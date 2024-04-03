@@ -1,2 +1,49 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Processor">
+      <UniqueIdentifier>{2d61da62-e163-4969-8b93-90af99074a0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{d8c80c80-e82f-4d50-9fd6-98dbf95656ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Enitity">
+      <UniqueIdentifier>{2ba566d2-042a-453c-a6b7-b56a2c240a60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{1b10218d-b44c-4430-926a-94c08b180b5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Time">
+      <UniqueIdentifier>{58126935-e9d1-4841-bfa6-13faeafce636}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Input">
+      <UniqueIdentifier>{17d5a98c-45a5-44dd-aeb2-a0ab29880e81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Scene">
+      <UniqueIdentifier>{dbd7dae4-1ad3-4740-b82e-59c9e5a9ff91}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Processor.cpp">
+      <Filter>Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>Manager\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Manager\Input</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Processor.h">
+      <Filter>Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>Manager\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers.h" />
+    <ClInclude Include="InputManager.h">
+      <Filter>Manager\Input</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
