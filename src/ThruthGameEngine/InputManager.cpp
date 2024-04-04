@@ -3,6 +3,8 @@
 InputManager::InputManager()
 	: m_keyInfomation()
 	, m_hwnd(nullptr)
+	, m_currentMousePos{}
+	, m_prevMousePos{}
 {
 
 }
@@ -95,9 +97,9 @@ void InputManager::Reset()
 	}
 }
 
-POINT InputManager::GetMouseMove()
+POINT InputManager::GetMouseMove() const
 {
-	POINT result;
+	POINT result = {};
 	result.x = m_currentMousePos.x - m_prevMousePos.x;
 	result.y = m_currentMousePos.y - m_prevMousePos.y;
 	return result;

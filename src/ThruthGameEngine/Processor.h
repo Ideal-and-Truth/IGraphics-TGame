@@ -29,5 +29,8 @@ private:
 	void LateUpdate();
 	void FixedUpdate();
 	void Render();
+
+	void CreateMainWindow(HINSTANCE _hInstance, int _width = 1920, int _height = 1080);
+	void InitializeManager();
 };
 

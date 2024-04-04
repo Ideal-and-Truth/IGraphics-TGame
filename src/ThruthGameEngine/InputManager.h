@@ -139,6 +139,6 @@ public:
 
 	KEY_STATE GetKeyState(KEY _eKey) const { return m_keyInfomation[(int)_eKey].state; }
 
-	POINT GetMouseMove();
+	POINT GetMouseMove() const;
 };
 
