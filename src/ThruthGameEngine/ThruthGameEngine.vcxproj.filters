@@ -25,6 +25,18 @@
     <Filter Include="Manager\Event">
       <UniqueIdentifier>{a6e8ad69-7903-4335-9998-6fbe2029f319}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Enitity\Test">
+      <UniqueIdentifier>{8a6a19c0-2595-4b39-9fac-027d9f8e5f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Test">
+      <UniqueIdentifier>{cc0d497e-382f-4f8f-ac7f-57f051aaf647}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{adc16a59-2de1-498f-9a44-879f99ff8d65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\TestScene">
+      <UniqueIdentifier>{992d8337-46cd-454c-a016-8b81b53c1567}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -35,6 +47,27 @@
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Manager\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Enitity</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="TestComponent.cpp">
+      <Filter>Component\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestEntity.cpp">
+      <Filter>Enitity\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>Scene\TestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Manager\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +80,27 @@
     <ClInclude Include="Headers.h" />
     <ClInclude Include="InputManager.h">
       <Filter>Manager\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Enitity</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="TestComponent.h">
+      <Filter>Component\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestEntity.h">
+      <Filter>Enitity\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>Scene\TestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Manager\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include "Processor.h"
 #include "TimeManager.h"
+#include "TestScene.h"
 
 
 Processor::Processor()
@@ -14,10 +15,17 @@ Processor::~Processor()
 {
 }
 
+/// <summary>
+/// 프로세서 초기화
+/// </summary>
+/// <param name="_hInstance"></param>
 void Processor::Initialize(HINSTANCE _hInstance)
 {
 	CreateMainWindow(_hInstance);
 	InitializeManager();
+
+	m_ts = std::make_unique<TestScene>();
+	m_ts->Enter();
 }
 
 void Processor::Process()
@@ -69,8 +77,9 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 void Processor::Update()
 {
-	this->m_timeManager->Update();
-	this->m_inputManager->Update();
+	m_timeManager->Update();
+	m_inputManager->Update();
+	m_ts->Update(m_timeManager->GetDT());
 }
 
 void Processor::LateUpdate()

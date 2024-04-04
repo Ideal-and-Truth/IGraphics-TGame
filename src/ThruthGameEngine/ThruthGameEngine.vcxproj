@@ -19,14 +19,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Processor.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="TestComponent.h" />
+    <ClInclude Include="TestEntity.h" />
+    <ClInclude Include="TestScene.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Headers.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Processor.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="TestComponent.cpp" />
+    <ClCompile Include="TestEntity.cpp" />
+    <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
