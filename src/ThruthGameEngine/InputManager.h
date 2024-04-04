@@ -20,32 +20,9 @@ enum class KEY
 	RIGHT,
 	UP,
 	DOWN,
-	Q,
-	W,
-	E,
-	R,
-	T,
-	Y,
-	U,
-	I,
-	O,
-	P,
-	A,
-	S,
-	D,
-	F,
-	G,
-	H,
-	J,
-	K,
-	L,
-	Z,
-	X,
-	C,
-	V,
-	B,
-	N,
-	M,
+	Q, W, E, R, T, Y, U, I, O, P,
+	A, S, D, F, G, H, J, K, L,
+	Z, X, C, V, B, N, M,
 	N_1,
 	N_2,
 	N_3,
@@ -65,6 +42,7 @@ enum class KEY
 	ESC,
 	LBTN,
 	RBTN,
+
 	F_1,
 	F_2,
 	F_3,
@@ -78,14 +56,12 @@ enum class KEY
 	F_11,
 	F_12,
 	BACKSPACE,
+
+	LMOUSE, RMOUSE, UPBUTTON, DOWNBUTTON,
+
 	END,
 };
-enum class MOUSE
-{
-	LEFT,
-	RIGHT,
-	END
-};
+
 struct tKeyInfo
 {
 	KEY_STATE state;
@@ -94,12 +70,11 @@ struct tKeyInfo
 
 class InputManager
 {
+	friend class Processor;
 private:
 	HWND m_hwnd;
 
 	tKeyInfo m_keyInfomation[(int)KEY::END];
-	bool m_mouseClick[(int)MOUSE::END];
-	tKeyInfo m_mouseInfomation[(int)MOUSE::END];
 
 	int m_virtualKeyArray[(int)KEY::END] =
 	{
@@ -107,32 +82,9 @@ private:
 		VK_RIGHT,	//RIGHT,
 		VK_UP,		//UP,
 		VK_DOWN,	//DOWN,
-		'Q',
-		'W',
-		'E',
-		'R',
-		'T',
-		'Y',
-		'U',
-		'I',
-		'O',
-		'P',
-		'A',
-		'S',
-		'D',
-		'F',
-		'G',
-		'H',
-		'J',
-		'K',
-		'L',
-		'Z',
-		'X',
-		'C',
-		'V',
-		'B',
-		'N',
-		'M',
+		'Q','W','E','R','T','Y','U','I','O','P',
+		'A','S','D','F','G','H','J','K','L',
+		'Z','X','C','V','B','N','M',
 		'1',
 		'2',
 		'3',
@@ -165,35 +117,28 @@ private:
 		VK_F10,
 		VK_F11,
 		VK_F12,
+
+		VK_LBUTTON, VK_RBUTTON, VK_XBUTTON2, VK_XBUTTON1,
+
 		VK_BACK
 	};
 
-	int m_nowMousePosX;
-	int m_nowMousePosY;
-
-	int m_oldMousePosX;
-	int m_oldMousePosY;
+private:
+	POINT m_currentMousePos;
+	POINT m_prevMousePos;
 
 public:
 	InputManager();
 	~InputManager();
 
-	int m_mouseDX;
-	int m_mouseDY;
-	void OnMouseLeftUp(int _x, int _y);
-	void OnMouseLeftDown(int _x, int _y);
-	void OnMouseRightUp(int _x, int _y);
-	void OnMouseRightDown(int _x, int _y);
-	void OnMouseMove(int _btnState, int _x, int _y);
-
+public:
 	void Initalize(HWND _hwnd);
 
 	void Update();
 	void Reset();
 
-	void ResetMouse(int _x = 0, int _y = 0);
+	KEY_STATE GetKeyState(KEY _eKey) const { return m_keyInfomation[(int)_eKey].state; }
 
-	KEY_STATE GetKeyState(KEY _eKey) { return m_keyInfomation[(int)_eKey].state; }
-	KEY_STATE GetMouseState(MOUSE _eKey) { return m_mouseInfomation[(int)_eKey].state; }
+	POINT GetMouseMove();
 };
 

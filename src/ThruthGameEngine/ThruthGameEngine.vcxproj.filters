@@ -22,6 +22,9 @@
     <Filter Include="Manager\Scene">
       <UniqueIdentifier>{dbd7dae4-1ad3-4740-b82e-59c9e5a9ff91}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager\Event">
+      <UniqueIdentifier>{a6e8ad69-7903-4335-9998-6fbe2029f319}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
