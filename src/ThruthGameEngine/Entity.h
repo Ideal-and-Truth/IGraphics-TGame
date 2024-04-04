@@ -14,10 +14,10 @@ private:
 	std::string m_name;
 
 	// key 값의 경우 type id 를 통해 유추한다.
-	std::map<std::string, std::list<std::shared_ptr<Component>>> m_multipleComponents;
-	std::map<std::string, std::shared_ptr<Component>> m_uniqueComponents;
 
 public:
+	std::map<std::string, std::list<std::shared_ptr<Component>>> m_multipleComponents;
+	std::map<std::string, std::shared_ptr<Component>> m_uniqueComponents;
 	Entity();
 	virtual ~Entity();
 
@@ -26,11 +26,11 @@ public:
 	virtual void LateUpdate(float4 _dt) abstract;
 	virtual void FixedUpdate(float4 _dt) abstract;
 
-	template<typename C>
+	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 	void AddComponent();
 };
 
-template<typename C>
+template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
 void Entity::AddComponent()
 {
 	// 일단 만든다
@@ -55,5 +55,6 @@ void Entity::AddComponent()
 		assert(m_uniqueComponents.find(tName) == m_uniqueComponents.end());
 		m_uniqueComponents[tName] = component;
 	}
+
 }
 
