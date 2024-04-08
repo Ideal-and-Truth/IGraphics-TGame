@@ -18,5 +18,6 @@ public:
 	void LateUpdate(float4 _dt) override;
 	void FiexUpdate(float4 _dt) override;
 
+	void EventTestFunc(std::shared_ptr<void> _p);
 };
 

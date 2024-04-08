@@ -1,8 +1,9 @@
 #include "Component.h"
 
 Component::Component()
-	: m_canMultiple(true)
-	, m_owner()
+	: m_owner()
+	, m_name("User Component")
+	, m_canMultiple(false)
 {
 }
 

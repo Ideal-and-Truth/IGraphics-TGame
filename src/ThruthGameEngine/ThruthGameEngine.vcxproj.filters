@@ -37,6 +37,12 @@
     <Filter Include="Scene\TestScene">
       <UniqueIdentifier>{992d8337-46cd-454c-a016-8b81b53c1567}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Transform">
+      <UniqueIdentifier>{98b98434-88e9-40c8-9c01-00d80c908808}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Event\Handler">
+      <UniqueIdentifier>{4ac078e7-a49f-45ff-8f9e-d2f0ea4cd2af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -68,6 +74,18 @@
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Manager\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>Manager\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHandler.cpp">
+      <Filter>Manager\Event\Handler</Filter>
+    </ClCompile>
+    <ClCompile Include="Managers.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +119,18 @@
     </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>Manager\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>Manager\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>Manager\Event\Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

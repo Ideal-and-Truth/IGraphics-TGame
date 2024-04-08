@@ -1,5 +1,6 @@
 #pragma once
 #include "Headers.h"
+#include "EventHandler.h"
 
 /// <summary>
 /// input mamaging class
@@ -122,10 +123,64 @@ private:
 
 		VK_BACK
 	};
+	const std::string m_keyStateString[(int)KEY_STATE::END] =
+	{
+		"NONE", "DOWN", "HOLD", "UP"
+	};
+
+	const std::string m_virtualKeyString[(int)KEY::END] =
+	{
+		"LEFT",
+		"RIGHT",
+		"UP",
+		"DOWN",
+		"Q","W","E","R","T","Y","U","I","O","P",
+		"A","S","D","F","G","H","J","K","L",
+		"Z","X","C","V","B","N","M",
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"0",
+
+		"MENU",	// ALT
+		"CONTROL",	// CTRL
+		"LSHIFT",	// LSHIFT
+		"SPACE",	// SPACE BAR
+		"RETURN",	// ENTER
+		"ESCAPE",	// ESC
+
+		"LBUTTON",
+		"RBUTTON",
+		"F1",
+		"F2",
+		"F3",
+		"F4",
+		"F5",
+		"F6",
+		"F7",
+		"F8",
+		"F9",
+		"F10",
+		"F11",
+		"F12",
+
+		"LBUTTON", "RBUTTON", "XBUTTON2", "XBUTTON1",
+
+		"BACK"
+	};
 
 private:
 	POINT m_currentMousePos;
 	POINT m_prevMousePos;
+
+	std::shared_ptr<bool> m_t;
+	std::shared_ptr<bool> m_f;
 
 public:
 	InputManager();

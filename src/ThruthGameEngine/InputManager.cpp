@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "Managers.h"
 
 InputManager::InputManager()
 	: m_keyInfomation()
@@ -6,7 +7,8 @@ InputManager::InputManager()
 	, m_currentMousePos{}
 	, m_prevMousePos{}
 {
-
+	m_t = std::make_shared<bool>(true);
+	m_f = std::make_shared<bool>(false);
 }
 
 InputManager::~InputManager()
@@ -30,6 +32,8 @@ void InputManager::Update()
 {
 	// 게임 포커스 [X] 상태면 키 전체 안 누름 처리하기 / 누르고 있었으면 떼기
 	HWND isGetFocusedHwnd = GetFocus();
+
+	std::weak_ptr<EventManager> eventManager = Managers::Get()->Event();
 
 	if (isGetFocusedHwnd == nullptr)
 	{
@@ -59,6 +63,7 @@ void InputManager::Update()
 			{
 				// 이전에도 눌려 있었다.
 				m_keyInfomation[i].state = KEY_STATE::HOLD;
+				eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::HOLD], std::reinterpret_pointer_cast<void>(m_t), 0);
 			}
 			else
 			{

@@ -1,14 +1,12 @@
 #include "Processor.h"
-#include "TimeManager.h"
 #include "TestScene.h"
-
+#include "Managers.h"
 
 Processor::Processor()
 	: m_hwnd(nullptr)
 	, m_msg()
 {
-	m_timeManager = std::make_unique<TimeManager>();
-	m_inputManager = std::make_unique<InputManager>();
+	m_manager = Managers::Get();
 }
 
 Processor::~Processor()
@@ -77,9 +75,8 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 void Processor::Update()
 {
-	m_timeManager->Update();
-	m_inputManager->Update();
-	m_ts->Update(m_timeManager->GetDT());
+	m_manager->Update();
+	m_ts->Update(m_manager->Time()->GetDT());
 }
 
 void Processor::LateUpdate()
@@ -156,6 +153,5 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, int _width, int _height)
 
 void Processor::InitializeManager()
 {
-	m_timeManager->Initalize();
-	m_inputManager->Initalize(m_hwnd);
+	m_manager->Initialize(m_hwnd);
 }

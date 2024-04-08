@@ -39,5 +39,6 @@ void Scene::AddEntity()
 {
 	std::shared_ptr<E> entity = std::make_shared<E>();
 	m_entities.push_back(entity);
+	entity->m_sharedThis = entity;
 }
 

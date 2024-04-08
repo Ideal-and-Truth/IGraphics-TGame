@@ -1,8 +1,10 @@
 #include "TestComponent.h"
+#include "Managers.h"
 
 TestComponent::TestComponent()
 {
-	CanMultiple(true);
+	m_canMultiple = true;
+	Managers::Get()->Event()->Subscribe("Q_HOLD", MakeListenerInfo(&TestComponent::EventTestFunc)) ;
 }
 
 TestComponent::~TestComponent()
@@ -11,7 +13,7 @@ TestComponent::~TestComponent()
 
 void TestComponent::Update(float4 _dt)
 {
-	int a = 1;
+	
 }
 
 void TestComponent::Render()
@@ -24,4 +26,9 @@ void TestComponent::LateUpdate(float4 _dt)
 
 void TestComponent::FiexUpdate(float4 _dt)
 {
+}
+
+void TestComponent::EventTestFunc(std::shared_ptr<void> _p)
+{
+	int a = 1;
 }

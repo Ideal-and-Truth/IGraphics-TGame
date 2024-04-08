@@ -1,10 +1,8 @@
 #pragma once
 #include "Headers.h"
-#include "InputManager.h"
 
-class TimeManager;
-class InputManager;
 class TestScene;
+class Managers;
 
 /// <summary>
 /// 엔진의 프로세서
@@ -13,9 +11,7 @@ class TestScene;
 class Processor
 {
 private:
-	// 매니저들
-	std::unique_ptr<TimeManager> m_timeManager;
-	std::unique_ptr<InputManager> m_inputManager;
+	Managers* m_manager;
 
 	// 윈도우 생성을 위한 변수
 	HWND m_hwnd;
