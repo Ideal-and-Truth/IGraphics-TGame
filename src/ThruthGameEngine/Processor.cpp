@@ -27,12 +27,12 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	CreateRender();
-// 	m_manager->Scene()->AddScene<TestScene>("test", m_manager);
-// 	m_manager->Scene()->AddScene<TestScene2>("test2", m_manager);
-// 
-// 	m_manager->Scene()->SetCurrnetScene("test");
-// 
-// 	m_manager->Scene()->StartGameScene();
+	m_manager->Scene()->AddScene<TestScene>("test", m_manager);
+	m_manager->Scene()->AddScene<TestScene2>("test2", m_manager);
+
+	m_manager->Scene()->SetCurrnetScene("test");
+
+	m_manager->Scene()->StartGameScene();
 }
 
 void Processor::Finalize()

@@ -87,7 +87,7 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>Manager\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Transform.cpp">
+    <ClCompile Include="ETransform.cpp">
       <Filter>Component\Transform</Filter>
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
@@ -150,7 +150,7 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Manager\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
+    <ClInclude Include="ETransform.h">
       <Filter>Component\Transform</Filter>
     </ClInclude>
     <ClInclude Include="EventManager.h">

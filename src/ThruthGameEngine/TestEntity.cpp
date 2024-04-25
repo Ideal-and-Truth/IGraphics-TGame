@@ -1,6 +1,6 @@
 #include "TestEntity.h"
 #include "TestComponent.h"
-#include "Transform.h"
+#include "ETransform.h"
 
 REFLECT_STRUCT_BEGIN(TestEntity)
 REFLECT_STRUCT_MEMBER(m_ID)

@@ -2,7 +2,7 @@
 #include "Headers.h"
 #include "Component.h"
 
-class Transform :
+class ETransform :
 	public Component
 {
 	COMPONENT_HEADER;
@@ -15,8 +15,8 @@ public:
 	Matrix m_transformMatrix;
 
 public:
-	Transform();
-	virtual ~Transform();
+	ETransform();
+	virtual ~ETransform();
 	virtual void Awake() override;
 
 	// 변환 내용 적용

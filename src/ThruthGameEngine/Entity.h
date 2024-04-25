@@ -7,7 +7,7 @@
 /// </summary>
 
 class Component;
-class Transform;
+class ETransform;
 class Managers;
 
 class Entity abstract

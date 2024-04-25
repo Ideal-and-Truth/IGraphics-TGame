@@ -45,7 +45,7 @@
     <ClInclude Include="TestScene2.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Headers.h" />
-    <ClInclude Include="Transform.h" />
+    <ClInclude Include="ETransform.h" />
     <ClInclude Include="TypeInfo.h" />
     <ClInclude Include="TypeInfoMacros.h" />
   </ItemGroup>
@@ -68,7 +68,7 @@
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="TestScene2.cpp" />
     <ClCompile Include="TimeManager.cpp" />
-    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="ETransform.cpp" />
     <ClCompile Include="TypeInfo.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>

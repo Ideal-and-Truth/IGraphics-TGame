@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include "Transform.h"
+#include "ETransform.h"
 
 uint16 Entity::m_entityCount = 0;
 
@@ -17,6 +17,6 @@ Entity::~Entity()
 
 void Entity::Initailize()
 {
-	AddComponent<Transform>();
+	AddComponent<ETransform>();
 }
 

@@ -8,7 +8,7 @@
 /// </summary>
 
 class Entity;
-class Transform;
+class ETransform;
 class Managers;
 
 class Component
@@ -20,7 +20,7 @@ protected:
 	bool m_canMultiple;
 
 	std::weak_ptr<Entity> m_owner;
-	std::weak_ptr<Transform> m_transform;
+	std::weak_ptr<ETransform> m_transform;
 	std::weak_ptr<Managers> m_managers;
 
 public:
