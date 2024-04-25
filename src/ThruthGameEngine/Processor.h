@@ -3,6 +3,7 @@
 
 class TestScene;
 class Managers;
+class IdealRenderer;
 
 /// <summary>
 /// 엔진의 프로세서
@@ -12,10 +13,14 @@ class Processor
 {
 private:
 	std::shared_ptr<Managers> m_manager;
-
+	std::shared_ptr<Ideal::IdealRenderer> m_renderer;
 	// 윈도우 생성을 위한 변수
 	HWND m_hwnd;
 	MSG m_msg;
+
+	float m_wight;
+	float m_height;
+
 
 public:
 	// 특수 멤버함수
@@ -39,5 +44,6 @@ private:
 
 	void CreateMainWindow(HINSTANCE _hInstance, int _width = 1920, int _height = 1080, const wchar_t szAppName[] = L"Truth Engine");
 	void InitializeManager();
+	void CreateRender();
 };
 

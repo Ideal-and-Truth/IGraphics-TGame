@@ -126,8 +126,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Libraries\Debug\GameEngine\</OutDir>
-    <IntDir>..\Libraries\Debug\GameEngine\</IntDir>
+    <OutDir>$(SolutionDir)Libraries\Debuglib\GameEngine\</OutDir>
+    <IntDir>..\Libraries\Debuglib\GameEngine\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -180,9 +180,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <OutputFile>$(SolutionDir)Libraries\Debug\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)Libraries\Debuglib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalDependencies>IdealGraphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)IdealGraphics\Libraries\DebugLib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Debuglib\GraphicsEngine;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

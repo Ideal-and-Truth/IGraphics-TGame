@@ -26,13 +26,13 @@ void Processor::Initialize(HINSTANCE _hInstance)
 {
 	CreateMainWindow(_hInstance);
 	InitializeManager();
-
-	m_manager->Scene()->AddScene<TestScene>("test", m_manager);
-	m_manager->Scene()->AddScene<TestScene2>("test2", m_manager);
-
-	m_manager->Scene()->SetCurrnetScene("test");
-
-	m_manager->Scene()->StartGameScene();
+	CreateRender();
+// 	m_manager->Scene()->AddScene<TestScene>("test", m_manager);
+// 	m_manager->Scene()->AddScene<TestScene2>("test2", m_manager);
+// 
+// 	m_manager->Scene()->SetCurrnetScene("test");
+// 
+// 	m_manager->Scene()->StartGameScene();
 }
 
 void Processor::Finalize()
@@ -90,6 +90,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 void Processor::Update()
 {
 	m_manager->Update();
+	m_renderer->Tick();
 }
 
 void Processor::LateUpdate()
@@ -104,11 +105,15 @@ void Processor::FixedUpdate()
 
 void Processor::Render()
 {
-	m_manager->Render();
+	// m_manager->Render();
+	m_renderer->Render();
 }
 
 void Processor::CreateMainWindow(HINSTANCE _hInstance, int _width, int _height, const wchar_t szAppName[])
 {
+	m_wight = _width;
+	m_height = _height;
+
 	// Ã¢ ÁöÁ¤
 	WNDCLASSEXW wcex = {};
 
@@ -166,4 +171,19 @@ void Processor::InitializeManager()
 {
 	m_manager = std::make_shared<Managers>();
 	m_manager->Initialize(m_hwnd);
+}
+
+void Processor::CreateRender()
+{
+	m_renderer = CreateRenderer(
+		EGraphicsInterfaceType::D3D12,
+		&m_hwnd,
+		m_wight,
+		m_height,
+		L"../Resources/Assets/",
+		L"../Resources/Models/",
+		L"../Resources/Textures/"
+	);
+
+	m_renderer->Init();
 }

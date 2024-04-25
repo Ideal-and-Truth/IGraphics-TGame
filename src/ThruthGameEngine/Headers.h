@@ -37,3 +37,9 @@ using namespace DirectX::SimpleMath;
 
 // 매크로 관련
 #include "Macro.h"
+
+// 그래픽 관련
+#include "ICamera.h"
+#include "IdealRendererFactory.h"
+#include "IdealRenderer.h"
+#include "IMeshObject.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "ThirdParty/Include/DirectXTK12/SimpleMath.h"
+#include "SimpleMath.h"
 
 namespace Ideal
 {
