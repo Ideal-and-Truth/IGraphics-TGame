@@ -1,5 +1,6 @@
 #pragma once
-#include "SimpleMath.h"
+//#include "GraphicsEngine/SimpleMath.h"
+#include "../Utils/SimpleMath.h"
 
 namespace Ideal
 {

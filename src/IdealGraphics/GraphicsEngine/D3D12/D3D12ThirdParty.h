@@ -14,12 +14,12 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 
-#include "ThirdParty/Include/DirectXTK12/SimpleMath.h"
+#include "../Utils/SimpleMath.h"
 
 #ifdef _DEBUG
-#pragma comment(lib, "ForDebug/DirectXTK12/DirectXTK12.lib")
+#pragma comment(lib, "DebugLib/DirectXTK12/DirectXTK12.lib")
 #else
-#pragma comment(lib, "ForRelease/DirectXTK12/DirectXTK12.lib")
+#pragma comment(lib, "ReleaseLib/DirectXTK12/DirectXTK12.lib")
 #endif
 
 using namespace DirectX::SimpleMath;

@@ -5,15 +5,15 @@
 #include "IdealGraphicsDemo.h"
 
 #ifdef _DEBUG
-#pragma comment(lib, "Debug/IdealGraphics.lib")
+#pragma comment(lib, "DebugLib/GraphicsEngine/IdealGraphics.lib")
 #else
-#pragma comment(lib, "Release/IdealGraphics.lib")
+#pragma comment(lib, "ReleaseLib/GraphicsEngine/IdealGraphics.lib")
 #endif
 
 #include "GraphicsEngine/public/IdealRendererFactory.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
 #include "GraphicsEngine/public/IMeshObject.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
 
 #define MAX_LOADSTRING 100
@@ -75,11 +75,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
 		//Renderer->ConvertAssetToMyFormat(L"Tank/Tank.fbx");
 		Renderer->Init();
-		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"statue_chronos/statue_join");
+		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"statue_chronos/statue_join");
 		
 		
-		Matrix world = Matrix::Identity;
-		float angle = 0.f;
+		//Matrix world = Matrix::Identity;
+		//float angle = 0.f;
 
 		while (msg.message != WM_QUIT)
 		{
@@ -90,10 +90,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
-				angle += 0.2f;
-				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
-				world.CreateRotationY(angle);
-				mesh->SetTransformMatrix(world);
+				//angle += 0.2f;
+				//world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
+				//world.CreateRotationY(angle);
+				//mesh->SetTransformMatrix(world);
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();

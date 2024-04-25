@@ -2,8 +2,6 @@
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "Core/Core.h"
 
-#include "ThirdParty/Include/DirectXTK12/SimpleMath.h"
-
 //class IdealRenderer;
 
 namespace Ideal

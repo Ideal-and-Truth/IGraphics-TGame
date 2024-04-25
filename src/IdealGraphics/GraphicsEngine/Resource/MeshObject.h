@@ -2,7 +2,6 @@
 #include "GraphicsEngine/public/IMeshObject.h"
 
 #include "Core/Core.h"
-#include "ThirdParty/Include/DirectXTK12/SimpleMath.h"
 
 namespace Ideal
 {
