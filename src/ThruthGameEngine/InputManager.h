@@ -3,9 +3,8 @@
 #include "EventHandler.h"
 
 /// <summary>
-/// input mamaging class
+/// 키 상태 
 /// </summary>
-
 enum class KEY_STATE
 {
 	NONE, // 키가 눌리지 않은 상태
@@ -15,6 +14,9 @@ enum class KEY_STATE
 	END,
 };
 
+/// <summary>
+/// 입력을 지원하는 키 
+/// </summary>
 enum class KEY
 {
 	LEFT,
@@ -63,20 +65,27 @@ enum class KEY
 	END,
 };
 
+/// <summary>
+/// 키 정보
+/// </summary>
 struct tKeyInfo
 {
 	KEY_STATE state;
 	bool prevPush;
 };
 
+/// <summary>
+/// input mamaging class
+/// </summary>
 class InputManager
 {
-	friend class Processor;
 private:
+	// 윈도우 포커스 여부를 확인 할 윈도우 핸들러
 	HWND m_hwnd;
 
 	tKeyInfo m_keyInfomation[(int)KEY::END];
 
+	// 키 입력을 확인할 버추얼 키 값
 	int m_virtualKeyArray[(int)KEY::END] =
 	{
 		VK_LEFT,	//LEFT,
@@ -123,11 +132,14 @@ private:
 
 		VK_BACK
 	};
+
+	// 키 상태를 string 형태로 바꾼 것
 	const std::string m_keyStateString[(int)KEY_STATE::END] =
 	{
 		"NONE", "DOWN", "HOLD", "UP"
 	};
 
+	// 키 입력을 확인할 버추얼 키 값을 string 형태로 바꾼 것
 	const std::string m_virtualKeyString[(int)KEY::END] =
 	{
 		"LEFT",
@@ -176,23 +188,31 @@ private:
 	};
 
 private:
+	// 현재 프레임 마우스 위치
 	POINT m_currentMousePos;
+	// 과거 프레임 마우스 위치
 	POINT m_prevMousePos;
 
-	std::shared_ptr<bool> m_t;
-	std::shared_ptr<bool> m_f;
+	// 이벤트 발행을 위한 이벤트 매니저
+	// 그때 그때 생성하는거 보다 미리 받아놓는다.
+	std::weak_ptr<EventManager> m_eventManager;
 
 public:
 	InputManager();
 	~InputManager();
 
 public:
-	void Initalize(HWND _hwnd);
+	// 초기화
+	void Initalize(HWND _hwnd, std::shared_ptr<EventManager> _eventManager);
 
+	// 업데이트
 	void Update();
+	// 리셋
 	void Reset();
 
-	KEY_STATE GetKeyState(KEY _eKey) const { return m_keyInfomation[(int)_eKey].state; }
+	void Finalize();
+
+	KEY_STATE GetKeyState(KEY _eKey) const = delete;
 
 	POINT GetMouseMove() const;
 };

@@ -43,6 +43,18 @@
     <Filter Include="Manager\Event\Handler">
       <UniqueIdentifier>{4ac078e7-a49f-45ff-8f9e-d2f0ea4cd2af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SimpleMath">
+      <UniqueIdentifier>{7f903d8b-271c-4790-af9c-fdb88adbff31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Reflection">
+      <UniqueIdentifier>{e6553fe3-6a16-4460-9ff4-340edc8a62f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{ae437e3a-922b-4503-bf21-22cae369f3c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Reflection\Advanced">
+      <UniqueIdentifier>{d094facb-abcc-4efd-a9c0-3e0ee728eb96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -86,6 +98,24 @@
     </ClCompile>
     <ClCompile Include="Managers.cpp">
       <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utils\SimpleMath.cpp">
+      <Filter>SimpleMath</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene2.cpp">
+      <Filter>Scene\TestScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Reflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utils\FileUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utils\Utils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeInfo.cpp">
+      <Filter>Reflection\Advanced</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +161,46 @@
     </ClInclude>
     <ClInclude Include="Managers.h">
       <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Macro.h" />
+    <ClInclude Include="..\Utils\SimpleMath.h">
+      <Filter>SimpleMath</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene2.h">
+      <Filter>Scene\TestScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utils\FileUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utils\Utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Method.h">
+      <Filter>Reflection\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="MethodMacros.h">
+      <Filter>Reflection\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="Property.h">
+      <Filter>Reflection\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyMacros.h">
+      <Filter>Reflection\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyParser.h">
+      <Filter>Reflection\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="AdvanceReflection.h">
+      <Filter>Reflection\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeInfo.h">
+      <Filter>Reflection\Advanced</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeInfoMacros.h">
+      <Filter>Reflection\Advanced</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

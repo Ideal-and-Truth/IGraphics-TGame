@@ -1,36 +1,62 @@
 #include "EventManager.h"
+#include "Managers.h"
+#include "TimeManager.h"
+#include "EventHandler.h"
 
 EventManager::EventManager()
 {
-
+	DEBUG_PRINT("Create EventManager\n");
 }
 
 EventManager::~EventManager()
 {
-
+	DEBUG_PRINT("Finalize EventManager\n");
+	Finalize();
 }
 
-void EventManager::Initialize()
+/// <summary>
+/// 초기화
+/// </summary>
+void EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager)
 {
-
+	m_timeManager = _timeManager;
 }
 
-void EventManager::Update(const float4& _deltaTime)
+/// <summary>
+/// 업데이트
+/// </summary>
+void EventManager::Update()
 {
-	ProcessEvent(_deltaTime);
+	ProcessEvent();
+	PublishEvent("Apply Transform");
+	ProcessEvent();
 }
 
+/// <summary>
+/// 초기화
+/// </summary>
 void EventManager::Finalize()
 {
 	RemoveAllEvents();
 	RemoveAllSubscribes();
 }
 
-void EventManager::PublishEvent(std::string _eventID, const std::shared_ptr<void>& _param /*= nullptr*/, const float& _delayed /*= 0.0f*/)
+/// <summary>
+/// 이벤트 발행
+/// </summary>
+/// <param name="_eventID">이벤트 이름</param>
+/// <param name="_param">이벤트 함수의 인자 혹은 인자 묶음. 기본 없음</param>
+/// <param name="_delayed">딜레이 시간 기본 0.0f</param>
+void EventManager::PublishEvent(std::string _eventID, const std::any _param /*= nullptr*/, const float& _delayed /*= 0.0f*/)
 {
 	m_customEvents.push(Event{ _eventID, _param, _delayed });
 }
 
+/// <summary>
+/// 이벤트 구독
+/// </summary>
+/// <param name="_eventID">구독 할 이벤트 아이디</param>
+/// <param name="_listenerInfo">이벤트를 구독할 클래스 정보 구조체</param>
 void EventManager::Subscribe(std::string _eventID, const ListenerInfo& _listenerInfo)
 {
 	if (_listenerInfo.m_listener == nullptr ||
@@ -38,47 +64,62 @@ void EventManager::Subscribe(std::string _eventID, const ListenerInfo& _listener
 	{
 		return;
 	}
-	m_listeners.emplace(std::make_pair(_eventID, _listenerInfo));
+	m_listeners[_eventID].push_front(_listenerInfo);
+
+	m_eventHandlerInfo[_listenerInfo.m_listener].push_back(
+		EventSearch
+		{
+			m_listeners[_eventID],
+			m_listeners[_eventID].begin(),
+			_eventID
+		}
+	);
+
+	EventSearch es = { m_listeners[_eventID], m_listeners[_eventID].begin(), _eventID };
 }
 
+/// <summary>
+/// 특정 클래스가 특정 이벤트를 구독 해제
+/// </summary>
+/// <param name="_eventID">구독 해제할 아이디</param>
+/// <param name="_listener">구독 해제할 클래스 정보 구조체</param>
 void EventManager::Unsubscribe(std::string _eventID, const EventHandler* _listener)
 {
-	auto eRange = m_listeners.equal_range(_eventID);
-	for (auto& itr = eRange.first; itr != eRange.second; )
+	for (auto& l : m_eventHandlerInfo[_listener])
 	{
-		if (itr->second.m_listener == _listener)
+		if (l.m_eventID == _eventID)
 		{
-			itr = m_listeners.erase(itr);
-			continue;
+			l.m_listRef.erase(l.m_itr);
 		}
-		++itr;
 	}
 }
 
-// O(n) 개선이 필요함
+/// <summary>
+/// 특정 리스너를 모든 이벤트에서 제거
+/// </summary>
+/// <param name="_listener">제거할 클래스</param>
 void EventManager::RemoveListener(const EventHandler* _listener)
 {
-	for (auto itr = m_listeners.begin(); itr != m_listeners.end(); )
+	for (auto& l : m_eventHandlerInfo[_listener])
 	{
-		if (itr->second.m_listener == _listener)
-		{
-			itr = m_listeners.erase(itr);
-			continue;
-		}
-		++itr;
+		DEBUG_PRINT("%s : event %s removed\n", _listener->m_name.c_str(), l.m_eventID.c_str());
+		l.m_listRef.erase(l.m_itr);
 	}
+	m_eventHandlerInfo[_listener].clear();
 }
 
+/// <summary>
+/// 특정 이벤트에서 모든 리스너를 제거
+/// </summary>
+/// <param name="_eventID">제거할 이벤트</param>
 void EventManager::RemoveListenersAtEvent(std::string _eventID)
 {
-	auto eRange = m_listeners.equal_range(_eventID);
-
-	for (auto& itr = eRange.first; itr != eRange.second; )
-	{
-		itr = m_listeners.erase(itr);
-	}
+	m_listeners[_eventID].clear();
 }
 
+/// <summary>
+/// 모든 이벤트 제거
+/// </summary>
 void EventManager::RemoveAllEvents()
 {
 	while (!m_customEvents.empty())
@@ -87,18 +128,26 @@ void EventManager::RemoveAllEvents()
 	}
 }
 
+/// <summary>
+/// 모든 구독자 제거
+/// </summary>
 void EventManager::RemoveAllSubscribes()
 {
 	m_listeners.clear();
+	m_eventHandlerInfo.clear();
 }
 
-void EventManager::ProcessEvent(const float4& _deltaTime)
+/// <summary>
+/// 이벤트 실행
+/// </summary>
+void EventManager::ProcessEvent()
 {
-	for (int i = 0; i < m_customEvents.size(); i++)
+	while (!m_customEvents.empty())
 	{
-		Event& e = m_customEvents.front();
+		Event e = m_customEvents.front();
+		m_customEvents.pop();
 
-		e.m_delayedTime -= _deltaTime;
+		e.m_delayedTime -= m_timeManager.lock()->GetDT();
 		if (e.m_delayedTime <= 0.0f)
 		{
 			DispatchEvent(e);
@@ -107,27 +156,34 @@ void EventManager::ProcessEvent(const float4& _deltaTime)
 		{
 			m_customEvents.push(e);
 		}
-		m_customEvents.pop();
 	}
 }
 
+/// <summary>
+/// 이벤트 함수의 실행
+/// </summary>
+/// <param name="_event">이벤트 정보</param>
 void EventManager::DispatchEvent(const Event& _event)
 {
-	auto eRange = m_listeners.equal_range(_event.m_eventID);
-
-	for (auto& itr = eRange.first; itr != eRange.second; ++itr)
+	for (auto& listner : m_listeners[_event.m_eventID])
 	{
-		itr->second.EventFunction(_event.m_parameter);
+		listner.EventFunction(_event.m_parameter);
 	}
 }
 
+/// <summary>
+/// 구독 정보 확인
+/// </summary>
+/// <param name="_eventID">이벤트 아이디</param>
+/// <param name="_listener">리스너 클래스</param>
+/// <returns>구독 여부</returns>
 bool EventManager::CheckSubscribe(std::string _eventID, const EventHandler* _listener)
 {
-	auto eRange = m_listeners.equal_range(_eventID);
+	auto& eventList = m_eventHandlerInfo[_listener];
 
-	for (auto& itr = eRange.first; itr != eRange.second; ++itr)
+	for (auto& e : eventList)
 	{
-		if (itr->second.m_listener == _listener)
+		if (_eventID == e.m_eventID)
 		{
 			return true;
 		}

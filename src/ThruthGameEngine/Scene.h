@@ -6,7 +6,7 @@
 /// </summary>
 
 class Entity;
-
+class Managers;
 class Scene
 {
 private:
@@ -14,24 +14,21 @@ private:
 	
 	std::list<std::shared_ptr<Entity>> m_entities;
 
+	std::weak_ptr<Managers> m_managers;
+
 public:
-	Scene();
+	Scene(std::shared_ptr<Managers> _managers);
 	virtual ~Scene();
 
 public:
-	void Update(float4 _dt);
-	void Render();
-	void LateUpdate(float4 _dt);
-	void FixedUpdate(float4 _dt);
-
 	template<typename E>
 	void AddEntity();
 
-	virtual void FrontUpdate(float4 _dt) abstract;
-	virtual void BackUpdate(float4 _dt) abstract;
-
+	virtual void Awake() abstract;
 	virtual void Enter() abstract;
 	virtual void Exit() abstract;
+
+	void ClearEntity();
 };
 
 template<typename E>
@@ -39,6 +36,7 @@ void Scene::AddEntity()
 {
 	std::shared_ptr<E> entity = std::make_shared<E>();
 	m_entities.push_back(entity);
-	entity->m_sharedThis = entity;
+	entity->SetManager(m_managers);
+	entity->Initailize();
 }
 

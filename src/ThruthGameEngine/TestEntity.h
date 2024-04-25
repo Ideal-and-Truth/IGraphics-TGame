@@ -11,10 +11,11 @@ class TestEntity
 public:
 	TestEntity();
 	virtual ~TestEntity();
-public:
-	void Update(float4 _dt) override;
-	void Render() override;
-	void LateUpdate(float4 _dt) override;
-	void FixedUpdate(float4 _dt) override;
+	virtual void Initailize() override;
+
+	std::shared_ptr<int> m_test;
+	std::vector<int> m_intest;
+
+	REFLECT()
 };
 

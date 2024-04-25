@@ -1,16 +1,21 @@
 #include "Processor.h"
-#include "TestScene.h"
 #include "Managers.h"
+#include "SceneManager.h"
+#include "TestScene.h"
+#include "TestScene2.h"
 
 Processor::Processor()
 	: m_hwnd(nullptr)
 	, m_msg()
+	, m_manager(nullptr)
 {
-	m_manager = Managers::Get();
+	DEBUG_PRINT("start process\n");
 }
 
 Processor::~Processor()
 {
+	Finalize();
+	DEBUG_PRINT("end process\n");
 }
 
 /// <summary>
@@ -22,8 +27,17 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 
-	m_ts = std::make_unique<TestScene>();
-	m_ts->Enter();
+	m_manager->Scene()->AddScene<TestScene>("test", m_manager);
+	m_manager->Scene()->AddScene<TestScene2>("test2", m_manager);
+
+	m_manager->Scene()->SetCurrnetScene("test");
+
+	m_manager->Scene()->StartGameScene();
+}
+
+void Processor::Finalize()
+{
+	m_manager->Finalize();
 }
 
 void Processor::Process()
@@ -76,28 +90,25 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 void Processor::Update()
 {
 	m_manager->Update();
-	m_ts->Update(m_manager->Time()->GetDT());
 }
 
 void Processor::LateUpdate()
 {
-
+	m_manager->LateUpdate();
 }
 
 void Processor::FixedUpdate()
 {
-
+	m_manager->FixedUpdate();
 }
 
 void Processor::Render()
 {
-
+	m_manager->Render();
 }
 
-void Processor::CreateMainWindow(HINSTANCE _hInstance, int _width, int _height)
+void Processor::CreateMainWindow(HINSTANCE _hInstance, int _width, int _height, const wchar_t szAppName[])
 {
-	wchar_t szAppName[] = L"Truth Engine";
-
 	// Ã¢ ÁöÁ¤
 	WNDCLASSEXW wcex = {};
 
@@ -153,5 +164,6 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, int _width, int _height)
 
 void Processor::InitializeManager()
 {
+	m_manager = std::make_shared<Managers>();
 	m_manager->Initialize(m_hwnd);
 }

@@ -7,17 +7,19 @@ InputManager::InputManager()
 	, m_currentMousePos{}
 	, m_prevMousePos{}
 {
-	m_t = std::make_shared<bool>(true);
-	m_f = std::make_shared<bool>(false);
+	DEBUG_PRINT("Create InputManager\n");
 }
 
 InputManager::~InputManager()
 {
-
+	DEBUG_PRINT("Finalize InputManager\n");
 }
 
-
-void InputManager::Initalize(HWND _hwnd)
+/// <summary>
+/// 초기화
+/// </summary>
+/// <param name="_hwnd">윈도우 포커스 확인을 위한 핸들러</param>
+void InputManager::Initalize(HWND _hwnd, std::shared_ptr<EventManager> _eventManager)
 {
 	m_hwnd = _hwnd;
 
@@ -25,67 +27,57 @@ void InputManager::Initalize(HWND _hwnd)
 	{
 		m_keyInfomation[i] = tKeyInfo{ KEY_STATE::NONE, false };
 	}
+	m_eventManager = _eventManager;
 }
 
-
+/// <summary>
+/// 업데이트 합수
+/// 키의 상태에 따라 이벤트를 발행한다.
+/// </summary>
 void InputManager::Update()
 {
 	// 게임 포커스 [X] 상태면 키 전체 안 누름 처리하기 / 누르고 있었으면 떼기
 	HWND isGetFocusedHwnd = GetFocus();
 
-	std::weak_ptr<EventManager> eventManager = Managers::Get()->Event();
-
+	// 현재 윈도우가 포커스 상태가 아닌경우
 	if (isGetFocusedHwnd == nullptr)
 	{
+		// 키 값을 리셋한다
 		for (size_t i = 0; i < static_cast<size_t>(KEY::END); i++)
 		{
 			m_keyInfomation[i].prevPush = false;
-
+			// 허나 눌려있던 상태라면 UP 상태로 바꿔 주어야 한다.
 			if (m_keyInfomation[i].state == KEY_STATE::DOWN || m_keyInfomation[i].state == KEY_STATE::HOLD)
 			{
-				m_keyInfomation[i].state = KEY_STATE::UP;
-			}
-			if (m_keyInfomation[i].state == KEY_STATE::UP)
-			{
-				m_keyInfomation[i].state = KEY_STATE::NONE;
+				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::UP]);
 			}
 		}
+		// 업데이트 바로 종료
 		return;
 	}
 
 	// 게임 포커스 [O] 때 키 상태 업데이트
 	for (size_t i = 0; i < static_cast<size_t>(KEY::END); ++i)
 	{
-		// 키가 눌려있다
+		// 현재 키가 눌려있는지와 과거 눌려있는지를 비교하여 이벤트를 발행한다.
 		if (GetAsyncKeyState(m_virtualKeyArray[i]) & 0x8000)
 		{
 			if (m_keyInfomation[i].prevPush)
 			{
-				// 이전에도 눌려 있었다.
-				m_keyInfomation[i].state = KEY_STATE::HOLD;
-				eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::HOLD], std::reinterpret_pointer_cast<void>(m_t), 0);
+				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::HOLD]);
 			}
 			else
 			{
-				// 이전에 눌려있지 않았다.
-				m_keyInfomation[i].state = KEY_STATE::DOWN;
+				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::DOWN]);
 			}
 
 			m_keyInfomation[i].prevPush = true;
 		}
-
-		// 키가 안눌려있다
 		else
 		{
 			if (m_keyInfomation[i].prevPush)
 			{
-				// 이전에 눌려 있었다.
-				m_keyInfomation[i].state = KEY_STATE::UP;
-			}
-			else
-			{
-				// 이전에도 눌려있지 않았다.
-				m_keyInfomation[i].state = KEY_STATE::NONE;
+				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::UP]);
 			}
 
 			m_keyInfomation[i].prevPush = false;
@@ -93,15 +85,27 @@ void InputManager::Update()
 	}
 }
 
+/// <summary>
+/// 리셋
+/// 모든 키의 과거 상태를 눌리지 않는 상태로 바꾸낟.
+/// </summary>
 void InputManager::Reset()
 {
 	for (size_t i = 0; i < static_cast<size_t>(KEY::END); i++)
 	{
-		this->m_keyInfomation[i].state = KEY_STATE::NONE;
 		this->m_keyInfomation[i].prevPush = false;
 	}
 }
 
+void InputManager::Finalize()
+{
+	Reset();
+}
+
+/// <summary>
+/// 마우스가 이동한 거리 
+/// </summary>
+/// <returns>마우스가 이동한 거리</returns>
 POINT InputManager::GetMouseMove() const
 {
 	POINT result = {};

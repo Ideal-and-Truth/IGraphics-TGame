@@ -7,94 +7,105 @@
 /// </summary>
 
 class Component;
+class Transform;
+class Managers;
 
-class Entity : public std::enable_shared_from_this<Entity>
+class Entity abstract
+	: public std::enable_shared_from_this<Entity>
 {
-private:
+	// GENERATE_CLASS_TYPE_INFO(Entity)
+
+protected:
+	static uint16 m_entityCount;
+	uint16 m_ID;
 	std::string m_name;
+	std::weak_ptr<Managers> m_manager;
 
 public:
-	std::shared_ptr<Entity> m_sharedThis;
-
 	// key 값의 경우 type id 를 통해 유추한다.
-	std::map<std::string, std::list<std::shared_ptr<Component>>> m_multipleComponents;
-	std::map<std::string, std::shared_ptr<Component>> m_uniqueComponents;
+	std::map<size_t, std::vector<std::shared_ptr<Component>>> m_components;
 
 	Entity();
 	virtual ~Entity();
-
-	virtual void Update(float4 _dt) abstract;
-	virtual void Render() abstract;
-	virtual void LateUpdate(float4 _dt) abstract;
-	virtual void FixedUpdate(float4 _dt) abstract;
+	virtual void Initailize();
 
 	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 	void AddComponent();
 
 	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
-	std::weak_ptr<Component> GetComponent();
+	std::weak_ptr<C> GetComponent();
 
 	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
-	std::list<std::shared_ptr<Component>> GetComponents();
+	std::vector<std::weak_ptr<C>> GetComponents();
+
+	void SetManager(std::weak_ptr<Managers> _val) { m_manager = _val; };
 };
 
+
+
+/// template로 작성된 함수 목록
+
+/// <summary>
+/// 엔티티에 컴포넌트 추가
+/// </summary>
+/// <typeparam name="C">컴포넌트 타입</typeparam>
 template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
 void Entity::AddComponent()
 {
 	// 일단 만든다
 	// 타입 이름 가져오기
 	std::shared_ptr<C> component = std::make_shared<C>();
-	component->SetOwner(m_sharedThis);
-	std::string tName = typeid(C).name();
+
+	component->SetOwner(shared_from_this());
+	component->SetManager(m_manager);
+	component->Awake();
 
 	// 만일 중복 가능한 컴포넌트라면
 	if (component->CanMultiple())
 	{
-		// 이 컴포넌트가 처음이라면
-		if (m_multipleComponents.find(tName) == m_multipleComponents.end())
-		{
-			m_multipleComponents[tName] = std::list<std::shared_ptr<Component>>();
-		}
-		m_multipleComponents[tName].push_back(component);
+		m_components[C::m_typeID].push_back(component);
 	}
 	// 중복 불가능한 컴포넌트라면
-	else
+	else if (!component->CanMultiple() && m_components[C::m_typeID].size() == 0)
 	{
-		// 컴포넌트가 없다면
-		assert(m_uniqueComponents.find(tName) == m_uniqueComponents.end());
-		m_uniqueComponents[tName] = component;
+		m_components[C::m_typeID].push_back(component);
 	}
 }
 
+/// <summary>
+/// 컴포넌트 가져오기
+/// 여려개가 있는 컴포넌트의 경우 가장 바깥에 있는 하나만 반환 
+/// </summary>
+/// <typeparam name="C">컴포넌트 타입</typeparam>
+/// <returns>컴포넌트</returns>
 template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
-std::weak_ptr<Component> Entity::GetComponent()
+std::weak_ptr<C> Entity::GetComponent()
 {
-	// 타입 이름 가져오기
-	std::string tName = typeid(C).name();
-	if (m_multipleComponents.find(tName) != m_multipleComponents.end())
+	if (m_components.find(C::m_typeID) != m_components.end())
 	{
-		return m_multipleComponents[tName].front();
+		return std::reinterpret_pointer_cast<C>(m_components[C::m_typeID].front());
 	}
-	else if (m_uniqueComponents.find(tName) != m_uniqueComponents.end())
-	{
-		return m_uniqueComponents[tName];
-	}
+	return std::weak_ptr<C>();
 }
 
+/// <summary>
+/// 컴포넌트들 가져오기
+/// 한개인 경우 크기가 하나인 리스트로 돌려준다.
+/// </summary>
+/// <typeparam name="C">컴포넌트 타입</typeparam>
+/// <returns>컴포넌트 리스트</returns>
 template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
-std::list<std::shared_ptr<Component>> Entity::GetComponents()
+std::vector<std::weak_ptr<C>> Entity::GetComponents()
 {
-	// 타입 이름 가져오기
-	std::string tName = typeid(C).name();
-	if (m_multipleComponents.find(tName) != m_multipleComponents.end())
+	std::vector<std::weak_ptr<C>> result;
+	if (m_components.find(C::m_typeID) != m_components.end())
 	{
-		return m_multipleComponents[tName];
-	}
-	else if (m_uniqueComponents.find(tName) != m_uniqueComponents.end())
-	{
-		std::list<std::shared_ptr<Component>> result;
-		result.push_back(m_uniqueComponents[tName]);
+		for (auto& c : m_components[C::m_typeID])
+		{
+			result.push_back(std::reinterpret_pointer_cast<C>(c));
+		}
 		return result;
 	}
+	return result;
 }
 

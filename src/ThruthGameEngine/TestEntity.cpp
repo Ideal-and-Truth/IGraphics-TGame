@@ -1,44 +1,29 @@
 #include "TestEntity.h"
 #include "TestComponent.h"
+#include "Transform.h"
+
+REFLECT_STRUCT_BEGIN(TestEntity)
+REFLECT_STRUCT_MEMBER(m_ID)
+REFLECT_STRUCT_MEMBER(m_name)
+REFLECT_STRUCT_MEMBER(m_components)
+REFLECT_STRUCT_END()
+
 TestEntity::TestEntity()
 {
-	AddComponent<TestComponent>();
-	AddComponent<TestComponent>();
-	AddComponent<TestComponent>();
-	AddComponent<TestComponent>();
-	// AddComponent<int>();
 }
 
 TestEntity::~TestEntity()
 {
-
-}
-
-void TestEntity::Update(float4 _dt)
-{
 	int a = 1;
-	for (auto& c : m_multipleComponents)
-	{
-		for (auto& cc: c.second)
-		{
-			cc->Update(_dt);
-		}
-	}
-
-	for (auto& c : m_uniqueComponents)
-	{
-		c.second->Update(_dt);
-	}
 }
 
-void TestEntity::Render()
+void TestEntity::Initailize()
 {
-}
+	DEBUG_PRINT("Entity Start : test enttity\n");
+	__super::Initailize();
+	AddComponent<TestComponent>();
 
-void TestEntity::LateUpdate(float4 _dt)
-{
-}
-
-void TestEntity::FixedUpdate(float4 _dt)
-{
+	reflect::TypeDescriptor* typeDesc = reflect::TypeResolver<TestEntity>::Get();
+	std::string dump = typeDesc->Dump(this);
+	DEBUG_PRINT(dump.c_str());
 }

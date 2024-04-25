@@ -11,15 +11,11 @@ class Managers;
 class Processor
 {
 private:
-	Managers* m_manager;
+	std::shared_ptr<Managers> m_manager;
 
 	// 윈도우 생성을 위한 변수
 	HWND m_hwnd;
 	MSG m_msg;
-
-
-/// 디버깅용 변수
-	std::unique_ptr<TestScene> m_ts;
 
 public:
 	// 특수 멤버함수
@@ -28,6 +24,7 @@ public:
 
 	// 초기화
 	void Initialize(HINSTANCE _hInstance);
+	void Finalize();
 	void Process();
 	void Loop();
 
@@ -40,7 +37,7 @@ private:
 	void FixedUpdate();
 	void Render();
 
-	void CreateMainWindow(HINSTANCE _hInstance, int _width = 1920, int _height = 1080);
+	void CreateMainWindow(HINSTANCE _hInstance, int _width = 1920, int _height = 1080, const wchar_t szAppName[] = L"Truth Engine");
 	void InitializeManager();
 };
 

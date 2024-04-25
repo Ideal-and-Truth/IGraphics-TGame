@@ -1,9 +1,10 @@
 #pragma once
 
 // extern library
-#include "Types.h"
 #include "SimpleMath.h"
-#include "Singleton.h"
+#include "Types.h"
+#include "Logger.h"
+#include "Reflection.h"
 using namespace DirectX::SimpleMath;
 
 // window
@@ -21,12 +22,18 @@ using namespace DirectX::SimpleMath;
 #include <vector>
 #include <list>
 #include <queue>
+#include <set>
 
 // type trait
 #include <type_traits>
 #include <typeinfo>
+#include <any>
 
 // assert
 #include <assert.h>
 
+// 함수 관련
 #include <functional>
+
+// 매크로 관련
+#include "Macro.h"

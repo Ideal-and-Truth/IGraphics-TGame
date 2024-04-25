@@ -1,32 +1,28 @@
 #include "TestScene.h"
 #include "TestEntity.h"
 
-TestScene::TestScene()
+TestScene::TestScene(std::shared_ptr<Managers> _managers)
+	: Scene(_managers)
 {
-
 }
 
 TestScene::~TestScene()
 {
-
-}
-
-void TestScene::FrontUpdate(float4 _dt)
-{
-
-}
-
-void TestScene::BackUpdate(float4 _dt)
-{
-
 }
 
 void TestScene::Enter()
 {
+	DEBUG_PRINT("%s", "Enter Test Scene\n");
 	AddEntity<TestEntity>();
+}
+
+void TestScene::Awake()
+{
+
 }
 
 void TestScene::Exit()
 {
-
+	ClearEntity();
+	DEBUG_PRINT("%s", "Exit Test Scene\n");
 }

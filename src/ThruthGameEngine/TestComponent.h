@@ -7,17 +7,20 @@
 /// </summary>
 
 class TestComponent :
-    public Component
+	public Component
 {
+	COMPONENT_HEADER;
+
 public:
 	TestComponent();
 	virtual	~TestComponent();
-public:
-	void Update(float4 _dt) override;
-	void Render() override;
-	void LateUpdate(float4 _dt) override;
-	void FiexUpdate(float4 _dt) override;
+	virtual void Awake() override;
 
-	void EventTestFunc(std::shared_ptr<void> _p);
+public:
+	void Update(std::any _p);
+	void QUP(std::any _p);
+	void QDOWN(std::any _p);
+
+	REFLECT()
 };
 
