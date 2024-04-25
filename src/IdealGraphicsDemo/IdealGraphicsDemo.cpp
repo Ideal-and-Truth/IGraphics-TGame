@@ -18,6 +18,9 @@
 
 #define MAX_LOADSTRING 100
 
+
+
+
 #define WIDTH 1280
 #define HEIGHT 960
 HWND g_hWnd;
