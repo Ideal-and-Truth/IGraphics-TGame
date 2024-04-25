@@ -2,7 +2,6 @@ x64/
 Music/
 Debug/
 Release/
-Library/
 Temp/
 .vs/
 *.obj
