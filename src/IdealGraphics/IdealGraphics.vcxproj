@@ -85,10 +85,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Libraries\DebugLib\</OutDir>
+    <OutDir>$(SolutionDir)Libraries\DebugLib\GraphicsEngine\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)Libraries\ReleaseLib\</OutDir>
+    <OutDir>$(SolutionDir)Libraries\ReleaseLib\GraphicsEngine\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
