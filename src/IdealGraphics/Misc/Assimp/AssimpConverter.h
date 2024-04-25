@@ -42,9 +42,13 @@ private:
 	void WriteModelFile(const std::wstring& filePath);
 	void ReadModelData(aiNode* node, int32 index, int32 parent);
 	void ReadMaterialData();
+	void ReadSkinData();
 	void ReadMeshData(aiNode* node, int32 bone);
 
+	uint32 GetBoneIndex(std::string& name);
+
 private:
+	
 	std::shared_ptr<Assimp::Importer> m_importer;
 	const aiScene* m_scene;
 

@@ -15,11 +15,10 @@
 #include "GraphicsEngine/public/IMeshObject.h"
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
+#include "../Utils/SimpleMath.h"
+using namespace DirectX::SimpleMath;
 
 #define MAX_LOADSTRING 100
-
-
-
 
 #define WIDTH 1280
 #define HEIGHT 960
@@ -79,10 +78,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//Renderer->ConvertAssetToMyFormat(L"Tank/Tank.fbx");
 		Renderer->Init();
 		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"statue_chronos/statue_join");
+		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		
 		
-		//Matrix world = Matrix::Identity;
-		//float angle = 0.f;
+		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
+		float angle = 0.f;
 
 		while (msg.message != WM_QUIT)
 		{
@@ -93,10 +93,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
-				//angle += 0.2f;
-				//world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
-				//world.CreateRotationY(angle);
-				//mesh->SetTransformMatrix(world);
+				angle += 0.2f;
+				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
+				world.CreateRotationY(angle);
+				mesh->SetTransformMatrix(world);
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();

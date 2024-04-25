@@ -2,7 +2,7 @@
 #include "GraphicsEngine/Resource/Material.h"
 #include "GraphicsEngine/Resource/Model.h"
 
-#include "GraphicsEngine/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
 
@@ -253,7 +253,7 @@ void Ideal::Mesh::InitPipelineState2(std::shared_ptr<D3D12Renderer> Renderer)
 	// Set VS
 	ComPtr<ID3DBlob> vertexShader;
 	Check(D3DCompileFromFile(
-		L"Shaders/BoxUV.hlsl",
+		L"../Shaders/BoxUV.hlsl",
 		nullptr,
 		nullptr,
 		"VS",
@@ -263,7 +263,7 @@ void Ideal::Mesh::InitPipelineState2(std::shared_ptr<D3D12Renderer> Renderer)
 	// Set PS
 	ComPtr<ID3DBlob> pixelShader;
 	Check(D3DCompileFromFile(
-		L"Shaders/BoxUV.hlsl",
+		L"../Shaders/BoxUV.hlsl",
 		nullptr,
 		nullptr,
 		"PS",

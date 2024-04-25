@@ -328,6 +328,27 @@ void AssimpConverter::ReadMaterialData()
 	}
 }
 
+void AssimpConverter::ReadSkinData()
+{
+	for (uint32 i = 0; i < m_scene->mNumMeshes; ++i)
+	{
+		aiMesh* srcMesh = m_scene->mMeshes[i];
+		if (srcMesh->HasBones() == false)
+		{
+			continue;;
+		}
+
+		std::shared_ptr<AssimpConvert::Mesh> mesh = m_meshes[i];
+
+		// bone을 순회하면서 연관된 vertexId, Weight를 구해서 기록
+		for (uint32 b = 0; b < srcMesh->mNumBones; b++)
+		{
+			aiBone* srcMeshBone = srcMesh->mBones[b];
+			//uint32 boneIndex = GetBoneIndex(srcMeshBone->mName.C_Str());
+		}
+	}
+}
+
 void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 {
 	// 마지막 노드는 정보를 들고 있다.
@@ -390,4 +411,9 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 		}
 	}
 	m_meshes.push_back(mesh);
+}
+
+uint32 AssimpConverter::GetBoneIndex(std::string& name)
+{
+	return 0;
 }

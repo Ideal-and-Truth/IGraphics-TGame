@@ -165,6 +165,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\Camera.h" />
@@ -187,7 +188,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Resource.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Texture.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Viewport.h" />
-    <ClInclude Include="GraphicsEngine\D3D12Renderer.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12Renderer.h" />
     <ClInclude Include="GraphicsEngine\Resource\Mesh.h" />
     <ClInclude Include="Misc\Utils\PIX.h" />
     <ClInclude Include="GraphicsEngine\Resource\Model.h" />
@@ -202,6 +203,7 @@
     <ClInclude Include="Misc\Utils\tinyxml2.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
+    <ClInclude Include="GraphicsEngine\Resource\SkinnedMeshObject.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="GraphicsEngine\VertexInfo.h" />
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
@@ -226,7 +228,7 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Resource.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Texture.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Viewport.cpp" />
-    <ClCompile Include="GraphicsEngine\D3D12Renderer.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12Renderer.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Model.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Mesh.cpp" />
     <ClCompile Include="Engine\IEngine.cpp" />
@@ -235,6 +237,7 @@
     <ClCompile Include="Misc\Utils\StringUtils.cpp" />
     <ClCompile Include="Misc\Utils\tinyxml2.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ResourceBase.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />

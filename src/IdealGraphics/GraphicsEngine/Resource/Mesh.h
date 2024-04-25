@@ -3,7 +3,9 @@
 #include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+
 #include "GraphicsEngine/VertexInfo.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 class D3D12Renderer;
 class AssimpLoader;

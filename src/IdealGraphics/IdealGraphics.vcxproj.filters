@@ -78,7 +78,7 @@
       <Filter>Misc\Thirdparty</Filter>
     </ClInclude>
     <ClInclude Include="Misc\Utils\PIX.h" />
-    <ClInclude Include="GraphicsEngine\D3D12Renderer.h">
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12Renderer.h">
       <Filter>GraphicsEngine</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Viewport.h">
@@ -130,6 +130,8 @@
     <ClInclude Include="GraphicsEngine\Resource\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
+    <ClInclude Include="GraphicsEngine\Resource\SkinnedMeshObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -149,7 +151,7 @@
       <Filter>Launch</Filter>
     </ClCompile>
     <ClCompile Include="Engine\IEngine.cpp" />
-    <ClCompile Include="GraphicsEngine\D3D12Renderer.cpp">
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12Renderer.cpp">
       <Filter>GraphicsEngine</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Viewport.cpp">
@@ -198,6 +200,7 @@
     </ClCompile>
     <ClCompile Include="GraphicsEngine\Resource\ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

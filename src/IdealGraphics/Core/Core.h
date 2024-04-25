@@ -22,3 +22,5 @@
 #include <cassert>
 //#include <wrl.h>
 //using namespace Microsoft::WRL;
+
+using namespace DirectX::SimpleMath;
