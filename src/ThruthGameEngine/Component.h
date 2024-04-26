@@ -51,7 +51,6 @@ protected:
 	void EventPublish(std::string _name, std::any _param = nullptr, float4 _delay = 0.0f);
 
 public:
-	REFLECT()
 };
 
 template <typename T>

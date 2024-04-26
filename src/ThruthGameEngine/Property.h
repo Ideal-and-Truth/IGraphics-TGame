@@ -4,59 +4,79 @@
 #include <cassert>
 #include <string>
 
+/// <summary>
+/// 변수 정보 핸들러 베이스
+/// </summary>
 class PropertyHandlerBase
 {
-	GENERATE_CLASS_TYPE_INFO( PropertyHandlerBase )
+	GENERATE_CLASS_TYPE_INFO(PropertyHandlerBase)
 
 public:
 	virtual ~PropertyHandlerBase() = default;
 };
 
+/// <summary>
+/// 변수 정보 핸들러 인터페이스
+/// </summary>
+/// <typeparam name="T"></typeparam>
 template <typename T>
-class IPropertyHandler : public PropertyHandlerBase
+class IPropertyHandler 
+	: public PropertyHandlerBase
 {
-	GENERATE_CLASS_TYPE_INFO( IPropertyHandler )
+	GENERATE_CLASS_TYPE_INFO(IPropertyHandler)
+
+	// 타입을 배열 등을 제외하고 순수 타입만 추출해서 보관 
 	using ElementType = std::remove_all_extents_t<T>;
 
 public:
+	// 변수의 값 Getter Setter
 	virtual ElementType& Get( void* object, size_t index = 0 ) const = 0;
 	virtual void Set( void* object, const ElementType& value, size_t index = 0 ) const = 0;
 };
 
+/// <summary>
+/// 변수 핸들러
+/// </summary>
+/// <typeparam name="TClass">변수가 속한 클래스</typeparam>
+/// <typeparam name="T">변수 타입</typeparam>
 template <typename TClass, typename T>
-class PropertyHandler : public IPropertyHandler<T>
+class PropertyHandler 
+	: public IPropertyHandler<T>
 {
-	GENERATE_CLASS_TYPE_INFO( PropertyHandler )
+	GENERATE_CLASS_TYPE_INFO(PropertyHandler)
+
+	// 멤버에 대한 주소 포인터 타입(ex: int Transform::position *)
 	using MemberPtr = T TClass::*;
+	// 배열 등의 요소가 제거된 순수 타입 
 	using ElementType = std::remove_all_extents_t<T>;
 
 public:
-	virtual ElementType& Get( void* object, size_t index = 0 ) const override
+	virtual ElementType& Get(void* _object, size_t _index = 0) const override
 	{
-		if constexpr ( std::is_array_v<T> )
+		if constexpr (std::is_array_v<T>)
 		{
-			return ( static_cast<TClass*>( object )->*m_ptr )[index];
+			return (static_cast<TClass*>(_object)->*m_ptr)[_index];
 		}
 		else
 		{
-			return static_cast<TClass*>( object )->*m_ptr;
+			return static_cast<TClass*>(_object)->*m_ptr;
 		}
 	}
 
-	virtual void Set( void* object, const ElementType& value, size_t index = 0 ) const override
+	virtual void Set(void* _object, const ElementType& _value, size_t _index = 0) const override
 	{
 		if constexpr ( std::is_array_v<T> )
 		{
-			Set( ( static_cast<TClass*>( object )->*m_ptr )[index], value );
+			Set( ( static_cast<TClass*>(_object)->*m_ptr)[_index], _value);
 		}
 		else
 		{
-			Set( static_cast<TClass*>( object )->*m_ptr, value );
+			Set( static_cast<TClass*>(_object)->*m_ptr, _value);
 		}
 	}
 
-	explicit PropertyHandler( MemberPtr ptr ) :
-		m_ptr( ptr ) {}
+	explicit PropertyHandler(MemberPtr _ptr) :
+		m_ptr(_ptr) {}
 
 private:
 	template <typename T>
@@ -78,7 +98,8 @@ private:
 };
 
 template <typename TClass, typename T>
-class StaticPropertyHandler : public IPropertyHandler<T>
+class StaticPropertyHandler 
+	: public IPropertyHandler<T>
 {
 	GENERATE_CLASS_TYPE_INFO( StaticPropertyHandler )
 	using ElementType = std::remove_all_extents_t<T>;
