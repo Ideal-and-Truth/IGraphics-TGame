@@ -108,12 +108,6 @@
     <ClCompile Include="Reflection.cpp">
       <Filter>Reflection</Filter>
     </ClCompile>
-    <ClCompile Include="..\Utils\FileUtils.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Utils\Utils.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="TypeInfo.cpp">
       <Filter>Reflection\Advanced</Filter>
     </ClCompile>
@@ -172,12 +166,6 @@
     <ClInclude Include="Reflection.h">
       <Filter>Reflection</Filter>
     </ClInclude>
-    <ClInclude Include="..\Utils\FileUtils.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Utils\Utils.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Method.h">
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
@@ -188,9 +176,6 @@
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
     <ClInclude Include="PropertyMacros.h">
-      <Filter>Reflection\Advanced</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyParser.h">
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
     <ClInclude Include="AdvanceReflection.h">

@@ -19,9 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Utils\FileUtils.h" />
     <ClInclude Include="..\Utils\SimpleMath.h" />
-    <ClInclude Include="..\Utils\Utils.h" />
     <ClInclude Include="AdvanceReflection.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Entity.h" />
@@ -35,7 +33,6 @@
     <ClInclude Include="Processor.h" />
     <ClInclude Include="Property.h" />
     <ClInclude Include="PropertyMacros.h" />
-    <ClInclude Include="PropertyParser.h" />
     <ClInclude Include="Reflection.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
@@ -50,9 +47,7 @@
     <ClInclude Include="TypeInfoMacros.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Utils\FileUtils.cpp" />
     <ClCompile Include="..\Utils\SimpleMath.cpp" />
-    <ClCompile Include="..\Utils\Utils.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EventManager.cpp" />
@@ -70,7 +65,7 @@
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="ETransform.cpp" />
     <ClCompile Include="TypeInfo.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -183,6 +178,7 @@
       <OutputFile>$(SolutionDir)Libraries\Debuglib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalDependencies>Debuglib\GraphicsEngine\IdealGraphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

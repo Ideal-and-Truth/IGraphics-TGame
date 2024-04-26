@@ -1,13 +1,11 @@
 #include "TestComponent.h"
 #include "Managers.h"
 
-REFLECT_STRUCT_BEGIN(TestComponent)
-REFLECT_STRUCT_END()
-
 TestComponent::TestComponent()
 {
 	m_canMultiple = true;
 	m_name = typeid(*this).name();
+	m_testInt = 10;
 }
 
 TestComponent::~TestComponent()
@@ -19,6 +17,11 @@ void TestComponent::Awake()
 	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
 	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
 	EventBind<TestComponent>("Update", &TestComponent::Update);
+
+	bool temp = false;
+	int tmepint = 0;
+	int t = m_typeInfo.GetProperty("testInt")->Get<int>(this);
+	int a = 1;
 }
 
 void TestComponent::Update(std::any _p)

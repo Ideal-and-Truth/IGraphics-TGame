@@ -80,7 +80,5 @@ public:
 		return m_rotation.ToEuler();
 	}
 #pragma endregion Inline
-
-	REFLECT()
 };
 

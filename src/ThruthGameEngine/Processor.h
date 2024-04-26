@@ -14,12 +14,13 @@ class Processor
 private:
 	std::shared_ptr<Managers> m_manager;
 	std::shared_ptr<Ideal::IdealRenderer> m_renderer;
+	std::shared_ptr<Ideal::IMeshObject> mesh;
 	// 윈도우 생성을 위한 변수
 	HWND m_hwnd;
 	MSG m_msg;
 
-	float m_wight;
-	float m_height;
+	uint32 m_wight;
+	uint32 m_height;
 
 
 public:
@@ -42,7 +43,7 @@ private:
 	void FixedUpdate();
 	void Render();
 
-	void CreateMainWindow(HINSTANCE _hInstance, int _width = 1920, int _height = 1080, const wchar_t szAppName[] = L"Truth Engine");
+	void CreateMainWindow(HINSTANCE _hInstance, uint32 _width = 1920, uint32 _height = 1080, const wchar_t szAppName[] = L"Truth Engine");
 	void InitializeManager();
 	void CreateRender();
 };

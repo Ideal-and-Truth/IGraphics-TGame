@@ -4,14 +4,35 @@
 
 class CallableBase
 {
-	GENERATE_CLASS_TYPE_INFO(CallableBase)
+private:
+	friend SuperClassTypeDeduction<CallableBase>;
+	friend TypeInfoInitializer<CallableBase>;
+public:
+	using Super = typename SuperClassTypeDeduction<CallableBase>::Type;
+	using ThisType = CallableBase;
+	static TypeInfo& StaticTypeInfo()
+	{
+		static TypeInfo typeInfo
+		{
+			TypeInfoInitializer<ThisType>("CallableBase")
+		};
+		return typeInfo;
+	}
+	virtual const TypeInfo& GetTypeInfo() const
+	{
+		return m_typeInfo;
+	}
+private:
+	inline static TypeInfo& m_typeInfo = StaticTypeInfo();
+private:
 
 public:
 	virtual ~CallableBase() = default;
 };
 
 template <typename TRet, typename... TArgs>
-class ICallable : public CallableBase
+class ICallable
+	: public CallableBase
 {
 	GENERATE_CLASS_TYPE_INFO(ICallable)
 
@@ -20,7 +41,8 @@ public:
 };
 
 template <typename TClass, typename TRet, typename... TArgs>
-class Callable : public ICallable<TRet, TArgs...>
+class Callable
+	: public ICallable<TRet, TArgs...>
 {
 	GENERATE_CLASS_TYPE_INFO(Callable)
 		using FuncPtr = TRet(TClass::*)(TArgs...);
@@ -28,7 +50,7 @@ class Callable : public ICallable<TRet, TArgs...>
 public:
 	virtual TRet Invoke(void* caller, TArgs&&... args) const override
 	{
-		if constexpr (std::same_as<TRet, void>)
+		if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 		{
 			(static_cast<TClass*>(caller)->*m_ptr)(std::forward<TArgs>(args)...);
 		}
@@ -54,7 +76,7 @@ class StaticCallable : public ICallable<TRet, TArgs...>
 public:
 	virtual TRet Invoke([[maybe_unused]] void* caller, TArgs&&... args) const override
 	{
-		if constexpr (std::same_as<TRet, void>)
+		if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 		{
 			(*m_ptr)(std::forward<TArgs>(args)...);
 		}
@@ -101,7 +123,7 @@ public:
 		if (typeinfo.IsChildOf<Callable<TClass, TRet, TArgs...>>())
 		{
 			auto concreateCallable = static_cast<const Callable<TClass, TRet, TArgs...>&>(m_callable);
-			if constexpr (std::same_as<TRet, void>)
+			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 			{
 				concreateCallable.Invoke(caller, std::forward<TArgs>(args)...);
 			}
@@ -113,7 +135,7 @@ public:
 		else if (typeinfo.IsChildOf<StaticCallable<TClass, TRet, TArgs...>>())
 		{
 			auto concreateCallable = static_cast<const StaticCallable<TClass, TRet, TArgs...>&>(m_callable);
-			if constexpr (std::same_as<TRet, void>)
+			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 			{
 				concreateCallable.Invoke(caller, std::forward<TArgs>(args)...);
 			}
@@ -125,7 +147,7 @@ public:
 		else
 		{
 			assert(false && "Method::Invoke<TClass, TRet, TArgs...> - Invalied casting");
-			if constexpr (!std::same_as<TRet, void>)
+			if constexpr (!std::enable_if_t<std::is_void_v<TRet>>)
 			{
 				return {};
 			}
@@ -138,7 +160,7 @@ public:
 		if (m_callable.GetTypeInfo().IsChildOf<ICallable<TRet, TArgs...>>())
 		{
 			auto concreateCallable = static_cast<const ICallable<TRet, TArgs...>*>(&m_callable);
-			if constexpr (std::same_as<TRet, void>)
+			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 			{
 				concreateCallable->Invoke(owner, std::forward<TArgs>(args)...);
 			}
@@ -150,7 +172,7 @@ public:
 		else
 		{
 			assert(false && "Method::Invoke<TRet, TArgs...> - Invalied casting");
-			if constexpr (!std::same_as<TRet, void>)
+			if constexpr (!std::enable_if_t<std::is_void_v<TRet>>)
 			{
 				return {};
 			}

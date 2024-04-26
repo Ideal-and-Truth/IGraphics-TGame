@@ -4,7 +4,6 @@
 #include "SimpleMath.h"
 #include "Types.h"
 #include "Logger.h"
-#include "Reflection.h"
 using namespace DirectX::SimpleMath;
 
 // window
@@ -37,6 +36,10 @@ using namespace DirectX::SimpleMath;
 
 // 매크로 관련
 #include "Macro.h"
+
+// 리플렉션 관련
+#include "AdvanceReflection.h"
+#include "Reflection.h"
 
 // 그래픽 관련
 #include "ICamera.h"

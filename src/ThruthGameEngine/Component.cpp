@@ -3,9 +3,6 @@
 #include "TimeManager.h"
 #include "EventManager.h"
 
-REFLECT_STRUCT_BEGIN(Component)
-REFLECT_STRUCT_END()
-
 Component::Component()
 	: m_owner()
 	, m_canMultiple(false)

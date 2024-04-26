@@ -4,8 +4,8 @@
 
 #define GENERATE_CLASS_TYPE_INFO(TypeName)	\
 private:	\
-	friend SuperClassTypeDeduction;	\
-	friend TypeInfoInitializer; \
+	friend SuperClassTypeDeduction<TypeName>;	\
+	friend TypeInfoInitializer<TypeName>; \
 \
 public:	\
 	using Super = typename SuperClassTypeDeduction<TypeName>::Type;	\
@@ -25,4 +25,4 @@ public:	\
 private: \
 	inline static TypeInfo& m_typeInfo = StaticTypeInfo();	\
 \
-private:	\
+private:

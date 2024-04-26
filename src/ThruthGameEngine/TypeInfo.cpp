@@ -1,5 +1,4 @@
 #include "TypeInfo.h"
-
 #include "Method.h"
 #include "Property.h"
 

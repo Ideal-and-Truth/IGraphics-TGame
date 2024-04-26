@@ -1,9 +1,6 @@
 #include "ETransform.h"
 #include "Managers.h"
 
-REFLECT_STRUCT_BEGIN(ETransform)
-REFLECT_STRUCT_MEMBER(m_name)
-REFLECT_STRUCT_END()
 
 ETransform::ETransform()
 	: m_position(0.0f, 0.0f, 0.0f)
@@ -17,7 +14,6 @@ ETransform::ETransform()
 
 ETransform::~ETransform()
 {
-
 }
 
 void ETransform::Awake()

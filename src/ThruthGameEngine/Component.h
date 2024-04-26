@@ -14,9 +14,12 @@ class Managers;
 class Component
 	: public EventHandler
 {
+	GENERATE_CLASS_TYPE_INFO(Component)
+
 	COMPONENT_HEADER
 
 protected:
+	PROPERTY(canMultiple)
 	bool m_canMultiple;
 
 	std::weak_ptr<Entity> m_owner;

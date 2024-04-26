@@ -1,14 +1,8 @@
 #pragma once
-
-#include "types.h"
-
-#include <concepts>
 #include <map>
 #include <string>
-#include <string_view>
-#include <typeinfo>
 #include <vector>
-
+#include <typeinfo>
 class Method;
 class Property;
 class TypeInfo;
@@ -44,7 +38,7 @@ struct HasStaticTypeInfoFunc<T, std::void_t<decltype(std::declval<T>().HasStatic
 /// <summary>
 /// Super 타입이 있는지
 /// </summary>
-template <typename , typename = void>
+template <typename, typename = void>
 struct SuperClassTypeDeduction
 {
 	using Type = void;
@@ -53,7 +47,7 @@ struct SuperClassTypeDeduction
 template <typename T>
 struct SuperClassTypeDeduction<T, std::void_t<typename T::ThisType>>
 {
-	using Type = T::ThisType;
+	using Type = typename T::ThisType;
 };
 
 template <typename T>
@@ -62,9 +56,13 @@ struct TypeInfoInitializer
 	TypeInfoInitializer(const char* name)
 		: m_name(name)
 	{
-		if constexpr (HasSuperType<T>)
+		if constexpr (HasSuperType<T>::value)
 		{
-			m_super = &(typename T::Super::StaticTypeInfo());
+			using Type = typename T::Super;
+			if constexpr (!std::is_void_v<Type>)
+			{
+				m_super = &(Type::StaticTypeInfo());
+			}
 		}
 	}
 
@@ -83,10 +81,14 @@ public:
 		, m_super(initializer.m_super)
 		, m_isArray(std::is_array_v<T>)
 	{
-		if constexpr (HasSuperType<T>)
+		if constexpr (HasSuperType<T>::value)
 		{
-			CollectSuperMethods();
-			CollectSuperProperties();
+			using Type = typename T::Super;
+			if constexpr (!std::is_void_v<Type>)
+			{
+				CollectSuperMethods();
+				CollectSuperProperties();
+			}
 		}
 	}
 
@@ -98,7 +100,7 @@ public:
 		return T::StaticTypeInfo();
 	}
 
-	template 
+	template
 		<
 		typename T,
 		std::enable_if_t<std::is_pointer_v<T>>* = nullptr,
@@ -109,12 +111,12 @@ public:
 		return std::remove_pointer_t<T>::StaticTypeInfo();
 	}
 
-	template 
+	template
 		<
 		typename T,
 		std::enable_if_t<!HasStaticTypeInfoFunc<T>::value>* = nullptr,
 		std::enable_if_t<!HasStaticTypeInfoFunc<std::remove_pointer_t<T>>::value>* = nullptr
-		> 
+		>
 		static const TypeInfo& GetStaticTypeInfo()
 	{
 		static TypeInfo typeInfo{ TypeInfoInitializer<T>("unreflected_type_variable") };

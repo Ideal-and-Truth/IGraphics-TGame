@@ -13,7 +13,7 @@ class Managers;
 class Entity abstract
 	: public std::enable_shared_from_this<Entity>
 {
-	// GENERATE_CLASS_TYPE_INFO(Entity)
+	GENERATE_CLASS_TYPE_INFO(Entity)
 
 protected:
 	static uint16 m_entityCount;

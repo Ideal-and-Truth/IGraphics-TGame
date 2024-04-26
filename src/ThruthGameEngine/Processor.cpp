@@ -8,6 +8,8 @@ Processor::Processor()
 	: m_hwnd(nullptr)
 	, m_msg()
 	, m_manager(nullptr)
+	, m_wight(0)
+	, m_height(0)
 {
 	DEBUG_PRINT("start process\n");
 }
@@ -27,6 +29,11 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	CreateRender();
+	//m_renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
+	//mesh = m_renderer->CreateMeshObject(L"Tower/Tower");
+	//m_renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+	//mesh = m_renderer->CreateMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+
 	m_manager->Scene()->AddScene<TestScene>("test", m_manager);
 	m_manager->Scene()->AddScene<TestScene2>("test2", m_manager);
 
@@ -109,7 +116,7 @@ void Processor::Render()
 	m_renderer->Render();
 }
 
-void Processor::CreateMainWindow(HINSTANCE _hInstance, int _width, int _height, const wchar_t szAppName[])
+void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _height, const wchar_t szAppName[])
 {
 	m_wight = _width;
 	m_height = _height;

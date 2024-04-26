@@ -9,7 +9,12 @@
 class TestComponent :
 	public Component
 {
+	GENERATE_CLASS_TYPE_INFO(TestComponent)
 	COMPONENT_HEADER;
+
+public:
+	PROPERTY(testInt)
+	int m_testInt;
 
 public:
 	TestComponent();
@@ -20,7 +25,5 @@ public:
 	void Update(std::any _p);
 	void QUP(std::any _p);
 	void QDOWN(std::any _p);
-
-	REFLECT()
 };
 

@@ -16,6 +16,5 @@ public:
 	std::shared_ptr<int> m_test;
 	std::vector<int> m_intest;
 
-	REFLECT()
 };
 
