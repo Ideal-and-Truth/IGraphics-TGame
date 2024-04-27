@@ -724,3 +724,21 @@ void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName)
 	assimpConverter->ExportModelData(FileName);
 	assimpConverter->ExportMaterialData(FileName);
 }
+
+void D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
+{
+	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
+	assimpConverter->SetAssetPath(m_assetPath);
+	assimpConverter->SetModelPath(m_modelPath);
+	assimpConverter->SetTexturePath(m_texturePath);
+
+	assimpConverter->ReadAssetFile(FileName);
+
+	// Temp : ".fbx" »èÁ¦
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+
+	assimpConverter->ExportAnimationData(FileName);
+}

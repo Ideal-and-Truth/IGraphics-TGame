@@ -72,11 +72,5 @@ namespace Ideal
 
 		std::vector<BasicVertex> m_vertices;	// 나중에 가지고 있을 필요가 없다
 		std::vector<uint32> m_indices;	// 마찬가지
-
-		// TODO : Delete
-		std::wstring m_diffuseMap;
-
-		private:
-		uint32 m_descriptorIncrementSize = 0;
 	};
 }

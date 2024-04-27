@@ -177,6 +177,7 @@ public:
 	virtual void SetTexturePath(const std::wstring& TexturePath) override { m_texturePath = TexturePath; }
 
 	virtual void ConvertAssetToMyFormat(std::wstring FileName) override;
+	virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
 
 private:
 	std::wstring m_assetPath;

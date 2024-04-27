@@ -165,6 +165,9 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12Shader.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12RootSignature.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
@@ -176,6 +179,8 @@
     <ClInclude Include="GraphicsEngine\public\IdealRenderer.h" />
     <ClInclude Include="GraphicsEngine\public\IdealRendererFactory.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceManager.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMesh.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealModel.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="GraphicsEngine\Resource\Bone.h" />
     <ClInclude Include="GraphicsEngine\Resource\Material.h" />
@@ -201,6 +206,7 @@
     <ClInclude Include="Launch\LaunchWindow.h" />
     <ClInclude Include="Misc\Utils\StringUtils.h" />
     <ClInclude Include="Misc\Utils\tinyxml2.h" />
+    <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\SkinnedMeshObject.h" />
@@ -209,12 +215,17 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Camera.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.cpp" />
     <ClCompile Include="GraphicsEngine\private\IdealRendererFactory.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ResourceManager.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealModel.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Bone.cpp" />
@@ -238,6 +249,7 @@
     <ClCompile Include="Misc\Utils\tinyxml2.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ResourceBase.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />
@@ -247,6 +259,11 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shaders\AnimationDefaultVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Shaders\BoxPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

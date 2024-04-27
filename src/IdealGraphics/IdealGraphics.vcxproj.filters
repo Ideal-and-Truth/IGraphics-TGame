@@ -132,6 +132,12 @@
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
     <ClInclude Include="GraphicsEngine\Resource\SkinnedMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMesh.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12RootSignature.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12Shader.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealModel.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -201,6 +207,12 @@
     <ClCompile Include="GraphicsEngine\Resource\ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -224,6 +236,7 @@
     <FxCompile Include="Shaders\BoxUV.hlsl" />
     <FxCompile Include="Shaders\SimpleVertexShaderUV.hlsl" />
     <FxCompile Include="Shaders\SimpleMeshShader.hlsl" />
+    <FxCompile Include="Shaders\AnimationDefaultVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

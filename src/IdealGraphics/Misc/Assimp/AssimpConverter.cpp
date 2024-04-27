@@ -60,8 +60,8 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path)
 	flag |= aiProcess_GenUVCoords;
 	flag |= aiProcess_GenNormals;
 	flag |= aiProcess_CalcTangentSpace;
-	flag |= aiProcess_OptimizeMeshes;
-	flag |= aiProcess_PreTransformVertices;
+	//flag |= aiProcess_OptimizeMeshes;
+	//flag |= aiProcess_PreTransformVertices;
 
 	m_scene = m_importer->ReadFile(
 		ConvertWStringToString(fileStr),
@@ -81,6 +81,41 @@ void AssimpConverter::ExportModelData(std::wstring savePath)
 {
 	std::wstring finalPath = m_modelPath + savePath + L".mesh";
 	ReadModelData(m_scene->mRootNode, -1, -1);
+	ReadSkinData();
+
+	//Write CSV File
+	{
+		FILE* file;
+		::fopen_s(&file, "../Vertices.csv", "w");
+
+		for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
+		{
+			std::string name = bone->name;
+			::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
+		}
+
+		::fprintf(file, "\n");
+
+		for (std::shared_ptr<AssimpConvert::Mesh>& mesh : m_meshes)
+		{
+			std::string name = mesh->name;
+			::printf("%s\n", name.c_str());
+
+			for (UINT i = 0; i < mesh->vertices.size(); i++)
+			{
+				Vector3 p = mesh->vertices[i].Position;
+				Vector4 indices = mesh->vertices[i].BlendIndices;
+				Vector4 weights = mesh->vertices[i].BlendWeights;
+
+				::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
+				::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
+				::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
+			}
+		}
+
+		::fclose(file);
+	}
+
 	WriteModelFile(finalPath);
 }
 
@@ -89,6 +124,15 @@ void AssimpConverter::ExportMaterialData(const std::wstring& savePath)
 	std::wstring filePath = m_texturePath + savePath + L".xml";
 	ReadMaterialData();
 	WriteMaterialData(filePath);
+}
+
+void AssimpConverter::ExportAnimationData(std::wstring savePath, uint32 index /*= 0*/)
+{
+	std::wstring finalPath = m_modelPath + savePath + L".anim";
+	assert(index < m_scene->mNumAnimations);
+
+	std::shared_ptr<AssimpConvert::Animation> animation = ReadAnimationData(m_scene->mAnimations[index]);
+	WriteAnimationData(animation, finalPath);
 }
 
 std::string AssimpConverter::WriteTexture(std::string SaveFolder, std::string File)
@@ -101,9 +145,7 @@ std::string AssimpConverter::WriteTexture(std::string SaveFolder, std::string Fi
 	// 텍스쳐가 내장되어있을 경우
 	if (srcTexture)
 	{
-		SaveFolder += "/";
-
-		std::string pathStr = SaveFolder + fileName;
+		std::string pathStr = (std::filesystem::path(SaveFolder) / fileName).string();
 
 		if (srcTexture->mHeight == 0)
 		{
@@ -233,7 +275,7 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 
 		// vertex
 		file->Write<uint32>(mesh->vertices.size());
-		file->Write(&mesh->vertices[0], sizeof(BasicVertex) * mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(SkinnedVertex) * mesh->vertices.size());
 
 		// index
 		file->Write<uint32>(mesh->indices.size());
@@ -335,16 +377,38 @@ void AssimpConverter::ReadSkinData()
 		aiMesh* srcMesh = m_scene->mMeshes[i];
 		if (srcMesh->HasBones() == false)
 		{
-			continue;;
+			continue;
 		}
 
 		std::shared_ptr<AssimpConvert::Mesh> mesh = m_meshes[i];
+
+		std::vector<AssimpConvert::BoneWeights> tempVertexBoneWeights;
+		tempVertexBoneWeights.resize(mesh->vertices.size());
 
 		// bone을 순회하면서 연관된 vertexId, Weight를 구해서 기록
 		for (uint32 b = 0; b < srcMesh->mNumBones; b++)
 		{
 			aiBone* srcMeshBone = srcMesh->mBones[b];
-			//uint32 boneIndex = GetBoneIndex(srcMeshBone->mName.C_Str());
+			uint32 boneIndex = GetBoneIndex(srcMeshBone->mName.C_Str());
+
+			
+			for (uint32 w = 0; w < srcMeshBone->mNumWeights; w++)
+			{
+				uint32 index = srcMeshBone->mWeights[w].mVertexId;
+				float weight = srcMeshBone->mWeights[w].mWeight;
+
+				tempVertexBoneWeights[index].AddWeights(boneIndex, weight);
+			}
+		}
+
+		// 최종 결과
+		for (uint32 v = 0; v < tempVertexBoneWeights.size(); ++v)
+		{
+			tempVertexBoneWeights[v].Normalize();
+
+			AssimpConvert::BlendWeight blendWeight = tempVertexBoneWeights[v].GetBlendWeights();
+			mesh->vertices[v].BlendIndices = blendWeight.indices;
+			mesh->vertices[v].BlendWeights = blendWeight.weights;
 		}
 	}
 }
@@ -379,7 +443,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 		{
-			BasicVertex vertex;
+			SkinnedVertex vertex;
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
 			}
@@ -413,7 +477,173 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 	m_meshes.push_back(mesh);
 }
 
-uint32 AssimpConverter::GetBoneIndex(std::string& name)
+std::shared_ptr<AssimpConvert::Animation> AssimpConverter::ReadAnimationData(aiAnimation* srcAnimation)
 {
+	std::shared_ptr<AssimpConvert::Animation> animation = std::make_shared<AssimpConvert::Animation>();
+	animation->name = srcAnimation->mName.C_Str();
+	animation->frameRate = (float)srcAnimation->mTicksPerSecond;
+	animation->frameCount = (uint32)srcAnimation->mDuration + 1;
+
+	std::map<std::string, std::shared_ptr<AssimpConvert::AnimationNode>> cacheAnimNode;
+
+	for (uint32 i = 0; i < srcAnimation->mNumChannels; ++i)
+	{
+		aiNodeAnim* srcNode = srcAnimation->mChannels[i];
+
+		std::shared_ptr<AssimpConvert::AnimationNode> node = ParseAnimationNode(animation, srcNode);
+
+		animation->duration = max(animation->duration, node->keyframe.back().time);
+
+		cacheAnimNode[srcNode->mNodeName.C_Str()] = node;
+	}
+
+	ReadKeyFrameData(animation, m_scene->mRootNode, cacheAnimNode);
+
+	return animation;
+}
+
+std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNode(std::shared_ptr<AssimpConvert::Animation> animation, aiNodeAnim* srcNode)
+{
+	std::shared_ptr<AssimpConvert::AnimationNode> node = std::make_shared<AssimpConvert::AnimationNode>();
+	node->name = srcNode->mNodeName;
+
+	// 그냥 최대 키 카운트로 설정
+	uint32 keyCount = max(max(srcNode->mNumPositionKeys, srcNode->mNumScalingKeys), srcNode->mNumRotationKeys);
+
+	for (uint32 k = 0; k < keyCount; ++k)
+	{
+		AssimpConvert::KeyFrameData frameData;
+
+		bool found = false;
+		uint32 t = node->keyframe.size();
+		
+		// position
+		if (fabsf((float)srcNode->mPositionKeys[k].mTime - (float)t) <= 0.0001f)
+		{
+			aiVectorKey key = srcNode->mPositionKeys[k];
+			frameData.time = (float)key.mTime;
+			frameData.translation.x = key.mValue.x;
+			frameData.translation.y = key.mValue.y;
+			frameData.translation.z = key.mValue.z;
+
+			found = true;
+		}
+
+		// Rotation
+		if (fabsf((float)srcNode->mRotationKeys[k].mTime - (float)t) <= 0.0001f)
+		{
+			aiQuatKey key = srcNode->mRotationKeys[k];
+			frameData.time = (float)key.mTime;
+			
+			frameData.rotation.x = key.mValue.x;
+			frameData.rotation.y = key.mValue.y;
+			frameData.rotation.z = key.mValue.z;
+			frameData.rotation.w = key.mValue.w;
+
+			found = true;
+		}
+
+		// Scale
+		if (fabs((float)srcNode->mScalingKeys[k].mTime - (float)t) <= 0.0001f)
+		{
+			aiVectorKey key = srcNode->mScalingKeys[k];
+			frameData.time = (float)key.mTime;
+			
+			frameData.scale.x = key.mValue.x;
+			frameData.scale.y = key.mValue.y;
+			frameData.scale.z = key.mValue.z;
+
+			found = true;
+		}
+
+		if (found == true)
+		{
+			node->keyframe.push_back(frameData);
+		}
+	}
+
+	// keyframe 늘려주는 곳
+	if (node->keyframe.size() < animation->frameCount)
+	{
+		uint32 count = animation->frameCount - node->keyframe.size();
+		AssimpConvert::KeyFrameData keyFrame = node->keyframe.back();
+
+		for (uint32 n = 0; n < count; ++n)
+		{
+			node->keyframe.push_back(keyFrame);
+		}
+	}
+	return node;
+}
+
+void AssimpConverter::ReadKeyFrameData(std::shared_ptr<AssimpConvert::Animation> animation, aiNode* srcNode, std::map<std::string, std::shared_ptr<AssimpConvert::AnimationNode>>& cache)
+{
+	std::shared_ptr<AssimpConvert::KeyFrame> keyFrame = std::make_shared<AssimpConvert::KeyFrame>();
+	keyFrame->boneName = srcNode->mName.C_Str();
+
+	std::shared_ptr<AssimpConvert::AnimationNode> findNode = cache[srcNode->mName.C_Str()];
+	
+	for (uint32 i = 0; i < animation->frameCount; ++i)
+	{
+		AssimpConvert::KeyFrameData frameData;
+
+		if (findNode == nullptr)
+		{
+			Matrix transform(srcNode->mTransformation[0]);
+			transform = transform.Transpose();
+			frameData.time = (float)i;
+			transform.Decompose(OUT frameData.scale, OUT frameData.rotation, OUT frameData.translation);
+		}
+		else
+		{
+			frameData = findNode->keyframe[i];
+		}
+
+		keyFrame->transforms.push_back(frameData);
+	}
+
+	animation->keyFrames.push_back(keyFrame);
+
+	for (uint32 i = 0; i < srcNode->mNumChildren; ++i)
+	{
+		ReadKeyFrameData(animation, srcNode->mChildren[i], cache);
+	}
+}
+
+void AssimpConverter::WriteAnimationData(std::shared_ptr<AssimpConvert::Animation> animation, std::wstring finalPath)
+{
+	auto path = std::filesystem::path(finalPath);
+
+	std::filesystem::create_directory(path.parent_path());
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(finalPath, FileMode::Write);
+
+	file->Write<std::string>(animation->name);
+	file->Write<float>(animation->duration);
+	file->Write<float>(animation->frameRate);
+	file->Write<uint32>(animation->frameCount);
+
+	file->Write<uint32>(animation->keyFrames.size());
+
+	for (std::shared_ptr<AssimpConvert::KeyFrame> keyFrame : animation->keyFrames)
+	{
+		file->Write<std::string>(keyFrame->boneName);
+		file->Write<uint32>(keyFrame->transforms.size());
+		file->Write(&keyFrame->transforms[0], sizeof(AssimpConvert::KeyFrameData) * keyFrame->transforms.size());
+	}
+}
+
+uint32 AssimpConverter::GetBoneIndex(const std::string& name)
+{
+	for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
+	{
+		if (bone->name == name)
+		{
+			return bone->index;
+		}
+	}
+	assert(false);
+	MessageBox(NULL, L"Cant find Bone Index", L"AssimpConverter::GetBoneIndex", MB_OK);
 	return 0;
 }

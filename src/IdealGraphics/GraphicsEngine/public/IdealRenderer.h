@@ -33,5 +33,6 @@ namespace Ideal
 		virtual void SetTexturePath(const std::wstring& TexturePath) abstract;
 
 		virtual void ConvertAssetToMyFormat(std::wstring FileName) abstract;
+		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) abstract;
 	};
 }

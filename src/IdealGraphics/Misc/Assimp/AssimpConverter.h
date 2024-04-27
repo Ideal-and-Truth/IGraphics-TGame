@@ -35,6 +35,7 @@ public:
 	void ReadAssetFile(const std::wstring& path);
 	void ExportModelData(std::wstring savePath);
 	void ExportMaterialData(const std::wstring& savePath);
+	void ExportAnimationData(std::wstring savePath, uint32 index = 0);
 
 private:
 	std::string WriteTexture(std::string SaveFolder, std::string File);
@@ -45,7 +46,11 @@ private:
 	void ReadSkinData();
 	void ReadMeshData(aiNode* node, int32 bone);
 
-	uint32 GetBoneIndex(std::string& name);
+	std::shared_ptr<AssimpConvert::Animation> ReadAnimationData(aiAnimation* srcAnimation);
+	std::shared_ptr<AssimpConvert::AnimationNode> ParseAnimationNode(std::shared_ptr<AssimpConvert::Animation> animation, aiNodeAnim* srcNode);
+	void ReadKeyFrameData(std::shared_ptr<AssimpConvert::Animation> animation, aiNode* node, std::map<std::string, std::shared_ptr<AssimpConvert::AnimationNode>>& cache);
+	void WriteAnimationData(std::shared_ptr<AssimpConvert::Animation> animation, std::wstring finalPath);
+	uint32 GetBoneIndex(const std::string& name);
 
 private:
 	

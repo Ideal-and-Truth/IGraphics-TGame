@@ -73,13 +73,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Resources/Textures/"
 		);
 		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx");
+		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx");
 		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
 		//Renderer->ConvertAssetToMyFormat(L"Tank/Tank.fbx");
 		Renderer->Init();
 		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"statue_chronos/statue_join");
-		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		
+		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"Kachujin/Mesh");
 		
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
