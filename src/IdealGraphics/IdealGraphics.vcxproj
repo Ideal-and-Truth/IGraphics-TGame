@@ -170,6 +170,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\public\IScene.h" />
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\Camera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ResourceManager.h" />

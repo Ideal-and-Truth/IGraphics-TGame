@@ -7,6 +7,7 @@
 #include <wrl.h>
 //#include <d3dx12.h>
 #include "ThirdParty/Common/d3dx12.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
 using namespace Microsoft::WRL;
 

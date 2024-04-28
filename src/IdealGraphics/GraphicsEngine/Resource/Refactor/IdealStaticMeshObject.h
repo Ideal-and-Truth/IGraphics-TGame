@@ -21,6 +21,7 @@ namespace Ideal
 
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; }
+		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetStaticMesh(std::shared_ptr<Ideal::IdealStaticMesh> Mesh) { m_staticMesh = Mesh; }
 
 	private:

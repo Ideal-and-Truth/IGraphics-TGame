@@ -103,7 +103,7 @@ void Ideal::Mesh::Render(std::shared_ptr<D3D12Renderer> Renderer)
 	//CommandList->SetGraphicsRootDescriptorTable(0, Renderer->GetSRVDescriptorHeap().Get()->GetGPUDescriptorHandleForHeapStart());
 
 	uint32 currentIndex = Renderer->GetFrameIndex();
-	CommandList->SetGraphicsRootConstantBufferView(1, m_constantBuffer.GetGPUVirtualAddress(currentIndex));
+	CommandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX, m_constantBuffer.GetGPUVirtualAddress(currentIndex));
 	CommandList->DrawIndexedInstanced(m_indexBuffer->GetElementCount(), 1, 0, 0, 0);
 }
 

@@ -20,6 +20,7 @@ namespace Ideal
 
 	public:
 		void SetRootSignature	(std::shared_ptr<Ideal::D3D12RootSignature> RootSignature);
+		void SetRootSignature	(ID3D12RootSignature* RootSignature);
 		void SetVertexShader	(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetPixelShader		(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetInputLayout		(const D3D12_INPUT_ELEMENT_DESC* InputElements, uint32 Count);
@@ -27,6 +28,8 @@ namespace Ideal
 		void SetBlendState		(const D3D12_BLEND_DESC BlendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT));
 
 		void Create				(std::shared_ptr<D3D12Renderer> Renderer);
+
+		ComPtr<ID3D12PipelineState> GetPipelineState() { return m_pipelineState; }
 
 	private:
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC m_psoDesc;

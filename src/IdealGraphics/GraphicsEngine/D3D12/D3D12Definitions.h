@@ -1,7 +1,8 @@
 #pragma once
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
+#define STATIC_MESH_ROOT_DESCRIPTOR_TABLE_PIXEL_SRV_INDEX 0
+#define STATIC_MESH_ROOT_CONSTANT_INDEX 1
 //namespace Ideal
 //{
 //	enum EPipelineStateInputLayout

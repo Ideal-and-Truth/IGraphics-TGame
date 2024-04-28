@@ -242,6 +242,9 @@ finishAdapter:
 	m_d3dResourceManager->SetTexturePath(m_texturePath);
 
 	// Test
+	CreatePSO();
+
+	// Test
 	//m_boxVB = std::make_shared<Ideal::D3D12VertexBuffer>();
 	//m_resourceManager->CreateVertexBufferBox(m_boxVB);
 	//TestCreateVertexBuffer(m_testVB);
@@ -310,13 +313,14 @@ void D3D12Renderer::Render()
 		}
 
 		//----------Static Mesh-----------//
+		RenderTest();
 		// pipeline
 		// rootsignature
 		// constantBuffer
-		for (auto m : m_meshObjects)
+		/*for (auto m : m_meshObjects)
 		{
 			m->Draw(shared_from_this());
-		}
+		}*/
 	}
 
 	//-------------End Render------------//
@@ -385,6 +389,11 @@ std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const 
 	m_meshObjects.push_back(newStaticMesh);
 
 	return newStaticMesh;
+}
+
+void D3D12Renderer::CreateRootSignature()
+{
+
 }
 
 void D3D12Renderer::Release()
@@ -507,10 +516,41 @@ uint32 D3D12Renderer::GetFrameIndex() const
 
 void D3D12Renderer::CreatePSO()
 {
-	m_staticMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
 
-	std::shared_ptr<Ideal::D3D12RootSignature> rootSignature = std::make_shared<Ideal::D3D12RootSignature>();
-	//rootSignature->
+	//-------------------Sampler--------------------//
+	CD3DX12_STATIC_SAMPLER_DESC sampler(
+		0,
+		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP
+	);
+	//-------------------Range--------------------//
+	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+
+	//-------------------Parameter--------------------//
+	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+	rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters[1].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
+
+	//-------------------Signature--------------------//
+	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+
+	ComPtr<ID3DBlob> signature;
+	ComPtr<ID3DBlob> error;
+	Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+	Check(GetDevice()->CreateRootSignature(
+		0,
+		signature->GetBufferPointer(),
+		signature->GetBufferSize(),
+		IID_PPV_ARGS(m_testRootSignature.GetAddressOf())
+	));
+
+	m_staticMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
 
 	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
 	vs->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "VS", "vs_5_0");
@@ -519,7 +559,38 @@ void D3D12Renderer::CreatePSO()
 
 	m_staticMeshPSO->SetVertexShader(vs);
 	m_staticMeshPSO->SetPixelShader(ps);
-	
+	m_staticMeshPSO->SetRootSignature(m_testRootSignature.Get());
+	m_staticMeshPSO->SetInputLayout(BasicVertex::InputElements, BasicVertex::InputElementCount);
+	m_staticMeshPSO->SetRasterizerState();
+	m_staticMeshPSO->SetBlendState();
+	m_staticMeshPSO->Create(shared_from_this());
+
+
+	//--------------CB---------------//
+	{
+		const uint32 bufferSize = sizeof(Transform);
+
+		m_constantBuffer.Create(GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
+	}
+
+
+}
+
+void D3D12Renderer::RenderTest()
+{
+	// static mesh
+	m_commandList->SetPipelineState(m_staticMeshPSO->GetPipelineState().Get());
+	m_transform.Proj = GetProj();
+	m_transform.View = GetView();
+	for (auto& m : m_meshObjects)
+	{
+		m_transform.World = m->GetTransformMatrix();
+		Transform* t = (Transform*)m_constantBuffer.GetMappedMemory(GetFrameIndex());
+		*t = m_transform;
+		m_commandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX, m_constantBuffer.GetGPUVirtualAddress(GetFrameIndex()));
+		
+		m->Draw(shared_from_this());
+	}
 }
 
 void D3D12Renderer::CreateCommandList()

@@ -142,6 +142,7 @@
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshRenderer.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.h" />
+    <ClInclude Include="GraphicsEngine\public\IScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">

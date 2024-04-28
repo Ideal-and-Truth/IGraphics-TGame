@@ -20,6 +20,11 @@ void Ideal::D3D12PipelineStateObject::SetRootSignature(std::shared_ptr<Ideal::D3
 	m_psoDesc.pRootSignature = RootSignature->GetRootSignature().Get();
 }
 
+void Ideal::D3D12PipelineStateObject::SetRootSignature(ID3D12RootSignature* RootSignature)
+{
+	m_psoDesc.pRootSignature = RootSignature;
+}
+
 void Ideal::D3D12PipelineStateObject::SetVertexShader(std::shared_ptr<Ideal::D3D12Shader> Shader)
 {
 	m_psoDesc.VS = Shader->GetShaderByteCode();

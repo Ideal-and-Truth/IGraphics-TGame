@@ -18,7 +18,7 @@ struct BasicVertex
 
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
 
-private:
+public:
 	static const int32 InputElementCount = 5;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };

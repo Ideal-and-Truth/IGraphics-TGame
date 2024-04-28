@@ -13,6 +13,7 @@
 //#include "GraphicsEngine/Mesh.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/Resource/Camera.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
 {
@@ -56,6 +57,9 @@ public:
 	std::shared_ptr<Ideal::Model> CreateModel(const std::wstring FileName);
 	// Test
 	virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
+	void CreateRootSignature();
+	void CreatePSO();
+	void RenderTest();
 
 public:
 	void Release();
@@ -97,9 +101,6 @@ public:
 	uint32 m_srvHeapNum = 256U;
 	Ideal::D3D12DescriptorHeap m_idealSrvHeap;
 
-	// 2024.04.28 PSO Test
-	void CreatePSO();
-
 private:
 	uint32 m_width;
 	uint32 m_height;
@@ -131,6 +132,10 @@ private:
 
 	// PSO
 	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;
+	ComPtr<ID3D12RootSignature> m_testRootSignature;
+
+	Ideal::D3D12ConstantBuffer m_constantBuffer;
+	Transform m_transform;
 
 private:
 	float m_aspectRatio = 0.f;

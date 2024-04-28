@@ -37,6 +37,6 @@ void Ideal::Material::BindToShader(std::shared_ptr<D3D12Renderer> Renderer)
 
 		// 2024.04.21 : diffuse texture은 Shader에서 t0라고 가정하고 사용한다.
 		// 그리고 이미 Renderer의 SRV의 Heap을 SetDescriptorHeap을 해주었다고 가정한다.
-		Renderer->GetCommandList()->SetGraphicsRootDescriptorTable(0, diffuseGPUAddress);
+		Renderer->GetCommandList()->SetGraphicsRootDescriptorTable(STATIC_MESH_ROOT_DESCRIPTOR_TABLE_PIXEL_SRV_INDEX, diffuseGPUAddress);
 	}
 }
