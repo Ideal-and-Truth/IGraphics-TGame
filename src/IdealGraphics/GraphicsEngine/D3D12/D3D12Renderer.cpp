@@ -14,7 +14,11 @@
 #include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
 #include "GraphicsEngine/Resource/Camera.h"
 #include "GraphicsEngine/Resource/MeshObject.h"
-
+#include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
+#include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
+#include "GraphicsEngine/D3D12/D3D12Shader.h"
+#include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
+#include "GraphicsEngine/D3D12/D3D12RootSignature.h"
 
 D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
@@ -233,6 +237,9 @@ finishAdapter:
 
 	m_d3dResourceManager = std::make_shared<Ideal::D3D12ResourceManager>();
 	m_d3dResourceManager->Init(m_device);
+	m_d3dResourceManager->SetAssetPath(m_assetPath);
+	m_d3dResourceManager->SetModelPath(m_modelPath);
+	m_d3dResourceManager->SetTexturePath(m_texturePath);
 
 	// Test
 	//m_boxVB = std::make_shared<Ideal::D3D12VertexBuffer>();
@@ -301,6 +308,15 @@ void D3D12Renderer::Render()
 		{
 			m->Render(shared_from_this());
 		}
+
+		//----------Static Mesh-----------//
+		// pipeline
+		// rootsignature
+		// constantBuffer
+		for (auto m : m_meshObjects)
+		{
+			m->Draw(shared_from_this());
+		}
 	}
 
 	//-------------End Render------------//
@@ -359,6 +375,16 @@ std::shared_ptr<Ideal::Model> D3D12Renderer::CreateModel(const std::wstring File
 	m_models.push_back(newModel);
 
 	return newModel;
+}
+
+std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
+{
+	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
+	m_d3dResourceManager->CreateStaticMeshObject(shared_from_this(), newStaticMesh, FileName);
+
+	m_meshObjects.push_back(newStaticMesh);
+
+	return newStaticMesh;
 }
 
 void D3D12Renderer::Release()
@@ -477,6 +503,23 @@ Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> D3D12Renderer::GetCommandList(
 uint32 D3D12Renderer::GetFrameIndex() const
 {
 	return m_frameIndex;
+}
+
+void D3D12Renderer::CreatePSO()
+{
+	m_staticMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
+
+	std::shared_ptr<Ideal::D3D12RootSignature> rootSignature = std::make_shared<Ideal::D3D12RootSignature>();
+	//rootSignature->
+
+	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
+	vs->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "VS", "vs_5_0");
+	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
+	vs->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "PS", "ps_5_0");
+
+	m_staticMeshPSO->SetVertexShader(vs);
+	m_staticMeshPSO->SetPixelShader(ps);
+	
 }
 
 void D3D12Renderer::CreateCommandList()

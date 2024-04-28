@@ -23,6 +23,9 @@ namespace Ideal
 
 	class D3D12Texture;
 	class D3D12ResourceManager;
+	class D3D12PipelineStateObject;
+
+	class IdealStaticMeshObject;
 
 	// Interface
 	class ICamera;
@@ -51,6 +54,9 @@ public:
 	virtual std::shared_ptr<Ideal::IMeshObject> CreateMeshObject(const std::wstring FileName) override;
 
 	std::shared_ptr<Ideal::Model> CreateModel(const std::wstring FileName);
+	// Test
+	virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
+
 public:
 	void Release();
 
@@ -91,6 +97,9 @@ public:
 	uint32 m_srvHeapNum = 256U;
 	Ideal::D3D12DescriptorHeap m_idealSrvHeap;
 
+	// 2024.04.28 PSO Test
+	void CreatePSO();
+
 private:
 	uint32 m_width;
 	uint32 m_height;
@@ -120,6 +129,9 @@ private:
 	uint64 m_graphicsFenceValue;
 	HANDLE m_graphicsFenceEvent;
 
+	// PSO
+	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;
+
 private:
 	float m_aspectRatio = 0.f;
 
@@ -133,6 +145,8 @@ private:
 	// Temp assimp model import
 	std::vector<std::shared_ptr<Ideal::Model>> m_models;
 	std::vector<std::shared_ptr<Ideal::MeshObject>> m_meshes;
+	// ver3
+	std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_meshObjects;
 
 private:
 	// Resource Manager

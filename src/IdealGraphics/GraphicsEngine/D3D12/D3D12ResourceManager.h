@@ -13,6 +13,11 @@ namespace Ideal
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12Texture;
+
+	class IdealStaticMeshObject;
+	template <typename> class IdealMesh;
+	class IdealMaterial;
+	class IdealStaticMesh;
 }
 
 namespace Ideal
@@ -22,6 +27,12 @@ namespace Ideal
 	public:
 		D3D12ResourceManager();
 		virtual ~D3D12ResourceManager();
+
+	public:
+		void SetAssetPath(const std::wstring& AssetPath) { m_assetPath = AssetPath; }
+		void SetModelPath(const std::wstring& ModelPath) { m_modelPath = ModelPath; }
+		void SetTexturePath(const std::wstring& TexturePath) { m_texturePath = TexturePath; }
+
 
 	public:
 		void Init(ComPtr<ID3D12Device> Device);
@@ -75,6 +86,8 @@ namespace Ideal
 
 		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture> OutTexture, const std::wstring& Path);
 
+		void CreateStaticMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
+
 	private:
 		ComPtr<ID3D12Device> m_device = nullptr;
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;
@@ -89,5 +102,12 @@ namespace Ideal
 		// Descriptor heaps
 		Ideal::D3D12DescriptorHeap m_srvHeap;
 		const uint32 m_srvHeapCount = 256U;
+
+	private:
+		std::wstring m_assetPath;
+		std::wstring m_modelPath;
+		std::wstring m_texturePath;
+
+		std::map<std::string, std::shared_ptr<Ideal::IdealStaticMesh>> m_staticMeshes;
 	};
 }

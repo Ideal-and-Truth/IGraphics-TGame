@@ -137,7 +137,11 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RootSignature.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Shader.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealModel.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealBone.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMaterial.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshRenderer.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -212,7 +216,11 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealModel.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealBone.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMaterial.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshRenderer.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

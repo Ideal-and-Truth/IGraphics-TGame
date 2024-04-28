@@ -81,10 +81,10 @@ void AssimpConverter::ExportModelData(std::wstring savePath)
 {
 	std::wstring finalPath = m_modelPath + savePath + L".mesh";
 	ReadModelData(m_scene->mRootNode, -1, -1);
-	ReadSkinData();
+	//ReadSkinData();
 
 	//Write CSV File
-	{
+	/*{
 		FILE* file;
 		::fopen_s(&file, "../Vertices.csv", "w");
 
@@ -114,7 +114,7 @@ void AssimpConverter::ExportModelData(std::wstring savePath)
 		}
 
 		::fclose(file);
-	}
+	}*/
 
 	WriteModelFile(finalPath);
 }
@@ -275,7 +275,7 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 
 		// vertex
 		file->Write<uint32>(mesh->vertices.size());
-		file->Write(&mesh->vertices[0], sizeof(SkinnedVertex) * mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(BasicVertex) * mesh->vertices.size());
 
 		// index
 		file->Write<uint32>(mesh->indices.size());
@@ -402,14 +402,14 @@ void AssimpConverter::ReadSkinData()
 		}
 
 		// 최종 결과
-		for (uint32 v = 0; v < tempVertexBoneWeights.size(); ++v)
+		/*for (uint32 v = 0; v < tempVertexBoneWeights.size(); ++v)
 		{
 			tempVertexBoneWeights[v].Normalize();
 
 			AssimpConvert::BlendWeight blendWeight = tempVertexBoneWeights[v].GetBlendWeights();
 			mesh->vertices[v].BlendIndices = blendWeight.indices;
 			mesh->vertices[v].BlendWeights = blendWeight.weights;
-		}
+		}*/
 	}
 }
 
@@ -443,7 +443,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 		{
-			SkinnedVertex vertex;
+			BasicVertex vertex;
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
 			}

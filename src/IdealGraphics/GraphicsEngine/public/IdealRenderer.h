@@ -26,6 +26,7 @@ namespace Ideal
 		virtual void SetMainCamera(std::shared_ptr<ICamera> Camera) abstract;
 
 		virtual std::shared_ptr<Ideal::IMeshObject> CreateMeshObject(const std::wstring FileName) abstract;
+		virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

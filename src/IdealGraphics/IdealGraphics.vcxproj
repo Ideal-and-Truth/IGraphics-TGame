@@ -180,7 +180,10 @@
     <ClInclude Include="GraphicsEngine\public\IdealRendererFactory.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMesh.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealModel.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealBone.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMaterial.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshRenderer.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="GraphicsEngine\Resource\Bone.h" />
     <ClInclude Include="GraphicsEngine\Resource\Material.h" />
@@ -210,6 +213,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\SkinnedMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="GraphicsEngine\VertexInfo.h" />
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
@@ -225,7 +229,10 @@
     <ClCompile Include="GraphicsEngine\private\IdealRendererFactory.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMesh.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealModel.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealBone.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMaterial.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshRenderer.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Bone.cpp" />
@@ -250,6 +257,7 @@
     <ClCompile Include="GraphicsEngine\Resource\ResourceBase.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />

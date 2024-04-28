@@ -13,7 +13,7 @@ namespace AssimpConvert
 		int32 boneIndex;	//뼈일 경우 인덱스 값
 		std::string materialName;	// 이 mesh를 그릴때 필요한 material의 이름을 가지고 있겠다.
 
-		std::vector<SkinnedVertex> vertices;
+		std::vector<BasicVertex> vertices;
 		std::vector<uint32> indices;
 	};
 

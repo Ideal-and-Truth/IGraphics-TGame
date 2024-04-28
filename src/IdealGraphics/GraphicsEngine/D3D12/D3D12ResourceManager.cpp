@@ -3,8 +3,19 @@
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/VertexInfo.h"
+#include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
+#include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
+
+#include "GraphicsEngine/Resource/Refactor/IdealBone.h"
+#include "GraphicsEngine/Resource/Refactor/IdealMesh.h"
+#include "GraphicsEngine/Resource/Refactor/IdealMaterial.h"
 
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
+#include "Misc/Utils/FileUtils.h"
+#include "Misc/Utils/StringUtils.h"
+#include "Misc/Utils/tinyxml2.h"
+
+#include <filesystem>
 
 using namespace Ideal;
 
@@ -261,4 +272,207 @@ void Ideal::D3D12ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Text
 
 	OutTexture->Create(resource, srvHandle);
 }
+
+void Ideal::D3D12ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
+{
+	// 이미 있을 경우
+	std::string key = StringUtils::ConvertWStringToString(filename);
+	std::shared_ptr<Ideal::IdealStaticMesh> staticMesh = m_staticMeshes[key];
+
+	if (staticMesh != nullptr)
+	{
+		OutMesh->SetStaticMesh(staticMesh);
+		return;
+	}
+
+	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
+	{
+		staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
+		std::wstring fullPath = m_modelPath + filename + L".mesh";
+		std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+		file->Open(fullPath, FileMode::Read);
+
+		// bone
+		{
+			const uint32 count = file->Read<uint32>();
+
+			for (uint32 i = 0; i < count; ++i)
+			{
+				std::shared_ptr<Ideal::IdealBone> bone = std::make_shared<Ideal::IdealBone>();
+				bone->SetBoneIndex(file->Read<int32>());
+				bone->SetName(file->Read<std::string>());
+				bone->SetParent(file->Read<int32>());
+				bone->SetTransform(file->Read<Matrix>());
+				staticMesh->AddBone(bone);
+			}
+		}
+
+		// SubMesh
+		{
+			const uint32 count = file->Read<uint32>();
+
+			for (uint32 i = 0; i < count; ++i)
+			{
+				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> mesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
+
+				mesh->SetName(file->Read<std::string>());
+				mesh->SetBoneIndex(file->Read<int32>());
+
+				// Material
+				mesh->SetMaterialName(file->Read<std::string>());
+
+				// vertex data
+				{
+					const uint32 count = file->Read<uint32>();
+					std::vector<BasicVertex> vertices;
+					vertices.resize(count);
+
+					void* data = vertices.data();
+					file->Read(&data, sizeof(BasicVertex) * count);
+					mesh->AddVertices(vertices);
+				}
+
+				// index Data
+				{
+					const uint32 count = file->Read<uint32>();
+					std::vector<uint32> indices;
+					indices.resize(count);
+
+					void* data = indices.data();
+					file->Read(&data, sizeof(uint32) * count);
+					mesh->AddIndices(indices);
+				}
+
+				staticMesh->AddMesh(mesh);
+			}
+		}
+
 	
+	}
+
+	// Material
+	{
+		std::wstring fullPath = m_texturePath + filename + L".xml";
+
+		std::filesystem::path parentPath = std::filesystem::path(fullPath).parent_path();
+
+		//tinyxml2::XMLDocument* document = new tinyxml2::XMLDocument();
+		std::shared_ptr<tinyxml2::XMLDocument> document = std::make_shared<tinyxml2::XMLDocument>();
+		tinyxml2::XMLError error = document->LoadFile(StringUtils::ConvertWStringToString(fullPath).c_str());
+		assert(error == tinyxml2::XML_SUCCESS);
+		if (error != tinyxml2::XML_SUCCESS)
+		{
+			MessageBox(NULL, fullPath.c_str(), L"read material", MB_OK);
+		}
+
+		tinyxml2::XMLElement* root = document->FirstChildElement();
+		tinyxml2::XMLElement* materialNode = root->FirstChildElement();
+
+		while (materialNode)
+		{
+			std::shared_ptr<Ideal::IdealMaterial> material = std::make_shared<Ideal::IdealMaterial>();
+
+			tinyxml2::XMLElement* node = nullptr;
+
+			node = materialNode->FirstChildElement();
+			material->SetName((node->GetText()));
+
+			// DiffuseTexture
+			node = node->NextSiblingElement();
+			if (node->GetText())
+			{
+				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+				if (textureStr.length() > 0)
+				{
+					// Temp 2024.04.20
+					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+
+					material->SetDiffuseTextureFile(finalTextureStr);
+				}
+			}
+
+			// Specular Texture
+			node = node->NextSiblingElement();
+			if (node->GetText())
+			{
+				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+				if (textureStr.length() > 0)
+				{
+					material->SetSpecularTextureFile(textureStr);
+					// TODO : Texture만들기
+					//auto texture
+				}
+			}
+
+			// Normal Texture
+			node = node->NextSiblingElement();
+			if (node->GetText())
+			{
+				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+				if (textureStr.length() > 0)
+				{
+					material->SetNormalTextureFile(textureStr);
+					// TODO : Texture만들기
+					//auto texture
+				}
+			}
+
+			// Ambient
+			{
+				node = node->NextSiblingElement();
+
+				Color color;
+				color.x = node->FloatAttribute("R");
+				color.y = node->FloatAttribute("G");
+				color.z = node->FloatAttribute("B");
+				color.w = node->FloatAttribute("A");
+				material->SetAmbient(color);
+			}
+
+			// Diffuse
+			{
+				node = node->NextSiblingElement();
+
+				Color color;
+				color.x = node->FloatAttribute("R");
+				color.y = node->FloatAttribute("G");
+				color.z = node->FloatAttribute("B");
+				color.w = node->FloatAttribute("A");
+				material->SetDiffuse(color);
+			}
+
+			// Specular
+			{
+				node = node->NextSiblingElement();
+
+				Color color;
+				color.x = node->FloatAttribute("R");
+				color.y = node->FloatAttribute("G");
+				color.z = node->FloatAttribute("B");
+				color.w = node->FloatAttribute("A");
+				material->SetSpecular(color);
+			}
+
+			// Emissive
+			{
+				node = node->NextSiblingElement();
+
+				Color color;
+				color.x = node->FloatAttribute("R");
+				color.y = node->FloatAttribute("G");
+				color.z = node->FloatAttribute("B");
+				color.w = node->FloatAttribute("A");
+				material->SetEmissive(color);
+			}
+
+			staticMesh->AddMaterial(material);
+
+			materialNode = materialNode->NextSiblingElement();
+		}
+	}
+
+	// Binding info
+	staticMesh->FinalCreate(Renderer);
+
+	OutMesh->SetStaticMesh(staticMesh);
+}
