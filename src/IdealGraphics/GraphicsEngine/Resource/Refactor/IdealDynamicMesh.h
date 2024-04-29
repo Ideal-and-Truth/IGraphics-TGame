@@ -3,7 +3,7 @@
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/VertexInfo.h"
-
+#include "GraphicsEngine/ConstantBufferInfo.h"
 namespace Ideal
 {
 	template <typename> class IdealMesh;
@@ -33,8 +33,10 @@ namespace Ideal
 
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>>> m_meshes;
+		Ideal::D3D12ConstantBuffer m_cbTransform;
+		Ideal::D3D12ConstantBuffer m_cbBoneTransform;
 		Matrix m_transform;
-		Ideal::D3D12ConstantBuffer m_constantBuffer;
+		CB_Bone m_bone;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 	};
 }

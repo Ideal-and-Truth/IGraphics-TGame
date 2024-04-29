@@ -89,6 +89,39 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 		ReadSkinData();
 		WriteSkinnedModelFile(finalPath);
 		// todo : write
+
+		//Write CSV File
+		{
+			FILE* file;
+			::fopen_s(&file, "../Vertices.csv", "w");
+
+			for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
+			{
+				std::string name = bone->name;
+				::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
+			}
+
+			::fprintf(file, "\n");
+
+			for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
+			{
+				std::string name = mesh->name;
+				::printf("%s\n", name.c_str());
+
+				for (UINT i = 0; i < mesh->vertices.size(); i++)
+				{
+					Vector3 p = mesh->vertices[i].Position;
+					Vector4 indices = mesh->vertices[i].BlendIndices;
+					Vector4 weights = mesh->vertices[i].BlendWeights;
+
+					::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
+					::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
+					::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
+				}
+			}
+
+			::fclose(file);
+		}
 	}
 	else
 	{
@@ -96,38 +129,7 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 		ReadModelData(m_scene->mRootNode, -1, -1);
 		WriteModelFile(finalPath);
 	}
-	//Write CSV File
-	/*{
-		FILE* file;
-		::fopen_s(&file, "../Vertices.csv", "w");
 
-		for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
-		{
-			std::string name = bone->name;
-			::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
-		}
-
-		::fprintf(file, "\n");
-
-		for (std::shared_ptr<AssimpConvert::Mesh>& mesh : m_meshes)
-		{
-			std::string name = mesh->name;
-			::printf("%s\n", name.c_str());
-
-			for (UINT i = 0; i < mesh->vertices.size(); i++)
-			{
-				Vector3 p = mesh->vertices[i].Position;
-				Vector4 indices = mesh->vertices[i].BlendIndices;
-				Vector4 weights = mesh->vertices[i].BlendWeights;
-
-				::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
-				::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
-				::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
-			}
-		}
-
-		::fclose(file);
-	}*/
 
 }
 
@@ -314,8 +316,8 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 		file->Write<int32>(bone->parent);
 		file->Write<Matrix>(bone->transform);
 	}
-	file->Write<uint32>(m_meshes.size());
-	for (auto& mesh : m_meshes)
+	file->Write<uint32>(m_skinnedMeshes.size());
+	for (auto& mesh : m_skinnedMeshes)
 	{
 		file->Write<std::string>(mesh->name);
 		file->Write<int32>(mesh->boneIndex);

@@ -19,7 +19,7 @@ void Ideal::IdealStaticMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Render
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
-	Transform* t = (Transform*)m_constantBuffer.GetMappedMemory(d3d12Renderer->GetFrameIndex());
+	CB_Transform* t = (CB_Transform*)m_constantBuffer.GetMappedMemory(d3d12Renderer->GetFrameIndex());
 	t->World = m_transform;
 	t->View = d3d12Renderer->GetView();
 	t->Proj = d3d12Renderer->GetProj();
@@ -82,6 +82,6 @@ void Ideal::IdealStaticMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> R
 		mesh->Create(d3d12Renderer);
 	}
 
-	const uint32 bufferSize = sizeof(Transform);
+	const uint32 bufferSize = sizeof(CB_Transform);
 	m_constantBuffer.Create(d3d12Renderer->GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 }

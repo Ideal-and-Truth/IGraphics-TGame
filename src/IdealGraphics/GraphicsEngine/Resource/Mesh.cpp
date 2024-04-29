@@ -42,7 +42,7 @@ void Ideal::Mesh::Create(std::shared_ptr<D3D12Renderer> Renderer)
 
 	//--------------CB---------------//
 	{
-		const uint32 bufferSize = sizeof(Transform);
+		const uint32 bufferSize = sizeof(CB_Transform);
 
 		m_constantBuffer.Create(Renderer->GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 	}
@@ -72,7 +72,7 @@ void Ideal::Mesh::Tick(std::shared_ptr<D3D12Renderer> Renderer)
 
 	//m_transform.World = Matrix::CreateRotationY(DirectX::XMConvertToRadians(rot)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
 	//
-	Transform* t = (Transform*)m_constantBuffer.GetMappedMemory(Renderer->GetFrameIndex());
+	CB_Transform* t = (CB_Transform*)m_constantBuffer.GetMappedMemory(Renderer->GetFrameIndex());
 	*t = m_transform;
 }
 

@@ -1,6 +1,6 @@
 // bone 연결시키기 위한 simple Mesh Shaderr
 
-#define MAX_BONE_TRANSFORMS 128
+#define MAX_BONE_TRANSFORMS 50
 
 struct VSInput
 {
@@ -18,6 +18,8 @@ struct VSOutput
     float4 PosW : POSITION;
     float4 NormalW : NORMAL;
     float2 UV : TEXCOORD;
+    uint4  skinIndices	: BLENDINDICES;
+    float4 skinWeights	: BLENDWEIGHT;
 };
 
 cbuffer Transform : register(b0)
@@ -51,13 +53,15 @@ VSOutput VS(VSInput input)
     output.PosH = projPos;
     output.NormalW = mul(WorldInvTranspose, float4(input.Normal, 0.f));
     output.UV = input.UV;
-
+    output.skinIndices = input.skinIndices;
+    output.skinWeights = input.skinWeights;
     return output;
 }
 
 float4 PS(VSOutput input) : SV_TARGET
 {
-    float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    //float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    float4 color = input.skinWeights;
     //float4 color = float4(input.UV.xy, 1, 1);
     return color;
 }

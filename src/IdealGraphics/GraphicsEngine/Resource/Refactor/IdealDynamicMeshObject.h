@@ -1,10 +1,11 @@
 #pragma once
 #include "GraphicsEngine/public/IDynamicMeshObject.h"
 #include "Core/Core.h"
+
 #include "GraphicsEngine/VertexInfo.h"
+
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/Resource/Refactor/IdealDynamicMesh.h"
-
 namespace Ideal
 {
 	class IAnimation;
@@ -33,7 +34,7 @@ namespace Ideal
 
 	private:
 		std::shared_ptr<IdealDynamicMesh> m_dynamicMesh;
-		Ideal::D3D12ConstantBuffer m_constantBuffer;
+		
 		Matrix m_transform;
 
 		std::vector<std::shared_ptr<Ideal::IdealAnimation>> m_animations;

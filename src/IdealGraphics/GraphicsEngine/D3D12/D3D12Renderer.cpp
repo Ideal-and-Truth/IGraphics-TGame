@@ -502,7 +502,7 @@ void D3D12Renderer::CreateStaticMeshPSO()
 
 	//--------------CB---------------//
 	{
-		const uint32 bufferSize = sizeof(Transform);
+		const uint32 bufferSize = sizeof(CB_Transform);
 
 		m_constantBuffer.Create(GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 	}

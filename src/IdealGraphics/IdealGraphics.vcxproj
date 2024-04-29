@@ -216,7 +216,6 @@
     <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
-    <ClInclude Include="GraphicsEngine\Resource\SkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="GraphicsEngine\VertexInfo.h" />
@@ -260,7 +259,6 @@
     <ClCompile Include="Misc\Utils\StringUtils.cpp" />
     <ClCompile Include="Misc\Utils\tinyxml2.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ResourceBase.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.cpp" />
   </ItemGroup>

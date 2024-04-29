@@ -130,7 +130,6 @@
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
-    <ClInclude Include="GraphicsEngine\Resource\SkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMesh.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
@@ -213,7 +212,6 @@
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMesh.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />

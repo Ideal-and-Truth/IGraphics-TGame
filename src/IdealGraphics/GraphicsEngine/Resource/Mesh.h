@@ -57,8 +57,8 @@ namespace Ideal
 		std::shared_ptr<D3D12IndexBuffer> m_indexBuffer;
 		D3D12ConstantBuffer m_constantBuffer;
 
-		Transform m_transform;
-		Transform* m_cbDataBegin;
+		CB_Transform m_transform;
+		CB_Transform* m_cbDataBegin;
 
 	public:
 		void AddVertices(const std::vector<BasicVertex>& vertices);

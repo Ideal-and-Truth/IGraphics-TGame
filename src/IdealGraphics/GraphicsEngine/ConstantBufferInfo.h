@@ -1,9 +1,9 @@
 #pragma once
 #include "Core/Core.h"
 
-#define MAX_BONE_TRANSFORMS 50
+#define MAX_BONE_TRANSFORMS 250
 
-struct BoneDesc
+struct CB_Bone
 {
 	Matrix transforms[MAX_BONE_TRANSFORMS];
 };
@@ -14,7 +14,7 @@ struct alignas(256) CommonMatrix
 	Matrix World;
 };
 
-struct alignas(256) Transform
+struct alignas(256) CB_Transform
 {
 	Matrix World;
 	Matrix View;
