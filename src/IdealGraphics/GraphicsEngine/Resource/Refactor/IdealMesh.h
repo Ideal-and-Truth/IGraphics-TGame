@@ -9,6 +9,7 @@
 #include "GraphicsEngine/Resource/Refactor/IdealMaterial.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 namespace Ideal
 {
@@ -47,10 +48,14 @@ namespace Ideal
 			{
 				m_material->Create(Renderer);
 			}
+
+			// cb
+			//const uint32 bufferSize = sizeof(Transform);
+			//m_constantBuffer.Create(Renderer->GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 		}
 
-		const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView()	const { return m_vertexBuffer->GetView(); }
-		const D3D12_INDEX_BUFFER_VIEW&	GetIndexBufferView()	const { return m_indexBuffer->GetView(); }
+		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return m_vertexBuffer->GetView(); }
+		D3D12_INDEX_BUFFER_VIEW	GetIndexBufferView() { return m_indexBuffer->GetView(); }
 
 		const uint32& GetElementCount() const { return m_indexBuffer->GetElementCount(); }
 
@@ -82,5 +87,8 @@ namespace Ideal
 
 		std::vector<Ideal::IdealBone> m_bones;
 		int32 m_boneIndex;
+
+	public:
+		Ideal::D3D12ConstantBuffer m_constantBuffer;
 	};
 }

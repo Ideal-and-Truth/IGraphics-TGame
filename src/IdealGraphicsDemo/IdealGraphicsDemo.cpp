@@ -72,7 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		);
-		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx");
@@ -80,13 +80,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//Renderer->ConvertAssetToMyFormat(L"Tank/Tank.fbx");
 		Renderer->Init();
 
-		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"statue_chronos/statue_join");
 		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		std::shared_ptr<Ideal::IMeshObject> mesh2 = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_chronos");
 
 
-		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"statue_chronos/statue_join");
-		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"Kachujin/Mesh");
+		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		std::shared_ptr<Ideal::IMeshObject> mesh3 = Renderer->CreateStaticMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"Kachujin/Mesh");
 		
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -101,9 +102,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			else
 			{
 				angle += 0.2f;
-				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
+				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 				world.CreateRotationY(angle);
-				mesh->SetTransformMatrix(world);
+				mesh2->SetTransformMatrix(world);
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();

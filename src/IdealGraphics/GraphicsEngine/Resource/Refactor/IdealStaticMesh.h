@@ -2,6 +2,7 @@
 #include "Core/Core.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "GraphicsEngine/VertexInfo.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
 
 namespace Ideal
 {
@@ -32,9 +33,11 @@ namespace Ideal
 
 		void FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
+
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>> m_meshes;
 		Matrix m_transform;
+		Ideal::D3D12ConstantBuffer m_constantBuffer;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 	};
 }

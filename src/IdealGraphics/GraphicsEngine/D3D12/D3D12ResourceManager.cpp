@@ -284,10 +284,10 @@ void Ideal::D3D12ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Re
 		OutMesh->SetStaticMesh(staticMesh);
 		return;
 	}
+	staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
 	{
-		staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 		std::wstring fullPath = m_modelPath + filename + L".mesh";
 		std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 		file->Open(fullPath, FileMode::Read);

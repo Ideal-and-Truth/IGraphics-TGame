@@ -135,7 +135,6 @@ private:
 	ComPtr<ID3D12RootSignature> m_testRootSignature;
 
 	Ideal::D3D12ConstantBuffer m_constantBuffer;
-	Transform m_transform;
 
 private:
 	float m_aspectRatio = 0.f;

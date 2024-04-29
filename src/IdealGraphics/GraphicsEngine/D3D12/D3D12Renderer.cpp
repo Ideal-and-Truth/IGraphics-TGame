@@ -307,10 +307,10 @@ void D3D12Renderer::Render()
 
 		//DrawBox();
 		// Test Models Render
-		for (auto m : m_meshes)
+		/*for (auto m : m_meshes)
 		{
 			m->Render(shared_from_this());
-		}
+		}*/
 
 		//----------Static Mesh-----------//
 		RenderTest();
@@ -385,6 +385,8 @@ std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const 
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
 	m_d3dResourceManager->CreateStaticMeshObject(shared_from_this(), newStaticMesh, FileName);
+
+	newStaticMesh->Init(shared_from_this());
 
 	m_meshObjects.push_back(newStaticMesh);
 
@@ -551,16 +553,17 @@ void D3D12Renderer::CreatePSO()
 	));
 
 	m_staticMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
+	m_staticMeshPSO->SetInputLayout(BasicVertex::InputElements, BasicVertex::InputElementCount);
 
 	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
 	vs->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "VS", "vs_5_0");
-	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
-	vs->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "PS", "ps_5_0");
-
 	m_staticMeshPSO->SetVertexShader(vs);
+
+	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
+	ps->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "PS", "ps_5_0");
 	m_staticMeshPSO->SetPixelShader(ps);
+
 	m_staticMeshPSO->SetRootSignature(m_testRootSignature.Get());
-	m_staticMeshPSO->SetInputLayout(BasicVertex::InputElements, BasicVertex::InputElementCount);
 	m_staticMeshPSO->SetRasterizerState();
 	m_staticMeshPSO->SetBlendState();
 	m_staticMeshPSO->Create(shared_from_this());
@@ -578,17 +581,14 @@ void D3D12Renderer::CreatePSO()
 
 void D3D12Renderer::RenderTest()
 {
-	// static mesh
-	m_commandList->SetPipelineState(m_staticMeshPSO->GetPipelineState().Get());
-	m_transform.Proj = GetProj();
-	m_transform.View = GetView();
+
 	for (auto& m : m_meshObjects)
 	{
-		m_transform.World = m->GetTransformMatrix();
-		Transform* t = (Transform*)m_constantBuffer.GetMappedMemory(GetFrameIndex());
-		*t = m_transform;
-		m_commandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX, m_constantBuffer.GetGPUVirtualAddress(GetFrameIndex()));
-		
+		// static mesh
+		m_commandList->SetPipelineState(m_staticMeshPSO->GetPipelineState().Get());
+		m_commandList->SetGraphicsRootSignature(m_testRootSignature.Get());
+		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		m->Draw(shared_from_this());
 	}
 }
