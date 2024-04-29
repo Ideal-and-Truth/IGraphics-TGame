@@ -187,6 +187,11 @@ public:
 
 	const std::string Dump(void* _object, int _indent = 0) const
 	{
+		if constexpr (IsVectorContainer<int>::value)
+		{
+
+		}
+
 		std::string result = "";
 		result += std::string(_indent, '\t');
 		result += m_type.m_fullName;

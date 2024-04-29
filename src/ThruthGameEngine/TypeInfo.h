@@ -9,6 +9,15 @@ class Method;
 class Property;
 class TypeInfo;
 
+template <typename T>
+struct IsVectorContainer {
+	static const bool value = false;
+};
+template <typename T, typename Alloc>
+struct IsVectorContainer<std::vector<T, Alloc> > {
+	static const bool value = true;
+};
+
 /// <summary>
 /// Super 타입이 있는지
 /// </summary>
