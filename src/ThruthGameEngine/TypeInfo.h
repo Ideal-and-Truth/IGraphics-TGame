@@ -4,6 +4,7 @@
 #include <vector>
 #include <typeinfo>
 #include <memory>
+
 class Method;
 class Property;
 class TypeInfo;
@@ -109,12 +110,14 @@ private:
 	// 함수 컨테이너 
 	std::vector<const Method*> m_methods;
 	MethodMap m_methodMap;
-	
+
 	// 변수 컨테이너
 	std::vector<const Property*> m_properties;
 	PropertyMap m_propertyMap;
 
 public:
+	std::string Dump(void* _object, int _indent = 0) const;
+
 	// 생성자 
 	// 타입 정보 이니셜라이저에서 필요한 정보를 받아온다.
 	// 컴파일 시간 안에 일어나는 과정
@@ -139,7 +142,7 @@ public:
 			}
 		}
 	}
-	
+
 	// 부모의 타입 정보 가져오기
 	const TypeInfo* GetSuper() const;
 
@@ -206,15 +209,10 @@ public:
 
 	const Property* GetProperty(const char* name) const;
 
-	const char* GetName() const
-	{
-		return m_name;
-	}
+	const char* GetName() const { return m_name; }
+	std::string GetFullName() const { return m_fullName; }
 
-	bool IsArray() const
-	{
-		return m_isArray;
-	}
+	bool IsArray() const { return m_isArray; }
 
 private:
 	void CollectSuperMethods();

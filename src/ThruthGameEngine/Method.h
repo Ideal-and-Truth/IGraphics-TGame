@@ -1,6 +1,7 @@
 #pragma once
 #include "TypeInfoMacros.h"
 #include <cassert>
+#include "StringConverter.h"
 
 /// <summary>
 /// 함수 reflection 클래스
@@ -13,6 +14,7 @@ class CallableBase
 public:
 	// 소멸자
 	virtual ~CallableBase() = default;
+	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
 };
 
 /// <summary>
@@ -30,6 +32,7 @@ class ICallable
 public:
 	// 함수 호출
 	virtual TRet Invoke(void* _caller, TArgs&&... _args) const abstract;
+	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
 };
 
 /// <summary>
@@ -49,6 +52,18 @@ private:
 	FuncPtr m_ptr = nullptr;
 
 public:
+	virtual std::string Dump(void* _object, int _indent = 0) const
+	{
+		std::string result = "";
+		result += typeid(TRet).name();
+		result += " ";
+		result += typeid(TClass).name();
+		result += " ";
+		// result += typeid(TArgs...).name();
+		result += "\n";
+		return result;
+	}
+
 	/// <summary>
 	/// 함수 호출
 	/// </summary>
@@ -58,7 +73,7 @@ public:
 	virtual TRet Invoke(void* _caller, TArgs&&... _args) const override
 	{
 		// 만일 리턴값이 void 라면
-		if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
+		if constexpr (std::is_void_v<TRet>)
 		{
 			// 실행 만 한다.
 			(static_cast<TClass*>(_caller)->*m_ptr)(std::forward<TArgs>(_args)...);
@@ -131,6 +146,29 @@ private:
 	const CallableBase& m_callable;
 
 public:
+	const std::string Dump(void* _object, int _indent = 0) const 
+	{
+		std::string result = "";
+		result += std::string(_indent, '\t');
+		result += m_returnType->GetFullName();
+		result += " ( ";
+		if (m_parameterTypes.empty())
+		{
+			result += ")";
+		}
+		else
+		{
+			for (auto& p : m_parameterTypes)
+			{
+				result += p->GetFullName();
+				result += " ";
+			}
+			result += " )";
+		}
+		result += "\n";
+		return result;
+	}
+
 	const char* GetName() const { return m_name; }
 
 	const TypeInfo& GetReturnType() const { return *m_returnType; }

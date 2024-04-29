@@ -76,3 +76,38 @@ void TypeInfo::AddMethod(const Method* method)
 	m_methods.emplace_back(method);
 	m_methodMap.emplace(method->GetName(), method);
 }
+
+std::string TypeInfo::Dump(void* _object, int _indent) const
+{
+	std::string result;
+	result += std::string(_indent, '\t');
+	result += m_fullName;
+	result += "\n";
+	if (m_properties.size() == 0 && m_methods.size() == 0)
+	{
+		result += "{ }\n";
+	}
+
+	result += std::string(_indent, '\t');
+	result += "{\n";
+
+	result += std::string(_indent, '\t');
+	result += "Property : \n";
+	result += std::string(_indent, '\t');
+	for (auto& p : m_properties)
+	{
+		result += p->Dump(_object, _indent + 1);
+	}
+
+	result += "Function : \n";
+	result += std::string(_indent, '\t');
+	for (auto& m : m_methods)
+	{
+		result += m->Dump(_object, _indent + 1);
+	}
+
+	result += std::string(_indent, '\t');
+	result += "}\n";
+
+	return result;
+}

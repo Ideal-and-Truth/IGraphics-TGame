@@ -22,6 +22,7 @@ public:
 	virtual void Awake() override;
 
 public:
+	METHOD(Update)
 	void Update(std::any _p);
 	void QUP(std::any _p);
 	void QDOWN(std::any _p);

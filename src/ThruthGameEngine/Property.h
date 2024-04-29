@@ -3,6 +3,7 @@
 #include "Types.h"
 #include <cassert>
 #include <string>
+#include "StringConverter.h"
 
 /// <summary>
 /// 변수 정보 핸들러 베이스
@@ -13,6 +14,8 @@ class PropertyHandlerBase
 
 public:
 	virtual ~PropertyHandlerBase() = default;
+
+	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
 };
 
 /// <summary>
@@ -25,13 +28,15 @@ class IPropertyHandler
 {
 	GENERATE_CLASS_TYPE_INFO(IPropertyHandler)
 
-		// 타입을 배열 등을 제외하고 순수 타입만 추출해서 보관 
-		using ElementType = std::remove_all_extents_t<T>;
+private:
+	// 타입을 배열 등을 제외하고 순수 타입만 추출해서 보관 
+	using ElementType = std::remove_all_extents_t<T>;
 
 public:
 	// 변수의 값 Getter Setter
-	virtual ElementType& Get(void* object, size_t index = 0) const = 0;
-	virtual void Set(void* object, const ElementType& value, size_t index = 0) const = 0;
+	virtual ElementType& Get(void* object, size_t index = 0) const abstract;
+	virtual void Set(void* object, const ElementType& value, size_t index = 0) const abstract;
+	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
 };
 
 /// <summary>
@@ -46,14 +51,22 @@ class PropertyHandler
 	// 이 클래스도 refelction 가능 
 	GENERATE_CLASS_TYPE_INFO(PropertyHandler)
 
-		// 멤버에 대한 주소 포인터 타입(ex: int Transform::position *)
-		using MemberPtr = T TClass::*;
+private:
+	// 멤버에 대한 주소 포인터 타입(ex: int Transform::position *)
+	using MemberPtr = T TClass::*;
 	// 배열 등의 요소가 제거된 순수 타입 
 	using ElementType = std::remove_all_extents_t<T>;
 	// 멤버
 	MemberPtr m_ptr = nullptr;
 
 public:
+	virtual std::string Dump(void* _object, int _indent = 0) const override
+	{
+		std::string result;
+		result += StringConverter::ToString(Get(_object));
+		return result;
+	}
+
 	// Getter
 	virtual ElementType& Get(void* _object, size_t _index = 0) const override
 	{
@@ -171,6 +184,19 @@ private:
 
 public:
 	const char* GetName() const { return m_name; }
+
+	const std::string Dump(void* _object, int _indent = 0) const
+	{
+		std::string result = "";
+		result += std::string(_indent, '\t');
+		result += m_type.m_fullName;
+		result += " ";
+		result += m_name;
+		result += " = ";
+		result += m_handler.Dump(_object, _indent + 1);
+		result += "\n";
+		return result;
+	}
 
 	// 값 반환 구조체
 	template <typename T>

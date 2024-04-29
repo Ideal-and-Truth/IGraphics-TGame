@@ -3,26 +3,26 @@
 #include "TypeInfo.h"
 
 #define GENERATE_CLASS_TYPE_INFO(TypeName)	\
-private:	\
-	friend SuperClassTypeDeduction<TypeName>;	\
+private: \
+	friend SuperClassTypeDeduction<TypeName>; \
 	friend TypeInfoInitializer<TypeName>; \
 \
 public:	\
-	using Super = typename SuperClassTypeDeduction<TypeName>::Type;	\
-	using ThisType = TypeName;	\
+	using Super = typename SuperClassTypeDeduction<TypeName>::Type; \
+	using ThisType = TypeName; \
 \
-	static TypeInfo& StaticTypeInfo()	\
-	{	\
-		static TypeInfo typeInfo{ TypeInfoInitializer<ThisType>( #TypeName ) };\
-		return typeInfo;\
-	}	\
+	static TypeInfo& StaticTypeInfo() \
+	{ \
+		static TypeInfo typeInfo{ TypeInfoInitializer<ThisType>( #TypeName ) }; \
+		return typeInfo; \
+	} \
 \
-	virtual const TypeInfo& GetTypeInfo() const	\
-	{	\
-		return m_typeInfo;	\
-	}	\
+	virtual const TypeInfo& GetTypeInfo() const \
+	{ \
+		return m_typeInfo; \
+	} \
 \
 private: \
-	inline static TypeInfo& m_typeInfo = StaticTypeInfo();	\
+	inline static TypeInfo& m_typeInfo = StaticTypeInfo(); \
 \
 private:

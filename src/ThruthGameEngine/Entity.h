@@ -39,6 +39,8 @@ public:
 	std::vector<std::weak_ptr<C>> GetComponents();
 
 	void SetManager(std::weak_ptr<Managers> _val) { m_manager = _val; };
+
+	std::string& GetName() { return m_name; };
 };
 
 

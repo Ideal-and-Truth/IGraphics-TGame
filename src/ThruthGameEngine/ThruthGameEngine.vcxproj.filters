@@ -105,12 +105,10 @@
     <ClCompile Include="TestScene2.cpp">
       <Filter>Scene\TestScene</Filter>
     </ClCompile>
-    <ClCompile Include="Reflection.cpp">
-      <Filter>Reflection</Filter>
-    </ClCompile>
     <ClCompile Include="TypeInfo.cpp">
       <Filter>Reflection\Advanced</Filter>
     </ClCompile>
+    <ClCompile Include="StringConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -163,9 +161,6 @@
     <ClInclude Include="TestScene2.h">
       <Filter>Scene\TestScene</Filter>
     </ClInclude>
-    <ClInclude Include="Reflection.h">
-      <Filter>Reflection</Filter>
-    </ClInclude>
     <ClInclude Include="Method.h">
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
@@ -187,5 +182,6 @@
     <ClInclude Include="TypeInfoMacros.h">
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
+    <ClInclude Include="StringConverter.h" />
   </ItemGroup>
 </Project>

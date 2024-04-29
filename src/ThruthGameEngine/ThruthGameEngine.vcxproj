@@ -33,9 +33,9 @@
     <ClInclude Include="Processor.h" />
     <ClInclude Include="Property.h" />
     <ClInclude Include="PropertyMacros.h" />
-    <ClInclude Include="Reflection.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="StringConverter.h" />
     <ClInclude Include="TestComponent.h" />
     <ClInclude Include="TestEntity.h" />
     <ClInclude Include="TestScene.h" />
@@ -55,9 +55,9 @@
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="Managers.cpp" />
     <ClCompile Include="Processor.cpp" />
-    <ClCompile Include="Reflection.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="StringConverter.cpp" />
     <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="TestEntity.cpp" />
     <ClCompile Include="TestScene.cpp" />
