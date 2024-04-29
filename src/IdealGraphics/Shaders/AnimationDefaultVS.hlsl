@@ -8,8 +8,8 @@ struct VSInput
     float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
     float3 tangent : TANGENT;
-
-    float4 
+	uint4  skinIndices	: BLENDINDICES;
+	float4 skinWeights	: BLENDWEIGHT;
 };
 
 struct VSOutput
@@ -33,7 +33,7 @@ cbuffer BoneBuffer : register(b1)
     matrix BoneTransforms[MAX_BONE_TRANSFORMS];
 }
 
-uint BoneIndex;
+//uint BoneIndex;
 
 Texture2D diffuseTexture : register(t0);
 SamplerState sampler0 : register(s0);

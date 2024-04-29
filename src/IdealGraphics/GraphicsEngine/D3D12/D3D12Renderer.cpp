@@ -4,14 +4,13 @@
 #include "Misc/Utils/PIX.h"
 
 #include "GraphicsEngine/Resource/Mesh.h"
-#include "GraphicsEngine/Resource/ResourceManager.h"
 
 // Test
 #include "Misc/Assimp/AssimpConverter.h"
 #include "GraphicsEngine/Resource/Model.h"
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
-#include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/Resource/Camera.h"
 #include "GraphicsEngine/Resource/MeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
@@ -19,6 +18,9 @@
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12RootSignature.h"
+#include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
+#include "GraphicsEngine/Resource/Refactor/IdealDynamicMesh.h"
+#include "GraphicsEngine/Resource/Refactor/IdealDynamicMeshObject.h"
 
 D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
@@ -32,7 +34,7 @@ D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 D3D12Renderer::~D3D12Renderer()
 {
 	// Release Resource Manager
-	m_d3dResourceManager = nullptr;
+	m_resourceManager = nullptr;
 }
 
 void D3D12Renderer::Init()
@@ -234,16 +236,14 @@ finishAdapter:
 
 	//------------------Resource Manager---------------------//
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
-
-	m_d3dResourceManager = std::make_shared<Ideal::D3D12ResourceManager>();
-	m_d3dResourceManager->Init(m_device);
-	m_d3dResourceManager->SetAssetPath(m_assetPath);
-	m_d3dResourceManager->SetModelPath(m_modelPath);
-	m_d3dResourceManager->SetTexturePath(m_texturePath);
+	m_resourceManager->Init(m_device);
+	m_resourceManager->SetAssetPath(m_assetPath);
+	m_resourceManager->SetModelPath(m_modelPath);
+	m_resourceManager->SetTexturePath(m_texturePath);
 
 	// Test
-	CreatePSO();
-
+	CreateStaticMeshPSO();
+	CreateDynamicMeshPSO();
 	// Test
 	//m_boxVB = std::make_shared<Ideal::D3D12VertexBuffer>();
 	//m_resourceManager->CreateVertexBufferBox(m_boxVB);
@@ -252,7 +252,6 @@ finishAdapter:
 	//m_boxIB = std::make_shared<Ideal::D3D12IndexBuffer>();
 	//m_resourceManager->CreateIndexBufferBox(m_boxIB);
 
-	LoadAssets();
 	//LoadBox();
 }
 
@@ -302,7 +301,7 @@ void D3D12Renderer::Render()
 
 	//-------------Render Command-------------//
 	{
-		ID3D12DescriptorHeap* heaps[] = { m_d3dResourceManager->GetSRVHeap().Get() };
+		ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
 		m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		//DrawBox();
@@ -344,58 +343,35 @@ void D3D12Renderer::SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	m_mainCamera = std::static_pointer_cast<Ideal::Camera>(Camera);
 }
 
-std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateMeshObject(const std::wstring FileName)
-{
-	std::shared_ptr<Ideal::Model> model = CreateModel(FileName);
-	std::shared_ptr<Ideal::MeshObject> outMeshObject = std::make_shared<Ideal::MeshObject>();
-	outMeshObject->SetModel(model);
-
-	m_meshes.push_back(outMeshObject);
-	return outMeshObject;
-}
-
-std::shared_ptr<Ideal::Model> D3D12Renderer::CreateModel(const std::wstring FileName)
-{
-	std::shared_ptr<Ideal::Model> newModel;
-
-	// 만약 있다면 새로 만들 필요없이 돌려준다.
-	newModel = m_resourceManager->GetModel(FileName);
-	if (newModel != nullptr)
-	{
-		return newModel;
-	}
-
-	// 없다면 만들고 리소스매니저에도 넣어준다.
-	newModel = std::make_shared<Ideal::Model>();
-	std::wstring modelPath = m_modelPath + FileName;
-	newModel->ReadModel(modelPath);
-
-	std::wstring materialPath = m_texturePath + FileName;
-	newModel->ReadMaterial(materialPath);
-
-	newModel->Create(shared_from_this());
-	m_resourceManager->AddModel(FileName, newModel);
-
-	m_models.push_back(newModel);
-
-	return newModel;
-}
-
 std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_d3dResourceManager->CreateStaticMeshObject(shared_from_this(), newStaticMesh, FileName);
+	m_resourceManager->CreateStaticMeshObject(shared_from_this(), newStaticMesh, FileName);
 
 	newStaticMesh->Init(shared_from_this());
 
-	m_meshObjects.push_back(newStaticMesh);
+	m_staticMeshObjects.push_back(newStaticMesh);
 
 	return newStaticMesh;
 }
 
-void D3D12Renderer::CreateRootSignature()
+std::shared_ptr<Ideal::IDynamicMeshObject> D3D12Renderer::CreateDynamicMeshObject(const std::wstring& FileName)
 {
+	std::shared_ptr<Ideal::IdealDynamicMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealDynamicMeshObject>();
+	m_resourceManager->CreateDynamicMeshObject(shared_from_this(), newDynamicMesh, FileName);
 
+	newDynamicMesh->Init(shared_from_this());
+	m_dynamicMeshObjects.push_back(newDynamicMesh);
+
+	return newDynamicMesh;
+}
+
+std::shared_ptr<Ideal::IAnimation> D3D12Renderer::CreateAnimation(const std::wstring& FileName)
+{
+	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
+	m_resourceManager->CreateAnimation(newAnimation, FileName);
+
+	return newAnimation;
 }
 
 void D3D12Renderer::Release()
@@ -409,51 +385,6 @@ void D3D12Renderer::CreateDefaultCamera()
 	std::shared_ptr<Ideal::Camera> camera = std::static_pointer_cast<Ideal::Camera>(m_mainCamera);
 	camera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
 }
-
-void D3D12Renderer::LoadAssets()
-{
-	////////////////////////////////////// Load ASSET
-	// 2024.04.18 Convert to my format
-	//std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
-
-	//assimpConverter->ReadAssetFile(L"statue_chronos/statue_join.fbx");
-	//assimpConverter->ExportModelData(L"statue_chronos/statue_chronos");
-	//assimpConverter->ExportMaterialData(L"statue_chronos/statue_chronos");
-	//assimpConverter.reset();
-
-	//assimpConverter = std::make_shared<AssimpConverter>();
-	//assimpConverter->ReadAssetFile(L"Tank/Tank.fbx");
-	//assimpConverter->ExportModelData(L"Tank/Tank");
-	//assimpConverter->ExportMaterialData(L"Tank/Tank");
-	//assimpConverter.reset();
-	//
-	//assimpConverter = std::make_shared<AssimpConverter>();
-	//assimpConverter->ReadAssetFile(L"House2/untitled.fbx");
-	//assimpConverter->ExportModelData(L"House2/House2");
-	//assimpConverter->ExportMaterialData(L"House2/House2");
-	//assimpConverter.reset();
-
-	//m_model = std::make_shared<Ideal::Model>();
-	//m_model->ReadModel(L"porsche/porsche");	// mesh 밖에 없음.
-	//m_model->ReadMaterial(L"porsche/porsche");
-
-	//CreateMeshObject(L"Tower/Tower");
-	//CreateMeshObject(L"Tank/Tank");
-	//CreateMeshObject(L"statue_chronos/statue_chronos");
-	
-	//CreateMeshObject(L"House2/House2");
-	//LoadBox();
-	//m_commandList->Close();
-}
-
-//void D3D12Renderer::CreateMeshObject(const std::wstring FileName)
-//{
-//	std::shared_ptr<Ideal::Model> model = std::make_shared<Ideal::Model>();
-//	model->ReadModel(FileName);
-//	model->ReadMaterial(FileName);
-//	model->Create(shared_from_this());
-//	m_models.push_back(model);
-//}
 
 void D3D12Renderer::BeginRender()
 {
@@ -496,9 +427,9 @@ void D3D12Renderer::EndRender()
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
-std::shared_ptr<Ideal::D3D12ResourceManager> D3D12Renderer::GetResourceManager()
+std::shared_ptr<Ideal::ResourceManager> D3D12Renderer::GetResourceManager()
 {
-	return m_d3dResourceManager;
+	return m_resourceManager;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Device> D3D12Renderer::GetDevice()
@@ -516,7 +447,7 @@ uint32 D3D12Renderer::GetFrameIndex() const
 	return m_frameIndex;
 }
 
-void D3D12Renderer::CreatePSO()
+void D3D12Renderer::CreateStaticMeshPSO()
 {
 
 	//-------------------Sampler--------------------//
@@ -549,7 +480,7 @@ void D3D12Renderer::CreatePSO()
 		0,
 		signature->GetBufferPointer(),
 		signature->GetBufferSize(),
-		IID_PPV_ARGS(m_testRootSignature.GetAddressOf())
+		IID_PPV_ARGS(m_staticMeshRootSignature.GetAddressOf())
 	));
 
 	m_staticMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
@@ -563,7 +494,7 @@ void D3D12Renderer::CreatePSO()
 	ps->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "PS", "ps_5_0");
 	m_staticMeshPSO->SetPixelShader(ps);
 
-	m_staticMeshPSO->SetRootSignature(m_testRootSignature.Get());
+	m_staticMeshPSO->SetRootSignature(m_staticMeshRootSignature.Get());
 	m_staticMeshPSO->SetRasterizerState();
 	m_staticMeshPSO->SetBlendState();
 	m_staticMeshPSO->Create(shared_from_this());
@@ -582,15 +513,79 @@ void D3D12Renderer::CreatePSO()
 void D3D12Renderer::RenderTest()
 {
 
-	for (auto& m : m_meshObjects)
+	for (auto& m : m_staticMeshObjects)
 	{
 		// static mesh
 		m_commandList->SetPipelineState(m_staticMeshPSO->GetPipelineState().Get());
-		m_commandList->SetGraphicsRootSignature(m_testRootSignature.Get());
+		m_commandList->SetGraphicsRootSignature(m_staticMeshRootSignature.Get());
 		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		m->Draw(shared_from_this());
 	}
+
+	for (auto& m : m_dynamicMeshObjects)
+	{
+		// dynamic mesh
+		m_commandList->SetPipelineState(m_dynamicMeshPSO->GetPipelineState().Get());
+		m_commandList->SetGraphicsRootSignature(m_dynamicMeshRootSignature.Get());
+		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//
+		m->Draw(shared_from_this());
+	}
+}
+
+void D3D12Renderer::CreateDynamicMeshPSO()
+{
+
+	//-------------------Sampler--------------------//
+	CD3DX12_STATIC_SAMPLER_DESC sampler(
+		0,
+		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP
+	);
+	//-------------------Range--------------------//
+	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+
+	//-------------------Parameter--------------------//
+	CD3DX12_ROOT_PARAMETER1 rootParameters[3];
+	rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParameters[1].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
+	rootParameters[2].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
+
+	//-------------------Signature--------------------//
+	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+
+	ComPtr<ID3DBlob> signature;
+	ComPtr<ID3DBlob> error;
+	Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+	Check(GetDevice()->CreateRootSignature(
+		0,
+		signature->GetBufferPointer(),
+		signature->GetBufferSize(),
+		IID_PPV_ARGS(m_dynamicMeshRootSignature.GetAddressOf())
+	));
+
+	m_dynamicMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
+	m_dynamicMeshPSO->SetInputLayout(SkinnedVertex::InputElements, SkinnedVertex::InputElementCount);
+
+	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
+	vs->CompileFromFile(L"../Shaders/AnimationDefaultVS.hlsl", nullptr, nullptr, "VS", "vs_5_0");
+	m_dynamicMeshPSO->SetVertexShader(vs);
+
+	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
+	ps->CompileFromFile(L"../Shaders/AnimationDefaultVS.hlsl", nullptr, nullptr, "PS", "ps_5_0");
+	m_dynamicMeshPSO->SetPixelShader(ps);
+
+	m_dynamicMeshPSO->SetRootSignature(m_dynamicMeshRootSignature.Get());
+	m_dynamicMeshPSO->SetRasterizerState();
+	m_dynamicMeshPSO->SetBlendState();
+	m_dynamicMeshPSO->Create(shared_from_this());
 }
 
 void D3D12Renderer::CreateCommandList()
@@ -693,7 +688,7 @@ void D3D12Renderer::DrawBox()
 	//---------------------Root Signature--------------------//
 	m_commandList->SetGraphicsRootSignature(m_boxRootSignature.Get());
 
-	ID3D12DescriptorHeap* heaps[] = { m_d3dResourceManager->GetSRVHeap().Get() };
+	ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 	m_commandList->SetGraphicsRootDescriptorTable(0, m_boxTexture->GetDescriptorHandle().GetGpuHandle());
@@ -816,11 +811,11 @@ void D3D12Renderer::CreateBoxTexture()
 {
 	m_boxTexture = std::make_shared<Ideal::D3D12Texture>();
 	std::wstring path = L"Resources/Test/test2.png";
-	m_d3dResourceManager->CreateTexture(m_boxTexture, path);
+	m_resourceManager->CreateTexture(m_boxTexture, path);
 	return;
 }
 
-void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName)
+void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
 	assimpConverter->SetAssetPath(m_assetPath);
@@ -835,7 +830,7 @@ void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName)
 	FileName.pop_back();
 	FileName.pop_back();
 
-	assimpConverter->ExportModelData(FileName);
+	assimpConverter->ExportModelData(FileName, isSkinnedData);
 	assimpConverter->ExportMaterialData(FileName);
 }
 

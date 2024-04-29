@@ -121,13 +121,12 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine\D3D12\D3D12ResourceManager.h">
+    <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Texture.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine\Resource\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
@@ -140,9 +139,13 @@
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealBone.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMaterial.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshRenderer.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.h" />
     <ClInclude Include="GraphicsEngine\public\IScene.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealDynamicMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealDynamicMesh.h" />
+    <ClInclude Include="GraphicsEngine\public\IDynamicMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealAnimation.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -200,7 +203,7 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.cpp">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine\D3D12\D3D12ResourceManager.cpp">
+    <ClCompile Include="GraphicsEngine\D3D12\ResourceManager.cpp">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Texture.cpp">
@@ -209,7 +212,6 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Definitions.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine\Resource\ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\SkinnedMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
@@ -220,8 +222,10 @@
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealBone.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMaterial.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshRenderer.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealDynamicMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealDynamicMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

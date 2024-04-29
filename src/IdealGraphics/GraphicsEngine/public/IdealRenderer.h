@@ -6,6 +6,8 @@ namespace Ideal
 {
 	class ICamera;
 	class IMeshObject;
+	class IAnimation;
+	class IDynamicMeshObject;
 }
 
 namespace Ideal
@@ -25,15 +27,16 @@ namespace Ideal
 		virtual std::shared_ptr<ICamera> CreateCamera() abstract;
 		virtual void SetMainCamera(std::shared_ptr<ICamera> Camera) abstract;
 
-		virtual std::shared_ptr<Ideal::IMeshObject> CreateMeshObject(const std::wstring FileName) abstract;
 		virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) abstract;
+		virtual std::shared_ptr<Ideal::IDynamicMeshObject> CreateDynamicMeshObject(const std::wstring& FileName) abstract;
+		virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;
 		virtual void SetTexturePath(const std::wstring& TexturePath) abstract;
 
-		virtual void ConvertAssetToMyFormat(std::wstring FileName) abstract;
+		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false) abstract;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) abstract;
 	};
 }

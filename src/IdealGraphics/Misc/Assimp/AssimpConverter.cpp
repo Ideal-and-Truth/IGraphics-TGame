@@ -77,12 +77,25 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path)
 
 }
 
-void AssimpConverter::ExportModelData(std::wstring savePath)
+void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData /*= false*/)
 {
-	std::wstring finalPath = m_modelPath + savePath + L".mesh";
-	ReadModelData(m_scene->mRootNode, -1, -1);
-	//ReadSkinData();
+	// skinned data일 경우 
+	m_isSkinnedData = IsSkinnedData;
 
+	if (m_isSkinnedData)
+	{
+		std::wstring finalPath = m_modelPath + savePath + L".dmesh";
+		ReadSkinnedModelData(m_scene->mRootNode, -1, -1);
+		ReadSkinData();
+		WriteSkinnedModelFile(finalPath);
+		// todo : write
+	}
+	else
+	{
+		std::wstring finalPath = m_modelPath + savePath + L".mesh";
+		ReadModelData(m_scene->mRootNode, -1, -1);
+		WriteModelFile(finalPath);
+	}
 	//Write CSV File
 	/*{
 		FILE* file;
@@ -116,7 +129,6 @@ void AssimpConverter::ExportModelData(std::wstring savePath)
 		::fclose(file);
 	}*/
 
-	WriteModelFile(finalPath);
 }
 
 void AssimpConverter::ExportMaterialData(const std::wstring& savePath)
@@ -284,6 +296,42 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 	}
 }
 
+void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
+{
+	auto path = std::filesystem::path(filePath);
+
+	std::filesystem::create_directory(path.parent_path());
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(filePath, FileMode::Write);
+
+	// Bone Data
+	file->Write<uint32>(m_bones.size());
+	for (auto& bone : m_bones)
+	{
+		file->Write<int32>(bone->index);
+		file->Write<std::string>(bone->name);
+		file->Write<int32>(bone->parent);
+		file->Write<Matrix>(bone->transform);
+	}
+	file->Write<uint32>(m_meshes.size());
+	for (auto& mesh : m_meshes)
+	{
+		file->Write<std::string>(mesh->name);
+		file->Write<int32>(mesh->boneIndex);
+		file->Write<std::string>(mesh->materialName);
+
+		// vertex
+		file->Write<uint32>(mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(SkinnedVertex) * mesh->vertices.size());
+
+		// index
+		file->Write<uint32>(mesh->indices.size());
+		file->Write(&mesh->indices[0], sizeof(uint32) * mesh->indices.size());
+
+	}
+}
+
 void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent)
 {
 	std::shared_ptr<AssimpConvert::Bone> bone = std::make_shared<AssimpConvert::Bone>();
@@ -307,12 +355,42 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent)
 
 	m_bones.push_back(bone);
 
-	// Mesh
 	ReadMeshData(node, index);
 
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
 		ReadModelData(node->mChildren[i], m_bones.size(), index);
+	}
+}
+
+void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 parent)
+{
+	std::shared_ptr<AssimpConvert::Bone> bone = std::make_shared<AssimpConvert::Bone>();
+	bone->index = index;
+	bone->parent = parent;
+	bone->name = node->mName.C_Str();
+
+
+	/// Relative Transform
+	// float 첫번째 주소 값으로 matrix 복사
+	Matrix transform(node->mTransformation[0]);
+	bone->transform = transform.Transpose();
+
+	// root (local)
+	Matrix matParent = Matrix::Identity;
+	if (parent >= 0)
+		matParent = m_bones[parent]->transform;
+
+	// Local Transform
+	bone->transform = bone->transform * matParent;
+
+	m_bones.push_back(bone);
+
+	ReadSkinnedMeshData(node, index);
+
+	for (uint32 i = 0; i < node->mNumChildren; ++i)
+	{
+		ReadSkinnedModelData(node->mChildren[i], m_bones.size(), index);
 	}
 }
 
@@ -380,7 +458,7 @@ void AssimpConverter::ReadSkinData()
 			continue;
 		}
 
-		std::shared_ptr<AssimpConvert::Mesh> mesh = m_meshes[i];
+		std::shared_ptr<AssimpConvert::SkinnedMesh> mesh = m_skinnedMeshes[i];
 
 		std::vector<AssimpConvert::BoneWeights> tempVertexBoneWeights;
 		tempVertexBoneWeights.resize(mesh->vertices.size());
@@ -391,7 +469,6 @@ void AssimpConverter::ReadSkinData()
 			aiBone* srcMeshBone = srcMesh->mBones[b];
 			uint32 boneIndex = GetBoneIndex(srcMeshBone->mName.C_Str());
 
-			
 			for (uint32 w = 0; w < srcMeshBone->mNumWeights; w++)
 			{
 				uint32 index = srcMeshBone->mWeights[w].mVertexId;
@@ -402,14 +479,14 @@ void AssimpConverter::ReadSkinData()
 		}
 
 		// 최종 결과
-		/*for (uint32 v = 0; v < tempVertexBoneWeights.size(); ++v)
+		for (uint32 v = 0; v < tempVertexBoneWeights.size(); ++v)
 		{
 			tempVertexBoneWeights[v].Normalize();
 
 			AssimpConvert::BlendWeight blendWeight = tempVertexBoneWeights[v].GetBlendWeights();
 			mesh->vertices[v].BlendIndices = blendWeight.indices;
 			mesh->vertices[v].BlendWeights = blendWeight.weights;
-		}*/
+		}
 	}
 }
 
@@ -477,6 +554,71 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 	m_meshes.push_back(mesh);
 }
 
+void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
+{
+	// 마지막 노드는 정보를 들고 있다.
+	if (node->mNumMeshes < 1)
+	{
+		return;
+	}
+
+	std::shared_ptr<AssimpConvert::SkinnedMesh> mesh = std::make_shared<AssimpConvert::SkinnedMesh>();
+	mesh->name = node->mName.C_Str();
+	mesh->boneIndex = bone;
+
+	// submesh
+	for (uint32 i = 0; i < node->mNumMeshes; ++i)
+	{
+		uint32 index = node->mMeshes[i];
+		const aiMesh* srcMesh = m_scene->mMeshes[index];
+
+		// Material 이름
+		const aiMaterial* material = m_scene->mMaterials[srcMesh->mMaterialIndex];
+		mesh->materialName = material->GetName().C_Str();
+
+		// mesh가 여러개일 경우 index가 중복될 수 있다. 
+		// 하나로 관리하기 위해 미리 이전 vertex의 size를 가져와서 이번에 추가하는 index에 더해 중복을 피한다.
+
+		const uint32 startVertex = mesh->vertices.size();
+
+		// Vertex
+		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
+		{
+			SkinnedVertex vertex;
+			{
+				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
+			}
+
+			// UV
+			if (srcMesh->HasTextureCoords(0))
+			{
+				memcpy(&vertex.UV, &srcMesh->mTextureCoords[0][v], sizeof(Vector2));
+			}
+
+			// Normal
+			if (srcMesh->HasNormals())
+			{
+				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
+			}
+
+
+			mesh->vertices.push_back(vertex);
+		}
+
+		// Index
+		for (uint32 f = 0; f < srcMesh->mNumFaces; ++f)
+		{
+			aiFace& face = srcMesh->mFaces[f];
+
+			for (uint32 k = 0; k < face.mNumIndices; ++k)
+			{
+				mesh->indices.push_back(face.mIndices[k] + startVertex);
+			}
+		}
+	}
+	m_skinnedMeshes.push_back(mesh);
+}
+
 std::shared_ptr<AssimpConvert::Animation> AssimpConverter::ReadAnimationData(aiAnimation* srcAnimation)
 {
 	std::shared_ptr<AssimpConvert::Animation> animation = std::make_shared<AssimpConvert::Animation>();
@@ -516,7 +658,7 @@ std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNod
 
 		bool found = false;
 		uint32 t = node->keyframe.size();
-		
+
 		// position
 		if (fabsf((float)srcNode->mPositionKeys[k].mTime - (float)t) <= 0.0001f)
 		{
@@ -534,7 +676,7 @@ std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNod
 		{
 			aiQuatKey key = srcNode->mRotationKeys[k];
 			frameData.time = (float)key.mTime;
-			
+
 			frameData.rotation.x = key.mValue.x;
 			frameData.rotation.y = key.mValue.y;
 			frameData.rotation.z = key.mValue.z;
@@ -548,7 +690,7 @@ std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNod
 		{
 			aiVectorKey key = srcNode->mScalingKeys[k];
 			frameData.time = (float)key.mTime;
-			
+
 			frameData.scale.x = key.mValue.x;
 			frameData.scale.y = key.mValue.y;
 			frameData.scale.z = key.mValue.z;
@@ -582,7 +724,7 @@ void AssimpConverter::ReadKeyFrameData(std::shared_ptr<AssimpConvert::Animation>
 	keyFrame->boneName = srcNode->mName.C_Str();
 
 	std::shared_ptr<AssimpConvert::AnimationNode> findNode = cache[srcNode->mName.C_Str()];
-	
+
 	for (uint32 i = 0; i < animation->frameCount; ++i)
 	{
 		AssimpConvert::KeyFrameData frameData;

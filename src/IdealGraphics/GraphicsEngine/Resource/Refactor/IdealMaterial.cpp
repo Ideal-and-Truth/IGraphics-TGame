@@ -2,7 +2,7 @@
 #include "GraphicsEngine/public/IdealRenderer.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
-#include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 Ideal::IdealMaterial::IdealMaterial()

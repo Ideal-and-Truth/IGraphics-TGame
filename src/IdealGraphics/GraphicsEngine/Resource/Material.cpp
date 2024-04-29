@@ -1,7 +1,7 @@
 #include "GraphicsEngine/Resource/Material.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
-#include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
 
 Ideal::Material::Material()
 {

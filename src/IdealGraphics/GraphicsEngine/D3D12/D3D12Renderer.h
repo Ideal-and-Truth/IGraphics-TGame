@@ -23,15 +23,16 @@ namespace Ideal
 	class ResourceManager;
 
 	class D3D12Texture;
-	class D3D12ResourceManager;
+	class ResourceManager;
 	class D3D12PipelineStateObject;
 
 	class IdealStaticMeshObject;
-
+	class IdealDynamicMeshObject;
 	// Interface
 	class ICamera;
 	class IScene;
 	class IMeshObject;
+	class IDynamicMeshObject;
 }
 
 class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12Renderer>
@@ -52,25 +53,25 @@ public:
 	virtual std::shared_ptr<Ideal::ICamera> CreateCamera() override;
 	virtual void SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera) override;
 
-	virtual std::shared_ptr<Ideal::IMeshObject> CreateMeshObject(const std::wstring FileName) override;
-
-	std::shared_ptr<Ideal::Model> CreateModel(const std::wstring FileName);
 	// Test
 	virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
-	void CreateRootSignature();
-	void CreatePSO();
+	virtual std::shared_ptr<Ideal::IDynamicMeshObject> CreateDynamicMeshObject(const std::wstring& FileName) override;
+	virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
+	void CreateStaticMeshPSO();
 	void RenderTest();
+
+	void CreateDynamicMeshPSO();
+
 
 public:
 	void Release();
 
 	void CreateDefaultCamera();
-	void LoadAssets();
 	//void CreateMeshObject(const std::wstring FileName);
 	void BeginRender();
 	void EndRender();
 
-	std::shared_ptr<Ideal::D3D12ResourceManager> GetResourceManager();
+	std::shared_ptr<Ideal::ResourceManager> GetResourceManager();
 
 	// Command
 	void CreateCommandList();
@@ -132,9 +133,11 @@ private:
 
 	// PSO
 	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;
-	ComPtr<ID3D12RootSignature> m_testRootSignature;
-
+	ComPtr<ID3D12RootSignature> m_staticMeshRootSignature;
 	Ideal::D3D12ConstantBuffer m_constantBuffer;
+
+	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_dynamicMeshPSO;
+	ComPtr<ID3D12RootSignature> m_dynamicMeshRootSignature;
 
 private:
 	float m_aspectRatio = 0.f;
@@ -150,12 +153,12 @@ private:
 	std::vector<std::shared_ptr<Ideal::Model>> m_models;
 	std::vector<std::shared_ptr<Ideal::MeshObject>> m_meshes;
 	// ver3
-	std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_meshObjects;
+	std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
+	std::vector<std::shared_ptr<Ideal::IdealDynamicMeshObject>> m_dynamicMeshObjects;
 
 private:
 	// Resource Manager
-	std::shared_ptr<Ideal::ResourceManager> m_resourceManager;
-	std::shared_ptr<Ideal::D3D12ResourceManager> m_d3dResourceManager = nullptr;
+	std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 
 	// Main Camera
 	std::shared_ptr<Ideal::Camera> m_mainCamera = nullptr;
@@ -194,7 +197,7 @@ public:
 	virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }
 	virtual void SetTexturePath(const std::wstring& TexturePath) override { m_texturePath = TexturePath; }
 
-	virtual void ConvertAssetToMyFormat(std::wstring FileName) override;
+	virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false) override;
 	virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
 
 private:

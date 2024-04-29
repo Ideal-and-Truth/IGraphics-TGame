@@ -4,7 +4,7 @@
 
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/VertexInfo.h"
-#include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
 
 Ideal::Mesh::Mesh()
 {
@@ -18,7 +18,7 @@ Ideal::Mesh::~Mesh()
 
 void Ideal::Mesh::Create(std::shared_ptr<D3D12Renderer> Renderer)
 {
-	std::shared_ptr<Ideal::D3D12ResourceManager> resourceManager = Renderer->GetResourceManager();
+	std::shared_ptr<Ideal::ResourceManager> resourceManager = Renderer->GetResourceManager();
 	
 	//--------------Init---------------//
 	//InitRootSignature(Renderer);

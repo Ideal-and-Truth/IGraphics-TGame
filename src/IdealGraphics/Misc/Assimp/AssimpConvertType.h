@@ -17,6 +17,15 @@ namespace AssimpConvert
 		std::vector<uint32> indices;
 	};
 
+	struct SkinnedMesh
+	{
+		std::string name;
+		int32 boneIndex;
+		std::string materialName;
+		std::vector<SkinnedVertex> vertices;
+		std::vector<uint32> indices;
+	};
+
 	struct Bone
 	{
 		std::string name;

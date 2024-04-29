@@ -3,12 +3,11 @@
 #include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 // Resource Head
-#include "GraphicsEngine/Resource/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/Resource/Refactor/IdealBone.h"
 #include "GraphicsEngine/Resource/Refactor/IdealMaterial.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
-#include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 namespace Ideal
@@ -30,7 +29,7 @@ namespace Ideal
 	public:
 		void Create(std::shared_ptr<D3D12Renderer> Renderer)
 		{
-			std::shared_ptr<Ideal::D3D12ResourceManager> resourceManager = Renderer->GetResourceManager();
+			std::shared_ptr<Ideal::ResourceManager> resourceManager = Renderer->GetResourceManager();
 			//-------------VB-------------//
 			m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
 			resourceManager->CreateVertexBuffer<TVertexType>(m_vertexBuffer, m_vertices);
