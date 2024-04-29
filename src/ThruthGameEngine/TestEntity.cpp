@@ -4,6 +4,7 @@
 
 TestEntity::TestEntity()
 {
+	m_test = std::make_shared<int>(7);
 }
 
 TestEntity::~TestEntity()

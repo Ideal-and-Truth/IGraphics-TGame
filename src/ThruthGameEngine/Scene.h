@@ -9,7 +9,7 @@ class Entity;
 class Managers;
 class Scene
 {
-private:
+protected:
 	std::string m_name;
 	
 	std::list<std::shared_ptr<Entity>> m_entities;
