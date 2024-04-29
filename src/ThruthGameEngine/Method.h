@@ -2,148 +2,187 @@
 #include "TypeInfoMacros.h"
 #include <cassert>
 
+/// <summary>
+/// 함수 reflection 클래스
+/// </summary>
 class CallableBase
 {
-private:
-	friend SuperClassTypeDeduction<CallableBase>;
-	friend TypeInfoInitializer<CallableBase>;
-public:
-	using Super = typename SuperClassTypeDeduction<CallableBase>::Type;
-	using ThisType = CallableBase;
-	static TypeInfo& StaticTypeInfo()
-	{
-		static TypeInfo typeInfo
-		{
-			TypeInfoInitializer<ThisType>("CallableBase")
-		};
-		return typeInfo;
-	}
-	virtual const TypeInfo& GetTypeInfo() const
-	{
-		return m_typeInfo;
-	}
-private:
-	inline static TypeInfo& m_typeInfo = StaticTypeInfo();
-private:
+	// reflection 가능 객체
+	GENERATE_CLASS_TYPE_INFO(CallableBase)
 
 public:
+	// 소멸자
 	virtual ~CallableBase() = default;
 };
 
+/// <summary>
+/// 인터페이스 클래스
+/// </summary>
+/// <typeparam name="TRet">리턴 타입</typeparam>
+/// <typeparam name="...TArgs">인자 타입</typeparam>
 template <typename TRet, typename... TArgs>
 class ICallable
 	: public CallableBase
 {
+	// reflection 가능 클래스
 	GENERATE_CLASS_TYPE_INFO(ICallable)
 
 public:
-	virtual TRet Invoke(void* caller, TArgs&&... args) const = 0;
+	// 함수 호출
+	virtual TRet Invoke(void* _caller, TArgs&&... _args) const abstract;
 };
 
+/// <summary>
+/// 함수 호출 클래스
+/// </summary>
+/// <typeparam name="TClass">클래스</typeparam>
+/// <typeparam name="TRet">리턴 타입</typeparam>
+/// <typeparam name="...TArgs">인자 타입</typeparam>
 template <typename TClass, typename TRet, typename... TArgs>
 class Callable
 	: public ICallable<TRet, TArgs...>
 {
 	GENERATE_CLASS_TYPE_INFO(Callable)
-		using FuncPtr = TRet(TClass::*)(TArgs...);
+private:
+	// 함수 포인터
+	using FuncPtr = TRet(TClass::*)(TArgs...);
+	FuncPtr m_ptr = nullptr;
 
 public:
-	virtual TRet Invoke(void* caller, TArgs&&... args) const override
+	/// <summary>
+	/// 함수 호출
+	/// </summary>
+	/// <param name="_caller">함수 주체</param>
+	/// <param name="..._args">인자</param>
+	/// <returns>리턴 값 (can void)</returns>
+	virtual TRet Invoke(void* _caller, TArgs&&... _args) const override
 	{
+		// 만일 리턴값이 void 라면
 		if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 		{
-			(static_cast<TClass*>(caller)->*m_ptr)(std::forward<TArgs>(args)...);
+			// 실행 만 한다.
+			(static_cast<TClass*>(_caller)->*m_ptr)(std::forward<TArgs>(_args)...);
 		}
+		// 리턴값이 있다면
 		else
 		{
-			return (static_cast<TClass*>(caller)->*m_ptr)(std::forward<TArgs>(args)...);
+			// 해당 값을 리턴한다.
+			return (static_cast<TClass*>(_caller)->*m_ptr)(std::forward<TArgs>(_args)...);
 		}
 	}
 
+	// 생성자
 	Callable(FuncPtr ptr) :
 		m_ptr(ptr) {}
-
-private:
-	FuncPtr m_ptr = nullptr;
 };
 
+/// <summary>
+/// 정적 함수 호출 클래스
+/// </summary>
+/// <typeparam name="TClass">클래스</typeparam>
+/// <typeparam name="TRet">리턴 타입</typeparam>
+/// <typeparam name="...TArgs">인자 타입</typeparam>
 template <typename TClass, typename TRet, typename... TArgs>
-class StaticCallable : public ICallable<TRet, TArgs...>
+class StaticCallable
+	: public ICallable<TRet, TArgs...>
 {
 	GENERATE_CLASS_TYPE_INFO(StaticCallable)
-		using FuncPtr = TRet(*)(TArgs...);
+
+private:
+	// 함수 포인터
+	using FuncPtr = TRet(*)(TArgs...);
+	FuncPtr m_ptr = nullptr;
 
 public:
+	/// <summary>
+	/// 호출 함수
+	/// </summary>
+	/// <param name="caller">함수 주체(정적 함수라 필요 없을 가능성이 높음)</param>
+	/// <param name="...args">인자들</param>
+	/// <returns>리턴 값</returns>
 	virtual TRet Invoke([[maybe_unused]] void* caller, TArgs&&... args) const override
 	{
+		// 리턴 타입이 void면
 		if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 		{
 			(*m_ptr)(std::forward<TArgs>(args)...);
 		}
+		// 리턴 타입이 있다면
 		else
 		{
 			return (*m_ptr)(std::forward<TArgs>(args)...);
 		}
 	}
 
+	// 생성자
 	StaticCallable([[maybe_unused]] TClass* owner, FuncPtr ptr) :
 		m_ptr(ptr) {}
-
-private:
-	FuncPtr m_ptr = nullptr;
 };
 
+/// <summary>
+/// 함수 reflection 클래스
+/// </summary>
 class Method
 {
+private:
+	const TypeInfo* m_returnType = nullptr;
+	std::vector<const TypeInfo*> m_parameterTypes;
+	const char* m_name = nullptr;
+	const CallableBase& m_callable;
+
 public:
-	const char* GetName() const
-	{
-		return m_name;
-	}
+	const char* GetName() const { return m_name; }
 
-	const TypeInfo& GetReturnType() const
-	{
-		return *m_returnType;
-	}
+	const TypeInfo& GetReturnType() const { return *m_returnType; }
 
-	const TypeInfo& GetParameterType(size_t i) const
-	{
-		return *m_parameterTypes[i];
-	}
+	const TypeInfo& GetParameterType(size_t i) const { return *m_parameterTypes[i]; }
 
-	size_t NumParameter() const
-	{
-		return m_parameterTypes.size();
-	}
+	size_t NumParameter() const { return m_parameterTypes.size(); }
 
+	/// <summary>
+	/// 함수 호출
+	/// </summary>
+	/// <typeparam name="TClass">함수가 있는 클래스</typeparam>
+	/// <typeparam name="TRet">리턴 타입</typeparam>
+	/// <typeparam name="...TArgs">인자 타입</typeparam>
+	/// <param name="caller">함수 호출자</param>
+	/// <param name="...args">인자들</param>
+	/// <returns>리턴 값</returns>
 	template <typename TClass, typename TRet, typename... TArgs>
-	TRet Invoke(void* caller, TArgs&&... args) const
+	TRet Invoke(void* _caller, TArgs&&... _args) const
 	{
+		// 호출자의 타입 정보를 받아옴
 		const TypeInfo& typeinfo = m_callable.GetTypeInfo();
+
+		// 호출자가 Callable 클래스의 자식 클래스라면
 		if (typeinfo.IsChildOf<Callable<TClass, TRet, TArgs...>>())
 		{
+			// 업캐스팅
 			auto concreateCallable = static_cast<const Callable<TClass, TRet, TArgs...>&>(m_callable);
+			// 리턴값에 따른 함수 호출
 			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 			{
-				concreateCallable.Invoke(caller, std::forward<TArgs>(args)...);
+				concreateCallable.Invoke(_caller, std::forward<TArgs>(_args)...);
 			}
 			else
 			{
-				return concreateCallable.Invoke(caller, std::forward<TArgs>(args)...);
+				return concreateCallable.Invoke(_caller, std::forward<TArgs>(_args)...);
 			}
 		}
+		// 정적 함수인 경우
 		else if (typeinfo.IsChildOf<StaticCallable<TClass, TRet, TArgs...>>())
 		{
 			auto concreateCallable = static_cast<const StaticCallable<TClass, TRet, TArgs...>&>(m_callable);
 			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 			{
-				concreateCallable.Invoke(caller, std::forward<TArgs>(args)...);
+				concreateCallable.Invoke(_caller, std::forward<TArgs>(_args)...);
 			}
 			else
 			{
-				return concreateCallable.Invoke(caller, std::forward<TArgs>(args)...);
+				return concreateCallable.Invoke(_caller, std::forward<TArgs>(_args)...);
 			}
 		}
+		// 위 두 경우가 아니라면 버그
 		else
 		{
 			assert(false && "Method::Invoke<TClass, TRet, TArgs...> - Invalied casting");
@@ -154,19 +193,29 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// 함수 호출
+	/// </summary>
+	/// <typeparam name="TRet">리턴값</typeparam>
+	/// <typeparam name="...TArgs">인자 타입</typeparam>
+	/// <param name="owner">주인</param>
+	/// <param name="...args">인자</param>
+	/// <returns>리턴 값</returns>
 	template <typename TRet, typename... TArgs>
-	TRet Invoke(void* owner, TArgs&&... args) const
+	TRet Invoke(void* _owner, TArgs&&... _args) const
 	{
+		// 호출자는 호출 인터페이스의 자식이여야한다.
 		if (m_callable.GetTypeInfo().IsChildOf<ICallable<TRet, TArgs...>>())
 		{
 			auto concreateCallable = static_cast<const ICallable<TRet, TArgs...>*>(&m_callable);
+			// 타입에 따른 함수 호출
 			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
 			{
-				concreateCallable->Invoke(owner, std::forward<TArgs>(args)...);
+				concreateCallable->Invoke(_owner, std::forward<TArgs>(_args)...);
 			}
 			else
 			{
-				return concreateCallable->Invoke(owner, std::forward<TArgs>(args)...);
+				return concreateCallable->Invoke(_owner, std::forward<TArgs>(_args)...);
 			}
 		}
 		else
@@ -179,6 +228,15 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// 생성자 
+	/// </summary>
+	/// <typeparam name="TRet">리턴 타입</typeparam>
+	/// <typeparam name="...TArgs">인자 타입</typeparam>
+	/// <param name="owner">함수 주인</param>
+	/// <param name="ptr">함수 포인터</param>
+	/// <param name="name">이름</param>
+	/// <param name="callable">호출자</param>
 	template <typename TRet, typename... TArgs>
 	Method(TypeInfo& owner, [[maybe_unused]] TRet(*ptr)(TArgs...), const char* name, const CallableBase& callable) :
 		m_name(name),
@@ -188,6 +246,16 @@ public:
 		owner.AddMethod(this);
 	}
 
+	/// <summary>
+	/// 생성자
+	/// </summary>
+	/// <typeparam name="TClass">클래스</typeparam>
+	/// <typeparam name="TRet">리턴 타입</typeparam>
+	/// <typeparam name="...TArgs">인자 타입</typeparam>
+	/// <param name="owner">함수 주인</param>
+	/// <param name="ptr">함수 포인터</param>
+	/// <param name="name">이름</param>
+	/// <param name="callable">호출자</param>
 	template <typename TClass, typename TRet, typename... TArgs>
 	Method(TypeInfo& owner, [[maybe_unused]] TRet(TClass::* ptr)(TArgs...), const char* name, const CallableBase& callable) :
 		m_name(name),
@@ -206,11 +274,6 @@ private:
 
 		(m_parameterTypes.emplace_back(&TypeInfo::GetStaticTypeInfo<Args>()), ...);
 	}
-
-	const TypeInfo* m_returnType = nullptr;
-	std::vector<const TypeInfo*> m_parameterTypes;
-	const char* m_name = nullptr;
-	const CallableBase& m_callable;
 };
 
 template <typename TClass, typename TPtr, TPtr ptr>

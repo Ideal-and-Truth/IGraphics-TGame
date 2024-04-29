@@ -2,7 +2,7 @@
 
 #include "Property.h"
 
-#define PROPERTY( Name )	\
+#define PROPERTY(Name)	\
 	inline static struct RegistPropertyExecutor_##Name	\
 	{	\
 		RegistPropertyExecutor_##Name()	\

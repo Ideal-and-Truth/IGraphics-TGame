@@ -17,11 +17,6 @@ void TestComponent::Awake()
 	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
 	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
 	EventBind<TestComponent>("Update", &TestComponent::Update);
-
-	bool temp = false;
-	int tmepint = 0;
-	int t = m_typeInfo.GetProperty("testInt")->Get<int>(this);
-	int a = 1;
 }
 
 void TestComponent::Update(std::any _p)

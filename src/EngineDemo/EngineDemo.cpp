@@ -16,6 +16,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     std::unique_ptr<Processor> processor = std::make_unique<Processor>();
 
     processor->Initialize(hInstance);
+
+    ///...///
+
     processor->Loop();
 
     return 0;
