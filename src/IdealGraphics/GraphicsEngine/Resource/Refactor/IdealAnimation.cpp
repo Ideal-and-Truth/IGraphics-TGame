@@ -10,7 +10,7 @@ Ideal::IdealAnimation::~IdealAnimation()
 
 }
 
-std::shared_ptr<Ideal::ModelKeyframe> Ideal::IdealAnimation::GetKeyframe(const std::wstring& name)
+std::shared_ptr<Ideal::ModelKeyframe> Ideal::IdealAnimation::GetKeyframe(const std::string& name)
 {
 	auto findIt = keyframes.find(name);
 	if (findIt == keyframes.end())

@@ -7,7 +7,7 @@ namespace Ideal
 	class ICamera;
 	class IMeshObject;
 	class IAnimation;
-	class IDynamicMeshObject;
+	class ISkinnedMeshObject;
 }
 
 namespace Ideal
@@ -28,7 +28,7 @@ namespace Ideal
 		virtual void SetMainCamera(std::shared_ptr<ICamera> Camera) abstract;
 
 		virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) abstract;
-		virtual std::shared_ptr<Ideal::IDynamicMeshObject> CreateDynamicMeshObject(const std::wstring& FileName) abstract;
+		virtual std::shared_ptr<Ideal::ISkinnedMeshObject> CreateDynamicMeshObject(const std::wstring& FileName) abstract;
 		virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) abstract;
 
 	public:

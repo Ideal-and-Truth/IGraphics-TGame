@@ -239,7 +239,8 @@ void Ideal::Model::ReadAnimation(const std::wstring& filename)
 
 	std::shared_ptr<Ideal::ModelAnimation> animation = std::make_shared<Ideal::ModelAnimation>();
 
-	animation->name = StringUtils::ConvertStringToWString(file->Read<std::string>());
+	//animation->name = StringUtils::ConvertStringToWString(file->Read<std::string>());
+	animation->name = file->Read<std::string>();
 	animation->duration = file->Read<float>();
 	animation->frameRate = file->Read<float>();
 	animation->frameCount = file->Read<uint32>();
@@ -249,7 +250,8 @@ void Ideal::Model::ReadAnimation(const std::wstring& filename)
 	for (uint32 i = 0; i < keyframeCount; ++i)
 	{
 		std::shared_ptr<ModelKeyframe> keyFrame = std::make_shared<ModelKeyframe>();
-		keyFrame->boneName = StringUtils::ConvertStringToWString(file->Read<std::string>());
+		//keyFrame->boneName = StringUtils::ConvertStringToWString(file->Read<std::string>());
+		keyFrame->boneName = file->Read<std::string>();
 
 		uint32 size = file->Read<uint32>();
 
@@ -349,7 +351,7 @@ std::shared_ptr<Ideal::ModelAnimation> Ideal::Model::GetAnimationByIndex(uint32 
 	 return (index < 0 || index >= m_animations.size() ? nullptr : m_animations[index]); 
 }
 
-std::shared_ptr<Ideal::ModelAnimation> Ideal::Model::GetAnimationByName(const std::wstring& name)
+std::shared_ptr<Ideal::ModelAnimation> Ideal::Model::GetAnimationByName(const std::string& name)
 {
 	for (auto& animation : m_animations)
 	{

@@ -5,8 +5,8 @@
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
-#include "GraphicsEngine/Resource/Refactor/IdealDynamicMesh.h"
-#include "GraphicsEngine/Resource/Refactor/IdealDynamicMeshObject.h"
+#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
+#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
 
 #include "GraphicsEngine/Resource/Refactor/IdealBone.h"
 #include "GraphicsEngine/Resource/Refactor/IdealMesh.h"
@@ -480,18 +480,18 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Rendere
 	OutMesh->SetStaticMesh(staticMesh);
 }
 
-void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealDynamicMeshObject> OutMesh, const std::wstring& filename)
+void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);
-	std::shared_ptr<Ideal::IdealDynamicMesh> dynamicMesh = m_dynamicMeshes[key];
+	std::shared_ptr<Ideal::IdealSkinnedMesh> dynamicMesh = m_dynamicMeshes[key];
 
 	if (dynamicMesh != nullptr)
 	{
 		OutMesh->SetDynamicMesh(dynamicMesh);
 		return;
 	}
-	dynamicMesh = std::make_shared<Ideal::IdealDynamicMesh>();
+	dynamicMesh = std::make_shared<Ideal::IdealSkinnedMesh>();
 
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
 	{
@@ -700,7 +700,8 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation> Out
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(fullPath, FileMode::Read);
 
-	OutAnimation->name = StringUtils::ConvertStringToWString(file->Read<std::string>());
+	//OutAnimation->name = StringUtils::ConvertStringToWString(file->Read<std::string>());
+	OutAnimation->name = file->Read<std::string>();
 	OutAnimation->duration = file->Read<float>();
 	OutAnimation->frameRate = file->Read<float>();
 	OutAnimation->frameCount = file->Read<uint32>();
@@ -710,7 +711,8 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation> Out
 	for (uint32 i = 0; i < keyframeCount; ++i)
 	{
 		std::shared_ptr<ModelKeyframe> keyFrame = std::make_shared<ModelKeyframe>();
-		keyFrame->boneName = StringUtils::ConvertStringToWString(file->Read<std::string>());
+		//keyFrame->boneName = StringUtils::ConvertStringToWString(file->Read<std::string>());
+		keyFrame->boneName = file->Read<std::string>();
 
 		uint32 size = file->Read<uint32>();
 

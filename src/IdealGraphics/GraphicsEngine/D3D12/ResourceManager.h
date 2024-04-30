@@ -15,11 +15,11 @@ namespace Ideal
 	class D3D12Texture;
 
 	class IdealStaticMeshObject;
-	class IdealDynamicMeshObject;
+	class IdealSkinnedMeshObject;
 	template <typename> class IdealMesh;
 	class IdealMaterial;
 	class IdealStaticMesh;
-	class IdealDynamicMesh;
+	class IdealSkinnedMesh;
 	class IdealAnimation;
 }
 
@@ -90,7 +90,7 @@ namespace Ideal
 		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture> OutTexture, const std::wstring& Path);
 
 		void CreateStaticMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
-		void CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealDynamicMeshObject> OutMesh, const std::wstring& filename);
+		void CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
 		void CreateAnimation(std::shared_ptr<Ideal::IdealAnimation> OutAnimation, const std::wstring& filename);
 
 	private:
@@ -114,7 +114,7 @@ namespace Ideal
 		std::wstring m_texturePath;
 
 		std::map<std::string, std::shared_ptr<Ideal::IdealStaticMesh>> m_staticMeshes;
-		std::map<std::string, std::shared_ptr<Ideal::IdealDynamicMesh>> m_dynamicMeshes;
+		std::map<std::string, std::shared_ptr<Ideal::IdealSkinnedMesh>> m_dynamicMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
 	};
 }

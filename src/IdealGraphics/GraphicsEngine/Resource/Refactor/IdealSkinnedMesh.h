@@ -1,0 +1,44 @@
+#pragma once
+#include "Core/Core.h"
+#include "GraphicsEngine/Resource/ResourceBase.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/VertexInfo.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
+namespace Ideal
+{
+	template <typename> class IdealMesh;
+	class IdealMaterial;
+	class IdealRenderer;
+	class IdealBone;
+}
+
+namespace Ideal
+{
+	class IdealSkinnedMesh : public ResourceBase
+	{
+	public:
+		IdealSkinnedMesh();
+		virtual ~IdealSkinnedMesh();
+
+	public:
+		void Render(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+		void SetTransformMatrix(const Matrix& Transform);
+
+	public:
+		void AddMesh(std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> Mesh);
+		void AddMaterial(std::shared_ptr<Ideal::IdealMaterial> Material);
+		void AddBone(std::shared_ptr<Ideal::IdealBone> Bone) { m_bones.push_back(Bone); }
+
+		void FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+
+		std::vector<std::shared_ptr<Ideal::IdealBone>>& GetBones() { return m_bones; }
+
+	private:
+		std::vector<std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>>> m_meshes;
+		Ideal::D3D12ConstantBuffer m_cbTransform;
+		Ideal::D3D12ConstantBuffer m_cbBoneTransform;
+		Matrix m_transform;
+		CB_Bone m_bone;
+		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
+	};
+}

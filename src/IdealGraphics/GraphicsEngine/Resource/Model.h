@@ -43,7 +43,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::Mesh>			GetMeshByName(const std::string& name);
 		std::shared_ptr<Ideal::Bone>			GetBoneByName(const std::string& name);
 		std::shared_ptr<Ideal::ModelAnimation>	GetAnimationByIndex(uint32 index);
-		std::shared_ptr<Ideal::ModelAnimation>	GetAnimationByName(const std::wstring& name);
+		std::shared_ptr<Ideal::ModelAnimation> GetAnimationByName(const std::string& name);
 		void BindCacheInfo();
 	private:
 		std::vector<std::shared_ptr<Ideal::Material>> m_materials;

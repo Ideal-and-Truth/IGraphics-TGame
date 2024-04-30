@@ -7,7 +7,6 @@
 
 #define DYNAMIC_MESH_ROOT_DESCRIPTOR_TABLE_PIXEL_SRV_INDEX 0
 #define DYNAMIC_MESH_ROOT_CONSTANT_INDEX 1
-
 //namespace Ideal
 //{
 //	enum EPipelineStateInputLayout

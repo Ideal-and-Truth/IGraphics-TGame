@@ -1,6 +1,6 @@
 // bone 연결시키기 위한 simple Mesh Shaderr
 
-#define MAX_BONE_TRANSFORMS 50
+#define MAX_BONE_TRANSFORMS 250
 
 struct VSInput
 {
@@ -8,8 +8,8 @@ struct VSInput
     float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
     float3 tangent : TANGENT;
-	uint4  skinIndices	: BLENDINDICES;
-	float4 skinWeights	: BLENDWEIGHT;
+	float4  skinIndices	: BLEND_INDICES;
+	float4 skinWeights	: BLEND_WEIGHTS;
 };
 
 struct VSOutput
@@ -18,8 +18,8 @@ struct VSOutput
     float4 PosW : POSITION;
     float4 NormalW : NORMAL;
     float2 UV : TEXCOORD;
-    uint4  skinIndices	: BLENDINDICES;
-    float4 skinWeights	: BLENDWEIGHT;
+    float4  skinIndices	: BLEND_INDICES;
+    float4 skinWeights	: BLEND_WEIGHTS;
 };
 
 cbuffer Transform : register(b0)
@@ -35,6 +35,23 @@ cbuffer BoneBuffer : register(b1)
     matrix BoneTransforms[MAX_BONE_TRANSFORMS];
 }
 
+float4x4 SkinTransform(float4 weights, float4 boneIndices)
+{
+    float4x4 skinTransform =
+            BoneTransforms[boneIndices.x] * weights.x +
+            BoneTransforms[boneIndices.y] * weights.y +
+            BoneTransforms[boneIndices.z] * weights.z +
+            BoneTransforms[boneIndices.w] * weights.w;
+    return skinTransform;
+}
+
+void SkinVertex(inout float4 position, inout float3 normal, float4x4 skinTransform)
+{
+    //position = mul(position, skinTransform);
+    position = mul(skinTransform, position);
+    normal = mul((float3x3)skinTransform, normal);
+}
+
 //uint BoneIndex;
 
 Texture2D diffuseTexture : register(t0);
@@ -44,7 +61,14 @@ VSOutput VS(VSInput input)
 {
     VSOutput output;
 
-    float4 localPos = float4(input.Pos, 1.f);
+    float4x4 skinTransform = SkinTransform(input.skinWeights, input.skinIndices);
+    float4 position = float4(input.Pos, 1.0f);
+    
+    SkinVertex(position, input.Normal, skinTransform);
+
+
+    //float4 localPos = float4(input.Pos, 1.f);
+    float4 localPos = position;
     float4 worldPos = mul(World, localPos);
     float4 viewPos = mul(View, worldPos);
     float4 projPos = mul(Proj, viewPos);
@@ -60,8 +84,8 @@ VSOutput VS(VSInput input)
 
 float4 PS(VSOutput input) : SV_TARGET
 {
-    //float4 color = diffuseTexture.Sample(sampler0, input.UV);
-    float4 color = input.skinWeights;
+    float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    //float4 color = input.skinWeights;
     //float4 color = float4(input.UV.xy, 1, 1);
     return color;
 }

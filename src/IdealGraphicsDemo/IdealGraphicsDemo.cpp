@@ -13,7 +13,7 @@
 #include "GraphicsEngine/public/IdealRendererFactory.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
 #include "GraphicsEngine/public/IMeshObject.h"
-#include "GraphicsEngine/public/IDynamicMeshObject.h"
+#include "GraphicsEngine/public/ISkinnedMeshObject.h"
 #include "GraphicsEngine/public/IAnimation.h"
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
@@ -74,17 +74,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		);
-		Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		//Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx");
-		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-		Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
-		Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx");
-		Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
-		//Renderer->ConvertAssetToMyFormat(L"Tank/Tank.fbx");
+		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		//Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		//Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx");
+		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
 		Renderer->Init();
-		std::shared_ptr<Ideal::IDynamicMeshObject> dynamicMesh = Renderer->CreateDynamicMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+	/*	std::shared_ptr<Ideal::ISkinnedMeshObject> dynamicMesh = Renderer->CreateDynamicMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		std::shared_ptr<Ideal::IAnimation> animation = Renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		dynamicMesh->AddAnimation(animation);
+		dynamicMesh->AddAnimation(animation);*/
+		Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = Renderer->CreateDynamicMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::IAnimation> animation = Renderer->CreateAnimation(L"Kachujin/Run");
+		ka->AddAnimation(animation);
+
 		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
 		std::shared_ptr<Ideal::IMeshObject> mesh2 = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
 		std::shared_ptr<Ideal::IMeshObject> mesh3 = Renderer->CreateStaticMeshObject(L"Tower/Tower");

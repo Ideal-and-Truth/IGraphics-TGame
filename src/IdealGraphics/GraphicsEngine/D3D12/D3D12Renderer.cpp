@@ -19,8 +19,8 @@
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12RootSignature.h"
 #include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
-#include "GraphicsEngine/Resource/Refactor/IdealDynamicMesh.h"
-#include "GraphicsEngine/Resource/Refactor/IdealDynamicMeshObject.h"
+#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
+#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
 
 D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
@@ -355,9 +355,9 @@ std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const 
 	return newStaticMesh;
 }
 
-std::shared_ptr<Ideal::IDynamicMeshObject> D3D12Renderer::CreateDynamicMeshObject(const std::wstring& FileName)
+std::shared_ptr<Ideal::ISkinnedMeshObject> D3D12Renderer::CreateDynamicMeshObject(const std::wstring& FileName)
 {
-	std::shared_ptr<Ideal::IdealDynamicMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealDynamicMeshObject>();
+	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
 	m_resourceManager->CreateDynamicMeshObject(shared_from_this(), newDynamicMesh, FileName);
 
 	newDynamicMesh->Init(shared_from_this());

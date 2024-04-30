@@ -27,12 +27,12 @@ namespace Ideal
 	class D3D12PipelineStateObject;
 
 	class IdealStaticMeshObject;
-	class IdealDynamicMeshObject;
+	class IdealSkinnedMeshObject;
 	// Interface
 	class ICamera;
 	class IScene;
 	class IMeshObject;
-	class IDynamicMeshObject;
+	class ISkinnedMeshObject;
 }
 
 class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12Renderer>
@@ -55,7 +55,7 @@ public:
 
 	// Test
 	virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
-	virtual std::shared_ptr<Ideal::IDynamicMeshObject> CreateDynamicMeshObject(const std::wstring& FileName) override;
+	virtual std::shared_ptr<Ideal::ISkinnedMeshObject> CreateDynamicMeshObject(const std::wstring& FileName) override;
 	virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
 	void CreateStaticMeshPSO();
 	void RenderTest();
@@ -154,7 +154,7 @@ private:
 	std::vector<std::shared_ptr<Ideal::MeshObject>> m_meshes;
 	// ver3
 	std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
-	std::vector<std::shared_ptr<Ideal::IdealDynamicMeshObject>> m_dynamicMeshObjects;
+	std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_dynamicMeshObjects;
 
 private:
 	// Resource Manager

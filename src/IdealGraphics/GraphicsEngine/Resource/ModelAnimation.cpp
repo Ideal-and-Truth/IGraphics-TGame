@@ -2,7 +2,7 @@
 
 using namespace Ideal;
 
-std::shared_ptr<ModelKeyframe> ModelAnimation::GetKeyframe(const std::wstring& name)
+std::shared_ptr<Ideal::ModelKeyframe> Ideal::ModelAnimation::GetKeyframe(const std::string& name)
 {
 	auto findIt = keyframes.find(name);
 	if (findIt == keyframes.end())
