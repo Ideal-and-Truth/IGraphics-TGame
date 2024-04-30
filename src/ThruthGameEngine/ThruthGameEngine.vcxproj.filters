@@ -109,6 +109,9 @@
       <Filter>Reflection\Advanced</Filter>
     </ClCompile>
     <ClCompile Include="StringConverter.cpp" />
+    <ClCompile Include="Property.cpp">
+      <Filter>Reflection\Advanced</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">

@@ -55,6 +55,7 @@
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="Managers.cpp" />
     <ClCompile Include="Processor.cpp" />
+    <ClCompile Include="Property.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="StringConverter.cpp" />

@@ -14,7 +14,7 @@
 // }
 static void _PrintDebugString(const char* format, ...) 
 {
-	char buf[1024];
+	char buf[2048];
 	va_list vaList;
 	va_start(vaList, format);
 	_vsnprintf_s(buf, sizeof(buf), format, vaList);

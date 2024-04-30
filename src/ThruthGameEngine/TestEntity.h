@@ -17,7 +17,7 @@ public:
 
 	PROPERTY(test)
 	std::shared_ptr<int> m_test;
+	PROPERTY(intest)
 	std::vector<int> m_intest;
-
 };
 

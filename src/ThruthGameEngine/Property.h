@@ -5,6 +5,8 @@
 #include <string>
 #include "StringConverter.h"
 
+
+
 /// <summary>
 /// 변수 정보 핸들러 베이스
 /// </summary>
@@ -63,7 +65,8 @@ public:
 	virtual std::string Dump(void* _object, int _indent = 0) const override
 	{
 		std::string result;
-		result += StringConverter::ToString(Get(_object));
+		auto& obj = Get(_object);
+		result += StringConverter::ToString(obj, _indent);
 		return result;
 	}
 
@@ -187,17 +190,12 @@ public:
 
 	const std::string Dump(void* _object, int _indent = 0) const
 	{
-		if constexpr (IsVectorContainer<int>::value)
-		{
-
-		}
-
 		std::string result = "";
 		result += std::string(_indent, '\t');
 		result += m_type.m_fullName;
 		result += " ";
 		result += m_name;
-		result += " = ";
+		result += " : ";
 		result += m_handler.Dump(_object, _indent + 1);
 		result += "\n";
 		return result;

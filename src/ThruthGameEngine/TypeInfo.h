@@ -9,15 +9,6 @@ class Method;
 class Property;
 class TypeInfo;
 
-template <typename T>
-struct IsVectorContainer {
-	static const bool value = false;
-};
-template <typename T, typename Alloc>
-struct IsVectorContainer<std::vector<T, Alloc> > {
-	static const bool value = true;
-};
-
 /// <summary>
 /// Super 타입이 있는지
 /// </summary>
@@ -113,6 +104,7 @@ private:
 	std::string m_fullName;
 	// 부모 클래스의 정보 (있다면)
 	const TypeInfo* m_super = nullptr;
+
 	// 해당 타입이 배열인지
 	bool m_isArray = false;
 
