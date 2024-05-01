@@ -460,7 +460,7 @@ void D3D12Renderer::CreateStaticMeshPSO()
 	);
 	//-------------------Range--------------------//
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0);
 
 	//-------------------Parameter--------------------//
 	CD3DX12_ROOT_PARAMETER1 rootParameters[2];

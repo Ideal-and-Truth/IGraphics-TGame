@@ -4,7 +4,6 @@
 #include "GraphicsEngine/Resource/Refactor/IdealBone.h"
 
 Ideal::IdealStaticMesh::IdealStaticMesh()
-	:m_transform(Matrix::Identity)
 {
 
 }
@@ -19,13 +18,6 @@ void Ideal::IdealStaticMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Render
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
-	CB_Transform* t = (CB_Transform*)m_constantBuffer.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	t->World = m_transform;
-	t->View = d3d12Renderer->GetView();
-	t->Proj = d3d12Renderer->GetProj();
-
-	commandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX, m_constantBuffer.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-	
 	for (auto& mesh : m_meshes)
 	{
 		// Mesh
@@ -44,11 +36,6 @@ void Ideal::IdealStaticMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Render
 		// Final Draw
 		commandList->DrawIndexedInstanced(mesh->GetElementCount(), 1, 0, 0, 0);
 	}
-}
-
-void Ideal::IdealStaticMesh::SetTransformMatrix(const Matrix& Transform)
-{
-	m_transform = Transform;
 }
 
 void Ideal::IdealStaticMesh::AddMesh(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh)
@@ -81,7 +68,4 @@ void Ideal::IdealStaticMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> R
 	{
 		mesh->Create(d3d12Renderer);
 	}
-
-	const uint32 bufferSize = sizeof(CB_Transform);
-	m_constantBuffer.Create(d3d12Renderer->GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 }

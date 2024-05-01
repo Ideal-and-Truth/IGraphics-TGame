@@ -18,11 +18,11 @@ void Ideal::IdealSkinnedMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Rende
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
-	CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	t->World = m_transform;
-	t->View = d3d12Renderer->GetView();
-	t->Proj = d3d12Renderer->GetProj();
-	t->WorldInvTranspose = m_transform.Invert();
+	//CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
+	//t->World = m_transform;
+	//t->View = d3d12Renderer->GetView();
+	//t->Proj = d3d12Renderer->GetProj();
+	//t->WorldInvTranspose = m_transform.Invert();
 	/*CB_Bone* b = (CB_Bone*)m_cbBoneTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
 	*b = m_bone;*/
 
@@ -33,7 +33,7 @@ void Ideal::IdealSkinnedMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Rende
 	}*/
 
 	
-	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+	//commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
 	//commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX + 1, m_cbBoneTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
 
 	for (auto& mesh : m_meshes)
@@ -54,11 +54,6 @@ void Ideal::IdealSkinnedMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Rende
 		// Final Draw
 		commandList->DrawIndexedInstanced(mesh->GetElementCount(), 1, 0, 0, 0);
 	}
-}
-
-void Ideal::IdealSkinnedMesh::SetTransformMatrix(const Matrix& Transform)
-{
-	m_transform = Transform;
 }
 
 void Ideal::IdealSkinnedMesh::AddMesh(std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> Mesh)
@@ -95,7 +90,7 @@ void Ideal::IdealSkinnedMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> 
 	}
 	{
 		const uint32 bufferSize = sizeof(CB_Transform);
-		m_cbTransform.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
+		//m_cbTransform.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 	}
 	{
 		const uint32 bufferSize = sizeof(CB_Bone);

@@ -401,7 +401,8 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Rendere
 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
 				if (textureStr.length() > 0)
 				{
-					material->SetSpecularTextureFile(textureStr);
+					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+					material->SetSpecularTextureFile(finalTextureStr);
 					// TODO : Texture만들기
 					//auto texture
 				}
@@ -414,7 +415,8 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Rendere
 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
 				if (textureStr.length() > 0)
 				{
-					material->SetNormalTextureFile(textureStr);
+					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+					material->SetNormalTextureFile(finalTextureStr);
 					// TODO : Texture만들기
 					//auto texture
 				}
@@ -484,14 +486,14 @@ void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Ren
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);
-	std::shared_ptr<Ideal::IdealSkinnedMesh> dynamicMesh = m_dynamicMeshes[key];
+	std::shared_ptr<Ideal::IdealSkinnedMesh> skinnedMesh = m_dynamicMeshes[key];
 
-	if (dynamicMesh != nullptr)
+	if (skinnedMesh != nullptr)
 	{
-		OutMesh->SetDynamicMesh(dynamicMesh);
+		OutMesh->SetSkinnedMesh(skinnedMesh);
 		return;
 	}
-	dynamicMesh = std::make_shared<Ideal::IdealSkinnedMesh>();
+	skinnedMesh = std::make_shared<Ideal::IdealSkinnedMesh>();
 
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
 	{
@@ -510,7 +512,7 @@ void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Ren
 				bone->SetName(file->Read<std::string>());
 				bone->SetParent(file->Read<int32>());
 				bone->SetTransform(file->Read<Matrix>());
-				dynamicMesh->AddBone(bone);
+				skinnedMesh->AddBone(bone);
 			}
 		}
 
@@ -550,7 +552,7 @@ void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Ren
 					mesh->AddIndices(indices);
 				}
 
-				dynamicMesh->AddMesh(mesh);
+				skinnedMesh->AddMesh(mesh);
 			}
 		}
 
@@ -605,7 +607,8 @@ void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Ren
 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
 				if (textureStr.length() > 0)
 				{
-					material->SetSpecularTextureFile(textureStr);
+					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+					material->SetSpecularTextureFile(finalTextureStr);
 					// TODO : Texture만들기
 					//auto texture
 				}
@@ -618,7 +621,8 @@ void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Ren
 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
 				if (textureStr.length() > 0)
 				{
-					material->SetNormalTextureFile(textureStr);
+					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+					material->SetNormalTextureFile(finalTextureStr);
 					// TODO : Texture만들기
 					//auto texture
 				}
@@ -672,16 +676,19 @@ void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Ren
 				material->SetEmissive(color);
 			}
 
-			dynamicMesh->AddMaterial(material);
+			skinnedMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();
 		}
 	}
 
 	// Binding info
-	dynamicMesh->FinalCreate(Renderer);
+	skinnedMesh->FinalCreate(Renderer);
 
-	OutMesh->SetDynamicMesh(dynamicMesh);
+	OutMesh->SetSkinnedMesh(skinnedMesh);
+
+	// KeyBinding
+	m_dynamicMeshes[key] = skinnedMesh;
 }
 
 void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation> OutAnimation, const std::wstring& filename)

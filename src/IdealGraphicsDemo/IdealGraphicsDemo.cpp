@@ -84,9 +84,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		dynamicMesh->AddAnimation(animation);*/
 		Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = Renderer->CreateDynamicMeshObject(L"Kachujin/Mesh");
 		std::shared_ptr<Ideal::IAnimation> animation = Renderer->CreateAnimation(L"Kachujin/Run");
 		ka->AddAnimation(animation);
+
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = Renderer->CreateDynamicMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::IAnimation> animation2 = Renderer->CreateAnimation(L"Kachujin/Idle");
+		ka2->AddAnimation(animation2);
+
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka3 = Renderer->CreateDynamicMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::IAnimation> animation3 = Renderer->CreateAnimation(L"Kachujin/Slash");
+		ka3->AddAnimation(animation3);
 
 		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
 		std::shared_ptr<Ideal::IMeshObject> mesh2 = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
@@ -114,6 +124,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 				world.CreateRotationY(angle);
 				mesh2->SetTransformMatrix(world);
+				ka->SetTransformMatrix(world);
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();

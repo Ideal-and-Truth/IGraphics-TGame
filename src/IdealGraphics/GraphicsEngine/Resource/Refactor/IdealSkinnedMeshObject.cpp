@@ -20,7 +20,12 @@ void Ideal::IdealSkinnedMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer
 	{
 		const uint32 bufferSize = sizeof(CB_Bone);
 		m_cbBone.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-		m_cbBone.GetResource()->SetName(L"Constant Bone");
+		m_cbBone.GetResource()->SetName(L"CB_Bone");
+	}
+	{
+		const uint32 bufferSize = sizeof(CB_Transform);
+		m_cbTransform.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
+		m_cbTransform.GetResource()->SetName(L"CB_Transform");
 	}
 }
 
@@ -29,33 +34,63 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
-	// TEST
-	static float animFrame = 0;
-	animFrame += 0.02;
-	if (animFrame - 1 > m_animations[0]->frameCount)
+	// Animation이 없을 경우
+	if (m_animations.size() > 0 && m_animations[0])
 	{
-		animFrame = 0;
-	}
-	// Bone Setting
-	{
-		for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
+		// TEST
+		static float animFrame = 0;
+		animFrame += 0.02;
+		if (animFrame - 1 > m_animations[0]->frameCount)
 		{
-			m_cbBoneData.transforms[boneIdx] = m_animTransforms[0]->transforms[(uint32)animFrame][boneIdx];
+			animFrame = 0;
+		}
+		// Bone Setting
+		{
+			for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
+			{
+				m_cbBoneData.transforms[boneIdx] = m_animTransforms[0]->transforms[(uint32)animFrame][boneIdx];
+			}
 		}
 	}
+
+	CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
+	//*t = m_cbTransformData;
+	t->World = m_transform;
+	t->View = d3d12Renderer->GetView();
+	t->Proj = d3d12Renderer->GetProj();
+	t->WorldInvTranspose = m_transform.Invert();
+	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+
 	CB_Bone* b = (CB_Bone*)m_cbBone.GetMappedMemory(d3d12Renderer->GetFrameIndex());
 	*b = m_cbBoneData;
-	
 	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX + 1, m_cbBone.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+	
 
 	
-	m_dynamicMesh->Render(Renderer);
+	m_skinnedMesh->Render(Renderer);
 }
 
 void Ideal::IdealSkinnedMeshObject::AddAnimation(std::shared_ptr<Ideal::IAnimation> Animation)
 {
 	m_animations.push_back(std::static_pointer_cast<Ideal::IdealAnimation>(Animation));
 	CreateAnimationTransform();
+}
+
+void Ideal::IdealSkinnedMeshObject::SetSkinnedMesh(std::shared_ptr<Ideal::IdealSkinnedMesh> Mesh)
+{
+	m_skinnedMesh = Mesh;
+	//SetBone(Mesh->GetBones());
+
+	auto bones = Mesh->GetBones();
+	for (auto b : bones)
+	{
+		std::shared_ptr<Ideal::IdealBone> newBone = std::make_shared<Ideal::IdealBone>();
+		newBone->SetName(b->GetName());
+		newBone->SetBoneIndex(b->GetBoneIndex());
+		newBone->SetParent(b->GetParent());
+		newBone->SetTransform(b->GetTransform());
+		m_bones.push_back(newBone);
+	}
 }
 
 void Ideal::IdealSkinnedMeshObject::CreateAnimationTransform()

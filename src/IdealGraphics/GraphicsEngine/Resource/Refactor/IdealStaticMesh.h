@@ -15,7 +15,6 @@ namespace Ideal
 
 namespace Ideal
 {
-	// Transform 이 필요 없을지도
 	class IdealStaticMesh : public ResourceBase
 	{
 	public:
@@ -24,7 +23,6 @@ namespace Ideal
 
 	public:
 		void Render(std::shared_ptr<Ideal::IdealRenderer> Renderer);
-		void SetTransformMatrix(const Matrix& Transform);
 
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh);
@@ -36,8 +34,6 @@ namespace Ideal
 
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>> m_meshes;
-		Matrix m_transform;
-		Ideal::D3D12ConstantBuffer m_constantBuffer;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 	};
 }

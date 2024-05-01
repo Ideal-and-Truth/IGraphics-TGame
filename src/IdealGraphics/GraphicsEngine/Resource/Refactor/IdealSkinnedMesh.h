@@ -22,7 +22,6 @@ namespace Ideal
 
 	public:
 		void Render(std::shared_ptr<Ideal::IdealRenderer> Renderer);
-		void SetTransformMatrix(const Matrix& Transform);
 
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> Mesh);
@@ -35,10 +34,6 @@ namespace Ideal
 
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>>> m_meshes;
-		Ideal::D3D12ConstantBuffer m_cbTransform;
-		Ideal::D3D12ConstantBuffer m_cbBoneTransform;
-		Matrix m_transform;
-		CB_Bone m_bone;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 	};
 }
