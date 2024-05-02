@@ -23,7 +23,12 @@ namespace Ideal
 		//friend class IdealStaticMeshObject;
 
 	public:
-		IdealMesh() {}
+		IdealMesh() 
+			: m_vertexBuffer(nullptr),
+			m_indexBuffer(nullptr),
+			m_material(nullptr),
+			m_boneIndex(0)
+		{}
 		virtual ~IdealMesh() {};
 
 	public:
@@ -47,10 +52,6 @@ namespace Ideal
 			{
 				m_material->Create(Renderer);
 			}
-
-			// cb
-			//const uint32 bufferSize = sizeof(Transform);
-			//m_constantBuffer.Create(Renderer->GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 		}
 
 		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return m_vertexBuffer->GetView(); }

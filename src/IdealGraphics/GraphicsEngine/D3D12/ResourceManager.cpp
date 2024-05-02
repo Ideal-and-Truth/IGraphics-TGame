@@ -177,7 +177,7 @@ void ResourceManager::CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer>
 	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
 
 	const uint32 elementSize = sizeof(uint32);
-	const uint32 elementCount = Indices.size();
+	const uint32 elementCount = (uint32)Indices.size();
 	const uint32 bufferSize = elementSize * elementCount;
 
 	Ideal::D3D12UploadBuffer uploadBuffer;
@@ -230,7 +230,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture> 
 	uint64 bufferSize = GetRequiredIntermediateSize(resource.Get(), 0, 1);
 
 	Ideal::D3D12UploadBuffer uploadBuffer;
-	uploadBuffer.Create(m_device.Get(), bufferSize);
+	uploadBuffer.Create(m_device.Get(), (uint32)bufferSize);
 
 	//----------------------Update Subresources--------------------------//
 
@@ -738,7 +738,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 
 	// bone
 	{
-		for (uint32 i = 0; i < numBones; ++i)
+		for (uint32 i = 0; i < (uint32)numBones; ++i)
 		{
 			std::shared_ptr<Ideal::IdealBone> bone = std::make_shared<Ideal::IdealBone>();
 			bone->SetBoneIndex(file->Read<int32>());
@@ -756,7 +756,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 
 		for (uint32 frame = 0; frame < OutAnimation->frameCount; ++frame)
 		{
-			for (uint32 boneIdx = 0; boneIdx < OutAnimation->numBones; ++boneIdx)
+			for (uint32 boneIdx = 0; boneIdx < (uint32)OutAnimation->numBones; ++boneIdx)
 			{
 				std::shared_ptr<Ideal::IdealBone> bone = bones[boneIdx];
 

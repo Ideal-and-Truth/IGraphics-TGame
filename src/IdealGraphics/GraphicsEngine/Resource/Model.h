@@ -9,7 +9,7 @@ namespace Ideal
 	class Material;
 	class Mesh;
 	class Bone;
-	class ModelAnimation;
+	struct ModelAnimation;
 }
 
 struct ID3D12GraphicsCommandList;

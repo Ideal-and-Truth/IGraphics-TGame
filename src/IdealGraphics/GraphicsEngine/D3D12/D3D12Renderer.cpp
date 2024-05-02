@@ -27,7 +27,11 @@ D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
 	m_width(width),
 	m_height(height),
-	m_viewport(hwnd, width, height)
+	m_viewport(hwnd, width, height),
+	m_frameIndex(0),
+	m_graphicsFenceEvent(NULL),
+	m_graphicsFenceValue(0),
+	m_rtvDescriptorSize(0)
 {
 	m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
@@ -241,19 +245,6 @@ finishAdapter:
 	m_resourceManager->SetAssetPath(m_assetPath);
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
-
-	// Test
-	CreateStaticMeshPSO();
-	CreateSkinnedMeshPSO();
-	// Test
-	//m_boxVB = std::make_shared<Ideal::D3D12VertexBuffer>();
-	//m_resourceManager->CreateVertexBufferBox(m_boxVB);
-	//TestCreateVertexBuffer(m_testVB);
-	// Test
-	//m_boxIB = std::make_shared<Ideal::D3D12IndexBuffer>();
-	//m_resourceManager->CreateIndexBufferBox(m_boxIB);
-
-	//LoadBox();
 }
 
 void D3D12Renderer::Tick()
@@ -285,14 +276,7 @@ void D3D12Renderer::Tick()
 		m_mainCamera->Strafe(speed);
 	}
 
-	//BoxTick();
-	
 	m_mainCamera->UpdateViewMatrix();
-
-	for (auto m : m_models)
-	{
-		m->Tick(shared_from_this());
-	}
 }
 
 void D3D12Renderer::Render()
@@ -305,16 +289,6 @@ void D3D12Renderer::Render()
 		ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
 		m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
-		//DrawBox();
-		// Test Models Render
-		/*for (auto m : m_meshes)
-		{
-			m->Render(shared_from_this());
-		}*/
-
-		//----------Static Mesh-----------//
-		//RenderTest();
-		
 		//----------Render Scene-----------//
 		if (m_currentRenderScene != nullptr)
 		{
@@ -460,147 +434,6 @@ uint32 D3D12Renderer::GetFrameIndex() const
 	return m_frameIndex;
 }
 
-void D3D12Renderer::CreateStaticMeshPSO()
-{
-
-	//-------------------Sampler--------------------//
-	CD3DX12_STATIC_SAMPLER_DESC sampler(
-		0,
-		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP
-	);
-	//-------------------Range--------------------//
-	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0);
-
-	//-------------------Parameter--------------------//
-	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
-	rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-	rootParameters[1].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
-
-	//-------------------Signature--------------------//
-	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
-
-	ComPtr<ID3DBlob> signature;
-	ComPtr<ID3DBlob> error;
-	Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-	Check(GetDevice()->CreateRootSignature(
-		0,
-		signature->GetBufferPointer(),
-		signature->GetBufferSize(),
-		IID_PPV_ARGS(m_staticMeshRootSignature.GetAddressOf())
-	));
-
-	m_staticMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
-	m_staticMeshPSO->SetInputLayout(BasicVertex::InputElements, BasicVertex::InputElementCount);
-
-	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
-	vs->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "VS", "vs_5_0");
-	m_staticMeshPSO->SetVertexShader(vs);
-
-	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
-	ps->CompileFromFile(L"../Shaders/BoxUV.hlsl", nullptr, nullptr, "PS", "ps_5_0");
-	m_staticMeshPSO->SetPixelShader(ps);
-
-	m_staticMeshPSO->SetRootSignature(m_staticMeshRootSignature.Get());
-	m_staticMeshPSO->SetRasterizerState();
-	m_staticMeshPSO->SetBlendState();
-	m_staticMeshPSO->Create(shared_from_this());
-
-
-	//--------------CB---------------//
-	{
-		const uint32 bufferSize = sizeof(CB_Transform);
-
-		m_constantBuffer.Create(GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-	}
-
-
-}
-
-void D3D12Renderer::RenderTest()
-{
-
-	for (auto& m : m_staticMeshObjects)
-	{
-		// static mesh
-		m_commandList->SetPipelineState(m_staticMeshPSO->GetPipelineState().Get());
-		m_commandList->SetGraphicsRootSignature(m_staticMeshRootSignature.Get());
-		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		m->Draw(shared_from_this());
-	}
-
-	for (auto& m : m_dynamicMeshObjects)
-	{
-		// dynamic mesh
-		m_commandList->SetPipelineState(m_skinnedMeshPSO->GetPipelineState().Get());
-		m_commandList->SetGraphicsRootSignature(m_skinnedMeshRootSignature.Get());
-		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//
-		m->Draw(shared_from_this());
-	}
-}
-
-void D3D12Renderer::CreateSkinnedMeshPSO()
-{
-
-	//-------------------Sampler--------------------//
-	CD3DX12_STATIC_SAMPLER_DESC sampler(
-		0,
-		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP
-	);
-	//-------------------Range--------------------//
-	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-
-	//-------------------Parameter--------------------//
-	CD3DX12_ROOT_PARAMETER1 rootParameters[3];
-	rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-	rootParameters[1].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
-	rootParameters[2].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
-
-	//-------------------Signature--------------------//
-	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
-
-	ComPtr<ID3DBlob> signature;
-	ComPtr<ID3DBlob> error;
-	Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-	Check(GetDevice()->CreateRootSignature(
-		0,
-		signature->GetBufferPointer(),
-		signature->GetBufferSize(),
-		IID_PPV_ARGS(m_skinnedMeshRootSignature.GetAddressOf())
-	));
-
-	m_skinnedMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
-	m_skinnedMeshPSO->SetInputLayout(SkinnedVertex::InputElements, SkinnedVertex::InputElementCount);
-
-	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
-	vs->CompileFromFile(L"../Shaders/AnimationDefaultVS.hlsl", nullptr, nullptr, "VS", "vs_5_0");
-	m_skinnedMeshPSO->SetVertexShader(vs);
-
-	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
-	ps->CompileFromFile(L"../Shaders/AnimationDefaultVS.hlsl", nullptr, nullptr, "PS", "ps_5_0");
-	m_skinnedMeshPSO->SetPixelShader(ps);
-
-	m_skinnedMeshPSO->SetRootSignature(m_skinnedMeshRootSignature.Get());
-	m_skinnedMeshPSO->SetRasterizerState();
-	m_skinnedMeshPSO->SetBlendState();
-	m_skinnedMeshPSO->Create(shared_from_this());
-}
-
 void D3D12Renderer::CreateCommandList()
 {
 	Check(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
@@ -647,185 +480,6 @@ void D3D12Renderer::GraphicsPresent()
 
 	GraphicsFence();
 	WaitForGraphicsFenceValue();
-}
-
-//-------------------------------------------BOX-------------------------------------------//
-
-void D3D12Renderer::LoadBox()
-{
-	{
-		// CBV를 다시 만들었으니 Root Signature을 다시 만든다.
-		CD3DX12_ROOT_PARAMETER1 rootParameters[1];
-		// 2024.04.13 : 루트 시그니쳐 뭔가 바꿔보겠다
-		// 1개 있고, b0에 들어갈 것이고, data_static은 일반적으로 상수 버퍼 설정에 넣는 것이라고 한다(?), 그리고 이 데이터는 vertex 쉐이더에서 사용할 것이다
-		rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
-
-
-		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-		rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
-
-		ComPtr<ID3DBlob> signature;
-		ComPtr<ID3DBlob> error;
-		Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-		Check(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(m_boxRootSignature.GetAddressOf())));
-	}
-
-	CreateBoxTexPipeline();
-	CreateBoxTexture();
-
-	// 2024.04.13 : ConstantBuffer 다시 만든다.
-	// 프레임 개수 만큼 메모리를 할당 할 것이다.
-	{
-		const uint32 testConstantBufferSize = sizeof(SimpleBoxConstantBuffer);
-
-		m_boxCB.Create(m_device.Get(), testConstantBufferSize, FRAME_BUFFER_COUNT);
-
-		m_simpleBoxConstantBufferDataBegin = (SimpleBoxConstantBuffer*)m_boxCB.GetMappedMemory(m_frameIndex);
-	}
-	return;
-}
-
-void D3D12Renderer::DrawBox()
-{
-	m_commandList->SetPipelineState(m_boxPipeline.Get());
-
-	//---------------------IA--------------------//
-	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	auto vbView = m_boxVB->GetView();
-	m_commandList->IASetVertexBuffers(0, 1, &vbView);
-	auto ibView = m_boxIB->GetView();
-	m_commandList->IASetIndexBuffer(&ibView);
-
-	//---------------------Root Signature--------------------//
-	m_commandList->SetGraphicsRootSignature(m_boxRootSignature.Get());
-
-	ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
-	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
-
-	m_commandList->SetGraphicsRootDescriptorTable(0, m_boxTexture->GetDescriptorHandle().GetGpuHandle());
-	m_commandList->SetGraphicsRootConstantBufferView(1, m_boxCB.GetGPUVirtualAddress(m_frameIndex));
-
-	//---------------------Draw--------------------//
-	m_commandList->DrawIndexedInstanced(m_boxIB->GetElementCount(), 1, 0, 0, 0);
-}
-
-void D3D12Renderer::BoxTick()
-{
-	// 2024.04.14 constantBuffer 수정
-	static float rot = 0.0f;
-	m_simpleBoxConstantBufferDataBegin = (SimpleBoxConstantBuffer*)m_boxCB.GetMappedMemory(m_frameIndex);
-	Matrix mat = Matrix::CreateRotationY(rot) * Matrix::CreateRotationX(-rot) * m_mainCamera->GetViewProj();
-	Matrix tMat = mat.Transpose();
-	rot += 0.01f;
-	m_simpleBoxConstantBufferDataBegin->worldViewProjection = tMat;
-}
-
-void D3D12Renderer::CreateBoxTexPipeline()
-{
-	// LinearWrap
-	CD3DX12_STATIC_SAMPLER_DESC sampler(
-		0,
-		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP
-	);
-
-	// Root Signature
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-	if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-	{
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-	}
-
-	CD3DX12_DESCRIPTOR_RANGE1 descRange[1];
-	descRange[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-
-	CD3DX12_ROOT_PARAMETER1 rootParameter[2];
-	rootParameter[0].InitAsDescriptorTable(1, &descRange[0], D3D12_SHADER_VISIBILITY_PIXEL);
-	rootParameter[1].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC, D3D12_SHADER_VISIBILITY_VERTEX);
-
-	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSigDesc(2, rootParameter, 1, &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	ComPtr<ID3DBlob> signature;
-	ComPtr<ID3DBlob> error;
-	Check(D3DX12SerializeVersionedRootSignature(&rootSigDesc, featureData.HighestVersion, &signature, &error));
-	Check(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(m_boxRootSignature.GetAddressOf())));
-
-	ComPtr<ID3DBlob> errorBlob;
-	uint32 compileFlags = 0;
-
-	D3D12_INPUT_ELEMENT_DESC inputElements[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-	};
-
-#if defined(_DEBUG)
-	compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
-	// Set VS
-	ComPtr<ID3DBlob> vertexShader;
-	Check(D3DCompileFromFile(
-		L"Shaders/SimpleVertexShaderUV.hlsl",
-		nullptr,
-		nullptr,
-		"VS",
-		"vs_5_0",
-		compileFlags, 0, &vertexShader, &errorBlob));
-
-	// Set PS
-	ComPtr<ID3DBlob> pixelShader;
-	Check(D3DCompileFromFile(
-		L"Shaders/SimpleVertexShaderUV.hlsl",
-		nullptr,
-		nullptr,
-		"PS",
-		"ps_5_0",
-		compileFlags, 0, &pixelShader, &errorBlob));
-
-
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-
-	// Set Input Layout
-	psoDesc.InputLayout = { inputElements, 2 };
-
-	psoDesc.pRootSignature = m_boxRootSignature.Get();
-
-	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
-	psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
-	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-
-	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-
-	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	psoDesc.DepthStencilState.DepthEnable = TRUE;
-	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	psoDesc.DepthStencilState.StencilEnable = FALSE;
-
-
-	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.SampleDesc.Count = 1;
-
-	Check(m_device->CreateGraphicsPipelineState(
-		&psoDesc,
-		IID_PPV_ARGS(m_boxPipeline.GetAddressOf())
-	));
-}
-
-void D3D12Renderer::CreateBoxTexture()
-{
-	m_boxTexture = std::make_shared<Ideal::D3D12Texture>();
-	std::wstring path = L"Resources/Test/test2.png";
-	m_resourceManager->CreateTexture(m_boxTexture, path);
-	return;
 }
 
 void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)

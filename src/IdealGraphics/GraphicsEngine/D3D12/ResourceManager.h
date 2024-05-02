@@ -57,7 +57,7 @@ namespace Ideal
 			m_commandList->Reset(m_commandAllocator.Get(), nullptr);
 
 			const uint32 elementSize = sizeof(TVertexType);
-			const uint32 elementCount = Vertices.size();
+			const uint32 elementCount = (uint32)Vertices.size();
 			const uint32 bufferSize = elementSize * elementCount;
 
 			Ideal::D3D12UploadBuffer uploadBuffer;

@@ -94,7 +94,7 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 		//Write CSV File
 		{
 			FILE* file;
-			::fopen_s(&file, "../Vertices.csv", "w");
+			fopen_s(&file, "../Vertices.csv", "w");
 
 			for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
 			{
@@ -102,7 +102,7 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 				::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
 			}
 
-			::fprintf(file, "\n");
+			fprintf(file, "\n");
 
 			for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
 			{
@@ -121,7 +121,7 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 				}
 			}
 
-			::fclose(file);
+			fclose(file);
 		}
 	}
 	else
@@ -274,7 +274,7 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 	file->Open(filePath, FileMode::Write);
 
 	// Bone Data
-	file->Write<uint32>(m_bones.size());
+	file->Write<uint32>((uint32)m_bones.size());
 	for (auto& bone : m_bones)
 	{
 		file->Write<int32>(bone->index);
@@ -282,7 +282,7 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 		file->Write<int32>(bone->parent);
 		file->Write<Matrix>(bone->transform);
 	}
-	file->Write<uint32>(m_meshes.size());
+	file->Write<uint32>((uint32)m_meshes.size());
 	for (auto& mesh : m_meshes)
 	{
 		file->Write<std::string>(mesh->name);
@@ -290,12 +290,12 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 		file->Write<std::string>(mesh->materialName);
 
 		// vertex
-		file->Write<uint32>(mesh->vertices.size());
-		file->Write(&mesh->vertices[0], sizeof(BasicVertex) * mesh->vertices.size());
+		file->Write<uint32>((uint32)mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(BasicVertex) * (uint32)mesh->vertices.size());
 
 		// index
-		file->Write<uint32>(mesh->indices.size());
-		file->Write(&mesh->indices[0], sizeof(uint32) * mesh->indices.size());
+		file->Write<uint32>((uint32)mesh->indices.size());
+		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
 
 	}
 }
@@ -310,7 +310,7 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 	file->Open(filePath, FileMode::Write);
 
 	// Bone Data
-	file->Write<uint32>(m_bones.size());
+	file->Write<uint32>((uint32)m_bones.size());
 	for (auto& bone : m_bones)
 	{
 		file->Write<int32>(bone->index);
@@ -318,7 +318,7 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 		file->Write<int32>(bone->parent);
 		file->Write<Matrix>(bone->transform);
 	}
-	file->Write<uint32>(m_skinnedMeshes.size());
+	file->Write<uint32>((uint32)m_skinnedMeshes.size());
 	for (auto& mesh : m_skinnedMeshes)
 	{
 		file->Write<std::string>(mesh->name);
@@ -326,12 +326,12 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 		file->Write<std::string>(mesh->materialName);
 
 		// vertex
-		file->Write<uint32>(mesh->vertices.size());
-		file->Write(&mesh->vertices[0], sizeof(SkinnedVertex) * mesh->vertices.size());
+		file->Write<uint32>((uint32)mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(SkinnedVertex) * (uint32)mesh->vertices.size());
 
 		// index
-		file->Write<uint32>(mesh->indices.size());
-		file->Write(&mesh->indices[0], sizeof(uint32) * mesh->indices.size());
+		file->Write<uint32>((uint32)mesh->indices.size());
+		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
 
 	}
 }
@@ -363,7 +363,7 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent)
 
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
-		ReadModelData(node->mChildren[i], m_bones.size(), index);
+		ReadModelData(node->mChildren[i], (uint32)m_bones.size(), index);
 	}
 }
 
@@ -398,7 +398,7 @@ void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 pare
 
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
-		ReadSkinnedModelData(node->mChildren[i], m_bones.size(), index);
+		ReadSkinnedModelData(node->mChildren[i], (uint32)m_bones.size(), index);
 	}
 }
 
@@ -523,7 +523,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 		// mesh가 여러개일 경우 index가 중복될 수 있다. 
 		// 하나로 관리하기 위해 미리 이전 vertex의 size를 가져와서 이번에 추가하는 index에 더해 중복을 피한다.
 
-		const uint32 startVertex = mesh->vertices.size();
+		const uint32 startVertex = (uint32)mesh->vertices.size();
 
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
@@ -587,7 +587,7 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
 		// mesh가 여러개일 경우 index가 중복될 수 있다. 
 		// 하나로 관리하기 위해 미리 이전 vertex의 size를 가져와서 이번에 추가하는 index에 더해 중복을 피한다.
 
-		const uint32 startVertex = mesh->vertices.size();
+		const uint32 startVertex = (uint32)mesh->vertices.size();
 
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
@@ -668,7 +668,7 @@ std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNod
 		AssimpConvert::KeyFrameData frameData;
 
 		bool found = false;
-		uint32 t = node->keyframe.size();
+		uint32 t = (uint32)node->keyframe.size();
 
 		// position
 		if (fabsf((float)srcNode->mPositionKeys[k].mTime - (float)t) <= 0.0001f)
@@ -718,7 +718,7 @@ std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNod
 	// keyframe 늘려주는 곳
 	if (node->keyframe.size() < animation->frameCount)
 	{
-		uint32 count = animation->frameCount - node->keyframe.size();
+		uint32 count = animation->frameCount - (uint32)node->keyframe.size();
 		AssimpConvert::KeyFrameData keyFrame = node->keyframe.back();
 
 		for (uint32 n = 0; n < count; ++n)
@@ -777,18 +777,18 @@ void AssimpConverter::WriteAnimationData(std::shared_ptr<AssimpConvert::Animatio
 	file->Write<float>(animation->frameRate);
 	file->Write<uint32>(animation->frameCount);
 
-	file->Write<uint32>(animation->keyFrames.size());
+	file->Write<uint32>((uint32)animation->keyFrames.size());
 
 	for (std::shared_ptr<AssimpConvert::KeyFrame> keyFrame : animation->keyFrames)
 	{
 		file->Write<std::string>(keyFrame->boneName);
-		file->Write<uint32>(keyFrame->transforms.size());
-		file->Write(&keyFrame->transforms[0], sizeof(AssimpConvert::KeyFrameData) * keyFrame->transforms.size());
+		file->Write<uint32>((uint32)keyFrame->transforms.size());
+		file->Write(&keyFrame->transforms[0], sizeof(AssimpConvert::KeyFrameData) * (uint32)keyFrame->transforms.size());
 	}
 
 	//file->Write<int32>(animation->numBones);
 	// Bone Data
-	file->Write<uint32>(m_bones.size());
+	file->Write<uint32>((uint32)m_bones.size());
 	for (auto& bone : m_bones)
 	{
 		file->Write<int32>(bone->index);

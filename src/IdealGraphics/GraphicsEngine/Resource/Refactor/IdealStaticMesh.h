@@ -31,7 +31,6 @@ namespace Ideal
 
 		void FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
-
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>> m_meshes;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;

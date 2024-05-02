@@ -5,7 +5,7 @@ namespace Ideal
 {
 	struct ModelKeyFrameData
 	{
-		float time;
+		float time = 0.f;
 		Vector3 scale;
 		Quaternion rotation;
 		Vector3 translation;

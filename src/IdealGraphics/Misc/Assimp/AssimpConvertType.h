@@ -20,7 +20,7 @@ namespace AssimpConvert
 	struct SkinnedMesh
 	{
 		std::string name;
-		int32 boneIndex;
+		int32 boneIndex = 0;
 		std::string materialName;
 		std::vector<SkinnedVertex> vertices;
 		std::vector<uint32> indices;
@@ -168,10 +168,10 @@ namespace AssimpConvert
 	struct Animation
 	{
 		std::string name;
-		uint32 frameCount;
-		float frameRate;
-		float duration;
-		int32 numBones;
+		uint32 frameCount = 0;
+		float frameRate = 0.f;
+		float duration= 0.f;
+		int32 numBones = 0;
 		
 		std::vector<std::shared_ptr<KeyFrame>> keyFrames;
 	};

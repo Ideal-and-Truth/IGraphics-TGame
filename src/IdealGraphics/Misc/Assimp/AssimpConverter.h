@@ -9,9 +9,9 @@
 
 namespace AssimpConvert
 {
-	class Mesh;
-	class Material;
-	class Bone;
+	struct Mesh;
+	struct Material;
+	struct Bone;
 }
 
 class AssimpConverter

@@ -64,12 +64,6 @@ public:
 	virtual std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
 	virtual void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
 
-	void CreateStaticMeshPSO();
-	void RenderTest();
-
-	void CreateSkinnedMeshPSO();
-
-
 public:
 	void Release();
 
@@ -135,16 +129,8 @@ private:
 
 	// Fence
 	ComPtr<ID3D12Fence> m_graphicsFence = nullptr;
-	uint64 m_graphicsFenceValue;
-	HANDLE m_graphicsFenceEvent;
-
-	// PSO
-	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;
-	ComPtr<ID3D12RootSignature> m_staticMeshRootSignature;
-	Ideal::D3D12ConstantBuffer m_constantBuffer;
-
-	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_skinnedMeshPSO;
-	ComPtr<ID3D12RootSignature> m_skinnedMeshRootSignature;
+	uint64 m_graphicsFenceValue = 0;
+	HANDLE m_graphicsFenceEvent = NULL;
 
 	// RenderScene
 	std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
@@ -159,14 +145,6 @@ private:
 	Ideal::D3D12Viewport m_viewport;
 
 private:
-	// Temp assimp model import
-	std::vector<std::shared_ptr<Ideal::Model>> m_models;
-	std::vector<std::shared_ptr<Ideal::MeshObject>> m_meshes;
-	// ver3
-	std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
-	std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_dynamicMeshObjects;
-
-private:
 	// Resource Manager
 	std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 
@@ -174,29 +152,6 @@ private:
 	std::shared_ptr<Ideal::Camera> m_mainCamera = nullptr;
 
 private:
-	//-----------BOX----------//
-	void LoadBox();
-	void DrawBox();
-	void BoxTick();
-
-	// box init
-	void CreateBoxTexPipeline();
-	void CreateBoxTexture();
-
-	// 2024.04.11 :
-	// VertexBuffer¿Í IndexBuffer¸¦ ¹­¾îÁàº¸°Ú´Ù.
-	std::shared_ptr<Ideal::D3D12VertexBuffer> m_boxVB = nullptr;
-	std::shared_ptr<Ideal::D3D12IndexBuffer> m_boxIB = nullptr;
-	Ideal::D3D12ConstantBuffer m_boxCB;
-	std::shared_ptr<Ideal::D3D12Texture> m_boxTexture = nullptr;
-	SimpleBoxConstantBuffer* m_simpleBoxConstantBufferDataBegin = nullptr;
-
-	ComPtr<ID3D12RootSignature> m_boxRootSignature;
-	ComPtr<ID3D12PipelineState> m_boxPipeline;
-
-	//------------------------//
-
-
 	// Test Camera 2
 	std::shared_ptr<Ideal::ICamera> c1;
 	std::shared_ptr<Ideal::ICamera> c2;
