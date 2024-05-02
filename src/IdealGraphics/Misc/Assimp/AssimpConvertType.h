@@ -171,6 +171,7 @@ namespace AssimpConvert
 		uint32 frameCount;
 		float frameRate;
 		float duration;
+		int32 numBones;
 		
 		std::vector<std::shared_ptr<KeyFrame>> keyFrames;
 	};

@@ -691,7 +691,7 @@ void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Ren
 	m_dynamicMeshes[key] = skinnedMesh;
 }
 
-void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation> OutAnimation, const std::wstring& filename)
+void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename)
 {
 	std::string key = StringUtils::ConvertWStringToString(filename);
 	std::shared_ptr<Ideal::IdealAnimation> animation = m_animations[key];
@@ -707,18 +707,16 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation> Out
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(fullPath, FileMode::Read);
 
-	//OutAnimation->name = StringUtils::ConvertStringToWString(file->Read<std::string>());
 	OutAnimation->name = file->Read<std::string>();
 	OutAnimation->duration = file->Read<float>();
 	OutAnimation->frameRate = file->Read<float>();
 	OutAnimation->frameCount = file->Read<uint32>();
 
 	uint32 keyframeCount = file->Read<uint32>();
-
+	
 	for (uint32 i = 0; i < keyframeCount; ++i)
 	{
 		std::shared_ptr<ModelKeyframe> keyFrame = std::make_shared<ModelKeyframe>();
-		//keyFrame->boneName = StringUtils::ConvertStringToWString(file->Read<std::string>());
 		keyFrame->boneName = file->Read<std::string>();
 
 		uint32 size = file->Read<uint32>();
@@ -732,5 +730,76 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation> Out
 
 		OutAnimation->keyframes[keyFrame->boneName] = keyFrame;
 	}
+
+	// Create Bone Transform
+	int32 numBones = OutAnimation->numBones = file->Read<int32>();
+	std::vector<std::shared_ptr<Ideal::IdealBone>> bones;
+	bones.resize(numBones);
+
+	// bone
+	{
+		for (uint32 i = 0; i < numBones; ++i)
+		{
+			std::shared_ptr<Ideal::IdealBone> bone = std::make_shared<Ideal::IdealBone>();
+			bone->SetBoneIndex(file->Read<int32>());
+			bone->SetName(file->Read<std::string>());
+			bone->SetParent(file->Read<int32>());
+			bone->SetTransform(file->Read<Matrix>());
+			bones[i] = bone;
+		}
+	}
+
+	// BoneTransform
+	{
+		std::vector<Matrix> tempAnimBoneTransforms(MAX_BONE_TRANSFORMS, Matrix::Identity);
+		std::shared_ptr<Ideal::AnimTransform> animTransform = std::make_shared<Ideal::AnimTransform>();
+
+		for (uint32 frame = 0; frame < OutAnimation->frameCount; ++frame)
+		{
+			for (uint32 boneIdx = 0; boneIdx < OutAnimation->numBones; ++boneIdx)
+			{
+				std::shared_ptr<Ideal::IdealBone> bone = bones[boneIdx];
+
+				Matrix matAnimation;
+
+				std::shared_ptr<ModelKeyframe> keyFrame = OutAnimation->GetKeyframe(bone->GetName());
+
+				if (keyFrame != nullptr)
+				{
+					ModelKeyFrameData& data = keyFrame->transforms[frame];
+
+					Matrix S, R, T;
+					S = Matrix::CreateScale(data.scale.x, data.scale.y, data.scale.z);
+					R = Matrix::CreateFromQuaternion(data.rotation);
+					T = Matrix::CreateTranslation(data.translation.x, data.translation.y, data.translation.z);
+
+					matAnimation = S * R * T;
+				}
+				else
+				{
+					matAnimation = Matrix::Identity;
+				}
+
+				// ÀçÁ¶¸³
+				Matrix toRootMatrix = bone->GetTransform();
+				Matrix invGlobal = toRootMatrix.Invert();
+
+				int32 parentIndex = bone->GetParent();
+
+				Matrix matParent = Matrix::Identity;
+				if (parentIndex >= 0)
+				{
+					matParent = tempAnimBoneTransforms[parentIndex];
+				}
+
+				tempAnimBoneTransforms[boneIdx] = matAnimation * matParent;
+
+				animTransform->transforms[frame][boneIdx] = invGlobal * tempAnimBoneTransforms[boneIdx];
+			}
+		}
+		OutAnimation->m_animTransform = animTransform;
+	}
+
+	// Final Insert Key
 	m_animations[key] = OutAnimation;
 }

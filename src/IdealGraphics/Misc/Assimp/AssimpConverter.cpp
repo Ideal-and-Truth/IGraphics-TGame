@@ -62,6 +62,7 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path)
 	flag |= aiProcess_CalcTangentSpace;
 	//flag |= aiProcess_OptimizeMeshes;
 	//flag |= aiProcess_PreTransformVertices;
+	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
 
 	m_scene = m_importer->ReadFile(
 		ConvertWStringToString(fileStr),
@@ -146,6 +147,7 @@ void AssimpConverter::ExportAnimationData(std::wstring savePath, uint32 index /*
 	assert(index < m_scene->mNumAnimations);
 
 	std::shared_ptr<AssimpConvert::Animation> animation = ReadAnimationData(m_scene->mAnimations[index]);
+	ReadSkinnedModelData(m_scene->mRootNode, -1, -1, false);	// bone만 불러온다.
 	WriteAnimationData(animation, finalPath);
 }
 
@@ -365,7 +367,7 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent)
 	}
 }
 
-void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 parent)
+void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData /*= true*/)
 {
 	std::shared_ptr<AssimpConvert::Bone> bone = std::make_shared<AssimpConvert::Bone>();
 	bone->index = index;
@@ -388,7 +390,11 @@ void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 pare
 
 	m_bones.push_back(bone);
 
-	ReadSkinnedMeshData(node, index);
+	// Mesh까지 읽을 경우
+	if (readMeshData)
+	{
+		ReadSkinnedMeshData(node, index);
+	}
 
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
@@ -627,6 +633,9 @@ std::shared_ptr<AssimpConvert::Animation> AssimpConverter::ReadAnimationData(aiA
 	animation->name = srcAnimation->mName.C_Str();
 	animation->frameRate = (float)srcAnimation->mTicksPerSecond;
 	animation->frameCount = (uint32)srcAnimation->mDuration + 1;
+	
+	// Animation의 본 개수
+	animation->numBones = srcAnimation->mNumChannels;
 
 	std::map<std::string, std::shared_ptr<AssimpConvert::AnimationNode>> cacheAnimNode;
 
@@ -775,6 +784,17 @@ void AssimpConverter::WriteAnimationData(std::shared_ptr<AssimpConvert::Animatio
 		file->Write<std::string>(keyFrame->boneName);
 		file->Write<uint32>(keyFrame->transforms.size());
 		file->Write(&keyFrame->transforms[0], sizeof(AssimpConvert::KeyFrameData) * keyFrame->transforms.size());
+	}
+
+	//file->Write<int32>(animation->numBones);
+	// Bone Data
+	file->Write<uint32>(m_bones.size());
+	for (auto& bone : m_bones)
+	{
+		file->Write<int32>(bone->index);
+		file->Write<std::string>(bone->name);
+		file->Write<int32>(bone->parent);
+		file->Write<Matrix>(bone->transform);
 	}
 }
 

@@ -33,31 +33,45 @@ namespace Ideal
 
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; }
-		virtual void AddAnimation(std::shared_ptr<Ideal::IAnimation> Animation) override;
+		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
+		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
+
+		//--TODO: 나중에 인터페이스로 뽑을 것--//
+		uint32 GetCurrentAnimationIndex() { return m_currentFrame; };
+		//----------------------------------//
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetSkinnedMesh(std::shared_ptr<Ideal::IdealSkinnedMesh> Mesh);
-
-		//void SetBone(std::vector<std::shared_ptr<Ideal::IdealBone>>& Bones) { m_bones = Bones; };
-
-		// Test : 임시로 한 애니메이션을 조립해서 띄워보겠음
-		// TODO : 애니메이션 인덱스 관리를 할 것. 현재 0번만 띄워두고 있음.
-		void CreateAnimationTransform();
+		
+		void AnimationPlay();
 
 	private:
 		std::shared_ptr<IdealSkinnedMesh> m_skinnedMesh;
-		
-
-		std::vector<std::shared_ptr<Ideal::IdealAnimation>> m_animations;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
-		std::vector<std::shared_ptr<AnimTransform>> m_animTransforms;
-
 
 		Ideal::D3D12ConstantBuffer m_cbBone;
 		CB_Bone m_cbBoneData;
 		Ideal::D3D12ConstantBuffer m_cbTransform;
 		CB_Transform m_cbTransformData;
 		Matrix m_transform;
+
+		// Animation
+	private:
+		/// Ver2
+		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations2;
+		std::map<std::string, std::shared_ptr<AnimTransform>> m_animTransforms2;
+		std::shared_ptr<Ideal::IdealAnimation> m_currentAnimation;
+		std::shared_ptr<Ideal::IdealAnimation> m_nextAnimation;
+
+		// 다음 애니메이션이 있을 경우 추가
+		bool m_whenCurrentAnimationFinishChangeAnimation = false;
+		bool m_isAnimationFinished = false;
+
+		float m_sumTime = 0.f;
+		uint32 m_currentFrame = 0;
+		uint32 m_nextFrame = 0;
+		float m_animSpeed = 1.f;
+		float m_ratio = 0.f;
 	};
 }
 

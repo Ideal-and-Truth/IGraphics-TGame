@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -145,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -162,6 +162,7 @@
     </Link>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -172,7 +173,7 @@
     <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
     <ClInclude Include="GraphicsEngine\public\ISkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
-    <ClInclude Include="GraphicsEngine\public\IScene.h" />
+    <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\Camera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealAnimation.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="GraphicsEngine\Resource\Bone.h" />
     <ClInclude Include="GraphicsEngine\Resource\Material.h" />
@@ -237,6 +239,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealAnimation.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Bone.cpp" />

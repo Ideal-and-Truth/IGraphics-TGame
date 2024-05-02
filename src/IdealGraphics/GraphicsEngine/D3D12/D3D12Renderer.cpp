@@ -11,16 +11,17 @@
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
+#include "GraphicsEngine/D3D12/D3D12Shader.h"
+#include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
+#include "GraphicsEngine/D3D12/D3D12RootSignature.h"
 #include "GraphicsEngine/Resource/Camera.h"
 #include "GraphicsEngine/Resource/MeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
-#include "GraphicsEngine/D3D12/D3D12Shader.h"
-#include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
-#include "GraphicsEngine/D3D12/D3D12RootSignature.h"
 #include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
 #include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/Refactor/IdealRenderScene.h"
 
 D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
@@ -243,7 +244,7 @@ finishAdapter:
 
 	// Test
 	CreateStaticMeshPSO();
-	CreateDynamicMeshPSO();
+	CreateSkinnedMeshPSO();
 	// Test
 	//m_boxVB = std::make_shared<Ideal::D3D12VertexBuffer>();
 	//m_resourceManager->CreateVertexBufferBox(m_boxVB);
@@ -312,14 +313,13 @@ void D3D12Renderer::Render()
 		}*/
 
 		//----------Static Mesh-----------//
-		RenderTest();
-		// pipeline
-		// rootsignature
-		// constantBuffer
-		/*for (auto m : m_meshObjects)
+		//RenderTest();
+		
+		//----------Render Scene-----------//
+		if (m_currentRenderScene != nullptr)
 		{
-			m->Draw(shared_from_this());
-		}*/
+			m_currentRenderScene->Draw(shared_from_this());
+		}
 	}
 
 	//-------------End Render------------//
@@ -350,18 +350,18 @@ std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const 
 
 	newStaticMesh->Init(shared_from_this());
 
-	m_staticMeshObjects.push_back(newStaticMesh);
+	//m_staticMeshObjects.push_back(newStaticMesh);
 
 	return newStaticMesh;
 }
 
-std::shared_ptr<Ideal::ISkinnedMeshObject> D3D12Renderer::CreateDynamicMeshObject(const std::wstring& FileName)
+std::shared_ptr<Ideal::ISkinnedMeshObject> D3D12Renderer::CreateSkinnedMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
 	m_resourceManager->CreateDynamicMeshObject(shared_from_this(), newDynamicMesh, FileName);
 
 	newDynamicMesh->Init(shared_from_this());
-	m_dynamicMeshObjects.push_back(newDynamicMesh);
+	//m_dynamicMeshObjects.push_back(newDynamicMesh);
 
 	return newDynamicMesh;
 }
@@ -372,6 +372,19 @@ std::shared_ptr<Ideal::IAnimation> D3D12Renderer::CreateAnimation(const std::wst
 	m_resourceManager->CreateAnimation(newAnimation, FileName);
 
 	return newAnimation;
+}
+
+std::shared_ptr<Ideal::IRenderScene> D3D12Renderer::CreateRenderScene()
+{
+	std::shared_ptr<Ideal::IdealRenderScene> newScene = std::make_shared<Ideal::IdealRenderScene>();
+	newScene->Init(shared_from_this());
+
+	return newScene;
+}
+
+void D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene)
+{
+	m_currentRenderScene = std::static_pointer_cast<Ideal::IdealRenderScene>(RenderScene);
 }
 
 void D3D12Renderer::Release()
@@ -526,15 +539,15 @@ void D3D12Renderer::RenderTest()
 	for (auto& m : m_dynamicMeshObjects)
 	{
 		// dynamic mesh
-		m_commandList->SetPipelineState(m_dynamicMeshPSO->GetPipelineState().Get());
-		m_commandList->SetGraphicsRootSignature(m_dynamicMeshRootSignature.Get());
+		m_commandList->SetPipelineState(m_skinnedMeshPSO->GetPipelineState().Get());
+		m_commandList->SetGraphicsRootSignature(m_skinnedMeshRootSignature.Get());
 		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//
 		m->Draw(shared_from_this());
 	}
 }
 
-void D3D12Renderer::CreateDynamicMeshPSO()
+void D3D12Renderer::CreateSkinnedMeshPSO()
 {
 
 	//-------------------Sampler--------------------//
@@ -568,24 +581,24 @@ void D3D12Renderer::CreateDynamicMeshPSO()
 		0,
 		signature->GetBufferPointer(),
 		signature->GetBufferSize(),
-		IID_PPV_ARGS(m_dynamicMeshRootSignature.GetAddressOf())
+		IID_PPV_ARGS(m_skinnedMeshRootSignature.GetAddressOf())
 	));
 
-	m_dynamicMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
-	m_dynamicMeshPSO->SetInputLayout(SkinnedVertex::InputElements, SkinnedVertex::InputElementCount);
+	m_skinnedMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
+	m_skinnedMeshPSO->SetInputLayout(SkinnedVertex::InputElements, SkinnedVertex::InputElementCount);
 
 	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
 	vs->CompileFromFile(L"../Shaders/AnimationDefaultVS.hlsl", nullptr, nullptr, "VS", "vs_5_0");
-	m_dynamicMeshPSO->SetVertexShader(vs);
+	m_skinnedMeshPSO->SetVertexShader(vs);
 
 	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
 	ps->CompileFromFile(L"../Shaders/AnimationDefaultVS.hlsl", nullptr, nullptr, "PS", "ps_5_0");
-	m_dynamicMeshPSO->SetPixelShader(ps);
+	m_skinnedMeshPSO->SetPixelShader(ps);
 
-	m_dynamicMeshPSO->SetRootSignature(m_dynamicMeshRootSignature.Get());
-	m_dynamicMeshPSO->SetRasterizerState();
-	m_dynamicMeshPSO->SetBlendState();
-	m_dynamicMeshPSO->Create(shared_from_this());
+	m_skinnedMeshPSO->SetRootSignature(m_skinnedMeshRootSignature.Get());
+	m_skinnedMeshPSO->SetRasterizerState();
+	m_skinnedMeshPSO->SetBlendState();
+	m_skinnedMeshPSO->Create(shared_from_this());
 }
 
 void D3D12Renderer::CreateCommandList()

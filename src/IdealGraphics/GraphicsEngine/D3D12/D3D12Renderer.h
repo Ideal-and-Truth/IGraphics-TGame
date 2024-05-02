@@ -28,11 +28,14 @@ namespace Ideal
 
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
+	class IdealRenderScene;
+
 	// Interface
 	class ICamera;
-	class IScene;
+	class IRenderScene;
 	class IMeshObject;
 	class ISkinnedMeshObject;
+	class IRenderScene;
 }
 
 class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12Renderer>
@@ -55,12 +58,16 @@ public:
 
 	// Test
 	virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
-	virtual std::shared_ptr<Ideal::ISkinnedMeshObject> CreateDynamicMeshObject(const std::wstring& FileName) override;
+	virtual std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
 	virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
+
+	virtual std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
+	virtual void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
+
 	void CreateStaticMeshPSO();
 	void RenderTest();
 
-	void CreateDynamicMeshPSO();
+	void CreateSkinnedMeshPSO();
 
 
 public:
@@ -136,8 +143,11 @@ private:
 	ComPtr<ID3D12RootSignature> m_staticMeshRootSignature;
 	Ideal::D3D12ConstantBuffer m_constantBuffer;
 
-	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_dynamicMeshPSO;
-	ComPtr<ID3D12RootSignature> m_dynamicMeshRootSignature;
+	std::shared_ptr<Ideal::D3D12PipelineStateObject> m_skinnedMeshPSO;
+	ComPtr<ID3D12RootSignature> m_skinnedMeshRootSignature;
+
+	// RenderScene
+	std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
 
 private:
 	float m_aspectRatio = 0.f;

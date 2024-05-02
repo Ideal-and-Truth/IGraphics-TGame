@@ -1,9 +1,16 @@
 #pragma once
 #include "GraphicsEngine/public/IAnimation.h"
 #include "GraphicsEngine/Resource/ModelAnimation.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
 {
+	struct AnimTransform
+	{
+		using TransformArrayType = std::array<Matrix, MAX_BONE_TRANSFORMS>;
+		std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
+
+	};
 	class IdealAnimation : public IAnimation
 	{
 	public:
@@ -17,6 +24,8 @@ namespace Ideal
 		float duration = 0.f;
 		float frameRate = 0.f;
 		uint32 frameCount = 0;
+		int32 numBones = 0;
 		std::unordered_map<std::string, std::shared_ptr<ModelKeyframe>> keyframes;
+		std::shared_ptr<Ideal::AnimTransform> m_animTransform;
 	};
 }

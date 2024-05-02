@@ -16,11 +16,12 @@
 #include <set>
 #include <unordered_set>
 #include <algorithm>
+#include <wrl.h>
 
 #include "Misc/ThirdParty/Thirdparty.h"
 #include "../Utils/SimpleMath.h"
 #include <cassert>
 //#include <wrl.h>
 //using namespace Microsoft::WRL;
-
+using namespace Microsoft::WRL;
 using namespace DirectX::SimpleMath;
