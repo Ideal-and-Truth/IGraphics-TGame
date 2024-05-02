@@ -1,6 +1,6 @@
 #pragma once
 #include "GraphicsEngine/public/IdealRendererFactory.h"
-#include "GraphicsEngine/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include <windows.h>
 
 std::shared_ptr<Ideal::IdealRenderer> CreateRenderer(

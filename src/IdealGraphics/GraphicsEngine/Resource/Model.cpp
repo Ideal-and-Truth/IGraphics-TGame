@@ -6,10 +6,14 @@
 #include "GraphicsEngine/Resource/Bone.h"
 #include "GraphicsEngine/Resource/Mesh.h"
 #include "GraphicsEngine/Resource/Material.h"
+#include "GraphicsEngine/Resource/ModelAnimation.h"
+
 #include "Misc/Utils/FileUtils.h"
 
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-#include "GraphicsEngine/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
+
+
 
 Ideal::Model::Model()
 {
@@ -226,6 +230,44 @@ void Ideal::Model::ReadModel(const std::wstring& filename)
 	BindCacheInfo();
 }
 
+void Ideal::Model::ReadAnimation(const std::wstring& filename)
+{
+	std::wstring fullPath = filename + L".anim";
+	
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(fullPath, FileMode::Read);
+
+	std::shared_ptr<Ideal::ModelAnimation> animation = std::make_shared<Ideal::ModelAnimation>();
+
+	//animation->name = StringUtils::ConvertStringToWString(file->Read<std::string>());
+	animation->name = file->Read<std::string>();
+	animation->duration = file->Read<float>();
+	animation->frameRate = file->Read<float>();
+	animation->frameCount = file->Read<uint32>();
+
+	uint32 keyframeCount = file->Read<uint32>();
+
+	for (uint32 i = 0; i < keyframeCount; ++i)
+	{
+		std::shared_ptr<ModelKeyframe> keyFrame = std::make_shared<ModelKeyframe>();
+		//keyFrame->boneName = StringUtils::ConvertStringToWString(file->Read<std::string>());
+		keyFrame->boneName = file->Read<std::string>();
+
+		uint32 size = file->Read<uint32>();
+
+		if (size > 0)
+		{
+			keyFrame->transforms.resize(size);
+			void* ptr = &keyFrame->transforms[0];
+			file->Read(&ptr, sizeof(Ideal::ModelKeyFrameData) * size);
+		}
+
+		animation->keyframes[keyFrame->boneName] = keyFrame;
+	}
+
+	m_animations.push_back(animation);
+}
+
 void Ideal::Model::Create(std::shared_ptr<D3D12Renderer> Renderer)
 {
 	for (auto& m : m_meshes)
@@ -300,6 +342,21 @@ std::shared_ptr<Ideal::Bone> Ideal::Model::GetBoneByName(const std::string& name
 		{
 			return m;
 		}
+	}
+	return nullptr;
+}
+
+std::shared_ptr<Ideal::ModelAnimation> Ideal::Model::GetAnimationByIndex(uint32 index)
+{
+	 return (index < 0 || index >= m_animations.size() ? nullptr : m_animations[index]); 
+}
+
+std::shared_ptr<Ideal::ModelAnimation> Ideal::Model::GetAnimationByName(const std::string& name)
+{
+	for (auto& animation : m_animations)
+	{
+		if (animation->name == name)
+			return animation;
 	}
 	return nullptr;
 }

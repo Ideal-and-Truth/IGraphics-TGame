@@ -71,8 +71,11 @@ void FileUtils::Write(const std::string& Data)
 void FileUtils::Read(void** Data, uint32 DataSize)
 {
 	uint32 numOfBytes = 0;
-	ReadFile(m_handle, *Data, DataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr);
-	//assert(ReadFile(m_handle, *Data, DataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr));
+	BOOL isSuccess = ReadFile(m_handle, *Data, DataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr);
+	if (!isSuccess)
+	{
+		assert(false);
+	}
 }
 
 void FileUtils::Read(OUT std::string& Data)
