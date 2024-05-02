@@ -4,6 +4,7 @@ Debug/
 Release/
 Temp/
 .vs/
+vcpkg_installed/
 *.obj
 *.log
 *.ilk
