@@ -3,7 +3,9 @@
 #include "SceneManager.h"
 #include "TestScene.h"
 #include "TestScene2.h"
-
+#include "ISkinnedMeshObject.h"
+#include "IRenderScene.h"
+#include "IAnimation.h"
 Processor::Processor()
 	: m_hwnd(nullptr)
 	, m_msg()
@@ -40,6 +42,20 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	m_manager->Scene()->SetCurrnetScene("test");
 
 	m_manager->Scene()->StartGameScene();
+
+	/// 그래픽 테스트
+	m_renderScene = m_renderer->CreateRenderScene();
+	m_renderer->SetRenderScene(m_renderScene);
+
+	// m_renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+	// m_renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+
+	m_cat = m_renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+	m_walkAnim = m_renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+	m_cat->AddAnimation("Walk", m_walkAnim);
+
+	m_renderScene->AddObject(m_cat);
+
 }
 
 void Processor::Finalize()

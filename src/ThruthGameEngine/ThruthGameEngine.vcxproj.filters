@@ -126,8 +126,6 @@
     <ClCompile Include="TypeInfo.cpp">
       <Filter>Reflection\Advanced</Filter>
     </ClCompile>
-    <ClCompile Include="StringConverter.cpp" />
-
     <ClCompile Include="Property.cpp">
       <Filter>Reflection\Advanced</Filter>
     </ClCompile>
@@ -143,8 +141,15 @@
     <ClCompile Include="CapsuleCollider.cpp">
       <Filter>Component\Collider\Capsule</Filter>
     </ClCompile>
-    <ClCompile Include="SphereCollider.cpp" />
-    <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>Component\Collider\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="StringConverter.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsManager.cpp">
+      <Filter>Manager\PhysX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -218,7 +223,6 @@
     <ClInclude Include="TypeInfoMacros.h">
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
-    <ClInclude Include="StringConverter.h" />
     <ClInclude Include="ERigidBody.h">
       <Filter>Component\Rigidbody</Filter>
     </ClInclude>
@@ -231,7 +235,14 @@
     <ClInclude Include="CapsuleCollider.h">
       <Filter>Component\Collider\Capsule</Filter>
     </ClInclude>
-    <ClInclude Include="SphereCollider.h" />
-    <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="SphereCollider.h">
+      <Filter>Component\Collider\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="StringConverter.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsManager.h">
+      <Filter>Manager\PhysX</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
