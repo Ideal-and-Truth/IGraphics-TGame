@@ -7,9 +7,14 @@ class ETransform :
 {
 	COMPONENT_HEADER;
 
+	GENERATE_CLASS_TYPE_INFO(ETransform)
+
 public:
+	PROPERTY(position)
 	Vector3 m_position;
+	PROPERTY(scale)
 	Vector3 m_scale;
+
 	Quaternion m_rotation;
 
 	Matrix m_transformMatrix;

@@ -4,6 +4,12 @@
 
 TestEntity::TestEntity()
 {
+	m_test = std::make_shared<int>(7);
+	m_intest.push_back(1);
+	m_intest.push_back(2);
+	m_intest.push_back(3);
+
+
 }
 
 TestEntity::~TestEntity()

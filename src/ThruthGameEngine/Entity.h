@@ -18,12 +18,17 @@ class Entity abstract
 protected:
 	static uint16 m_entityCount;
 	uint16 m_ID;
-	std::string m_name;
+	PROPERTY(name)
+		std::string m_name;
 	std::weak_ptr<Managers> m_manager;
 
 public:
 	// key 값의 경우 type id 를 통해 유추한다.
-	std::map<size_t, std::vector<std::shared_ptr<Component>>> m_components;
+	PROPERTY(components)
+		std::map<size_t, std::vector<std::shared_ptr<Component>>> m_components;
+
+	PROPERTY(componentsTest)
+		std::vector<std::shared_ptr<Component>> m_componentsTest;
 
 	Entity();
 	virtual ~Entity();
@@ -66,6 +71,7 @@ void Entity::AddComponent()
 	if (component->CanMultiple())
 	{
 		m_components[C::m_typeID].push_back(component);
+		m_componentsTest.push_back(component);
 	}
 	// 중복 불가능한 컴포넌트라면
 	else if (!component->CanMultiple() && m_components[C::m_typeID].size() == 0)

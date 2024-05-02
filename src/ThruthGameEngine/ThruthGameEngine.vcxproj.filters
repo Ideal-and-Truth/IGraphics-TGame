@@ -55,6 +55,24 @@
     <Filter Include="Reflection\Advanced">
       <UniqueIdentifier>{d094facb-abcc-4efd-a9c0-3e0ee728eb96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager\PhysX">
+      <UniqueIdentifier>{2186477e-af5a-4e7e-bd1a-d93d848f20e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Collider">
+      <UniqueIdentifier>{289111b3-a41d-4bdd-8ade-4ad59032b944}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Rigidbody">
+      <UniqueIdentifier>{e206653b-b51f-4ec2-ac6f-fa5e0872692c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Collider\Box">
+      <UniqueIdentifier>{b2a03901-feaf-4e76-b3a9-1e9ecadcb48f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Collider\Sphere">
+      <UniqueIdentifier>{96fa1d36-4d6d-4f73-b58d-7b9b7ca759ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Collider\Capsule">
+      <UniqueIdentifier>{67d444dc-9f25-44d9-bba1-838a4b1a699c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -109,6 +127,24 @@
       <Filter>Reflection\Advanced</Filter>
     </ClCompile>
     <ClCompile Include="StringConverter.cpp" />
+
+    <ClCompile Include="Property.cpp">
+      <Filter>Reflection\Advanced</Filter>
+    </ClCompile>
+    <ClCompile Include="ERigidBody.cpp">
+      <Filter>Component\Rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Component\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Component\Collider\Box</Filter>
+    </ClCompile>
+    <ClCompile Include="CapsuleCollider.cpp">
+      <Filter>Component\Collider\Capsule</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp" />
+    <ClCompile Include="PhysicsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -183,5 +219,19 @@
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
     <ClInclude Include="StringConverter.h" />
+    <ClInclude Include="ERigidBody.h">
+      <Filter>Component\Rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Component\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Component\Collider\Box</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleCollider.h">
+      <Filter>Component\Collider\Capsule</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h" />
+    <ClInclude Include="PhysicsManager.h" />
   </ItemGroup>
 </Project>

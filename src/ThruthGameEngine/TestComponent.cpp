@@ -17,8 +17,6 @@ void TestComponent::Awake()
 	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
 	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
 	EventBind<TestComponent>("Update", &TestComponent::Update);
-
-	DEBUG_PRINT(m_typeInfo.Dump(this).c_str());
 }
 
 void TestComponent::Update(std::any _p)

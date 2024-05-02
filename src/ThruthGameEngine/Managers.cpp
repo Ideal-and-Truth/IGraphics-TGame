@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "Eventmanager.h"
 #include "SceneManager.h"
+#include "PhysicsManager.h"
 
 Managers::Managers()
 {
@@ -20,7 +21,7 @@ void Managers::Initialize(HWND _hwnd)
 	InitlizeManagers(_hwnd);
 }
 
-void Managers::Update()
+void Managers::Update() const
 {
 	m_inputManager->Update();
 	m_timeManager->Update();
@@ -28,28 +29,29 @@ void Managers::Update()
 	m_eventManager->Update();
 }
 
-void Managers::LateUpdate()
+void Managers::LateUpdate() const
 {
 	m_eventManager->PublishEvent("Late Update");
 	m_eventManager->Update();
 }
-
-void Managers::FixedUpdate()
+ 
+void Managers::FixedUpdate() const
 {
 }
 
-void Managers::Render()
+void Managers::Render() const
 {
 	m_eventManager->PublishEvent("Render");
 	m_eventManager->Update();
 }
 
-void Managers::Finalize()
+void Managers::Finalize() const
 {
 	m_sceneManager->Finalize();
 	m_inputManager->Finalize();
 	m_timeManager->Finalize();
 	m_eventManager->Finalize();
+	m_physXManager->Finalize();
 }
 
 void Managers::CreateManagers()
@@ -59,12 +61,14 @@ void Managers::CreateManagers()
 	m_inputManager = std::make_shared<InputManager>();
 	m_eventManager = std::make_shared<EventManager>();
 	m_sceneManager = std::make_shared<SceneManager>();
+	m_physXManager = std::make_shared<PhysicsManager>();
 }
 
-void Managers::InitlizeManagers(HWND _hwnd)
+void Managers::InitlizeManagers(HWND _hwnd) const
 {
 	m_eventManager->Initialize(m_timeManager);
 	m_timeManager->Initalize(m_eventManager);
 	m_inputManager->Initalize(_hwnd, m_eventManager);
 	m_sceneManager->Initalize(m_eventManager);
+	m_physXManager->Initalize();
 }
