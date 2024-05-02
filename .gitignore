@@ -3,6 +3,7 @@ Music/
 Debug/
 Release/
 Temp/
+vcpkg_installed/
 .vs/
 *.obj
 *.log
