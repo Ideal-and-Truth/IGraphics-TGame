@@ -3,7 +3,9 @@
 #include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+
 #include "GraphicsEngine/VertexInfo.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 class D3D12Renderer;
 class AssimpLoader;
@@ -55,8 +57,8 @@ namespace Ideal
 		std::shared_ptr<D3D12IndexBuffer> m_indexBuffer;
 		D3D12ConstantBuffer m_constantBuffer;
 
-		Transform m_transform;
-		Transform* m_cbDataBegin;
+		CB_Transform m_transform;
+		CB_Transform* m_cbDataBegin;
 
 	public:
 		void AddVertices(const std::vector<BasicVertex>& vertices);
@@ -70,11 +72,5 @@ namespace Ideal
 
 		std::vector<BasicVertex> m_vertices;	// 나중에 가지고 있을 필요가 없다
 		std::vector<uint32> m_indices;	// 마찬가지
-
-		// TODO : Delete
-		std::wstring m_diffuseMap;
-
-		private:
-		uint32 m_descriptorIncrementSize = 0;
 	};
 }

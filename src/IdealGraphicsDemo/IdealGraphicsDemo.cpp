@@ -13,13 +13,16 @@
 #include "GraphicsEngine/public/IdealRendererFactory.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
 #include "GraphicsEngine/public/IMeshObject.h"
+#include "GraphicsEngine/public/ISkinnedMeshObject.h"
+#include "GraphicsEngine/public/IAnimation.h"
+#include "GraphicsEngine/public/IRenderScene.h"
+
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
+#include "../Utils/SimpleMath.h"
+using namespace DirectX::SimpleMath;
 
 #define MAX_LOADSTRING 100
-
-
-
 
 #define WIDTH 1280
 #define HEIGHT 960
@@ -73,16 +76,58 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		);
-		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		// CatWalkForward3
+		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		//Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> dynamicMesh = Renderer->CreateDynamicMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		//std::shared_ptr<Ideal::IAnimation> animation5 = Renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		//dynamicMesh->AddAnimation(animation5);
+	 
 		//Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx");
 		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
-		//Renderer->ConvertAssetToMyFormat(L"Tank/Tank.fbx");
+
+
 		Renderer->Init();
-		//std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateMeshObject(L"statue_chronos/statue_join");
 		
-		
-		//Matrix world = Matrix::Identity;
-		//float angle = 0.f;
+		//-------------------Create Scene-------------------//
+		std::shared_ptr<Ideal::IRenderScene> renderScene = Renderer->CreateRenderScene();
+		Renderer->SetRenderScene(renderScene);
+
+		//-------------------Convert FBX(Model, Animation)-------------------//
+		Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+
+		//-------------------Create Mesh Object-------------------//
+		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = Renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		std::shared_ptr<Ideal::IAnimation> walkAnim = Renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = Renderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::IAnimation> runAnim = Renderer->CreateAnimation(L"Kachujin/Run");
+		std::shared_ptr<Ideal::IAnimation> idleAnim = Renderer->CreateAnimation(L"Kachujin/Idle");
+		std::shared_ptr<Ideal::IAnimation> slashAnim = Renderer->CreateAnimation(L"Kachujin/Slash");
+		//ka->AddAnimation("idle", idleAnim);
+
+		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		std::shared_ptr<Ideal::IMeshObject> mesh2 = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		std::shared_ptr<Ideal::IMeshObject> mesh3 = Renderer->CreateStaticMeshObject(L"Tower/Tower");
+
+		//-------------------Add Animation to Skinned Mesh Object-------------------//
+		ka->AddAnimation("Run",runAnim);
+		ka->SetAnimation("Run", true);
+		cat->AddAnimation("Walk", walkAnim);
+
+		//-------------------Add Mesh Object to Render Scene-------------------//
+		renderScene->AddObject(ka);
+		renderScene->AddObject(mesh);
+		renderScene->AddObject(mesh2);
+		renderScene->AddObject(mesh3);
+		renderScene->AddObject(cat);
+
+		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
+		float angle = 0.f;
 
 		while (msg.message != WM_QUIT)
 		{
@@ -93,10 +138,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
-				//angle += 0.2f;
-				//world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
-				//world.CreateRotationY(angle);
-				//mesh->SetTransformMatrix(world);
+				angle += 0.2f;
+				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+				world.CreateRotationY(angle);
+				mesh2->SetTransformMatrix(world);
+				ka->SetTransformMatrix(world);
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();
