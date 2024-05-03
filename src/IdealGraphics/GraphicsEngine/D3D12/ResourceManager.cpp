@@ -482,7 +482,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Rendere
 	OutMesh->SetStaticMesh(staticMesh);
 }
 
-void ResourceManager::CreateDynamicMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
+void ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);

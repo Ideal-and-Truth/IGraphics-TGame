@@ -42,21 +42,19 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 	t->View = d3d12Renderer->GetView();
 	t->Proj = d3d12Renderer->GetProj();
 	t->WorldInvTranspose = m_transform.Invert();
-	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX_TRANSFORM, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
 
 	CB_Bone* b = (CB_Bone*)m_cbBone.GetMappedMemory(d3d12Renderer->GetFrameIndex());
 	*b = m_cbBoneData;
-	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX + 1, m_cbBone.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX_BONE, m_cbBone.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
 
-
-
-	m_skinnedMesh->Render(Renderer);
+	m_skinnedMesh->Draw(Renderer);
 }
 
 void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished /*= true*/)
 {
 	m_whenCurrentAnimationFinishChangeAnimation = WhenCurrentAnimationFinished;
-	m_nextAnimation = m_animations2[AnimationName];
+	m_nextAnimation = m_animations[AnimationName];
 	if (m_nextAnimation == nullptr)
 	{
 		MessageBoxA(NULL, "NullException - SetAnimation", "SetAnimation", MB_OK);
@@ -66,12 +64,12 @@ void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationNam
 
 void Ideal::IdealSkinnedMeshObject::AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation)
 {
-	if (m_animations2[AnimationName] != nullptr)
+	if (m_animations[AnimationName] != nullptr)
 	{
 		MessageBoxA(NULL, "Already Have Same Name Animation", "AddAnimation Error", MB_OK);
 		return;
 	}
-	m_animations2[AnimationName] = std::static_pointer_cast<Ideal::IdealAnimation>(Animation);
+	m_animations[AnimationName] = std::static_pointer_cast<Ideal::IdealAnimation>(Animation);
 	if (m_currentAnimation == nullptr)
 	{
 		m_currentAnimation = std::static_pointer_cast<Ideal::IdealAnimation>(Animation);

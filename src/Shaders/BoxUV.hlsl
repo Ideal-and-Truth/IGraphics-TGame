@@ -1,4 +1,13 @@
-cbuffer Transform : register(b0)
+
+cbuffer Material : register(b0)
+{
+    float4 Ambient;
+    float4 Diffuse;
+    float4 Specular;
+    float4 Emissive;
+}
+
+cbuffer Transform : register(b1)
 {
     float4x4 World;
     float4x4 View;
@@ -41,7 +50,8 @@ VSOutput VS(VSInput input)
 }
 
 Texture2D diffuseTexture : register(t0);
-//Texture2D normalTexture : register(t1);
+Texture2D specularTexture : register(t1);
+Texture2D normalTexture : register(t2);
 
 SamplerState sampler0 : register(s0);
 

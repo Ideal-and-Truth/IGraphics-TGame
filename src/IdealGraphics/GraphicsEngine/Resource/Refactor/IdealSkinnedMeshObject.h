@@ -58,8 +58,8 @@ namespace Ideal
 		// Animation
 	private:
 		/// Ver2
-		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations2;
-		std::map<std::string, std::shared_ptr<AnimTransform>> m_animTransforms2;
+		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
+		std::map<std::string, std::shared_ptr<AnimTransform>> m_animTransforms;
 		std::shared_ptr<Ideal::IdealAnimation> m_currentAnimation;
 		std::shared_ptr<Ideal::IdealAnimation> m_nextAnimation;
 

@@ -21,3 +21,11 @@ struct alignas(256) CB_Transform
 	Matrix Proj;
 	Matrix WorldInvTranspose;
 };
+
+struct CB_Material
+{
+	Color Ambient;
+	Color Diffuse;
+	Color Specular;
+	Color Emissive;
+};

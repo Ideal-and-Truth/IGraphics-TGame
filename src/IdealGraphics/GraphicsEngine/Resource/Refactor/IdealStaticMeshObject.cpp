@@ -36,6 +36,6 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<IdealRenderer> Renderer)
 	t->Proj = d3d12Renderer->GetProj();
 	t->WorldInvTranspose = t->World.Invert();
 
-	commandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-	m_staticMesh->Render(Renderer);
+	commandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX_TRANSFORM, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+	m_staticMesh->Draw(Renderer);
 }

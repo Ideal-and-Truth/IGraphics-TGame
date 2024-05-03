@@ -13,7 +13,7 @@ Ideal::IdealStaticMesh::~IdealStaticMesh()
 
 }
 
-void Ideal::IdealStaticMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+void Ideal::IdealStaticMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();

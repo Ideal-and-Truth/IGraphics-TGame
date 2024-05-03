@@ -245,6 +245,9 @@ finishAdapter:
 	m_resourceManager->SetAssetPath(m_assetPath);
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
+
+	//------------------Create Common CB---------------------//
+
 }
 
 void D3D12Renderer::Tick()
@@ -332,7 +335,7 @@ std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const 
 std::shared_ptr<Ideal::ISkinnedMeshObject> D3D12Renderer::CreateSkinnedMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
-	m_resourceManager->CreateDynamicMeshObject(shared_from_this(), newDynamicMesh, FileName);
+	m_resourceManager->CreateSkinnedMeshObject(shared_from_this(), newDynamicMesh, FileName);
 
 	newDynamicMesh->Init(shared_from_this());
 	//m_dynamicMeshObjects.push_back(newDynamicMesh);
