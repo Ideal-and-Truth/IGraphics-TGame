@@ -1,7 +1,11 @@
 #pragma once
 #include "Headers.h"
 
-class EMesh;
+namespace Truth
+{
+	class Mesh;
+}
+
 namespace Truth
 {
 	class GraphicsManager
@@ -26,12 +30,12 @@ namespace Truth
 
 		void Render();
 
-		void AddObject(std::shared_ptr<EMesh>);
-		void AddAnimation(std::shared_ptr<EMesh>);
+		void AddObject(std::shared_ptr<Ideal::ISkinnedMeshObject> _mesh);
+		void AddAnimation();
 
 		void ConvertAsset(std::wstring _path, bool _isSkind);
 
-		void CreateMesh(std::wstring _path);
+		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMesh(std::wstring _path);
 		void CreateAnimation(std::wstring _path);
 	};
 }

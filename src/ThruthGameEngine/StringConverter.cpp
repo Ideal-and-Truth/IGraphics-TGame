@@ -75,3 +75,10 @@ std::string StringConverter::ToString(std::string _val, int _indent)
 {
 	return _val;
 }
+
+
+template<>
+std::string StringConverter::ToString(std::wstring _val, int _indent)
+{
+	return "wstring Data";
+}

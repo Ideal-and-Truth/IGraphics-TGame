@@ -76,6 +76,9 @@
     <Filter Include="Manager\Graphics">
       <UniqueIdentifier>{90db0b8e-1f46-40c9-9a63-67706e8a6ec0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Mesh">
+      <UniqueIdentifier>{881c1d1f-2b03-4b59-b335-cee1b6fab331}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -156,6 +159,7 @@
     <ClCompile Include="GraphicsManager.cpp">
       <Filter>Manager\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -253,5 +257,6 @@
     <ClInclude Include="GraphicsManager.h">
       <Filter>Manager\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h" />
   </ItemGroup>
 </Project>

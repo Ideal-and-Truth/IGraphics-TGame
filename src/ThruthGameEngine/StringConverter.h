@@ -129,6 +129,9 @@ namespace StringConverter
 	std::string ToString(std::string _val, int _indent);
 
 	template<>
+	std::string ToString(std::wstring _val, int _indent);
+
+	template<>
 	std::string ToString(Vector4 _val, int _indent);
 
 	template<>

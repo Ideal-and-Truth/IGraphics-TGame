@@ -39,7 +39,7 @@ namespace Truth
 		virtual void Initailize();
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
-		void AddComponent();
+		std::shared_ptr<C> AddComponent();
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::weak_ptr<C> GetComponent();
@@ -58,7 +58,7 @@ namespace Truth
 	/// </summary>
 	/// <typeparam name="C">컴포넌트 타입</typeparam>
 	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
-	void Entity::AddComponent()
+	std::shared_ptr<C> Entity::AddComponent()
 	{
 		// 일단 만든다
 		// 타입 이름 가져오기
@@ -73,11 +73,17 @@ namespace Truth
 		{
 			m_components[C::m_typeID].push_back(component);
 			m_componentsTest.push_back(component);
+			return component;
 		}
 		// 중복 불가능한 컴포넌트라면
 		else if (!component->CanMultiple() && m_components[C::m_typeID].size() == 0)
 		{
 			m_components[C::m_typeID].push_back(component);
+			return component;
+		}
+		else
+		{
+			return std::reinterpret_pointer_cast<C>(m_components[C::m_typeID][0]);
 		}
 	}
 

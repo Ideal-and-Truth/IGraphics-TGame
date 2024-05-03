@@ -33,6 +33,7 @@
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Managers.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Method.h" />
     <ClInclude Include="MethodMacros.h" />
     <ClInclude Include="PhysicsManager.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="Managers.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Processor.cpp" />
     <ClCompile Include="Property.cpp" />

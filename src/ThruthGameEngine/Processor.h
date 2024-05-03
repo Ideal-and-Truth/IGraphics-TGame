@@ -20,8 +20,6 @@ class Processor
 {
 private:
 	std::shared_ptr<Truth::Managers> m_manager;
-	// 	std::shared_ptr<Ideal::IdealRenderer> m_renderer;
-	// 	std::shared_ptr<Ideal::IRenderScene> m_renderScene;
 
 	std::shared_ptr<Ideal::IMeshObject> mesh;
 	std::shared_ptr<Ideal::ISkinnedMeshObject> m_cat;
