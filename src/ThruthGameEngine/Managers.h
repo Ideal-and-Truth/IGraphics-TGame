@@ -1,43 +1,52 @@
 #pragma once
 #include "Headers.h"
 
-class Processor;
-class TimeManager;
-class InputManager;
-class EventManager;
-class SceneManager;
-class PhysicsManager;
-
-class Managers
+namespace Truth
 {
-public:
-	std::shared_ptr<TimeManager> m_timeManager;
-	std::shared_ptr<InputManager> m_inputManager;
-	std::shared_ptr<EventManager> m_eventManager;
-	std::shared_ptr<SceneManager> m_sceneManager;
-	std::shared_ptr<PhysicsManager> m_physXManager;
+	class TimeManager;
+	class InputManager;
+	class EventManager;
+	class SceneManager;
+	class PhysicsManager;
+	class GraphicsManager;
+}
 
-public:
-	// friend class Processor;
-	Managers();
-	~Managers();
+namespace Truth
+{
 
-public:
-	void Initialize(HWND _hwnd) ;
-	void Update() const;
-	void LateUpdate() const;
-	void FixedUpdate() const;
-	void Render() const;
+	class Managers
+	{
+	public:
+		std::shared_ptr<Truth::TimeManager> m_timeManager;
+		std::shared_ptr<Truth::InputManager> m_inputManager;
+		std::shared_ptr<Truth::EventManager> m_eventManager;
+		std::shared_ptr<Truth::SceneManager> m_sceneManager;
+		std::shared_ptr<Truth::PhysicsManager> m_physXManager;
+		std::shared_ptr<Truth::GraphicsManager> m_graphicsManager;
 
-	void Finalize() const;
+	public:
+		Managers();
+		~Managers();
 
-	inline std::shared_ptr<TimeManager> Time() const  { return m_timeManager; };
-	inline std::shared_ptr<InputManager> Input() const  { return m_inputManager; };
-	inline std::shared_ptr<EventManager> Event() const  { return m_eventManager; };
-	inline std::shared_ptr<SceneManager> Scene() const  { return m_sceneManager; };
+	public:
+		void Initialize(HWND _hwnd, uint32 _width, uint32 _height);
+		void Update() const;
+		void LateUpdate() const;
+		void FixedUpdate() const;
+		void Render() const;
 
-private:
-	void CreateManagers();
-	void InitlizeManagers(HWND _hwnd) const;
-};
+		void Finalize() const;
+
+		inline std::shared_ptr<TimeManager> Time() const { return m_timeManager; };
+		inline std::shared_ptr<InputManager> Input() const { return m_inputManager; };
+		inline std::shared_ptr<EventManager> Event() const { return m_eventManager; };
+		inline std::shared_ptr<SceneManager> Scene() const { return m_sceneManager; };
+		inline std::shared_ptr<PhysicsManager> Physics() const { return m_physXManager; };
+		inline std::shared_ptr<GraphicsManager> Graphics() const { return m_graphicsManager; };
+
+	private:
+		void CreateManagers();
+		void InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height) const;
+	};
+}
 

@@ -73,6 +73,9 @@
     <Filter Include="Component\Collider\Capsule">
       <UniqueIdentifier>{67d444dc-9f25-44d9-bba1-838a4b1a699c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager\Graphics">
+      <UniqueIdentifier>{90db0b8e-1f46-40c9-9a63-67706e8a6ec0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -105,7 +108,7 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>Manager\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="ETransform.cpp">
+    <ClCompile Include="Transform.cpp">
       <Filter>Component\Transform</Filter>
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
@@ -150,6 +153,9 @@
     <ClCompile Include="PhysicsManager.cpp">
       <Filter>Manager\PhysX</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsManager.cpp">
+      <Filter>Manager\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -183,7 +189,7 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Manager\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="ETransform.h">
+    <ClInclude Include="Transform.h">
       <Filter>Component\Transform</Filter>
     </ClInclude>
     <ClInclude Include="EventManager.h">
@@ -243,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="PhysicsManager.h">
       <Filter>Manager\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsManager.h">
+      <Filter>Manager\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

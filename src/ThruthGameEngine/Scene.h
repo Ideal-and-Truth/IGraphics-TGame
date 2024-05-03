@@ -4,35 +4,37 @@
 /// <summary>
 /// 게임이 실제로 돌아가는 씬
 /// </summary>
-
-class Entity;
-class Managers;
-class Scene
+namespace Truth
 {
-protected:
-	std::string m_name;
-	
-	std::vector<std::shared_ptr<Entity>> m_entities;
+	class Entity;
+	class Managers;
+	class Scene
+	{
+	protected:
+		std::string m_name;
 
-	std::weak_ptr<Managers> m_managers;
+		std::vector<std::shared_ptr<Entity>> m_entities;
 
-public:
-	Scene(std::shared_ptr<Managers> _managers);
-	virtual ~Scene();
+		std::weak_ptr<Managers> m_managers;
 
-public:
-	template<typename E>
-	void AddEntity();
+	public:
+		Scene(std::shared_ptr<Managers> _managers);
+		virtual ~Scene();
 
-	virtual void Awake() abstract;
-	virtual void Enter() abstract;
-	virtual void Exit() abstract;
+	public:
+		template<typename E>
+		void AddEntity();
 
-	void ClearEntity();
-};
+		virtual void Awake() abstract;
+		virtual void Enter() abstract;
+		virtual void Exit() abstract;
+
+		void ClearEntity();
+	};
+}
 
 template<typename E>
-void Scene::AddEntity()
+void Truth::Scene::AddEntity()
 {
 	std::shared_ptr<E> entity = std::make_shared<E>();
 	m_entities.push_back(entity);

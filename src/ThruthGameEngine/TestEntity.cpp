@@ -1,8 +1,8 @@
 #include "TestEntity.h"
 #include "TestComponent.h"
-#include "ETransform.h"
+#include "Transform.h"
 
-TestEntity::TestEntity()
+Truth::TestEntity::TestEntity()
 {
 	m_test = std::make_shared<int>(7);
 	m_intest.push_back(1);
@@ -12,12 +12,12 @@ TestEntity::TestEntity()
 
 }
 
-TestEntity::~TestEntity()
+Truth::TestEntity::~TestEntity()
 {
 	int a = 1;
 }
 
-void TestEntity::Initailize()
+void Truth::TestEntity::Initailize()
 {
 	DEBUG_PRINT("Entity Start : test enttity\n");
 	__super::Initailize();

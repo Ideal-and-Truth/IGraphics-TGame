@@ -4,24 +4,25 @@
 #include "Eventmanager.h"
 #include "SceneManager.h"
 #include "PhysicsManager.h"
+#include "GraphicsManager.h"
 
-Managers::Managers()
+Truth::Managers::Managers()
 {
 	DEBUG_PRINT("Create Managers\n");
 }
 
-Managers::~Managers()
+Truth::Managers::~Managers()
 {
 
 }
 
-void Managers::Initialize(HWND _hwnd)
+void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
 {
 	CreateManagers();
-	InitlizeManagers(_hwnd);
+	InitlizeManagers(_hwnd, _width, _height);
 }
 
-void Managers::Update() const
+void Truth::Managers::Update() const
 {
 	m_inputManager->Update();
 	m_timeManager->Update();
@@ -29,23 +30,22 @@ void Managers::Update() const
 	m_eventManager->Update();
 }
 
-void Managers::LateUpdate() const
+void Truth::Managers::LateUpdate() const
 {
 	m_eventManager->PublishEvent("Late Update");
 	m_eventManager->Update();
 }
  
-void Managers::FixedUpdate() const
+void Truth::Managers::FixedUpdate() const
 {
 }
 
-void Managers::Render() const
+void Truth::Managers::Render() const
 {
-	m_eventManager->PublishEvent("Render");
-	m_eventManager->Update();
+	m_graphicsManager->Render();
 }
 
-void Managers::Finalize() const
+void Truth::Managers::Finalize() const
 {
 	m_sceneManager->Finalize();
 	m_inputManager->Finalize();
@@ -54,7 +54,7 @@ void Managers::Finalize() const
 	m_physXManager->Finalize();
 }
 
-void Managers::CreateManagers()
+void Truth::Managers::CreateManagers()
 {
 	// TimeManager* temp = new TimeManager();
 	m_timeManager = std::make_shared<TimeManager>();
@@ -62,13 +62,15 @@ void Managers::CreateManagers()
 	m_eventManager = std::make_shared<EventManager>();
 	m_sceneManager = std::make_shared<SceneManager>();
 	m_physXManager = std::make_shared<PhysicsManager>();
+	m_graphicsManager = std::make_shared<GraphicsManager>();
 }
 
-void Managers::InitlizeManagers(HWND _hwnd) const
+void Truth::Managers::InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height) const
 {
 	m_eventManager->Initialize(m_timeManager);
 	m_timeManager->Initalize(m_eventManager);
 	m_inputManager->Initalize(_hwnd, m_eventManager);
 	m_sceneManager->Initalize(m_eventManager);
 	m_physXManager->Initalize();
+	m_graphicsManager->Initalize(_hwnd, _width, _height);
 }

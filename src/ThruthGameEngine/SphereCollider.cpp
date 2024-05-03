@@ -1,12 +1,12 @@
 #include "SphereCollider.h"
 
-SphereCollider::SphereCollider()
+Truth::SphereCollider::SphereCollider()
 	: m_radius(0.5f)
 {
 
 }
 
-SphereCollider::~SphereCollider()
+Truth::SphereCollider::~SphereCollider()
 {
 
 }

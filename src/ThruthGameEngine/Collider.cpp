@@ -1,15 +1,15 @@
 #include "Collider.h"
 
-Collider::Collider()
+Truth::Collider::Collider()
 	: m_isTrigger(true)
-	, m_center{0.0f, 0.0f, 0.0f}
+	, m_center{ 0.0f, 0.0f, 0.0f }
 {
 }
 
-Collider::~Collider()
+Truth::Collider::~Collider()
 {
 }
 
-void Collider::Awake()
+void Truth::Collider::Awake()
 {
 }

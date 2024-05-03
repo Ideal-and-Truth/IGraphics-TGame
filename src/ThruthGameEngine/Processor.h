@@ -1,11 +1,16 @@
 #pragma once
 #include "Headers.h"
+namespace Truth
+{
+	class Managers;
+}
 
-class TestScene;
-class Managers;
-class IdealRenderer;
-class IRenderScene;
-class ISkinnedMeshObject;
+namespace Ideal
+{
+	class IdealRenderer;
+	class IRenderScene;
+	class ISkinnedMeshObject;
+}
 
 /// <summary>
 /// 엔진의 프로세서
@@ -14,9 +19,10 @@ class ISkinnedMeshObject;
 class Processor
 {
 private:
-	std::shared_ptr<Managers> m_manager;
-	std::shared_ptr<Ideal::IdealRenderer> m_renderer;
-	std::shared_ptr<Ideal::IRenderScene> m_renderScene;
+	std::shared_ptr<Truth::Managers> m_manager;
+	// 	std::shared_ptr<Ideal::IdealRenderer> m_renderer;
+	// 	std::shared_ptr<Ideal::IRenderScene> m_renderScene;
+
 	std::shared_ptr<Ideal::IMeshObject> mesh;
 	std::shared_ptr<Ideal::ISkinnedMeshObject> m_cat;
 	std::shared_ptr<Ideal::IAnimation> m_walkAnim;
@@ -50,6 +56,5 @@ private:
 
 	void CreateMainWindow(HINSTANCE _hInstance, uint32 _width = 1920, uint32 _height = 1080, const wchar_t szAppName[] = L"Truth Engine");
 	void InitializeManager();
-	void CreateRender();
 };
 

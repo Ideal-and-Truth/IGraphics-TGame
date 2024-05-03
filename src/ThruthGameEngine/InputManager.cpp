@@ -1,7 +1,7 @@
 #include "InputManager.h"
 #include "Managers.h"
 
-InputManager::InputManager()
+Truth::InputManager::InputManager()
 	: m_keyInfomation()
 	, m_hwnd(nullptr)
 	, m_currentMousePos{}
@@ -10,7 +10,7 @@ InputManager::InputManager()
 	DEBUG_PRINT("Create InputManager\n");
 }
 
-InputManager::~InputManager()
+Truth::InputManager::~InputManager()
 {
 	DEBUG_PRINT("Finalize InputManager\n");
 }
@@ -19,7 +19,7 @@ InputManager::~InputManager()
 /// 초기화
 /// </summary>
 /// <param name="_hwnd">윈도우 포커스 확인을 위한 핸들러</param>
-void InputManager::Initalize(HWND _hwnd, std::shared_ptr<EventManager> _eventManager)
+void Truth::InputManager::Initalize(HWND _hwnd, std::shared_ptr<EventManager> _eventManager)
 {
 	m_hwnd = _hwnd;
 
@@ -34,7 +34,7 @@ void InputManager::Initalize(HWND _hwnd, std::shared_ptr<EventManager> _eventMan
 /// 업데이트 합수
 /// 키의 상태에 따라 이벤트를 발행한다.
 /// </summary>
-void InputManager::Update()
+void Truth::InputManager::Update()
 {
 	// 게임 포커스 [X] 상태면 키 전체 안 누름 처리하기 / 누르고 있었으면 떼기
 	HWND isGetFocusedHwnd = GetFocus();
@@ -89,7 +89,7 @@ void InputManager::Update()
 /// 리셋
 /// 모든 키의 과거 상태를 눌리지 않는 상태로 바꾸낟.
 /// </summary>
-void InputManager::Reset()
+void Truth::InputManager::Reset()
 {
 	for (size_t i = 0; i < static_cast<size_t>(KEY::END); i++)
 	{
@@ -97,7 +97,7 @@ void InputManager::Reset()
 	}
 }
 
-void InputManager::Finalize()
+void Truth::InputManager::Finalize()
 {
 	Reset();
 }
@@ -106,7 +106,7 @@ void InputManager::Finalize()
 /// 마우스가 이동한 거리 
 /// </summary>
 /// <returns>마우스가 이동한 거리</returns>
-POINT InputManager::GetMouseMove() const
+POINT Truth::InputManager::GetMouseMove() const
 {
 	POINT result = {};
 	result.x = m_currentMousePos.x - m_prevMousePos.x;
