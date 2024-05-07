@@ -78,7 +78,7 @@
       <Filter>Misc\Thirdparty</Filter>
     </ClInclude>
     <ClInclude Include="Misc\Utils\PIX.h" />
-    <ClInclude Include="GraphicsEngine\D3D12Renderer.h">
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12Renderer.h">
       <Filter>GraphicsEngine</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Viewport.h">
@@ -121,15 +121,31 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine\D3D12\D3D12ResourceManager.h">
+    <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Texture.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine\Resource\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
+    <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMesh.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12RootSignature.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12Shader.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealBone.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMaterial.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.h" />
+    <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.h" />
+    <ClInclude Include="GraphicsEngine\public\ISkinnedMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealAnimation.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -149,7 +165,7 @@
       <Filter>Launch</Filter>
     </ClCompile>
     <ClCompile Include="Engine\IEngine.cpp" />
-    <ClCompile Include="GraphicsEngine\D3D12Renderer.cpp">
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12Renderer.cpp">
       <Filter>GraphicsEngine</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Viewport.cpp">
@@ -187,7 +203,7 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.cpp">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine\D3D12\D3D12ResourceManager.cpp">
+    <ClCompile Include="GraphicsEngine\D3D12\ResourceManager.cpp">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Texture.cpp">
@@ -196,8 +212,20 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Definitions.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine\Resource\ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealBone.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMaterial.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealAnimation.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -221,6 +249,7 @@
     <FxCompile Include="Shaders\BoxUV.hlsl" />
     <FxCompile Include="Shaders\SimpleVertexShaderUV.hlsl" />
     <FxCompile Include="Shaders\SimpleMeshShader.hlsl" />
+    <FxCompile Include="Shaders\AnimationDefaultVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

@@ -1,18 +1,19 @@
 #pragma once
 #include "Collider.h"
 #include "Headers.h"
-
-class SphereCollider :
-	public Collider
+namespace Truth
 {
-	COMPONENT_HEADER
+	class SphereCollider :
+		public Collider
+	{
 		GENERATE_CLASS_TYPE_INFO(SphereCollider)
 
-public:
-	float m_radius;
+	public:
+		float m_radius;
 
-public:
-	SphereCollider();
-	virtual ~SphereCollider();
-};
+	public:
+		SphereCollider();
+		virtual ~SphereCollider();
+	};
+}
 

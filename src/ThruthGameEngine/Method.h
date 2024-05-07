@@ -151,7 +151,9 @@ public:
 		std::string result = "";
 		result += std::string(_indent, '\t');
 		result += m_returnType->GetFullName();
-		result += " ( ";
+		result += " ";
+		result += m_name;
+		result += " (";
 		if (m_parameterTypes.empty())
 		{
 			result += ")";
@@ -161,9 +163,11 @@ public:
 			for (auto& p : m_parameterTypes)
 			{
 				result += p->GetFullName();
-				result += " ";
+				result += ", ";
 			}
-			result += " )";
+			result.pop_back();
+			result.pop_back();
+			result += ")";
 		}
 		result += "\n";
 		return result;

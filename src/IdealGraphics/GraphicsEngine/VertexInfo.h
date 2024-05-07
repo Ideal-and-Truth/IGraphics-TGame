@@ -2,20 +2,6 @@
 #include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
-struct alignas(256) Transform	// 사이즈를 맞추었다?
-{
-	Matrix World;
-	Matrix View;
-	Matrix Proj;
-	Matrix WorldInvTranspose;
-};
-
-struct VertexTest
-{
-	Vector3 Position;
-	Vector4 Color;
-};
-
 struct VertexTest2
 {
 	Vector3 Position;
@@ -32,8 +18,24 @@ struct BasicVertex
 
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
 
-private:
+public:
 	static const int32 InputElementCount = 5;
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+};
+
+struct SkinnedVertex
+{
+	Vector3 Position;
+	Vector3 Normal;
+	Vector2 UV;
+	Vector3 Tangent;
+	Vector4 BlendIndices;
+	Vector4 BlendWeights;
+
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+
+public:
+	static const int32 InputElementCount = 6;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
@@ -47,17 +49,4 @@ struct Mesh
 	std::vector<BasicVertex> vertices;
 	std::vector<uint32> indices;
 	std::wstring diffuseMap;
-};
-
-#define MAX_BONE_TRANSFORMS 50
-
-struct BoneDesc
-{
-	Matrix transforms[MAX_BONE_TRANSFORMS];
-};
-
-struct CommonMatrix
-{
-	uint32 BoneIndex;
-	Matrix World;
 };

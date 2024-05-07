@@ -4,7 +4,7 @@
 #include "GraphicsEngine/Resource/Bone.h"
 #include "GraphicsEngine/Resource/Mesh.h"
 #include "GraphicsEngine/Resource/Material.h"
-#include "GraphicsEngine/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 
 using namespace Ideal;
 

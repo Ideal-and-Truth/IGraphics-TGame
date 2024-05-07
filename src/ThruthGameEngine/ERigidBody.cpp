@@ -1,8 +1,8 @@
 #include "ERigidBody.h"
-#include "ETransform.h"
+#include "Transform.h"
 #include "Entity.h"
 
-ERigidBody::ERigidBody()
+Truth::ERigidBody::ERigidBody()
 	: m_mass(1.0f)
 	, m_drag(0.0f)
 	, m_angularDrag(0.05f)
@@ -17,14 +17,14 @@ ERigidBody::ERigidBody()
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
-	m_transform = m_owner.lock()->GetComponent<ETransform>();
+	m_transform = m_owner.lock()->GetComponent<Transform>();
 }
 
-ERigidBody::~ERigidBody()
+Truth::ERigidBody::~ERigidBody()
 {
 
 }
 
-void ERigidBody::Awake()
+void Truth::ERigidBody::Awake()
 {
 }

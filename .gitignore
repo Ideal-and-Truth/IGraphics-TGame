@@ -5,6 +5,7 @@ Release/
 Temp/
 vcpkg_installed/
 .vs/
+vcpkg_installed/
 *.obj
 *.log
 *.ilk

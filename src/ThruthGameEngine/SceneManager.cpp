@@ -1,23 +1,23 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-SceneManager::SceneManager()
+Truth::SceneManager::SceneManager()
 {
 	DEBUG_PRINT("Create Scene Manager\n");
 }
 
-SceneManager::~SceneManager()
+Truth::SceneManager::~SceneManager()
 {
 	DEBUG_PRINT("Finalize SceneManager\n");
 }
 
-void SceneManager::Initalize(std::shared_ptr<EventManager> _eventManger)
+void Truth::SceneManager::Initalize(std::shared_ptr<EventManager> _eventManger)
 {
 	m_eventManager = _eventManger;
 	m_eventManager.lock()->Subscribe("Change Scene", MakeListenerInfo(&SceneManager::ChangeScene));
 }
 
-void SceneManager::SetCurrnetScene(std::string _name)
+void Truth::SceneManager::SetCurrnetScene(std::string _name)
 {
 	if (!HasScene(_name))
 	{
@@ -27,18 +27,18 @@ void SceneManager::SetCurrnetScene(std::string _name)
 	m_currentScene = m_sceneMap[_name];
 }
 
-void SceneManager::Finalize()
+void Truth::SceneManager::Finalize()
 {
 	m_currentScene.lock()->Exit();
 	m_sceneMap.clear();
 }
 
-void SceneManager::StartGameScene()
+void Truth::SceneManager::StartGameScene()
 {
 	m_currentScene.lock()->Enter();
 }
 
-void SceneManager::ChangeScene(std::any _p)
+void Truth::SceneManager::ChangeScene(std::any _p)
 {
 #ifdef _DEBUG
 	if (!_p.has_value())
@@ -60,13 +60,13 @@ void SceneManager::ChangeScene(std::any _p)
 	m_currentScene.lock()->Enter();
 }
 
-void SceneManager::ResetScene(std::any _p)
+void Truth::SceneManager::ResetScene(std::any _p)
 {
 	m_currentScene.lock()->Exit();
 	m_currentScene.lock()->Enter();
 }
 
-bool SceneManager::HasScene(std::string _name)
+bool Truth::SceneManager::HasScene(std::string _name)
 {
 	return m_sceneMap.find(_name) != m_sceneMap.end();
 }

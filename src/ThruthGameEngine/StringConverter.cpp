@@ -1,7 +1,8 @@
 #include "StringConverter.h"
-
+#include "Component.h"
+#include "Entity.h"
 template<>
-std::string StringConverter::ToString(bool _val)
+std::string StringConverter::ToString(bool _val, int _indent)
 {
 	if (_val)
 	{
@@ -14,7 +15,7 @@ std::string StringConverter::ToString(bool _val)
 }
 
 template<>
-std::string StringConverter::ToString(Vector4 _val)
+std::string StringConverter::ToString(Vector4 _val, int _indent)
 {
 	std::string result = "";
 	result += "{ ";
@@ -30,8 +31,7 @@ std::string StringConverter::ToString(Vector4 _val)
 }
 
 template<>
-std::string StringConverter::ToString(Vector3 _val)
-
+std::string StringConverter::ToString(Vector3 _val, int _indent)
 {
 	std::string result = "";
 	result += "{ ";
@@ -45,8 +45,7 @@ std::string StringConverter::ToString(Vector3 _val)
 }
 
 template<>
-std::string StringConverter::ToString(Vector2 _val)
-
+std::string StringConverter::ToString(Vector2 _val, int _indent)
 {
 	std::string result = "";
 	result += "{ ";
@@ -55,4 +54,31 @@ std::string StringConverter::ToString(Vector2 _val)
 	result += ToString(_val.y);
 	result += " }";
 	return result;
+}
+
+template<>
+std::string StringConverter::ToString(std::shared_ptr<Truth::Component> _val, int _indent)
+{
+	std::string result = "";
+	result += _val->GetTypeInfo().Dump(_val.get(), _indent);
+	return result;
+}
+
+template<>
+std::string StringConverter::ToString(std::shared_ptr<Truth::Entity> _val, int _indent)
+{
+	return "Entity";
+}
+
+template<>
+std::string StringConverter::ToString(std::string _val, int _indent)
+{
+	return _val;
+}
+
+
+template<>
+std::string StringConverter::ToString(std::wstring _val, int _indent)
+{
+	return "wstring Data";
 }

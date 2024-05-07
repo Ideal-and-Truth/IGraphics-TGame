@@ -25,10 +25,10 @@ void D3D12Viewport::Init()
 	);
 
 	m_scissorRect = CD3DX12_RECT(
-		0.f,
-		0.f,
-		static_cast<float>(m_width),
-		static_cast<float>(m_height)
+		0,
+		0,
+		static_cast<LONG>(m_width),
+		static_cast<LONG>(m_height)
 	);
 }
 

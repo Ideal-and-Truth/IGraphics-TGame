@@ -104,6 +104,7 @@ private:
 	std::string m_fullName;
 	// 부모 클래스의 정보 (있다면)
 	const TypeInfo* m_super = nullptr;
+
 	// 해당 타입이 배열인지
 	bool m_isArray = false;
 

@@ -1,16 +1,18 @@
 #pragma once
 #include "Collider.h"
-class BoxCollider :
-    public Collider
+namespace Truth
 {
-	COMPONENT_HEADER
-	GENERATE_CLASS_TYPE_INFO(BoxCollider)
+	class BoxCollider :
+		public Collider
+	{
+		GENERATE_CLASS_TYPE_INFO(BoxCollider)
 
-public:
-	Vector3 m_size;
+	public:
+		Vector3 m_size;
 
-public:
-	BoxCollider();
-	virtual ~BoxCollider();
-};
+	public:
+		BoxCollider();
+		virtual ~BoxCollider();
+	};
+}
 

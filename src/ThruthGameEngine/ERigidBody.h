@@ -2,42 +2,42 @@
 #include "Component.h"
 #include "Headers.h"
 
-class ETransform;
+class Truth::Transform;
 
-class ERigidBody :
-    public Component
+namespace Truth
 {
-    COMPONENT_HEADER
-    GENERATE_CLASS_TYPE_INFO(ERigidBody)
+	class ERigidBody :
+		public Component
+	{
+		GENERATE_CLASS_TYPE_INFO(ERigidBody)
 
-public:
-    float m_mass;
-    float m_drag;
-    float m_angularDrag;
+	public:
+		float m_mass;
+		float m_drag;
+		float m_angularDrag;
 
-    bool m_useGravity;
-    bool m_isKinematic;
+		bool m_useGravity;
+		bool m_isKinematic;
 
-// 	bool m_freezePosition;
-// 	bool m_freezeRotation;
+		// 	bool m_freezePosition;
+		// 	bool m_freezeRotation;
 
-private:
-    float m_speed;
-	Vector3 m_velocity;
-	Vector3 m_angularVelocity;
-    Vector3 m_inertiaTensor;
-    Vector3 m_inertiaTensorRotation;
-	Vector3 m_localMassCenter;
-	Vector3 m_worldMassCenter;
+	private:
+		float m_speed;
+		Vector3 m_velocity;
+		Vector3 m_angularVelocity;
+		Vector3 m_inertiaTensor;
+		Vector3 m_inertiaTensorRotation;
+		Vector3 m_localMassCenter;
+		Vector3 m_worldMassCenter;
 
-    std::weak_ptr<ETransform> m_transform;
+		std::weak_ptr<Transform> m_transform;
 
-public:
-    ERigidBody();
-    ~ERigidBody();
+	public:
+		ERigidBody();
+		~ERigidBody();
 
-    void Awake() override;
-
-
-};
+		void Awake() override;
+	};
+}
 

@@ -15,33 +15,36 @@
 /// PhysX 라이브러리를 사용하는 매니저
 /// 모든 PhysX 기능은 이 라이브러리를 통해 실행 될 것이다.
 /// </summary>
-class PhysicsManager
+namespace Truth
 {
-private:
-	// Foundation 생성
-	physx::PxDefaultAllocator m_allocator;
-	physx::PxDefaultErrorCallback m_errorCallback;
-	physx::PxFoundation* m_foundation;
+	class PhysicsManager
+	{
+	private:
+		// Foundation 생성
+		physx::PxDefaultAllocator m_allocator;
+		physx::PxDefaultErrorCallback m_errorCallback;
+		physx::PxFoundation* m_foundation;
 
-	physx::PxPhysics* m_physics;
+		physx::PxPhysics* m_physics;
 
-	physx::PxDefaultCpuDispatcher* m_dispatcher;
-	physx::PxScene* m_scene;
-	physx::PxMaterial* m_material;
+		physx::PxDefaultCpuDispatcher* m_dispatcher;
+		physx::PxScene* m_scene;
+		physx::PxMaterial* m_material;
 
-	// 디버거
-	physx::PxPvd* m_pvd;
+		// 디버거
+		physx::PxPvd* m_pvd;
 
-public:
-	PhysicsManager();
-	~PhysicsManager();
+	public:
+		PhysicsManager();
+		~PhysicsManager();
 
-	void Initalize();
-	void Finalize();
+		void Initalize();
+		void Finalize();
 
-private:
-	void SetPhysics();
-	void SetScene();
-	void SetMaterial();
-};
+	private:
+		void SetPhysics();
+		void SetScene();
+		void SetMaterial();
+	};
+}
 

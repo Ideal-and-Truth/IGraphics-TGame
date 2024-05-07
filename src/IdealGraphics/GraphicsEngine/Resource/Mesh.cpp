@@ -2,9 +2,9 @@
 #include "GraphicsEngine/Resource/Material.h"
 #include "GraphicsEngine/Resource/Model.h"
 
-#include "GraphicsEngine/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/VertexInfo.h"
-#include "GraphicsEngine/D3D12/D3D12ResourceManager.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
 
 Ideal::Mesh::Mesh()
 {
@@ -18,7 +18,7 @@ Ideal::Mesh::~Mesh()
 
 void Ideal::Mesh::Create(std::shared_ptr<D3D12Renderer> Renderer)
 {
-	std::shared_ptr<Ideal::D3D12ResourceManager> resourceManager = Renderer->GetResourceManager();
+	std::shared_ptr<Ideal::ResourceManager> resourceManager = Renderer->GetResourceManager();
 	
 	//--------------Init---------------//
 	//InitRootSignature(Renderer);
@@ -42,7 +42,7 @@ void Ideal::Mesh::Create(std::shared_ptr<D3D12Renderer> Renderer)
 
 	//--------------CB---------------//
 	{
-		const uint32 bufferSize = sizeof(Transform);
+		const uint32 bufferSize = sizeof(CB_Transform);
 
 		m_constantBuffer.Create(Renderer->GetDevice().Get(), bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
 	}
@@ -72,7 +72,7 @@ void Ideal::Mesh::Tick(std::shared_ptr<D3D12Renderer> Renderer)
 
 	//m_transform.World = Matrix::CreateRotationY(DirectX::XMConvertToRadians(rot)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, -800.f));
 	//
-	Transform* t = (Transform*)m_constantBuffer.GetMappedMemory(Renderer->GetFrameIndex());
+	CB_Transform* t = (CB_Transform*)m_constantBuffer.GetMappedMemory(Renderer->GetFrameIndex());
 	*t = m_transform;
 }
 
@@ -103,7 +103,7 @@ void Ideal::Mesh::Render(std::shared_ptr<D3D12Renderer> Renderer)
 	//CommandList->SetGraphicsRootDescriptorTable(0, Renderer->GetSRVDescriptorHeap().Get()->GetGPUDescriptorHandleForHeapStart());
 
 	uint32 currentIndex = Renderer->GetFrameIndex();
-	CommandList->SetGraphicsRootConstantBufferView(1, m_constantBuffer.GetGPUVirtualAddress(currentIndex));
+	CommandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX, m_constantBuffer.GetGPUVirtualAddress(currentIndex));
 	CommandList->DrawIndexedInstanced(m_indexBuffer->GetElementCount(), 1, 0, 0, 0);
 }
 
@@ -253,7 +253,7 @@ void Ideal::Mesh::InitPipelineState2(std::shared_ptr<D3D12Renderer> Renderer)
 	// Set VS
 	ComPtr<ID3DBlob> vertexShader;
 	Check(D3DCompileFromFile(
-		L"Shaders/BoxUV.hlsl",
+		L"../Shaders/BoxUV.hlsl",
 		nullptr,
 		nullptr,
 		"VS",
@@ -263,7 +263,7 @@ void Ideal::Mesh::InitPipelineState2(std::shared_ptr<D3D12Renderer> Renderer)
 	// Set PS
 	ComPtr<ID3DBlob> pixelShader;
 	Check(D3DCompileFromFile(
-		L"Shaders/BoxUV.hlsl",
+		L"../Shaders/BoxUV.hlsl",
 		nullptr,
 		nullptr,
 		"PS",

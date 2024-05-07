@@ -4,11 +4,10 @@
 #include <d3d12.h>
 #include <dxgi.h>
 #include <dxgi1_4.h>
-#include <wrl.h>
 //#include <d3dx12.h>
 #include "ThirdParty/Common/d3dx12.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
-using namespace Microsoft::WRL;
 
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d12.lib")

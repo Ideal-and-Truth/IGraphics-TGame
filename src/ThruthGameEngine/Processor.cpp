@@ -3,6 +3,9 @@
 #include "SceneManager.h"
 #include "TestScene.h"
 #include "TestScene2.h"
+#include "ISkinnedMeshObject.h"
+#include "IRenderScene.h"
+#include "IAnimation.h"
 
 Processor::Processor()
 	: m_hwnd(nullptr)
@@ -28,18 +31,31 @@ void Processor::Initialize(HINSTANCE _hInstance)
 {
 	CreateMainWindow(_hInstance);
 	InitializeManager();
-	CreateRender();
 	//m_renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
 	//mesh = m_renderer->CreateMeshObject(L"Tower/Tower");
 	//m_renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 	//mesh = m_renderer->CreateMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 
-	m_manager->Scene()->AddScene<TestScene>("test", m_manager);
-	m_manager->Scene()->AddScene<TestScene2>("test2", m_manager);
+	m_manager->Scene()->AddScene<Truth::TestScene>("test", m_manager);
+	m_manager->Scene()->AddScene<Truth::TestScene2>("test2", m_manager);
 
 	m_manager->Scene()->SetCurrnetScene("test");
 
 	m_manager->Scene()->StartGameScene();
+
+	/// 그래픽 테스트
+	// m_renderScene = m_renderer->CreateRenderScene();
+	// m_renderer->SetRenderScene(m_renderScene);
+
+	// m_renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+	// m_renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+
+	// m_cat = m_renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+	// m_walkAnim = m_renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+	// m_cat->AddAnimation("Walk", m_walkAnim);
+
+	// m_renderScene->AddObject(m_cat);
+
 }
 
 void Processor::Finalize()
@@ -97,7 +113,6 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 void Processor::Update()
 {
 	m_manager->Update();
-	m_renderer->Tick();
 }
 
 void Processor::LateUpdate()
@@ -112,8 +127,7 @@ void Processor::FixedUpdate()
 
 void Processor::Render()
 {
-	// m_manager->Render();
-	m_renderer->Render();
+	m_manager->Render();
 }
 
 void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _height, const wchar_t szAppName[])
@@ -176,21 +190,6 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 
 void Processor::InitializeManager()
 {
-	m_manager = std::make_shared<Managers>();
-	m_manager->Initialize(m_hwnd);
-}
-
-void Processor::CreateRender()
-{
-	m_renderer = CreateRenderer(
-		EGraphicsInterfaceType::D3D12,
-		&m_hwnd,
-		m_wight,
-		m_height,
-		L"../Resources/Assets/",
-		L"../Resources/Models/",
-		L"../Resources/Textures/"
-	);
-
-	m_renderer->Init();
+	m_manager = std::make_shared<Truth::Managers>();
+	m_manager->Initialize(m_hwnd, m_wight, m_height);
 }
