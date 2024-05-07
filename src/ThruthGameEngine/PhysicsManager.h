@@ -9,6 +9,7 @@
 #pragma warning(disable: 33010)
 #pragma warning(disable: 6297)
 #include "physx/PxPhysicsAPI.h"
+// #include "physx/omnipvd/PxOmniPvd.h"
 #pragma warning(pop)
 
 /// <summary>
@@ -21,10 +22,10 @@ namespace Truth
 	{
 	private:
 		// Foundation 생성
+		physx::PxFoundation* m_foundation;
 		physx::PxDefaultAllocator m_allocator;
 		physx::PxDefaultErrorCallback m_errorCallback;
-		physx::PxFoundation* m_foundation;
-
+	
 		physx::PxPhysics* m_physics;
 
 		physx::PxDefaultCpuDispatcher* m_dispatcher;
@@ -33,6 +34,13 @@ namespace Truth
 
 		// 디버거
 		physx::PxPvd* m_pvd;
+		physx::PxPvdTransport* m_trasport;
+
+		physx::PxReal m_stackZ = 10.0f;
+
+		// physx::PxOmniPvd* m_oPvd;
+
+		bool m_isInteractive = false;
 
 	public:
 		PhysicsManager();
@@ -40,11 +48,22 @@ namespace Truth
 
 		void Initalize();
 		void Finalize();
+		void Update();
 
 	private:
-		void SetPhysics();
-		void SetScene();
-		void SetMaterial();
+		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);
+		physx::PxRigidDynamic* createDynamic(const physx::PxTransform& _t, const physx::PxGeometry& _geometry, const physx::PxVec3& _velocity = physx::PxVec3(0));
 	};
 }
 
+class TruthPxEventCallback 
+	: public physx::PxSimulationEventCallback
+{
+public:
+	virtual void onContact(const physx::PxContactPairHeader& _pairHeader, const physx::PxContactPair* _pairs, physx::PxU32 _nbPairs) {};
+	virtual void onTrigger(physx::PxTriggerPair* _pairs, physx::PxU32 _count) {};
+	virtual void onWake(physx::PxActor** _actors, physx::PxU32 _count) {};
+	virtual void onSleep(physx::PxActor** _actors, physx::PxU32 _count) {};
+	virtual void onAdvance(const physx::PxRigidBody* const* _bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 _count) {};
+	virtual void onConstraintBreak(physx::PxConstraintInfo* _constraints, physx::PxU32 _count) {};
+};

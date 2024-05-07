@@ -26,6 +26,7 @@ void Truth::Managers::Update() const
 {
 	m_inputManager->Update();
 	m_timeManager->Update();
+	m_physXManager->Update();
 	m_eventManager->PublishEvent("Update");
 	m_eventManager->Update();
 	m_graphicsManager->Tick();
