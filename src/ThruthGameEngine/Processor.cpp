@@ -31,10 +31,6 @@ void Processor::Initialize(HINSTANCE _hInstance)
 {
 	CreateMainWindow(_hInstance);
 	InitializeManager();
-	//m_renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
-	//mesh = m_renderer->CreateMeshObject(L"Tower/Tower");
-	//m_renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
-	//mesh = m_renderer->CreateMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 
 	m_manager->Scene()->AddScene<Truth::TestScene>("test", m_manager);
 	m_manager->Scene()->AddScene<Truth::TestScene2>("test2", m_manager);
@@ -42,20 +38,6 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	m_manager->Scene()->SetCurrnetScene("test");
 
 	m_manager->Scene()->StartGameScene();
-
-	/// 그래픽 테스트
-	// m_renderScene = m_renderer->CreateRenderScene();
-	// m_renderer->SetRenderScene(m_renderScene);
-
-	// m_renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-	// m_renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-
-	// m_cat = m_renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-	// m_walkAnim = m_renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
-	// m_cat->AddAnimation("Walk", m_walkAnim);
-
-	// m_renderScene->AddObject(m_cat);
-
 }
 
 void Processor::Finalize()

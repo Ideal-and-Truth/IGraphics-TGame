@@ -31,7 +31,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	m_renderScene = m_renderer->CreateRenderScene();
 	m_renderer->SetRenderScene(m_renderScene);
 
-	m_aspect = static_cast<float>(_wight / _height);
+	m_aspect = static_cast<float>(_wight) / static_cast<float>(_height);
 }
 
 void Truth::GraphicsManager::Finalize()
