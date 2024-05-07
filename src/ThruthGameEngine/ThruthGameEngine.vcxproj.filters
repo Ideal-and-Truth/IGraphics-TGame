@@ -79,6 +79,12 @@
     <Filter Include="Component\Mesh">
       <UniqueIdentifier>{881c1d1f-2b03-4b59-b335-cee1b6fab331}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Camera">
+      <UniqueIdentifier>{1671b10b-9e22-416a-ab9e-f588fcb23b9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Enitity\TestCamera">
+      <UniqueIdentifier>{14d40754-8c73-4d08-ad1f-ff4282d98281}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -159,7 +165,15 @@
     <ClCompile Include="GraphicsManager.cpp">
       <Filter>Manager\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Component\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="DefalutCamera.cpp">
+      <Filter>Enitity\TestCamera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -257,6 +271,14 @@
     <ClInclude Include="GraphicsManager.h">
       <Filter>Manager\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Mesh.h">
+      <Filter>Component\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="DefalutCamera.h">
+      <Filter>Enitity\TestCamera</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -28,6 +28,7 @@ void Truth::Managers::Update() const
 	m_timeManager->Update();
 	m_eventManager->PublishEvent("Update");
 	m_eventManager->Update();
+	m_graphicsManager->Tick();
 }
 
 void Truth::Managers::LateUpdate() const

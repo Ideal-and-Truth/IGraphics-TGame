@@ -5,6 +5,7 @@
 Truth::GraphicsManager::GraphicsManager()
 	: m_renderer(nullptr)
 	, m_renderScene(nullptr)
+	, m_aspect(1.0f)
 {
 
 }
@@ -29,11 +30,18 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	m_renderer->Init();
 	m_renderScene = m_renderer->CreateRenderScene();
 	m_renderer->SetRenderScene(m_renderScene);
+
+	m_aspect = static_cast<float>(_wight / _height);
 }
 
 void Truth::GraphicsManager::Finalize()
 {
 
+}
+
+void Truth::GraphicsManager::Tick()
+{
+	m_renderer->Tick();
 }
 
 void Truth::GraphicsManager::Render()
@@ -49,5 +57,15 @@ void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::ISkinnedMeshObject
 std::shared_ptr<Ideal::ISkinnedMeshObject> Truth::GraphicsManager::CreateSkinnedMesh(std::wstring _path)
 {
 	return m_renderer->CreateSkinnedMeshObject(_path);
+}
+
+std::shared_ptr<Ideal::ICamera> Truth::GraphicsManager::CreateCamera()
+{
+	return m_renderer->CreateCamera();
+}
+
+void Truth::GraphicsManager::SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera)
+{
+	m_renderer->SetMainCamera(_camera);
 }
 

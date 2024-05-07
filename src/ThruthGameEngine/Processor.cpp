@@ -113,7 +113,6 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 void Processor::Update()
 {
 	m_manager->Update();
-	// m_renderer->Tick();
 }
 
 void Processor::LateUpdate()

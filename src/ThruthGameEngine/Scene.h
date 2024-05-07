@@ -23,7 +23,7 @@ namespace Truth
 
 	public:
 		template<typename E>
-		void AddEntity();
+		std::shared_ptr<E> AddEntity();
 
 		virtual void Awake() abstract;
 		virtual void Enter() abstract;
@@ -34,11 +34,13 @@ namespace Truth
 }
 
 template<typename E>
-void Truth::Scene::AddEntity()
+std::shared_ptr<E> Truth::Scene::AddEntity()
 {
 	std::shared_ptr<E> entity = std::make_shared<E>();
 	m_entities.push_back(entity);
 	entity->SetManager(m_managers);
 	entity->Initailize();
+
+	return entity;
 }
 

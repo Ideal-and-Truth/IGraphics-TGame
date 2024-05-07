@@ -214,7 +214,7 @@ namespace Truth
 
 		void Finalize();
 
-		KEY_STATE GetKeyState(KEY _eKey) const = delete;
+		KEY_STATE GetKeyState(KEY _eKey) const;
 
 		POINT GetMouseMove() const;
 	};

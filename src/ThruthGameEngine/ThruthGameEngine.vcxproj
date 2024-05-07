@@ -22,6 +22,7 @@
     <ClInclude Include="..\Utils\SimpleMath.h" />
     <ClInclude Include="AdvanceReflection.h" />
     <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Component.h" />
@@ -44,6 +45,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="StringConverter.h" />
+    <ClInclude Include="DefalutCamera.h" />
     <ClInclude Include="TestComponent.h" />
     <ClInclude Include="TestEntity.h" />
     <ClInclude Include="TestScene.h" />
@@ -57,6 +59,7 @@
   <ItemGroup>
     <ClCompile Include="..\Utils\SimpleMath.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -75,6 +78,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="StringConverter.cpp" />
+    <ClCompile Include="DefalutCamera.cpp" />
     <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="TestEntity.cpp" />
     <ClCompile Include="TestScene.cpp" />

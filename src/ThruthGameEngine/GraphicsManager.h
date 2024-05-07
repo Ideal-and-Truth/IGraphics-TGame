@@ -13,6 +13,7 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::IdealRenderer> m_renderer;
 		std::shared_ptr<Ideal::IRenderScene> m_renderScene;
+		float m_aspect;
 
 		const wchar_t* m_assetPath[3] =
 		{
@@ -27,7 +28,7 @@ namespace Truth
 
 		void Initalize(HWND _hwnd, uint32 _wight, uint32 _height);
 		void Finalize();
-
+		void Tick();
 		void Render();
 
 		void AddObject(std::shared_ptr<Ideal::ISkinnedMeshObject> _mesh);
@@ -37,6 +38,11 @@ namespace Truth
 
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMesh(std::wstring _path);
 		void CreateAnimation(std::wstring _path);
+
+		std::shared_ptr<Ideal::ICamera> CreateCamera();
+		void SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera);
+
+		float GetAspect() const { return m_aspect; }
 	};
 }
 

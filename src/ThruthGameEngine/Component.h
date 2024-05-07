@@ -1,11 +1,15 @@
 #pragma once
 #include "Headers.h"
 #include "EventHandler.h"
+#include "Managers.h"
+#include "InputManager.h"
 
 /// <summary>
 /// 모든 컴포넌트의 부모 클래스
 /// 일단은 이렇게 구현해보자...
 /// </summary>
+
+enum class KEY;
 
 namespace Truth
 {
@@ -49,6 +53,20 @@ namespace Truth
 		template <typename T>
 		void EventBind(std::string _name, void (T::* func)(std::any));
 		void EventPublish(std::string _name, std::any _param = nullptr, float4 _delay = 0.0f);
+
+		// 입력 관련 함수
+		inline bool GetKeyDown(KEY _key) const
+		{
+			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::DOWN);
+		}
+		inline bool GetKeyUp(KEY _key) const
+		{
+			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::UP);
+		}
+		inline bool GetKey(KEY _key) const
+		{
+			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::HOLD);
+		}
 	};
 }
 

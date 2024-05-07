@@ -49,7 +49,11 @@ void Truth::InputManager::Update()
 			// 허나 눌려있던 상태라면 UP 상태로 바꿔 주어야 한다.
 			if (m_keyInfomation[i].state == KEY_STATE::DOWN || m_keyInfomation[i].state == KEY_STATE::HOLD)
 			{
-				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::UP]);
+				m_keyInfomation[(int)i].state = KEY_STATE::UP;
+			}
+			else
+			{
+				m_keyInfomation[(int)i].state = KEY_STATE::NONE;
 			}
 		}
 		// 업데이트 바로 종료
@@ -64,11 +68,11 @@ void Truth::InputManager::Update()
 		{
 			if (m_keyInfomation[i].prevPush)
 			{
-				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::HOLD]);
+				m_keyInfomation[(int)i].state = KEY_STATE::HOLD;
 			}
 			else
 			{
-				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::DOWN]);
+				m_keyInfomation[(int)i].state = KEY_STATE::DOWN;
 			}
 
 			m_keyInfomation[i].prevPush = true;
@@ -77,7 +81,11 @@ void Truth::InputManager::Update()
 		{
 			if (m_keyInfomation[i].prevPush)
 			{
-				m_eventManager.lock()->PublishEvent(m_virtualKeyString[i] + "_" + m_keyStateString[(int)KEY_STATE::UP]);
+				m_keyInfomation[(int)i].state = KEY_STATE::UP;
+			}
+			else
+			{
+				m_keyInfomation[(int)i].state = KEY_STATE::NONE;
 			}
 
 			m_keyInfomation[i].prevPush = false;
@@ -100,6 +108,11 @@ void Truth::InputManager::Reset()
 void Truth::InputManager::Finalize()
 {
 	Reset();
+}
+
+KEY_STATE Truth::InputManager::GetKeyState(KEY _eKey) const
+{
+	return m_keyInfomation[(int)_eKey].state;
 }
 
 /// <summary>
