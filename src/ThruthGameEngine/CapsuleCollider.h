@@ -13,7 +13,7 @@ namespace Truth
 		float m_height;
 
 	public:
-		CapsuleCollider();
+		CapsuleCollider(std::shared_ptr<Managers> _managers);
 		virtual ~CapsuleCollider();
 
 	};

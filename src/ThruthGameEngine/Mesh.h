@@ -14,11 +14,10 @@ namespace Truth
 		std::wstring m_path;
 
 	public:
-		Mesh();
-		Mesh(std::wstring _path);
+		Mesh(std::shared_ptr<Managers> _managers);
+		Mesh(std::shared_ptr<Managers> _managers, std::wstring _path);
 		virtual ~Mesh();
 
-		void Awake() override;
 		void SetMesh(std::wstring _path);
 		void SetRenderable(bool _isRenderable);
 

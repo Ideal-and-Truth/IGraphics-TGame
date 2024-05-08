@@ -2,8 +2,9 @@
 #include "Transform.h"
 #include "Entity.h"
 
-Truth::RigidBody::RigidBody()
-	: m_mass(1.0f)
+Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers)
+	: Component(_managers)
+	, m_mass(1.0f)
 	, m_drag(0.0f)
 	, m_angularDrag(0.05f)
 	, m_useGravity(true)
@@ -23,8 +24,4 @@ Truth::RigidBody::RigidBody()
 Truth::RigidBody::~RigidBody()
 {
 
-}
-
-void Truth::RigidBody::Awake()
-{
 }

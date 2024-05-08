@@ -12,7 +12,7 @@ namespace Truth
 		float m_radius;
 
 	public:
-		SphereCollider();
+		SphereCollider(std::shared_ptr<Managers> _managers);
 		virtual ~SphereCollider();
 	};
 }

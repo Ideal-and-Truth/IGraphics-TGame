@@ -2,10 +2,10 @@
 #include "TimeManager.h"
 #include "EventManager.h"
 
-Truth::Component::Component()
+Truth::Component::Component(std::shared_ptr<Managers> _managers)
 	: m_owner()
 	, m_canMultiple(false)
-	, m_managers()
+	, m_managers(_managers)
 {
 	m_name = typeid(*this).name();
 }

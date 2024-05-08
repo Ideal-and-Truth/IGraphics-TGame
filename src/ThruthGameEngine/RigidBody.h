@@ -34,10 +34,8 @@ namespace Truth
 		std::weak_ptr<Transform> m_transform;
 
 	public:
-		RigidBody();
+		RigidBody(std::shared_ptr<Managers> _managers);
 		~RigidBody();
-
-		void Awake() override;
 	};
 }
 

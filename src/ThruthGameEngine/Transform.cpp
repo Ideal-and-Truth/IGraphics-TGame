@@ -2,23 +2,20 @@
 #include "Managers.h"
 
 
-Truth::Transform::Transform()
-	: m_position(0.0f, 0.0f, 0.0f)
+Truth::Transform::Transform(std::shared_ptr<Managers> _managers)
+	: Component(_managers)
+	, m_position(0.0f, 0.0f, 0.0f)
 	, m_scale(1.0f, 1.0f, 1.0f)
 	, m_rotation{}
 	, m_transformMatrix{Matrix::Identity}
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
+	EventBind("Apply Transform", &Transform::ApplyTransform);
 }
 
 Truth::Transform::~Transform()
 {
-}
-
-void Truth::Transform::Awake()
-{
-	EventBind("Apply Transform", &Transform::ApplyTransform);
 }
 
 /// <summary>

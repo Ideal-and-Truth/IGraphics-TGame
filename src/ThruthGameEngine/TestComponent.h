@@ -17,9 +17,8 @@ namespace Truth
 			int m_testInt;
 
 	public:
-		TestComponent();
+		TestComponent(std::shared_ptr<Managers> _managers);
 		virtual	~TestComponent();
-		virtual void Awake() override;
 
 	public:
 		METHOD(Update)
