@@ -30,6 +30,9 @@ namespace Ideal
 	class IdealSkinnedMeshObject;
 	class IdealRenderScene;
 
+	// Manager
+	class D3D12ConstantBufferPool;
+
 	// Interface
 	class ICamera;
 	class IRenderScene;
@@ -42,6 +45,10 @@ class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_fro
 {
 public:
 	enum { FRAME_BUFFER_COUNT = 2 };
+
+private:
+	static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;
+	static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
 
 public:
 	D3D12Renderer(HWND hwnd, uint32 width, uint32 height);
@@ -68,7 +75,6 @@ public:
 	void Release();
 
 	void CreateDefaultCamera();
-	//void CreateMeshObject(const std::wstring FileName);
 	void BeginRender();
 	void EndRender();
 
@@ -134,6 +140,25 @@ private:
 
 	// RenderScene
 	std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
+
+public:
+	// Test : 2024.05.07; 하나의 Descriptor Table에서 떼어다가 쓴다...
+	void CreateDescriptorTable();
+	std::shared_ptr<Ideal::D3D12DescriptorHeap> GetMainDescriptorHeap();
+
+	// Test : 2024.05.07; Type마다 CBPool을 만들어야하나?
+	void CreateCBPool();
+	// 2024.05.08; 256의 512, 1024 로 만들어서 필요한 용량에 따라 사용해도 괜찮을 듯?
+	std::shared_ptr<Ideal::D3D12ConstantBufferPool> GetCBPool(uint32 SizePerCB);
+
+private:
+	// D3D12 Data Manager
+	std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeap;
+
+	// 2024.05.08; 256의 512, 1024 로 만들어서 필요한 용량에 따라 사용해도 괜찮을 듯?
+	std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb256Pool;
+	std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb512Pool;
+	std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb1024Pool;
 
 private:
 	float m_aspectRatio = 0.f;

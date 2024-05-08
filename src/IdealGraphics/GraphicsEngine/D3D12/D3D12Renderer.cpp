@@ -22,6 +22,7 @@
 #include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealRenderScene.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 
 D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
@@ -74,7 +75,6 @@ void D3D12Renderer::Init()
 #endif
 
 	//---------------------Viewport Init-------------------------//
-
 	m_viewport.Init();
 
 	//---------------------Create Device-------------------------//
@@ -226,7 +226,7 @@ finishAdapter:
 	}
 
 	// 2024.04.21 Ideal::Descriptor Heap
-	m_idealSrvHeap.Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_srvHeapNum);
+	m_idealSrvHeap.Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapNum);
 
 	//------------------Create Default Camera------------------//
 	CreateDefaultCamera();
@@ -246,8 +246,10 @@ finishAdapter:
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
 
-	//------------------Create Common CB---------------------//
-
+	//------------------Create Main Descriptor Heap---------------------//
+	CreateDescriptorTable();
+	//------------------Create CB Pool---------------------//
+	CreateCBPool();
 }
 
 void D3D12Renderer::Tick()
@@ -278,19 +280,19 @@ void D3D12Renderer::Tick()
 	{
 		m_mainCamera->Strafe(speed);
 	}
-
-	m_mainCamera->UpdateViewMatrix();
 }
 
 void D3D12Renderer::Render()
 {
+	m_mainCamera->UpdateViewMatrix();
+
 	//-------------Begin Render------------//
 	BeginRender();
 
 	//-------------Render Command-------------//
 	{
-		ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
-		m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+		//ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
+		//m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		//----------Render Scene-----------//
 		if (m_currentRenderScene != nullptr)
@@ -305,13 +307,17 @@ void D3D12Renderer::Render()
 	//----------------Present-------------------//
 	GraphicsPresent();
 
+	m_descriptorHeap->Reset();
+	m_cb256Pool->Reset();
+	m_cb512Pool->Reset();
+	m_cb1024Pool->Reset();
 	return;
 }
 
 std::shared_ptr<Ideal::ICamera> D3D12Renderer::CreateCamera()
 {
 	std::shared_ptr<Ideal::Camera> newCamera = std::make_shared<Ideal::Camera>();
-	
+
 	return newCamera;
 }
 
@@ -483,6 +489,47 @@ void D3D12Renderer::GraphicsPresent()
 
 	GraphicsFence();
 	WaitForGraphicsFenceValue();
+}
+
+void D3D12Renderer::CreateDescriptorTable()
+{
+	m_descriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	//m_descriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, MAX_DESCRIPTOR_COUNT);
+	m_descriptorHeap->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
+}
+
+std::shared_ptr<Ideal::D3D12DescriptorHeap> D3D12Renderer::GetMainDescriptorHeap()
+{
+	return m_descriptorHeap;
+}
+
+void D3D12Renderer::CreateCBPool()
+{
+	m_cb256Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb256Pool->Init(m_device.Get(), 256, MAX_DRAW_COUNT_PER_FRAME);
+
+	m_cb512Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb512Pool->Init(m_device.Get(), 512, MAX_DRAW_COUNT_PER_FRAME);
+
+	m_cb1024Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb1024Pool->Init(m_device.Get(), 1024, MAX_DRAW_COUNT_PER_FRAME);
+}
+
+std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBPool(uint32 SizePerCB)
+{
+	if (SizePerCB <= 256)
+	{
+		return m_cb256Pool;
+	}
+	else if (SizePerCB <= 512)
+	{
+		return m_cb512Pool;
+	}
+	else if (SizePerCB <= 1024)
+	{
+		return m_cb1024Pool;
+	}
+	return nullptr;
 }
 
 void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)

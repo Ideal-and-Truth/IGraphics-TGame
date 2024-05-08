@@ -146,6 +146,8 @@
     <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.h" />
+    <ClInclude Include="IdealLight.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -226,6 +228,8 @@
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.cpp" />
+    <ClCompile Include="IdealLight.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -250,6 +254,7 @@
     <FxCompile Include="Shaders\SimpleVertexShaderUV.hlsl" />
     <FxCompile Include="Shaders\SimpleMeshShader.hlsl" />
     <FxCompile Include="Shaders\AnimationDefaultVS.hlsl" />
+    <FxCompile Include="Shaders\BoxUV2.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

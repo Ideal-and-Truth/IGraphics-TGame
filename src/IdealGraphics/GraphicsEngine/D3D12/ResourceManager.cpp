@@ -57,7 +57,7 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	m_fence->SetName(L"ResourceManager Fence");
 
 	//------------SRV Descriptor-----------//
-	m_srvHeap.Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_srvHeapCount);
+	m_srvHeap.Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
 }
 
 void ResourceManager::Fence()

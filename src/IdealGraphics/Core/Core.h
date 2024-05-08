@@ -25,3 +25,9 @@
 //using namespace Microsoft::WRL;
 using namespace Microsoft::WRL;
 using namespace DirectX::SimpleMath;
+
+inline size_t AlignConstantBufferSize(size_t size)
+{
+	size_t aligned_size = (size + 255) & (~255);
+	return aligned_size;
+}

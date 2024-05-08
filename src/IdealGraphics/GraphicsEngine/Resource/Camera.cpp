@@ -44,16 +44,16 @@ void Ideal::Camera::Pitch(float Angle)
 	// Right º¤ÅÍ´Â ¹Ù²îÁö ¾ÊÀ½.
 
 	Matrix R = Matrix::CreateRotationX(Angle);
-	m_up.TransformNormal(m_up, R);
-	m_look.TransformNormal(m_look, R);
+	m_up = m_up.TransformNormal(m_up, R);
+	m_look = m_look.TransformNormal(m_look, R);
 }
 
 void Ideal::Camera::RotateY(float Angle)
 {
 	Matrix R = Matrix::CreateRotationY(Angle);
-	m_right.TransformNormal(m_right, R);
-	m_up.TransformNormal(m_up, R);
-	m_look.TransformNormal(m_look, R);
+	m_right = m_right.TransformNormal(m_right, R);
+	m_up = m_up.TransformNormal(m_up, R);
+	m_look = m_look.TransformNormal(m_look, R);
 }
 
 Camera::~Camera()
