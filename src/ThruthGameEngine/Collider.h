@@ -1,18 +1,18 @@
 #pragma once
 #include "Component.h"
-class Collider :
-    public Component
+namespace Truth
 {
-	COMPONENT_HEADER
-	GENERATE_CLASS_TYPE_INFO(Collider)
+	class Collider :
+		public Component
+	{
+		GENERATE_CLASS_TYPE_INFO(Collider)
 
-public:
-	bool m_isTrigger;
-	Vector3 m_center;
-	
-	Collider();
-	virtual ~Collider();
+	public:
+		bool m_isTrigger;
+		Vector3 m_center;
 
-	virtual void Awake() override;
-};
+		Collider(std::shared_ptr<Managers> _managers);
+		virtual ~Collider();
+	};
+}
 

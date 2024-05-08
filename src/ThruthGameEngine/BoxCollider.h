@@ -1,16 +1,27 @@
 #pragma once
 #include "Collider.h"
-class BoxCollider :
-    public Collider
+
+namespace physx
 {
-	COMPONENT_HEADER
-	GENERATE_CLASS_TYPE_INFO(BoxCollider)
+	class PxShape;
+}
 
-public:
-	Vector3 m_size;
+namespace Truth
+{
+	class BoxCollider :
+		public Collider
+	{
+		GENERATE_CLASS_TYPE_INFO(BoxCollider)
 
-public:
-	BoxCollider();
-	virtual ~BoxCollider();
-};
+	public:
+		Vector3 m_size;
+
+	private:
+		physx::PxShape* m_collider;
+
+	public:
+		BoxCollider(std::shared_ptr<Managers> _managers);
+		virtual ~BoxCollider();
+	};
+}
 

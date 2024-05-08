@@ -54,9 +54,12 @@ struct IsStdSharedPtr<std::shared_ptr<T>>
 {
 };
 
-class Entity;
-class Component;
-class Scene;
+namespace Truth
+{
+	class Entity;
+	class Component;
+	class Scene;
+}
 
 /// <summary>
 /// 템플릿 특수화를 통한 다양한 타입의 문자열화
@@ -126,6 +129,9 @@ namespace StringConverter
 	std::string ToString(std::string _val, int _indent);
 
 	template<>
+	std::string ToString(std::wstring _val, int _indent);
+
+	template<>
 	std::string ToString(Vector4 _val, int _indent);
 
 	template<>
@@ -135,9 +141,9 @@ namespace StringConverter
 	std::string ToString(Vector2 _val, int _indent);
 
 	template<>
-	std::string ToString(std::shared_ptr<Component> _val, int _indent);
+	std::string ToString(std::shared_ptr<Truth::Component> _val, int _indent);
 
 	template<>
-	std::string ToString(std::shared_ptr<Entity> _val, int _indent);
+	std::string ToString(std::shared_ptr<Truth::Entity> _val, int _indent);
 }
 

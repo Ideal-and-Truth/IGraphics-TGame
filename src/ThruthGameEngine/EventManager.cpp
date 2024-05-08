@@ -3,12 +3,12 @@
 #include "TimeManager.h"
 #include "EventHandler.h"
 
-EventManager::EventManager()
+Truth::EventManager::EventManager()
 {
 	DEBUG_PRINT("Create EventManager\n");
 }
 
-EventManager::~EventManager()
+Truth::EventManager::~EventManager()
 {
 	DEBUG_PRINT("Finalize EventManager\n");
 	Finalize();
@@ -17,7 +17,7 @@ EventManager::~EventManager()
 /// <summary>
 /// 초기화
 /// </summary>
-void EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager)
+void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager)
 {
 	m_timeManager = _timeManager;
 }
@@ -25,7 +25,7 @@ void EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager)
 /// <summary>
 /// 업데이트
 /// </summary>
-void EventManager::Update()
+void Truth::EventManager::Update()
 {
 	ProcessEvent();
 	PublishEvent("Apply Transform");
@@ -35,7 +35,7 @@ void EventManager::Update()
 /// <summary>
 /// 초기화
 /// </summary>
-void EventManager::Finalize()
+void Truth::EventManager::Finalize()
 {
 	RemoveAllEvents();
 	RemoveAllSubscribes();
@@ -47,7 +47,7 @@ void EventManager::Finalize()
 /// <param name="_eventID">이벤트 이름</param>
 /// <param name="_param">이벤트 함수의 인자 혹은 인자 묶음. 기본 없음</param>
 /// <param name="_delayed">딜레이 시간 기본 0.0f</param>
-void EventManager::PublishEvent(std::string _eventID, const std::any _param /*= nullptr*/, const float& _delayed /*= 0.0f*/)
+void Truth::EventManager::PublishEvent(std::string _eventID, const std::any _param /*= nullptr*/, const float& _delayed /*= 0.0f*/)
 {
 	m_customEvents.push(Event{ _eventID, _param, _delayed });
 }
@@ -57,7 +57,7 @@ void EventManager::PublishEvent(std::string _eventID, const std::any _param /*= 
 /// </summary>
 /// <param name="_eventID">구독 할 이벤트 아이디</param>
 /// <param name="_listenerInfo">이벤트를 구독할 클래스 정보 구조체</param>
-void EventManager::Subscribe(std::string _eventID, const ListenerInfo& _listenerInfo)
+void Truth::EventManager::Subscribe(std::string _eventID, const ListenerInfo& _listenerInfo)
 {
 	if (_listenerInfo.m_listener == nullptr ||
 		CheckSubscribe(_eventID, _listenerInfo.m_listener))
@@ -83,7 +83,7 @@ void EventManager::Subscribe(std::string _eventID, const ListenerInfo& _listener
 /// </summary>
 /// <param name="_eventID">구독 해제할 아이디</param>
 /// <param name="_listener">구독 해제할 클래스 정보 구조체</param>
-void EventManager::Unsubscribe(std::string _eventID, const EventHandler* _listener)
+void Truth::EventManager::Unsubscribe(std::string _eventID, const EventHandler* _listener)
 {
 	for (auto& l : m_eventHandlerInfo[_listener])
 	{
@@ -98,7 +98,7 @@ void EventManager::Unsubscribe(std::string _eventID, const EventHandler* _listen
 /// 특정 리스너를 모든 이벤트에서 제거
 /// </summary>
 /// <param name="_listener">제거할 클래스</param>
-void EventManager::RemoveListener(const EventHandler* _listener)
+void Truth::EventManager::RemoveListener(const EventHandler* _listener)
 {
 	for (auto& l : m_eventHandlerInfo[_listener])
 	{
@@ -112,7 +112,7 @@ void EventManager::RemoveListener(const EventHandler* _listener)
 /// 특정 이벤트에서 모든 리스너를 제거
 /// </summary>
 /// <param name="_eventID">제거할 이벤트</param>
-void EventManager::RemoveListenersAtEvent(std::string _eventID)
+void Truth::EventManager::RemoveListenersAtEvent(std::string _eventID)
 {
 	m_listeners[_eventID].clear();
 }
@@ -120,7 +120,7 @@ void EventManager::RemoveListenersAtEvent(std::string _eventID)
 /// <summary>
 /// 모든 이벤트 제거
 /// </summary>
-void EventManager::RemoveAllEvents()
+void Truth::EventManager::RemoveAllEvents()
 {
 	while (!m_customEvents.empty())
 	{
@@ -131,7 +131,7 @@ void EventManager::RemoveAllEvents()
 /// <summary>
 /// 모든 구독자 제거
 /// </summary>
-void EventManager::RemoveAllSubscribes()
+void Truth::EventManager::RemoveAllSubscribes()
 {
 	m_listeners.clear();
 	m_eventHandlerInfo.clear();
@@ -140,7 +140,7 @@ void EventManager::RemoveAllSubscribes()
 /// <summary>
 /// 이벤트 실행
 /// </summary>
-void EventManager::ProcessEvent()
+void Truth::EventManager::ProcessEvent()
 {
 	while (!m_customEvents.empty())
 	{
@@ -163,7 +163,7 @@ void EventManager::ProcessEvent()
 /// 이벤트 함수의 실행
 /// </summary>
 /// <param name="_event">이벤트 정보</param>
-void EventManager::DispatchEvent(const Event& _event)
+void Truth::EventManager::DispatchEvent(const Event& _event)
 {
 	for (auto& listner : m_listeners[_event.m_eventID])
 	{
@@ -177,7 +177,7 @@ void EventManager::DispatchEvent(const Event& _event)
 /// <param name="_eventID">이벤트 아이디</param>
 /// <param name="_listener">리스너 클래스</param>
 /// <returns>구독 여부</returns>
-bool EventManager::CheckSubscribe(std::string _eventID, const EventHandler* _listener)
+bool Truth::EventManager::CheckSubscribe(std::string _eventID, const EventHandler* _listener)
 {
 	auto& eventList = m_eventHandlerInfo[_listener];
 

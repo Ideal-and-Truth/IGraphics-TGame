@@ -57,7 +57,7 @@ std::string StringConverter::ToString(Vector2 _val, int _indent)
 }
 
 template<>
-std::string StringConverter::ToString(std::shared_ptr<Component> _val, int _indent)
+std::string StringConverter::ToString(std::shared_ptr<Truth::Component> _val, int _indent)
 {
 	std::string result = "";
 	result += _val->GetTypeInfo().Dump(_val.get(), _indent);
@@ -65,7 +65,7 @@ std::string StringConverter::ToString(std::shared_ptr<Component> _val, int _inde
 }
 
 template<>
-std::string StringConverter::ToString(std::shared_ptr<Entity> _val, int _indent)
+std::string StringConverter::ToString(std::shared_ptr<Truth::Entity> _val, int _indent)
 {
 	return "Entity";
 }
@@ -74,4 +74,11 @@ template<>
 std::string StringConverter::ToString(std::string _val, int _indent)
 {
 	return _val;
+}
+
+
+template<>
+std::string StringConverter::ToString(std::wstring _val, int _indent)
+{
+	return "wstring Data";
 }

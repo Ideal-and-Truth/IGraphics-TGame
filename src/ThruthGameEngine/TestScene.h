@@ -1,16 +1,18 @@
 #pragma once
 #include "Headers.h"
 #include "Scene.h"
-
-class TestScene :
-    public Scene
+namespace Truth
 {
-public:
-	TestScene(std::shared_ptr<Managers> _managers);
-	virtual ~TestScene();
+	class TestScene :
+		public Scene
+	{
+	public:
+		TestScene(std::shared_ptr<Managers> _managers);
+		virtual ~TestScene();
 
-	virtual void Enter();
-	virtual void Awake();
-	virtual void Exit();
-};
+		virtual void Enter();
+		virtual void Awake();
+		virtual void Exit();
+	};
+}
 

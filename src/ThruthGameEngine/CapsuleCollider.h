@@ -1,20 +1,21 @@
 #pragma once
 #include "Collider.h"
 #include "Headers.h"
-
-class CapsuleCollider
-	: public Collider
+namespace Truth
 {
-	COMPONENT_HEADER
+	class CapsuleCollider
+		: public Collider
+	{
 		GENERATE_CLASS_TYPE_INFO(CapsuleCollider)
 
-public:
-	float m_radius;
-	float m_height;
+	public:
+		float m_radius;
+		float m_height;
 
-public:
-	CapsuleCollider();
-	virtual ~CapsuleCollider();
+	public:
+		CapsuleCollider(std::shared_ptr<Managers> _managers);
+		virtual ~CapsuleCollider();
 
-};
+	};
+}
 
