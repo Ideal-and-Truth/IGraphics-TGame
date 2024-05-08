@@ -13,7 +13,6 @@ namespace Truth
 
 namespace Truth
 {
-
 	class Managers
 	{
 	public:

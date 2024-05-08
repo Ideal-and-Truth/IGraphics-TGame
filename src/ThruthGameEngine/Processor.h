@@ -1,8 +1,12 @@
 #pragma once
 #include "Headers.h"
+#include "Managers.h"
+#include "SceneManager.h"
+
 namespace Truth
 {
 	class Managers;
+	class Scene;
 }
 
 namespace Ideal
@@ -43,6 +47,11 @@ public:
 	void Process();
 	void Loop();
 
+	template<typename S, typename std::enable_if_t<std::is_base_of_v<Truth::Scene, S>, S>* = nullptr>
+	void AddScene(std::string _name);
+
+	void SetStartScene(std::string _name);
+
 	// 윈도우 함수
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -55,4 +64,10 @@ private:
 	void CreateMainWindow(HINSTANCE _hInstance, uint32 _width = 1920, uint32 _height = 1080, const wchar_t szAppName[] = L"Truth Engine");
 	void InitializeManager();
 };
+
+template<typename S, typename std::enable_if_t<std::is_base_of_v<Truth::Scene, S>, S>*>
+void Processor::AddScene(std::string _name)
+{
+	m_manager->Scene()->AddScene<S>(_name, m_manager);
+}
 
