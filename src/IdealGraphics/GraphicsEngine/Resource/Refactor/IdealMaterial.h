@@ -26,7 +26,6 @@ namespace Ideal
 		void Create(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 		// 쉐이더랑 바인드를 한다.
 		void BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer);
-		void BindToShader2(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 		void SetDiffuseTextureFile(std::wstring& File)	{ m_diffuseTextureFile = File; }
 		void SetSpecularTextureFile(std::wstring& File) { m_specularTextureFile = File; }

@@ -32,13 +32,9 @@ namespace Ideal
 		virtual void AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
 
 	private:
-		// 이것도 Renderer로 나중에 옮겨야겠다.
+		// Ver2 : 2024.05.07 : cb pool, descriptor pool을 사용하는 방식으로 바꾸겠다.
 		void CreateStaticMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
 		void CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
-
-		// Ver2 : 2024.05.07 : cb pool, descriptor pool을 사용하는 방식으로 바꾸겠다.
-		void CreateStaticMeshPSO2(std::shared_ptr<IdealRenderer> Renderer);
-		void CreateSkinnedMeshPSO2(std::shared_ptr<IdealRenderer> Renderer);
 
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;

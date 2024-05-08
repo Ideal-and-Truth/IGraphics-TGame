@@ -23,10 +23,8 @@ namespace Ideal
 		virtual ~IdealStaticMeshObject();
 
 		void Init(std::shared_ptr<IdealRenderer> Renderer);
-		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
-
 		// 2024.05.07 Ver2
-		void Draw2(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; }

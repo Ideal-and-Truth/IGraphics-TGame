@@ -26,23 +26,7 @@ void Ideal::IdealStaticMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)
 	}
 }
 
-void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<IdealRenderer> Renderer)
-{
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
-	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
-
-	// Ver1
-	CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	t->World = m_transform;
-	t->View = d3d12Renderer->GetView();
-	t->Proj = d3d12Renderer->GetProj();
-	t->WorldInvTranspose = t->World.Invert();
-
-	commandList->SetGraphicsRootConstantBufferView(STATIC_MESH_ROOT_CONSTANT_INDEX_TRANSFORM, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-	m_staticMesh->Draw(Renderer);
-}
-
-void Ideal::IdealStaticMeshObject::Draw2(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
 	// Ver2 2024.05.07 : Constant Buffer를 Pool에서 할당받아 사용한다.
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
@@ -75,5 +59,5 @@ void Ideal::IdealStaticMeshObject::Draw2(std::shared_ptr<Ideal::IdealRenderer> R
 	// 공용으로 쓰는 Root Parameter인 Transform은 Root Paramter Index가 0번임.
 	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ, handle.GetGpuHandle());
 
-	m_staticMesh->Draw2(Renderer);
+	m_staticMesh->Draw(Renderer);
 }

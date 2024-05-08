@@ -34,33 +34,10 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 {
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
-
-	AnimationPlay();
-
-	CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	//*t = m_cbTransformData;
-	t->World = m_transform;
-	t->View = d3d12Renderer->GetView();
-	t->Proj = d3d12Renderer->GetProj();
-	t->WorldInvTranspose = m_transform.Invert();
-	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX_TRANSFORM, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-
-	CB_Bone* b = (CB_Bone*)m_cbBone.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	*b = m_cbBoneData;
-	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX_BONE, m_cbBone.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-
-	m_skinnedMesh->Draw(Renderer);
-}
-
-void Ideal::IdealSkinnedMeshObject::Draw2(std::shared_ptr<Ideal::IdealRenderer> Renderer)
-{
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
-	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
 
 	AnimationPlay();
-
 
 	// Bind Descriptor Table
 	auto handle = descriptorHeap->Allocate(2);
@@ -106,7 +83,7 @@ void Ideal::IdealSkinnedMeshObject::Draw2(std::shared_ptr<Ideal::IdealRenderer> 
 		device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
 
-	m_skinnedMesh->Draw2(Renderer);
+	m_skinnedMesh->Draw(Renderer);
 }
 
 void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished /*= true*/)

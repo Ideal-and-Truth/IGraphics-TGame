@@ -18,24 +18,6 @@ void Ideal::IdealSkinnedMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Rendere
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
-	//CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	//t->World = m_transform;
-	//t->View = d3d12Renderer->GetView();
-	//t->Proj = d3d12Renderer->GetProj();
-	//t->WorldInvTranspose = m_transform.Invert();
-	/*CB_Bone* b = (CB_Bone*)m_cbBoneTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	*b = m_bone;*/
-
-	// Bone
-	/*for (uint32 i = 0; i < m_bones.size(); ++i)
-	{
-		m_bone.transforms[i] =
-	}*/
-
-	
-	//commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-	//commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX + 1, m_cbBoneTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-
 	for (auto& mesh : m_meshes)
 	{
 		// Mesh
@@ -50,31 +32,6 @@ void Ideal::IdealSkinnedMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Rendere
 		if (material != nullptr)
 		{
 			material->BindToShader(d3d12Renderer);
-		}
-		// Final Draw
-		commandList->DrawIndexedInstanced(mesh->GetElementCount(), 1, 0, 0, 0);
-	}
-}
-
-void Ideal::IdealSkinnedMesh::Draw2(std::shared_ptr<Ideal::IdealRenderer> Renderer)
-{
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
-	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
-
-	for (auto& mesh : m_meshes)
-	{
-		// Mesh
-		const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = mesh->GetVertexBufferView();
-		const D3D12_INDEX_BUFFER_VIEW& indexBufferView = mesh->GetIndexBufferView();
-
-		commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-		commandList->IASetIndexBuffer(&indexBufferView);
-
-		// Material
-		std::shared_ptr<Ideal::IdealMaterial> material = mesh->GetMaterial();
-		if (material != nullptr)
-		{
-			material->BindToShader2(d3d12Renderer);
 		}
 		// Final Draw
 		commandList->DrawIndexedInstanced(mesh->GetElementCount(), 1, 0, 0, 0);
