@@ -6,6 +6,12 @@ Truth::Mesh::Mesh()
 {
 }
 
+Truth::Mesh::Mesh(std::wstring _path)
+{
+	SetMesh(_path);
+	SetRenderable(true);
+}
+
 Truth::Mesh::~Mesh()
 {
 }

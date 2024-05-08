@@ -15,6 +15,7 @@ namespace Truth
 
 	public:
 		Mesh();
+		Mesh(std::wstring _path);
 		virtual ~Mesh();
 
 		void Awake() override;
