@@ -24,7 +24,7 @@ namespace Truth
 		uint16 m_ID;
 		PROPERTY(name)
 			std::string m_name;
-		std::weak_ptr<Managers> m_manager;
+		std::shared_ptr<Managers> m_manager;
 
 	public:
 		// key 값의 경우 type id 를 통해 유추한다.
@@ -49,7 +49,7 @@ namespace Truth
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::vector<std::weak_ptr<C>> GetComponents();
 
-		void SetManager(std::weak_ptr<Managers> _val) { m_manager = _val; };
+		void SetManager(std::shared_ptr<Managers> _val) { m_manager = _val; };
 
 		std::string& GetName() { return m_name; };
 	};
@@ -64,11 +64,9 @@ namespace Truth
 	{
 		// 일단 만든다
 		// 타입 이름 가져오기
-		std::shared_ptr<C> component = std::make_shared<C>();
+		std::shared_ptr<C> component = std::make_shared<C>(m_manager);
 
 		component->SetOwner(shared_from_this());
-		component->SetManager(m_manager);
-		component->Awake();
 
 		// 만일 중복 가능한 컴포넌트라면
 		if (component->CanMultiple())
@@ -94,11 +92,9 @@ namespace Truth
 	{
 		// 일단 만든다
 		// 타입 이름 가져오기
-		std::shared_ptr<C> component = std::make_shared<C>(_args...);
+		std::shared_ptr<C> component = std::make_shared<C>(m_manager, _args...);
 
 		component->SetOwner(shared_from_this());
-		component->SetManager(m_manager);
-		component->Awake();
 
 		// 만일 중복 가능한 컴포넌트라면
 		if (component->CanMultiple())

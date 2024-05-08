@@ -20,9 +20,8 @@ namespace Truth
 		Matrix m_transformMatrix;
 
 	public:
-		Transform();
+		Transform(std::shared_ptr<Managers> _managers);
 		virtual ~Transform();
-		virtual void Awake() override;
 
 		// 변환 내용 적용
 		void ApplyTransform(std::any _p);

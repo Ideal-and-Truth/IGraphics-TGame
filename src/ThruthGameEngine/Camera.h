@@ -17,10 +17,8 @@ namespace Truth
 		std::shared_ptr<Ideal::ICamera> m_camera;
 
 	public:
-		Camera();
+		Camera(std::shared_ptr<Managers> _managers);
 		virtual ~Camera();
-
-		virtual void Awake() override;
 
 		void Update(std::any _p);
 

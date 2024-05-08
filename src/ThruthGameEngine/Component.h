@@ -31,10 +31,8 @@ namespace Truth
 		std::weak_ptr<Managers> m_managers;
 
 	public:
-		Component();
+		Component(std::shared_ptr<Managers> _managers);
 		virtual ~Component();
-
-		virtual void Awake() abstract;
 
 		bool CanMultiple() const { return m_canMultiple; }
 

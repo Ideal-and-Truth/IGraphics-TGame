@@ -11,7 +11,7 @@ namespace Truth
 		Vector3 m_size;
 
 	public:
-		BoxCollider();
+		BoxCollider(std::shared_ptr<Managers> _managers);
 		virtual ~BoxCollider();
 
 		virtual void Awake() override;

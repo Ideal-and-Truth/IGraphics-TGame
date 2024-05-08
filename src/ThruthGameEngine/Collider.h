@@ -11,7 +11,7 @@ namespace Truth
 		bool m_isTrigger;
 		Vector3 m_center;
 
-		Collider();
+		Collider(std::shared_ptr<Managers> _managers);
 		virtual ~Collider();
 
 		virtual void Awake() abstract;

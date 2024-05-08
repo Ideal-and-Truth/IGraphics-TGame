@@ -15,7 +15,7 @@ namespace Truth
 
 		std::vector<std::shared_ptr<Entity>> m_entities;
 
-		std::weak_ptr<Managers> m_managers;
+		std::shared_ptr<Managers> m_managers;
  
 	public:
 		Scene(std::shared_ptr<Managers> _managers);

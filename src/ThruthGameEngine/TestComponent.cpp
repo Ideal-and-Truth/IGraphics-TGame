@@ -1,23 +1,21 @@
 #include "TestComponent.h"
 #include "Managers.h"
 
-Truth::TestComponent::TestComponent()
+Truth::TestComponent::TestComponent(std::shared_ptr<Managers> _managers)
+	: Component(_managers)
 {
 	m_canMultiple = true;
 	m_name = typeid(*this).name();
 	m_testInt = 10;
+
+	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
+	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
+	EventBind<TestComponent>("Update", &TestComponent::Update);
 }
 
 
 Truth::TestComponent::~TestComponent()
 {
-}
-
-void Truth::TestComponent::Awake()
-{
-	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
-	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
-	EventBind<TestComponent>("Update", &TestComponent::Update);
 }
 
 void Truth::TestComponent::Update(std::any _p)
