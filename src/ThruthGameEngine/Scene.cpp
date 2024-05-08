@@ -17,3 +17,8 @@ void Truth::Scene::ClearEntity()
 	m_entities.clear();
 }
 
+void Truth::Scene::SetManger(std::shared_ptr<Managers> _managers)
+{
+	m_managers = _managers;
+}
+

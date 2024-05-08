@@ -32,6 +32,8 @@ namespace Truth
 		virtual void Exit() abstract;
 
 		void ClearEntity();
+
+		void SetManger(std::shared_ptr<Managers> _managers);
 	};
 }
 

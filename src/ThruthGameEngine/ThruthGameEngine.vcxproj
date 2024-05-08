@@ -49,8 +49,6 @@
     <ClInclude Include="DefalutCamera.h" />
     <ClInclude Include="TestComponent.h" />
     <ClInclude Include="TestEntity.h" />
-    <ClInclude Include="TestScene.h" />
-    <ClInclude Include="TestScene2.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="Transform.h" />
@@ -82,8 +80,6 @@
     <ClCompile Include="DefalutCamera.cpp" />
     <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="TestEntity.cpp" />
-    <ClCompile Include="TestScene.cpp" />
-    <ClCompile Include="TestScene2.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TypeInfo.cpp">
