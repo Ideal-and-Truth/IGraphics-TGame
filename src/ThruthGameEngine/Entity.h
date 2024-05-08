@@ -40,6 +40,8 @@ namespace Truth
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();
+		template<typename C, typename... Args, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
+		std::shared_ptr<C> AddComponent(Args... _args);
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::weak_ptr<C> GetComponent();
@@ -63,6 +65,36 @@ namespace Truth
 		// 일단 만든다
 		// 타입 이름 가져오기
 		std::shared_ptr<C> component = std::make_shared<C>();
+
+		component->SetOwner(shared_from_this());
+		component->SetManager(m_manager);
+		component->Awake();
+
+		// 만일 중복 가능한 컴포넌트라면
+		if (component->CanMultiple())
+		{
+			m_components[C::m_typeID].push_back(component);
+			m_componentsTest.push_back(component);
+			return component;
+		}
+		// 중복 불가능한 컴포넌트라면
+		else if (!component->CanMultiple() && m_components[C::m_typeID].size() == 0)
+		{
+			m_components[C::m_typeID].push_back(component);
+			return component;
+		}
+		else
+		{
+			return std::reinterpret_pointer_cast<C>(m_components[C::m_typeID][0]);
+		}
+	}
+
+	template<typename C, typename... Args, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
+	std::shared_ptr<C> Entity::AddComponent(Args... _args)
+	{
+		// 일단 만든다
+		// 타입 이름 가져오기
+		std::shared_ptr<C> component = std::make_shared<C>(_args...);
 
 		component->SetOwner(shared_from_this());
 		component->SetManager(m_manager);
