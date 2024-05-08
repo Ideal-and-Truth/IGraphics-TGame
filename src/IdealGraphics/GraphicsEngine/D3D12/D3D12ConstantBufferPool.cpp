@@ -1,11 +1,11 @@
-#include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 
 using namespace Ideal;
 
 D3D12ConstantBufferPool::D3D12ConstantBufferPool()
-	: m_systemMemAddr(nullptr),
+	: m_resource(nullptr),
+	m_cbvHeap(nullptr),
+	m_systemMemAddr(nullptr),
 	m_maxCBVNum(0),
 	m_sizePerCBV(0),
 	m_allocatedCBVNum(0)

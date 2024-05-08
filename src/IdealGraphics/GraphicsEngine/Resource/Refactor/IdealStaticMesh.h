@@ -1,8 +1,10 @@
 #pragma once
 #include "Core/Core.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
-#include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/VertexInfo.h"
+
+struct BasicVertex;
 
 namespace Ideal
 {

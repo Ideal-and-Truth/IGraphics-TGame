@@ -1,10 +1,14 @@
+#include "Core/Core.h"
 #include "IdealMaterial.h"
-#include "GraphicsEngine/public/IdealRenderer.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
-#include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
+#include "GraphicsEngine/public/IdealRenderer.h"
 
 Ideal::IdealMaterial::IdealMaterial()
 {
@@ -37,15 +41,6 @@ void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::IdealRenderer> Renderer
 		m_normalTexture = std::make_shared<Ideal::D3D12Texture>();
 		d3d12Renderer->GetResourceManager()->CreateTexture(m_normalTexture, m_normalTextureFile);
 	}
-
-	/*if (m_specularTextureFile.length() > 0)
-	{
-		m_specularTexture = std::make_shared<Ideal::D3D12Texture>();
-		d3d12Renderer->GetResourceManager()->CreateTexture(m_specularTexture, m_specularTextureFile);
-	}*/
-
-	//------------------Material CB-------------------//
-	m_cbMaterial.Create(d3d12Renderer->GetDevice().Get(), sizeof(CB_Material), D3D12Renderer::FRAME_BUFFER_COUNT);
 }
 
 void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer)

@@ -542,7 +542,7 @@ void D3D12Renderer::CreateCBPool()
 
 	// TEMP
 	m_cbBonePool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(sizeof(CB_Bone)), MAX_DRAW_COUNT_PER_FRAME);
+	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(static_cast<uint32>(sizeof(CB_Bone))), MAX_DRAW_COUNT_PER_FRAME);
 }
 
 std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBPool(uint32 SizePerCB)

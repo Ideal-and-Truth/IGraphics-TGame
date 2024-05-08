@@ -1,6 +1,4 @@
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 
@@ -10,6 +8,8 @@ using namespace Ideal;
 //------------------Descriptor Handle-------------------//
 
 D3D12DescriptorHandle::D3D12DescriptorHandle()
+	: m_cpuHandle(),
+	m_gpuHandle()
 {
 	//m_cpuHandle = (D3D12_GPU_VIRTUAL_ADDRESS)(-1);
 }
@@ -36,7 +36,8 @@ D3D12DescriptorHandle::~D3D12DescriptorHandle()
 
 D3D12DescriptorHeap::D3D12DescriptorHeap()
 	: m_numFreeDescriptors(0),
-	m_descriptorSize(0)
+	m_descriptorSize(0),
+	m_maxCount(0)
 {
 
 }

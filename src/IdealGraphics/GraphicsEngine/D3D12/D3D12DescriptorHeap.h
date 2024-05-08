@@ -1,4 +1,5 @@
 #pragma once
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 class D3D12Renderer;
 
@@ -69,7 +70,3 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_headHandle;
 	};
 }
-
-// TODO LIST : 
-// DescriptorHeap에 Descriptor를 넣을때마다 
-//

@@ -1,5 +1,3 @@
-#include "Core/Core.h"
-
 #include "IdealRenderScene.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"

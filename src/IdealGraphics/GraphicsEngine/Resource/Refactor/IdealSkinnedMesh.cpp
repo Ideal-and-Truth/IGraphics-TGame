@@ -1,7 +1,9 @@
+#include "Core/Core.h"
 #include "IdealSkinnedMesh.h"
-
 #include "GraphicsEngine/Resource/Refactor/IdealMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealBone.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
+#include "GraphicsEngine/VertexInfo.h"
 
 Ideal::IdealSkinnedMesh::IdealSkinnedMesh()
 {

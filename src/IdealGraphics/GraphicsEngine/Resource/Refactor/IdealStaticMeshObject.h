@@ -33,8 +33,6 @@ namespace Ideal
 
 	private:
 		std::shared_ptr<IdealStaticMesh> m_staticMesh;
-
-		Ideal::D3D12ConstantBuffer m_cbTransform;
 		Matrix m_transform;
 	};
 }

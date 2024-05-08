@@ -1,7 +1,5 @@
 #pragma once
 #include "GraphicsEngine/public/ICamera.h"
-//#include "Thirdparty/DXTK/SimpleMath.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "Core/Core.h"
 
 namespace Ideal

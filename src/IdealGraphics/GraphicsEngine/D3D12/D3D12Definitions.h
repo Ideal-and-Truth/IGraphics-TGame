@@ -1,5 +1,4 @@
 #pragma once
-#include "Core/Core.h"
 
 /// Static Mesh Macro
 // 2024.05.08

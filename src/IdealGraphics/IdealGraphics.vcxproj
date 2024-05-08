@@ -179,7 +179,6 @@
     <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h" />
     <ClInclude Include="GraphicsEngine\public\ICamera.h" />
-    <ClInclude Include="GraphicsEngine\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\public\IdealRenderer.h" />
     <ClInclude Include="GraphicsEngine\public\IdealRendererFactory.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMesh.h" />

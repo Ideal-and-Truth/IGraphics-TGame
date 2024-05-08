@@ -1,4 +1,5 @@
 #include "Core/Core.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 

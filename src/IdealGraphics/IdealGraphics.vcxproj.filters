@@ -95,7 +95,6 @@
     </ClInclude>
     <ClInclude Include="Misc\Utils\tinyxml2.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
-    <ClInclude Include="GraphicsEngine\ResourceManager.h" />
     <ClInclude Include="Misc\Utils\StringUtils.h">
       <Filter>Misc</Filter>
     </ClInclude>

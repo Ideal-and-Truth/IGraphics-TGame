@@ -1,9 +1,14 @@
+#include "Core/Core.h"
+#include "GraphicsEngine/Resource/Refactor/IdealBone.h"
 #include "IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
-#include "GraphicsEngine/Resource/Refactor/IdealBone.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
+#include "GraphicsEngine/Resource/Refactor/IdealBone.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
 {
@@ -19,16 +24,6 @@ void Ideal::IdealSkinnedMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer
 {
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
-	{
-		const uint32 bufferSize = sizeof(CB_Bone);
-		m_cbBone.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-		m_cbBone.GetResource()->SetName(L"CB_Bone");
-	}
-	{
-		const uint32 bufferSize = sizeof(CB_Transform);
-		m_cbTransform.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-		m_cbTransform.GetResource()->SetName(L"CB_Transform");
-	}
 }
 
 void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)

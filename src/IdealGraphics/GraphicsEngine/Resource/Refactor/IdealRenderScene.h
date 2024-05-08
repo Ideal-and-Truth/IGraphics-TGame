@@ -1,4 +1,5 @@
 #pragma once
+#include "Core/Core.h"
 #include "IRenderScene.h"
 
 namespace Ideal

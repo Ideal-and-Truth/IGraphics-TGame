@@ -1,4 +1,5 @@
 #pragma once
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 namespace Ideal
 {

@@ -1,3 +1,9 @@
+#include "Core/Core.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/VertexInfo.h"
+
+
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
@@ -57,7 +63,8 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	m_fence->SetName(L"ResourceManager Fence");
 
 	//------------SRV Descriptor-----------//
-	m_srvHeap.Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
+	m_srvHeap = std::make_shared<D3D12DescriptorHeap>();
+	m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
 }
 
 void ResourceManager::Fence()
@@ -269,7 +276,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture> 
 	srvDesc.Texture2D.MipLevels = 1;
 
 	//----------------------Allocate Descriptor-----------------------//
-	srvHandle = m_srvHeap.Allocate();
+	srvHandle = m_srvHeap->Allocate();
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = srvHandle.GetCpuHandle();
 	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, cpuHandle);
 

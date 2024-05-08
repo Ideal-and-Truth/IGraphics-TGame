@@ -1,4 +1,10 @@
 #pragma once
+#include "Core/Core.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+
+struct ID3D12Device;
+struct ID3D12Resource;
+struct ID3D12DescriptorHeap;
 
 namespace Ideal
 {

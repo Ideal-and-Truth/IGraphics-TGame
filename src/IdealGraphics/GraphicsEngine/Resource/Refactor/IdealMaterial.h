@@ -1,7 +1,5 @@
 #pragma once
-#include "Core/Core.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
-#include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
@@ -49,8 +47,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Texture> m_normalTexture;
 
 	private:
-		// TEMP : 2024.05.03 잘 변하지 않는 데이터긴 하지만 일단 만들어만 둘 예정
-		Ideal::D3D12ConstantBuffer m_cbMaterial;
 		CB_Material m_cbMaterialData;
 	};
 }
