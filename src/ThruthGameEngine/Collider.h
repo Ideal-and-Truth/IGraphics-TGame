@@ -14,7 +14,7 @@ namespace Truth
 		Collider();
 		virtual ~Collider();
 
-		virtual void Awake() override;
+		virtual void Awake() abstract;
 	};
 }
 

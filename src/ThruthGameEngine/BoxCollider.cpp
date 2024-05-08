@@ -8,3 +8,8 @@ Truth::BoxCollider::BoxCollider()
 Truth::BoxCollider::~BoxCollider()
 {
 }
+
+void Truth::BoxCollider::Awake()
+{
+
+}

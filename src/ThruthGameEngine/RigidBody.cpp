@@ -1,8 +1,8 @@
-#include "ERigidBody.h"
+#include "RigidBody.h"
 #include "Transform.h"
 #include "Entity.h"
 
-Truth::ERigidBody::ERigidBody()
+Truth::RigidBody::RigidBody()
 	: m_mass(1.0f)
 	, m_drag(0.0f)
 	, m_angularDrag(0.05f)
@@ -20,11 +20,11 @@ Truth::ERigidBody::ERigidBody()
 	m_transform = m_owner.lock()->GetComponent<Transform>();
 }
 
-Truth::ERigidBody::~ERigidBody()
+Truth::RigidBody::~RigidBody()
 {
 
 }
 
-void Truth::ERigidBody::Awake()
+void Truth::RigidBody::Awake()
 {
 }

@@ -13,6 +13,8 @@ namespace Truth
 	public:
 		BoxCollider();
 		virtual ~BoxCollider();
+
+		virtual void Awake() override;
 	};
 }
 

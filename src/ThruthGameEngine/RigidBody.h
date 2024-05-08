@@ -6,10 +6,10 @@ class Truth::Transform;
 
 namespace Truth
 {
-	class ERigidBody :
+	class RigidBody :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(ERigidBody)
+		GENERATE_CLASS_TYPE_INFO(RigidBody)
 
 	public:
 		float m_mass;
@@ -34,8 +34,8 @@ namespace Truth
 		std::weak_ptr<Transform> m_transform;
 
 	public:
-		ERigidBody();
-		~ERigidBody();
+		RigidBody();
+		~RigidBody();
 
 		void Awake() override;
 	};
