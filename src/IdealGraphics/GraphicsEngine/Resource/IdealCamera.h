@@ -6,11 +6,11 @@
 
 namespace Ideal
 {
-	class Camera : public ICamera
+	class IdealCamera : public ICamera
 	{
 	public:
-		Camera();
-		virtual ~Camera();
+		IdealCamera();
+		virtual ~IdealCamera();
 
 	public:
 		virtual void SetLens(float FovY, float Aspect, float NearZ, float FarZ) override;

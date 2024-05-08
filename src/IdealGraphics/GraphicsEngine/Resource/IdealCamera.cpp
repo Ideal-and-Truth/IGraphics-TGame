@@ -1,11 +1,11 @@
-#include "GraphicsEngine/Resource/Camera.h"
+#include "GraphicsEngine/Resource/IdealCamera.h"
 
 using namespace Ideal;
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-Camera::Camera()
+IdealCamera::IdealCamera()
 	: m_position(),
 	m_right(1.f, 0.f, 0.f),
 	m_up(0.f, 1.f, 0.f),
@@ -23,7 +23,7 @@ Camera::Camera()
 
 }
 
-void Ideal::Camera::Walk(float d)
+void Ideal::IdealCamera::Walk(float d)
 {
 	Vector3 s = Vector3(d);
 	Vector3 l = m_look;
@@ -31,7 +31,7 @@ void Ideal::Camera::Walk(float d)
 	m_position = s * l + p;
 }
 
-void Ideal::Camera::Strafe(float d)
+void Ideal::IdealCamera::Strafe(float d)
 {
 	Vector3 s = Vector3(d);
 	Vector3 r = m_right;
@@ -39,7 +39,7 @@ void Ideal::Camera::Strafe(float d)
 	m_position = s * r + p;
 }
 
-void Ideal::Camera::Pitch(float Angle)
+void Ideal::IdealCamera::Pitch(float Angle)
 {
 	// Right º¤ÅÍ´Â ¹Ù²îÁö ¾ÊÀ½.
 
@@ -48,7 +48,7 @@ void Ideal::Camera::Pitch(float Angle)
 	m_look = m_look.TransformNormal(m_look, R);
 }
 
-void Ideal::Camera::RotateY(float Angle)
+void Ideal::IdealCamera::RotateY(float Angle)
 {
 	Matrix R = Matrix::CreateRotationY(Angle);
 	m_right = m_right.TransformNormal(m_right, R);
@@ -56,12 +56,12 @@ void Ideal::Camera::RotateY(float Angle)
 	m_look = m_look.TransformNormal(m_look, R);
 }
 
-Camera::~Camera()
+IdealCamera::~IdealCamera()
 {
 
 }
 
-void Camera::SetLens(float FovY, float Aspect, float NearZ, float FarZ)
+void IdealCamera::SetLens(float FovY, float Aspect, float NearZ, float FarZ)
 {
 	m_fovY = FovY;
 	m_aspect = Aspect;
@@ -74,7 +74,7 @@ void Camera::SetLens(float FovY, float Aspect, float NearZ, float FarZ)
 	m_proj = Matrix::CreatePerspectiveFieldOfView(m_fovY, m_aspect, m_nearZ, m_farZ);
 }
 
-void Camera::UpdateViewMatrix()
+void IdealCamera::UpdateViewMatrix()
 {
 	Vector3 Right = m_right;
 	Vector3 Up = m_up;

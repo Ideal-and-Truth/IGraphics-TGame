@@ -1,7 +1,8 @@
 #pragma once
-#include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-#include "GraphicsEngine/D3D12/D3D12Definitions.h"
+
+struct ID3D12Resource;
+struct ID3D12Device;
 
 namespace Ideal
 {
@@ -77,7 +78,7 @@ namespace Ideal
 		D3D12_VERTEX_BUFFER_VIEW GetView() const;
 
 	private:
-		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView = {};
+		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	};
 
 	// IndexBuffer
@@ -94,7 +95,7 @@ namespace Ideal
 		D3D12_INDEX_BUFFER_VIEW GetView() const;
 
 	private:
-		D3D12_INDEX_BUFFER_VIEW m_indexBufferView = {};
+		D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 	};
 
 	// ConstantBuffer

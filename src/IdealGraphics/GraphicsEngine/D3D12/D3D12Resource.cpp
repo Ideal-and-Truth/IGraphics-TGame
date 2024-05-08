@@ -1,3 +1,5 @@
+#include "Core/Core.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 
 using namespace Ideal;
@@ -121,6 +123,7 @@ void D3D12GPUBuffer::SetName(const LPCTSTR& name)
 //------------------------VertexBuffer------------------------//
 
 D3D12VertexBuffer::D3D12VertexBuffer()
+	: m_vertexBufferView()
 {
 
 }
@@ -159,6 +162,7 @@ void D3D12VertexBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* 
 //------------------------IndexBuffer------------------------//
 
 D3D12IndexBuffer::D3D12IndexBuffer()
+	: m_indexBufferView()
 {
 
 }

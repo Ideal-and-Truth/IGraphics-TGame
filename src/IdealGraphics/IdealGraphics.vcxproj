@@ -175,7 +175,7 @@
     <ClInclude Include="GraphicsEngine\public\ISkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Camera.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealCamera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h" />
     <ClInclude Include="GraphicsEngine\public\ICamera.h" />
@@ -220,7 +220,7 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Camera.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealCamera.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.cpp" />
     <ClCompile Include="GraphicsEngine\private\IdealRendererFactory.cpp" />

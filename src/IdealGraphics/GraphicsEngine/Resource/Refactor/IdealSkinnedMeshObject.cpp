@@ -3,6 +3,7 @@
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/Resource/Refactor/IdealBone.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
 {

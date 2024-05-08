@@ -1,31 +1,31 @@
 #include "D3D12Renderer.h"
-#include "GraphicsEngine/VertexInfo.h"
+
 #include <DirectXColors.h>
 #include "Misc/Utils/PIX.h"
-
-
-// Test
 #include "Misc/Assimp/AssimpConverter.h"
-#include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
+
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12RootSignature.h"
-#include "GraphicsEngine/Resource/Camera.h"
-#include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/D3D12/D3D12Viewport.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+
+#include "GraphicsEngine/Resource/IdealCamera.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealRenderScene.h"
-#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 
 D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
 	m_width(width),
 	m_height(height),
-	m_viewport(hwnd, width, height),
+	//m_viewport,
 	m_frameIndex(0),
 	m_graphicsFenceEvent(NULL),
 	m_graphicsFenceValue(0),
@@ -72,7 +72,8 @@ void D3D12Renderer::Init()
 #endif
 
 	//---------------------Viewport Init-------------------------//
-	m_viewport.Init();
+	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_hwnd, m_width, m_height);
+	m_viewport->Init();
 
 	//---------------------Create Device-------------------------//
 
@@ -222,9 +223,6 @@ finishAdapter:
 		m_device->CreateDepthStencilView(m_depthStencil.Get(), &depthStencilDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 	}
 
-	// 2024.04.21 Ideal::Descriptor Heap
-	m_idealSrvHeap.Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapNum);
-
 	//------------------Create Default Camera------------------//
 	CreateDefaultCamera();
 	// Temp
@@ -244,7 +242,7 @@ finishAdapter:
 	m_resourceManager->SetTexturePath(m_texturePath);
 
 	//------------------Create Main Descriptor Heap---------------------//
-	CreateDescriptorTable();
+	CreateDescriptorHeap();
 	//------------------Create CB Pool---------------------//
 	CreateCBPool();
 }
@@ -254,11 +252,11 @@ void D3D12Renderer::Tick()
 	const float speed = 2.f;
 	if (GetAsyncKeyState('O') & 0x8000)
 	{
-		m_mainCamera = std::static_pointer_cast<Ideal::Camera>(c1);
+		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c1);
 	}
 	if (GetAsyncKeyState('P') & 0x8000)
 	{
-		m_mainCamera = std::static_pointer_cast<Ideal::Camera>(c2);
+		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c2);
 	}
 
 	if (GetAsyncKeyState('W') & 0x8000)
@@ -315,14 +313,14 @@ void D3D12Renderer::Render()
 
 std::shared_ptr<Ideal::ICamera> D3D12Renderer::CreateCamera()
 {
-	std::shared_ptr<Ideal::Camera> newCamera = std::make_shared<Ideal::Camera>();
+	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
 
 	return newCamera;
 }
 
 void D3D12Renderer::SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
-	m_mainCamera = std::static_pointer_cast<Ideal::Camera>(Camera);
+	m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(Camera);
 }
 
 std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
@@ -369,16 +367,51 @@ void D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderSc
 	m_currentRenderScene = std::static_pointer_cast<Ideal::IdealRenderScene>(RenderScene);
 }
 
+void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)
+{
+	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
+	assimpConverter->SetAssetPath(m_assetPath);
+	assimpConverter->SetModelPath(m_modelPath);
+	assimpConverter->SetTexturePath(m_texturePath);
+
+	assimpConverter->ReadAssetFile(FileName);
+
+	// Temp : ".fbx" 삭제
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+
+	assimpConverter->ExportModelData(FileName, isSkinnedData);
+	assimpConverter->ExportMaterialData(FileName);
+}
+
+void D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
+{
+	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
+	assimpConverter->SetAssetPath(m_assetPath);
+	assimpConverter->SetModelPath(m_modelPath);
+	assimpConverter->SetTexturePath(m_texturePath);
+
+	assimpConverter->ReadAssetFile(FileName);
+
+	// Temp : ".fbx" 삭제
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+
+	assimpConverter->ExportAnimationData(FileName);
+}
+
 void D3D12Renderer::Release()
 {
 
 }
 
-void D3D12Renderer::CreateDefaultCamera()
+Microsoft::WRL::ComPtr<ID3D12Device> D3D12Renderer::GetDevice()
 {
-	m_mainCamera = std::make_shared<Ideal::Camera>();
-	std::shared_ptr<Ideal::Camera> camera = std::static_pointer_cast<Ideal::Camera>(m_mainCamera);
-	camera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
+	return m_device;
 }
 
 void D3D12Renderer::BeginRender()
@@ -387,8 +420,8 @@ void D3D12Renderer::BeginRender()
 	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
 	// 2024.04.15 pipeline state를 m_currentPipelineState에 있는 것으로 세팅한다.
 
-	m_commandList->RSSetViewports(1, &m_viewport.GetViewport());
-	m_commandList->RSSetScissorRects(1, &m_viewport.GetScissorRect());
+	m_commandList->RSSetViewports(1, &m_viewport->GetViewport());
+	m_commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
 
 	CD3DX12_RESOURCE_BARRIER backBufferRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_renderTargets[m_frameIndex].Get(),
@@ -422,19 +455,18 @@ void D3D12Renderer::EndRender()
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
-std::shared_ptr<Ideal::ResourceManager> D3D12Renderer::GetResourceManager()
+void D3D12Renderer::GraphicsPresent()
 {
-	return m_resourceManager;
-}
+	HRESULT hr = m_swapChain->Present(1, 0);
+	if (DXGI_ERROR_DEVICE_REMOVED == hr)
+	{
+		__debugbreak();
+	}
 
-Microsoft::WRL::ComPtr<ID3D12Device> D3D12Renderer::GetDevice()
-{
-	return m_device;
-}
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
-Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> D3D12Renderer::GetCommandList()
-{
-	return m_commandList;
+	GraphicsFence();
+	WaitForGraphicsFenceValue();
 }
 
 uint32 D3D12Renderer::GetFrameIndex() const
@@ -447,6 +479,11 @@ void D3D12Renderer::CreateCommandList()
 	Check(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
 	Check(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
 	m_commandList->Close();
+}
+
+Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> D3D12Renderer::GetCommandList()
+{
+	return m_commandList;
 }
 
 void D3D12Renderer::CreateGraphicsFence()
@@ -476,24 +513,14 @@ void D3D12Renderer::WaitForGraphicsFenceValue()
 	}
 }
 
-void D3D12Renderer::GraphicsPresent()
+std::shared_ptr<Ideal::ResourceManager> D3D12Renderer::GetResourceManager()
 {
-	HRESULT hr = m_swapChain->Present(1, 0);
-	if (DXGI_ERROR_DEVICE_REMOVED == hr)
-	{
-		__debugbreak();
-	}
-
-	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-	GraphicsFence();
-	WaitForGraphicsFenceValue();
+	return m_resourceManager;
 }
 
-void D3D12Renderer::CreateDescriptorTable()
+void D3D12Renderer::CreateDescriptorHeap()
 {
 	m_descriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	//m_descriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, MAX_DESCRIPTOR_COUNT);
 	m_descriptorHeap->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 }
 
@@ -540,39 +567,24 @@ std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBBonePool()
 	return m_cbBonePool;
 }
 
-void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)
+void D3D12Renderer::CreateDefaultCamera()
 {
-	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
-	assimpConverter->SetAssetPath(m_assetPath);
-	assimpConverter->SetModelPath(m_modelPath);
-	assimpConverter->SetTexturePath(m_texturePath);
-
-	assimpConverter->ReadAssetFile(FileName);
-
-	// Temp : ".fbx" 삭제
-	FileName.pop_back();
-	FileName.pop_back();
-	FileName.pop_back();
-	FileName.pop_back();
-
-	assimpConverter->ExportModelData(FileName, isSkinnedData);
-	assimpConverter->ExportMaterialData(FileName);
+	m_mainCamera = std::make_shared<Ideal::IdealCamera>();
+	std::shared_ptr<Ideal::IdealCamera> camera = std::static_pointer_cast<Ideal::IdealCamera>(m_mainCamera);
+	camera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
 }
 
-void D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
+DirectX::SimpleMath::Matrix D3D12Renderer::GetView()
 {
-	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
-	assimpConverter->SetAssetPath(m_assetPath);
-	assimpConverter->SetModelPath(m_modelPath);
-	assimpConverter->SetTexturePath(m_texturePath);
+	return m_mainCamera->GetView();
+}
 
-	assimpConverter->ReadAssetFile(FileName);
+DirectX::SimpleMath::Matrix D3D12Renderer::GetProj()
+{
+	return m_mainCamera->GetProj();
+}
 
-	// Temp : ".fbx" 삭제
-	FileName.pop_back();
-	FileName.pop_back();
-	FileName.pop_back();
-	FileName.pop_back();
-
-	assimpConverter->ExportAnimationData(FileName);
+DirectX::SimpleMath::Matrix D3D12Renderer::GetViewProj()
+{
+	return m_mainCamera->GetViewProj();
 }

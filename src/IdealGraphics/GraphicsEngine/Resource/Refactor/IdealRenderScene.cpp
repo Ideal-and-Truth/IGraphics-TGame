@@ -9,6 +9,7 @@
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 Ideal::IdealRenderScene::IdealRenderScene()
 {
@@ -32,13 +33,14 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	
+	commandList->SetDescriptorHeaps(1, d3d12Renderer->GetMainDescriptorHeap()->GetDescriptorHeap().GetAddressOf());
+
 	// Ver2 StaticMesh
 	{
 		commandList->SetPipelineState(m_staticMeshPSO->GetPipelineState().Get());
 		commandList->SetGraphicsRootSignature(m_staticMeshRootSignature.Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		commandList->SetDescriptorHeaps(1, d3d12Renderer->GetMainDescriptorHeap()->GetDescriptorHeap().GetAddressOf());
 
 		for (auto& m : m_staticMeshObjects)
 		{
