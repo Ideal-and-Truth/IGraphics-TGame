@@ -22,6 +22,7 @@ namespace Ideal
 
 	public:
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+		void Draw2(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> Mesh);

@@ -94,7 +94,7 @@ void Ideal::IdealMaterial::BindToShader2(std::shared_ptr<Ideal::IdealRenderer> R
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
 	std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Material));
 
-	auto cb = cbPool->Alloc();
+	auto cb = cbPool->Allocate();
 	if (!cb)
 	{
 		__debugbreak();
@@ -107,13 +107,14 @@ void Ideal::IdealMaterial::BindToShader2(std::shared_ptr<Ideal::IdealRenderer> R
 	materialData->Specular = m_specular;
 	materialData->Emissive = m_emissive;
 
+	
+	auto handle = descriptorHeap->Allocate(4);	// b1 : Material, t0 : diffuse, t1 : specular, t2 : normal
 	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	
-	auto handle = descriptorHeap->Allocate(1);
-	
 	// TODO : 1번째로 하드코딩 되어 있음
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), 0, incrementSize);
-	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_CBV_MATERIAL, incrementSize);
+	// Root Table Index 1 : 개별 매쉬가 스왑할 root table의 인덱스
+	device->CopyDescriptorsSimple(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	
 	// 2024.05.08
 	// TEST : 루트시그니쳐에 맞게 두번째로 바꿔준다.
@@ -125,28 +126,29 @@ void Ideal::IdealMaterial::BindToShader2(std::shared_ptr<Ideal::IdealRenderer> R
 	if (m_diffuseTexture)
 	{
 		Ideal::D3D12DescriptorHandle diffuseHandle = m_diffuseTexture->GetDescriptorHandle();
-		D3D12_GPU_DESCRIPTOR_HANDLE diffuseGPUAddress = diffuseHandle.GetGpuHandle();
+		D3D12_CPU_DESCRIPTOR_HANDLE diffuseCPUAddress = diffuseHandle.GetCpuHandle();
 
-		auto handle = descriptorHeap->Allocate(1);
-		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), 0, incrementSize);
+		//auto handle = descriptorHeap->Allocate(1);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_SRV_DIFFUSE, incrementSize);
 		device->CopyDescriptorsSimple(1, srvDest, diffuseHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
 	if (m_specularTexture)
 	{
 		Ideal::D3D12DescriptorHandle specularHandle = m_specularTexture->GetDescriptorHandle();
-		D3D12_GPU_DESCRIPTOR_HANDLE specularGPUAddress = specularHandle.GetGpuHandle();
+		D3D12_CPU_DESCRIPTOR_HANDLE specularCPUAddress = specularHandle.GetCpuHandle();
 
-		auto handle = descriptorHeap->Allocate(1);
-		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), 0, incrementSize);
-		device->CopyDescriptorsSimple(1, srvDest, specularHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//auto handle = descriptorHeap->Allocate(1);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_SRV_SPECULAR, incrementSize);
+		device->CopyDescriptorsSimple(1, srvDest, specularCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
 	if (m_normalTexture)
 	{
 		Ideal::D3D12DescriptorHandle normalHandle = m_normalTexture->GetDescriptorHandle();
-		D3D12_GPU_DESCRIPTOR_HANDLE normalGPUAddress = normalHandle.GetGpuHandle();
+		D3D12_CPU_DESCRIPTOR_HANDLE normalCPUAddress = normalHandle.GetCpuHandle();
+		
 
-		auto handle = descriptorHeap->Allocate(1);
-		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), 0, incrementSize);
-		device->CopyDescriptorsSimple(1, srvDest, normalHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//auto handle = descriptorHeap->Allocate(1);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_SRV_NORMAL, incrementSize);
+		device->CopyDescriptorsSimple(1, srvDest, normalCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
 }

@@ -255,6 +255,7 @@
     <FxCompile Include="Shaders\SimpleMeshShader.hlsl" />
     <FxCompile Include="Shaders\AnimationDefaultVS.hlsl" />
     <FxCompile Include="Shaders\BoxUV2.hlsl" />
+    <FxCompile Include="Shaders\AnimationDefault.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

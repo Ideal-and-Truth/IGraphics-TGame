@@ -74,7 +74,7 @@ void D3D12ConstantBufferPool::Init(ID3D12Device* Device, uint32 SizePerCBV, uint
 	}
 }
 
-std::shared_ptr<ConstantBufferContainer> D3D12ConstantBufferPool::Alloc()
+std::shared_ptr<ConstantBufferContainer> D3D12ConstantBufferPool::Allocate()
 {
 	std::shared_ptr<ConstantBufferContainer> ret = nullptr;
 	// 만약 현재 할당된 개수가 최대 개수 or 넘어가면 nullptr 반환

@@ -56,6 +56,31 @@ void Ideal::IdealSkinnedMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Rendere
 	}
 }
 
+void Ideal::IdealSkinnedMesh::Draw2(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+{
+	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
+
+	for (auto& mesh : m_meshes)
+	{
+		// Mesh
+		const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = mesh->GetVertexBufferView();
+		const D3D12_INDEX_BUFFER_VIEW& indexBufferView = mesh->GetIndexBufferView();
+
+		commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+		commandList->IASetIndexBuffer(&indexBufferView);
+
+		// Material
+		std::shared_ptr<Ideal::IdealMaterial> material = mesh->GetMaterial();
+		if (material != nullptr)
+		{
+			material->BindToShader2(d3d12Renderer);
+		}
+		// Final Draw
+		commandList->DrawIndexedInstanced(mesh->GetElementCount(), 1, 0, 0, 0);
+	}
+}
+
 void Ideal::IdealSkinnedMesh::AddMesh(std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> Mesh)
 {
 	m_meshes.push_back(Mesh);

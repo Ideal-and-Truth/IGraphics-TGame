@@ -22,7 +22,7 @@ namespace Ideal
 
 	public:
 		void Init(ID3D12Device* Device, uint32 SizePerCBV, uint32 MaxCBVNum);
-		std::shared_ptr<ConstantBufferContainer> Alloc();
+		std::shared_ptr<ConstantBufferContainer> Allocate();
 		void Reset();
 	private:
 		ComPtr<ID3D12Resource> m_resource;

@@ -307,10 +307,12 @@ void D3D12Renderer::Render()
 	//----------------Present-------------------//
 	GraphicsPresent();
 
+	//-----------Reset Pool-----------//
 	m_descriptorHeap->Reset();
 	m_cb256Pool->Reset();
 	m_cb512Pool->Reset();
 	m_cb1024Pool->Reset();
+	m_cbBonePool->Reset();
 	return;
 }
 
@@ -513,6 +515,10 @@ void D3D12Renderer::CreateCBPool()
 
 	m_cb1024Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
 	m_cb1024Pool->Init(m_device.Get(), 1024, MAX_DRAW_COUNT_PER_FRAME);
+
+	// TEMP
+	m_cbBonePool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(sizeof(CB_Bone)), MAX_DRAW_COUNT_PER_FRAME);
 }
 
 std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBPool(uint32 SizePerCB)
@@ -530,6 +536,11 @@ std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBPool(uint32 
 		return m_cb1024Pool;
 	}
 	return nullptr;
+}
+
+std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBBonePool()
+{
+	return m_cbBonePool;
 }
 
 void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)

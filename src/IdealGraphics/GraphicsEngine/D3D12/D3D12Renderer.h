@@ -150,6 +150,7 @@ public:
 	void CreateCBPool();
 	// 2024.05.08; 256의 512, 1024 로 만들어서 필요한 용량에 따라 사용해도 괜찮을 듯?
 	std::shared_ptr<Ideal::D3D12ConstantBufferPool> GetCBPool(uint32 SizePerCB);
+	std::shared_ptr<Ideal::D3D12ConstantBufferPool> GetCBBonePool();
 
 private:
 	// D3D12 Data Manager
@@ -159,6 +160,9 @@ private:
 	std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb256Pool;
 	std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb512Pool;
 	std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb1024Pool;
+
+	// bone의 데이터가 크다. 일단은 따로 만들다가 나중에 SRV로 넘겨주든 해야겠다.
+	std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cbBonePool;
 
 private:
 	float m_aspectRatio = 0.f;

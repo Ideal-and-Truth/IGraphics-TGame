@@ -110,10 +110,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
-		//renderScene->AddObject(ka);
-		//renderScene->AddObject(cat);
-		//renderScene->AddObject(mesh);
-		//renderScene->AddObject(mesh2);
+		renderScene->AddObject(ka);
+		renderScene->AddObject(cat);
+		renderScene->AddObject(mesh);
+		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
