@@ -280,5 +280,8 @@
     <ClInclude Include="DefalutCamera.h">
       <Filter>Enitity\TestCamera</Filter>
     </ClInclude>
+    <ClInclude Include="ShapeType.h">
+      <Filter>Manager\PhysX</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

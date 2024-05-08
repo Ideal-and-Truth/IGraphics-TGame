@@ -1,6 +1,7 @@
 #include "RigidBody.h"
 #include "Transform.h"
 #include "Entity.h"
+#include "PhysicsManager.h"
 
 Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers)
 	: Component(_managers)
@@ -19,9 +20,11 @@ Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers)
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
 	m_transform = m_owner.lock()->GetComponent<Transform>();
+
+	m_body = m_managers.lock()->Physics()->CreateRigidDynamic();
 }
 
 Truth::RigidBody::~RigidBody()
 {
-
+	m_body->release();
 }

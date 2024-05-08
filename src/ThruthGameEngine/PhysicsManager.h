@@ -1,5 +1,6 @@
 #pragma once
 #include "Headers.h"
+#include "ShapeType.h"
 
 // 라이브러리에 경고가 너무 많다
 // 나중에 이 부분 수정 예정
@@ -35,7 +36,7 @@ namespace Truth
 		physx::PxPvd* m_pvd;
 		physx::PxPvdTransport* m_trasport;
 
-		physx::PxReal m_stackZ = 10.0f;
+		physx::PxReal m_stackZ = 20.0f;
 
 		// physx::PxOmniPvd* m_oPvd;
 
@@ -50,6 +51,11 @@ namespace Truth
 		void Update();
 
 		void ResetPhysX();
+
+		physx::PxRigidDynamic* CreateRigidDynamic();
+		physx::PxRigidStatic* CreateRigidStatic();
+
+		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
 
 	private:
 		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);

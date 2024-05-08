@@ -43,6 +43,7 @@
     <ClInclude Include="PropertyMacros.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="ShapeType.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="StringConverter.h" />
     <ClInclude Include="DefalutCamera.h" />

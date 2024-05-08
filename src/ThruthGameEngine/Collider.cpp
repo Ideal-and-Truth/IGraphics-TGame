@@ -10,7 +10,3 @@ Truth::Collider::Collider(std::shared_ptr<Managers> _managers)
 Truth::Collider::~Collider()
 {
 }
-
-void Truth::Collider::Awake()
-{
-}

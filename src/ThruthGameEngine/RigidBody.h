@@ -2,7 +2,15 @@
 #include "Component.h"
 #include "Headers.h"
 
-class Truth::Transform;
+namespace Truth
+{
+	class Transform;
+}
+
+namespace physx
+{
+	class PxRigidDynamic;
+}
 
 namespace Truth
 {
@@ -32,6 +40,8 @@ namespace Truth
 		Vector3 m_worldMassCenter;
 
 		std::weak_ptr<Transform> m_transform;
+
+		physx::PxRigidDynamic* m_body;
 
 	public:
 		RigidBody(std::shared_ptr<Managers> _managers);

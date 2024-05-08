@@ -13,8 +13,6 @@ namespace Truth
 
 		Collider(std::shared_ptr<Managers> _managers);
 		virtual ~Collider();
-
-		virtual void Awake() abstract;
 	};
 }
 

@@ -25,7 +25,7 @@ void Truth::PhysicsManager::Initalize()
 
 	m_pvd = physx::PxCreatePvd(*m_foundation);
 	m_trasport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-	bool c = m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
+	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
 
 	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
 
@@ -34,39 +34,37 @@ void Truth::PhysicsManager::Initalize()
 	assert(m_physics && "PxCreatePhysics failed!");
 
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = physx::PxVec3(0.0f, -98.1f, 0.0f);
 	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = m_dispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 
 	m_scene = m_physics->createScene(sceneDesc);
-	bool cflag = false;
-	cflag = m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
-	// cflag = m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
-	cflag = m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 4.0f);
+	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
+	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 4.0f);
 	m_scene->setSimulationEventCallback(&collisionCallback);
 	physx::PxPvdSceneClient* pvdClient = m_scene->getScenePvdClient();
 
 	if (pvdClient)
 	{
- 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
- 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
- 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.6f);
+	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.0f);
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
-	for (physx::PxU32 i = 0; i < 5; i++)
-	{
-		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
-	}
-
-	if (!m_isInteractive)
-	{
-		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
-	}
+// 	for (physx::PxU32 i = 0; i < 5; i++)
+// 	{
+// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
+// 	}
+// 
+// 	if (!m_isInteractive)
+// 	{
+// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+// 	}
 }
 
 void Truth::PhysicsManager::Finalize()
@@ -89,9 +87,71 @@ void Truth::PhysicsManager::ResetPhysX()
 
 }
 
+physx::PxRigidDynamic* Truth::PhysicsManager::CreateRigidDynamic()
+{
+	auto body = m_physics->createRigidDynamic(physx::PxTransform());
+	return body;
+}
+
+physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic()
+{
+	auto body = m_physics->createRigidStatic(physx::PxTransform());
+	return body;
+}
+
+physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
+{
+	physx::PxShape* shape = nullptr;
+	switch (_shape)
+	{
+	case Truth::ColliderShape::BOX:
+	{
+		if (_args.empty())
+		{
+			return nullptr;
+		}
+		shape = m_physics->createShape(physx::PxBoxGeometry(_args[0], _args[0], _args[0]), *m_material);
+		break;
+	}
+	case Truth::ColliderShape::CAPSULE:
+	{
+		if (_args.size() < 2)
+		{
+			return nullptr;
+		}
+		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args[0], _args[1]), *m_material);
+		break;
+	}
+	case Truth::ColliderShape::SPHERE:
+	{
+		if (_args.empty())
+		{
+			return nullptr;
+		}
+		shape = m_physics->createShape(physx::PxSphereGeometry(_args[0]), *m_material);
+		break;
+	}
+	case Truth::ColliderShape::MESH:
+	{
+		if (_args.empty())
+		{
+			return nullptr;
+		}
+		// shape = m_physics->createShape(physx::PxConvexMeshGeometry(_args[0]), *m_material);
+		break;
+	}
+	default:
+		shape = nullptr;
+		break;
+	}
+
+	return shape;
+}
+
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
 {
 	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_material);
+	
 	for (physx::PxU32 i = 0; i < size; i++)
 	{
 		for (physx::PxU32 j = 0; j < size - i; j++)
@@ -102,8 +162,11 @@ void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU3
 			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
 			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
 			body->attachShape(*shape);
+			// body->setLinearVelocity(physx::PxVec3(0, -50, -100));
 			physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+			
 			m_scene->addActor(*body);
+			//body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 		}
 	}
 	shape->release();
