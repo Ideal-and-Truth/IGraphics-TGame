@@ -175,7 +175,6 @@
     <ClInclude Include="GraphicsEngine\public\ISkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
-    <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\Camera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h" />
@@ -193,25 +192,16 @@
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.h" />
     <ClInclude Include="IdealLight.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Bone.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Material.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
     <ClInclude Include="Core\ForDebug.h" />
-    <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineState.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Resource.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Texture.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Viewport.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Renderer.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Mesh.h" />
     <ClInclude Include="Misc\Utils\PIX.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Model.h" />
     <ClInclude Include="Core\Core.h" />
     <ClInclude Include="Core\Defines.h" />
     <ClInclude Include="Core\Types.h" />
-    <ClInclude Include="Engine\IEngine.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ThirdParty.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Launch\LaunchWindow.h" />
@@ -230,7 +220,6 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Camera.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\ResourceManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.cpp" />
@@ -246,21 +235,12 @@
     <ClCompile Include="IdealLight.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Bone.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Material.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConverter.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Definitions.h" />
-    <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineState.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Resource.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Texture.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Viewport.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Renderer.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Model.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Mesh.cpp" />
-    <ClCompile Include="Engine\IEngine.cpp" />
     <ClCompile Include="Launch\LaunchWindow.cpp" />
     <ClCompile Include="GraphicsEngine\VertexInfo.cpp" />
     <ClCompile Include="Misc\Utils\StringUtils.cpp" />

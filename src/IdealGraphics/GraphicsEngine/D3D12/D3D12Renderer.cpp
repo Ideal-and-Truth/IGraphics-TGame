@@ -3,11 +3,9 @@
 #include <DirectXColors.h>
 #include "Misc/Utils/PIX.h"
 
-#include "GraphicsEngine/Resource/Mesh.h"
 
 // Test
 #include "Misc/Assimp/AssimpConverter.h"
-#include "GraphicsEngine/Resource/Model.h"
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
@@ -15,7 +13,6 @@
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12RootSignature.h"
 #include "GraphicsEngine/Resource/Camera.h"
-#include "GraphicsEngine/Resource/MeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
