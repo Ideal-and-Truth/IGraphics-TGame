@@ -8,6 +8,7 @@ Truth::TestComponent::TestComponent()
 	m_testInt = 10;
 }
 
+
 Truth::TestComponent::~TestComponent()
 {
 }

@@ -24,7 +24,7 @@ void Truth::TestEntity::Initailize()
 {
 	DEBUG_PRINT("Entity Start : test enttity\n");
 	__super::Initailize();
-	AddComponent<TestComponent>();
+	AddComponent<TestComponent>(7);
 	auto mesh = AddComponent<Mesh>();
 	mesh->SetMesh(L"CatwalkWalkForward3/CatwalkWalkForward3");
 	mesh->SetRenderable(true);

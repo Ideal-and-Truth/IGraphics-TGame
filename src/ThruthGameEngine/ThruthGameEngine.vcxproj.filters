@@ -141,7 +141,7 @@
     <ClCompile Include="Property.cpp">
       <Filter>Reflection\Advanced</Filter>
     </ClCompile>
-    <ClCompile Include="ERigidBody.cpp">
+    <ClCompile Include="RigidBody.cpp">
       <Filter>Component\Rigidbody</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
@@ -247,7 +247,7 @@
     <ClInclude Include="TypeInfoMacros.h">
       <Filter>Reflection\Advanced</Filter>
     </ClInclude>
-    <ClInclude Include="ERigidBody.h">
+    <ClInclude Include="RigidBody.h">
       <Filter>Component\Rigidbody</Filter>
     </ClInclude>
     <ClInclude Include="Collider.h">
