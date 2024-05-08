@@ -111,9 +111,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>Scene\TestScene</Filter>
-    </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Manager\Scene</Filter>
     </ClCompile>
@@ -131,9 +128,6 @@
     </ClCompile>
     <ClCompile Include="..\Utils\SimpleMath.cpp">
       <Filter>SimpleMath</Filter>
-    </ClCompile>
-    <ClCompile Include="TestScene2.cpp">
-      <Filter>Scene\TestScene</Filter>
     </ClCompile>
     <ClCompile Include="TypeInfo.cpp">
       <Filter>Reflection\Advanced</Filter>
@@ -201,9 +195,6 @@
     <ClInclude Include="Scene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene.h">
-      <Filter>Scene\TestScene</Filter>
-    </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>Manager\Scene</Filter>
     </ClInclude>
@@ -222,9 +213,6 @@
     <ClInclude Include="Macro.h" />
     <ClInclude Include="..\Utils\SimpleMath.h">
       <Filter>SimpleMath</Filter>
-    </ClInclude>
-    <ClInclude Include="TestScene2.h">
-      <Filter>Scene\TestScene</Filter>
     </ClInclude>
     <ClInclude Include="Method.h">
       <Filter>Reflection\Advanced</Filter>

@@ -5,6 +5,8 @@
 #include "EngineDemo.h"
 #include "Processor.h"
 
+#include "TestScene.h"
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -16,7 +18,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     std::unique_ptr<Processor> processor = std::make_unique<Processor>();
 
     processor->Initialize(hInstance);
-
+    processor->AddScene<TestScene>("test");
+    processor->SetStartScene("test");
     ///...///
 
     processor->Loop();

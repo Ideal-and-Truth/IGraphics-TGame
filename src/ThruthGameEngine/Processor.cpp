@@ -1,8 +1,8 @@
 #include "Processor.h"
 #include "Managers.h"
 #include "SceneManager.h"
-#include "TestScene.h"
-#include "TestScene2.h"
+// #include "TestScene.h"
+// #include "TestScene2.h"
 #include "ISkinnedMeshObject.h"
 #include "IRenderScene.h"
 #include "IAnimation.h"
@@ -31,13 +31,6 @@ void Processor::Initialize(HINSTANCE _hInstance)
 {
 	CreateMainWindow(_hInstance);
 	InitializeManager();
-
-	m_manager->Scene()->AddScene<Truth::TestScene>("test", m_manager);
-	m_manager->Scene()->AddScene<Truth::TestScene2>("test2", m_manager);
-
-	m_manager->Scene()->SetCurrnetScene("test");
-
-	m_manager->Scene()->StartGameScene();
 }
 
 void Processor::Finalize()
@@ -55,6 +48,7 @@ void Processor::Process()
 
 void Processor::Loop()
 {
+	m_manager->Scene()->StartGameScene();
 	while (true)
 	{
 		if (PeekMessage(&m_msg, NULL, 0, 0, PM_REMOVE))
@@ -174,4 +168,9 @@ void Processor::InitializeManager()
 {
 	m_manager = std::make_shared<Truth::Managers>();
 	m_manager->Initialize(m_hwnd, m_wight, m_height);
+}
+
+void Processor::SetStartScene(std::string _name)
+{
+	m_manager->Scene()->SetCurrnetScene(_name);
 }
