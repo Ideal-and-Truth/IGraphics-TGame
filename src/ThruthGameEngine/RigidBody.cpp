@@ -28,3 +28,9 @@ Truth::RigidBody::~RigidBody()
 {
 	m_body->release();
 }
+
+void Truth::RigidBody::FixedUpdate(std::any _p)
+{
+	int a = 1;
+}
+
