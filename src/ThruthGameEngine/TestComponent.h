@@ -17,7 +17,7 @@ namespace Truth
 			int m_testInt;
 
 	public:
-		TestComponent(std::shared_ptr<Managers> _managers);
+		TestComponent(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual	~TestComponent();
 
 	public:

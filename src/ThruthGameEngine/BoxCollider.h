@@ -17,7 +17,7 @@ namespace Truth
 		Vector3 m_size;
 
 	public:
-		BoxCollider(std::shared_ptr<Managers> _managers);
+		BoxCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~BoxCollider();
 	};
 }

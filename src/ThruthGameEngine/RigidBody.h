@@ -44,7 +44,7 @@ namespace Truth
 		physx::PxRigidDynamic* m_body;
 
 	public:
-		RigidBody(std::shared_ptr<Managers> _managers);
+		RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		~RigidBody();
 	};
 }

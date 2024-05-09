@@ -56,15 +56,15 @@ void Truth::PhysicsManager::Initalize()
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
-	for (physx::PxU32 i = 0; i < 5; i++)
-	{
-		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
-	}
-
-	if (!m_isInteractive)
-	{
-		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
-	}
+// 	for (physx::PxU32 i = 0; i < 5; i++)
+// 	{
+// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
+// 	}
+// 
+// 	if (!m_isInteractive)
+// 	{
+// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+// 	}
 }
 
 void Truth::PhysicsManager::Finalize()

@@ -15,10 +15,10 @@ namespace Truth
 
 	protected:
 		physx::PxShape* m_collider;
-		physx::PxActor* m_body;
+		physx::PxRigidActor* m_body;
 
 	public:
-		Collider(std::shared_ptr<Managers> _managers, bool _isTrigger = true);
+		Collider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner, bool _isTrigger = true);
 		virtual ~Collider();
 
 	protected:
@@ -27,11 +27,11 @@ namespace Truth
 			return m_managers.lock()->Physics()->CreateCollider(_shape, _args);
 		}
 
-		inline physx::PxActor* GetDefaultDynamic()
+		inline physx::PxRigidDynamic* GetDefaultDynamic()
 		{
 			return m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
 		}
-		inline physx::PxActor* GetDefaultStatic()
+		inline physx::PxRigidStatic* GetDefaultStatic()
 		{
 			return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 		}

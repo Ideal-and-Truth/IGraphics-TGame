@@ -32,7 +32,7 @@ namespace Truth
 		std::weak_ptr<Managers> m_managers;
 
 	public:
-		Component(std::shared_ptr<Managers> _managers);
+		Component(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~Component();
 
 		bool CanMultiple() const { return m_canMultiple; }
