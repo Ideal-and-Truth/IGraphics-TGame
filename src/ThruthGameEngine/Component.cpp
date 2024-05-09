@@ -17,18 +17,3 @@ Truth::Component::~Component()
 		m_managers.lock()->Event()->RemoveListener(this);
 	}
 }
-
-float4 Truth::Component::GetDeltaTime()
-{
-	return m_managers.lock()->Time()->GetDT();
-}
-
-float4 Truth::Component::GetFixedDeltaTime()
-{
-	return m_managers.lock()->Time()->GetFDT();
-}
-
-void Truth::Component::EventPublish(std::string _name, std::any _param, float4 _delay)
-{
-	m_managers.lock()->Event()->PublishEvent(_name, _param, _delay);
-}

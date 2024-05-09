@@ -35,7 +35,6 @@ private:
 	uint32 m_wight;
 	uint32 m_height;
 
-
 public:
 	// 특수 멤버함수
 	Processor();

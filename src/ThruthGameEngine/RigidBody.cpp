@@ -21,7 +21,7 @@ Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers)
 	m_name = typeid(*this).name();
 	m_transform = m_owner.lock()->GetComponent<Transform>();
 
-	m_body = m_managers.lock()->Physics()->CreateRigidDynamic();
+	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
 }
 
 Truth::RigidBody::~RigidBody()

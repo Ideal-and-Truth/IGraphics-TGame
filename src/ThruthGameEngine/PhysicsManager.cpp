@@ -56,15 +56,15 @@ void Truth::PhysicsManager::Initalize()
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
-// 	for (physx::PxU32 i = 0; i < 5; i++)
-// 	{
-// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
-// 	}
-// 
-// 	if (!m_isInteractive)
-// 	{
-// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
-// 	}
+	for (physx::PxU32 i = 0; i < 5; i++)
+	{
+		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
+	}
+
+	if (!m_isInteractive)
+	{
+		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+	}
 }
 
 void Truth::PhysicsManager::Finalize()
@@ -87,16 +87,39 @@ void Truth::PhysicsManager::ResetPhysX()
 
 }
 
-physx::PxRigidDynamic* Truth::PhysicsManager::CreateRigidDynamic()
+void Truth::PhysicsManager::AddScene(physx::PxActor* _actor)
 {
-	auto body = m_physics->createRigidDynamic(physx::PxTransform());
+	m_scene->addActor(*_actor);
+}
+
+physx::PxRigidDynamic* Truth::PhysicsManager::CreateRigidDynamic(Vector3 _pos, Quaternion _rot)
+{
+	auto body = m_physics->createRigidDynamic(
+		physx::PxTransform(
+			physx::PxVec3(_pos.x, _pos.y, _pos.z)
+		)
+	);
 	return body;
 }
 
-physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic()
+physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic(Vector3 _pos, Quaternion _rot)
 {
-	auto body = m_physics->createRigidStatic(physx::PxTransform());
+	auto body = m_physics->createRigidStatic(
+		physx::PxTransform(
+			physx::PxVec3(_pos.x, _pos.y, _pos.z)
+		)
+	);
 	return body;
+}
+
+physx::PxRigidDynamic* Truth::PhysicsManager::CreateDefaultRigidDynamic()
+{
+	return CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
+}
+
+physx::PxRigidStatic* Truth::PhysicsManager::CreateDefaultRigidStatic()
+{
+	return CreateRigidStatic(Vector3::Zero, Quaternion::Identity);
 }
 
 physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
@@ -148,10 +171,13 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	return shape;
 }
 
+
+
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
 {
 	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_material);
-	
+	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 	for (physx::PxU32 i = 0; i < size; i++)
 	{
 		for (physx::PxU32 j = 0; j < size - i; j++)
@@ -164,9 +190,9 @@ void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU3
 			body->attachShape(*shape);
 			// body->setLinearVelocity(physx::PxVec3(0, -50, -100));
 			physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-			
+
 			m_scene->addActor(*body);
-			//body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
+			body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 		}
 	}
 	shape->release();
