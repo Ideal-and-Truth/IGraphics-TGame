@@ -14,8 +14,8 @@ namespace Truth
 		std::wstring m_path;
 
 	public:
-		Mesh(std::shared_ptr<Managers> _managers);
-		Mesh(std::shared_ptr<Managers> _managers, std::wstring _path);
+		Mesh(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		Mesh(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner, std::wstring _path);
 		virtual ~Mesh();
 
 		void SetMesh(std::wstring _path);

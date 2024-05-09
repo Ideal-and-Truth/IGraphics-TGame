@@ -2,8 +2,8 @@
 #include "Managers.h"
 
 
-Truth::Transform::Transform(std::shared_ptr<Managers> _managers)
-	: Component(_managers)
+Truth::Transform::Transform(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
+	: Component(_managers, _owner)
 	, m_position(0.0f, 0.0f, 0.0f)
 	, m_scale(1.0f, 1.0f, 1.0f)
 	, m_rotation{}

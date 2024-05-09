@@ -52,8 +52,13 @@ namespace Truth
 
 		void ResetPhysX();
 
-		physx::PxRigidDynamic* CreateRigidDynamic();
-		physx::PxRigidStatic* CreateRigidStatic();
+		void AddScene(physx::PxActor* _actor);
+
+		physx::PxRigidDynamic* CreateRigidDynamic(Vector3 _pos, Quaternion _rot);
+		physx::PxRigidStatic* CreateRigidStatic(Vector3 _pos, Quaternion _rot);
+
+		physx::PxRigidDynamic* CreateDefaultRigidDynamic();
+		physx::PxRigidStatic* CreateDefaultRigidStatic();
 
 		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
 

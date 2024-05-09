@@ -20,7 +20,7 @@ namespace Truth
 		Matrix m_transformMatrix;
 
 	public:
-		Transform(std::shared_ptr<Managers> _managers);
+		Transform(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~Transform();
 
 		// 변환 내용 적용
