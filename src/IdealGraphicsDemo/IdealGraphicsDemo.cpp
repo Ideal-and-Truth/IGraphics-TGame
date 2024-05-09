@@ -20,6 +20,8 @@
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
 #include "../Utils/SimpleMath.h"
+#include "Test.h"
+
 using namespace DirectX::SimpleMath;
 
 #define MAX_LOADSTRING 100
@@ -76,16 +78,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		);
-		// CatWalkForward3
-		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		//Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> dynamicMesh = Renderer->CreateDynamicMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		//std::shared_ptr<Ideal::IAnimation> animation5 = Renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		//dynamicMesh->AddAnimation(animation5);
-	 
-		//Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx");
-		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx");
-
 
 		Renderer->Init();
 		
@@ -94,12 +86,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		Renderer->SetRenderScene(renderScene);
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
-		Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
-		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
-		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-		Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		//Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
 
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = Renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
@@ -121,10 +114,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		renderScene->AddObject(ka);
+		renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
 		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
-		renderScene->AddObject(cat);
+
+		//-------------------Test Vertices Pos-------------------//
+		ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
+
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -142,7 +139,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 				world.CreateRotationY(angle);
 				mesh2->SetTransformMatrix(world);
-				ka->SetTransformMatrix(world);
+				//ka->SetTransformMatrix(world);
+				//cat->SetTransformMatrix(world);
+				if (GetAsyncKeyState('Z') & 0x8000)
+				{
+					cat->SetDrawObject(false);
+				}
+				if (GetAsyncKeyState('X') & 0x8000)
+				{
+					cat->SetDrawObject(true);
+				}
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();

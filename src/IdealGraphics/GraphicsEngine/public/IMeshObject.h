@@ -11,6 +11,7 @@ namespace Ideal
 		virtual ~IMeshObject() {}
 
 	public:
-		virtual void SetTransformMatrix(const DirectX::SimpleMath::Matrix& matrix) abstract;
+		virtual void SetTransformMatrix(const DirectX::SimpleMath::Matrix& Matrix) abstract;
+		virtual void SetDrawObject(bool IsDraw) abstract;
 	};
 }

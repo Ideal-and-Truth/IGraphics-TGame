@@ -1,3 +1,4 @@
+#include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 
@@ -7,6 +8,8 @@ using namespace Ideal;
 //------------------Descriptor Handle-------------------//
 
 D3D12DescriptorHandle::D3D12DescriptorHandle()
+	: m_cpuHandle(),
+	m_gpuHandle()
 {
 	//m_cpuHandle = (D3D12_GPU_VIRTUAL_ADDRESS)(-1);
 }
@@ -33,7 +36,8 @@ D3D12DescriptorHandle::~D3D12DescriptorHandle()
 
 D3D12DescriptorHeap::D3D12DescriptorHeap()
 	: m_numFreeDescriptors(0),
-	m_descriptorSize(0)
+	m_descriptorSize(0),
+	m_maxCount(0)
 {
 
 }
@@ -43,32 +47,36 @@ D3D12DescriptorHeap::~D3D12DescriptorHeap()
 
 }
 
-void D3D12DescriptorHeap::Create(std::shared_ptr<D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, uint32 MaxCount)
+void D3D12DescriptorHeap::Create(std::shared_ptr<D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount)
 {
+	m_maxCount = MaxCount;
+
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 	heapDesc.NumDescriptors = MaxCount;
 	heapDesc.Type = HeapType;
-	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	heapDesc.Flags = Flags;
 	Check(Renderer->GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_descriptorHeap.GetAddressOf())));
 
 	m_descriptorSize = Renderer->GetDevice()->GetDescriptorHandleIncrementSize(heapDesc.Type);
 	m_numFreeDescriptors = heapDesc.NumDescriptors;
 
-	//auto aaa = m_descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	//auto bbb = m_descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	// 첫 위치로 Handle을 만든다.
 	m_freeHandle = Ideal::D3D12DescriptorHandle(
 		m_descriptorHeap->GetCPUDescriptorHandleForHeapStart(),
 		m_descriptorHeap->GetGPUDescriptorHandleForHeapStart()
 	);
+
+	m_headHandle = m_freeHandle;
 }
 
-void D3D12DescriptorHeap::Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, uint32 MaxCount)
+void D3D12DescriptorHeap::Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount)
 {
+	m_maxCount = MaxCount;
+
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 	heapDesc.NumDescriptors = MaxCount;
 	heapDesc.Type = HeapType;
-	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	heapDesc.Flags = Flags;
 	Check(Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(m_descriptorHeap.GetAddressOf())));
 
 	m_descriptorSize = Device->GetDescriptorHandleIncrementSize(heapDesc.Type);
@@ -79,6 +87,8 @@ void D3D12DescriptorHeap::Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYP
 		m_descriptorHeap->GetCPUDescriptorHandleForHeapStart(),
 		m_descriptorHeap->GetGPUDescriptorHandleForHeapStart()
 	);
+
+	m_headHandle = m_freeHandle;
 }
 
 Ideal::D3D12DescriptorHandle D3D12DescriptorHeap::Allocate(uint32 Count /* = 1*/)
@@ -103,4 +113,11 @@ Ideal::D3D12DescriptorHandle D3D12DescriptorHeap::Allocate(uint32 Count /* = 1*/
 	m_numFreeDescriptors -= Count;
 
 	return ret;
+}
+
+void D3D12DescriptorHeap::Reset()
+{
+	m_count = 0;
+	m_numFreeDescriptors = m_maxCount;
+	m_freeHandle = m_headHandle;
 }

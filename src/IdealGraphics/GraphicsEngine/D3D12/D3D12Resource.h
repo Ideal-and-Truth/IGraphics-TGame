@@ -1,7 +1,8 @@
 #pragma once
-#include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-#include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include <d3d12.h>
+
+struct ID3D12Resource;
+struct ID3D12Device;
 
 namespace Ideal
 {
@@ -17,7 +18,6 @@ namespace Ideal
 	protected:
 		ComPtr<ID3D12Resource> m_resource = nullptr;
 	};
-
 
 	// 업로드용 임시 버퍼; 업로드 힙에 잡힌다. cpu write gpu read
 	class D3D12UploadBuffer : public D3D12Resource
@@ -77,7 +77,7 @@ namespace Ideal
 		D3D12_VERTEX_BUFFER_VIEW GetView() const;
 
 	private:
-		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView = {};
+		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	};
 
 	// IndexBuffer
@@ -94,7 +94,7 @@ namespace Ideal
 		D3D12_INDEX_BUFFER_VIEW GetView() const;
 
 	private:
-		D3D12_INDEX_BUFFER_VIEW m_indexBufferView = {};
+		D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 	};
 
 	// ConstantBuffer

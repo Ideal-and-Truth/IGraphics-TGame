@@ -151,6 +151,12 @@ void AssimpConverter::ExportAnimationData(std::wstring savePath, uint32 index /*
 	WriteAnimationData(animation, finalPath);
 }
 
+void AssimpConverter::ExportVertexPositionData(const std::wstring& savePath)
+{
+	std::wstring finalPath = m_modelPath + savePath + L".pos";
+	WriteVertexPositionFile(finalPath);
+}
+
 std::string AssimpConverter::WriteTexture(std::string SaveFolder, std::string File)
 {
 	std::string fileName = std::filesystem::path(File).filename().string();
@@ -810,4 +816,31 @@ uint32 AssimpConverter::GetBoneIndex(const std::string& name)
 	assert(false);
 	MessageBox(NULL, L"Cant find Bone Index", L"AssimpConverter::GetBoneIndex", MB_OK);
 	return 0;
+}
+
+void AssimpConverter::WriteVertexPositionFile(const std::wstring& filePath)
+{
+	auto path = std::filesystem::path(filePath);
+
+	std::filesystem::create_directory(path.parent_path());
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(filePath, FileMode::Write);
+	
+	// 매쉬 개수
+	file->Write<uint32>((uint32)m_meshes.size());
+
+	for (auto& mesh : m_meshes)
+	{
+		// vertex 개수
+		file->Write<uint32>((uint32)mesh->vertices.size());
+		//file->Write(&mesh->vertices[0], sizeof(BasicVertex) * (uint32)mesh->vertices.size());
+
+		for (uint32 i = 0; i < (uint32)mesh->vertices.size(); ++i)
+		{
+			file->Write<float>(mesh->vertices[i].Position.x);
+			file->Write<float>(mesh->vertices[i].Position.y);
+			file->Write<float>(mesh->vertices[i].Position.z);
+		}
+	}
 }
