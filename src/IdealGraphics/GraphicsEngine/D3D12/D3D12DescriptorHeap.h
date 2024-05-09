@@ -1,4 +1,6 @@
 #pragma once
+#include "Core/Types.h"
+#include <memory>
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 class D3D12Renderer;
