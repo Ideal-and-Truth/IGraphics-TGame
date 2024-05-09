@@ -23,7 +23,8 @@ void Truth::Camera::Update(std::any _p)
 	float speed = 100;
 	if (GetKey(KEY::UP))
 	{
-		m_camera->Walk(-dt * speed);
+		/*m_camera->Walk(-dt * speed);*/
+		m_camera->SetLook(Vector3(0.0f, -1.0f, 1.0f));
 	}
 	if (GetKey(KEY::DOWN))
 	{

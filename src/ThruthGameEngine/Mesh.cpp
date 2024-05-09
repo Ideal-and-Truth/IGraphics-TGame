@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "Managers.h"
 #include "GraphicsManager.h"
+#include "ISkinnedMeshObject.h"
 
 Truth::Mesh::Mesh(std::shared_ptr<Managers> _managers)
 	: Component(_managers)
@@ -12,6 +13,8 @@ Truth::Mesh::Mesh(std::shared_ptr<Managers> _managers, std::wstring _path)
 {
 	SetMesh(_path);
 	SetRenderable(true);
+
+	EventBind("Update", &Truth::Mesh::Update);
 }
 
 Truth::Mesh::~Mesh()
@@ -30,5 +33,15 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 	if (_isRenderable)
 	{
 		m_managers.lock()->Graphics()->AddObject(m_mesh);
+	}
+}
+
+void Truth::Mesh::Update(std::any _p)
+{
+	static bool test = true;
+	if (GetKeyDown(KEY::C))
+	{
+		m_mesh->SetDrawObject(test);
+		test = !test;
 	}
 }
