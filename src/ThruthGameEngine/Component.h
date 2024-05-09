@@ -3,6 +3,7 @@
 #include "EventHandler.h"
 #include "Managers.h"
 #include "InputManager.h"
+#include "TimeManager.h"
 
 /// <summary>
 /// 모든 컴포넌트의 부모 클래스
@@ -31,7 +32,7 @@ namespace Truth
 		std::weak_ptr<Managers> m_managers;
 
 	public:
-		Component(std::shared_ptr<Managers> _managers);
+		Component(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~Component();
 
 		bool CanMultiple() const { return m_canMultiple; }
@@ -43,14 +44,17 @@ namespace Truth
 		// 자주 사용될 기능을 미리 묶어 놓는다.
 		// Component 에서 자주 사용될 함수 목록
 	protected:
-		// 프레임 시간 가져오기
-		float4 GetDeltaTime();
-		float4 GetFixedDeltaTime();
-
+#pragma region inline
 		// 이벤트 관련 함수
 		template <typename T>
-		void EventBind(std::string _name, void (T::* func)(std::any));
-		void EventPublish(std::string _name, std::any _param = nullptr, float4 _delay = 0.0f);
+		inline void EventBind(std::string _name, void (T::* func)(std::any))
+		{
+			m_managers.lock()->Event()->Subscribe(_name, MakeListenerInfo(func));
+		}
+		inline void EventPublish(std::string _name, std::any _param, float4 _delay = 0.0f)
+		{
+			m_managers.lock()->Event()->PublishEvent(_name, _param, _delay);
+		}
 
 		// 입력 관련 함수
 		inline bool GetKeyDown(KEY _key) const
@@ -65,12 +69,18 @@ namespace Truth
 		{
 			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::HOLD);
 		}
-	};
-}
+		
+		// 시간 관련 함수들
+		inline float GetDeltaTime()
+		{
+			return m_managers.lock()->Time()->GetDT();
+		}
 
-template <typename T>
-void Truth::Component::EventBind(std::string _name, void (T::* func)(std::any))
-{
-	m_managers.lock()->Event()->Subscribe(_name, MakeListenerInfo(func));
+		inline float GetFixedDeltaTime()
+		{
+			return m_managers.lock()->Time()->GetFDT();
+		}
+#pragma endregion inline
+	};
 }
 

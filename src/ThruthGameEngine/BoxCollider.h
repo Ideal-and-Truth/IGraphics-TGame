@@ -16,11 +16,8 @@ namespace Truth
 	public:
 		Vector3 m_size;
 
-	private:
-		physx::PxShape* m_collider;
-
 	public:
-		BoxCollider(std::shared_ptr<Managers> _managers);
+		BoxCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~BoxCollider();
 	};
 }

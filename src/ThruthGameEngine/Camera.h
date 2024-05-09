@@ -17,7 +17,7 @@ namespace Truth
 		std::shared_ptr<Ideal::ICamera> m_camera;
 
 	public:
-		Camera(std::shared_ptr<Managers> _managers);
+		Camera(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~Camera();
 
 		void Update(std::any _p);

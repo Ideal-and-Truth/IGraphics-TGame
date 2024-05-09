@@ -1,8 +1,8 @@
 #include "TestComponent.h"
 #include "Managers.h"
 
-Truth::TestComponent::TestComponent(std::shared_ptr<Managers> _managers)
-	: Component(_managers)
+Truth::TestComponent::TestComponent(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
+	: Component(_managers, _owner)
 {
 	m_canMultiple = true;
 	m_name = typeid(*this).name();

@@ -64,9 +64,7 @@ namespace Truth
 	{
 		// 일단 만든다
 		// 타입 이름 가져오기
-		std::shared_ptr<C> component = std::make_shared<C>(m_manager);
-
-		component->SetOwner(shared_from_this());
+		std::shared_ptr<C> component = std::make_shared<C>(m_manager, shared_from_this());
 
 		// 만일 중복 가능한 컴포넌트라면
 		if (component->CanMultiple())
@@ -92,7 +90,7 @@ namespace Truth
 	{
 		// 일단 만든다
 		// 타입 이름 가져오기
-		std::shared_ptr<C> component = std::make_shared<C>(m_manager, _args...);
+		std::shared_ptr<C> component = std::make_shared<C>(m_manager, shared_from_this(), _args...);
 
 		component->SetOwner(shared_from_this());
 

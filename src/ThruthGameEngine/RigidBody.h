@@ -30,9 +30,11 @@ namespace Truth
 		// 	bool m_freezePosition;
 		// 	bool m_freezeRotation;
 
+		Vector3 m_velocity;
+		physx::PxRigidDynamic* m_body;
+
 	private:
 		float m_speed;
-		Vector3 m_velocity;
 		Vector3 m_angularVelocity;
 		Vector3 m_inertiaTensor;
 		Vector3 m_inertiaTensorRotation;
@@ -41,11 +43,12 @@ namespace Truth
 
 		std::weak_ptr<Transform> m_transform;
 
-		physx::PxRigidDynamic* m_body;
 
 	public:
-		RigidBody(std::shared_ptr<Managers> _managers);
-		~RigidBody();
+		RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		virtual ~RigidBody();
+
+		void FixedUpdate(std::any _p);
 	};
 }
 

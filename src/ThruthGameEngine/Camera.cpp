@@ -4,8 +4,8 @@
 #include "InputManager.h"
 #include "GraphicsManager.h"
 
-Truth::Camera::Camera(std::shared_ptr<Managers> _managers)
-	: Component(_managers)
+Truth::Camera::Camera(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
+	: Component(_managers, _owner)
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 3000.f);

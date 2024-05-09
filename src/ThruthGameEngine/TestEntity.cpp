@@ -4,6 +4,8 @@
 #include "Mesh.h"
 #include "Managers.h"
 #include "GraphicsManager.h"
+#include "BoxCollider.h"
+#include "RigidBody.h"
 
 Truth::TestEntity::TestEntity()
 {
@@ -25,5 +27,7 @@ void Truth::TestEntity::Initailize()
 	DEBUG_PRINT("Entity Start : test enttity\n");
 	__super::Initailize();
 	AddComponent<TestComponent>();
-	auto mesh = AddComponent<Mesh>(L"CatwalkWalkForward3/CatwalkWalkForward3");
+	AddComponent<RigidBody>();
+	AddComponent<BoxCollider>();
+	AddComponent<Mesh>(L"CatwalkWalkForward3/CatwalkWalkForward3");
 }
