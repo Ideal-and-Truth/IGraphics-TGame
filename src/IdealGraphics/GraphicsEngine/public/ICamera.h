@@ -1,4 +1,6 @@
 #pragma once
+#include "../Utils/SimpleMath.h"
+using namespace DirectX::SimpleMath;
 
 namespace Ideal
 {
@@ -15,5 +17,8 @@ namespace Ideal
 		virtual void Strafe(float Distance) abstract;
 		virtual void Pitch(float Angle) abstract;
 		virtual void RotateY(float Angle) abstract;
+
+		virtual void SetPosition(const Vector3& Position) abstract;
+		virtual void SetLook(Vector3 Look) abstract;
 	};
 }

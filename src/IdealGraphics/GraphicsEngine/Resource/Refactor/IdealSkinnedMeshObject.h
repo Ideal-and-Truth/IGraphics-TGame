@@ -30,6 +30,7 @@ namespace Ideal
 
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; }
+		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
 
@@ -43,6 +44,8 @@ namespace Ideal
 		void AnimationPlay();
 
 	private:
+		bool m_isDraw = true;
+
 		std::shared_ptr<IdealSkinnedMesh> m_skinnedMesh;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 

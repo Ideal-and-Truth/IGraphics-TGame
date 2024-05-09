@@ -10,6 +10,9 @@
     <Filter Include="Misc">
       <UniqueIdentifier>{5d5501a8-a7ad-4399-99cb-b3b436d49d52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{664ed9a4-b4f7-406e-aa44-f46b4d9bc4e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -24,6 +27,9 @@
     <ClInclude Include="targetver.h">
       <Filter>Misc</Filter>
     </ClInclude>
+    <ClInclude Include="Test.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="IdealGraphicsDemo.ico">
@@ -36,6 +42,9 @@
   <ItemGroup>
     <ClCompile Include="IdealGraphicsDemo.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
