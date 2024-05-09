@@ -226,7 +226,8 @@ finishAdapter:
 	//------------------Create Default Camera------------------//
 	CreateDefaultCamera();
 	// Temp
-	m_mainCamera->Walk(50.f);
+	//m_mainCamera->Walk(50.f);
+	m_mainCamera->SetPosition(Vector3(0.f, 0.f, 150.f));
 	m_mainCamera->UpdateViewMatrix();
 
 	c1 = CreateCamera();
@@ -275,10 +276,16 @@ void D3D12Renderer::Tick()
 	{
 		m_mainCamera->Strafe(speed);
 	}
+	if (GetAsyncKeyState('L') & 0x8000)
+	{
+		m_mainCamera->SetLook(Vector3(1.f,0.f,-1.f));
+	}
+
 }
 
 void D3D12Renderer::Render()
 {
+	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateViewMatrix();
 
 	//-------------Begin Render------------//
@@ -367,7 +374,7 @@ void D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderSc
 	m_currentRenderScene = std::static_pointer_cast<Ideal::IdealRenderScene>(RenderScene);
 }
 
-void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)
+void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
 	assimpConverter->SetAssetPath(m_assetPath);
@@ -383,6 +390,10 @@ void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinned
 	FileName.pop_back();
 
 	assimpConverter->ExportModelData(FileName, isSkinnedData);
+	if (NeedVertexInfo)
+	{
+		assimpConverter->ExportVertexPositionData(FileName);
+	}
 	assimpConverter->ExportMaterialData(FileName);
 }
 

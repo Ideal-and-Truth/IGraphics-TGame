@@ -20,6 +20,8 @@
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
 #include "../Utils/SimpleMath.h"
+#include "Test.h"
+
 using namespace DirectX::SimpleMath;
 
 #define MAX_LOADSTRING 100
@@ -90,6 +92,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
 
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = Renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
@@ -116,6 +119,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
 
+		//-------------------Test Vertices Pos-------------------//
+		ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
+
+
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
 
@@ -134,6 +141,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				mesh2->SetTransformMatrix(world);
 				//ka->SetTransformMatrix(world);
 				//cat->SetTransformMatrix(world);
+				if (GetAsyncKeyState('Z') & 0x8000)
+				{
+					cat->SetDrawObject(false);
+				}
+				if (GetAsyncKeyState('X') & 0x8000)
+				{
+					cat->SetDrawObject(true);
+				}
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();

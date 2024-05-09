@@ -57,6 +57,28 @@ void Ideal::IdealCamera::RotateY(float Angle)
 	m_look = m_look.TransformNormal(m_look, R);
 }
 
+void IdealCamera::SetPosition(const Vector3& Position)
+{
+	m_position = Position;
+}
+
+void Ideal::IdealCamera::SetLook(Vector3 Look)
+{
+	Look.Normalize();
+
+	Vector3 worldUp(0.f, 1.f, 0.f);
+	Vector3 right = -Look.Cross(worldUp);
+	//Vector3 right = worldUp.Cross(Look);
+	right.Normalize();
+
+	Vector3 up = Look.Cross(right);
+
+	m_look = Look;
+	m_up = up;
+	m_right = right;
+	UpdateViewMatrix();
+}
+
 IdealCamera::~IdealCamera()
 {
 

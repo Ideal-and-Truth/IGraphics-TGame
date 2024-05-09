@@ -18,6 +18,9 @@ namespace Ideal
 		virtual void Pitch(float Angle) override;
 		virtual void RotateY(float Angle) override;
 		
+		virtual void SetPosition(const Vector3& Position) override;
+		virtual void SetLook(Vector3 Look) override;
+
 		DirectX::SimpleMath::Matrix GetView()const { return m_view; }
 		DirectX::SimpleMath::Matrix GetProj()const { return m_proj; }
 		DirectX::SimpleMath::Matrix GetViewProj()const { return m_view * m_proj; }

@@ -24,6 +24,10 @@ void Ideal::IdealStaticMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)
 
 void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
+	if (!m_isDraw)
+	{
+		return;
+	}
 	// Ver2 2024.05.07 : Constant Buffer를 Pool에서 할당받아 사용한다.
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
