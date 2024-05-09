@@ -35,6 +35,7 @@ cbuffer BoneBuffer : register(b1)
 uint BoneIndex;
 
 Texture2D diffuseTexture : register(t0);
+
 SamplerState sampler0 : register(s0);
 
 VSOutput VS(VSInput input)

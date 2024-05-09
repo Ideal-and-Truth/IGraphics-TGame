@@ -73,7 +73,6 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ThirdParty.h">
       <Filter>RenderTest</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\IEngine.h" />
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h">
       <Filter>Misc\Thirdparty</Filter>
     </ClInclude>
@@ -88,28 +87,14 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Resource.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineState.h">
-      <Filter>GraphicsEngine\D3D12</Filter>
-    </ClInclude>
     <ClInclude Include="Misc\Assimp\AssimpConverter.h">
       <Filter>Misc\Assimp</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\VertexInfo.h">
       <Filter>GraphicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine\Resource\Material.h" />
     <ClInclude Include="Misc\Utils\tinyxml2.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
-    <ClInclude Include="GraphicsEngine\ResourceManager.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Bone.h">
-      <Filter>GraphicsEngine\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsEngine\Resource\Mesh.h">
-      <Filter>GraphicsEngine\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsEngine\Resource\Model.h">
-      <Filter>GraphicsEngine\Resource</Filter>
-    </ClInclude>
     <ClInclude Include="Misc\Utils\StringUtils.h">
       <Filter>Misc</Filter>
     </ClInclude>
@@ -117,7 +102,7 @@
     <ClInclude Include="GraphicsEngine\public\IdealRenderer.h" />
     <ClInclude Include="GraphicsEngine\public\IdealRendererFactory.h" />
     <ClInclude Include="GraphicsEngine\public\ICamera.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Camera.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealCamera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
@@ -127,7 +112,6 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Texture.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine\Resource\MeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
     <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
@@ -146,6 +130,8 @@
     <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.h" />
+    <ClInclude Include="IdealLight.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -164,7 +150,6 @@
     <ClCompile Include="Launch\LaunchWindow.cpp">
       <Filter>Launch</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\IEngine.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Renderer.cpp">
       <Filter>GraphicsEngine</Filter>
     </ClCompile>
@@ -174,32 +159,19 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Resource.cpp">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineState.cpp">
-      <Filter>GraphicsEngine\D3D12</Filter>
-    </ClCompile>
     <ClCompile Include="Misc\Assimp\AssimpConverter.cpp">
       <Filter>Misc\Assimp</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\VertexInfo.cpp">
       <Filter>GraphicsEngine</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine\Resource\Material.cpp" />
     <ClCompile Include="Misc\Utils\tinyxml2.cpp" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
-    <ClCompile Include="GraphicsEngine\Resource\Bone.cpp">
-      <Filter>GraphicsEngine\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsEngine\Resource\Mesh.cpp">
-      <Filter>GraphicsEngine\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsEngine\Resource\Model.cpp">
-      <Filter>GraphicsEngine\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="Misc\Utils\StringUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ResourceBase.cpp" />
     <ClCompile Include="GraphicsEngine\private\IdealRendererFactory.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Camera.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealCamera.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.cpp">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
@@ -212,7 +184,6 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Definitions.h">
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsEngine\Resource\MeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMesh.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
@@ -226,6 +197,8 @@
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.cpp" />
+    <ClCompile Include="IdealLight.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -250,6 +223,8 @@
     <FxCompile Include="Shaders\SimpleVertexShaderUV.hlsl" />
     <FxCompile Include="Shaders\SimpleMeshShader.hlsl" />
     <FxCompile Include="Shaders\AnimationDefaultVS.hlsl" />
+    <FxCompile Include="Shaders\BoxUV2.hlsl" />
+    <FxCompile Include="Shaders\AnimationDefault.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

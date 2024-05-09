@@ -8,7 +8,7 @@ struct VSInput
     float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
     float3 tangent : TANGENT;
-	float4  skinIndices	: BLEND_INDICES;
+	float4 skinIndices	: BLEND_INDICES;
 	float4 skinWeights	: BLEND_WEIGHTS;
 };
 
@@ -22,7 +22,15 @@ struct VSOutput
     float4 skinWeights	: BLEND_WEIGHTS;
 };
 
-cbuffer Transform : register(b0)
+cbuffer Material : register(b0)
+{
+    float4 Ambient;
+    float4 Diffuse;
+    float4 Specular;
+    float4 Emissive;
+}
+
+cbuffer Transform : register(b1)
 {
     float4x4 World;
     float4x4 View;
@@ -30,7 +38,7 @@ cbuffer Transform : register(b0)
     float4x4 WorldInvTranspose;
 }
 
-cbuffer BoneBuffer : register(b1)
+cbuffer BoneBuffer : register(b2)
 {
     matrix BoneTransforms[MAX_BONE_TRANSFORMS];
 }
@@ -55,6 +63,8 @@ void SkinVertex(inout float4 position, inout float3 normal, float4x4 skinTransfo
 //uint BoneIndex;
 
 Texture2D diffuseTexture : register(t0);
+Texture2D specularTexture : register(t1);
+Texture2D normalTexture : register(t2);
 SamplerState sampler0 : register(s0);
 
 VSOutput VS(VSInput input)
@@ -84,8 +94,9 @@ VSOutput VS(VSInput input)
 
 float4 PS(VSOutput input) : SV_TARGET
 {
-    float4 color = diffuseTexture.Sample(sampler0, input.UV);
-    //float4 color = input.skinWeights;
-    //float4 color = float4(input.UV.xy, 1, 1);
+      float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    float4 dirLight = float4(1.f,0.f,0.f,1.f);
+    float4 value = dot(-dirLight, normalize(input.NormalW));
+    color = color * value * Diffuse;
     return color;
 }

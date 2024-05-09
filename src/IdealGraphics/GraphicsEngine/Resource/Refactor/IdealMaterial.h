@@ -1,6 +1,6 @@
 #pragma once
-#include "Core/Core.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
 {
@@ -31,10 +31,9 @@ namespace Ideal
 		void SetNormalTextureFile(std::wstring& File)	{ m_normalTextureFile = File; }
 
 	private:
-
 		Color m_ambient;
-		Color m_specular;
 		Color m_diffuse;
+		Color m_specular;
 		Color m_emissive;
 
 		std::wstring m_diffuseTextureFile;
@@ -46,5 +45,8 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Texture> m_specularTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_emissiveTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_normalTexture;
+
+	private:
+		CB_Material m_cbMaterialData;
 	};
 }

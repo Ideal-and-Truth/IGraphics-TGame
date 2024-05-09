@@ -20,6 +20,7 @@ namespace Truth
 
 		void SetMesh(std::wstring _path);
 		void SetRenderable(bool _isRenderable);
+		void Update(std::any _p);
 
 	private:
 

@@ -37,6 +37,9 @@ public:
 	void ExportMaterialData(const std::wstring& savePath);
 	void ExportAnimationData(std::wstring savePath, uint32 index = 0);
 
+	// 정점 위치만 내보내기 위한 함수
+	void ExportVertexPositionData(const std::wstring& savePath);
+
 private:
 	std::string WriteTexture(std::string SaveFolder, std::string File);
 	void WriteMaterialData(std::wstring FilePath);
@@ -54,6 +57,8 @@ private:
 	void ReadKeyFrameData(std::shared_ptr<AssimpConvert::Animation> animation, aiNode* node, std::map<std::string, std::shared_ptr<AssimpConvert::AnimationNode>>& cache);
 	void WriteAnimationData(std::shared_ptr<AssimpConvert::Animation> animation, std::wstring finalPath);
 	uint32 GetBoneIndex(const std::string& name);
+
+	void WriteVertexPositionFile(const std::wstring& filePath);
 
 private:
 	

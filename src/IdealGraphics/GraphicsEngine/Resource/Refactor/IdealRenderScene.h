@@ -20,6 +20,7 @@ namespace Ideal
 {
 	class IdealRenderScene : public IRenderScene
 	{
+
 	public:
 		IdealRenderScene();
 		virtual ~IdealRenderScene();
@@ -32,6 +33,7 @@ namespace Ideal
 		virtual void AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
 
 	private:
+		// Ver2 : 2024.05.07 : cb pool, descriptor pool을 사용하는 방식으로 바꾸겠다.
 		void CreateStaticMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
 		void CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
 

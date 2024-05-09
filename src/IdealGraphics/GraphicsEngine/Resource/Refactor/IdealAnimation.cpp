@@ -1,4 +1,6 @@
+#include "Core/Core.h"
 #include "IdealAnimation.h"
+#include "GraphicsEngine/Resource/ModelAnimation.h"
 
 Ideal::IdealAnimation::IdealAnimation()
 {

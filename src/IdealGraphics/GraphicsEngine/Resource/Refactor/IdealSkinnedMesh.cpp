@@ -1,7 +1,9 @@
+#include "Core/Core.h"
 #include "IdealSkinnedMesh.h"
-
 #include "GraphicsEngine/Resource/Refactor/IdealMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealBone.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
+#include "GraphicsEngine/VertexInfo.h"
 
 Ideal::IdealSkinnedMesh::IdealSkinnedMesh()
 {
@@ -13,28 +15,10 @@ Ideal::IdealSkinnedMesh::~IdealSkinnedMesh()
 
 }
 
-void Ideal::IdealSkinnedMesh::Render(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+void Ideal::IdealSkinnedMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
-
-	//CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	//t->World = m_transform;
-	//t->View = d3d12Renderer->GetView();
-	//t->Proj = d3d12Renderer->GetProj();
-	//t->WorldInvTranspose = m_transform.Invert();
-	/*CB_Bone* b = (CB_Bone*)m_cbBoneTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	*b = m_bone;*/
-
-	// Bone
-	/*for (uint32 i = 0; i < m_bones.size(); ++i)
-	{
-		m_bone.transforms[i] =
-	}*/
-
-	
-	//commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
-	//commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX + 1, m_cbBoneTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
 
 	for (auto& mesh : m_meshes)
 	{

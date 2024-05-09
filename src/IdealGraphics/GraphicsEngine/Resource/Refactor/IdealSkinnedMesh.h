@@ -1,9 +1,6 @@
 #pragma once
-#include "Core/Core.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
-#include "GraphicsEngine/D3D12/D3D12Resource.h"
-#include "GraphicsEngine/VertexInfo.h"
-#include "GraphicsEngine/ConstantBufferInfo.h"
+
 namespace Ideal
 {
 	template <typename> class IdealMesh;
@@ -11,6 +8,8 @@ namespace Ideal
 	class IdealRenderer;
 	class IdealBone;
 }
+
+struct SkinnedVertex;
 
 namespace Ideal
 {
@@ -21,8 +20,7 @@ namespace Ideal
 		virtual ~IdealSkinnedMesh();
 
 	public:
-		void Render(std::shared_ptr<Ideal::IdealRenderer> Renderer);
-
+		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> Mesh);
 		void AddMaterial(std::shared_ptr<Ideal::IdealMaterial> Material);

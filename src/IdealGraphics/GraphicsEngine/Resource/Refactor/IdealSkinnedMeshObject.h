@@ -1,18 +1,15 @@
 #pragma once
 #include "GraphicsEngine/public/ISkinnedMeshObject.h"
-#include "Core/Core.h"
-
-#include "GraphicsEngine/VertexInfo.h"
-
-#include "GraphicsEngine/D3D12/D3D12Resource.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
 {
 	class IAnimation;
 
+	class Idealbone;
 	class IdealRenderer;
 	class IdealAnimation;
+	class IdealSkinnedMesh;
 }
 struct AnimTransform
 {
@@ -33,6 +30,7 @@ namespace Ideal
 
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; }
+		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
 
@@ -46,20 +44,21 @@ namespace Ideal
 		void AnimationPlay();
 
 	private:
+		bool m_isDraw = true;
+
 		std::shared_ptr<IdealSkinnedMesh> m_skinnedMesh;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 
-		Ideal::D3D12ConstantBuffer m_cbBone;
 		CB_Bone m_cbBoneData;
-		Ideal::D3D12ConstantBuffer m_cbTransform;
 		CB_Transform m_cbTransformData;
+
 		Matrix m_transform;
 
 		// Animation
 	private:
 		/// Ver2
-		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations2;
-		std::map<std::string, std::shared_ptr<AnimTransform>> m_animTransforms2;
+		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
+		std::map<std::string, std::shared_ptr<AnimTransform>> m_animTransforms;
 		std::shared_ptr<Ideal::IdealAnimation> m_currentAnimation;
 		std::shared_ptr<Ideal::IdealAnimation> m_nextAnimation;
 
