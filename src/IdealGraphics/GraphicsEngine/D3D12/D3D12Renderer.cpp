@@ -1,25 +1,23 @@
 #include "D3D12Renderer.h"
-#include "GraphicsEngine/VertexInfo.h"
+
 #include <DirectXColors.h>
 #include "Misc/Utils/PIX.h"
-
-#include "GraphicsEngine/Resource/Mesh.h"
-
-// Test
 #include "Misc/Assimp/AssimpConverter.h"
-#include "GraphicsEngine/Resource/Model.h"
-#include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
+
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12RootSignature.h"
-#include "GraphicsEngine/Resource/Camera.h"
-#include "GraphicsEngine/Resource/MeshObject.h"
-#include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/D3D12/D3D12Viewport.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+
+#include "GraphicsEngine/Resource/IdealCamera.h"
 #include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealRenderScene.h"
 
@@ -27,7 +25,7 @@ D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
 	m_width(width),
 	m_height(height),
-	m_viewport(hwnd, width, height),
+	//m_viewport,
 	m_frameIndex(0),
 	m_graphicsFenceEvent(NULL),
 	m_graphicsFenceValue(0),
@@ -74,8 +72,8 @@ void D3D12Renderer::Init()
 #endif
 
 	//---------------------Viewport Init-------------------------//
-
-	m_viewport.Init();
+	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_hwnd, m_width, m_height);
+	m_viewport->Init();
 
 	//---------------------Create Device-------------------------//
 
@@ -225,9 +223,6 @@ finishAdapter:
 		m_device->CreateDepthStencilView(m_depthStencil.Get(), &depthStencilDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 	}
 
-	// 2024.04.21 Ideal::Descriptor Heap
-	m_idealSrvHeap.Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, m_srvHeapNum);
-
 	//------------------Create Default Camera------------------//
 	CreateDefaultCamera();
 	// Temp
@@ -246,8 +241,10 @@ finishAdapter:
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
 
-	//------------------Create Common CB---------------------//
-
+	//------------------Create Main Descriptor Heap---------------------//
+	CreateDescriptorHeap();
+	//------------------Create CB Pool---------------------//
+	CreateCBPool();
 }
 
 void D3D12Renderer::Tick()
@@ -255,11 +252,11 @@ void D3D12Renderer::Tick()
 	const float speed = 2.f;
 	if (GetAsyncKeyState('O') & 0x8000)
 	{
-		m_mainCamera = std::static_pointer_cast<Ideal::Camera>(c1);
+		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c1);
 	}
 	if (GetAsyncKeyState('P') & 0x8000)
 	{
-		m_mainCamera = std::static_pointer_cast<Ideal::Camera>(c2);
+		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c2);
 	}
 
 	if (GetAsyncKeyState('W') & 0x8000)
@@ -278,19 +275,19 @@ void D3D12Renderer::Tick()
 	{
 		m_mainCamera->Strafe(speed);
 	}
-
-	m_mainCamera->UpdateViewMatrix();
 }
 
 void D3D12Renderer::Render()
 {
+	m_mainCamera->UpdateViewMatrix();
+
 	//-------------Begin Render------------//
 	BeginRender();
 
 	//-------------Render Command-------------//
 	{
-		ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
-		m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+		//ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
+		//m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		//----------Render Scene-----------//
 		if (m_currentRenderScene != nullptr)
@@ -305,19 +302,25 @@ void D3D12Renderer::Render()
 	//----------------Present-------------------//
 	GraphicsPresent();
 
+	//-----------Reset Pool-----------//
+	m_descriptorHeap->Reset();
+	m_cb256Pool->Reset();
+	m_cb512Pool->Reset();
+	m_cb1024Pool->Reset();
+	m_cbBonePool->Reset();
 	return;
 }
 
 std::shared_ptr<Ideal::ICamera> D3D12Renderer::CreateCamera()
 {
-	std::shared_ptr<Ideal::Camera> newCamera = std::make_shared<Ideal::Camera>();
-	
+	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
+
 	return newCamera;
 }
 
 void D3D12Renderer::SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
-	m_mainCamera = std::static_pointer_cast<Ideal::Camera>(Camera);
+	m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(Camera);
 }
 
 std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
@@ -364,127 +367,6 @@ void D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderSc
 	m_currentRenderScene = std::static_pointer_cast<Ideal::IdealRenderScene>(RenderScene);
 }
 
-void D3D12Renderer::Release()
-{
-
-}
-
-void D3D12Renderer::CreateDefaultCamera()
-{
-	m_mainCamera = std::make_shared<Ideal::Camera>();
-	std::shared_ptr<Ideal::Camera> camera = std::static_pointer_cast<Ideal::Camera>(m_mainCamera);
-	camera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
-}
-
-void D3D12Renderer::BeginRender()
-{
-	Check(m_commandAllocator->Reset());
-	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
-	// 2024.04.15 pipeline state를 m_currentPipelineState에 있는 것으로 세팅한다.
-
-	m_commandList->RSSetViewports(1, &m_viewport.GetViewport());
-	m_commandList->RSSetScissorRects(1, &m_viewport.GetScissorRect());
-
-	CD3DX12_RESOURCE_BARRIER backBufferRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	m_commandList->ResourceBarrier(1, &backBufferRenderTarget);
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
-	// 2024.04.14 dsv세팅
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-
-	m_commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::DimGray, 0, nullptr);
-	// 2024.04.14 Clear DSV
-	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-}
-
-void D3D12Renderer::EndRender()
-{
-	CD3DX12_RESOURCE_BARRIER backBufferPresent = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT
-	);
-
-	m_commandList->ResourceBarrier(1, &backBufferPresent);
-
-	Check(m_commandList->Close());
-	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-}
-
-std::shared_ptr<Ideal::ResourceManager> D3D12Renderer::GetResourceManager()
-{
-	return m_resourceManager;
-}
-
-Microsoft::WRL::ComPtr<ID3D12Device> D3D12Renderer::GetDevice()
-{
-	return m_device;
-}
-
-Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> D3D12Renderer::GetCommandList()
-{
-	return m_commandList;
-}
-
-uint32 D3D12Renderer::GetFrameIndex() const
-{
-	return m_frameIndex;
-}
-
-void D3D12Renderer::CreateCommandList()
-{
-	Check(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
-	Check(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
-	m_commandList->Close();
-}
-
-void D3D12Renderer::CreateGraphicsFence()
-{
-	Check(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_graphicsFence.GetAddressOf())));
-
-	m_graphicsFenceValue = 0;
-
-	m_graphicsFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-}
-
-uint64 D3D12Renderer::GraphicsFence()
-{
-	m_graphicsFenceValue++;
-	m_commandQueue->Signal(m_graphicsFence.Get(), m_graphicsFenceValue);
-	return m_graphicsFenceValue;
-}
-
-void D3D12Renderer::WaitForGraphicsFenceValue()
-{
-	const uint64 expectedFenceValue = m_graphicsFenceValue;
-
-	if (m_graphicsFence->GetCompletedValue() < expectedFenceValue)
-	{
-		m_graphicsFence->SetEventOnCompletion(expectedFenceValue, m_graphicsFenceEvent);
-		WaitForSingleObject(m_graphicsFenceEvent, INFINITE);
-	}
-}
-
-void D3D12Renderer::GraphicsPresent()
-{
-	HRESULT hr = m_swapChain->Present(1, 0);
-	if (DXGI_ERROR_DEVICE_REMOVED == hr)
-	{
-		__debugbreak();
-	}
-
-	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-	GraphicsFence();
-	WaitForGraphicsFenceValue();
-}
-
 void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
@@ -520,4 +402,189 @@ void D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
 	FileName.pop_back();
 
 	assimpConverter->ExportAnimationData(FileName);
+}
+
+void D3D12Renderer::Release()
+{
+
+}
+
+Microsoft::WRL::ComPtr<ID3D12Device> D3D12Renderer::GetDevice()
+{
+	return m_device;
+}
+
+void D3D12Renderer::BeginRender()
+{
+	Check(m_commandAllocator->Reset());
+	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+	// 2024.04.15 pipeline state를 m_currentPipelineState에 있는 것으로 세팅한다.
+
+	m_commandList->RSSetViewports(1, &m_viewport->GetViewport());
+	m_commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+
+	CD3DX12_RESOURCE_BARRIER backBufferRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex].Get(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	m_commandList->ResourceBarrier(1, &backBufferRenderTarget);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+	// 2024.04.14 dsv세팅
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+
+	m_commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::DimGray, 0, nullptr);
+	// 2024.04.14 Clear DSV
+	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+}
+
+void D3D12Renderer::EndRender()
+{
+	CD3DX12_RESOURCE_BARRIER backBufferPresent = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex].Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PRESENT
+	);
+
+	m_commandList->ResourceBarrier(1, &backBufferPresent);
+
+	Check(m_commandList->Close());
+	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+}
+
+void D3D12Renderer::GraphicsPresent()
+{
+	HRESULT hr = m_swapChain->Present(1, 0);
+	if (DXGI_ERROR_DEVICE_REMOVED == hr)
+	{
+		__debugbreak();
+	}
+
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+	GraphicsFence();
+	WaitForGraphicsFenceValue();
+}
+
+uint32 D3D12Renderer::GetFrameIndex() const
+{
+	return m_frameIndex;
+}
+
+void D3D12Renderer::CreateCommandList()
+{
+	Check(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
+	Check(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
+	m_commandList->Close();
+}
+
+Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> D3D12Renderer::GetCommandList()
+{
+	return m_commandList;
+}
+
+void D3D12Renderer::CreateGraphicsFence()
+{
+	Check(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_graphicsFence.GetAddressOf())));
+
+	m_graphicsFenceValue = 0;
+
+	m_graphicsFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+}
+
+uint64 D3D12Renderer::GraphicsFence()
+{
+	m_graphicsFenceValue++;
+	m_commandQueue->Signal(m_graphicsFence.Get(), m_graphicsFenceValue);
+	return m_graphicsFenceValue;
+}
+
+void D3D12Renderer::WaitForGraphicsFenceValue()
+{
+	const uint64 expectedFenceValue = m_graphicsFenceValue;
+
+	if (m_graphicsFence->GetCompletedValue() < expectedFenceValue)
+	{
+		m_graphicsFence->SetEventOnCompletion(expectedFenceValue, m_graphicsFenceEvent);
+		WaitForSingleObject(m_graphicsFenceEvent, INFINITE);
+	}
+}
+
+std::shared_ptr<Ideal::ResourceManager> D3D12Renderer::GetResourceManager()
+{
+	return m_resourceManager;
+}
+
+void D3D12Renderer::CreateDescriptorHeap()
+{
+	m_descriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_descriptorHeap->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
+}
+
+std::shared_ptr<Ideal::D3D12DescriptorHeap> D3D12Renderer::GetMainDescriptorHeap()
+{
+	return m_descriptorHeap;
+}
+
+void D3D12Renderer::CreateCBPool()
+{
+	m_cb256Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb256Pool->Init(m_device.Get(), 256, MAX_DRAW_COUNT_PER_FRAME);
+
+	m_cb512Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb512Pool->Init(m_device.Get(), 512, MAX_DRAW_COUNT_PER_FRAME);
+
+	m_cb1024Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb1024Pool->Init(m_device.Get(), 1024, MAX_DRAW_COUNT_PER_FRAME);
+
+	// TEMP
+	m_cbBonePool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(static_cast<uint32>(sizeof(CB_Bone))), MAX_DRAW_COUNT_PER_FRAME);
+}
+
+std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBPool(uint32 SizePerCB)
+{
+	if (SizePerCB <= 256)
+	{
+		return m_cb256Pool;
+	}
+	else if (SizePerCB <= 512)
+	{
+		return m_cb512Pool;
+	}
+	else if (SizePerCB <= 1024)
+	{
+		return m_cb1024Pool;
+	}
+	return nullptr;
+}
+
+std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBBonePool()
+{
+	return m_cbBonePool;
+}
+
+void D3D12Renderer::CreateDefaultCamera()
+{
+	m_mainCamera = std::make_shared<Ideal::IdealCamera>();
+	std::shared_ptr<Ideal::IdealCamera> camera = std::static_pointer_cast<Ideal::IdealCamera>(m_mainCamera);
+	camera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
+}
+
+DirectX::SimpleMath::Matrix D3D12Renderer::GetView()
+{
+	return m_mainCamera->GetView();
+}
+
+DirectX::SimpleMath::Matrix D3D12Renderer::GetProj()
+{
+	return m_mainCamera->GetProj();
+}
+
+DirectX::SimpleMath::Matrix D3D12Renderer::GetViewProj()
+{
+	return m_mainCamera->GetViewProj();
 }

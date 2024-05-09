@@ -8,13 +8,13 @@ struct CB_Bone
 	Matrix transforms[MAX_BONE_TRANSFORMS];
 };
 
-struct alignas(256) CommonMatrix
+struct CommonMatrix
 {
 	uint32 BoneIndex;
 	Matrix World;
 };
 
-struct alignas(256) CB_Transform
+struct CB_Transform
 {
 	Matrix World;
 	Matrix View;

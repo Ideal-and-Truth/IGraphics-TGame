@@ -8,7 +8,7 @@ struct VSInput
     float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
     float3 tangent : TANGENT;
-	float4  skinIndices	: BLEND_INDICES;
+	float4 skinIndices	: BLEND_INDICES;
 	float4 skinWeights	: BLEND_WEIGHTS;
 };
 
@@ -94,8 +94,9 @@ VSOutput VS(VSInput input)
 
 float4 PS(VSOutput input) : SV_TARGET
 {
-    float4 color = diffuseTexture.Sample(sampler0, input.UV);
-    //float4 color = input.skinWeights;
-    //float4 color = float4(input.UV.xy, 1, 1);
+      float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    float4 dirLight = float4(1.f,0.f,0.f,1.f);
+    float4 value = dot(-dirLight, normalize(input.NormalW));
+    color = color * value * Diffuse;
     return color;
 }

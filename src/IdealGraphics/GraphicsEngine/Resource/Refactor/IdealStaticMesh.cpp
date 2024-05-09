@@ -23,7 +23,7 @@ void Ideal::IdealStaticMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer
 		// Mesh
 		const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = mesh->GetVertexBufferView();
 		const D3D12_INDEX_BUFFER_VIEW& indexBufferView = mesh->GetIndexBufferView();
-		
+
 		commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 		commandList->IASetIndexBuffer(&indexBufferView);
 

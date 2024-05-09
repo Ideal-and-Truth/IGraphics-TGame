@@ -1,5 +1,6 @@
 #pragma once
-#include "Core/Core.h"
+#include "Core/Types.h"
+#include <memory>
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 class D3D12Renderer;
@@ -49,25 +50,25 @@ namespace Ideal
 		virtual ~D3D12DescriptorHeap();
 
 	public:
-		void Create(std::shared_ptr<D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, uint32 MaxCount);
-		void Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, uint32 MaxCount);
+		void Create(std::shared_ptr<D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);
+		void Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);
 		ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() { return m_descriptorHeap; }
 
 		// 메모리를 할당할 주소를 받아오고 Count만큼 Handle을 이동시킨다.
 		Ideal::D3D12DescriptorHandle Allocate(uint32 Count = 1);
 
+		void Reset();
 	private:
 		ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
 
 		// 앞으로 descriptor를 할당할 수 있는 개수
 		uint32 m_numFreeDescriptors;
 		uint32 m_descriptorSize;
-
+		uint32 m_maxCount;
+		uint32 m_count = 0;
 		// 현재 할당할 수 있는 주소를 가르키고 있는 핸들
 		Ideal::D3D12DescriptorHandle m_freeHandle;
+		// 첫 위치 핸들
+		Ideal::D3D12DescriptorHandle m_headHandle;
 	};
 }
-
-// TODO LIST : 
-// DescriptorHeap에 Descriptor를 넣을때마다 
-//

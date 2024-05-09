@@ -111,10 +111,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		renderScene->AddObject(ka);
+		renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
 		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
-		renderScene->AddObject(cat);
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -132,8 +132,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 				world.CreateRotationY(angle);
 				mesh2->SetTransformMatrix(world);
-				ka->SetTransformMatrix(world);
-				cat->SetTransformMatrix(world);
+				//ka->SetTransformMatrix(world);
+				//cat->SetTransformMatrix(world);
 				// MAIN LOOP
 				Renderer->Tick();
 				Renderer->Render();

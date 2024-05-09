@@ -1,7 +1,14 @@
+#include "Core/Core.h"
+#include "GraphicsEngine/Resource/Refactor/IdealBone.h"
 #include "IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
 #include "GraphicsEngine/Resource/Refactor/IdealBone.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
 {
@@ -17,36 +24,60 @@ void Ideal::IdealSkinnedMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer
 {
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
-	{
-		const uint32 bufferSize = sizeof(CB_Bone);
-		m_cbBone.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-		m_cbBone.GetResource()->SetName(L"CB_Bone");
-	}
-	{
-		const uint32 bufferSize = sizeof(CB_Transform);
-		m_cbTransform.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-		m_cbTransform.GetResource()->SetName(L"CB_Transform");
-	}
 }
 
 void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
 	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
+	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
+	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
 
 	AnimationPlay();
 
-	CB_Transform* t = (CB_Transform*)m_cbTransform.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	//*t = m_cbTransformData;
-	t->World = m_transform;
-	t->View = d3d12Renderer->GetView();
-	t->Proj = d3d12Renderer->GetProj();
-	t->WorldInvTranspose = m_transform.Invert();
-	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX_TRANSFORM, m_cbTransform.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+	// Bind Descriptor Table
+	auto handle = descriptorHeap->Allocate(2);
+	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	commandList->SetGraphicsRootDescriptorTable(SKINNED_MESH_DESCRIPTOR_TABLE_INDEX_OBJ, handle.GetGpuHandle());
 
-	CB_Bone* b = (CB_Bone*)m_cbBone.GetMappedMemory(d3d12Renderer->GetFrameIndex());
-	*b = m_cbBoneData;
-	commandList->SetGraphicsRootConstantBufferView(DYNAMIC_MESH_ROOT_CONSTANT_INDEX_BONE, m_cbBone.GetGPUVirtualAddress(d3d12Renderer->GetFrameIndex()));
+	{
+		// Bind Transform
+		std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Transform));
+		auto cb = cbPool->Allocate();
+		if (!cb)
+		{
+			__debugbreak();
+		}
+
+		CB_Transform* t = (CB_Transform*)cb->SystemMemAddr;
+		t->World = m_transform;
+		t->View = d3d12Renderer->GetView();
+		t->Proj = d3d12Renderer->GetProj();
+		t->WorldInvTranspose = m_transform.Invert();
+
+		// Copy To Main Descriptor Table
+		CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), SKINNED_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM, incrementSize);
+		device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	}
+
+
+	// Bind Bone
+	{
+		//std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Bone));
+		std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBBonePool();
+		auto cb = cbPool->Allocate();
+		if (!cb)
+		{
+			__debugbreak();
+		}
+
+		CB_Bone* b = (CB_Bone*)cb->SystemMemAddr;
+		*b = m_cbBoneData;
+
+		// Copy To Main Descriptor Table
+		CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), SKINNED_MESH_DESCRIPTOR_INDEX_CBV_BONE, incrementSize);
+		device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	}
 
 	m_skinnedMesh->Draw(Renderer);
 }

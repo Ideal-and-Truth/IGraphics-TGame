@@ -1,18 +1,15 @@
 #pragma once
 #include "GraphicsEngine/public/ISkinnedMeshObject.h"
-#include "Core/Core.h"
-
-#include "GraphicsEngine/VertexInfo.h"
-
-#include "GraphicsEngine/D3D12/D3D12Resource.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
 {
 	class IAnimation;
 
+	class Idealbone;
 	class IdealRenderer;
 	class IdealAnimation;
+	class IdealSkinnedMesh;
 }
 struct AnimTransform
 {
@@ -49,10 +46,9 @@ namespace Ideal
 		std::shared_ptr<IdealSkinnedMesh> m_skinnedMesh;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 
-		Ideal::D3D12ConstantBuffer m_cbBone;
 		CB_Bone m_cbBoneData;
-		Ideal::D3D12ConstantBuffer m_cbTransform;
 		CB_Transform m_cbTransformData;
+
 		Matrix m_transform;
 
 		// Animation

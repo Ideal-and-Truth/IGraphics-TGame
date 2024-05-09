@@ -1,9 +1,4 @@
 #pragma once
-#include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-#include "GraphicsEngine/D3D12/D3D12Resource.h"
-#include "GraphicsEngine/VertexInfo.h"
-
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 // 따로 GPU에 메모리를 업로드 하는 command list를 파서 여기서 사용한다.
@@ -13,7 +8,7 @@ namespace Ideal
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12Texture;
-
+	class D3D12DescriptorHeap;
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
 	template <typename> class IdealMesh;
@@ -43,7 +38,7 @@ namespace Ideal
 		void Fence();
 		void WaitForFenceValue();
 
-		ComPtr<ID3D12DescriptorHeap> GetSRVHeap() { return m_srvHeap.GetDescriptorHeap(); }
+		ComPtr<ID3D12DescriptorHeap> GetSRVHeap() { return m_srvHeap->GetDescriptorHeap(); }
 
 		void CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBuffer>& VertexBuffer);
 		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer);
@@ -105,7 +100,7 @@ namespace Ideal
 
 	private:
 		// Descriptor heaps
-		Ideal::D3D12DescriptorHeap m_srvHeap;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_srvHeap;
 		const uint32 m_srvHeapCount = 256U;
 
 	private:

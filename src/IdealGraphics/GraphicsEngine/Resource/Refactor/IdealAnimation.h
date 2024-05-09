@@ -1,7 +1,12 @@
 #pragma once
+#include "Core/Core.h"
 #include "GraphicsEngine/public/IAnimation.h"
-#include "GraphicsEngine/Resource/ModelAnimation.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
+
+namespace Ideal
+{
+	struct ModelKeyframe;
+}
 
 namespace Ideal
 {
