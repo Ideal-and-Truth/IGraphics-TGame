@@ -20,8 +20,8 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Entity)
 
 	protected:
-		static uint16 m_entityCount;
-		uint16 m_ID;
+		static uint32 m_entityCount;
+		uint32 m_ID;
 		PROPERTY(name)
 			std::string m_name;
 		std::shared_ptr<Managers> m_manager;
@@ -29,13 +29,11 @@ namespace Truth
 	public:
 		// key 값의 경우 type id 를 통해 유추한다.
 		PROPERTY(components)
-			std::map<size_t, std::vector<std::shared_ptr<Component>>> m_components;
-
-		PROPERTY(componentsTest)
-			std::vector<std::shared_ptr<Component>> m_componentsTest;
+			std::vector<std::shared_ptr<Component>> m_components;
 
 		Entity();
 		virtual ~Entity();
+
 		virtual void Initailize();
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
@@ -53,6 +51,7 @@ namespace Truth
 
 		std::string& GetName() { return m_name; };
 	};
+
 	/// template로 작성된 함수 목록
 
 	/// <summary>
@@ -69,19 +68,17 @@ namespace Truth
 		// 만일 중복 가능한 컴포넌트라면
 		if (component->CanMultiple())
 		{
-			m_components[C::m_typeID].push_back(component);
-			m_componentsTest.push_back(component);
-			return component;
-		}
-		// 중복 불가능한 컴포넌트라면
-		else if (!component->CanMultiple() && m_components[C::m_typeID].size() == 0)
-		{
-			m_components[C::m_typeID].push_back(component);
+			m_components.push_back(component);
 			return component;
 		}
 		else
 		{
-			return std::reinterpret_pointer_cast<C>(m_components[C::m_typeID][0]);
+			if (!GetComponent<C>().expired())
+			{
+				return nullptr;
+			}
+			m_components.push_back(component);
+			return component;
 		}
 	}
 
@@ -92,25 +89,20 @@ namespace Truth
 		// 타입 이름 가져오기
 		std::shared_ptr<C> component = std::make_shared<C>(m_manager, shared_from_this(), _args...);
 
-		component->SetOwner(shared_from_this());
-
 		// 만일 중복 가능한 컴포넌트라면
 		if (component->CanMultiple())
 		{
-			m_components[C::m_typeID].push_back(component);
-			m_componentsTest.push_back(component);
-			return component;
-		}
-		// 중복 불가능한 컴포넌트라면
-		else if (!component->CanMultiple() && m_components[C::m_typeID].size() == 0)
-		{
-			m_components[C::m_typeID].push_back(component);
-			return component;
+			m_components.push_back(component);
 		}
 		else
 		{
-			return std::reinterpret_pointer_cast<C>(m_components[C::m_typeID][0]);
+			if (GetComponent<C>().expired())
+			{
+				return nullptr;
+			}
+			m_components.push_back(component);
 		}
+		return component;
 	}
 
 	/// <summary>
@@ -122,9 +114,13 @@ namespace Truth
 	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
 	std::weak_ptr<C> Entity::GetComponent()
 	{
-		if (m_components.find(C::m_typeID) != m_components.end())
+		for (auto c : m_components)
 		{
-			return std::reinterpret_pointer_cast<C>(m_components[C::m_typeID].front());
+			auto component = ::Cast<C, Component>(c);
+			if (component != nullptr)
+			{
+				return component;
+			}
 		}
 		return std::weak_ptr<C>();
 	}
@@ -139,19 +135,14 @@ namespace Truth
 	std::vector<std::weak_ptr<C>> Entity::GetComponents()
 	{
 		std::vector<std::weak_ptr<C>> result;
-		if (m_components.find(C::m_typeID) != m_components.end())
+		for (auto c : m_components)
 		{
-			for (auto& c : m_components[C::m_typeID])
+			auto component = ::Cast<C, Component>(c);
+			if (component != nullptr)
 			{
-				result.push_back(std::reinterpret_pointer_cast<C>(c));
+				result.push_back(component);
 			}
-			return result;
 		}
 		return result;
 	}
 }
-
-
-
-
-

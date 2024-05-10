@@ -12,6 +12,13 @@ Truth::Scene::~Scene()
 	ClearEntity();
 }
 
+void Truth::Scene::AddEntity(std::shared_ptr<Entity> _entity)
+{
+	_entity->SetManager(m_managers);
+	_entity->Initailize();
+	m_entities.push_back(_entity);
+}
+
 void Truth::Scene::ClearEntity()
 {
 	m_entities.clear();

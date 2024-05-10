@@ -5,6 +5,8 @@ namespace Truth
 {
 	class EventHandler;
 	class TimeManager;
+	class SceneManager;
+	class Entity;
 }
 
 /// 이벤트 실행을 위해 사용되는 구조체
@@ -64,6 +66,8 @@ namespace Truth
 		};
 
 		std::queue<Event> m_customEvents;
+		std::queue<std::shared_ptr<Entity>> m_createdEntity;
+		std::queue<std::shared_ptr<Entity>> m_deletedEntity;
 
 		// 이벤트와 그 이벤트를 구독한 리스너
 		std::unordered_map<std::string, std::list<Truth::ListenerInfo>> m_listeners;
@@ -72,6 +76,7 @@ namespace Truth
 		std::unordered_map<const Truth::EventHandler*, std::list<EventSearch>> m_eventHandlerInfo;
 
 		std::weak_ptr<Truth::TimeManager> m_timeManager;
+		std::weak_ptr<Truth::SceneManager> m_sceneManager;
 
 	public:
 		EventManager();
@@ -79,9 +84,11 @@ namespace Truth
 
 	public:
 		// 생성자
-		void Initialize(std::weak_ptr<Truth::TimeManager> _timeManager);
+		void Initialize(std::weak_ptr<Truth::TimeManager> _timeManager, std::weak_ptr<SceneManager> _sceneManager);
 		// 업데이트
 		void Update();
+		void LateUpdate() {}
+		void FixedUpdate() {};
 		// 소멸
 		void Finalize();
 

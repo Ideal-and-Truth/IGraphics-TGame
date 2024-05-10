@@ -17,9 +17,12 @@ Truth::BoxCollider::BoxCollider(std::shared_ptr<Managers> _managers, std::shared
 	{
 		m_body = r.lock()->m_body;
 	}
+
 	m_body->attachShape(*m_collider);
+
 	m_managers.lock()->Physics()->AddScene(m_body);
 }
+
 
 Truth::BoxCollider::~BoxCollider()
 {

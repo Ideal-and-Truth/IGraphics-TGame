@@ -61,10 +61,10 @@ void Truth::PhysicsManager::Initalize()
 // 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
 // 	}
 // 
-// 	if (!m_isInteractive)
-// 	{
-// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
-// 	}
+	if (!m_isInteractive)
+	{
+		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+	}
 }
 
 void Truth::PhysicsManager::Finalize()
@@ -176,8 +176,9 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
 {
 	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_material);
-	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+// 	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+// 	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+
 	for (physx::PxU32 i = 0; i < size; i++)
 	{
 		for (physx::PxU32 j = 0; j < size - i; j++)
@@ -192,7 +193,7 @@ void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU3
 			physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 
 			m_scene->addActor(*body);
-			body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
+			// body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 		}
 	}
 	shape->release();

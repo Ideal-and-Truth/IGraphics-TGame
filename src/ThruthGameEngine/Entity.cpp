@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include "Transform.h"
 
-uint16 Truth::Entity::m_entityCount = 0;
+uint32 Truth::Entity::m_entityCount = 0;
 
 Truth::Entity::Entity()
 	: m_manager()
@@ -19,4 +19,6 @@ void Truth::Entity::Initailize()
 {
 	AddComponent<Transform>();
 }
+
+
 

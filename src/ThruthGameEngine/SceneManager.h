@@ -34,6 +34,8 @@ namespace Truth
 		void ResetScene(std::any _p);
 		void SetCurrnetScene(std::string _name);
 
+		void AddEntity(std::shared_ptr<Entity> _entity);
+
 		void Finalize();
 
 	private:
