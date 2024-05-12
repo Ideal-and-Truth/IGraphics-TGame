@@ -65,6 +65,11 @@ void IdealCamera::SetPosition(const Vector3& Position)
 void Ideal::IdealCamera::SetLook(Vector3 Look)
 {
 	Look.Normalize();
+	m_look = Look;
+	return;
+
+
+	Look.Normalize();
 
 	Vector3 worldUp(0.f, 1.f, 0.f);
 	Vector3 right = -Look.Cross(worldUp);
@@ -77,6 +82,21 @@ void Ideal::IdealCamera::SetLook(Vector3 Look)
 	m_up = up;
 	m_right = right;
 	UpdateViewMatrix();
+}
+
+void IdealCamera::UpdateMatrix2()
+{
+	Vector3 eyePosition = m_position;
+	Vector3 focusPosition = eyePosition + m_look;
+	Vector3 right = m_look.Cross(Vector3::Up);
+	Vector3 upDir = right.Cross(m_look);
+
+	m_right = right;
+	m_up = upDir;
+
+	m_view = XMMatrixLookAtLH(eyePosition, focusPosition, upDir);
+	m_proj = XMMatrixPerspectiveFovLH(m_fovY, m_aspect, m_nearZ, m_farZ);
+	//Vector3 upDir = 
 }
 
 IdealCamera::~IdealCamera()
@@ -94,11 +114,14 @@ void IdealCamera::SetLens(float FovY, float Aspect, float NearZ, float FarZ)
 	m_nearWindowHeight = 2.f * m_nearZ * std::tanf(0.5f * m_fovY);
 	m_farWindowHeight = 2.f * m_farZ * std::tanf(0.5f * m_fovY);
 
-	m_proj = Matrix::CreatePerspectiveFieldOfView(m_fovY, m_aspect, m_nearZ, m_farZ);
+	m_proj = XMMatrixPerspectiveFovLH(m_fovY, m_aspect, m_nearZ, m_farZ);
+	//m_proj = Matrix::CreatePerspectiveFieldOfView(m_fovY, m_aspect, m_nearZ, m_farZ);
 }
 
 void IdealCamera::UpdateViewMatrix()
 {
+	/*m_view = CreateViewMatrix(m_position, m_look, Vector3::Up);
+	return;*/
 	Vector3 Right = m_right;
 	Vector3 Up = m_up;
 	Vector3 Look = m_look;

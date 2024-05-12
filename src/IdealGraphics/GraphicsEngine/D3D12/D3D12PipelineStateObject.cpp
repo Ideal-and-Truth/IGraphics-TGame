@@ -43,9 +43,10 @@ void Ideal::D3D12PipelineStateObject::SetInputLayout(const D3D12_INPUT_ELEMENT_D
 
 void Ideal::D3D12PipelineStateObject::SetRasterizerState(const D3D12_RASTERIZER_DESC RSDesc /*= CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT)*/)
 {
-	m_psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	m_psoDesc.RasterizerState = RSDesc;
-	m_psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
+	//m_psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	//m_psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_FRONT;
+	//m_psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
 }
 
 void Ideal::D3D12PipelineStateObject::SetBlendState(const D3D12_BLEND_DESC BlendDesc /*= CD3DX12_BLEND_DESC(D3D12_DEFAULT)*/)
