@@ -109,7 +109,6 @@ private:
 	FuncPtr m_ptr = nullptr;
 
 public:
-
 	virtual std::string Dump(void* _object, int _indent = 0) const
 	{
 		std::string result = "";

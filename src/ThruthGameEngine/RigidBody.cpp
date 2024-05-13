@@ -38,3 +38,13 @@ void Truth::RigidBody::FixedUpdate(std::any _p)
 	int a = 1;
 }
 
+void Truth::RigidBody::FreezePosition(bool _xzy[3])
+{
+
+}
+
+void Truth::RigidBody::FreezeRotation(bool _xzy[3])
+{
+
+}
+

@@ -61,10 +61,10 @@ void Truth::PhysicsManager::Initalize()
 // 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
 // 	}
 // 
-	if (!m_isInteractive)
-	{
-		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
-	}
+// 	if (!m_isInteractive)
+// 	{
+// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+// 	}
 }
 
 void Truth::PhysicsManager::Finalize()
