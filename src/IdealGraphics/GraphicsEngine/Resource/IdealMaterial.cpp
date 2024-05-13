@@ -71,13 +71,13 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	// TODO : 1번째로 하드코딩 되어 있음
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_CBV_MATERIAL, incrementSize);
 	// Root Table Index 1 : 개별 매쉬가 스왑할 root table의 인덱스
-	device->CopyDescriptorsSimple(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	
 	// 2024.05.08
 	// TEST : 루트시그니쳐에 맞게 두번째로 바꿔준다.
 	// 매쉬마다 개별로 쓰는 Root Parameter인 Transform은 Root Paramter Index가 1번이다.
 	// 0번은 Transform으로 쓰고 있으니 매쉬마다 갈아 끼워서 써야한다!!
-	commandList->SetGraphicsRootDescriptorTable(1, handle.GetGpuHandle());
+	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH, handle.GetGpuHandle());
 
 	// 2024.05.03 : 그냥 다음 srv인 specular와 normal까지 가져올 것 같은데?
 	if (m_diffuseTexture)
