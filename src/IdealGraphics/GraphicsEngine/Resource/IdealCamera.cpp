@@ -88,8 +88,8 @@ void IdealCamera::UpdateMatrix2()
 {
 	Vector3 eyePosition = m_position;
 	Vector3 focusPosition = eyePosition + m_look;
-	Vector3 right = m_look.Cross(Vector3::Up);
-	Vector3 upDir = right.Cross(m_look);
+	Vector3 right = Vector3::Up.Cross(m_look);
+	Vector3 upDir = m_look.Cross(right);
 
 	m_right = right;
 	m_up = upDir;
