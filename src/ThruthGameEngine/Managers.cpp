@@ -27,19 +27,19 @@ void Truth::Managers::Update() const
 	m_inputManager->Update();
 	m_timeManager->Update();
 	m_physXManager->Update();
-	m_eventManager->PublishEvent("Update");
+
 	m_eventManager->Update();
-	m_graphicsManager->Tick();
+	// m_graphicsManager->Tick();
 }
 
 void Truth::Managers::LateUpdate() const
 {
-	m_eventManager->PublishEvent("Late Update");
-	m_eventManager->Update();
+	m_eventManager->LateUpdate();
 }
  
 void Truth::Managers::FixedUpdate() const
 {
+	m_eventManager->FixedUpdate();
 }
 
 void Truth::Managers::Render() const
@@ -69,7 +69,7 @@ void Truth::Managers::CreateManagers()
 
 void Truth::Managers::InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height) const
 {
-	m_eventManager->Initialize(m_timeManager);
+	m_eventManager->Initialize(m_timeManager, m_sceneManager);
 	m_timeManager->Initalize(m_eventManager);
 	m_inputManager->Initalize(_hwnd, m_eventManager);
 	m_sceneManager->Initalize(m_eventManager);

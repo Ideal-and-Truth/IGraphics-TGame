@@ -27,8 +27,9 @@ namespace Truth
 		bool m_useGravity;
 		bool m_isKinematic;
 
-		// 	bool m_freezePosition;
-		// 	bool m_freezeRotation;
+		PROPERTY(freezePosition)
+		bool m_freezePosition[3];
+		bool m_freezeRotation[3];
 
 		Vector3 m_velocity;
 		physx::PxRigidDynamic* m_body;
@@ -43,12 +44,14 @@ namespace Truth
 
 		std::weak_ptr<Transform> m_transform;
 
-
 	public:
 		RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~RigidBody();
 
 		void FixedUpdate(std::any _p);
+
+		void FreezePosition(bool _xzy[3]);
+		void FreezeRotation(bool _xzy[3]);
 	};
 }
 

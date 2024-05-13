@@ -5,7 +5,18 @@
 #include <string>
 #include "StringConverter.h"
 
+template<typename T> struct is_array_custom
+{
+	static constexpr bool value = false;
+	static constexpr size_t size = -1;
+};
 
+template<typename T, size_t N>
+struct is_array_custom<T[N]>
+{
+	static constexpr bool value = true;
+	static constexpr size_t size = N;
+};
 
 /// <summary>
 /// 변수 정보 핸들러 베이스
@@ -64,10 +75,30 @@ private:
 public:
 	virtual std::string Dump(void* _object, int _indent = 0) const override
 	{
-		std::string result;
-		auto& obj = Get(_object);
-		result += StringConverter::ToString(obj, _indent);
-		return result;
+		if constexpr (std::is_array_v<T>)
+		{
+			std::string result = "";
+			result += "\n";
+
+			for (int i = 0; i < is_array_custom<T>::size; i++)
+			{
+				auto& obj = Get(_object, i);
+				result += std::string(_indent, '\t');
+				result += "[";
+				result += StringConverter::ToString(i);
+				result += "] : ";
+				result += StringConverter::ToString(obj, _indent);
+				result += "\n";
+			}
+			return result;
+		}
+		else
+		{
+			std::string result;
+			auto& obj = Get(_object);
+			result += StringConverter::ToString(obj, _indent);
+			return result;
+		}
 	}
 
 	// Getter
@@ -184,6 +215,7 @@ private:
 	const char* m_name = nullptr;
 	const TypeInfo& m_type;
 	const PropertyHandlerBase& m_handler;
+	const int m_arraySize;
 
 public:
 	const char* GetName() const { return m_name; }
@@ -330,10 +362,11 @@ public:
 	}
 
 	// 생성자
-	Property(TypeInfo& owner, const PropertyInitializer& initializer)
+	Property(TypeInfo& owner, const PropertyInitializer& initializer, int _arraySize = 0)
 		: m_name(initializer.m_name)
 		, m_type(initializer.m_type)
 		, m_handler(initializer.m_handler)
+		, m_arraySize(_arraySize)
 	{
 		owner.AddProperty(this);
 	}
@@ -372,6 +405,11 @@ public:
 		// 만일 멤버 포인터라면
 		if constexpr (std::is_member_pointer_v<TPtr>)
 		{
+			int size = 0;
+			if constexpr (is_array_custom<T>::value)
+			{
+				size = is_array_custom<T>::size;
+			}
 			static PropertyHandler<TClass, T> handler(ptr);
 			static PropertyInitializer intializer =
 			{
@@ -379,10 +417,15 @@ public:
 			TypeInfo::GetStaticTypeInfo<T>(),
 			handler
 			};
-			static Property property(typeInfo, intializer);
+			static Property property(typeInfo, intializer, size);
 		}
 		else
 		{
+			int size = 0;
+			if constexpr (is_array_custom<T>::value)
+			{
+				size = is_array_custom<T>::size;
+			}
 			static StaticPropertyHandler<TClass, T> handler(ptr);
 			static PropertyInitializer intializer =
 			{

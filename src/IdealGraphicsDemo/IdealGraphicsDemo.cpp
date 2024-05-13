@@ -123,6 +123,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 
+		mesh3->SetTransformMatrix(Matrix::CreateRotationX(DirectX::XMConvertToRadians(90.f)));
+
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
 

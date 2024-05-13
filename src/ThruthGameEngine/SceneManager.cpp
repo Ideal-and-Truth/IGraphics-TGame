@@ -27,6 +27,11 @@ void Truth::SceneManager::SetCurrnetScene(std::string _name)
 	m_currentScene = m_sceneMap[_name];
 }
 
+void Truth::SceneManager::AddEntity(std::shared_ptr<Entity> _entity)
+{
+	m_currentScene.lock()->AddEntity(_entity);
+}
+
 void Truth::SceneManager::Finalize()
 {
 	m_currentScene.lock()->Exit();

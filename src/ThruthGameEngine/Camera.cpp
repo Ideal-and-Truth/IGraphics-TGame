@@ -8,6 +8,7 @@ Truth::Camera::Camera(std::shared_ptr<Managers> _managers, std::shared_ptr<Entit
 	: Component(_managers, _owner)
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
+	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 3000.f);
 	EventBind<Camera>("Update", &Camera::Update);
 }
@@ -23,12 +24,12 @@ void Truth::Camera::Update(std::any _p)
 	float speed = 100;
 	if (GetKey(KEY::UP))
 	{
-		/*m_camera->Walk(-dt * speed);*/
-		m_camera->SetLook(Vector3(0.0f, -1.0f, 1.0f));
+		// m_camera->Walk(dt * speed);
+		m_camera->SetLook(Vector3(0.0f, 1.0f, 1.0f));
 	}
 	if (GetKey(KEY::DOWN))
 	{
-		m_camera->Walk(dt * speed);
+		m_camera->Walk(-dt * speed);
 	}
 	if (GetKey(KEY::LEFT))
 	{
