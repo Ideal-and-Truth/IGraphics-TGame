@@ -30,4 +30,6 @@ void Truth::TestEntity::Initailize()
 	AddComponent<RigidBody>();
 	AddComponent<BoxCollider>();
 	AddComponent<Mesh>(L"CatwalkWalkForward3/CatwalkWalkForward3");
+
+	
 }

@@ -13,7 +13,7 @@ TestScene2::~TestScene2()
 void TestScene2::Enter()
 {
 	DEBUG_PRINT("%s", "Enter Test Scene 2\n");
-	AddEntity(std::make_shared<Truth::TestEntity>());
+	CreateEntity(std::make_shared<Truth::TestEntity>());
 }
 
 void TestScene2::Awake()

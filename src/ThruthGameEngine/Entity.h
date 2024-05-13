@@ -36,6 +36,9 @@ namespace Truth
 
 		virtual void Initailize();
 
+		void Awake();
+		void Destroy();
+
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();
 		template<typename C, typename... Args, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
@@ -50,6 +53,8 @@ namespace Truth
 		void SetManager(std::shared_ptr<Managers> _val) { m_manager = _val; };
 
 		std::string& GetName() { return m_name; };
+
+	private:
 	};
 
 	/// template로 작성된 함수 목록
@@ -98,9 +103,12 @@ namespace Truth
 		{
 			if (GetComponent<C>().expired())
 			{
+				m_components.push_back(component);
+			}
+			else
+			{
 				return nullptr;
 			}
-			m_components.push_back(component);
 		}
 		return component;
 	}

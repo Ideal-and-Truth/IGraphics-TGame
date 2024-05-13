@@ -3,6 +3,8 @@
 #include "TimeManager.h"
 #include "EventHandler.h"
 #include "Entity.h"
+#include "SceneManager.h"
+
 Truth::EventManager::EventManager()
 {
 	DEBUG_PRINT("Create EventManager\n");
@@ -28,18 +30,6 @@ void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager, st
 /// </summary>
 void Truth::EventManager::Update()
 {
-	while (!m_deletedEntity.empty())
-	{
-		auto e = m_deletedEntity.front();
-		m_deletedEntity.pop();
-	}
-
-	while (!m_createdEntity.empty())
-	{
-		auto e = m_createdEntity.front();
-		m_createdEntity.pop();
-	}
-
 	PublishEvent("Update");
 	ProcessEvent();
 }
@@ -51,6 +41,15 @@ void Truth::EventManager::Finalize()
 {
 	RemoveAllEvents();
 	RemoveAllSubscribes();
+}
+
+void Truth::EventManager::CreateEntity(std::shared_ptr<Entity> _p)
+{
+	m_createdEntity.push(_p);
+}
+void Truth::EventManager::DeleteEntity(std::shared_ptr<Entity> _p)
+{
+	m_deletedEntity.push(_p);
 }
 
 /// <summary>
