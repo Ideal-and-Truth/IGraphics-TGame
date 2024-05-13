@@ -9,6 +9,7 @@ namespace Ideal
 		virtual ~IdealLight();
 
 	public:
+
 	};
 }
 

@@ -23,7 +23,7 @@ Ideal::IdealRenderScene::~IdealRenderScene()
 
 void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	CreateGlobalCB(Renderer);
 	CreateStaticMeshPSO(Renderer);
 	CreateSkinnedMeshPSO(Renderer);
@@ -31,7 +31,7 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 
 void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	
 	commandList->SetDescriptorHeaps(1, d3d12Renderer->GetMainDescriptorHeap()->GetDescriptorHeap().GetAddressOf());
@@ -81,7 +81,7 @@ void Ideal::IdealRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> Mesh
 
 void Ideal::IdealRenderScene::CreateStaticMeshPSO(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 
 	//-------------------Sampler--------------------//
 	CD3DX12_STATIC_SAMPLER_DESC sampler(
@@ -145,7 +145,7 @@ void Ideal::IdealRenderScene::CreateStaticMeshPSO(std::shared_ptr<IdealRenderer>
 
 void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 
 	//-------------------Sampler--------------------//
 	CD3DX12_STATIC_SAMPLER_DESC sampler(
@@ -209,13 +209,13 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer
 
 void Ideal::IdealRenderScene::CreateGlobalCB(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	m_cbGlobal = std::make_shared<CB_Global>();
 }
 
 void Ideal::IdealRenderScene::UpdateGlobalCBData(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 
@@ -248,7 +248,7 @@ void Ideal::IdealRenderScene::UpdateGlobalCBData(std::shared_ptr<IdealRenderer> 
 
 void Ideal::IdealRenderScene::SetGlobalCBDescriptorTable(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	commandList->SetGraphicsRootDescriptorTable(GLOBAL_DESCRIPTOR_TABLE_INDEX, m_cbGlobalHandle.GetGpuHandle());
 

@@ -16,10 +16,10 @@ std::shared_ptr<Ideal::IdealRenderer> CreateRenderer(
 
 	if (APIType == EGraphicsInterfaceType::D3D12)
 	{
-		OutRenderer = std::make_shared<D3D12Renderer>(*hwnd, Width, Height);
-		std::static_pointer_cast<D3D12Renderer>(OutRenderer)->SetAssetPath(AssetPath);
-		std::static_pointer_cast<D3D12Renderer>(OutRenderer)->SetModelPath(ModelPath);
-		std::static_pointer_cast<D3D12Renderer>(OutRenderer)->SetTexturePath(TexturePath);
+		OutRenderer = std::make_shared<Ideal::D3D12Renderer>(*hwnd, Width, Height);
+		std::static_pointer_cast<Ideal::D3D12Renderer>(OutRenderer)->SetAssetPath(AssetPath);
+		std::static_pointer_cast<Ideal::D3D12Renderer>(OutRenderer)->SetModelPath(ModelPath);
+		std::static_pointer_cast<Ideal::D3D12Renderer>(OutRenderer)->SetTexturePath(TexturePath);
 	}
 
 	return OutRenderer;

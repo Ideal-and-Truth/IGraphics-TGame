@@ -17,7 +17,7 @@ Ideal::IdealSkinnedMesh::~IdealSkinnedMesh()
 
 void Ideal::IdealSkinnedMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
 	for (auto& mesh : m_meshes)
@@ -65,7 +65,7 @@ void Ideal::IdealSkinnedMesh::AddMaterial(std::shared_ptr<Ideal::IdealMaterial> 
 
 void Ideal::IdealSkinnedMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
 
 	for (auto& mesh : m_meshes)

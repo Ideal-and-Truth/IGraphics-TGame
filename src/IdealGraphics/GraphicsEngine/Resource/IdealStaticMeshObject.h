@@ -9,9 +9,9 @@ namespace Ideal
 {
 	class IdealRenderer;
 	class IdealStaticMesh;
+	class D3D12Renderer;
 }
 
-class D3D12Renderer;
 
 namespace Ideal
 {

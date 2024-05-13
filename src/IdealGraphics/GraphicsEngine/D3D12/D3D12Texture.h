@@ -3,7 +3,11 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 struct ID3D12Resource;
-class D3D12Renderer;
+
+namespace Ideal
+{
+	class D3D12Renderer;
+}
 
 namespace Ideal
 {

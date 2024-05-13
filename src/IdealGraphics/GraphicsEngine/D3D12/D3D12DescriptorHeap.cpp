@@ -47,7 +47,7 @@ D3D12DescriptorHeap::~D3D12DescriptorHeap()
 
 }
 
-void D3D12DescriptorHeap::Create(std::shared_ptr<D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount)
+void D3D12DescriptorHeap::Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount)
 {
 	m_maxCount = MaxCount;
 

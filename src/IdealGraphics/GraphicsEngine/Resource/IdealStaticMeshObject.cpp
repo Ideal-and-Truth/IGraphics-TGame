@@ -18,7 +18,7 @@ Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
 
 void Ideal::IdealStaticMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
 }
 
@@ -29,7 +29,7 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 		return;
 	}
 	// Ver2 2024.05.07 : Constant Buffer를 Pool에서 할당받아 사용한다.
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 

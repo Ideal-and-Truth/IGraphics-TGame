@@ -15,7 +15,7 @@ Ideal::IdealStaticMesh::~IdealStaticMesh()
 
 void Ideal::IdealStaticMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
 	for (auto& mesh : m_meshes)
@@ -63,7 +63,7 @@ void Ideal::IdealStaticMesh::AddMaterial(std::shared_ptr<Ideal::IdealMaterial> M
 
 void Ideal::IdealStaticMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	for (auto& mesh : m_meshes)
 	{
 		mesh->Create(d3d12Renderer);

@@ -32,7 +32,7 @@ namespace Ideal
 		virtual ~IdealMesh() {};
 
 	public:
-		void Create(std::shared_ptr<D3D12Renderer> Renderer)
+		void Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer)
 		{
 			std::shared_ptr<Ideal::ResourceManager> resourceManager = Renderer->GetResourceManager();
 			//-------------VB-------------//

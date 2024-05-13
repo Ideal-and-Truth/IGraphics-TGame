@@ -22,7 +22,7 @@ Ideal::IdealSkinnedMeshObject::~IdealSkinnedMeshObject()
 
 void Ideal::IdealSkinnedMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
 }
 
@@ -33,7 +33,7 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 		return;
 	}
 
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();

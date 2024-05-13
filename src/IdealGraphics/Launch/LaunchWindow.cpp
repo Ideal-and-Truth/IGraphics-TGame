@@ -50,7 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //Engine2 engine(g_hWnd,1280,960);
     //_CrtSetBreakAlloc(520);
     {
-        std::shared_ptr<D3D12Renderer> renderer = std::make_shared<D3D12Renderer>(g_hWnd, 1280, 960);
+        std::shared_ptr<Ideal::D3D12Renderer> renderer = std::make_shared<Ideal::D3D12Renderer>(g_hWnd, 1280, 960);
         //IdealRenderer engine(g_hWnd, 1280, 960);
         //engine.Init();
         renderer->Init();

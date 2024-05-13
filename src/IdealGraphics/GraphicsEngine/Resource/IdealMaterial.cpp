@@ -22,7 +22,7 @@ Ideal::IdealMaterial::~IdealMaterial()
 
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 
 	if (m_diffuseTextureFile.length() > 0)
 	{
@@ -45,7 +45,7 @@ void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::IdealRenderer> Renderer
 
 void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer)
 {
-	std::shared_ptr<D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
