@@ -16,10 +16,10 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 
 #include "GraphicsEngine/Resource/IdealCamera.h"
-#include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
-#include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
-#include "GraphicsEngine/Resource/Refactor/IdealRenderScene.h"
+#include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
+#include "GraphicsEngine/Resource/IdealAnimation.h"
+#include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/IdealRenderScene.h"
 
 D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
