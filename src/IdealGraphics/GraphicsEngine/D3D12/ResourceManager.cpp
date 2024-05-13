@@ -1,28 +1,26 @@
 #include "Core/Core.h"
+
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
-#include "GraphicsEngine/VertexInfo.h"
-
-
 #include "GraphicsEngine/D3D12/ResourceManager.h"
-
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/VertexInfo.h"
+
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMesh.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
-
 #include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/Resource/IdealMesh.h"
 #include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
+#include "GraphicsEngine/Resource/ModelAnimation.h"
+
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "Misc/Utils/FileUtils.h"
 #include "Misc/Utils/StringUtils.h"
 #include "Misc/Utils/tinyxml2.h"
-#include "GraphicsEngine/Resource/ModelAnimation.h"
 
 #include <filesystem>
 

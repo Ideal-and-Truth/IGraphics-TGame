@@ -56,8 +56,6 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 
 		CB_Transform* t = (CB_Transform*)cb->SystemMemAddr;
 		t->World = m_transform;
-		t->View = d3d12Renderer->GetView();
-		t->Proj = d3d12Renderer->GetProj();
 		t->WorldInvTranspose = m_transform.Invert();
 
 		// Copy To Main Descriptor Table

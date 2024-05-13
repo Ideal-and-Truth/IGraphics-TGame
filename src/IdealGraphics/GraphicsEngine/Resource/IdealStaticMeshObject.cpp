@@ -44,8 +44,6 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 
 	CB_Transform* cbTransform = (CB_Transform*)cb->SystemMemAddr;
 	cbTransform->World = m_transform;
-	cbTransform->View = d3d12Renderer->GetView();
-	cbTransform->Proj = d3d12Renderer->GetProj();
 	cbTransform->WorldInvTranspose = m_transform.Invert();
 
 	// b0©К Descriptor Table гр╢Г
