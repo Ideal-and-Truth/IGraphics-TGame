@@ -109,6 +109,18 @@ private:
 	FuncPtr m_ptr = nullptr;
 
 public:
+	virtual std::string Dump(void* _object, int _indent = 0) const
+	{
+		std::string result = "";
+		result += typeid(TRet).name();
+		result += " ";
+		result += typeid(TClass).name();
+		result += " ";
+		// result += typeid(TArgs...).name();
+		result += "\n";
+		return result;
+	}
+
 	/// <summary>
 	/// 호출 함수
 	/// </summary>
@@ -118,7 +130,7 @@ public:
 	virtual TRet Invoke([[maybe_unused]] void* caller, TArgs&&... args) const override
 	{
 		// 리턴 타입이 void면
-		if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
+		if constexpr (std::is_void_v<TRet>)
 		{
 			(*m_ptr)(std::forward<TArgs>(args)...);
 		}
@@ -202,7 +214,7 @@ public:
 			// 업캐스팅
 			auto concreateCallable = static_cast<const Callable<TClass, TRet, TArgs...>&>(m_callable);
 			// 리턴값에 따른 함수 호출
-			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
+			if constexpr (std::is_void_v<TRet>)
 			{
 				concreateCallable.Invoke(_caller, std::forward<TArgs>(_args)...);
 			}
@@ -215,7 +227,7 @@ public:
 		else if (typeinfo.IsChildOf<StaticCallable<TClass, TRet, TArgs...>>())
 		{
 			auto concreateCallable = static_cast<const StaticCallable<TClass, TRet, TArgs...>&>(m_callable);
-			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
+			if constexpr (std::is_void_v<TRet>)
 			{
 				concreateCallable.Invoke(_caller, std::forward<TArgs>(_args)...);
 			}
@@ -228,7 +240,7 @@ public:
 		else
 		{
 			assert(false && "Method::Invoke<TClass, TRet, TArgs...> - Invalied casting");
-			if constexpr (!std::enable_if_t<std::is_void_v<TRet>>)
+			if constexpr (!std::is_void_v<TRet>)
 			{
 				return {};
 			}

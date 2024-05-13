@@ -14,8 +14,8 @@ TestScene::~TestScene()
 void TestScene::Enter()
 {
 	DEBUG_PRINT("%s", "Enter Test Scene\n");
-	AddEntity<Truth::TestEntity>();
-	AddEntity<Truth::DefalutCamera>();
+	AddEntity(std::make_shared<Truth::TestEntity>());
+	AddEntity(std::make_shared<Truth::DefalutCamera>());
 	
 	DEBUG_PRINT(Truth::TestEntity::StaticTypeInfo().Dump(m_entities.front().get()).c_str());
 }

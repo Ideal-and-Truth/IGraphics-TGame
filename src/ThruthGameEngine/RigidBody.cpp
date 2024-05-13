@@ -2,6 +2,7 @@
 #include "Transform.h"
 #include "Entity.h"
 #include "PhysicsManager.h"
+#include "Collider.h"
 
 Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
 	: Component(_managers, _owner)
@@ -19,9 +20,12 @@ Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
+
 	m_transform = m_owner.lock()->GetComponent<Transform>();
 
 	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
+
+	m_managers.lock()->Physics()->AddScene(m_body);
 }
 
 Truth::RigidBody::~RigidBody()
@@ -32,5 +36,15 @@ Truth::RigidBody::~RigidBody()
 void Truth::RigidBody::FixedUpdate(std::any _p)
 {
 	int a = 1;
+}
+
+void Truth::RigidBody::FreezePosition(bool _xzy[3])
+{
+
+}
+
+void Truth::RigidBody::FreezeRotation(bool _xzy[3])
+{
+
 }
 

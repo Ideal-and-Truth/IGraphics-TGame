@@ -2,7 +2,7 @@
 #include "Managers.h"
 #include "TimeManager.h"
 #include "EventHandler.h"
-
+#include "Entity.h"
 Truth::EventManager::EventManager()
 {
 	DEBUG_PRINT("Create EventManager\n");
@@ -17,9 +17,10 @@ Truth::EventManager::~EventManager()
 /// <summary>
 /// √ ±‚»≠
 /// </summary>
-void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager)
+void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager, std::weak_ptr<SceneManager> _sceneManager)
 {
 	m_timeManager = _timeManager;
+	m_sceneManager = _sceneManager;
 }
 
 /// <summary>
@@ -27,8 +28,19 @@ void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager)
 /// </summary>
 void Truth::EventManager::Update()
 {
-	ProcessEvent();
-	PublishEvent("Apply Transform");
+	while (!m_deletedEntity.empty())
+	{
+		auto e = m_deletedEntity.front();
+		m_deletedEntity.pop();
+	}
+
+	while (!m_createdEntity.empty())
+	{
+		auto e = m_createdEntity.front();
+		m_createdEntity.pop();
+	}
+
+	PublishEvent("Update");
 	ProcessEvent();
 }
 

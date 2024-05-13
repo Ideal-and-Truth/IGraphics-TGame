@@ -17,7 +17,10 @@ namespace Truth
 	class Entity;
 	class Transform;
 	class Managers;
+}
 
+namespace Truth
+{
 	class Component
 		: public EventHandler
 	{
@@ -38,13 +41,12 @@ namespace Truth
 		bool CanMultiple() const { return m_canMultiple; }
 
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }
-
 		void SetManager(std::weak_ptr<Managers> _val) { m_managers = _val; }
 
+#pragma region inline
+	protected:
 		// 자주 사용될 기능을 미리 묶어 놓는다.
 		// Component 에서 자주 사용될 함수 목록
-	protected:
-#pragma region inline
 		// 이벤트 관련 함수
 		template <typename T>
 		inline void EventBind(std::string _name, void (T::* func)(std::any))
@@ -69,7 +71,7 @@ namespace Truth
 		{
 			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::HOLD);
 		}
-		
+
 		// 시간 관련 함수들
 		inline float GetDeltaTime()
 		{

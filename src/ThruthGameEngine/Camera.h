@@ -8,8 +8,8 @@ namespace Ideal
 
 namespace Truth
 {
-	class Camera :
-		public Component
+	class Camera 
+		: public Component
 	{
 		GENERATE_CLASS_TYPE_INFO(Camera)
 
