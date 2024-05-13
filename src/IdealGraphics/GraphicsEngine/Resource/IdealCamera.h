@@ -26,6 +26,9 @@ namespace Ideal
 		DirectX::SimpleMath::Matrix GetViewProj()const { return m_view * m_proj; }
 		void UpdateViewMatrix();
 
+		// ver2
+		void UpdateMatrix2();
+
 	private:
 		DirectX::SimpleMath::Vector3 m_position;
 		DirectX::SimpleMath::Vector3 m_right;

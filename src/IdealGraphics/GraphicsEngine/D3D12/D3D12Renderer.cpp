@@ -227,8 +227,9 @@ finishAdapter:
 	CreateDefaultCamera();
 	// Temp
 	//m_mainCamera->Walk(50.f);
-	m_mainCamera->SetPosition(Vector3(0.f, 0.f, 150.f));
-	m_mainCamera->UpdateViewMatrix();
+	m_mainCamera->SetPosition(Vector3(0.f, 0.f, -150.f));
+	//m_mainCamera->UpdateViewMatrix();
+	//m_mainCamera->UpdateMatrix2();
 
 	c1 = CreateCamera();
 	c1->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
@@ -262,11 +263,11 @@ void D3D12Renderer::Tick()
 
 	if (GetAsyncKeyState('W') & 0x8000)
 	{
-		m_mainCamera->Walk(-speed);
+		m_mainCamera->Walk(speed);
 	}
 	if (GetAsyncKeyState('S') & 0x8000)
 	{
-		m_mainCamera->Walk(speed);
+		m_mainCamera->Walk(-speed);
 	}
 	if (GetAsyncKeyState('A') & 0x8000)
 	{
@@ -278,15 +279,22 @@ void D3D12Renderer::Tick()
 	}
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
-		m_mainCamera->SetLook(Vector3(1.f,0.f,-1.f));
+		m_mainCamera->SetLook(Vector3(0.f,1.f,1.f));
 	}
-
+	if (GetAsyncKeyState('K') & 0x8000)
+	{
+		m_mainCamera->SetLook(Vector3(0.f, 0.f, -1.f));
+	}
+	if (GetAsyncKeyState('J') & 0x8000)
+	{
+		m_mainCamera->SetLook(Vector3(0.f, 0.f, 1.f));
+	}
 }
 
 void D3D12Renderer::Render()
 {
 	//---------Update Camera Matrix---------//
-	m_mainCamera->UpdateViewMatrix();
+	m_mainCamera->UpdateMatrix2();
 
 	//-------------Begin Render------------//
 	BeginRender();
