@@ -19,6 +19,10 @@ namespace Truth
 	public:
 		BoxCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual ~BoxCollider();
+
+	private:
+		METHOD(Awake);
+		void Awake();
 	};
 }
 

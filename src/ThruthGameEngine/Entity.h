@@ -21,20 +21,26 @@ namespace Truth
 
 	protected:
 		static uint32 m_entityCount;
+
+		PROPERTY(ID);
 		uint32 m_ID;
-		PROPERTY(name)
-			std::string m_name;
+		PROPERTY(name);
+		std::string m_name;
 		std::shared_ptr<Managers> m_manager;
 
 	public:
 		// key 값의 경우 type id 를 통해 유추한다.
-		PROPERTY(components)
-			std::vector<std::shared_ptr<Component>> m_components;
+		PROPERTY(components);
+		std::vector<std::shared_ptr<Component>> m_components;
 
 		Entity();
 		virtual ~Entity();
 
 		virtual void Initailize();
+
+		void Awake();
+		void Destroy();
+		void Start();
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();
@@ -50,6 +56,8 @@ namespace Truth
 		void SetManager(std::shared_ptr<Managers> _val) { m_manager = _val; };
 
 		std::string& GetName() { return m_name; };
+
+	private:
 	};
 
 	/// template로 작성된 함수 목록
@@ -98,9 +106,12 @@ namespace Truth
 		{
 			if (GetComponent<C>().expired())
 			{
+				m_components.push_back(component);
+			}
+			else
+			{
 				return nullptr;
 			}
-			m_components.push_back(component);
 		}
 		return component;
 	}
@@ -114,7 +125,7 @@ namespace Truth
 	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
 	std::weak_ptr<C> Entity::GetComponent()
 	{
-		for (auto c : m_components)
+		for (auto& c : m_components)
 		{
 			auto component = ::Cast<C, Component>(c);
 			if (component != nullptr)
@@ -135,7 +146,7 @@ namespace Truth
 	std::vector<std::weak_ptr<C>> Entity::GetComponents()
 	{
 		std::vector<std::weak_ptr<C>> result;
-		for (auto c : m_components)
+		for (auto& c : m_components)
 		{
 			auto component = ::Cast<C, Component>(c);
 			if (component != nullptr)

@@ -92,6 +92,9 @@ namespace Truth
 		// 소멸
 		void Finalize();
 
+		void CreateEntity(std::shared_ptr<Entity> _p);
+		void DeleteEntity(std::shared_ptr<Entity> _p);
+
 	public:
 		// 이벤트 발행 (_eventID에 해당하는 이벤트가 발생했다고 알림)
 		void PublishEvent(std::string _eventID, const std::any _param = nullptr, const float& _delayed = 0.0f);

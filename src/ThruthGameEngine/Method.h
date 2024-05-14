@@ -263,7 +263,7 @@ public:
 		{
 			auto concreateCallable = static_cast<const ICallable<TRet, TArgs...>*>(&m_callable);
 			// 타입에 따른 함수 호출
-			if constexpr (std::enable_if_t<std::is_void_v<TRet>>)
+			if constexpr (std::is_void_v<TRet>)
 			{
 				concreateCallable->Invoke(_owner, std::forward<TArgs>(_args)...);
 			}
@@ -275,7 +275,7 @@ public:
 		else
 		{
 			assert(false && "Method::Invoke<TRet, TArgs...> - Invalied casting");
-			if constexpr (!std::enable_if_t<std::is_void_v<TRet>>)
+			if constexpr (!std::is_void_v<TRet>)
 			{
 				return {};
 			}
