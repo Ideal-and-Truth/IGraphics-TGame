@@ -115,22 +115,22 @@
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
     <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMesh.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealMesh.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RootSignature.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Shader.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealBone.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealMaterial.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealBone.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealStaticMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealMaterial.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealStaticMesh.h" />
     <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshObject.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealSkinnedMeshObject.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealSkinnedMesh.h" />
     <ClInclude Include="GraphicsEngine\public\ISkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealAnimation.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.h" />
-    <ClInclude Include="IdealLight.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealAnimation.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealRenderScene.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Light\IdealLight.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.h" />
   </ItemGroup>
   <ItemGroup>
@@ -185,19 +185,19 @@
       <Filter>GraphicsEngine\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealMesh.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealBone.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMeshObject.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealMaterial.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealStaticMesh.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMeshObject.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealSkinnedMesh.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealAnimation.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Refactor\IdealRenderScene.cpp" />
-    <ClCompile Include="IdealLight.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealBone.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealStaticMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealMaterial.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealStaticMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealSkinnedMeshObject.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealSkinnedMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealAnimation.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealRenderScene.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Light\IdealLight.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -20,5 +20,41 @@ void Truth::Entity::Initailize()
 	AddComponent<Transform>();
 }
 
+void Truth::Entity::Awake()
+{
+	Initailize();
+	for (auto& c : m_components)
+	{
+		auto met = c->GetTypeInfo().GetMethod("Awake");
+		if (met)
+		{
+			met->Invoke<void>(c.get());
+		}
+	}
+	DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
+}
 
+void Truth::Entity::Destroy()
+{
+	for (auto& c : m_components)
+	{
+		auto met = c->GetTypeInfo().GetMethod("Destroy");
+		if (met)
+		{
+			met->Invoke<void>(c.get());
+		}
+	}
+}
+
+void Truth::Entity::Start()
+{
+	for (auto& c : m_components)
+	{
+		auto met = c->GetTypeInfo().GetMethod("Start");
+		if (met)
+		{
+			met->Invoke<void>(c.get());
+		}
+	}
+}
 

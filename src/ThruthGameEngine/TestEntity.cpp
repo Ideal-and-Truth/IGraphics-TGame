@@ -14,7 +14,7 @@ Truth::TestEntity::TestEntity()
 	m_intest.push_back(2);
 	m_intest.push_back(3);
 
-
+	m_name = typeid(*this).name();
 }
 
 Truth::TestEntity::~TestEntity()
@@ -27,7 +27,9 @@ void Truth::TestEntity::Initailize()
 	DEBUG_PRINT("Entity Start : test enttity\n");
 	__super::Initailize();
 	AddComponent<TestComponent>();
-	AddComponent<RigidBody>();
 	AddComponent<BoxCollider>();
+	AddComponent<RigidBody>();
 	AddComponent<Mesh>(L"CatwalkWalkForward3/CatwalkWalkForward3");
+
+	
 }

@@ -1,28 +1,26 @@
 #include "Core/Core.h"
+
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
-#include "GraphicsEngine/VertexInfo.h"
-
-
 #include "GraphicsEngine/D3D12/ResourceManager.h"
-
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/VertexInfo.h"
-#include "GraphicsEngine/Resource/Refactor/IdealStaticMesh.h"
-#include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMesh.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
 
-#include "GraphicsEngine/Resource/Refactor/IdealBone.h"
-#include "GraphicsEngine/Resource/Refactor/IdealMesh.h"
-#include "GraphicsEngine/Resource/Refactor/IdealMaterial.h"
-#include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
+#include "GraphicsEngine/Resource/IdealStaticMesh.h"
+#include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
+#include "GraphicsEngine/Resource/IdealSkinnedMesh.h"
+#include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/IdealBone.h"
+#include "GraphicsEngine/Resource/IdealMesh.h"
+#include "GraphicsEngine/Resource/IdealMaterial.h"
+#include "GraphicsEngine/Resource/IdealAnimation.h"
+#include "GraphicsEngine/Resource/ModelAnimation.h"
+
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "Misc/Utils/FileUtils.h"
 #include "Misc/Utils/StringUtils.h"
 #include "Misc/Utils/tinyxml2.h"
-#include "GraphicsEngine/Resource/ModelAnimation.h"
 
 #include <filesystem>
 
@@ -283,7 +281,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture> 
 	OutTexture->Create(resource, srvHandle);
 }
 
-void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
+void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);
@@ -489,7 +487,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<D3D12Rendere
 	OutMesh->SetStaticMesh(staticMesh);
 }
 
-void ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
+void ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);

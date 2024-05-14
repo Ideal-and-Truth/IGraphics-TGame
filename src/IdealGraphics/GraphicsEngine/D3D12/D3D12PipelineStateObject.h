@@ -6,9 +6,9 @@ namespace Ideal
 {
 	class D3D12RootSignature;
 	class D3D12Shader;
+	class D3D12Renderer;
 }
 
-class D3D12Renderer;
 
 namespace Ideal
 {
@@ -27,7 +27,7 @@ namespace Ideal
 		void SetRasterizerState (const D3D12_RASTERIZER_DESC RSDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT));
 		void SetBlendState		(const D3D12_BLEND_DESC BlendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT));
 
-		void Create				(std::shared_ptr<D3D12Renderer> Renderer);
+		void Create				(std::shared_ptr<Ideal::D3D12Renderer> Renderer);
 
 		ComPtr<ID3D12PipelineState> GetPipelineState() { return m_pipelineState; }
 
