@@ -1,13 +1,17 @@
-
-cbuffer Transform : register(b0)
+cbuffer Global : register(b0)
 {
-    float4x4 World;
     float4x4 View;
     float4x4 Proj;
+    float4x4 ViewProj;
+}
+
+cbuffer Transform : register(b1)
+{
+    float4x4 World;
     float4x4 WorldInvTranspose;
 }
 
-cbuffer Material : register(b1)
+cbuffer Material : register(b2)
 {
     float4 Ambient;
     float4 Diffuse;

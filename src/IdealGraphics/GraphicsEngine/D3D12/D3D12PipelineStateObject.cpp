@@ -54,7 +54,7 @@ void Ideal::D3D12PipelineStateObject::SetBlendState(const D3D12_BLEND_DESC Blend
 	m_psoDesc.BlendState = BlendDesc;
 }
 
-void Ideal::D3D12PipelineStateObject::Create(std::shared_ptr<D3D12Renderer> Renderer)
+void Ideal::D3D12PipelineStateObject::Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer)
 {
 	//RootSignature
 	//IA

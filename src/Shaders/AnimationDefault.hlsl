@@ -22,20 +22,25 @@ struct VSOutput
     float4 skinWeights	: BLEND_WEIGHTS;
 };
 
-cbuffer Transform : register(b0)
+cbuffer Global : register(b0)
 {
-    float4x4 World;
     float4x4 View;
     float4x4 Proj;
+    float4x4 ViewProj;
+}
+
+cbuffer Transform : register(b1)
+{
+    float4x4 World;
     float4x4 WorldInvTranspose;
 }
 
-cbuffer BoneBuffer : register(b1)
+cbuffer BoneBuffer : register(b2)
 {
     matrix BoneTransforms[MAX_BONE_TRANSFORMS];
 }
 
-cbuffer Material : register(b2)
+cbuffer Material : register(b3)
 {
     float4 Ambient;
     float4 Diffuse;

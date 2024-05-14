@@ -16,12 +16,14 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 
 #include "GraphicsEngine/Resource/IdealCamera.h"
-#include "GraphicsEngine/Resource/Refactor/IdealStaticMeshObject.h"
-#include "GraphicsEngine/Resource/Refactor/IdealAnimation.h"
-#include "GraphicsEngine/Resource/Refactor/IdealSkinnedMeshObject.h"
-#include "GraphicsEngine/Resource/Refactor/IdealRenderScene.h"
+#include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
+#include "GraphicsEngine/Resource/IdealAnimation.h"
+#include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/IdealRenderScene.h"
 
-D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
+
+
+Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
 	m_width(width),
 	m_height(height),
@@ -34,13 +36,13 @@ D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
 
-D3D12Renderer::~D3D12Renderer()
+Ideal::D3D12Renderer::~D3D12Renderer()
 {
 	// Release Resource Manager
 	m_resourceManager = nullptr;
 }
 
-void D3D12Renderer::Init()
+void Ideal::D3D12Renderer::Init()
 {
 	uint32 dxgiFactoryFlags = 0;
 
@@ -249,7 +251,7 @@ finishAdapter:
 	CreateCBPool();
 }
 
-void D3D12Renderer::Tick()
+void Ideal::D3D12Renderer::Tick()
 {
 	const float speed = 2.f;
 	if (GetAsyncKeyState('O') & 0x8000)
@@ -291,7 +293,7 @@ void D3D12Renderer::Tick()
 	}
 }
 
-void D3D12Renderer::Render()
+void Ideal::D3D12Renderer::Render()
 {
 	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateMatrix2();
@@ -326,19 +328,19 @@ void D3D12Renderer::Render()
 	return;
 }
 
-std::shared_ptr<Ideal::ICamera> D3D12Renderer::CreateCamera()
+std::shared_ptr<Ideal::ICamera> Ideal::D3D12Renderer::CreateCamera()
 {
 	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
 
 	return newCamera;
 }
 
-void D3D12Renderer::SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera)
+void Ideal::D3D12Renderer::SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(Camera);
 }
 
-std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
+std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
 	m_resourceManager->CreateStaticMeshObject(shared_from_this(), newStaticMesh, FileName);
@@ -350,7 +352,7 @@ std::shared_ptr<Ideal::IMeshObject> D3D12Renderer::CreateStaticMeshObject(const 
 	return newStaticMesh;
 }
 
-std::shared_ptr<Ideal::ISkinnedMeshObject> D3D12Renderer::CreateSkinnedMeshObject(const std::wstring& FileName)
+std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12Renderer::CreateSkinnedMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
 	m_resourceManager->CreateSkinnedMeshObject(shared_from_this(), newDynamicMesh, FileName);
@@ -361,7 +363,7 @@ std::shared_ptr<Ideal::ISkinnedMeshObject> D3D12Renderer::CreateSkinnedMeshObjec
 	return newDynamicMesh;
 }
 
-std::shared_ptr<Ideal::IAnimation> D3D12Renderer::CreateAnimation(const std::wstring& FileName)
+std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
 	m_resourceManager->CreateAnimation(newAnimation, FileName);
@@ -369,7 +371,7 @@ std::shared_ptr<Ideal::IAnimation> D3D12Renderer::CreateAnimation(const std::wst
 	return newAnimation;
 }
 
-std::shared_ptr<Ideal::IRenderScene> D3D12Renderer::CreateRenderScene()
+std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12Renderer::CreateRenderScene()
 {
 	std::shared_ptr<Ideal::IdealRenderScene> newScene = std::make_shared<Ideal::IdealRenderScene>();
 	newScene->Init(shared_from_this());
@@ -377,12 +379,12 @@ std::shared_ptr<Ideal::IRenderScene> D3D12Renderer::CreateRenderScene()
 	return newScene;
 }
 
-void D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene)
+void Ideal::D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene)
 {
 	m_currentRenderScene = std::static_pointer_cast<Ideal::IdealRenderScene>(RenderScene);
 }
 
-void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
+void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
 	assimpConverter->SetAssetPath(m_assetPath);
@@ -405,7 +407,7 @@ void D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinned
 	assimpConverter->ExportMaterialData(FileName);
 }
 
-void D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
+void Ideal::D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
 	assimpConverter->SetAssetPath(m_assetPath);
@@ -423,17 +425,17 @@ void D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
 	assimpConverter->ExportAnimationData(FileName);
 }
 
-void D3D12Renderer::Release()
+void Ideal::D3D12Renderer::Release()
 {
 
 }
 
-Microsoft::WRL::ComPtr<ID3D12Device> D3D12Renderer::GetDevice()
+Microsoft::WRL::ComPtr<ID3D12Device> Ideal::D3D12Renderer::GetDevice()
 {
 	return m_device;
 }
 
-void D3D12Renderer::BeginRender()
+void Ideal::D3D12Renderer::BeginRender()
 {
 	Check(m_commandAllocator->Reset());
 	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
@@ -459,7 +461,7 @@ void D3D12Renderer::BeginRender()
 	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 }
 
-void D3D12Renderer::EndRender()
+void Ideal::D3D12Renderer::EndRender()
 {
 	CD3DX12_RESOURCE_BARRIER backBufferPresent = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_renderTargets[m_frameIndex].Get(),
@@ -474,7 +476,7 @@ void D3D12Renderer::EndRender()
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
-void D3D12Renderer::GraphicsPresent()
+void Ideal::D3D12Renderer::GraphicsPresent()
 {
 	HRESULT hr = m_swapChain->Present(1, 0);
 	if (DXGI_ERROR_DEVICE_REMOVED == hr)
@@ -488,24 +490,24 @@ void D3D12Renderer::GraphicsPresent()
 	WaitForGraphicsFenceValue();
 }
 
-uint32 D3D12Renderer::GetFrameIndex() const
+uint32 Ideal::D3D12Renderer::GetFrameIndex() const
 {
 	return m_frameIndex;
 }
 
-void D3D12Renderer::CreateCommandList()
+void Ideal::D3D12Renderer::CreateCommandList()
 {
 	Check(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
 	Check(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
 	m_commandList->Close();
 }
 
-Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> D3D12Renderer::GetCommandList()
+Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Ideal::D3D12Renderer::GetCommandList()
 {
 	return m_commandList;
 }
 
-void D3D12Renderer::CreateGraphicsFence()
+void Ideal::D3D12Renderer::CreateGraphicsFence()
 {
 	Check(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_graphicsFence.GetAddressOf())));
 
@@ -514,14 +516,14 @@ void D3D12Renderer::CreateGraphicsFence()
 	m_graphicsFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
-uint64 D3D12Renderer::GraphicsFence()
+uint64 Ideal::D3D12Renderer::GraphicsFence()
 {
 	m_graphicsFenceValue++;
 	m_commandQueue->Signal(m_graphicsFence.Get(), m_graphicsFenceValue);
 	return m_graphicsFenceValue;
 }
 
-void D3D12Renderer::WaitForGraphicsFenceValue()
+void Ideal::D3D12Renderer::WaitForGraphicsFenceValue()
 {
 	const uint64 expectedFenceValue = m_graphicsFenceValue;
 
@@ -532,23 +534,23 @@ void D3D12Renderer::WaitForGraphicsFenceValue()
 	}
 }
 
-std::shared_ptr<Ideal::ResourceManager> D3D12Renderer::GetResourceManager()
+std::shared_ptr<Ideal::ResourceManager> Ideal::D3D12Renderer::GetResourceManager()
 {
 	return m_resourceManager;
 }
 
-void D3D12Renderer::CreateDescriptorHeap()
+void Ideal::D3D12Renderer::CreateDescriptorHeap()
 {
 	m_descriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
 	m_descriptorHeap->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 }
 
-std::shared_ptr<Ideal::D3D12DescriptorHeap> D3D12Renderer::GetMainDescriptorHeap()
+std::shared_ptr<Ideal::D3D12DescriptorHeap> Ideal::D3D12Renderer::GetMainDescriptorHeap()
 {
 	return m_descriptorHeap;
 }
 
-void D3D12Renderer::CreateCBPool()
+void Ideal::D3D12Renderer::CreateCBPool()
 {
 	m_cb256Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
 	m_cb256Pool->Init(m_device.Get(), 256, MAX_DRAW_COUNT_PER_FRAME);
@@ -564,7 +566,7 @@ void D3D12Renderer::CreateCBPool()
 	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(static_cast<uint32>(sizeof(CB_Bone))), MAX_DRAW_COUNT_PER_FRAME);
 }
 
-std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBPool(uint32 SizePerCB)
+std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBPool(uint32 SizePerCB)
 {
 	if (SizePerCB <= 256)
 	{
@@ -581,29 +583,29 @@ std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBPool(uint32 
 	return nullptr;
 }
 
-std::shared_ptr<Ideal::D3D12ConstantBufferPool> D3D12Renderer::GetCBBonePool()
+std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBBonePool()
 {
 	return m_cbBonePool;
 }
 
-void D3D12Renderer::CreateDefaultCamera()
+void Ideal::D3D12Renderer::CreateDefaultCamera()
 {
 	m_mainCamera = std::make_shared<Ideal::IdealCamera>();
 	std::shared_ptr<Ideal::IdealCamera> camera = std::static_pointer_cast<Ideal::IdealCamera>(m_mainCamera);
 	camera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
 }
 
-DirectX::SimpleMath::Matrix D3D12Renderer::GetView()
+DirectX::SimpleMath::Matrix Ideal::D3D12Renderer::GetView()
 {
 	return m_mainCamera->GetView();
 }
 
-DirectX::SimpleMath::Matrix D3D12Renderer::GetProj()
+DirectX::SimpleMath::Matrix Ideal::D3D12Renderer::GetProj()
 {
 	return m_mainCamera->GetProj();
 }
 
-DirectX::SimpleMath::Matrix D3D12Renderer::GetViewProj()
+DirectX::SimpleMath::Matrix Ideal::D3D12Renderer::GetViewProj()
 {
 	return m_mainCamera->GetViewProj();
 }

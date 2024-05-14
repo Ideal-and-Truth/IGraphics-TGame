@@ -1,13 +1,17 @@
-
-cbuffer Transform : register(b0)
+cbuffer Global : register(b0)
 {
-    float4x4 World;
     float4x4 View;
     float4x4 Proj;
+    float4x4 ViewProj;
+}
+
+cbuffer Transform : register(b1)
+{
+    float4x4 World;
     float4x4 WorldInvTranspose;
 }
 
-cbuffer Material : register(b1)
+cbuffer Material : register(b2)
 {
     float4 Ambient;
     float4 Diffuse;
@@ -58,8 +62,8 @@ SamplerState sampler0 : register(s0);
 float4 PS(VSOutput input) : SV_TARGET
 {
     float4 color = diffuseTexture.Sample(sampler0, input.UV);
-    //float4 dirLight = float4(1.f,0.f,0.f,1.f);
-    //float4 value = dot(-dirLight, normalize(input.NormalW));
-    //color = color * value * Diffuse;
+    float4 dirLight = float4(1.f,0.f,0.f,1.f);
+    float4 value = dot(-dirLight, normalize(input.NormalW));
+    color = color * value * Diffuse;
     return color;
 }
