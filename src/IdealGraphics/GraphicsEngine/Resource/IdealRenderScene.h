@@ -47,8 +47,11 @@ namespace Ideal
 		void SetGlobalCBDescriptorTable(std::shared_ptr<IdealRenderer> Renderer);
 
 	private:
-		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
-		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
+		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
+		//std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
+
+		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
+		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
 
 	private:
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;

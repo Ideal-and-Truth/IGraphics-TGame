@@ -49,7 +49,10 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 
 		for (auto& m : m_staticMeshObjects)
 		{
-			m->Draw(d3d12Renderer);
+			if (m.lock() != nullptr)
+			{
+				m.lock()->Draw(d3d12Renderer);
+			}
 		}
 	}
 	// Ver2 SkinnedMesh
@@ -62,7 +65,10 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 
 		for (auto& m : m_skinnedMeshObjects)
 		{
-			m->Draw(Renderer);
+			if (m.lock() != nullptr)
+			{
+				m.lock()->Draw(Renderer);
+			}
 		}
 	}
 }
