@@ -10,4 +10,4 @@
 			static MethodRegister<ThisType, decltype(&ThisType::Name), &ThisType::Name> method_register_##Name{ #Name, ThisType::StaticTypeInfo() };	\
 		}	\
 		\
-	} regist_##Name;
+	} regist_##Name

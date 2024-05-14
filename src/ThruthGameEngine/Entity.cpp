@@ -23,12 +23,12 @@ void Truth::Entity::Initailize()
 void Truth::Entity::Awake()
 {
 	Initailize();
-	for (auto c : m_components)
+	for (auto& c : m_components)
 	{
-		auto m = c->GetTypeInfo().GetMethod("Awake");
-		if (m)
+		auto met = c->GetTypeInfo().GetMethod("Awake");
+		if (met)
 		{
-			m->Invoke<void>((void*)c.get());
+			met->Invoke<void>(c.get());
 		}
 	}
 	DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
@@ -36,6 +36,25 @@ void Truth::Entity::Awake()
 
 void Truth::Entity::Destroy()
 {
+	for (auto& c : m_components)
+	{
+		auto met = c->GetTypeInfo().GetMethod("Destroy");
+		if (met)
+		{
+			met->Invoke<void>(c.get());
+		}
+	}
+}
 
+void Truth::Entity::Start()
+{
+	for (auto& c : m_components)
+	{
+		auto met = c->GetTypeInfo().GetMethod("Start");
+		if (met)
+		{
+			met->Invoke<void>(c.get());
+		}
+	}
 }
 

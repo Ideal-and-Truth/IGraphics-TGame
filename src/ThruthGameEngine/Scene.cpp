@@ -29,18 +29,28 @@ void Truth::Scene::Update()
 	// delete
 	while (!m_deletedEntity.empty())
 	{
-		m_deletedEntity.front()->Destroy();
+		auto& e = m_deletedEntity.front();
+		e->Destroy();
 		m_deletedEntity.pop();
 	}
 
 	// Create
 	while (!m_createdEntity.empty())
 	{
-		auto e = m_createdEntity.front();
+		auto& e = m_createdEntity.front();
 		m_entities.push_back(e);
 		e->SetManager(m_managers);
 		e->Awake();
+		m_startedEntity.push(e);
 		m_createdEntity.pop();
+	}
+
+	// Start
+	while (!m_startedEntity.empty())
+	{
+		auto& e = m_startedEntity.front();
+		e->Start();
+		m_startedEntity.pop();
 	}
 }
 

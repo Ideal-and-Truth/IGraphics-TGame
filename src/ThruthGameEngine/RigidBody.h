@@ -52,6 +52,13 @@ namespace Truth
 
 		void FreezePosition(bool _xzy[3]);
 		void FreezeRotation(bool _xzy[3]);
+
+	private:
+		METHOD(Awake);
+		void Awake();
+		
+// 		METHOD(Start);
+// 		void Start();
 	};
 }
 

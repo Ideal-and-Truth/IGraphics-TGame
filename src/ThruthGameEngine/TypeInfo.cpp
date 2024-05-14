@@ -82,10 +82,6 @@ std::string TypeInfo::Dump(void* _object, int _indent) const
 	std::string result;
 	result += m_name;
 	result += "\n";
-	if (m_properties.size() == 0 && m_methods.size() == 0)
-	{
-		result += "{ }\n";
-	}
 
 	result += std::string(_indent, '\t');
 	result += "{\n";
@@ -105,7 +101,7 @@ std::string TypeInfo::Dump(void* _object, int _indent) const
 	}
 
 	result += std::string(_indent, '\t');
-	result += "}";
+	result += "}\n";
 
 	return result;
 }

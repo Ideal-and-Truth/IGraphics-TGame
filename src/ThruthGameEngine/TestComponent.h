@@ -13,16 +13,20 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(TestComponent)
 
 	public:
-		PROPERTY(testInt)
-			int m_testInt;
+		PROPERTY(testInt);
+		int m_testInt;
 
 	public:
 		TestComponent(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
 		virtual	~TestComponent();
 
+		METHOD(Awake);
+		void Awake();
+
 	public:
-		METHOD(Update)
-			void Update(std::any _p);
+		METHOD(Update);
+		void Update(std::any _p);
+
 		void QUP(std::any _p);
 		void QDOWN(std::any _p);
 	};

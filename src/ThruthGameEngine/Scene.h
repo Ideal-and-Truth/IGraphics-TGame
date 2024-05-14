@@ -23,7 +23,7 @@ namespace Truth
 	private:
 		std::queue<std::shared_ptr<Entity>> m_deletedEntity;
 		std::queue<std::shared_ptr<Entity>> m_createdEntity;
-		std::queue<std::shared_ptr<Entity>> m_awakeEntity;
+		std::queue<std::shared_ptr<Entity>> m_startedEntity;
 
 	public:
 		Scene(std::shared_ptr<Managers> _managers);
