@@ -17,7 +17,7 @@ namespace Truth
 		Vector3 m_size;
 
 	public:
-		BoxCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		BoxCollider();
 		virtual ~BoxCollider();
 
 		void SetSize(Vector3 _size);
@@ -25,6 +25,9 @@ namespace Truth
 	private:
 		METHOD(Awake);
 		void Awake();
+
+		METHOD(Start);
+		void Start();
 	};
 }
 

@@ -4,8 +4,8 @@
 #include "PhysicsManager.h"
 #include "Collider.h"
 
-Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
-	: Component(_managers, _owner)
+Truth::RigidBody::RigidBody()
+	: Component()
 	, m_mass(1.0f)
 	, m_drag(0.0f)
 	, m_angularDrag(0.05f)
@@ -21,7 +21,6 @@ Truth::RigidBody::RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
 
-	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
 }
 
 Truth::RigidBody::~RigidBody()
@@ -45,6 +44,7 @@ void Truth::RigidBody::FreezeRotation(bool _xzy[3])
 
 void Truth::RigidBody::Awake()
 {
+	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
 	m_transform = m_owner.lock()->GetComponent<Transform>();
 	m_managers.lock()->Physics()->AddScene(m_body);
 }

@@ -45,7 +45,7 @@ namespace Truth
 		std::weak_ptr<Transform> m_transform;
 
 	public:
-		RigidBody(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		RigidBody();
 		virtual ~RigidBody();
 
 		void FixedUpdate(std::any _p);

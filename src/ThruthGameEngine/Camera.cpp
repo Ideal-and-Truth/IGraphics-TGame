@@ -4,13 +4,10 @@
 #include "InputManager.h"
 #include "GraphicsManager.h"
 
-Truth::Camera::Camera(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
-	: Component(_managers, _owner)
+Truth::Camera::Camera()
+	: Component()
 {
-	m_camera = m_managers.lock()->Graphics()->CreateCamera();
-	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
-	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 3000.f);
-	EventBind<Camera>("Update", &Camera::Update);
+
 }
 
 Truth::Camera::~Camera()
@@ -49,4 +46,14 @@ void Truth::Camera::SetLens(float _fovY, float _aspect, float _nearZ, float _far
 void Truth::Camera::SetMainCamera()
 {
 	m_managers.lock()->Graphics()->SetMainCamera(m_camera);
+}
+
+void Truth::Camera::Awake()
+{
+	m_camera = m_managers.lock()->Graphics()->CreateCamera();
+	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
+	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 3000.f);
+	SetMainCamera();
+
+	EventBind<Camera>("Update", &Camera::Update);
 }
