@@ -17,12 +17,15 @@ namespace Truth
 		Vector3 m_size;
 
 	public:
-		BoxCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		BoxCollider();
 		virtual ~BoxCollider();
 
 	private:
 		METHOD(Awake);
 		void Awake();
+
+		METHOD(Start);
+		void Start();
 	};
 }
 

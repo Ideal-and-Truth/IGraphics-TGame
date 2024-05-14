@@ -18,7 +18,7 @@ namespace Truth
 		physx::PxRigidActor* m_body;
 
 	public:
-		Collider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner, bool _isTrigger = true);
+		Collider(bool _isTrigger = true);
 		virtual ~Collider();
 
 	protected:

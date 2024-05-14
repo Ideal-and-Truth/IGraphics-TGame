@@ -3,11 +3,10 @@
 #include "Component.h"
 #include "Entity.h"
 
-Truth::BoxCollider::BoxCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
-	: Collider(_managers, _owner)
+Truth::BoxCollider::BoxCollider()
+	: Collider()
 	, m_size{ 1.0f, 1.0f, 1.0f }
 {
-
 }
 
 
@@ -19,6 +18,10 @@ Truth::BoxCollider::~BoxCollider()
 void Truth::BoxCollider::Awake()
 {
 	m_collider = CreateCollider(ColliderShape::BOX, std::vector<float>{ 1.0f });
+}
+
+void Truth::BoxCollider::Start()
+{
 	auto r = m_owner.lock()->GetComponent<RigidBody>();
 	if (r.expired())
 	{
