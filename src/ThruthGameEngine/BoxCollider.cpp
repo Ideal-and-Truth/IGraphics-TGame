@@ -16,6 +16,11 @@ Truth::BoxCollider::~BoxCollider()
 	m_collider->release();
 }
 
+void Truth::BoxCollider::SetSize(Vector3 _size)
+{
+
+}
+
 void Truth::BoxCollider::Awake()
 {
 	m_collider = CreateCollider(ColliderShape::BOX, std::vector<float>{ 1.0f });
