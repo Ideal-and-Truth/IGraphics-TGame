@@ -4,6 +4,7 @@
 #include "EventHandler.h"
 #include "Entity.h"
 #include "SceneManager.h"
+#include "PhysicsManager.h"
 
 Truth::EventManager::EventManager()
 {
@@ -19,10 +20,10 @@ Truth::EventManager::~EventManager()
 /// <summary>
 /// √ ±‚»≠
 /// </summary>
-void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager, std::weak_ptr<SceneManager> _sceneManager)
+void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager, std::weak_ptr<Truth::PhysicsManager> _physicsManager)
 {
 	m_timeManager = _timeManager;
-	m_sceneManager = _sceneManager;
+	m_physicsManager = _physicsManager;
 }
 
 /// <summary>
@@ -30,6 +31,13 @@ void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager, st
 /// </summary>
 void Truth::EventManager::Update()
 {
+	PublishEvent("Update");
+	ProcessEvent();
+}
+
+void Truth::EventManager::FixedUpdate()
+{
+	m_physicsManager.lock()->FixedUpdate();
 	PublishEvent("Update");
 	ProcessEvent();
 }

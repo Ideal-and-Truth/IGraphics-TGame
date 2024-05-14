@@ -1,6 +1,7 @@
 #include "TestScene.h"
 #include "TestEntity.h"
 #include "DefalutCamera.h"
+#include "Wall.h"
 
 TestScene::TestScene(std::shared_ptr<Truth::Managers> _managers)
 	: Truth::Scene(_managers)
@@ -14,7 +15,7 @@ TestScene::~TestScene()
 void TestScene::Enter()
 {
 	DEBUG_PRINT("%s", "Enter Test Scene\n");
-	CreateEntity(std::make_shared<Truth::TestEntity>());
+	CreateEntity(std::make_shared<Wall>());
 	CreateEntity(std::make_shared<Truth::DefalutCamera>());
 }
 

@@ -53,6 +53,8 @@ namespace Truth
 		void FreezePosition(bool _xzy[3]);
 		void FreezeRotation(bool _xzy[3]);
 
+		void UpdateMassAndInertia();
+
 	private:
 		METHOD(Awake);
 		void Awake();

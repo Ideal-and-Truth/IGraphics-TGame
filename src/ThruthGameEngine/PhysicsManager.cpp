@@ -51,20 +51,20 @@ void Truth::PhysicsManager::Initalize()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.0f);
+	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
 // 	for (physx::PxU32 i = 0; i < 5; i++)
 // 	{
-// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
+ 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
 // 	}
-// 
-// 	if (!m_isInteractive)
-// 	{
-// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
-// 	}
+
+	// 	if (!m_isInteractive)
+	// 	{
+	// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+	// 	}
 }
 
 void Truth::PhysicsManager::Finalize()
@@ -76,10 +76,13 @@ void Truth::PhysicsManager::Finalize()
 
 void Truth::PhysicsManager::Update()
 {
-	m_scene->simulate(0.02f);
+}
+
+void Truth::PhysicsManager::FixedUpdate()
+{
+	m_scene->simulate(0.01f);
 	physx::PxU32 a;
 	bool c = m_scene->fetchResults(true, &a);
-
 }
 
 void Truth::PhysicsManager::ResetPhysX()
@@ -114,12 +117,17 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic(Vector3 _pos, Qua
 
 physx::PxRigidDynamic* Truth::PhysicsManager::CreateDefaultRigidDynamic()
 {
-	return CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
+	physx::PxRigidDynamic* body = CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
+	return body;
 }
 
 physx::PxRigidStatic* Truth::PhysicsManager::CreateDefaultRigidStatic()
 {
-	return CreateRigidStatic(Vector3::Zero, Quaternion::Identity);
+	physx::PxRigidStatic* body = CreateRigidStatic(Vector3::Zero, Quaternion::Identity);
+	return body;
 }
 
 physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
@@ -133,7 +141,7 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 		{
 			return nullptr;
 		}
-		shape = m_physics->createShape(physx::PxBoxGeometry(_args[0], _args[0], _args[0]), *m_material);
+		shape = m_physics->createShape(physx::PxBoxGeometry(_args[0], _args[1], _args[2]), *m_material);
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
@@ -175,27 +183,29 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
 {
-	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_material);
-// 	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-// 	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent * 10, halfExtent * 10, halfExtent), *m_material);
+	// 	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+	// 	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 
 	for (physx::PxU32 i = 0; i < size; i++)
 	{
 		for (physx::PxU32 j = 0; j < size - i; j++)
 		{
-			physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1), 0) * halfExtent);
-			physx::PxRigidDynamic* body = m_physics->createRigidDynamic(t.transform(localTm));
-			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
-			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
-			body->attachShape(*shape);
-			// body->setLinearVelocity(physx::PxVec3(0, -50, -100));
-			physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-
-			m_scene->addActor(*body);
-			// body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 		}
 	}
+	int i = 1;
+	int j = 1;
+	physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1) + 10, 0) * halfExtent);
+	physx::PxRigidDynamic* body = m_physics->createRigidDynamic(t.transform(localTm));
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
+	body->attachShape(*shape);
+	// body->setLinearVelocity(physx::PxVec3(0, -50, -100));
+	physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+
+	m_scene->addActor(*body);
+	// body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 	shape->release();
 }
 

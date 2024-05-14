@@ -19,7 +19,10 @@ namespace Truth
 
 	public:
 		Collider(bool _isTrigger = true);
+		Collider(Vector3 _pos, bool _isTrigger = true);
 		virtual ~Collider();
+
+		void SetPosition(Vector3 _pos);
 
 	protected:
 		inline physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args)

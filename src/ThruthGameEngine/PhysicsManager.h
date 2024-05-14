@@ -49,10 +49,13 @@ namespace Truth
 		void Initalize();
 		void Finalize();
 		void Update();
+		void FixedUpdate();
 
 		void ResetPhysX();
 
 		void AddScene(physx::PxActor* _actor);
+
+		physx::PxMaterial* GetMaterial() { return m_material; };
 
 		physx::PxRigidDynamic* CreateRigidDynamic(Vector3 _pos, Quaternion _rot);
 		physx::PxRigidStatic* CreateRigidStatic(Vector3 _pos, Quaternion _rot);

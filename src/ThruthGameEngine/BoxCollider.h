@@ -18,6 +18,8 @@ namespace Truth
 
 	public:
 		BoxCollider();
+		BoxCollider(Vector3 _size);
+		BoxCollider(Vector3 _pos, Vector3 _size);
 		virtual ~BoxCollider();
 
 		void SetSize(Vector3 _size);

@@ -42,11 +42,17 @@ void Truth::RigidBody::FreezeRotation(bool _xzy[3])
 
 }
 
+void Truth::RigidBody::UpdateMassAndInertia()
+{
+	physx::PxRigidBodyExt::updateMassAndInertia(*m_body, 10.0f);
+}
+
 void Truth::RigidBody::Awake()
 {
 	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
+
 	m_transform = m_owner.lock()->GetComponent<Transform>();
-	m_managers.lock()->Physics()->AddScene(m_body);
+	// m_managers.lock()->Physics()->AddScene(m_body);
 }
 
 // void Truth::RigidBody::Start()

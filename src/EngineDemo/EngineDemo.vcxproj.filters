@@ -19,6 +19,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{3c8b76da-e1da-4357-9c74-ed361c957f4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Wall">
+      <UniqueIdentifier>{a6ba6c50-0002-4bce-a342-68d2b1c3e05c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -40,7 +43,7 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Wall.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Entity\Wall</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -54,7 +57,7 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Wall.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Entity\Wall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
