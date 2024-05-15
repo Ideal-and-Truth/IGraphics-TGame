@@ -28,3 +28,38 @@ struct CB_Global
 	Matrix Proj;
 	Matrix ViewProj;
 };
+
+//------------Light-----------//
+#define MAX_POINT_LIGHT_NUM 1024
+#define MAX_SPOT_LIGHT_NUM 1024
+
+struct PointLight
+{
+	Color Color;
+	Vector3 Position;
+	float Range;
+	float Intensity;
+};
+
+struct DirectionalLight
+{
+	Color Color;
+	float Intensity;
+	Vector3 Direction;
+};
+
+struct SpotLight
+{
+	Color Color;
+	Vector4 Direction;
+	Vector3 Position;
+	float SpotAngle;
+	float Range;	
+	float Intensity;
+};
+
+struct CB_LightList
+{
+	PointLight PointLights[MAX_POINT_LIGHT_NUM];
+	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
+};

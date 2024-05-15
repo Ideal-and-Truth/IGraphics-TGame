@@ -60,9 +60,13 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	m_fence->SetName(L"ResourceManager Fence");
 
-	//------------SRV Descriptor-----------//
+	//------------SRV Heap-----------//
 	m_srvHeap = std::make_shared<D3D12DescriptorHeap>();
 	m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
+
+	//------------RTV Heap-----------//
+	m_rtvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
 }
 
 void ResourceManager::Fence()
@@ -209,8 +213,15 @@ void ResourceManager::CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer>
 	WaitForFenceValue();
 }
 
-void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture> OutTexture, const std::wstring& Path)
+void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
 {
+	if (!OutTexture)
+	{
+		OutTexture = std::make_shared<Ideal::D3D12Texture>();
+	}
+	// 2024.05.14 : 이 함수 Texture에 있어야 할지도// 
+	// 2024.05.15 : fence때문에 잘 모르겠다. 일단 넘어간다.
+
 	//----------------------Init--------------------------//
 	m_commandAllocator->Reset();
 	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
@@ -278,7 +289,58 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture> 
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = srvHandle.GetCpuHandle();
 	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, cpuHandle);
 
-	OutTexture->Create(resource, srvHandle);
+	//----------------------Final Create---------------------//
+	OutTexture->Create(resource);
+	OutTexture->EmplaceSRV(srvHandle);
+}
+
+void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, bool MakeRTV /*= false*/)
+{
+	if (!OutTexture)
+	{
+		OutTexture = std::make_shared<Ideal::D3D12Texture>();
+	}
+
+	ComPtr<ID3D12Resource> resource;
+	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		Width,
+		Height
+	);
+	m_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		nullptr,
+		IID_PPV_ARGS(resource.GetAddressOf())
+	);
+
+	//-------------SRV-------------//
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = resource->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	//srvDesc.Texture2D.MipLevels = 1;
+	Ideal::D3D12DescriptorHandle srvHandle = m_srvHeap->Allocate();
+	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
+
+	//-------------RTV------------//
+	Ideal::D3D12DescriptorHandle rtvHandle;
+	if (MakeRTV)
+	{
+		rtvHandle = m_rtvHeap->Allocate();
+		m_device->CreateRenderTargetView(resource.Get(), nullptr, rtvHandle.GetCpuHandle());
+	}
+
+	//-----Final Create-----//
+	OutTexture->Create(resource);
+	OutTexture->EmplaceSRV(srvHandle);
+	if (MakeRTV)
+	{
+		OutTexture->EmplaceRTV(rtvHandle);
+	}
 }
 
 void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)

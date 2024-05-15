@@ -249,6 +249,12 @@ finishAdapter:
 	CreateDescriptorHeap();
 	//------------------Create CB Pool---------------------//
 	CreateCBPool();
+
+
+	// 2024.05.14 : MRT Test
+	m_resourceManager->CreateEmptyTexture2D(t1, m_width, m_height, true);
+
+	int a = 3;
 }
 
 void Ideal::D3D12Renderer::Tick()

@@ -166,6 +166,8 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12View.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12RenderTarget.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Shader.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RootSignature.h" />
@@ -190,6 +192,8 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealRenderScene.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealLight.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Light\IdealPointLight.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Light\IdealSpotLight.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
     <ClInclude Include="Core\ForDebug.h" />
@@ -215,6 +219,8 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12View.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12RenderTarget.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12Shader.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RootSignature.cpp" />
@@ -232,6 +238,8 @@
     <ClCompile Include="GraphicsEngine\Resource\IdealAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealRenderScene.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealLight.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Light\IdealPointLight.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConverter.cpp" />
@@ -360,6 +368,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="Shaders\Light.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

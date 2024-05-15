@@ -132,6 +132,10 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealRenderScene.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealLight.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Light\IdealPointLight.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Light\IdealSpotLight.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12RenderTarget.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12View.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -199,6 +203,10 @@
     <ClCompile Include="GraphicsEngine\Resource\IdealRenderScene.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealLight.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Light\IdealPointLight.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12RenderTarget.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12View.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -230,5 +238,6 @@
     <None Include="Shaders\Common.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\Light.hlsli" />
   </ItemGroup>
 </Project>

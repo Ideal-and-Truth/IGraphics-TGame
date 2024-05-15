@@ -1,5 +1,7 @@
 #pragma once
 
+#define D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN   ((D3D12_GPU_VIRTUAL_ADDRESS)-1)
+
 /// Static Mesh Macro
 // 2024.05.08
 // Root Table Index Macro

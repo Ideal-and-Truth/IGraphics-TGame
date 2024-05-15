@@ -186,5 +186,9 @@ namespace Ideal
 		std::wstring m_assetPath;
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
+
+	private:
+		// 2024.05.14 : MRT Test
+		std::shared_ptr<Ideal::D3D12Texture> t1 = nullptr;
 	};
 }
