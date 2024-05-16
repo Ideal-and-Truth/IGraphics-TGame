@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "PhysicsManager.h"
 #include "Collider.h"
+#include "MathConverter.h"
 
 Truth::RigidBody::RigidBody()
 	: Component()
@@ -20,12 +21,16 @@ Truth::RigidBody::RigidBody()
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
-
 }
 
 Truth::RigidBody::~RigidBody()
 {
 	m_body->release();
+}
+
+void Truth::RigidBody::Initalize()
+{
+	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
 }
 
 void Truth::RigidBody::FixedUpdate(std::any _p)
@@ -45,12 +50,16 @@ void Truth::RigidBody::FreezeRotation(bool _xzy[3])
 void Truth::RigidBody::UpdateMassAndInertia()
 {
 	physx::PxRigidBodyExt::updateMassAndInertia(*m_body, 10.0f);
+	m_mass = m_body->getMass();
+}
+
+void Truth::RigidBody::AddForce(Vector3 _force)
+{
+	m_body->addForce(MathConverter::Convert(_force));
 }
 
 void Truth::RigidBody::Awake()
 {
-	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
-
 	m_transform = m_owner.lock()->GetComponent<Transform>();
 	// m_managers.lock()->Physics()->AddScene(m_body);
 }

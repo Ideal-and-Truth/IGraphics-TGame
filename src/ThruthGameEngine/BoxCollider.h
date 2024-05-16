@@ -14,12 +14,13 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(BoxCollider)
 
 	public:
+		PROPERTY(size);
 		Vector3 m_size;
 
 	public:
-		BoxCollider();
-		BoxCollider(Vector3 _size);
-		BoxCollider(Vector3 _pos, Vector3 _size);
+		BoxCollider(bool _isTrigger = true);
+		BoxCollider(Vector3 _size, bool _isTrigger = true);
+		BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger = true);
 		virtual ~BoxCollider();
 
 		void SetSize(Vector3 _size);

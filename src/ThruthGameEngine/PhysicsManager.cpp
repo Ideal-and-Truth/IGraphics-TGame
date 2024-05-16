@@ -51,14 +51,14 @@ void Truth::PhysicsManager::Initalize()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
+	m_material = m_physics->createMaterial(0.2f, 0.2f, 0.5f);
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
 // 	for (physx::PxU32 i = 0; i < 5; i++)
 // 	{
- 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
+// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
 // 	}
 
 	// 	if (!m_isInteractive)

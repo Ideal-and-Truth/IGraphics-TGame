@@ -48,12 +48,17 @@ namespace Truth
 		RigidBody();
 		virtual ~RigidBody();
 
+		METHOD(Initalize);
+		void Initalize();
+
 		void FixedUpdate(std::any _p);
 
 		void FreezePosition(bool _xzy[3]);
 		void FreezeRotation(bool _xzy[3]);
 
 		void UpdateMassAndInertia();
+
+		void AddForce(Vector3 _force);
 
 	private:
 		METHOD(Awake);

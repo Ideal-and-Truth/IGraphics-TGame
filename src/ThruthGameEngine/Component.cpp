@@ -1,6 +1,8 @@
 #include "Component.h"
 #include "TimeManager.h"
 #include "EventManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
 
 Truth::Component::Component() 
 	: m_canMultiple(false)

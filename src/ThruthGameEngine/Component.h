@@ -4,6 +4,8 @@
 #include "Managers.h"
 #include "InputManager.h"
 #include "TimeManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
 
 /// <summary>
 /// 모든 컴포넌트의 부모 클래스
@@ -18,6 +20,8 @@ namespace Truth
 	class Transform;
 	class Managers;
 }
+
+
 
 namespace Truth
 {
@@ -82,7 +86,15 @@ namespace Truth
 		{
 			return m_managers.lock()->Time()->GetFDT();
 		}
+
+		template <typename E>
+		void AddEntity();
 #pragma endregion inline
 	};
 }
 
+template <typename E>
+void Truth::Component::AddEntity()
+{
+	m_managers.lock()->Scene()->m_currentScene.lock()->CreateEntity(std::make_shared<E>());
+}

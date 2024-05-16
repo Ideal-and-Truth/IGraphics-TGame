@@ -38,7 +38,7 @@ void Truth::EventManager::Update()
 void Truth::EventManager::FixedUpdate()
 {
 	m_physicsManager.lock()->FixedUpdate();
-	PublishEvent("Update");
+	PublishEvent("FixedUpdate");
 	ProcessEvent();
 }
 

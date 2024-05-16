@@ -4,21 +4,22 @@
 #include "Entity.h"
 #include "PhysicsManager.h"
 
-Truth::BoxCollider::BoxCollider()
-	: Collider()
+Truth::BoxCollider::BoxCollider(bool _isTrigger)
+	: Collider(_isTrigger)
 	, m_size{ 1.0f, 1.0f, 1.0f }
 {
 }
 
 
-Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size)
-	: Collider(_pos)
+Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
+	: Collider(_pos, _isTrigger)
 {
 	SetSize(_size);
 	SetPosition(m_center);
 }
 
-Truth::BoxCollider::BoxCollider(Vector3 _size)
+Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)
+	: Collider(_isTrigger)
 {
 	SetSize(_size);
 }
@@ -48,12 +49,8 @@ void Truth::BoxCollider::SetSize(Vector3 _size)
 void Truth::BoxCollider::Awake()
 {
 	m_collider = CreateCollider(ColliderShape::BOX, std::vector<float>{ m_size.x, m_size.y, m_size.z });
-// 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-// 	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
-}
-
-void Truth::BoxCollider::Start()
-{
+	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
+	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 	auto r = m_owner.lock()->GetComponent<RigidBody>();
 	if (r.expired())
 	{
@@ -72,4 +69,8 @@ void Truth::BoxCollider::Start()
 	}
 
 	m_managers.lock()->Physics()->AddScene(m_body);
+}
+
+void Truth::BoxCollider::Start()
+{
 }

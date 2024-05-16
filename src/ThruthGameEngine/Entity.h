@@ -74,6 +74,13 @@ namespace Truth
 		std::shared_ptr<C> component = std::make_shared<C>();
 		component->SetManager(m_manager);
 		component->SetOwner(shared_from_this());
+
+		auto met = component->GetTypeInfo().GetMethod("Initalize");
+		if (met)
+		{
+			met->Invoke<void>(component.get());
+		}
+
 		// 만일 중복 가능한 컴포넌트라면
 		if (component->CanMultiple())
 		{
@@ -99,6 +106,13 @@ namespace Truth
 		std::shared_ptr<C> component = std::make_shared<C>(_args...);
 		component->SetManager(m_manager);
 		component->SetOwner(shared_from_this());
+
+		auto met = component->GetTypeInfo().GetMethod("Initalize");
+		if (met)
+		{
+			met->Invoke<void>(component.get());
+		}
+
 		// 만일 중복 가능한 컴포넌트라면
 		if (component->CanMultiple())
 		{

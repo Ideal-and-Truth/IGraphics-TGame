@@ -22,6 +22,18 @@
     <Filter Include="Entity\Wall">
       <UniqueIdentifier>{a6ba6c50-0002-4bce-a342-68d2b1c3e05c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Bullet">
+      <UniqueIdentifier>{dbd7b957-b3c4-49da-a06c-6c320f720caf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{e172fa2e-c0eb-4ecb-b2f9-5ad87389de9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Bullet">
+      <UniqueIdentifier>{8a6966f1-adc0-47d9-8eaa-1a998d8e63ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\BulletSpowner">
+      <UniqueIdentifier>{7bdae6a6-f93c-4e5d-9fef-b4e72e114ab3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -45,6 +57,18 @@
     <ClInclude Include="Wall.h">
       <Filter>Entity\Wall</Filter>
     </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Entity\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletMove.h">
+      <Filter>Component\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Shooter.h">
+      <Filter>Component\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletShooter.h">
+      <Filter>Entity\BulletSpowner</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -58,6 +82,18 @@
     </ClCompile>
     <ClCompile Include="Wall.cpp">
       <Filter>Entity\Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Entity\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletMove.cpp">
+      <Filter>Component\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Shooter.cpp">
+      <Filter>Component\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletShooter.cpp">
+      <Filter>Entity\BulletSpowner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

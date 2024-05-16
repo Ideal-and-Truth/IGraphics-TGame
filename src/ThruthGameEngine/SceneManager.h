@@ -16,10 +16,11 @@ namespace Truth
 	{
 	private:
 		std::map<std::string, std::shared_ptr<Scene>> m_sceneMap;
-		std::weak_ptr<Scene> m_currentScene;
 		std::weak_ptr<EventManager> m_eventManager;
 
 	public:
+		std::weak_ptr<Scene> m_currentScene;
+
 		SceneManager();
 		~SceneManager();
 
