@@ -49,8 +49,18 @@ void Truth::BoxCollider::SetSize(Vector3 _size)
 void Truth::BoxCollider::Awake()
 {
 	m_collider = CreateCollider(ColliderShape::BOX, std::vector<float>{ m_size.x, m_size.y, m_size.z });
+
+	physx::PxFilterData filterData;
+	filterData.word0 = 0;
+	filterData.word1 = 0;
+
+	m_collider->setSimulationFilterData(filterData);
+
 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+
+	auto f = m_collider->getSimulationFilterData();
+
 	auto r = m_owner.lock()->GetComponent<RigidBody>();
 	if (r.expired())
 	{

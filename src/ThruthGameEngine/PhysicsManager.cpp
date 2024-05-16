@@ -1,4 +1,5 @@
 #include "PhysicsManager.h"
+#include "PxEvenetCallback.h"
 
 Truth::PhysicsManager::PhysicsManager()
 	: m_allocator{}
@@ -10,6 +11,7 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_material(nullptr)
 	, m_pvd(nullptr)
 	, m_trasport(nullptr)
+	, collisionCallback(nullptr)
 {
 }
 
@@ -28,21 +30,26 @@ void Truth::PhysicsManager::Initalize()
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
 
 	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
-
-	static Truth::TruthPxEventCallback collisionCallback;
+	PxInitExtensions(*m_physics, m_pvd);
+	collisionCallback = new Truth::PxEvenetCallback();
 
 	assert(m_physics && "PxCreatePhysics failed!");
 
+	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0.0f, -98.1f, 0.0f);
-	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(16);
 	sceneDesc.cpuDispatcher = m_dispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	sceneDesc.simulationEventCallback = collisionCallback;
+	// m_scene->setSimulationEventCallback(collisionCallback);
+	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;
+	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;
 
 	m_scene = m_physics->createScene(sceneDesc);
+	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 4.0f);
-	m_scene->setSimulationEventCallback(&collisionCallback);
+
 	physx::PxPvdSceneClient* pvdClient = m_scene->getScenePvdClient();
 
 	if (pvdClient)
@@ -81,8 +88,7 @@ void Truth::PhysicsManager::Update()
 void Truth::PhysicsManager::FixedUpdate()
 {
 	m_scene->simulate(1.0f / 60.0f);
-	physx::PxU32 a;
-	bool c = m_scene->fetchResults(true, &a);
+	m_scene->fetchResults(true);
 }
 
 void Truth::PhysicsManager::ResetPhysX()
@@ -216,4 +222,22 @@ physx::PxRigidDynamic* Truth::PhysicsManager::createDynamic(const physx::PxTrans
 	dynamic->setLinearVelocity(velocity);
 	m_scene->addActor(*dynamic);
 	return dynamic;
+}
+
+physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0, physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1, physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+{
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(filterData0);
+	PX_UNUSED(filterData1);
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
+
+	// all initial and persisting reports for everything, with per-point data
+	// 한마디로 걍 필터 없는거처럼 행동한다 이거
+	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
+		| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+		| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+		| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	return physx::PxFilterFlag::eDEFAULT;
 }

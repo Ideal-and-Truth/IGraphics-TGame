@@ -12,6 +12,11 @@
 #include "physx/PxPhysicsAPI.h"
 #pragma warning(pop)
 
+namespace Truth
+{
+	class PxEvenetCallback;
+}
+
 /// <summary>
 /// PhysX 라이브러리를 사용하는 매니저
 /// 모든 PhysX 기능은 이 라이브러리를 통해 실행 될 것이다.
@@ -21,6 +26,8 @@ namespace Truth
 	class PhysicsManager
 	{
 	private:
+		Truth::PxEvenetCallback* collisionCallback;
+
 		// Foundation 생성
 		physx::PxFoundation* m_foundation;
 		physx::PxDefaultAllocator m_allocator;
@@ -69,6 +76,11 @@ namespace Truth
 		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);
 		physx::PxRigidDynamic* createDynamic(const physx::PxTransform& _t, const physx::PxGeometry& _geometry, const physx::PxVec3& _velocity = physx::PxVec3(0));
 	};
+
+	physx::PxFilterFlags FilterShaderExample(
+		physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize);
 }
 
 namespace Truth
@@ -85,3 +97,4 @@ namespace Truth
 		virtual void onConstraintBreak(physx::PxConstraintInfo* _constraints, physx::PxU32 _count) {};
 	};
 }
+
