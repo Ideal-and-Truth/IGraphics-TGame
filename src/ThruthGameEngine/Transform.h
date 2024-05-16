@@ -19,6 +19,8 @@ namespace Truth
 
 		Matrix m_transformMatrix;
 
+		Vector3 m_look;
+
 	public:
 		Transform();
 		virtual ~Transform();

@@ -58,7 +58,9 @@ namespace Truth
 
 		void UpdateMassAndInertia();
 
-		void AddForce(Vector3 _force);
+		void AddImpulse(Vector3 _force);
+		void SetLinearVelocity(Vector3 _val);
+		Vector3 GetLinearVelocity() const;
 
 	private:
 		METHOD(Awake);

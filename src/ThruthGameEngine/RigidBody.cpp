@@ -53,9 +53,19 @@ void Truth::RigidBody::UpdateMassAndInertia()
 	m_mass = m_body->getMass();
 }
 
-void Truth::RigidBody::AddForce(Vector3 _force)
+void Truth::RigidBody::AddImpulse(Vector3 _force)
 {
-	m_body->addForce(MathConverter::Convert(_force));
+	m_body->addForce(MathConverter::Convert(_force * m_mass), physx::PxForceMode::eIMPULSE);
+}
+
+void Truth::RigidBody::SetLinearVelocity(Vector3 _val)
+{
+	m_body->setLinearVelocity(MathConverter::Convert(_val));
+}
+
+DirectX::SimpleMath::Vector3 Truth::RigidBody::GetLinearVelocity() const
+{
+	return MathConverter::Convert(m_body->getLinearVelocity());
 }
 
 void Truth::RigidBody::Awake()

@@ -35,7 +35,7 @@ void Truth::PhysicsManager::Initalize()
 
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0.0f, -98.1f, 0.0f);
-	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(16);
 	sceneDesc.cpuDispatcher = m_dispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 
@@ -80,7 +80,7 @@ void Truth::PhysicsManager::Update()
 
 void Truth::PhysicsManager::FixedUpdate()
 {
-	m_scene->simulate(0.01f);
+	m_scene->simulate(1.0f / 60.0f);
 	physx::PxU32 a;
 	bool c = m_scene->fetchResults(true, &a);
 }
@@ -118,9 +118,9 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic(Vector3 _pos, Qua
 physx::PxRigidDynamic* Truth::PhysicsManager::CreateDefaultRigidDynamic()
 {
 	physx::PxRigidDynamic* body = CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
-	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
-	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
+// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
 	return body;
 }
 

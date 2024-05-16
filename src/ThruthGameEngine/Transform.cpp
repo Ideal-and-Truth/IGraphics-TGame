@@ -8,9 +8,10 @@ Truth::Transform::Transform()
 	, m_scale(1.0f, 1.0f, 1.0f)
 	, m_rotation{}
 	, m_transformMatrix{Matrix::Identity}
+	, m_look(0.0f, 0.0f, 1.0f)
 {
 	m_canMultiple = false;
-	m_name = typeid(*this).name();
+	m_name = "Transform";
 }
 
 Truth::Transform::~Transform()

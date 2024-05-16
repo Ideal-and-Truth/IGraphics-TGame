@@ -20,7 +20,7 @@ namespace Truth
 		// 고정 프레임 시간
 		float4 m_fixedDeltaTime;
 		// 고정 프레임 단위 시간
-		float4 m_fixedTime = 0.01f;
+		float4 m_fixedTime = 1.0f / 60.0f;
 
 		LARGE_INTEGER m_currentCount;
 		LARGE_INTEGER m_prevCount;
