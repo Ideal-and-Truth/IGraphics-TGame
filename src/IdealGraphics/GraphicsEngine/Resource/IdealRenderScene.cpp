@@ -1,8 +1,15 @@
 #include "IdealRenderScene.h"
+
+#include "GraphicsEngine/public/IdealRendererDefinitions.h"
+
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
+
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
+#include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
+#include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
+#include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
@@ -42,6 +49,8 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 
 	//---Global CB---//
 	CreateGlobalCB(Renderer);
+	//---Light CB---//
+	CreateLightCB(Renderer);
 
 	//---Mesh---//
 	CreateStaticMeshPSO(Renderer);
@@ -58,6 +67,7 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 
 	// CB
 	UpdateGlobalCBData(Renderer);
+	//UpdateLightCBData(Renderer);
 
 	// Ver2 StaticMesh
 	{
@@ -65,7 +75,7 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 		commandList->SetGraphicsRootSignature(m_staticMeshRootSignature.Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		SetGlobalCBDescriptorTable(Renderer);
+		BindDescriptorTable(Renderer);
 
 		for (auto& m : m_staticMeshObjects)
 		{
@@ -81,7 +91,7 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 		commandList->SetGraphicsRootSignature(m_skinnedMeshRootSignature.Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		SetGlobalCBDescriptorTable(Renderer);
+		BindDescriptorTable(Renderer);
 
 		for (auto& m : m_skinnedMeshObjects)
 		{
@@ -104,6 +114,7 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 	commandList->SetDescriptorHeaps(1, d3d12Renderer->GetMainDescriptorHeap()->GetDescriptorHeap().GetAddressOf());
 
 	// CB
+	AllocateFromDescriptorHeap(Renderer);
 	UpdateGlobalCBData(Renderer);
 
 	// Ver2 StaticMesh
@@ -112,7 +123,7 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 		commandList->SetGraphicsRootSignature(m_staticMeshRootSignature.Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		SetGlobalCBDescriptorTable(Renderer);
+		BindDescriptorTable(Renderer);
 
 		for (auto& m : m_staticMeshObjects)
 		{
@@ -152,11 +163,13 @@ void Ideal::IdealRenderScene::DrawScreen(std::shared_ptr<IdealRenderer> Renderer
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
+	UpdateLightCBData(Renderer);
+
 	commandList->SetPipelineState(m_screenQuadPSO->GetPipelineState().Get());
 	commandList->SetGraphicsRootSignature(m_screenQuadRootSignature.Get());
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	SetGlobalCBDescriptorTable(Renderer);
+	BindDescriptorTable(Renderer);
 
 	TransitionGBufferToSRV(Renderer);
 
@@ -172,6 +185,40 @@ void Ideal::IdealRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> Mesh
 	else if (std::dynamic_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject) != nullptr)
 	{
 		m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
+	}
+}
+
+void Ideal::IdealRenderScene::AddLight(std::shared_ptr<Ideal::ILight> Light)
+{
+	switch (Light->GetLightType())
+	{
+		case ELightType::None:
+		{
+			__debugbreak();
+		}
+			break;
+		case ELightType::Directional:
+		{
+			// Directional Light는 그냥 바꿔준다.
+			m_directionalLight = std::static_pointer_cast<IdealDirectionalLight>(Light);
+		}
+			break;
+		case ELightType::Spot:
+		{
+			m_spotLights.push_back(std::static_pointer_cast<IdealSpotLight>(Light));
+		}
+			break;
+		case ELightType::Point:
+		{
+			m_pointLights.push_back(std::static_pointer_cast<IdealPointLight>(Light));
+		}
+			break;
+		default:
+		{
+
+		}
+			break;
+
 	}
 }
 
@@ -303,6 +350,17 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer
 	m_skinnedMeshPSO->Create(d3d12Renderer);
 }
 
+void Ideal::IdealRenderScene::AllocateFromDescriptorHeap(std::shared_ptr<IdealRenderer> Renderer)
+{
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
+	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
+	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
+
+	auto handle = descriptorHeap->Allocate(2);	// b0, b1
+	m_cbGlobalHandle = handle;
+}
+
 void Ideal::IdealRenderScene::CreateGlobalCB(std::shared_ptr<IdealRenderer> Renderer)
 {
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
@@ -332,21 +390,78 @@ void Ideal::IdealRenderScene::UpdateGlobalCBData(std::shared_ptr<IdealRenderer> 
 	//*cbGlobal = *(m_cbGlobal.get());
 	*cbGlobal = *m_cbGlobal;
 
-	auto handle = descriptorHeap->Allocate(1);
 	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// Copy To Main Descriptor
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), GLOBAL_DESCRIPTOR_INDEX_CBV_GLOBAL, incrementSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(m_cbGlobalHandle.GetCpuHandle(), GLOBAL_DESCRIPTOR_INDEX_CBV_GLOBAL, incrementSize);
 	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	m_cbGlobalHandle = handle;
 }
 
-void Ideal::IdealRenderScene::SetGlobalCBDescriptorTable(std::shared_ptr<IdealRenderer> Renderer)
+void Ideal::IdealRenderScene::BindDescriptorTable(std::shared_ptr<IdealRenderer> Renderer)
 {
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	commandList->SetGraphicsRootDescriptorTable(GLOBAL_DESCRIPTOR_TABLE_INDEX, m_cbGlobalHandle.GetGpuHandle());
+}
+
+void Ideal::IdealRenderScene::CreateLightCB(std::shared_ptr<IdealRenderer> Renderer)
+{
+	m_cbLightList = std::make_shared<CB_LightList>();
+}
+
+void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> Renderer)
+{
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
+	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
+
+	//----------------Directional Light-----------------//
+	if (!m_directionalLight.expired())
+	{
+		m_cbLightList->DirLight = m_directionalLight.lock()->GetDirectionalLightDesc();
+	}
+
+	//----------------Spot Light-----------------//
+	uint32 spotLightNum = m_spotLights.size();
+
+	if (spotLightNum > MAX_SPOT_LIGHT_NUM)
+	{
+		spotLightNum = MAX_SPOT_LIGHT_NUM;
+	}
+
+	for (uint32 i = 0; i < spotLightNum; ++i)
+	{
+		m_cbLightList->SpotLights[i] = m_spotLights[i].lock()->GetSpotLightDesc();
+	}
+
+	//----------------Point Light-----------------//
+	uint32 pointLightNum = m_pointLights.size();
+
+	if (pointLightNum > MAX_POINT_LIGHT_NUM)
+	{
+		pointLightNum = MAX_POINT_LIGHT_NUM;
+	}
+
+	for (uint32 i = 0; i < pointLightNum; ++i)
+	{
+		m_cbLightList->PointLights[i] = m_pointLights[i].lock()->GetPointLightDesc();
+	}
+
+	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
+	std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_LightList));
+
+	auto cb = cbPool->Allocate();
+	if (!cb)
+	{
+		__debugbreak();
+	}
+
+	CB_LightList* cbLightList = (CB_LightList*)cb->SystemMemAddr;
+	*cbLightList = *m_cbLightList;
+	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(m_cbGlobalHandle.GetCpuHandle(), GLOBAL_DESCRIPTOR_INDEX_CBV_LIGHTLIST, incrementSize);
+	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void Ideal::IdealRenderScene::CreateGBuffer(std::shared_ptr<IdealRenderer> Renderer)
@@ -362,6 +477,7 @@ void Ideal::IdealRenderScene::CreateGBuffer(std::shared_ptr<IdealRenderer> Rende
 	}
 
 	m_gBufferClearColors[0] = DirectX::Colors::AliceBlue;
+	m_gBufferClearColors[0] = DirectX::Colors::DimGray;
 	m_gBufferClearColors[1] = DirectX::Colors::Brown;
 	m_gBufferClearColors[2] = DirectX::Colors::Violet;
 	m_gBufferClearColors[3] = DirectX::Colors::Green;
@@ -439,7 +555,7 @@ void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(std::shared_ptr<Idea
 	);
 	//-------------------Range--------------------//
 	CD3DX12_DESCRIPTOR_RANGE1 rangeGlobal[1];
-	rangeGlobal[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : global
+	rangeGlobal[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0 : global, b1 : lightList
 
 	CD3DX12_DESCRIPTOR_RANGE1 rangeGBuffers[1];
 	rangeGBuffers[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, 0);	// t0 : Albedo, t1 : Normal, t2 : POSH, t3 : Tangent...

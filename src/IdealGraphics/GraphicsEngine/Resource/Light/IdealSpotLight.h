@@ -1,21 +1,25 @@
 #pragma once
-#include "GraphicsEngine/Resource/Light/IdealLight.h"
+#include "GraphicsEngine/public/ISpotLight.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
 {
-	class IdealSpotLight : public IdealLight
+	class IdealSpotLight : public ISpotLight
 	{
 	public:
 		IdealSpotLight();
 		virtual ~IdealSpotLight();
 
 	public:
-		void SetLightColor(const Color& LightColor);
-		void SetDirection(const Vector4& Direction);
-		void SetPosition(const Vector3& Position);
-		void SetSpotAngle(float SpotAngle);
-		void SetRange(float Range);
-		void SetIntensity(float Intensity);
+		virtual void SetLightColor(const Color& LightColor) override;
+		virtual void SetDirection(const Vector4& Direction) override;
+		virtual void SetPosition(const Vector3& Position) override;
+		virtual void SetSpotAngle(const float& SpotAngle) override;
+		virtual void SetRange(const float& Range) override;
+		virtual void SetIntensity(const float& Intensity) override;
+
+	public:
+		SpotLight const& GetSpotLightDesc() { return m_spotLight; }
 
 	private:
 		SpotLight m_spotLight;

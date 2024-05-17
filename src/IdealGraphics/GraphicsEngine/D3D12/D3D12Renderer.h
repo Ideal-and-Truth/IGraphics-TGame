@@ -72,6 +72,10 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
 		virtual void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
 
+		virtual std::shared_ptr<Ideal::IDirectionalLight>	CreateDirectionalLight() override;
+		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() override;
+		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() override;
+
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }
@@ -170,6 +174,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb256Pool = nullptr;
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb512Pool = nullptr;
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb1024Pool = nullptr;
+		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb2048Pool = nullptr;
 
 		// bone의 데이터가 크다. 일단은 따로 만들다가 나중에 SRV로 넘겨주든 해야겠다.
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cbBonePool = nullptr;

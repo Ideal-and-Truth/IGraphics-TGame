@@ -30,8 +30,9 @@ struct SpotLight
 	float Intensity;
 };
 
-cbuffer LightList : register(b0)	// temp b0
+cbuffer LightList : register(b1)	// temp b0
 {
+    DirectionalLight DirLight;
 	PointLight PointLights[MAX_POINT_LIGHT_NUM];
 	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
 };

@@ -9,6 +9,9 @@ namespace Ideal
 	class IAnimation;
 	class ISkinnedMeshObject;
 	class IRenderScene;
+	class IDirectionalLight;
+	class IPointLight;
+	class ISpotLight;
 }
 
 namespace Ideal
@@ -34,6 +37,10 @@ namespace Ideal
 
 		virtual std::shared_ptr<Ideal::IRenderScene>		CreateRenderScene() abstract;
 		virtual void										SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) abstract;
+
+		virtual std::shared_ptr<Ideal::IDirectionalLight>	CreateDirectionalLight() abstract;
+		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() abstract;
+		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

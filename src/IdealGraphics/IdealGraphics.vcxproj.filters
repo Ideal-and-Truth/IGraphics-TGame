@@ -64,7 +64,7 @@
     <ClInclude Include="Core\Core.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Defines.h">
+    <ClInclude Include="Core\Definitions.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\Types.h">
@@ -130,12 +130,16 @@
     <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealRenderScene.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Light\IdealLight.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealPointLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealSpotLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
+    <ClInclude Include="GraphicsEngine\public\ISpotLight.h" />
+    <ClInclude Include="GraphicsEngine\public\IPointLight.h" />
+    <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
+    <ClInclude Include="GraphicsEngine\public\ILight.h" />
+    <ClInclude Include="GraphicsEngine\public\IdealRendererDefinitions.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -201,7 +205,6 @@
     <ClCompile Include="GraphicsEngine\Resource\IdealSkinnedMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealRenderScene.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Light\IdealLight.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealPointLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />

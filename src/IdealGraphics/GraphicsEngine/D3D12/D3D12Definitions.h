@@ -31,6 +31,7 @@
 // 2024.05.13
 #define GLOBAL_DESCRIPTOR_TABLE_INDEX 0
 #define GLOBAL_DESCRIPTOR_INDEX_CBV_GLOBAL 0 // b0 : global
+#define GLOBAL_DESCRIPTOR_INDEX_CBV_LIGHTLIST 1 // b1 : lightList
 
 /// Screen Quad
 // 2024.05.15 Temp

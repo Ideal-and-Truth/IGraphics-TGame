@@ -22,6 +22,9 @@
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 
+#include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
+#include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
+#include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
@@ -337,6 +340,7 @@ void Ideal::D3D12Renderer::Render()
 	m_cb256Pool->Reset();
 	m_cb512Pool->Reset();
 	m_cb1024Pool->Reset();
+	m_cb2048Pool->Reset();
 	m_cbBonePool->Reset();
 	return;
 }
@@ -395,6 +399,24 @@ std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12Renderer::CreateRenderScene()
 void Ideal::D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene)
 {
 	m_currentRenderScene = std::static_pointer_cast<Ideal::IdealRenderScene>(RenderScene);
+}
+
+std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12Renderer::CreateDirectionalLight()
+{
+	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
+	return newLight;
+}
+
+std::shared_ptr<Ideal::ISpotLight> Ideal::D3D12Renderer::CreateSpotLight()
+{
+	std::shared_ptr<Ideal::ISpotLight> newLight = std::make_shared<Ideal::IdealSpotLight>();
+	return newLight;
+}
+
+std::shared_ptr<Ideal::IPointLight> Ideal::D3D12Renderer::CreatePointLight()
+{
+	std::shared_ptr<Ideal::IPointLight> newLight = std::make_shared<Ideal::IdealPointLight>();
+	return newLight;
 }
 
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
@@ -579,6 +601,9 @@ void Ideal::D3D12Renderer::CreateCBPool()
 	m_cb1024Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
 	m_cb1024Pool->Init(m_device.Get(), 1024, MAX_DRAW_COUNT_PER_FRAME);
 
+	m_cb2048Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb2048Pool->Init(m_device.Get(), 2048, MAX_DRAW_COUNT_PER_FRAME);
+
 	// TEMP
 	m_cbBonePool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
 	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(static_cast<uint32>(sizeof(CB_Bone))), MAX_DRAW_COUNT_PER_FRAME);
@@ -597,6 +622,10 @@ std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBPool(
 	else if (SizePerCB <= 1024)
 	{
 		return m_cb1024Pool;
+	}
+	else if (SizePerCB <= 2048)
+	{
+		return m_cb2048Pool;
 	}
 	return nullptr;
 }

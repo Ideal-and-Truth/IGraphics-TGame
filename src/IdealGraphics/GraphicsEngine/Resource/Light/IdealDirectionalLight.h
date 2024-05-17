@@ -1,19 +1,23 @@
 #pragma once
-#include "GraphicsEngine/Resource/Light/IdealLight.h"
+#include "GraphicsEngine/public/IDirectionalLight.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 namespace Ideal
 {
-	class IdealDirectionalLight : public IdealLight
+	class IdealDirectionalLight : public IDirectionalLight
 	{
 	public:
 		IdealDirectionalLight();
 		virtual ~IdealDirectionalLight();
 
 	public:
-		void SetAmbientColor(const Color& LightColor);
-		void SetDiffuseColor(const Color& LightColor);
-		void SetDirection(const Vector3& Direction);
-		void SetIntensity(const float& Intensity);
+		virtual void SetAmbientColor(const Color& LightColor) override;
+		virtual void SetDiffuseColor(const Color& LightColor) override;
+		virtual void SetDirection(const Vector3& Direction) override;
+		virtual void SetIntensity(const float& Intensity) override;
+
+	public:
+		DirectionalLight const& GetDirectionalLightDesc() { return m_directionalLight; }
 
 	private:
 		DirectionalLight m_directionalLight;

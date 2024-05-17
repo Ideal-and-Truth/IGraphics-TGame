@@ -7,9 +7,14 @@
 namespace Ideal
 {
 	class IMeshObject;
+	class ILight;
+
 	class IdealRenderer;
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
+	class IdealDirectionalLight;
+	class IdealSpotLight;
+	class IdealPointLight;
 	class IdealScreenQuad;
 
 	// D3D12
@@ -19,6 +24,7 @@ namespace Ideal
 }
 // CB
 struct CB_Global;
+struct CB_LightList;
 
 // ID3D12
 struct ID3D12RootSignature;
@@ -41,17 +47,26 @@ namespace Ideal
 		void DrawScreen(std::shared_ptr<IdealRenderer> Renderer);
 
 	public:
+		//----------IRenderScene Interface-----------//
 		virtual void AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
+		virtual void AddLight(std::shared_ptr<Ideal::ILight> Light) override;
 
 	private:
 		// Ver2 : 2024.05.07 : cb pool, descriptor pool을 사용하는 방식으로 바꾸겠다.
 		void CreateStaticMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
 		void CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
 
+		// 2024.05.17 : ScreenQuad Data
+		void AllocateFromDescriptorHeap(std::shared_ptr<IdealRenderer> Renderer);
+		void BindDescriptorTable(std::shared_ptr<IdealRenderer> Renderer);
+
 		// 2024.05.13 : global cb
 		void CreateGlobalCB(std::shared_ptr<IdealRenderer> Renderer);
 		void UpdateGlobalCBData(std::shared_ptr<IdealRenderer> Renderer);
-		void SetGlobalCBDescriptorTable(std::shared_ptr<IdealRenderer> Renderer);
+
+		// 2024.05.17 : lightList cb
+		void CreateLightCB(std::shared_ptr<IdealRenderer> Renderer);
+		void UpdateLightCBData(std::shared_ptr<IdealRenderer> Renderer);
 
 		// 2024.05.15 : GBuffer
 		void CreateGBuffer(std::shared_ptr<IdealRenderer> Renderer);
@@ -70,6 +85,10 @@ namespace Ideal
 		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
 		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
 
+		std::weak_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
+		std::vector<std::weak_ptr<Ideal::IdealSpotLight>> m_spotLights;
+		std::vector<std::weak_ptr<Ideal::IdealPointLight>> m_pointLights;
+
 	private:
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_skinnedMeshPSO;
@@ -80,6 +99,8 @@ namespace Ideal
 	private:
 		std::shared_ptr<CB_Global> m_cbGlobal;
 		D3D12DescriptorHandle m_cbGlobalHandle;
+
+		std::shared_ptr<CB_LightList> m_cbLightList;
 
 		// GBufferRenderTarget
 		static const uint32 m_gBufferNum = 4;

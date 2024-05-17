@@ -1,7 +1,7 @@
 #ifndef _GBUFFER_SHADER
 #define _GBUFFER_SHADER
 #endif
-
+//https://darkcatgame.tistory.com/11
 cbuffer Global : register(b0)
 {
     float4x4 View;

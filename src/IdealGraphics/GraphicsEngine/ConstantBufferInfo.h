@@ -30,8 +30,8 @@ struct CB_Global
 };
 
 //------------Light-----------//
-#define MAX_POINT_LIGHT_NUM 1024
-#define MAX_SPOT_LIGHT_NUM 1024
+#define MAX_POINT_LIGHT_NUM 16
+#define MAX_SPOT_LIGHT_NUM 16
 
 struct PointLight
 {
@@ -61,6 +61,7 @@ struct SpotLight
 
 struct CB_LightList
 {
+	DirectionalLight DirLight;
 	PointLight PointLights[MAX_POINT_LIGHT_NUM];
 	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
 };

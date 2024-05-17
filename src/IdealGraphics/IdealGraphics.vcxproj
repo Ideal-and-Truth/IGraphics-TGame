@@ -172,9 +172,13 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12PipelineStateObject.h" />
     <ClInclude Include="GraphicsEngine\ConstantBufferInfo.h" />
     <ClInclude Include="GraphicsEngine\public\IAnimation.h" />
+    <ClInclude Include="GraphicsEngine\public\IdealRendererDefinitions.h" />
+    <ClInclude Include="GraphicsEngine\public\ILight.h" />
+    <ClInclude Include="GraphicsEngine\public\IPointLight.h" />
     <ClInclude Include="GraphicsEngine\public\ISkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
+    <ClInclude Include="GraphicsEngine\public\ISpotLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealCamera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h" />
@@ -189,11 +193,11 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealSkinnedMesh.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealAnimation.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealRenderScene.h" />
-    <ClInclude Include="GraphicsEngine\Resource\Light\IdealLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealPointLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealSpotLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
+    <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
     <ClInclude Include="Core\ForDebug.h" />
@@ -203,7 +207,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Renderer.h" />
     <ClInclude Include="Misc\Utils\PIX.h" />
     <ClInclude Include="Core\Core.h" />
-    <ClInclude Include="Core\Defines.h" />
+    <ClInclude Include="Core\Definitions.h" />
     <ClInclude Include="Core\Types.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ThirdParty.h" />
     <ClInclude Include="framework.h" />
@@ -235,7 +239,6 @@
     <ClCompile Include="GraphicsEngine\Resource\IdealSkinnedMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealRenderScene.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\Light\IdealLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealPointLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
@@ -336,9 +339,9 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\SimpleMeshShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

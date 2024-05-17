@@ -4,6 +4,7 @@
 namespace Ideal
 {
 	class IMeshObject;
+	class ILight;
 }
 
 namespace Ideal
@@ -16,6 +17,6 @@ namespace Ideal
 
 	public:
 		virtual void AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) abstract;
-
+		virtual void AddLight(std::shared_ptr<Ideal::ILight> Light) abstract;
 	};
 }

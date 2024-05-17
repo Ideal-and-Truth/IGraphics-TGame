@@ -17,6 +17,10 @@
 #include "GraphicsEngine/public/IAnimation.h"
 #include "GraphicsEngine/public/IRenderScene.h"
 
+#include "GraphicsEngine/public/IDirectionalLight.h"
+#include "GraphicsEngine/public/ISpotLight.h"
+#include "GraphicsEngine/public/IPointLight.h"
+
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
 #include "../Utils/SimpleMath.h"
@@ -95,6 +99,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 
+		//-------------------Test Vertices Pos-------------------//
+		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
+
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = Renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		std::shared_ptr<Ideal::IAnimation> walkAnim = Renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
@@ -120,8 +127,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
 
-		//-------------------Test Vertices Pos-------------------//
-		ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
+		//--------------------Create Light----------------------//
+		std::shared_ptr<Ideal::IDirectionalLight> dirLight = Renderer->CreateDirectionalLight();
+		std::shared_ptr<Ideal::ISpotLight> spotLight = Renderer->CreateSpotLight();
+		std::shared_ptr<Ideal::IPointLight> pointLight = Renderer->CreatePointLight();
+
+		dirLight->SetDirection(Vector3(0.f,0.f,1.f));
+
+		//------------------Add Light to Render Scene-----------------//
+		// Directional Light일 경우 그냥 바뀐다.
+		renderScene->AddLight(dirLight);
+		renderScene->AddLight(spotLight);
+		renderScene->AddLight(pointLight);
 
 
 		mesh3->SetTransformMatrix(Matrix::CreateRotationX(DirectX::XMConvertToRadians(90.f)));

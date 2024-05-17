@@ -30,17 +30,17 @@ void Ideal::IdealSpotLight::SetPosition(const Vector3& Position)
 	m_spotLight.Position = Position;
 }
 
-void Ideal::IdealSpotLight::SetSpotAngle(float SpotAngle)
+void Ideal::IdealSpotLight::SetSpotAngle(const float& SpotAngle)
 {
 	m_spotLight.SpotAngle = SpotAngle;
 }
 
-void Ideal::IdealSpotLight::SetRange(float Range)
+void Ideal::IdealSpotLight::SetRange(const float& Range)
 {
 	m_spotLight.Range = Range;
 }
 
-void Ideal::IdealSpotLight::SetIntensity(float Intensity)
+void Ideal::IdealSpotLight::SetIntensity(const float& Intensity)
 {
 	m_spotLight.Intensity = Intensity;
 }
