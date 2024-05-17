@@ -17,7 +17,7 @@ namespace Ideal
 {
 	class IdealScreenQuad
 	{
-		static const uint32 GBUFFER_SRV_NUM = 3;
+		static const uint32 GBUFFER_SRV_NUM = 4;
 	public:
 		IdealScreenQuad();
 		virtual ~IdealScreenQuad();

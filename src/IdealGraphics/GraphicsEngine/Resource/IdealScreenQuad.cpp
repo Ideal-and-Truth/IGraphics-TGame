@@ -56,26 +56,33 @@ void Ideal::IdealScreenQuad::Draw(std::shared_ptr<IdealRenderer> Renderer, std::
 	
 		commandList->SetGraphicsRootDescriptorTable(SCREEN_DESCRIPTOR_TABLE_INDEX, handle.GetGpuHandle());
 		
+		// Albedo
+		{
+			Ideal::D3D12DescriptorHandle albedoHandle = GBufferTextures[0]->GetSRV();
+			D3D12_CPU_DESCRIPTOR_HANDLE albedoCPUAddress = albedoHandle.GetCpuHandle();
+			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_ALBEDO, incrementSize);
+			device->CopyDescriptorsSimple(1, srvDest, albedoCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
 		// Normal
 		{
-			Ideal::D3D12DescriptorHandle normalHandle = GBufferTextures[0]->GetSRV();
+			Ideal::D3D12DescriptorHandle normalHandle = GBufferTextures[1]->GetSRV();
 			D3D12_CPU_DESCRIPTOR_HANDLE normalCPUAddress = normalHandle.GetCpuHandle();
 			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_NORMAL, incrementSize);
 			device->CopyDescriptorsSimple(1, srvDest, normalCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
-		// Position
+		// PosH	// temp
 		{
-			Ideal::D3D12DescriptorHandle positionHandle = GBufferTextures[1]->GetSRV();
-			D3D12_CPU_DESCRIPTOR_HANDLE positionCPUAddress = positionHandle.GetCpuHandle();
-			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_POSITION, incrementSize);
-			device->CopyDescriptorsSimple(1, srvDest, positionCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			Ideal::D3D12DescriptorHandle posHomogeneousHandle = GBufferTextures[2]->GetSRV();
+			D3D12_CPU_DESCRIPTOR_HANDLE posHomogeneousCPUAddress = posHomogeneousHandle.GetCpuHandle();
+			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_POSH, incrementSize);
+			device->CopyDescriptorsSimple(1, srvDest, posHomogeneousCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
-		// Diffuse
+		// Tangent
 		{
-			Ideal::D3D12DescriptorHandle diffuseHandle = GBufferTextures[2]->GetSRV();
-			D3D12_CPU_DESCRIPTOR_HANDLE diffuseCPUAddress = diffuseHandle.GetCpuHandle();
-			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_DIFFUSE, incrementSize);
-			device->CopyDescriptorsSimple(1, srvDest, diffuseCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			Ideal::D3D12DescriptorHandle tangentHandle = GBufferTextures[3]->GetSRV();
+			D3D12_CPU_DESCRIPTOR_HANDLE tangentCPUAddress = tangentHandle.GetCpuHandle();
+			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_TANGENT, incrementSize);
+			device->CopyDescriptorsSimple(1, srvDest, tangentCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
 	}
 

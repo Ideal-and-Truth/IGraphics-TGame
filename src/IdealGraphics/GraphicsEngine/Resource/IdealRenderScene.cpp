@@ -364,6 +364,7 @@ void Ideal::IdealRenderScene::CreateGBuffer(std::shared_ptr<IdealRenderer> Rende
 	m_gBufferClearColors[0] = DirectX::Colors::AliceBlue;
 	m_gBufferClearColors[1] = DirectX::Colors::Brown;
 	m_gBufferClearColors[2] = DirectX::Colors::Violet;
+	m_gBufferClearColors[3] = DirectX::Colors::Green;
 }
 
 void Ideal::IdealRenderScene::TransitionGBufferToRTVandClear(std::shared_ptr<IdealRenderer> Renderer)
@@ -389,7 +390,9 @@ void Ideal::IdealRenderScene::TransitionGBufferToRTVandClear(std::shared_ptr<Ide
 	// TODO : OMSetRenderTarget
 	//commandList->OMSetRenderTargets(m_gBufferNum, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), FALSE, nullptr);
 	//commandList->OMSetRenderTargets(1, &resourceManager->GetRTVHeap(), FALSE, nullptr);
-	commandList->OMSetRenderTargets(3, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, nullptr);
+	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, nullptr);
+	commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
+	commandList->ClearDepthStencilView(d3d12Renderer->GetDSV(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	//commandList->OMSetRenderTargets(1, &resourceManager->GetRTVHeap(), FALSE, nullptr);
 	
 
@@ -439,7 +442,7 @@ void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(std::shared_ptr<Idea
 	rangeGlobal[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : global
 
 	CD3DX12_DESCRIPTOR_RANGE1 rangeGBuffers[1];
-	rangeGBuffers[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0);	// t0 : Normal, t1 : Position, t2 : Diffuse...
+	rangeGBuffers[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, 0);	// t0 : Albedo, t1 : Normal, t2 : POSH, t3 : Tangent...
 
 
 	//-------------------Parameter--------------------//

@@ -28,7 +28,7 @@ struct VSInput
     float3 Pos : POSITION;
     float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
-    float3 tangent : TANGENT;
+    float3 Tangent : TANGENT;
     float4 color : COLOR;
 };
 
@@ -36,16 +36,18 @@ struct VSOutput
 {
     float4 PosH : SV_POSITION;
     float4 PosW : POSITION;
-    float4 NormalW : NORMAL;
+    float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
+    float3 Tangent : TANGENT;
 };
 
 struct PSOutput
 {
 // Test
-    float4 color : SV_Target0;
-    float4 PosH : SV_Target1;
-    float4 PosW : SV_Target2;
+    float4 Albedo : SV_Target0;
+    float4 Normal : SV_Target1;
+    float4 PosH : SV_Target2;
+    float4 Tangent : SV_Target3;
 };
 
 VSOutput VS(VSInput input)
@@ -56,10 +58,12 @@ VSOutput VS(VSInput input)
     float4 worldPos = mul(World, localPos);
     float4 viewPos = mul(View, worldPos);
     float4 projPos = mul(Proj, viewPos);
-
+   
     output.PosW = worldPos;
     output.PosH = projPos;
-    output.NormalW = mul(WorldInvTranspose, float4(input.Normal, 0.f));
+    //output.NormalW = mul(WorldInvTranspose, float4(input.Normal, 0.f));
+    output.Normal = normalize(mul((float3x3)World, input.Normal));
+    output.Tangent = normalize(mul((float3x3)World, input.Tangent));
     output.UV = input.UV;
 
     return output;
@@ -75,12 +79,14 @@ PSOutput PS(VSOutput input)
 {
     PSOutput psOutput;
     float4 color = diffuseTexture.Sample(sampler0, input.UV);
-    float4 dirLight = float4(1.f,0.f,0.f,1.f);
-    float4 value = dot(-dirLight, normalize(input.NormalW));
-    color = color * value * Diffuse;
+    //float4 dirLight = float4(1.f,0.f,0.f,1.f);
+    //float4 value = dot(-dirLight, normalize(input.Normal));
+    //color = color * value * Diffuse;
     
-    psOutput.color = color;
-    psOutput.PosH = float4(1.f,0.f,0.f,1.f);
-    psOutput.PosW = float4(1.f,0.f,0.f,1.f);
+    psOutput.Albedo = color;
+    psOutput.Normal = float4(input.Normal.xyz, 1.f);
+    float DepthZ = input.PosH.z;
+    psOutput.PosH = float4(DepthZ, DepthZ, DepthZ, 1.f);
+    psOutput.Tangent = float4(input.Tangent.xyz, 1.f);
     return psOutput;
 }

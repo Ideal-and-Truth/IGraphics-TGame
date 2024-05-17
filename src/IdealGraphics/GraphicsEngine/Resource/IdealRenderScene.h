@@ -82,7 +82,7 @@ namespace Ideal
 		D3D12DescriptorHandle m_cbGlobalHandle;
 
 		// GBufferRenderTarget
-		static const uint32 m_gBufferNum = 3;
+		static const uint32 m_gBufferNum = 4;
 		std::vector<std::shared_ptr<Ideal::D3D12Texture>> m_gBuffers;
 		Color m_gBufferClearColors[m_gBufferNum];
 		// ScreenQuad

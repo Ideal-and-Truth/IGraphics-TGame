@@ -135,6 +135,7 @@
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealPointLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealSpotLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -205,6 +206,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealPointLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
