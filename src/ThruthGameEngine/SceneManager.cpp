@@ -33,12 +33,12 @@ void Truth::SceneManager::Finalize()
 	m_sceneMap.clear();
 }
 
-void Truth::SceneManager::Update()
+void Truth::SceneManager::Update() const
 {
 	m_currentScene.lock()->Update();
 }
 
-void Truth::SceneManager::StartGameScene()
+void Truth::SceneManager::StartGameScene() const
 {
 	m_currentScene.lock()->Enter();
 }
@@ -65,7 +65,7 @@ void Truth::SceneManager::ChangeScene(std::any _p)
 	m_currentScene.lock()->Enter();
 }
 
-void Truth::SceneManager::ResetScene(std::any _p)
+void Truth::SceneManager::ResetScene(std::any _p) const
 {
 	m_currentScene.lock()->Exit();
 	m_currentScene.lock()->Enter();

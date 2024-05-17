@@ -31,8 +31,8 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Component)
 
 	protected:
-		PROPERTY(canMultiple)
-			bool m_canMultiple;
+		PROPERTY(canMultiple);
+		bool m_canMultiple;
 
 		std::weak_ptr<Entity> m_owner;
 		std::weak_ptr<Transform> m_transform;
@@ -45,6 +45,7 @@ namespace Truth
 		bool CanMultiple() const { return m_canMultiple; }
 
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }
+		std::weak_ptr<Entity> GetOwner() const { return m_owner; }
 		void SetManager(std::weak_ptr<Managers> _val) { m_managers = _val; }
 
 #pragma region inline

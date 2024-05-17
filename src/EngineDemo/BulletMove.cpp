@@ -58,3 +58,8 @@ void BulletMove::Update(std::any _p)
 // 
 // 	r.lock()->SetLinearVelocity(dir);
 }
+
+void BulletMove::OnCollisionEnter(const Truth::Collider* _other)
+{
+	DEBUG_PRINT("Collision Enter\n");
+}

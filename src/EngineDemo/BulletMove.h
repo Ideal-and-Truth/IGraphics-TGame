@@ -1,5 +1,11 @@
 #pragma once
 #include "Component.h"
+
+namespace Truth
+{
+    class Collider;
+}
+
 class BulletMove :
     public Truth::Component
 {
@@ -13,5 +19,8 @@ public:
     void Start();
 
     void Update(std::any _p);
+
+    METHOD(OnCollisionEnter);
+    void OnCollisionEnter(const Truth::Collider* _other);
 };
 

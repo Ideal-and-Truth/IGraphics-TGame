@@ -60,3 +60,11 @@ void Truth::Entity::Start()
 	}
 }
 
+void Truth::Entity::OnCollisionEnter(const Collider* _other) const
+{
+	for (auto& p : m_onCollisionEnter)
+	{
+		p.second->Invoke<void>(p.first, _other);
+	}
+}
+

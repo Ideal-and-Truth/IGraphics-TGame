@@ -76,6 +76,8 @@ void Truth::BoxCollider::Initalize()
 {
   	m_collider = CreateCollider(ColliderShape::BOX, std::vector<float>{ m_size.x, m_size.y, m_size.z });
 
+	m_collider->userData = this;
+
 	SetUpFiltering(m_owner.lock()->m_layer);
 
 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);

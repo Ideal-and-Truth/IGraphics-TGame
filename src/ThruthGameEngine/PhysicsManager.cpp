@@ -23,7 +23,7 @@ Truth::PhysicsManager::PhysicsManager()
 		}
 	}
 
-	SetCollisionFilter(1, 2, false);
+	// SetCollisionFilter(1, 2, false);
 }
 
 Truth::PhysicsManager::~PhysicsManager()
@@ -52,7 +52,7 @@ void Truth::PhysicsManager::Initalize()
 	sceneDesc.cpuDispatcher = m_dispatcher;
 	sceneDesc.filterShader = FilterShaderExample;
 	sceneDesc.simulationEventCallback = collisionCallback;
-	// m_scene->setSimulationEventCallback(collisionCallback);
+
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;
 
