@@ -20,7 +20,7 @@
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
-
+#include "GraphicsEngine/Resource/IdealScreenQuad.h"
 
 
 Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
@@ -250,9 +250,16 @@ finishAdapter:
 	//------------------Create CB Pool---------------------//
 	CreateCBPool();
 
-
 	// 2024.05.14 : MRT Test
-	m_resourceManager->CreateEmptyTexture2D(t1, m_width, m_height, true);
+	//m_resourceManager->CreateEmptyTexture2D(t1, m_width, m_height, true);
+	/*for (uint32 i = 0; i < m_gBufferCount; ++i)
+	{
+		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
+		m_resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, true);
+		m_gBuffers.push_back(gBuffer);
+	}*/
+
+
 }
 
 void Ideal::D3D12Renderer::Tick()
@@ -299,21 +306,23 @@ void Ideal::D3D12Renderer::Tick()
 
 void Ideal::D3D12Renderer::Render()
 {
+	ResetCommandList();
 	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateMatrix2();
+
+	//2024.05.16 Draw GBuffer
+	m_currentRenderScene->DrawGBuffer(shared_from_this());
 
 	//-------------Begin Render------------//
 	BeginRender();
 
 	//-------------Render Command-------------//
 	{
-		//ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
-		//m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
-
 		//----------Render Scene-----------//
 		if (m_currentRenderScene != nullptr)
 		{
-			m_currentRenderScene->Draw(shared_from_this());
+			//m_currentRenderScene->Draw(shared_from_this());
+			m_currentRenderScene->DrawScreen(shared_from_this());
 		}
 	}
 
@@ -439,10 +448,14 @@ Microsoft::WRL::ComPtr<ID3D12Device> Ideal::D3D12Renderer::GetDevice()
 	return m_device;
 }
 
-void Ideal::D3D12Renderer::BeginRender()
+void Ideal::D3D12Renderer::ResetCommandList()
 {
 	Check(m_commandAllocator->Reset());
 	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+}
+
+void Ideal::D3D12Renderer::BeginRender()
+{
 	// 2024.04.15 pipeline state를 m_currentPipelineState에 있는 것으로 세팅한다.
 
 	m_commandList->RSSetViewports(1, &m_viewport->GetViewport());

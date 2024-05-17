@@ -134,6 +134,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealPointLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealSpotLight.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -203,6 +204,7 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12ConstantBufferPool.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealPointLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -229,6 +231,9 @@
     <FxCompile Include="Shaders\AnimationDefaultVS.hlsl" />
     <FxCompile Include="Shaders\BoxUV2.hlsl" />
     <FxCompile Include="Shaders\AnimationDefault.hlsl" />
+    <FxCompile Include="Shaders\FullScreenVS.hlsl" />
+    <FxCompile Include="Shaders\LightPassPS.hlsl" />
+    <FxCompile Include="Shaders\GBufferMesh.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

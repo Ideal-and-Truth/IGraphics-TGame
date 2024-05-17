@@ -3,6 +3,8 @@
 // Main Interface
 #include "Core/Core.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
+#include <d3d12.h>
+#include "d3dx12.h"
 
 struct ID3D12Device;
 struct ID3D12CommandQueue;
@@ -26,6 +28,7 @@ namespace Ideal
 	class IdealRenderScene;
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
+	class IdealScreenQuad;
 
 	// Manager
 	class D3D12ConstantBufferPool;
@@ -84,6 +87,7 @@ namespace Ideal
 		ComPtr<ID3D12Device> GetDevice();
 
 		//------Render-----//
+		void ResetCommandList();
 		void BeginRender();
 		void EndRender();
 		void GraphicsPresent();
@@ -92,7 +96,7 @@ namespace Ideal
 		//------CommandList------//
 		void CreateCommandList();
 		ComPtr<ID3D12GraphicsCommandList> GetCommandList();
-
+		ComPtr<ID3D12CommandQueue> GetCommandQueue() { return m_commandQueue; }
 		//------Fence------//
 		void CreateGraphicsFence();
 		uint64 GraphicsFence();
@@ -118,6 +122,13 @@ namespace Ideal
 		Matrix GetView();
 		Matrix GetProj();
 		Matrix GetViewProj();
+
+		//-----etc-----//
+		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
+		std::shared_ptr<Ideal::D3D12Viewport> GetViewport() { return m_viewport; }
+		//----Screen----//
+		uint32 GetWidth() { return m_width; }
+		uint32 GetHeight() { return m_height; }
 
 	private:
 		uint32 m_width = 0;
@@ -187,8 +198,6 @@ namespace Ideal
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
 
-	private:
-		// 2024.05.14 : MRT Test
 		std::shared_ptr<Ideal::D3D12Texture> t1 = nullptr;
 	};
 }

@@ -2,6 +2,7 @@
 #include "Core/Core.h"
 #include "IRenderScene.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include <DirectXColors.h>
 
 namespace Ideal
 {
@@ -9,10 +10,12 @@ namespace Ideal
 	class IdealRenderer;
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
+	class IdealScreenQuad;
 
 	// D3D12
 	class D3D12PipelineStateObject;
 	class D3D12Shader;
+	class D3D12Texture;
 }
 // CB
 struct CB_Global;
@@ -33,6 +36,10 @@ namespace Ideal
 		void Init(std::shared_ptr<IdealRenderer> Renderer);
 		void Draw(std::shared_ptr<IdealRenderer> Renderer);
 
+		// 2024.05.15 : buffer render
+		void DrawGBuffer(std::shared_ptr<IdealRenderer> Renderer);
+		void DrawScreen(std::shared_ptr<IdealRenderer> Renderer);
+
 	public:
 		virtual void AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
 
@@ -45,6 +52,16 @@ namespace Ideal
 		void CreateGlobalCB(std::shared_ptr<IdealRenderer> Renderer);
 		void UpdateGlobalCBData(std::shared_ptr<IdealRenderer> Renderer);
 		void SetGlobalCBDescriptorTable(std::shared_ptr<IdealRenderer> Renderer);
+
+		// 2024.05.15 : GBuffer
+		void CreateGBuffer(std::shared_ptr<IdealRenderer> Renderer);
+		void TransitionGBufferToRTVandClear(std::shared_ptr<IdealRenderer> Renderer);
+		void TransitionGBufferToSRV(std::shared_ptr<IdealRenderer> Renderer);
+
+		// 2024.05.15 : MainScreenQuad
+		void InitScreenQuad(std::shared_ptr<IdealRenderer> Renderer);
+		void CreateScreenQuadRootSignature(std::shared_ptr<IdealRenderer> Renderer);
+		void CreateScreenQuadPSO(std::shared_ptr<IdealRenderer> Renderer);
 
 	private:
 		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
@@ -63,5 +80,16 @@ namespace Ideal
 	private:
 		std::shared_ptr<CB_Global> m_cbGlobal;
 		D3D12DescriptorHandle m_cbGlobalHandle;
+
+		// GBufferRenderTarget
+		static const uint32 m_gBufferNum = 3;
+		std::vector<std::shared_ptr<Ideal::D3D12Texture>> m_gBuffers;
+		Color m_gBufferClearColors[m_gBufferNum];
+		// ScreenQuad
+		std::shared_ptr<Ideal::IdealScreenQuad> m_fullScreenQuad;
+		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_screenQuadPSO;
+		ComPtr<ID3D12RootSignature> m_screenQuadRootSignature;
+		uint32 m_width;
+		uint32 m_height;
 	};
 }

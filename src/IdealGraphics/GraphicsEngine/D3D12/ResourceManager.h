@@ -91,6 +91,8 @@ namespace Ideal
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
 		void CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename);
 
+		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHeap() { return m_rtvHeap->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(); };
+
 	private:
 		ComPtr<ID3D12Device> m_device = nullptr;
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;

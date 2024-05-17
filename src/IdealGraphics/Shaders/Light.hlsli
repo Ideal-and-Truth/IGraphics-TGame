@@ -1,5 +1,6 @@
 #ifndef _LIGHT_HLSLI
 #define _LIGHT_HLSLI
+#endif
 
 #define MAX_POINT_LIGHT_NUM 1024
 #define MAX_SPOT_LIGHT_NUM 1024

@@ -306,23 +306,25 @@ void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Te
 	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_R8G8B8A8_UNORM,
 		Width,
-		Height
+		Height,1,1
 	);
-	m_device->CreateCommittedResource(
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	Check(m_device->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
 		&resourceDesc,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		nullptr,
 		IID_PPV_ARGS(resource.GetAddressOf())
-	);
+	));
 
 	//-------------SRV-------------//
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = resource->GetDesc().Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MipLevels = 1;
 	Ideal::D3D12DescriptorHandle srvHandle = m_srvHeap->Allocate();
 	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
 
@@ -341,6 +343,8 @@ void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Te
 	{
 		OutTexture->EmplaceRTV(rtvHandle);
 	}
+
+	resource->SetName(L"TEST TEXTURE");
 }
 
 void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
