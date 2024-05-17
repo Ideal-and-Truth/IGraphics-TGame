@@ -5,6 +5,7 @@
 Wall::Wall()
 {
 	m_name = "Wall";
+	m_layer = 1;
 }
 
 Wall::~Wall()

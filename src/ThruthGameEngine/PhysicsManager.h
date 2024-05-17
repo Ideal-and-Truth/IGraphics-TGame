@@ -14,8 +14,13 @@
 
 namespace Truth
 {
-	class PxEvenetCallback;
+	class PxEventCallback;
 }
+
+namespace physx
+{
+	static uint8 m_collsionTable[8];
+};
 
 /// <summary>
 /// PhysX 라이브러리를 사용하는 매니저
@@ -26,7 +31,7 @@ namespace Truth
 	class PhysicsManager
 	{
 	private:
-		Truth::PxEvenetCallback* collisionCallback;
+		Truth::PxEventCallback* collisionCallback;
 
 		// Foundation 생성
 		physx::PxFoundation* m_foundation;
@@ -50,6 +55,8 @@ namespace Truth
 		bool m_isInteractive = false;
 
 	public:
+
+	public:
 		PhysicsManager();
 		~PhysicsManager();
 
@@ -69,8 +76,10 @@ namespace Truth
 
 		physx::PxRigidDynamic* CreateDefaultRigidDynamic();
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
-
+		 
 		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
+
+		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
 	private:
 		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);

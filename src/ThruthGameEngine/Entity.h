@@ -22,6 +22,9 @@ namespace Truth
 	protected:
 		static uint32 m_entityCount;
 
+
+		std::string m_tag;
+
 		PROPERTY(ID);
 		uint32 m_ID;
 		PROPERTY(name);
@@ -32,6 +35,8 @@ namespace Truth
 		// key 값의 경우 type id 를 통해 유추한다.
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
+
+		uint8 m_layer;
 
 		Entity();
 		virtual ~Entity();

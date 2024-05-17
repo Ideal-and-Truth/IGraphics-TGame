@@ -12,6 +12,8 @@ namespace Truth
 	public:
 		bool m_isTrigger;
 		Vector3 m_center;
+		inline static uint32 m_colliderIDGenerator = 0;
+		uint32 m_colliderID;
 
 	protected:
 		physx::PxShape* m_collider;
@@ -38,6 +40,19 @@ namespace Truth
 		{
 			return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 		}
+
+		void SetUpFiltering(physx::PxU32 _filterGroup)
+		{
+			physx::PxFilterData filterData;
+			filterData.word0 = _filterGroup;
+			m_collider->setSimulationFilterData(filterData);
+		}
+	};
+
+	struct Collision
+	{
+		std::weak_ptr<Collider> m_collA;
+		std::weak_ptr<Collider> m_collB;
 	};
 }
 

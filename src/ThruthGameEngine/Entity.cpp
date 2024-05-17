@@ -7,6 +7,8 @@ Truth::Entity::Entity()
 	: m_manager()
 	, m_name("Empty Enitity")
 	, m_ID(m_entityCount++)
+	, m_layer(0)
+	, m_tag("None")
 {
 }
 
@@ -31,7 +33,7 @@ void Truth::Entity::Awake()
 			met->Invoke<void>(c.get());
 		}
 	}
-	DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
+	// DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
 }
 
 void Truth::Entity::Destroy()

@@ -31,6 +31,9 @@ namespace Truth
 
 		METHOD(Start);
 		void Start();
+
+		METHOD(Initalize);
+		void Initalize();
 	};
 }
 

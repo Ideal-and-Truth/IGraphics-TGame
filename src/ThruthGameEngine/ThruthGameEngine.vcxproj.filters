@@ -175,7 +175,7 @@
       <Filter>Utils\String</Filter>
     </ClCompile>
     <ClCompile Include="MathConverter.cpp" />
-    <ClCompile Include="PxEvenetCallback.cpp">
+    <ClCompile Include="PxEventCallback.cpp">
       <Filter>Manager\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
@@ -282,7 +282,7 @@
       <Filter>Utils\String</Filter>
     </ClInclude>
     <ClInclude Include="MathConverter.h" />
-    <ClInclude Include="PxEvenetCallback.h">
+    <ClInclude Include="PxEventCallback.h">
       <Filter>Manager\PhysX</Filter>
     </ClInclude>
   </ItemGroup>

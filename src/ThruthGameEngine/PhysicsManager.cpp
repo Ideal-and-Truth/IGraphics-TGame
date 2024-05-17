@@ -1,5 +1,7 @@
 #include "PhysicsManager.h"
-#include "PxEvenetCallback.h"
+#include "PxEventCallback.h"
+
+// static uint8 physx::m_collsionTable[8] = {};
 
 Truth::PhysicsManager::PhysicsManager()
 	: m_allocator{}
@@ -13,6 +15,15 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_trasport(nullptr)
 	, collisionCallback(nullptr)
 {
+	for (uint8 i = 0; i < 8; i++)
+	{
+		for (uint8 j = 0; j < 8; j++)
+		{
+			physx::m_collsionTable[i] += 1 << j;
+		}
+	}
+
+	SetCollisionFilter(1, 2, false);
 }
 
 Truth::PhysicsManager::~PhysicsManager()
@@ -31,7 +42,7 @@ void Truth::PhysicsManager::Initalize()
 
 	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
 	PxInitExtensions(*m_physics, m_pvd);
-	collisionCallback = new Truth::PxEvenetCallback();
+	collisionCallback = new Truth::PxEventCallback();
 
 	assert(m_physics && "PxCreatePhysics failed!");
 
@@ -39,7 +50,7 @@ void Truth::PhysicsManager::Initalize()
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0.0f, -98.1f, 0.0f);
 	sceneDesc.cpuDispatcher = m_dispatcher;
-	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = FilterShaderExample;
 	sceneDesc.simulationEventCallback = collisionCallback;
 	// m_scene->setSimulationEventCallback(collisionCallback);
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;
@@ -63,15 +74,15 @@ void Truth::PhysicsManager::Initalize()
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
-// 	for (physx::PxU32 i = 0; i < 5; i++)
-// 	{
-// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
-// 	}
-
-	// 	if (!m_isInteractive)
+	// 	for (physx::PxU32 i = 0; i < 5; i++)
 	// 	{
-	// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+	// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
 	// 	}
+
+		// 	if (!m_isInteractive)
+		// 	{
+		// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+		// 	}
 }
 
 void Truth::PhysicsManager::Finalize()
@@ -124,9 +135,9 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic(Vector3 _pos, Qua
 physx::PxRigidDynamic* Truth::PhysicsManager::CreateDefaultRigidDynamic()
 {
 	physx::PxRigidDynamic* body = CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
-// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
-// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
+	// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+	// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+	// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
 	return body;
 }
 
@@ -185,7 +196,19 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	return shape;
 }
 
-
+void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin)
+{
+	if (_isCollisoin)
+	{
+		physx::m_collsionTable[_layerA] |= 1 << _layerB;
+		physx::m_collsionTable[_layerB] |= 1 << _layerA;
+	}
+	else
+	{
+		physx::m_collsionTable[_layerA] &= ~(1 << _layerB);
+		physx::m_collsionTable[_layerB] &= ~(1 << _layerA);
+	}
+}
 
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
 {
@@ -228,16 +251,23 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 {
 	PX_UNUSED(attributes0);
 	PX_UNUSED(attributes1);
-	PX_UNUSED(filterData0);
-	PX_UNUSED(filterData1);
 	PX_UNUSED(constantBlockSize);
 	PX_UNUSED(constantBlock);
 
 	// all initial and persisting reports for everything, with per-point data
 	// 한마디로 걍 필터 없는거처럼 행동한다 이거
-	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
-		| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
-		| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
-		| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+
+	if (physx::m_collsionTable[filterData0.word0] & 1 << filterData1.word0)
+	{
+		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
+			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+			| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	}
+	else
+	{
+		return physx::PxFilterFlag::eSUPPRESS;
+	}
+
 	return physx::PxFilterFlag::eDEFAULT;
 }

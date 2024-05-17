@@ -5,7 +5,7 @@
 
 Bullet::Bullet()
 {
-
+	m_layer = 2;
 }
 
 Bullet::~Bullet()

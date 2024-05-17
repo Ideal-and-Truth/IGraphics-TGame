@@ -6,6 +6,7 @@ Truth::Collider::Collider(bool _isTrigger)
 	, m_center{ 0.0f, 0.0f, 0.0f }
 	, m_collider(nullptr)
 	, m_body(nullptr)
+	, m_colliderID(m_colliderIDGenerator++)
 {
 }
 
@@ -14,6 +15,7 @@ Truth::Collider::Collider(Vector3 _pos, bool _isTrigger /*= true*/)
 	, m_isTrigger(_isTrigger)
 	, m_collider(nullptr)
 	, m_body(nullptr)
+	, m_colliderID(m_colliderIDGenerator++)
 {
 
 }
