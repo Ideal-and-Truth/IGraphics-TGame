@@ -551,6 +551,12 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
 			}
 
+			// Tangent
+			if (srcMesh->HasTangentsAndBitangents())
+			{
+				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
+			}
+
 			mesh->vertices.push_back(vertex);
 		}
 
@@ -615,6 +621,11 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
 			}
 
+			// Tangent
+			if (srcMesh->HasTangentsAndBitangents())
+			{
+				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
+			}
 
 			mesh->vertices.push_back(vertex);
 		}

@@ -75,16 +75,28 @@ Texture2D normalTexture : register(t2);
 
 SamplerState sampler0 : register(s0);
 
+float3 CalculateNormalFromMap(float3 normalFromTexture, float3 normal, float3 tangent)
+{
+    float3 unpackedNormal = normalFromTexture * 2.f - 1.f;
+    float3 N = normal;
+    float3 T = normalize(tangent - N * dot(tangent, N));
+    float3 B = cross(N, T);
+    float3x3 TBN = float3x3(T,B,N);
+    return normalize(mul(TBN, unpackedNormal));
+}
+
 PSOutput PS(VSOutput input)
 {
     PSOutput psOutput;
     float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    float3 normalFromTexture = normalTexture.Sample(sampler0, input.UV).rgb;
     //float4 dirLight = float4(1.f,0.f,0.f,1.f);
     //float4 value = dot(-dirLight, normalize(input.Normal));
     //color = color * value * Diffuse;
     
     psOutput.Albedo = color;
-    psOutput.Normal = float4(input.Normal.xyz, 1.f);
+    //psOutput.Normal = float4(input.Normal.xyz, 1.f);
+    psOutput.Normal = float4(CalculateNormalFromMap(normalFromTexture, normalize(input.Normal), input.Tangent), 1.f);
     float DepthZ = input.PosH.z;
     psOutput.PosH = float4(DepthZ, DepthZ, DepthZ, 1.f);
     psOutput.Tangent = float4(input.Tangent.xyz, 1.f);

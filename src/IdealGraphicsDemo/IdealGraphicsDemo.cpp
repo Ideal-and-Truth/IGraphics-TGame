@@ -88,11 +88,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
 		//Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx", true);
+		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
 		//Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
 
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = Renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");

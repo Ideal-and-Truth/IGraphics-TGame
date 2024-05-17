@@ -43,9 +43,10 @@ struct PointLight
 
 struct DirectionalLight
 {
-	Color Color;
-	float Intensity;
+	Color AmbientColor;
+	Color DiffuseColor;
 	Vector3 Direction;
+	float Intensity;
 };
 
 struct SpotLight
