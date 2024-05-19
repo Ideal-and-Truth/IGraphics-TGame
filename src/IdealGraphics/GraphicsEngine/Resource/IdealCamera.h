@@ -29,6 +29,7 @@ namespace Ideal
 		// ver2
 		void UpdateMatrix2();
 
+		Vector3 GetPosition() { return m_position; }
 	private:
 		DirectX::SimpleMath::Vector3 m_position;
 		DirectX::SimpleMath::Vector3 m_right;

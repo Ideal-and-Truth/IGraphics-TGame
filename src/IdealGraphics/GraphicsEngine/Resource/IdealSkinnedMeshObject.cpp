@@ -128,7 +128,7 @@ void Ideal::IdealSkinnedMeshObject::SetSkinnedMesh(std::shared_ptr<Ideal::IdealS
 
 void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 {
-	m_sumTime += 0.01f;
+	//m_sumTime += 0.001f;
 
 	// 현재 애니메이션이 끝났는데 다음 애니메이션이 있을 경우?
 	bool changeAnimationFlag = false;

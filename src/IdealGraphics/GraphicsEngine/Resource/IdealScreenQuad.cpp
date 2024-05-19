@@ -34,7 +34,7 @@ void Ideal::IdealScreenQuad::Init(std::shared_ptr<IdealRenderer> Renderer)
 	//CreatePipelineState(Renderer);
 }
 
-void Ideal::IdealScreenQuad::Draw(std::shared_ptr<IdealRenderer> Renderer, std::vector<std::shared_ptr<Ideal::D3D12Texture>>& GBufferTextures)
+void Ideal::IdealScreenQuad::Draw(std::shared_ptr<IdealRenderer> Renderer, std::vector<std::shared_ptr<Ideal::D3D12Texture>>& GBufferTextures, std::shared_ptr<Ideal::D3D12Texture> DepthTexture)
 {
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
@@ -81,9 +81,16 @@ void Ideal::IdealScreenQuad::Draw(std::shared_ptr<IdealRenderer> Renderer, std::
 		{
 			Ideal::D3D12DescriptorHandle tangentHandle = GBufferTextures[3]->GetSRV();
 			D3D12_CPU_DESCRIPTOR_HANDLE tangentCPUAddress = tangentHandle.GetCpuHandle();
-			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_TANGENT, incrementSize);
+			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_POSW, incrementSize);
 			device->CopyDescriptorsSimple(1, srvDest, tangentCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
+		//// Depth
+		//{
+		//	Ideal::D3D12DescriptorHandle depthHandle = DepthTexture->GetSRV();
+		//	D3D12_CPU_DESCRIPTOR_HANDLE tangentCPUAddress = depthHandle.GetCpuHandle();
+		//	CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_Depth, incrementSize);
+		//	device->CopyDescriptorsSimple(1, srvDest, tangentCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//}
 	}
 
 	// Final Draw

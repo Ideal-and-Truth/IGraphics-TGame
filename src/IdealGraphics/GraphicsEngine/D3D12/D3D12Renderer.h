@@ -126,6 +126,7 @@ namespace Ideal
 		Matrix GetView();
 		Matrix GetProj();
 		Matrix GetViewProj();
+		Vector3 GetEyePos();
 
 		//-----etc-----//
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }

@@ -47,7 +47,7 @@ struct PSOutput
     float4 Albedo : SV_Target0;
     float4 Normal : SV_Target1;
     float4 PosH : SV_Target2;
-    float4 Tangent : SV_Target3;
+    float4 PosW : SV_Target3;
 };
 
 VSOutput VS(VSInput input)
@@ -69,10 +69,9 @@ VSOutput VS(VSInput input)
     return output;
 }
 
-Texture2D diffuseTexture : register(t0);
+Texture2D albedoTexture : register(t0);
 Texture2D specularTexture : register(t1);
 Texture2D normalTexture : register(t2);
-
 SamplerState sampler0 : register(s0);
 
 float3 CalculateNormalFromMap(float3 normalFromTexture, float3 normal, float3 tangent)
@@ -88,17 +87,15 @@ float3 CalculateNormalFromMap(float3 normalFromTexture, float3 normal, float3 ta
 PSOutput PS(VSOutput input)
 {
     PSOutput psOutput;
-    float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    float4 color = albedoTexture.Sample(sampler0, input.UV);
     float3 normalFromTexture = normalTexture.Sample(sampler0, input.UV).rgb;
-    //float4 dirLight = float4(1.f,0.f,0.f,1.f);
-    //float4 value = dot(-dirLight, normalize(input.Normal));
-    //color = color * value * Diffuse;
-    
     psOutput.Albedo = color;
-    //psOutput.Normal = float4(input.Normal.xyz, 1.f);
     psOutput.Normal = float4(CalculateNormalFromMap(normalFromTexture, normalize(input.Normal), input.Tangent), 1.f);
-    float DepthZ = input.PosH.z;
-    psOutput.PosH = float4(DepthZ, DepthZ, DepthZ, 1.f);
-    psOutput.Tangent = float4(input.Tangent.xyz, 1.f);
+    psOutput.Normal.w = input.PosH.z;
+    psOutput.PosW = input.PosW;
+    
+    //float DepthZ = input.PosH.z;
+    //psOutput.PosH = float4(DepthZ, DepthZ, DepthZ, 1.f);
+    psOutput.PosH = input.PosH;
     return psOutput;
 }

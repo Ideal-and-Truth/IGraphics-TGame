@@ -30,10 +30,13 @@ namespace Ideal
 		// D3D12_RENDER_TARGET_VIEW_DESC 이 있네?
 		void EmplaceRTV(Ideal::D3D12DescriptorHandle RTVHandle);
 
+		void EmplaceDSV(Ideal::D3D12DescriptorHandle DSVHandle);
+
 		// 2024.04.21 : 디스크립터가 할당된 위치를 가져온다.
 		//D3D12_CPU_DESCRIPTOR_HANDLE GetSRV() { return m_srvHandle.GetCpuHandle(); }
 		Ideal::D3D12DescriptorHandle GetSRV();
 		Ideal::D3D12DescriptorHandle GetRTV();
+		Ideal::D3D12DescriptorHandle GetDSV();
 	private:
 		// 2024.04.21
 		// Texture가 descriptor heap에 할당된 주소를 가지고 있는다.
@@ -41,6 +44,8 @@ namespace Ideal
 		// 2024.05.14
 		// RTV
 		Ideal::D3D12DescriptorHandle m_rtvHandle;
+
+		Ideal::D3D12DescriptorHandle m_dsvHandle;
 
 	private:
 		// 2024.05.15 Texture일 경우 필요한 여러가지 정보들

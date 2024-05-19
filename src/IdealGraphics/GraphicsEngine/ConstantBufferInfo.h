@@ -27,6 +27,7 @@ struct CB_Global
 	Matrix View;
 	Matrix Proj;
 	Matrix ViewProj;
+	Vector3 eyePos;
 };
 
 //------------Light-----------//

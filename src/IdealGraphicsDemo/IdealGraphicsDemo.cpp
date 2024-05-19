@@ -122,7 +122,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		renderScene->AddObject(ka);
-		renderScene->AddObject(cat);
+		//renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
 		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
@@ -132,8 +132,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ISpotLight> spotLight = Renderer->CreateSpotLight();
 		std::shared_ptr<Ideal::IPointLight> pointLight = Renderer->CreatePointLight();
 
-		dirLight->SetDirection(Vector3(0.f,0.f,1.f));
-
+		//dirLight->SetDirection(Vector3(0.f,0.f,1.f));
+		//dirLight->SetDirection(Vector3(-1.f,0.f,0.f));
+		dirLight->SetDirection(Vector3(1.f,0.f,0.f));
+		
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
 		renderScene->AddLight(dirLight);
@@ -144,6 +146,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		mesh3->SetTransformMatrix(Matrix::CreateRotationX(DirectX::XMConvertToRadians(90.f)));
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
+		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
 
 		while (msg.message != WM_QUIT)
@@ -155,9 +158,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
-				angle += 0.2f;
+				//angle += 0.2f;
+				angle += 0.4f;
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+				world2 = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+				
+				dirLight->SetDirection(world2.Forward());
+
 				world.CreateRotationY(angle);
+
 				mesh2->SetTransformMatrix(world);
 				//ka->SetTransformMatrix(world);
 				//cat->SetTransformMatrix(world);

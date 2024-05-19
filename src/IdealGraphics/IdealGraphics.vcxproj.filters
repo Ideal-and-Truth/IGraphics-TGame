@@ -239,6 +239,7 @@
     <FxCompile Include="Shaders\FullScreenVS.hlsl" />
     <FxCompile Include="Shaders\LightPassPS.hlsl" />
     <FxCompile Include="Shaders\GBufferMesh.hlsl" />
+    <FxCompile Include="Shaders\AnimationGeometry.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

@@ -41,6 +41,7 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 
 	//---GBuffer SRV RTV---//
 	CreateGBuffer(Renderer);
+	CreateDSV(Renderer);
 
 	//---Screen Quad---//
 	InitScreenQuad(Renderer);
@@ -134,12 +135,12 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 		}
 	}
 	// Ver2 SkinnedMesh
-	/*{
+	{
 		commandList->SetPipelineState(m_skinnedMeshPSO->GetPipelineState().Get());
 		commandList->SetGraphicsRootSignature(m_skinnedMeshRootSignature.Get());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		SetGlobalCBDescriptorTable(Renderer);
+		BindDescriptorTable(Renderer);
 
 		for (auto& m : m_skinnedMeshObjects)
 		{
@@ -148,7 +149,7 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 				m.lock()->Draw(Renderer);
 			}
 		}
-	}*/
+	}
 
 	/*commandList->Close();
 	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
@@ -173,7 +174,16 @@ void Ideal::IdealRenderScene::DrawScreen(std::shared_ptr<IdealRenderer> Renderer
 
 	TransitionGBufferToSRV(Renderer);
 
-	m_fullScreenQuad->Draw(Renderer, m_gBuffers);
+	CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_depthBuffer->GetResource(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		//D3D12_RESOURCE_STATE_GENERIC_READ
+	);
+
+	commandList->ResourceBarrier(1, &dsvBarrier);
+
+	m_fullScreenQuad->Draw(Renderer, m_gBuffers, m_depthBuffer);
 }
 
 void Ideal::IdealRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
@@ -337,11 +347,13 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer
 	m_skinnedMeshPSO->SetInputLayout(SkinnedVertex::InputElements, SkinnedVertex::InputElementCount);
 
 	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
-	vs->CompileFromFile(L"../Shaders/AnimationDefault.hlsl", nullptr, nullptr, "VS", "vs_5_0");
+	//vs->CompileFromFile(L"../Shaders/AnimationDefault.hlsl", nullptr, nullptr, "VS", "vs_5_0");
+	vs->CompileFromFile(L"../Shaders/AnimationGeometry.hlsl", nullptr, nullptr, "VS", "vs_5_0");
 	m_skinnedMeshPSO->SetVertexShader(vs);
 
 	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
-	ps->CompileFromFile(L"../Shaders/AnimationDefault.hlsl", nullptr, nullptr, "PS", "ps_5_0");
+	//ps->CompileFromFile(L"../Shaders/AnimationDefault.hlsl", nullptr, nullptr, "PS", "ps_5_0");
+	ps->CompileFromFile(L"../Shaders/AnimationGeometry.hlsl", nullptr, nullptr, "PS", "ps_5_0");
 	m_skinnedMeshPSO->SetPixelShader(ps);
 
 	m_skinnedMeshPSO->SetRootSignature(m_skinnedMeshRootSignature.Get());
@@ -376,6 +388,7 @@ void Ideal::IdealRenderScene::UpdateGlobalCBData(std::shared_ptr<IdealRenderer> 
 	m_cbGlobal->View = d3d12Renderer->GetView();
 	m_cbGlobal->Proj = d3d12Renderer->GetProj();
 	m_cbGlobal->ViewProj = d3d12Renderer->GetViewProj();
+	m_cbGlobal->eyePos = d3d12Renderer->GetEyePos();
 
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
 	std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Global));
@@ -469,18 +482,35 @@ void Ideal::IdealRenderScene::CreateGBuffer(std::shared_ptr<IdealRenderer> Rende
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	std::shared_ptr<Ideal::ResourceManager> resourceManager = d3d12Renderer->GetResourceManager();
 
-	for (uint32 i = 0; i < m_gBufferNum; ++i)
+	//for (uint32 i = 0; i < m_gBufferNum; ++i)
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
+		m_gBuffers.push_back(gBuffer);
+	}
+	{
+		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
+		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
+		m_gBuffers.push_back(gBuffer);
+	}
+	{
+		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
+		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		m_gBuffers.push_back(gBuffer);
+	}
+	{
+		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
+		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
 		m_gBuffers.push_back(gBuffer);
 	}
 
+	//m_gBufferClearColors[0] = DirectX::Colors::AliceBlue;
 	m_gBufferClearColors[0] = DirectX::Colors::AliceBlue;
-	m_gBufferClearColors[0] = DirectX::Colors::DimGray;
-	m_gBufferClearColors[1] = DirectX::Colors::Brown;
-	m_gBufferClearColors[2] = DirectX::Colors::Violet;
+	//m_gBufferClearColors[0] = DirectX::Colors::Black;
+	m_gBufferClearColors[1] = DirectX::Colors::Black;
+	m_gBufferClearColors[2] = DirectX::Colors::Black;	// h
 	m_gBufferClearColors[3] = DirectX::Colors::Green;
+
 }
 
 void Ideal::IdealRenderScene::TransitionGBufferToRTVandClear(std::shared_ptr<IdealRenderer> Renderer)
@@ -507,8 +537,14 @@ void Ideal::IdealRenderScene::TransitionGBufferToRTVandClear(std::shared_ptr<Ide
 	//commandList->OMSetRenderTargets(m_gBufferNum, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), FALSE, nullptr);
 	//commandList->OMSetRenderTargets(1, &resourceManager->GetRTVHeap(), FALSE, nullptr);
 	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, nullptr);
+	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
+
+	CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_depthBuffer->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	commandList->ResourceBarrier(1, &dsvBarrier);
+	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &m_depthBuffer->GetDSV().GetCpuHandle());
+	//commandList->ClearDepthStencilView(m_depthBuffer->GetDSV().GetCpuHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
-	commandList->ClearDepthStencilView(d3d12Renderer->GetDSV(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	commandList->ClearDepthStencilView(d3d12Renderer->GetDSV(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	//commandList->OMSetRenderTargets(1, &resourceManager->GetRTVHeap(), FALSE, nullptr);
 	
 
@@ -535,6 +571,17 @@ void Ideal::IdealRenderScene::TransitionGBufferToSRV(std::shared_ptr<IdealRender
 	}
 }
 
+void Ideal::IdealRenderScene::CreateDSV(std::shared_ptr<IdealRenderer> Renderer)
+{
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
+	std::shared_ptr<Ideal::ResourceManager> resourceManager = d3d12Renderer->GetResourceManager();
+
+	//-------DSV-------//
+	resourceManager->CreateTextureDSV(m_depthBuffer, m_width, m_height);
+	
+}
+
 void Ideal::IdealRenderScene::InitScreenQuad(std::shared_ptr<IdealRenderer> Renderer)
 {
 	m_fullScreenQuad = std::make_shared<Ideal::IdealScreenQuad>();
@@ -558,7 +605,7 @@ void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(std::shared_ptr<Idea
 	rangeGlobal[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0 : global, b1 : lightList
 
 	CD3DX12_DESCRIPTOR_RANGE1 rangeGBuffers[1];
-	rangeGBuffers[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, 0);	// t0 : Albedo, t1 : Normal, t2 : POSH, t3 : Tangent...
+	rangeGBuffers[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0);	// t0 : Albedo, t1 : Normal, t2 : POSH, t3 : POSH (Temp) t4 : POSW, t5 : Depth
 
 
 	//-------------------Parameter--------------------//

@@ -73,6 +73,9 @@ namespace Ideal
 		void TransitionGBufferToRTVandClear(std::shared_ptr<IdealRenderer> Renderer);
 		void TransitionGBufferToSRV(std::shared_ptr<IdealRenderer> Renderer);
 
+		// 2024.05.19 : DSV
+		void CreateDSV(std::shared_ptr<IdealRenderer> Renderer);
+
 		// 2024.05.15 : MainScreenQuad
 		void InitScreenQuad(std::shared_ptr<IdealRenderer> Renderer);
 		void CreateScreenQuadRootSignature(std::shared_ptr<IdealRenderer> Renderer);
@@ -106,6 +109,10 @@ namespace Ideal
 		static const uint32 m_gBufferNum = 4;
 		std::vector<std::shared_ptr<Ideal::D3D12Texture>> m_gBuffers;
 		Color m_gBufferClearColors[m_gBufferNum];
+
+		// DSV
+		std::shared_ptr<Ideal::D3D12Texture> m_depthBuffer = nullptr;
+
 		// ScreenQuad
 		std::shared_ptr<Ideal::IdealScreenQuad> m_fullScreenQuad;
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_screenQuadPSO;

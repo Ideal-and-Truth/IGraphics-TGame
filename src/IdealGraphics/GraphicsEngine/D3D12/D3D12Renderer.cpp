@@ -232,7 +232,7 @@ finishAdapter:
 	CreateDefaultCamera();
 	// Temp
 	//m_mainCamera->Walk(50.f);
-	m_mainCamera->SetPosition(Vector3(0.f, 0.f, -150.f));
+	m_mainCamera->SetPosition(Vector3(0.f, 100.f, -200.f));
 	//m_mainCamera->UpdateViewMatrix();
 	//m_mainCamera->UpdateMatrix2();
 
@@ -267,7 +267,11 @@ finishAdapter:
 
 void Ideal::D3D12Renderer::Tick()
 {
-	const float speed = 2.f;
+	float speed = 2.f;
+	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
+	{
+		speed = 0.2f;
+	}
 	if (GetAsyncKeyState('O') & 0x8000)
 	{
 		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c1);
@@ -493,12 +497,12 @@ void Ideal::D3D12Renderer::BeginRender()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
 	// 2024.04.14 dsv¼¼ÆÃ
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-	//m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+	//m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
 	m_commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::DimGray, 0, nullptr);
 	// 2024.04.14 Clear DSV
-	//m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 }
 
 void Ideal::D3D12Renderer::EndRender()
@@ -655,4 +659,9 @@ DirectX::SimpleMath::Matrix Ideal::D3D12Renderer::GetProj()
 DirectX::SimpleMath::Matrix Ideal::D3D12Renderer::GetViewProj()
 {
 	return m_mainCamera->GetViewProj();
+}
+
+DirectX::SimpleMath::Vector3 Ideal::D3D12Renderer::GetEyePos()
+{
+	return m_mainCamera->GetPosition();
 }
