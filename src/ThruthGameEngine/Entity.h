@@ -51,8 +51,8 @@ namespace Truth
 		std::vector<std::pair<Component*, const Method*>> m_fixedUpdate;
 		std::vector<std::pair<Component*, const Method*>> m_latedUpdate;
 
-		std::vector<std::pair<Component*, const Method*>> m_onBevameVisible;
-		std::vector<std::pair<Component*, const Method*>> m_onBevameInvisible;
+		std::vector<std::pair<Component*, const Method*>> m_onBecomeVisible;
+		std::vector<std::pair<Component*, const Method*>> m_onBecomeInvisible;
 
 		std::vector<std::pair<Component*, const Method*>> m_destroy;
 

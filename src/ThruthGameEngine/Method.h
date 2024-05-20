@@ -203,7 +203,7 @@ public:
 	/// <param name="...args">인자들</param>
 	/// <returns>리턴 값</returns>
 	template <typename TClass, typename TRet, typename... TArgs>
-	TRet Invoke(void* _caller, TArgs&&... _args) const
+	TRet Invoke(void* _caller, TArgs&... _args) const
 	{
 		// 호출자의 타입 정보를 받아옴
 		const TypeInfo& typeinfo = m_callable.GetTypeInfo();
@@ -256,7 +256,7 @@ public:
 	/// <param name="...args">인자</param>
 	/// <returns>리턴 값</returns>
 	template <typename TRet, typename... TArgs>
-	TRet Invoke(void* _owner, TArgs&&... _args) const
+	TRet Invoke(void* _owner, TArgs&... _args) const
 	{
 		// 호출자는 호출 인터페이스의 자식이여야한다.
 		if (m_callable.GetTypeInfo().IsChildOf<ICallable<TRet, TArgs...>>())

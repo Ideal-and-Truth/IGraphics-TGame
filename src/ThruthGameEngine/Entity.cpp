@@ -33,7 +33,7 @@ void Truth::Entity::Awake()
 			met->Invoke<void>(c.get());
 		}
 	}
-	// DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
+	DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
 }
 
 void Truth::Entity::Destroy()

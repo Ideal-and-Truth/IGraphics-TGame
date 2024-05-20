@@ -60,7 +60,8 @@ void Truth::PhysicsManager::Initalize()
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 4.0f);
-
+	auto s = m_scene->getBounceThresholdVelocity();
+	m_scene->setBounceThresholdVelocity(100.0f);
 	physx::PxPvdSceneClient* pvdClient = m_scene->getScenePvdClient();
 
 	if (pvdClient)
