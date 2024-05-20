@@ -229,7 +229,7 @@ void Ideal::IdealRenderScene::AddLight(std::shared_ptr<Ideal::ILight> Light)
 		{
 
 		}
-			break;
+		break;
 
 	}
 }
@@ -448,6 +448,7 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 	{
 		m_cbLightList->SpotLights[i] = m_spotLights[i].lock()->GetSpotLightDesc();
 	}
+	m_cbLightList->SpotLightNum = spotLightNum;
 
 	//----------------Point Light-----------------//
 	uint32 pointLightNum = m_pointLights.size();
@@ -456,6 +457,7 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 	{
 		pointLightNum = MAX_POINT_LIGHT_NUM;
 	}
+	m_cbLightList->PointLightNum = pointLightNum;
 
 	for (uint32 i = 0; i < pointLightNum; ++i)
 	{

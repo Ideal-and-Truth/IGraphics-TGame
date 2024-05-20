@@ -15,6 +15,7 @@ namespace Ideal
 
 	public:
 		virtual void SetLightColor(const Color& LightColor) abstract;
+		virtual Vector3 GetPosition() abstract;
 		virtual void SetPosition(const Vector3& LightPosition) abstract;
 		virtual void SetRange(const float& Range) abstract;
 		virtual void SetIntensity(const float& Intensity) abstract;

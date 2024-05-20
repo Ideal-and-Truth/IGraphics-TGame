@@ -18,6 +18,7 @@ namespace Ideal
 		virtual void Pitch(float Angle) abstract;
 		virtual void RotateY(float Angle) abstract;
 
+		virtual Vector3 GetPosition() abstract;
 		virtual void SetPosition(const Vector3& Position) abstract;
 		virtual void SetLook(Vector3 Look) abstract;
 	};

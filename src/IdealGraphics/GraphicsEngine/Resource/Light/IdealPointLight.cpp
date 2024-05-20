@@ -1,4 +1,4 @@
-#include "IdealPointLight.h"
+                     #include "IdealPointLight.h"
 
 Ideal::IdealPointLight::IdealPointLight()
 {
