@@ -110,25 +110,4 @@ float4 main(VertexOut input) : SV_TARGET
     float4 litColor = albedo * (ambient + diffuse);
     litColor.a = 1.f;
     return litColor;
-    
-    
- //       float d = posH.z / posH.w;
-    
- //   if(d <= 0.f && d >= 1.f)
- //   {  
- //       return albedo;
- //   }
-    
- //   if (depth >= 1.0f)
- //   {
- //       return albedo;
- //   }
-    
- //   return posH;
-	//// Directional Light
- //   float3 color = DirectLight(DirLight.Intensity, DirLight.DiffuseColor.rgb, -DirLight.Direction , normal, posW.xyz, eyePos, albedo.rgb);
- //   float4 ambient = DirLight.AmbientColor;
- //   float4 finalColor = float4(color, 1.f); + ambient;
- //   return finalColor;
-    //return normalOri;
 }

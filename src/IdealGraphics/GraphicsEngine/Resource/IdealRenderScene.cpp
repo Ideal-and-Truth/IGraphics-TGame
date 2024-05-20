@@ -23,6 +23,8 @@
 #include "GraphicsEngine/ConstantBufferInfo.h"
 
 Ideal::IdealRenderScene::IdealRenderScene()
+	: m_width(0),
+	m_height(0)
 {
 
 }
