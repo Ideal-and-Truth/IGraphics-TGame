@@ -485,12 +485,12 @@ void Ideal::IdealRenderScene::CreateGBuffer(std::shared_ptr<IdealRenderer> Rende
 	//for (uint32 i = 0; i < m_gBufferNum; ++i)
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{

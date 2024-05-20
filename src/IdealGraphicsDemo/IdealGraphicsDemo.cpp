@@ -121,8 +121,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
-		renderScene->AddObject(ka);
-		//renderScene->AddObject(cat);
+		//renderScene->AddObject(ka);
+		renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
 		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
@@ -134,7 +134,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//dirLight->SetDirection(Vector3(0.f,0.f,1.f));
 		//dirLight->SetDirection(Vector3(-1.f,0.f,0.f));
-		dirLight->SetDirection(Vector3(1.f,0.f,0.f));
+		dirLight->SetDirection(Vector3(1.f,0.f,1.f));
 		
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
