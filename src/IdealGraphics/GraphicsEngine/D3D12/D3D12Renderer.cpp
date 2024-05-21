@@ -20,8 +20,11 @@
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
+#include "GraphicsEngine/Resource/IdealScreenQuad.h"
 
-
+#include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
+#include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
+#include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	: m_hwnd(hwnd),
@@ -229,7 +232,7 @@ finishAdapter:
 	CreateDefaultCamera();
 	// Temp
 	//m_mainCamera->Walk(50.f);
-	m_mainCamera->SetPosition(Vector3(0.f, 0.f, -150.f));
+	m_mainCamera->SetPosition(Vector3(0.f, 100.f, -200.f));
 	//m_mainCamera->UpdateViewMatrix();
 	//m_mainCamera->UpdateMatrix2();
 
@@ -249,11 +252,26 @@ finishAdapter:
 	CreateDescriptorHeap();
 	//------------------Create CB Pool---------------------//
 	CreateCBPool();
+
+	// 2024.05.14 : MRT Test
+	//m_resourceManager->CreateEmptyTexture2D(t1, m_width, m_height, true);
+	/*for (uint32 i = 0; i < m_gBufferCount; ++i)
+	{
+		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
+		m_resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, true);
+		m_gBuffers.push_back(gBuffer);
+	}*/
+
+
 }
 
 void Ideal::D3D12Renderer::Tick()
 {
-	const float speed = 2.f;
+	float speed = 2.f;
+	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
+	{
+		speed = 0.2f;
+	}
 	if (GetAsyncKeyState('O') & 0x8000)
 	{
 		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c1);
@@ -295,21 +313,23 @@ void Ideal::D3D12Renderer::Tick()
 
 void Ideal::D3D12Renderer::Render()
 {
+	ResetCommandList();
 	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateMatrix2();
+
+	//2024.05.16 Draw GBuffer
+	m_currentRenderScene->DrawGBuffer(shared_from_this());
 
 	//-------------Begin Render------------//
 	BeginRender();
 
 	//-------------Render Command-------------//
 	{
-		//ID3D12DescriptorHeap* heaps[] = { m_resourceManager->GetSRVHeap().Get() };
-		//m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
-
 		//----------Render Scene-----------//
 		if (m_currentRenderScene != nullptr)
 		{
-			m_currentRenderScene->Draw(shared_from_this());
+			//m_currentRenderScene->Draw(shared_from_this());
+			m_currentRenderScene->DrawScreen(shared_from_this());
 		}
 	}
 
@@ -324,6 +344,7 @@ void Ideal::D3D12Renderer::Render()
 	m_cb256Pool->Reset();
 	m_cb512Pool->Reset();
 	m_cb1024Pool->Reset();
+	m_cb2048Pool->Reset();
 	m_cbBonePool->Reset();
 	return;
 }
@@ -384,6 +405,24 @@ void Ideal::D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> R
 	m_currentRenderScene = std::static_pointer_cast<Ideal::IdealRenderScene>(RenderScene);
 }
 
+std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12Renderer::CreateDirectionalLight()
+{
+	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
+	return newLight;
+}
+
+std::shared_ptr<Ideal::ISpotLight> Ideal::D3D12Renderer::CreateSpotLight()
+{
+	std::shared_ptr<Ideal::ISpotLight> newLight = std::make_shared<Ideal::IdealSpotLight>();
+	return newLight;
+}
+
+std::shared_ptr<Ideal::IPointLight> Ideal::D3D12Renderer::CreatePointLight()
+{
+	std::shared_ptr<Ideal::IPointLight> newLight = std::make_shared<Ideal::IdealPointLight>();
+	return newLight;
+}
+
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
@@ -435,10 +474,14 @@ Microsoft::WRL::ComPtr<ID3D12Device> Ideal::D3D12Renderer::GetDevice()
 	return m_device;
 }
 
-void Ideal::D3D12Renderer::BeginRender()
+void Ideal::D3D12Renderer::ResetCommandList()
 {
 	Check(m_commandAllocator->Reset());
 	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+}
+
+void Ideal::D3D12Renderer::BeginRender()
+{
 	// 2024.04.15 pipeline state를 m_currentPipelineState에 있는 것으로 세팅한다.
 
 	m_commandList->RSSetViewports(1, &m_viewport->GetViewport());
@@ -455,6 +498,7 @@ void Ideal::D3D12Renderer::BeginRender()
 	// 2024.04.14 dsv세팅
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+	//m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
 	m_commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::DimGray, 0, nullptr);
 	// 2024.04.14 Clear DSV
@@ -561,6 +605,9 @@ void Ideal::D3D12Renderer::CreateCBPool()
 	m_cb1024Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
 	m_cb1024Pool->Init(m_device.Get(), 1024, MAX_DRAW_COUNT_PER_FRAME);
 
+	m_cb2048Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
+	m_cb2048Pool->Init(m_device.Get(), 2048, MAX_DRAW_COUNT_PER_FRAME);
+
 	// TEMP
 	m_cbBonePool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
 	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(static_cast<uint32>(sizeof(CB_Bone))), MAX_DRAW_COUNT_PER_FRAME);
@@ -579,6 +626,10 @@ std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBPool(
 	else if (SizePerCB <= 1024)
 	{
 		return m_cb1024Pool;
+	}
+	else if (SizePerCB <= 2048)
+	{
+		return m_cb2048Pool;
 	}
 	return nullptr;
 }
@@ -608,4 +659,9 @@ DirectX::SimpleMath::Matrix Ideal::D3D12Renderer::GetProj()
 DirectX::SimpleMath::Matrix Ideal::D3D12Renderer::GetViewProj()
 {
 	return m_mainCamera->GetViewProj();
+}
+
+DirectX::SimpleMath::Vector3 Ideal::D3D12Renderer::GetEyePos()
+{
+	return m_mainCamera->GetPosition();
 }

@@ -50,3 +50,15 @@ struct Mesh
 	std::vector<uint32> indices;
 	std::wstring diffuseMap;
 };
+
+struct ScreenQuadVertex
+{
+	Vector3 Position;
+	Vector2 UV;
+
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+
+public:
+	static const int32 InputElementCount = 2;
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+};

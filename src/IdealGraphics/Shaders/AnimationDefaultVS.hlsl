@@ -94,7 +94,7 @@ VSOutput VS(VSInput input)
 
 float4 PS(VSOutput input) : SV_TARGET
 {
-      float4 color = diffuseTexture.Sample(sampler0, input.UV);
+    float4 color = diffuseTexture.Sample(sampler0, input.UV);
     float4 dirLight = float4(1.f,0.f,0.f,1.f);
     float4 value = dot(-dirLight, normalize(input.NormalW));
     color = color * value * Diffuse;

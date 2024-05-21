@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Defines.h"
+#include "Definitions.h"
 #include "Types.h"
 
 #include <windows.h>

@@ -3,6 +3,8 @@
 // Main Interface
 #include "Core/Core.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
+#include <d3d12.h>
+#include "d3dx12.h"
 
 struct ID3D12Device;
 struct ID3D12CommandQueue;
@@ -26,6 +28,7 @@ namespace Ideal
 	class IdealRenderScene;
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
+	class IdealScreenQuad;
 
 	// Manager
 	class D3D12ConstantBufferPool;
@@ -44,6 +47,7 @@ namespace Ideal
 	{
 	public:
 		enum { FRAME_BUFFER_COUNT = 2 };
+		
 
 	private:
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;
@@ -69,6 +73,10 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
 		virtual void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
 
+		virtual std::shared_ptr<Ideal::IDirectionalLight>	CreateDirectionalLight() override;
+		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() override;
+		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() override;
+
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }
@@ -84,6 +92,7 @@ namespace Ideal
 		ComPtr<ID3D12Device> GetDevice();
 
 		//------Render-----//
+		void ResetCommandList();
 		void BeginRender();
 		void EndRender();
 		void GraphicsPresent();
@@ -92,7 +101,7 @@ namespace Ideal
 		//------CommandList------//
 		void CreateCommandList();
 		ComPtr<ID3D12GraphicsCommandList> GetCommandList();
-
+		ComPtr<ID3D12CommandQueue> GetCommandQueue() { return m_commandQueue; }
 		//------Fence------//
 		void CreateGraphicsFence();
 		uint64 GraphicsFence();
@@ -118,6 +127,15 @@ namespace Ideal
 		Matrix GetView();
 		Matrix GetProj();
 		Matrix GetViewProj();
+		Vector3 GetEyePos();
+
+		//-----etc-----//
+		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
+		std::shared_ptr<Ideal::D3D12Viewport> GetViewport() { return m_viewport; }
+
+		//----Screen----//
+		uint32 GetWidth() { return m_width; }
+		uint32 GetHeight() { return m_height; }
 
 	private:
 		uint32 m_width = 0;
@@ -159,6 +177,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb256Pool = nullptr;
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb512Pool = nullptr;
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb1024Pool = nullptr;
+		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb2048Pool = nullptr;
 
 		// bone의 데이터가 크다. 일단은 따로 만들다가 나중에 SRV로 넘겨주든 해야겠다.
 		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cbBonePool = nullptr;
@@ -186,5 +205,7 @@ namespace Ideal
 		std::wstring m_assetPath;
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
+
+		std::shared_ptr<Ideal::D3D12Texture> t1 = nullptr;
 	};
 }

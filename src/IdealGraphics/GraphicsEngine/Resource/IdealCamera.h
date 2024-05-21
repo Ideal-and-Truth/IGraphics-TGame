@@ -18,6 +18,7 @@ namespace Ideal
 		virtual void Pitch(float Angle) override;
 		virtual void RotateY(float Angle) override;
 		
+		virtual Vector3 GetPosition() override { return m_position; };
 		virtual void SetPosition(const Vector3& Position) override;
 		virtual void SetLook(Vector3 Look) override;
 

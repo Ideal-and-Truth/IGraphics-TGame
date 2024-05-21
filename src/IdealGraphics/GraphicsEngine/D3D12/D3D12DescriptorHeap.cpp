@@ -1,6 +1,7 @@
 #include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
 using namespace Ideal;
 
@@ -11,7 +12,8 @@ D3D12DescriptorHandle::D3D12DescriptorHandle()
 	: m_cpuHandle(),
 	m_gpuHandle()
 {
-	//m_cpuHandle = (D3D12_GPU_VIRTUAL_ADDRESS)(-1);
+	m_cpuHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+	m_gpuHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
 }
 
 D3D12DescriptorHandle::D3D12DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle)
@@ -95,15 +97,15 @@ Ideal::D3D12DescriptorHandle D3D12DescriptorHeap::Allocate(uint32 Count /* = 1*/
 {
 	if (Count == 0)
 	{
-		assert(false);
 		MessageBox(NULL, L"Cant' Allocate Descriptor", L"오류", MB_OK);
+		assert(false);
 		return Ideal::D3D12DescriptorHandle();
 	}
 	// 할당할 수 있는 개수를 넘어섰을 경우
 	if (m_numFreeDescriptors < Count)
 	{
-		assert(false);
 		MessageBox(NULL, L"Cant' Allocate Descriptor", L"오류", MB_OK);
+		assert(false);
 		return Ideal::D3D12DescriptorHandle();
 	}
 

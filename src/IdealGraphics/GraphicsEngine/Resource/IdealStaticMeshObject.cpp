@@ -43,8 +43,8 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 	}
 
 	CB_Transform* cbTransform = (CB_Transform*)cb->SystemMemAddr;
-	cbTransform->World = m_transform;
-	cbTransform->WorldInvTranspose = m_transform.Invert();
+	cbTransform->World = m_transform.Transpose();
+	cbTransform->WorldInvTranspose = m_transform.Transpose().Invert();
 
 	// b0용 Descriptor Table 할당
 	auto handle = descriptorHeap->Allocate(1);	// 공용 root parameter인 b0 : transform 만 필요하니 Descriptor 공간을 하나만 받는다.

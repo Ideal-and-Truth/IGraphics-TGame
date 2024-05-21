@@ -55,8 +55,8 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 		}
 
 		CB_Transform* t = (CB_Transform*)cb->SystemMemAddr;
-		t->World = m_transform;
-		t->WorldInvTranspose = m_transform.Invert();
+		t->World = m_transform.Transpose();
+		t->WorldInvTranspose = m_transform.Transpose().Invert();
 
 		// Copy To Main Descriptor Table
 		CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), SKINNED_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM, incrementSize);
@@ -128,7 +128,7 @@ void Ideal::IdealSkinnedMeshObject::SetSkinnedMesh(std::shared_ptr<Ideal::IdealS
 
 void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 {
-	m_sumTime += 0.01f;
+	m_sumTime += 0.001f;
 
 	// 현재 애니메이션이 끝났는데 다음 애니메이션이 있을 경우?
 	bool changeAnimationFlag = false;
@@ -146,7 +146,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 					Matrix nextFrame = m_nextAnimation->m_animTransform->transforms[0][boneIdx];
 					Matrix resultFrame = Matrix::Identity;
 					Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
-					m_cbBoneData.transforms[boneIdx] = resultFrame;
+					m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
 				}
 				m_ratio = m_sumTime / timePerFrame;
 
@@ -205,7 +205,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 				Matrix nextFrame = m_currentAnimation->m_animTransform->transforms[m_nextFrame][boneIdx];
 				Matrix resultFrame = Matrix::Identity;
 				Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
-				m_cbBoneData.transforms[boneIdx] = resultFrame;
+				m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
 			}
 		}
 	}

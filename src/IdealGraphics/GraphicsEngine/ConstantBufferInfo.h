@@ -27,4 +27,48 @@ struct CB_Global
 	Matrix View;
 	Matrix Proj;
 	Matrix ViewProj;
+	Vector3 eyePos;
+};
+
+//------------Light-----------//
+#define MAX_POINT_LIGHT_NUM 16
+#define MAX_SPOT_LIGHT_NUM 16
+
+struct PointLight
+{
+	Color Color;
+	Vector3 Position;
+	float Range;
+	float Intensity;
+	Vector3 pad;
+};
+
+struct DirectionalLight
+{
+	Color AmbientColor;
+	Color DiffuseColor;
+	Vector3 Direction;
+	float Intensity;
+};
+
+struct SpotLight
+{
+	Color Color;
+	Vector4 Direction;
+	Vector3 Position;
+	float SpotAngle;
+	float Range;	
+	float Intensity;
+	float pad;
+	float pad2;
+};
+
+struct CB_LightList
+{
+	int32 PointLightNum;
+	int32 SpotLightNum;
+	float pad[2];
+	DirectionalLight DirLight;
+	PointLight PointLights[MAX_POINT_LIGHT_NUM];
+	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
 };

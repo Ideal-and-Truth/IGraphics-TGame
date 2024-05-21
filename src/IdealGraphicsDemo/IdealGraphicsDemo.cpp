@@ -10,12 +10,28 @@
 #pragma comment(lib, "ReleaseLib/GraphicsEngine/IdealGraphics.lib")
 #endif
 
+#ifdef _DEBUG
+#ifdef UNICODE
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#else
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
+#endif
+
+#include <iostream>
+using namespace std;
+
 #include "GraphicsEngine/public/IdealRendererFactory.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
 #include "GraphicsEngine/public/IMeshObject.h"
 #include "GraphicsEngine/public/ISkinnedMeshObject.h"
 #include "GraphicsEngine/public/IAnimation.h"
 #include "GraphicsEngine/public/IRenderScene.h"
+#include "GraphicsEngine/public/ICamera.h"
+
+#include "GraphicsEngine/public/IDirectionalLight.h"
+#include "GraphicsEngine/public/ISpotLight.h"
+#include "GraphicsEngine/public/IPointLight.h"
 
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
@@ -39,6 +55,10 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+
+// Test Function
+void InitCamera(std::shared_ptr<Ideal::ICamera> Camera);
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -81,6 +101,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		Renderer->Init();
 		
+		Vector3 pointLightPosition = Vector3(0.f);
+
+		//-------------------Create Camera-------------------//
+		std::shared_ptr<Ideal::ICamera> camera = Renderer->CreateCamera();
+		InitCamera(camera);
+		Renderer->SetMainCamera(camera);
+
 		//-------------------Create Scene-------------------//
 		std::shared_ptr<Ideal::IRenderScene> renderScene = Renderer->CreateRenderScene();
 		Renderer->SetRenderScene(renderScene);
@@ -88,11 +115,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
 		//Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx", true);
+		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
 		//Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
+
+		//-------------------Test Vertices Pos-------------------//
+		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = Renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
@@ -113,19 +144,37 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
-		renderScene->AddObject(ka);
+		//renderScene->AddObject(ka);
 		renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
 		renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
 
-		//-------------------Test Vertices Pos-------------------//
-		ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
+		//--------------------Create Light----------------------//
+		std::shared_ptr<Ideal::IDirectionalLight> dirLight = Renderer->CreateDirectionalLight();
+		std::shared_ptr<Ideal::ISpotLight> spotLight = Renderer->CreateSpotLight();
+		std::shared_ptr<Ideal::IPointLight> pointLight = Renderer->CreatePointLight();
+		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
+
+		dirLight->SetDirection(Vector3(1.f,0.f,1.f));
+
+		pointLight->SetPosition(pointLightPosition);
+		pointLight->SetRange(300.f);
+		pointLight->SetLightColor(Color(1.f,0.f,1.f,1.f));
+		pointLight->SetIntensity(10.f);
+
+		//------------------Add Light to Render Scene-----------------//
+		// Directional Light일 경우 그냥 바뀐다.
+		renderScene->AddLight(dirLight);
+		renderScene->AddLight(spotLight);
+		renderScene->AddLight(pointLight);
+		//renderScene->AddLight(pointLight2);
 
 
 		mesh3->SetTransformMatrix(Matrix::CreateRotationX(DirectX::XMConvertToRadians(90.f)));
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
+		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
 
 		while (msg.message != WM_QUIT)
@@ -137,12 +186,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
-				angle += 0.2f;
+				CameraTick(camera);
+				pointLight->SetPosition(camera->GetPosition());
+				auto cp = camera->GetPosition();
+				auto pp = pointLight->GetPosition();
+
+				angle += 0.4f;
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+				world2 = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+				
+				dirLight->SetDirection(world2.Forward());
+
 				world.CreateRotationY(angle);
+
 				mesh2->SetTransformMatrix(world);
-				//ka->SetTransformMatrix(world);
-				//cat->SetTransformMatrix(world);
+
+				//----- Set Draw -----//
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
 					cat->SetDrawObject(false);
@@ -234,4 +293,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
+{
+	float aspectRatio = float(WIDTH) / HEIGHT;
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	Camera->SetPosition(Vector3(0.f, 100.f, -200.f));
+}
+
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
+{
+	float speed = 2.f;
+	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
+	{
+		speed = 0.2f;
+	}
+	if (GetAsyncKeyState('W') & 0x8000)
+	{
+		Camera->Walk(speed);
+	}
+	if (GetAsyncKeyState('S') & 0x8000)
+	{
+		Camera->Walk(-speed);
+	}
+	if (GetAsyncKeyState('A') & 0x8000)
+	{
+		Camera->Strafe(-speed);
+	}
+	if (GetAsyncKeyState('D') & 0x8000)
+	{
+		Camera->Strafe(speed);
+	}
+	if (GetAsyncKeyState('L') & 0x8000)
+	{
+		Camera->SetLook(Vector3(0.f, 1.f, 1.f));
+	}
+	if (GetAsyncKeyState('K') & 0x8000)
+	{
+		Camera->SetLook(Vector3(0.f, 0.f, -1.f));
+	}
+	if (GetAsyncKeyState('J') & 0x8000)
+	{
+		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
+	}
 }

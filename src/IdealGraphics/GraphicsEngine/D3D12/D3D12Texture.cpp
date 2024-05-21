@@ -14,8 +14,50 @@ Ideal::D3D12Texture::~D3D12Texture()
 
 }
 
-void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource, Ideal::D3D12DescriptorHandle Handle)
+void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource)
 {
 	m_resource = Resource;
-	m_srvHandle = Handle;
 }
+
+void Ideal::D3D12Texture::EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle)
+{
+	m_srvHandle = SRVHandle;
+}
+
+void Ideal::D3D12Texture::EmplaceRTV(Ideal::D3D12DescriptorHandle RTVHandle)
+{
+	m_rtvHandle = RTVHandle;
+}
+
+void Ideal::D3D12Texture::EmplaceDSV(Ideal::D3D12DescriptorHandle DSVHandle)
+{
+	m_dsvHandle = DSVHandle;
+}
+
+Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetSRV()
+{
+	if(m_srvHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+	{
+		__debugbreak();
+	}
+	return m_srvHandle;
+}
+
+Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetRTV()
+{
+	if (m_rtvHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+	{
+		__debugbreak();
+	}
+	return m_rtvHandle;
+}
+
+Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetDSV()
+{
+	if (m_dsvHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+	{
+		__debugbreak();
+	}
+	return m_dsvHandle;
+}
+

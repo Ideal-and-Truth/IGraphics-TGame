@@ -82,7 +82,7 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	// 2024.05.03 : 그냥 다음 srv인 specular와 normal까지 가져올 것 같은데?
 	if (m_diffuseTexture)
 	{
-		Ideal::D3D12DescriptorHandle diffuseHandle = m_diffuseTexture->GetDescriptorHandle();
+		Ideal::D3D12DescriptorHandle diffuseHandle = m_diffuseTexture->GetSRV();
 		D3D12_CPU_DESCRIPTOR_HANDLE diffuseCPUAddress = diffuseHandle.GetCpuHandle();
 
 		//auto handle = descriptorHeap->Allocate(1);
@@ -91,7 +91,7 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	}
 	if (m_specularTexture)
 	{
-		Ideal::D3D12DescriptorHandle specularHandle = m_specularTexture->GetDescriptorHandle();
+		Ideal::D3D12DescriptorHandle specularHandle = m_specularTexture->GetSRV();
 		D3D12_CPU_DESCRIPTOR_HANDLE specularCPUAddress = specularHandle.GetCpuHandle();
 
 		//auto handle = descriptorHeap->Allocate(1);
@@ -100,7 +100,7 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	}
 	if (m_normalTexture)
 	{
-		Ideal::D3D12DescriptorHandle normalHandle = m_normalTexture->GetDescriptorHandle();
+		Ideal::D3D12DescriptorHandle normalHandle = m_normalTexture->GetSRV();
 		D3D12_CPU_DESCRIPTOR_HANDLE normalCPUAddress = normalHandle.GetCpuHandle();
 		
 
