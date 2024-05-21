@@ -47,6 +47,7 @@ namespace Ideal
 	{
 	public:
 		enum { FRAME_BUFFER_COUNT = 2 };
+		
 
 	private:
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;
@@ -131,6 +132,7 @@ namespace Ideal
 		//-----etc-----//
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 		std::shared_ptr<Ideal::D3D12Viewport> GetViewport() { return m_viewport; }
+
 		//----Screen----//
 		uint32 GetWidth() { return m_width; }
 		uint32 GetHeight() { return m_height; }

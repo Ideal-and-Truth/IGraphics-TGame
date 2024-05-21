@@ -285,11 +285,11 @@ void Ideal::IdealRenderScene::CreateStaticMeshPSO(std::shared_ptr<IdealRenderer>
 	m_staticMeshPSO->SetInputLayout(BasicVertex::InputElements, BasicVertex::InputElementCount);
 
 	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
-	vs->CompileFromFile(L"../Shaders/GBufferMesh.hlsl", nullptr, nullptr, "VS", "vs_5_0");
+	vs->CompileFromFile(L"../Shaders/GBufferMesh2.hlsl", nullptr, nullptr, "VS", "vs_5_0");
 	m_staticMeshPSO->SetVertexShader(vs);
 
 	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
-	ps->CompileFromFile(L"../Shaders/GBufferMesh.hlsl", nullptr, nullptr, "PS", "ps_5_0");
+	ps->CompileFromFile(L"../Shaders/GBufferMesh2.hlsl", nullptr, nullptr, "PS", "ps_5_0");
 	m_staticMeshPSO->SetPixelShader(ps);
 
 	m_staticMeshPSO->SetRootSignature(m_staticMeshRootSignature.Get());
@@ -350,12 +350,12 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer
 
 	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
 	//vs->CompileFromFile(L"../Shaders/AnimationDefault.hlsl", nullptr, nullptr, "VS", "vs_5_0");
-	vs->CompileFromFile(L"../Shaders/AnimationGeometry.hlsl", nullptr, nullptr, "VS", "vs_5_0");
+	vs->CompileFromFile(L"../Shaders/AnimationGeometry2.hlsl", nullptr, nullptr, "VS", "vs_5_0");
 	m_skinnedMeshPSO->SetVertexShader(vs);
 
 	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
 	//ps->CompileFromFile(L"../Shaders/AnimationDefault.hlsl", nullptr, nullptr, "PS", "ps_5_0");
-	ps->CompileFromFile(L"../Shaders/AnimationGeometry.hlsl", nullptr, nullptr, "PS", "ps_5_0");
+	ps->CompileFromFile(L"../Shaders/AnimationGeometry2.hlsl", nullptr, nullptr, "PS", "ps_5_0");
 	m_skinnedMeshPSO->SetPixelShader(ps);
 
 	m_skinnedMeshPSO->SetRootSignature(m_skinnedMeshRootSignature.Get());
@@ -387,9 +387,9 @@ void Ideal::IdealRenderScene::UpdateGlobalCBData(std::shared_ptr<IdealRenderer> 
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 
-	m_cbGlobal->View = d3d12Renderer->GetView();
-	m_cbGlobal->Proj = d3d12Renderer->GetProj();
-	m_cbGlobal->ViewProj = d3d12Renderer->GetViewProj();
+	m_cbGlobal->View = d3d12Renderer->GetView().Transpose();
+	m_cbGlobal->Proj = d3d12Renderer->GetProj().Transpose();
+	m_cbGlobal->ViewProj = d3d12Renderer->GetViewProj().Transpose();
 	m_cbGlobal->eyePos = d3d12Renderer->GetEyePos();
 
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();

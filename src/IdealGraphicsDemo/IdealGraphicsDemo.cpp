@@ -162,12 +162,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pointLight->SetRange(300.f);
 		pointLight->SetLightColor(Color(1.f,0.f,1.f,1.f));
 		pointLight->SetIntensity(10.f);
-		
-		/*pointLight2->SetPosition(pointLightPosition);
-		pointLight2->SetRange(300.f);
-		pointLight2->SetLightColor(Color(0.f, 1.f, 0.f, 1.f));
-		pointLight2->SetIntensity(10.f);
-		pointLight2->SetPosition(Vector3(0.f, 100.f, -200.f));*/
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -196,9 +190,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				pointLight->SetPosition(camera->GetPosition());
 				auto cp = camera->GetPosition();
 				auto pp = pointLight->GetPosition();
-				//cout << "CameraPostion : " << cp.x << ", " << cp.y << ", " << cp.z << endl;// " | pointLight Position : " <<
-				cout << "PointLightPosition : " << pp.x << ", " << pp.y << ", " << pp.z << endl;// " | pointLight Position : " <<
-				//angle += 0.2f;
+
 				angle += 0.4f;
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 				world2 = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
@@ -208,8 +200,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				world.CreateRotationY(angle);
 
 				mesh2->SetTransformMatrix(world);
-				//ka->SetTransformMatrix(world);
-				//cat->SetTransformMatrix(world);
+
+				//----- Set Draw -----//
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
 					cat->SetDrawObject(false);

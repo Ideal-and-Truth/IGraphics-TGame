@@ -240,6 +240,8 @@
     <FxCompile Include="Shaders\LightPassPS.hlsl" />
     <FxCompile Include="Shaders\GBufferMesh.hlsl" />
     <FxCompile Include="Shaders\AnimationGeometry.hlsl" />
+    <FxCompile Include="Shaders\GBufferMesh2.hlsl" />
+    <FxCompile Include="Shaders\AnimationGeometry2.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">
