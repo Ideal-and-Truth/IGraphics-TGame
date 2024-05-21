@@ -70,7 +70,7 @@ void Truth::PhysicsManager::Initalize()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	m_material = m_physics->createMaterial(0.2f, 0.2f, 0.5f);
+	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);

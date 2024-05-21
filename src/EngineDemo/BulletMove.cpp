@@ -15,12 +15,11 @@ BulletMove::~BulletMove()
 
 void BulletMove::Start()
 {
-	EventBind("Update", &BulletMove::Update);
 	auto r = m_owner.lock()->GetComponent<Truth::RigidBody>().lock().get();
 	r->AddImpulse(Vector3(0.0f, 0.0f, -100.0f));
 }
 
-void BulletMove::Update(std::any _p)
+void BulletMove::Update()
 {
 // 	float dt = GetDeltaTime();
 // 	float speed = 100;
@@ -59,7 +58,7 @@ void BulletMove::Update(std::any _p)
 // 	r.lock()->SetLinearVelocity(dir);
 }
 
-void BulletMove::OnCollisionEnter(const Truth::Collider* _other)
+void BulletMove::OnCollisionEnter(Truth::Collider* _other)
 {
 	DEBUG_PRINT("Collision Enter\n");
 }

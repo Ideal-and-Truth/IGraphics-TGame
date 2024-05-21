@@ -37,8 +37,6 @@ namespace Truth
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
-
-
 		std::vector<std::pair<Component*, const Method*>> m_onCollisionEnter;
 		std::vector<std::pair<Component*, const Method*>> m_onCollisionStay;
 		std::vector<std::pair<Component*, const Method*>> m_onCollisionExit;
@@ -58,16 +56,23 @@ namespace Truth
 
 		uint8 m_layer;
 
+		std::shared_ptr<Transform> m_transform;
+
+	public:
 		Entity();
 		virtual ~Entity();
 
 		virtual void Initailize();
+		void SetPosition(Vector3 _pos) const;
+		Vector3 GetPosition() const;
 
 		void Awake();
 		void Destroy();
 		void Start();
 
-		void OnCollisionEnter(const Collider* _other) const;
+		void Update();
+
+		void OnCollisionEnter(Collider* _other);
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();

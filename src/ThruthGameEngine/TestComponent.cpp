@@ -18,10 +18,9 @@ void Truth::TestComponent::Awake()
 {
 	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
 	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
-	EventBind<TestComponent>("Update", &TestComponent::Update);
 }
 
-void Truth::TestComponent::Update(std::any _p)
+void Truth::TestComponent::Update()
 {
 }
 

@@ -44,6 +44,19 @@ namespace Truth
 
 		bool CanMultiple() const { return m_canMultiple; }
 
+		virtual void Update() {};
+		virtual void Awake() {};
+		virtual void Start() {};
+		virtual void LateUpdate() {};
+		virtual void FixedUpdate() {};
+		virtual void OnCollisionEnter() {};
+		virtual void OnCollisionExit() {};
+		virtual void OnCollisionStay() {};
+		virtual void OnTriggerEnter() {};
+		virtual void OnTriggerExit() {};
+		virtual void OnTriggerStay() {};
+		
+
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }
 		std::weak_ptr<Entity> GetOwner() const { return m_owner; }
 		void SetManager(std::weak_ptr<Managers> _val) { m_managers = _val; }

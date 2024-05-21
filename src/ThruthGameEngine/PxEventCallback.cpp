@@ -16,8 +16,8 @@ void Truth::PxEventCallback::onContact(const physx::PxContactPairHeader& _pairHe
 	{
 		const physx::PxContactPair& contactPair = _pairs[i];
 
-		const Collider* a = static_cast<Collider*>(contactPair.shapes[0]->userData);
-		const Collider* b = static_cast<Collider*>(contactPair.shapes[1]->userData);
+		Collider* a = static_cast<Collider*>(contactPair.shapes[0]->userData);
+		Collider* b = static_cast<Collider*>(contactPair.shapes[1]->userData);
 		if (a)
 		{
 			a->GetOwner().lock()->OnCollisionEnter(b);

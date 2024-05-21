@@ -12,6 +12,7 @@ public:
     METHOD(Awake);
     void Awake();
 
-    void Update(std::any _p);
+    METHOD(Update);
+    void Update();
 };
 

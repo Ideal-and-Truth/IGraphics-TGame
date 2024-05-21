@@ -15,7 +15,7 @@ Truth::Camera::~Camera()
 
 }
 
-void Truth::Camera::Update(std::any _p)
+void Truth::Camera::Update()
 {
 	float dt = GetDeltaTime();
 	float speed = 100;
@@ -54,6 +54,4 @@ void Truth::Camera::Awake()
 	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 3000.f);
 	SetMainCamera();
-
-	EventBind<Camera>("Update", &Camera::Update);
 }

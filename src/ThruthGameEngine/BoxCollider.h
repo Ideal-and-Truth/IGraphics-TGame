@@ -29,9 +29,6 @@ namespace Truth
 		METHOD(Awake);
 		void Awake();
 
-		METHOD(Start);
-		void Start();
-
 		METHOD(Initalize);
 		void Initalize();
 	};

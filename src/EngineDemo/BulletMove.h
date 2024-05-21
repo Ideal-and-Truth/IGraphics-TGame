@@ -18,9 +18,10 @@ public:
     METHOD(Start);
     void Start();
 
-    void Update(std::any _p);
+    METHOD(Update);
+    void Update();
 
     METHOD(OnCollisionEnter);
-    void OnCollisionEnter(const Truth::Collider* _other);
+    void OnCollisionEnter(Truth::Collider* _other);
 };
 

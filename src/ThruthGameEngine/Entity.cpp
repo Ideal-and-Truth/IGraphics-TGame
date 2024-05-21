@@ -19,7 +19,17 @@ Truth::Entity::~Entity()
 
 void Truth::Entity::Initailize()
 {
-	AddComponent<Transform>();
+	m_transform = AddComponent<Transform>();
+}
+
+void Truth::Entity::SetPosition(Vector3 _pos) const
+{
+	m_transform->SetPosition(_pos);
+}
+
+DirectX::SimpleMath::Vector3 Truth::Entity::GetPosition() const
+{
+	return m_transform->m_position;
 }
 
 void Truth::Entity::Awake()
@@ -60,7 +70,15 @@ void Truth::Entity::Start()
 	}
 }
 
-void Truth::Entity::OnCollisionEnter(const Collider* _other) const
+void Truth::Entity::Update()
+{
+	for (auto& p : m_update)
+	{
+		p.second->Invoke<void>(p.first);
+	}
+}
+
+void Truth::Entity::OnCollisionEnter(Collider* _other)
 {
 	for (auto& p : m_onCollisionEnter)
 	{

@@ -13,10 +13,9 @@ Shooter::~Shooter()
 
 void Shooter::Awake()
 {
-	EventBind("Update", &Shooter::Update);
 }
 
-void Shooter::Update(std::any _p)
+void Shooter::Update()
 {
 	if (GetKeyDown(KEY::SPACE))
 	{

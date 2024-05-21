@@ -2,7 +2,8 @@
 #include "RigidBody.h"
 #include "BoxCollider.h"
 #include "BulletMove.h"
-
+#include "CapsuleCollider.h"
+#include "SphereCollider.h"
 Bullet::Bullet()
 {
 	m_layer = 2;
@@ -18,5 +19,7 @@ void Bullet::Initailize()
 	__super::Initailize();
 	AddComponent<BulletMove>();
 	AddComponent<Truth::RigidBody>();
-	AddComponent<Truth::BoxCollider>(Vector3{ 0.0f, 50.0f, 50.0f }, Vector3{ 1.0f, 1.0f, 1.0f }, false);
+	AddComponent<Truth::SphereCollider>(2.0f, false);
+
+	SetPosition(Vector3{ 0.0f, 50.0f, 50.0f });
 }

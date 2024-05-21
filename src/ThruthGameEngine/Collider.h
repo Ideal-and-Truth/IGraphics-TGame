@@ -14,9 +14,9 @@ namespace Truth
 		Vector3 m_center;
 		inline static uint32 m_colliderIDGenerator = 0;
 		uint32 m_colliderID;
+		physx::PxShape* m_collider;
 
 	protected:
-		physx::PxShape* m_collider;
 		physx::PxRigidActor* m_body;
 
 	public:

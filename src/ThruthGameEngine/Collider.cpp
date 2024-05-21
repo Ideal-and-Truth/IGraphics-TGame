@@ -33,3 +33,4 @@ void Truth::Collider::SetPosition(Vector3 _pos)
 	}
 }
 
+

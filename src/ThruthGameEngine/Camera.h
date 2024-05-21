@@ -20,7 +20,7 @@ namespace Truth
 		Camera();
 		virtual ~Camera();
 
-		void Update(std::any _p);
+		void Update();
 
 		void SetLens(float _fovY, float _aspect, float _nearZ, float _farZ);
 
