@@ -69,6 +69,9 @@
     <ClInclude Include="BulletShooter.h">
       <Filter>Entity\BulletSpowner</Filter>
     </ClInclude>
+    <ClInclude Include="TriggerWall.h">
+      <Filter>Entity\Wall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="BulletShooter.cpp">
       <Filter>Entity\BulletSpowner</Filter>
+    </ClCompile>
+    <ClCompile Include="TriggerWall.cpp">
+      <Filter>Entity\Wall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

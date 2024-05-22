@@ -73,6 +73,12 @@ namespace Truth
 		void Update();
 
 		void OnCollisionEnter(Collider* _other);
+		void OnCollisionStay(Collider* _other);
+		void OnCollisionExit(Collider* _other);
+
+		void OnTriggerEnter(Collider* _other);
+		void OnTriggerStay(Collider* _other);
+		void OnTriggerExit(Collider* _other);
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();

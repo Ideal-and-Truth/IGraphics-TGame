@@ -250,17 +250,21 @@ physx::PxRigidDynamic* Truth::PhysicsManager::createDynamic(const physx::PxTrans
 
 physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0, physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1, physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
 {
-	PX_UNUSED(attributes0);
-	PX_UNUSED(attributes1);
 	PX_UNUSED(constantBlockSize);
 	PX_UNUSED(constantBlock);
 
 	// all initial and persisting reports for everything, with per-point data
 	// 한마디로 걍 필터 없는거처럼 행동한다 이거
 
-	if (physx::m_collsionTable[filterData0.word0] & 1 << filterData1.word0)
+	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 	{
-		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
+		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+	}
+
+	else if (physx::m_collsionTable[filterData0.word0] & 1 << filterData1.word0)
+	{
+		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT 
+			| physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
 			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
 			| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
 			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;

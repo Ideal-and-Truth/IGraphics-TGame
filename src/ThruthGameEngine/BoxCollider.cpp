@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "Entity.h"
 #include "PhysicsManager.h"
+#include "MathConverter.h"
 
 Truth::BoxCollider::BoxCollider(bool _isTrigger)
 	: Collider(_isTrigger)
@@ -48,8 +49,16 @@ void Truth::BoxCollider::SetSize(Vector3 _size)
 
 void Truth::BoxCollider::Awake()
 {
+	auto r = m_owner.lock()->GetComponent<RigidBody>();
+	if (r.expired())
+	{
+		m_body = m_managers.lock()->Physics()->CreateDefaultRigidStatic();
+		m_body->attachShape(*m_collider);
+		physx::PxTransform t(MathConverter::Convert(m_owner.lock()->GetPosition()));
+		m_body->setGlobalPose(t);
+		m_managers.lock()->Physics()->AddScene(m_body);
+	}
 }
-
 
 void Truth::BoxCollider::Initalize()
 {
@@ -59,6 +68,6 @@ void Truth::BoxCollider::Initalize()
 
 	SetUpFiltering(m_owner.lock()->m_layer);
 
-	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 }

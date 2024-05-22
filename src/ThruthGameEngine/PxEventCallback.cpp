@@ -18,13 +18,30 @@ void Truth::PxEventCallback::onContact(const physx::PxContactPairHeader& _pairHe
 
 		Collider* a = static_cast<Collider*>(contactPair.shapes[0]->userData);
 		Collider* b = static_cast<Collider*>(contactPair.shapes[1]->userData);
-		if (a)
+		
+		if (contactPair.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND))
 		{
-			a->GetOwner().lock()->OnCollisionEnter(b);
+			if (a && b)
+			{
+				a->GetOwner().lock()->OnCollisionEnter(b);
+				b->GetOwner().lock()->OnCollisionEnter(a);
+			}
 		}
-		if (b)
+		if (contactPair.events & (physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
 		{
-			b->GetOwner().lock()->OnCollisionEnter(a);
+			if (a && b)
+			{
+				a->GetOwner().lock()->OnCollisionStay(b);
+				b->GetOwner().lock()->OnCollisionStay(a);
+			}
+		}
+		if (contactPair.events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST))
+		{
+			if (a && b)
+			{
+				a->GetOwner().lock()->OnCollisionExit(b);
+				b->GetOwner().lock()->OnCollisionExit(a);
+			}
 		}
 	}
 }
@@ -32,6 +49,38 @@ void Truth::PxEventCallback::onContact(const physx::PxContactPairHeader& _pairHe
 
 void Truth::PxEventCallback::onTrigger(physx::PxTriggerPair* _pairs, physx::PxU32 _count)
 {
+	for (uint32 i = 0; i < _count; i++)
+	{
+		const physx::PxTriggerPair& triggerPair = _pairs[i];
+
+		Collider* a = static_cast<Collider*>(triggerPair.triggerShape->userData);
+		Collider* b = static_cast<Collider*>(triggerPair.otherShape->userData);
+
+		if (triggerPair.status & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND))
+		{
+			if (a && b)
+			{
+				a->GetOwner().lock()->OnTriggerEnter(b);
+				b->GetOwner().lock()->OnTriggerEnter(a);
+			}
+		}
+		else if (triggerPair.status & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST))
+		{
+			if (a && b)
+			{
+				a->GetOwner().lock()->OnTriggerExit(b);
+				b->GetOwner().lock()->OnTriggerExit(a);
+			}
+		}
+		else
+		{
+			if (a && b)
+			{
+				a->GetOwner().lock()->OnTriggerStay(b);
+				b->GetOwner().lock()->OnTriggerStay(a);
+			}
+		}
+	}
 }
 
 void Truth::PxEventCallback::onWake(physx::PxActor** _actors, physx::PxU32 _count)
