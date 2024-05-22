@@ -122,13 +122,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		//Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		//Renderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx", true);
-		//Renderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
-		//Renderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
-		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
-		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-		//Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"Floor/SM_tilefloor.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -142,9 +144,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		//ka->AddAnimation("idle", idleAnim);
 
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
-		std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
 		std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
 		ka->AddAnimation("Run", runAnim);
@@ -155,7 +158,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(ka);
 		renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
-		renderScene->AddObject(mesh2);
+		//renderScene->AddObject(mesh2);
 		renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
@@ -207,7 +210,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				world.CreateRotationY(angle);
 
-				mesh2->SetTransformMatrix(world);
+				//mesh2->SetTransformMatrix(world);
 
 				//----- Set Draw -----//
 				if (GetAsyncKeyState('Z') & 0x8000)

@@ -42,7 +42,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetSRVPool() { return m_srvHeap; }
 
 		ComPtr<ID3D12DescriptorHeap> GetImguiSRVHeap() { return m_imguiSrvHeap->GetDescriptorHeap(); }
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetImguiSRVPool() { return m_imguiSrvHeap; }
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetImGuiSRVPool() { return m_imguiSrvHeap; }
 
 		void CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBuffer>& VertexBuffer);
 		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer);
@@ -114,7 +114,7 @@ namespace Ideal
 		const uint32 m_srvHeapCount = 256U;
 
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_imguiSrvHeap;
-		const uint32 m_imguiSrvHeapCount = 1;
+		const uint32 m_imguiSrvHeapCount = 3;
 
 		// 2024.05.14 Multi Render Target
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;

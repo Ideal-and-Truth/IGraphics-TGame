@@ -75,7 +75,7 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	//------------Imgui SRV Heap-----------//
 	m_imguiSrvHeap = std::make_shared<D3D12DescriptorHeap>();
 	m_imguiSrvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, m_imguiSrvHeapCount);
-
+	m_imguiSrvHeap->SetName(L"imguiSRVHeap");
 }
 
 void ResourceManager::Fence()
@@ -320,12 +320,20 @@ void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Te
 
 	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
+	const float c[4] = { 0.f,0.f,0.f,1.f };
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = Format;
+	clearValue.Color[0] = c[0];
+	clearValue.Color[1] = c[1];
+	clearValue.Color[2] = c[2];
+	clearValue.Color[3] = c[3];
+
 	Check(m_device->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
 		&resourceDesc,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		nullptr,
+		&clearValue,
 		IID_PPV_ARGS(resource.GetAddressOf())
 	));
 

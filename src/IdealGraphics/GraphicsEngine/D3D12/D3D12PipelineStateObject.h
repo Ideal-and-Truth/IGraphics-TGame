@@ -26,6 +26,7 @@ namespace Ideal
 		void SetInputLayout		(const D3D12_INPUT_ELEMENT_DESC* InputElements, uint32 Count);
 		void SetRasterizerState (const D3D12_RASTERIZER_DESC RSDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT));
 		void SetBlendState		(const D3D12_BLEND_DESC BlendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT));
+		void SetTargetFormat(const uint32 RTVNum, DXGI_FORMAT* RTVFormat, const DXGI_FORMAT& DSVFormat);
 
 		void Create				(std::shared_ptr<Ideal::D3D12Renderer> Renderer);
 
