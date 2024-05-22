@@ -166,8 +166,8 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Editor\imgui\imconfig.h" />
-    <ClInclude Include="Editor\imgui\imgui.h" />
+    <ClInclude Include="GraphicsEngine\public\imconfig.h" />
+    <ClInclude Include="GraphicsEngine\public\imgui.h" />
     <ClInclude Include="Editor\imgui\imgui_impl_dx12.h" />
     <ClInclude Include="Editor\imgui\imgui_impl_win32.h" />
     <ClInclude Include="Editor\imgui\imgui_internal.h" />

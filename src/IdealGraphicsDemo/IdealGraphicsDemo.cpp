@@ -33,7 +33,8 @@ using namespace std;
 #include "GraphicsEngine/public/ISpotLight.h"
 #include "GraphicsEngine/public/IPointLight.h"
 
-#include "Editor/imgui/imgui.h"
+//#include "Editor/imgui/imgui.h"
+#include "GraphicsEngine/public/imgui.h"
 
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 //#include "GraphicsEngine/public/ICamera.h"
