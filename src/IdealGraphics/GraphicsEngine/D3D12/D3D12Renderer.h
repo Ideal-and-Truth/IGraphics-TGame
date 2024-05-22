@@ -3,8 +3,11 @@
 // Main Interface
 #include "Core/Core.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
+
+
 #include <d3d12.h>
 #include "d3dx12.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 // TEMP
 #include "imgui.h"
@@ -223,5 +226,6 @@ namespace Ideal
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		Ideal::D3D12DescriptorHandle m_imguiSRVHandle;
 	};
 }

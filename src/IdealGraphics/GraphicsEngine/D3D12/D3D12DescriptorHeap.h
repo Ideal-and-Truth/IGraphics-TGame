@@ -61,6 +61,10 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle Allocate(uint32 Count = 1);
 
 		void Reset();
+
+	public:
+		void SetName(const std::wstring& Name) { m_descriptorHeap->SetName(Name.c_str()); }
+
 	private:
 		ComPtr<ID3D12DescriptorHeap> m_descriptorHeap;
 

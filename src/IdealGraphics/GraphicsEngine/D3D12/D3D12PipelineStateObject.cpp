@@ -54,6 +54,17 @@ void Ideal::D3D12PipelineStateObject::SetBlendState(const D3D12_BLEND_DESC Blend
 	m_psoDesc.BlendState = BlendDesc;
 }
 
+void Ideal::D3D12PipelineStateObject::SetTargetFormat(const uint32 RTVNum, DXGI_FORMAT* RTVFormat, const DXGI_FORMAT& DSVFormat)
+{
+	m_psoDesc.NumRenderTargets = RTVNum;
+
+	for (uint32 i = 0; i < RTVNum; ++i)
+	{
+		m_psoDesc.RTVFormats[i] = RTVFormat[i];
+	}
+	m_psoDesc.DSVFormat = DSVFormat;
+}
+
 void Ideal::D3D12PipelineStateObject::Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer)
 {
 	//RootSignature
@@ -65,9 +76,9 @@ void Ideal::D3D12PipelineStateObject::Create(std::shared_ptr<Ideal::D3D12Rendere
 	m_psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	m_psoDesc.SampleMask = UINT_MAX;
 	m_psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	m_psoDesc.NumRenderTargets = 1;
-	m_psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	m_psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//m_psoDesc.NumRenderTargets = 1;
+	//m_psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//m_psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	m_psoDesc.SampleDesc.Count = 1;
 
 	Check(Renderer->GetDevice()->CreateGraphicsPipelineState(&m_psoDesc, IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf())));

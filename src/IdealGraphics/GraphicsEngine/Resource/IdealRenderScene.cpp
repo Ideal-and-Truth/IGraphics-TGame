@@ -43,7 +43,7 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 
 	//---GBuffer SRV RTV---//
 	CreateGBuffer(Renderer);
-	CreateDSV(Renderer);
+	//CreateDSV(Renderer);
 
 	//---Screen Quad---//
 	InitScreenQuad(Renderer);
@@ -176,14 +176,14 @@ void Ideal::IdealRenderScene::DrawScreen(std::shared_ptr<IdealRenderer> Renderer
 
 	TransitionGBufferToSRV(Renderer);
 
-	CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_depthBuffer->GetResource(),
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-		//D3D12_RESOURCE_STATE_GENERIC_READ
-	);
+	//CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+	//	m_depthBuffer->GetResource(),
+	//	D3D12_RESOURCE_STATE_DEPTH_WRITE,
+	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	//	//D3D12_RESOURCE_STATE_GENERIC_READ
+	//);
 
-	commandList->ResourceBarrier(1, &dsvBarrier);
+	//commandList->ResourceBarrier(1, &dsvBarrier);
 
 	m_fullScreenQuad->Draw(Renderer, m_gBuffers, m_depthBuffer);
 }
@@ -295,6 +295,17 @@ void Ideal::IdealRenderScene::CreateStaticMeshPSO(std::shared_ptr<IdealRenderer>
 	m_staticMeshPSO->SetRootSignature(m_staticMeshRootSignature.Get());
 	m_staticMeshPSO->SetRasterizerState();
 	m_staticMeshPSO->SetBlendState();
+
+	DXGI_FORMAT rtvFormat[m_gBufferNum] = {
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_R32G32B32A32_FLOAT
+	};
+	DXGI_FORMAT dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	m_staticMeshPSO->SetTargetFormat(m_gBufferNum, rtvFormat, dsvFormat);
+
 	m_staticMeshPSO->Create(d3d12Renderer);
 }
 
@@ -361,6 +372,17 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer
 	m_skinnedMeshPSO->SetRootSignature(m_skinnedMeshRootSignature.Get());
 	m_skinnedMeshPSO->SetRasterizerState();
 	m_skinnedMeshPSO->SetBlendState();
+
+	DXGI_FORMAT rtvFormat[m_gBufferNum] = {
+	DXGI_FORMAT_R32G32B32A32_FLOAT,
+	DXGI_FORMAT_R32G32B32A32_FLOAT,
+	DXGI_FORMAT_R32G32B32A32_FLOAT,
+	DXGI_FORMAT_R32G32B32A32_FLOAT
+	};
+	DXGI_FORMAT dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	m_skinnedMeshPSO->SetTargetFormat(m_gBufferNum, rtvFormat, dsvFormat);
+
 	m_skinnedMeshPSO->Create(d3d12Renderer);
 }
 
@@ -543,12 +565,13 @@ void Ideal::IdealRenderScene::TransitionGBufferToRTVandClear(std::shared_ptr<Ide
 	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, nullptr);
 	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
 
-	CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_depthBuffer->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	commandList->ResourceBarrier(1, &dsvBarrier);
+	/*CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_depthBuffer->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	commandList->ResourceBarrier(1, &dsvBarrier);*/
 	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &m_depthBuffer->GetDSV().GetCpuHandle());
 	//commandList->ClearDepthStencilView(m_depthBuffer->GetDSV().GetCpuHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
-	commandList->ClearDepthStencilView(d3d12Renderer->GetDSV(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	commandList->ClearDepthStencilView(d3d12Renderer->GetDSV(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	//m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	//commandList->OMSetRenderTargets(1, &resourceManager->GetRTVHeap(), FALSE, nullptr);
 	
 
@@ -654,5 +677,13 @@ void Ideal::IdealRenderScene::CreateScreenQuadPSO(std::shared_ptr<IdealRenderer>
 	m_screenQuadPSO->SetRootSignature(m_screenQuadRootSignature.Get());
 	m_screenQuadPSO->SetRasterizerState();
 	m_screenQuadPSO->SetBlendState();
+
+	DXGI_FORMAT rtvFormat[1] = {
+		DXGI_FORMAT_R8G8B8A8_UNORM
+	};
+	DXGI_FORMAT dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	m_screenQuadPSO->SetTargetFormat(1, rtvFormat, dsvFormat);
+
 	m_screenQuadPSO->Create(d3d12Renderer);
 }

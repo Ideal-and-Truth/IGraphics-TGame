@@ -443,9 +443,11 @@ void AssimpConverter::ReadMaterialData()
 			int a = 3;
 		}*/
 		// Diffuse Texture
-		srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
-		material->diffuseTextureFile = file.C_Str();
-
+		if (srcMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), file) == AI_SUCCESS)
+		{
+			srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
+			material->diffuseTextureFile = file.C_Str();
+		}
 		// Specular Texture
 		srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
 		material->specularTextureFile = file.C_Str();

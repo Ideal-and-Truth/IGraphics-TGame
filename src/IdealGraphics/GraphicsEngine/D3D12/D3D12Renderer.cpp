@@ -173,6 +173,14 @@ finishAdapter:
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	Check(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
 
+	float c[4] = { 0.f,0.f,0.f,1.f };
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = swapChainDesc.Format;
+	clearValue.Color[0] = c[0];
+	clearValue.Color[1] = c[1];
+	clearValue.Color[2] = c[2];
+	clearValue.Color[3] = c[3];
+
 	// descriptor heap 에서 rtv Descriptor의 크기
 	m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	{
@@ -383,6 +391,9 @@ void Ideal::D3D12Renderer::Render()
 		}
 		{
 			//------IMGUI RENDER------//
+			//ClearImGui();
+			ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
+			m_commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 			ImGui::Render();
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandList.Get());
 		}
@@ -572,6 +583,7 @@ void Ideal::D3D12Renderer::BeginRender()
 	//m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
 	m_commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::DimGray, 0, nullptr);
+
 	// 2024.04.14 Clear DSV
 	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 }
@@ -750,12 +762,13 @@ void Ideal::D3D12Renderer::InitImgui()
 	//ImGui::StyleColorsLight();
 
 	//-----Allocate Srv-----//
-	auto handle = m_resourceManager->GetImguiSRVPool()->Allocate();
+	m_imguiSRVHandle = m_resourceManager->GetImGuiSRVPool()->Allocate();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(m_hwnd);
 	ImGui_ImplDX12_Init(m_device.Get(), 2,
-		DXGI_FORMAT_R8G8B8A8_UNORM, m_resourceManager->GetImguiSRVHeap().Get(),
-		handle.GetCpuHandle(),
-		handle.GetGpuHandle());
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		m_resourceManager->GetImguiSRVHeap().Get(),
+		m_imguiSRVHandle.GetCpuHandle(),
+		m_imguiSRVHandle.GetGpuHandle());
 }
