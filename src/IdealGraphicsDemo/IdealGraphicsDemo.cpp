@@ -51,6 +51,8 @@ HWND g_hWnd;
 std::shared_ptr<Ideal::IdealRenderer> gRenderer = nullptr;
 bool show_demo_window = true;
 bool show_another_window = false;
+bool show_angle_window = true;
+
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 // 전역 변수:
@@ -67,6 +69,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera);
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera);
 void ImGuiTest();
+void DirLightAngle(float* angle);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -121,16 +124,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->SetRenderScene(renderScene);
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
-		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/statue_join.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"Floor/SM_tilefloor.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -142,10 +143,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
-		//ka->AddAnimation("idle", idleAnim);
-
-		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
-		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		
 		std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
@@ -156,10 +154,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		//renderScene->AddObject(ka);
-		renderScene->AddObject(cat);
+		//renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
 		//renderScene->AddObject(mesh2);
-		renderScene->AddObject(mesh3);
+		//renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
@@ -202,7 +200,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				auto cp = camera->GetPosition();
 				auto pp = pointLight->GetPosition();
 
-				angle += 0.4f;
+				//angle += 0.4f;
+				if (angle > 360.f)
+				{
+					angle = 0.f;
+				}
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 				world2 = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 
@@ -215,16 +217,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//----- Set Draw -----//
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-					cat->SetDrawObject(false);
+					//cat->SetDrawObject(false);
 				}
 				if (GetAsyncKeyState('X') & 0x8000)
 				{
-					cat->SetDrawObject(true);
+					//cat->SetDrawObject(true);
 				}
 
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
-				ImGuiTest();
+				//ImGuiTest();
+				DirLightAngle(&angle);
 
 				// MAIN LOOP
 				gRenderer->Tick();
@@ -358,11 +361,18 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
 	}
 }
-
+void DirLightAngle(float* angle)
+{
+	if(show_angle_window)
+	{
+		ImGui::Begin("Directional Light Angle Window");
+		ImGui::SliderFloat("Angle", angle, 0.0f, 360.0f);
+		ImGui::End();
+	}
+}
 void ImGuiTest()
 {
 	{
-		//------IMGUI Tick------//
 		ImGuiIO& io = ImGui::GetIO();
 
 		if (show_demo_window)

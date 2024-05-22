@@ -49,7 +49,7 @@ void AssimpConverter::Replace(std::wstring& OutStr, std::wstring Comp, std::wstr
 	OutStr = temp;
 }
 
-void AssimpConverter::ReadAssetFile(const std::wstring& path)
+void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData)
 {
 	std::wstring fileStr;
 	fileStr = m_assetPath + path;
@@ -60,8 +60,11 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path)
 	flag |= aiProcess_GenUVCoords;
 	flag |= aiProcess_GenNormals;
 	flag |= aiProcess_CalcTangentSpace;
-	//flag |= aiProcess_OptimizeMeshes;
-	//flag |= aiProcess_PreTransformVertices;
+	if (!isSkinnedData)
+	{
+		flag |= aiProcess_OptimizeMeshes;
+		flag |= aiProcess_PreTransformVertices;
+	}
 	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
 
 	m_scene = m_importer->ReadFile(

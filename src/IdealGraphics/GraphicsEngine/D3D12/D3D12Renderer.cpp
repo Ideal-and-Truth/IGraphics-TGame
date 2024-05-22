@@ -495,7 +495,7 @@ void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool is
 	assimpConverter->SetModelPath(m_modelPath);
 	assimpConverter->SetTexturePath(m_texturePath);
 
-	assimpConverter->ReadAssetFile(FileName);
+	assimpConverter->ReadAssetFile(FileName, isSkinnedData);
 
 	// Temp : ".fbx" 삭제
 	FileName.pop_back();
@@ -518,7 +518,7 @@ void Ideal::D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName
 	assimpConverter->SetModelPath(m_modelPath);
 	assimpConverter->SetTexturePath(m_texturePath);
 
-	assimpConverter->ReadAssetFile(FileName);
+	assimpConverter->ReadAssetFile(FileName, false);
 
 	// Temp : ".fbx" 삭제
 	FileName.pop_back();
