@@ -90,7 +90,9 @@ namespace Ideal
 		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false) override;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
 
+		//--------ImGui--------//
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+		virtual void ClearImGui() override;
 
 	public:
 		void Release();

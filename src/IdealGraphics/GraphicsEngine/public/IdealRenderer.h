@@ -52,5 +52,6 @@ namespace Ideal
 
 	public:
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) abstract;
+		virtual void ClearImGui() abstract;
 	};
 }
