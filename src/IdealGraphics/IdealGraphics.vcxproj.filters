@@ -140,6 +140,14 @@
     <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
     <ClInclude Include="GraphicsEngine\public\ILight.h" />
     <ClInclude Include="GraphicsEngine\public\IdealRendererDefinitions.h" />
+    <ClInclude Include="Editor\imgui\imconfig.h" />
+    <ClInclude Include="Editor\imgui\imgui.h" />
+    <ClInclude Include="Editor\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="Editor\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="Editor\imgui\imgui_internal.h" />
+    <ClInclude Include="Editor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Editor\imgui\imstb_textedit.h" />
+    <ClInclude Include="Editor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -210,6 +218,13 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
+    <ClCompile Include="Editor\imgui\imgui.cpp" />
+    <ClCompile Include="Editor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Editor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Editor\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="Editor\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Editor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Editor\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

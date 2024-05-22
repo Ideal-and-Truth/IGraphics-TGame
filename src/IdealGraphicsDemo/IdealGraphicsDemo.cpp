@@ -45,6 +45,7 @@ using namespace DirectX::SimpleMath;
 #define WIDTH 1280
 #define HEIGHT 960
 HWND g_hWnd;
+std::shared_ptr<Ideal::IdealRenderer> gRenderer = nullptr;
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -89,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
-		std::shared_ptr<Ideal::IdealRenderer> Renderer = CreateRenderer(
+		gRenderer = CreateRenderer(
 			EGraphicsInterfaceType::D3D12,
 			&g_hWnd,
 			WIDTH,
@@ -99,18 +100,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Resources/Textures/"
 		);
 
-		Renderer->Init();
+		gRenderer->Init();
 		
 		Vector3 pointLightPosition = Vector3(0.f);
 
 		//-------------------Create Camera-------------------//
-		std::shared_ptr<Ideal::ICamera> camera = Renderer->CreateCamera();
+		std::shared_ptr<Ideal::ICamera> camera = gRenderer->CreateCamera();
 		InitCamera(camera);
-		Renderer->SetMainCamera(camera);
+		gRenderer->SetMainCamera(camera);
 
 		//-------------------Create Scene-------------------//
-		std::shared_ptr<Ideal::IRenderScene> renderScene = Renderer->CreateRenderScene();
-		Renderer->SetRenderScene(renderScene);
+		std::shared_ptr<Ideal::IRenderScene> renderScene = gRenderer->CreateRenderScene();
+		gRenderer->SetRenderScene(renderScene);
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//Renderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
@@ -126,17 +127,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 		//-------------------Create Mesh Object-------------------//
-		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = Renderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		std::shared_ptr<Ideal::IAnimation> walkAnim = Renderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = Renderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		std::shared_ptr<Ideal::IAnimation> runAnim = Renderer->CreateAnimation(L"Kachujin/Run");
-		std::shared_ptr<Ideal::IAnimation> idleAnim = Renderer->CreateAnimation(L"Kachujin/Idle");
-		std::shared_ptr<Ideal::IAnimation> slashAnim = Renderer->CreateAnimation(L"Kachujin/Slash");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
+		std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
+		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		//ka->AddAnimation("idle", idleAnim);
 
-		std::shared_ptr<Ideal::IMeshObject> mesh = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
-		std::shared_ptr<Ideal::IMeshObject> mesh2 = Renderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
-		std::shared_ptr<Ideal::IMeshObject> mesh3 = Renderer->CreateStaticMeshObject(L"Tower/Tower");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/statue_join");
+		std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
 		ka->AddAnimation("Run",runAnim);
@@ -151,9 +152,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
-		std::shared_ptr<Ideal::IDirectionalLight> dirLight = Renderer->CreateDirectionalLight();
-		std::shared_ptr<Ideal::ISpotLight> spotLight = Renderer->CreateSpotLight();
-		std::shared_ptr<Ideal::IPointLight> pointLight = Renderer->CreatePointLight();
+		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
 		dirLight->SetDirection(Vector3(1.f,0.f,1.f));
@@ -211,8 +212,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					cat->SetDrawObject(true);
 				}
 				// MAIN LOOP
-				Renderer->Tick();
-				Renderer->Render();
+				gRenderer->Tick();
+				gRenderer->Render();
 			}
 		}
 	}
@@ -270,6 +271,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (gRenderer)
+	{
+		gRenderer->SetImGuiWin32WndProcHandler(hWnd, message, wParam, lParam);
+	}
 	switch (message)
 	{
 		case WM_COMMAND:

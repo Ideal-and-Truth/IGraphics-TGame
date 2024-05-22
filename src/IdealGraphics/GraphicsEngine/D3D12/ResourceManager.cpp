@@ -71,6 +71,11 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	//-----------DSV Heap------------//
 	m_dsvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
 	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+
+	//------------Imgui SRV Heap-----------//
+	m_imguiSrvHeap = std::make_shared<D3D12DescriptorHeap>();
+	m_imguiSrvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, m_imguiSrvHeapCount);
+
 }
 
 void ResourceManager::Fence()

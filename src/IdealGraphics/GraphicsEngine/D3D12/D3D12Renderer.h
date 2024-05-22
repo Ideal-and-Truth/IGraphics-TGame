@@ -6,6 +6,11 @@
 #include <d3d12.h>
 #include "d3dx12.h"
 
+// TEMP
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx12.h"
+
 struct ID3D12Device;
 struct ID3D12CommandQueue;
 struct IDXGISwapChain3;
@@ -47,7 +52,7 @@ namespace Ideal
 	{
 	public:
 		enum { FRAME_BUFFER_COUNT = 2 };
-		
+
 
 	private:
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;
@@ -84,6 +89,8 @@ namespace Ideal
 
 		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false) override;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
+
+		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 
 	public:
 		void Release();
@@ -207,5 +214,12 @@ namespace Ideal
 		std::wstring m_texturePath;
 
 		std::shared_ptr<Ideal::D3D12Texture> t1 = nullptr;
+
+		// EDITOR TEST
+	private:
+		void InitImgui();
+		bool show_demo_window = true;
+		bool show_another_window = false;
+		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	};
 }
