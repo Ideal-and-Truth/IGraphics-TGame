@@ -57,8 +57,7 @@ void Truth::TimeManager::Update()
 	// 만일 고정 프레임 시간이 단위를 넘기게 되면 이벤트를 발행한다.
 	while (m_fixedDeltaTime >= m_fixedTime)
 	{
-		m_eventManager.lock()->PublishEvent("FixedUpdate");
-		m_eventManager.lock()->Update();
+		m_eventManager.lock()->FixedUpdate();
 		// 시간 조절
 		m_fixedDeltaTime -= m_fixedTime;
 	}

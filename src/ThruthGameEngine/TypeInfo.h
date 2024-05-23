@@ -203,6 +203,7 @@ public:
 
 	const Method* GetMethod(const char* name) const;
 
+
 	const std::vector<const Property*>& GetProperties() const
 	{
 		return m_properties;

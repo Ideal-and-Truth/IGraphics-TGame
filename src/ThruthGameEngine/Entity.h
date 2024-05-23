@@ -10,6 +10,7 @@ namespace Truth
 	class Component;
 	class Transform;
 	class Managers;
+	class Collider;
 }
 
 namespace Truth
@@ -22,6 +23,9 @@ namespace Truth
 	protected:
 		static uint32 m_entityCount;
 
+
+		std::string m_tag;
+
 		PROPERTY(ID);
 		uint32 m_ID;
 		PROPERTY(name);
@@ -33,14 +37,48 @@ namespace Truth
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
+		std::vector<std::pair<Component*, const Method*>> m_onCollisionEnter;
+		std::vector<std::pair<Component*, const Method*>> m_onCollisionStay;
+		std::vector<std::pair<Component*, const Method*>> m_onCollisionExit;
+
+		std::vector<std::pair<Component*, const Method*>> m_onTriggerEnter;
+		std::vector<std::pair<Component*, const Method*>> m_onTriggerStay;
+		std::vector<std::pair<Component*, const Method*>> m_onTriggerExit;
+
+		std::vector<std::pair<Component*, const Method*>> m_update;
+		std::vector<std::pair<Component*, const Method*>> m_fixedUpdate;
+		std::vector<std::pair<Component*, const Method*>> m_latedUpdate;
+
+		std::vector<std::pair<Component*, const Method*>> m_onBecomeVisible;
+		std::vector<std::pair<Component*, const Method*>> m_onBecomeInvisible;
+
+		std::vector<std::pair<Component*, const Method*>> m_destroy;
+
+		uint8 m_layer;
+
+		std::shared_ptr<Transform> m_transform;
+
+	public:
 		Entity();
 		virtual ~Entity();
 
 		virtual void Initailize();
+		void SetPosition(Vector3 _pos) const;
+		Vector3 GetPosition() const;
 
 		void Awake();
 		void Destroy();
 		void Start();
+
+		void Update();
+
+		void OnCollisionEnter(Collider* _other);
+		void OnCollisionStay(Collider* _other);
+		void OnCollisionExit(Collider* _other);
+
+		void OnTriggerEnter(Collider* _other);
+		void OnTriggerStay(Collider* _other);
+		void OnTriggerExit(Collider* _other);
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();
@@ -69,51 +107,104 @@ namespace Truth
 	template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
 	std::shared_ptr<C> Entity::AddComponent()
 	{
-		// 일단 만든다
-		// 타입 이름 가져오기
-		std::shared_ptr<C> component = std::make_shared<C>(m_manager, shared_from_this());
-
-		// 만일 중복 가능한 컴포넌트라면
-		if (component->CanMultiple())
+		if (GetComponent<C>().expired() || GetComponent<C>().lock()->CanMultiple())
 		{
+			std::shared_ptr<C> component = nullptr;
+			component = std::make_shared<C>();
+			component->SetManager(m_manager);
+			component->SetOwner(shared_from_this());
+
+			auto met = component->GetTypeInfo().GetMethod("Initalize");
+			if (met)
+			{
+				met->Invoke<void>(component.get());
+			}
 			m_components.push_back(component);
+
+			const auto& mets = component->GetTypeInfo().GetMethods();
+
+			for (const auto& m : mets)
+			{
+				std::string metName = m->GetName();
+
+				auto p = std::make_pair(component.get(), m);
+
+				if (metName == "OnCollisionEnter")
+				{
+					m_onCollisionEnter.push_back(p);
+				}
+				if (metName == "OnCollisionStay")
+				{
+					m_onCollisionStay.push_back(p);
+				}
+				if (metName == "OnCollisionExit")
+				{
+					m_onCollisionExit.push_back(p);
+				}
+
+				if (metName == "OnTriggerEnter")
+				{
+					m_onTriggerEnter.push_back(p);
+				}
+				if (metName == "OnTriggerStay")
+				{
+					m_onTriggerStay.push_back(p);
+				}
+				if (metName == "OnTriggerExit")
+				{
+					m_onTriggerExit.push_back(p);
+				}
+
+				if (metName == "Update")
+				{
+					m_update.push_back(p);
+				}
+				if (metName == "FixedUpdate")
+				{
+					m_fixedUpdate.push_back(p);
+				}
+				if (metName == "LateUpdate")
+				{
+					m_latedUpdate.push_back(p);
+				}
+
+				if (metName == "Destroy")
+				{
+					m_destroy.push_back(p);
+				}
+			}
+
 			return component;
 		}
 		else
 		{
-			if (!GetComponent<C>().expired())
-			{
-				return nullptr;
-			}
-			m_components.push_back(component);
-			return component;
+			return nullptr;
 		}
 	}
 
 	template<typename C, typename... Args, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type*>
 	std::shared_ptr<C> Entity::AddComponent(Args... _args)
 	{
-		// 일단 만든다
-		// 타입 이름 가져오기
-		std::shared_ptr<C> component = std::make_shared<C>(m_manager, shared_from_this(), _args...);
-
-		// 만일 중복 가능한 컴포넌트라면
-		if (component->CanMultiple())
+		if (GetComponent<C>().expired() || GetComponent<C>().lock()->CanMultiple())
 		{
+			std::shared_ptr<C> component = nullptr;
+			component = std::make_shared<C>(_args...);
+			component->SetManager(m_manager);
+			component->SetOwner(shared_from_this());
+
+			auto met = component->GetTypeInfo().GetMethod("Initalize");
+			if (met)
+			{
+				met->Invoke<void>(component.get());
+			}
 			m_components.push_back(component);
+
+			return component;
 		}
 		else
 		{
-			if (GetComponent<C>().expired())
-			{
-				m_components.push_back(component);
-			}
-			else
-			{
-				return nullptr;
-			}
+			return nullptr;
 		}
-		return component;
 	}
 
 	/// <summary>

@@ -5,7 +5,7 @@ namespace Truth
 {
 	class EventHandler;
 	class TimeManager;
-	class SceneManager;
+	class PhysicsManager;
 	class Entity;
 }
 
@@ -76,7 +76,7 @@ namespace Truth
 		std::unordered_map<const Truth::EventHandler*, std::list<EventSearch>> m_eventHandlerInfo;
 
 		std::weak_ptr<Truth::TimeManager> m_timeManager;
-		std::weak_ptr<Truth::SceneManager> m_sceneManager;
+		std::weak_ptr<Truth::PhysicsManager> m_physicsManager;
 
 	public:
 		EventManager();
@@ -84,11 +84,11 @@ namespace Truth
 
 	public:
 		// 생성자
-		void Initialize(std::weak_ptr<Truth::TimeManager> _timeManager, std::weak_ptr<SceneManager> _sceneManager);
+		void Initialize(std::weak_ptr<Truth::TimeManager> _timeManager, std::weak_ptr<Truth::PhysicsManager> _physicsManager);
 		// 업데이트
 		void Update();
 		void LateUpdate() {}
-		void FixedUpdate() {};
+		void FixedUpdate();
 		// 소멸
 		void Finalize();
 

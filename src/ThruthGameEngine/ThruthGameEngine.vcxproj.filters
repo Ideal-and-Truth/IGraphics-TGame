@@ -85,6 +85,12 @@
     <Filter Include="Enitity\TestCamera">
       <UniqueIdentifier>{14d40754-8c73-4d08-ad1f-ff4282d98281}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\String">
+      <UniqueIdentifier>{f1866153-6909-4bab-8ded-dceb35cf8139}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Math">
+      <UniqueIdentifier>{0a9672c8-1637-4454-8eb5-5a260ed8067d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -150,9 +156,6 @@
     <ClCompile Include="SphereCollider.cpp">
       <Filter>Component\Collider\Sphere</Filter>
     </ClCompile>
-    <ClCompile Include="StringConverter.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsManager.cpp">
       <Filter>Manager\PhysX</Filter>
     </ClCompile>
@@ -167,6 +170,13 @@
     </ClCompile>
     <ClCompile Include="DefalutCamera.cpp">
       <Filter>Enitity\TestCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="StringConverter.cpp">
+      <Filter>Utils\String</Filter>
+    </ClCompile>
+    <ClCompile Include="MathConverter.cpp" />
+    <ClCompile Include="PxEventCallback.cpp">
+      <Filter>Manager\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -250,9 +260,6 @@
     <ClInclude Include="SphereCollider.h">
       <Filter>Component\Collider\Sphere</Filter>
     </ClInclude>
-    <ClInclude Include="StringConverter.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsManager.h">
       <Filter>Manager\PhysX</Filter>
     </ClInclude>
@@ -269,6 +276,13 @@
       <Filter>Enitity\TestCamera</Filter>
     </ClInclude>
     <ClInclude Include="ShapeType.h">
+      <Filter>Manager\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="StringConverter.h">
+      <Filter>Utils\String</Filter>
+    </ClInclude>
+    <ClInclude Include="MathConverter.h" />
+    <ClInclude Include="PxEventCallback.h">
       <Filter>Manager\PhysX</Filter>
     </ClInclude>
   </ItemGroup>

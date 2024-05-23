@@ -1,14 +1,17 @@
 #include "Component.h"
 #include "TimeManager.h"
 #include "EventManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
 
-Truth::Component::Component(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner) 
+Truth::Component::Component() 
 	: m_canMultiple(false)
-	, m_managers(_managers)
-	, m_owner(_owner)
+	, m_managers()
+	, m_owner()
 {
 	m_name = typeid(*this).name();
 }
+
 
 Truth::Component::~Component()
 {

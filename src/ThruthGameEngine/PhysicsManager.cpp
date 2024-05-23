@@ -1,4 +1,7 @@
 #include "PhysicsManager.h"
+#include "PxEventCallback.h"
+
+// static uint8 physx::m_collsionTable[8] = {};
 
 Truth::PhysicsManager::PhysicsManager()
 	: m_allocator{}
@@ -10,7 +13,17 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_material(nullptr)
 	, m_pvd(nullptr)
 	, m_trasport(nullptr)
+	, collisionCallback(nullptr)
 {
+	for (uint8 i = 0; i < 8; i++)
+	{
+		for (uint8 j = 0; j < 8; j++)
+		{
+			physx::m_collsionTable[i] += 1 << j;
+		}
+	}
+
+	// SetCollisionFilter(1, 2, false);
 }
 
 Truth::PhysicsManager::~PhysicsManager()
@@ -28,21 +41,27 @@ void Truth::PhysicsManager::Initalize()
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
 
 	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
-
-	static Truth::TruthPxEventCallback collisionCallback;
+	PxInitExtensions(*m_physics, m_pvd);
+	collisionCallback = new Truth::PxEventCallback();
 
 	assert(m_physics && "PxCreatePhysics failed!");
 
+	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0.0f, -98.1f, 0.0f);
-	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = m_dispatcher;
-	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = FilterShaderExample;
+	sceneDesc.simulationEventCallback = collisionCallback;
+
+	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;
+	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;
 
 	m_scene = m_physics->createScene(sceneDesc);
+	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 4.0f);
-	m_scene->setSimulationEventCallback(&collisionCallback);
+	auto s = m_scene->getBounceThresholdVelocity();
+	m_scene->setBounceThresholdVelocity(100.0f);
 	physx::PxPvdSceneClient* pvdClient = m_scene->getScenePvdClient();
 
 	if (pvdClient)
@@ -51,20 +70,20 @@ void Truth::PhysicsManager::Initalize()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.0f);
+	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
-// 	for (physx::PxU32 i = 0; i < 5; i++)
-// 	{
-// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
-// 	}
-// 
-// 	if (!m_isInteractive)
-// 	{
-// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
-// 	}
+	// 	for (physx::PxU32 i = 0; i < 5; i++)
+	// 	{
+	// 		CreateStack(physx::PxTransform(physx::PxVec3(0, 0, m_stackZ -= 10.0f)), 10, 2.0f);
+	// 	}
+
+		// 	if (!m_isInteractive)
+		// 	{
+		// 		createDynamic(physx::PxTransform(physx::PxVec3(0, 40, 100)), physx::PxSphereGeometry(10), physx::PxVec3(0, -50, -100));
+		// 	}
 }
 
 void Truth::PhysicsManager::Finalize()
@@ -76,10 +95,12 @@ void Truth::PhysicsManager::Finalize()
 
 void Truth::PhysicsManager::Update()
 {
-	m_scene->simulate(0.02f);
-	physx::PxU32 a;
-	bool c = m_scene->fetchResults(true, &a);
+}
 
+void Truth::PhysicsManager::FixedUpdate()
+{
+	m_scene->simulate(1.0f / 60.0f);
+	m_scene->fetchResults(true);
 }
 
 void Truth::PhysicsManager::ResetPhysX()
@@ -114,12 +135,17 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic(Vector3 _pos, Qua
 
 physx::PxRigidDynamic* Truth::PhysicsManager::CreateDefaultRigidDynamic()
 {
-	return CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
+	physx::PxRigidDynamic* body = CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
+	// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+	// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+	// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
+	return body;
 }
 
 physx::PxRigidStatic* Truth::PhysicsManager::CreateDefaultRigidStatic()
 {
-	return CreateRigidStatic(Vector3::Zero, Quaternion::Identity);
+	physx::PxRigidStatic* body = CreateRigidStatic(Vector3::Zero, Quaternion::Identity);
+	return body;
 }
 
 physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
@@ -133,7 +159,7 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 		{
 			return nullptr;
 		}
-		shape = m_physics->createShape(physx::PxBoxGeometry(_args[0], _args[0], _args[0]), *m_material);
+		shape = m_physics->createShape(physx::PxBoxGeometry(_args[0], _args[1], _args[2]), *m_material);
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
@@ -171,31 +197,45 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	return shape;
 }
 
-
+void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin)
+{
+	if (_isCollisoin)
+	{
+		physx::m_collsionTable[_layerA] |= 1 << _layerB;
+		physx::m_collsionTable[_layerB] |= 1 << _layerA;
+	}
+	else
+	{
+		physx::m_collsionTable[_layerA] &= ~(1 << _layerB);
+		physx::m_collsionTable[_layerB] &= ~(1 << _layerA);
+	}
+}
 
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
 {
-	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_material);
-// 	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-// 	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent * 10, halfExtent * 10, halfExtent), *m_material);
+	// 	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+	// 	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 
 	for (physx::PxU32 i = 0; i < size; i++)
 	{
 		for (physx::PxU32 j = 0; j < size - i; j++)
 		{
-			physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1), 0) * halfExtent);
-			physx::PxRigidDynamic* body = m_physics->createRigidDynamic(t.transform(localTm));
-			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
-			body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
-			body->attachShape(*shape);
-			// body->setLinearVelocity(physx::PxVec3(0, -50, -100));
-			physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-
-			m_scene->addActor(*body);
-			// body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 		}
 	}
+	int i = 1;
+	int j = 1;
+	physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1) + 10, 0) * halfExtent);
+	physx::PxRigidDynamic* body = m_physics->createRigidDynamic(t.transform(localTm));
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
+	body->attachShape(*shape);
+	// body->setLinearVelocity(physx::PxVec3(0, -50, -100));
+	physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+
+	m_scene->addActor(*body);
+	// body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 	shape->release();
 }
 
@@ -206,4 +246,33 @@ physx::PxRigidDynamic* Truth::PhysicsManager::createDynamic(const physx::PxTrans
 	dynamic->setLinearVelocity(velocity);
 	m_scene->addActor(*dynamic);
 	return dynamic;
+}
+
+physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0, physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1, physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+{
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
+
+	// all initial and persisting reports for everything, with per-point data
+	// 한마디로 걍 필터 없는거처럼 행동한다 이거
+
+	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+	}
+
+	else if (physx::m_collsionTable[filterData0.word0] & 1 << filterData1.word0)
+	{
+		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT 
+			| physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
+			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+			| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	}
+	else
+	{
+		return physx::PxFilterFlag::eSUPPRESS;
+	}
+
+	return physx::PxFilterFlag::eDEFAULT;
 }

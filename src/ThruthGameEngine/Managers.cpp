@@ -69,7 +69,7 @@ void Truth::Managers::CreateManagers()
 
 void Truth::Managers::InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height) const
 {
-	m_eventManager->Initialize(m_timeManager, m_sceneManager);
+	m_eventManager->Initialize(m_timeManager, m_physXManager);
 	m_timeManager->Initalize(m_eventManager);
 	m_inputManager->Initalize(_hwnd, m_eventManager);
 	m_sceneManager->Initalize(m_eventManager);

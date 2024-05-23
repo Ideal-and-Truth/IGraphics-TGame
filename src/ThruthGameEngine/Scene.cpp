@@ -52,6 +52,11 @@ void Truth::Scene::Update()
 		e->Start();
 		m_startedEntity.pop();
 	}
+
+	for (auto& e : m_entities)
+	{
+		e->Update();
+	}
 }
 
 void Truth::Scene::ClearEntity()

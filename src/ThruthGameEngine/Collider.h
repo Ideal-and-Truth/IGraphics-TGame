@@ -12,14 +12,19 @@ namespace Truth
 	public:
 		bool m_isTrigger;
 		Vector3 m_center;
+		inline static uint32 m_colliderIDGenerator = 0;
+		uint32 m_colliderID;
+		physx::PxShape* m_collider;
 
 	protected:
-		physx::PxShape* m_collider;
 		physx::PxRigidActor* m_body;
 
 	public:
-		Collider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner, bool _isTrigger = true);
+		Collider(bool _isTrigger = true);
+		Collider(Vector3 _pos, bool _isTrigger = true);
 		virtual ~Collider();
+
+		void SetPosition(Vector3 _pos);
 
 	protected:
 		inline physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
@@ -35,6 +40,19 @@ namespace Truth
 		{
 			return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 		}
+
+		void SetUpFiltering(physx::PxU32 _filterGroup)
+		{
+			physx::PxFilterData filterData;
+			filterData.word0 = _filterGroup;
+			m_collider->setSimulationFilterData(filterData);
+		}
+	};
+
+	struct Collision
+	{
+		std::weak_ptr<Collider> m_collA;
+		std::weak_ptr<Collider> m_collB;
 	};
 }
 

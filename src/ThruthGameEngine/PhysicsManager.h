@@ -12,6 +12,16 @@
 #include "physx/PxPhysicsAPI.h"
 #pragma warning(pop)
 
+namespace Truth
+{
+	class PxEventCallback;
+}
+
+namespace physx
+{
+	static uint8 m_collsionTable[8];
+};
+
 /// <summary>
 /// PhysX 라이브러리를 사용하는 매니저
 /// 모든 PhysX 기능은 이 라이브러리를 통해 실행 될 것이다.
@@ -21,6 +31,8 @@ namespace Truth
 	class PhysicsManager
 	{
 	private:
+		Truth::PxEventCallback* collisionCallback;
+
 		// Foundation 생성
 		physx::PxFoundation* m_foundation;
 		physx::PxDefaultAllocator m_allocator;
@@ -43,29 +55,41 @@ namespace Truth
 		bool m_isInteractive = false;
 
 	public:
+
+	public:
 		PhysicsManager();
 		~PhysicsManager();
 
 		void Initalize();
 		void Finalize();
 		void Update();
+		void FixedUpdate();
 
 		void ResetPhysX();
 
 		void AddScene(physx::PxActor* _actor);
+
+		physx::PxMaterial* GetMaterial() { return m_material; };
 
 		physx::PxRigidDynamic* CreateRigidDynamic(Vector3 _pos, Quaternion _rot);
 		physx::PxRigidStatic* CreateRigidStatic(Vector3 _pos, Quaternion _rot);
 
 		physx::PxRigidDynamic* CreateDefaultRigidDynamic();
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
-
+		 
 		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
+
+		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
 	private:
 		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);
 		physx::PxRigidDynamic* createDynamic(const physx::PxTransform& _t, const physx::PxGeometry& _geometry, const physx::PxVec3& _velocity = physx::PxVec3(0));
 	};
+
+	physx::PxFilterFlags FilterShaderExample(
+		physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize);
 }
 
 namespace Truth
@@ -82,3 +106,4 @@ namespace Truth
 		virtual void onConstraintBreak(physx::PxConstraintInfo* _constraints, physx::PxU32 _count) {};
 	};
 }
+

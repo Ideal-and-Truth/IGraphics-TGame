@@ -19,13 +19,20 @@ namespace Truth
 
 		Matrix m_transformMatrix;
 
+		Vector3 m_look;
+
 	public:
-		Transform(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		Transform();
 		virtual ~Transform();
 
 		// 변환 내용 적용
 		void ApplyTransform(std::any _p);
 
+	private:
+		METHOD(Awake);
+		void Awake();
+
+	public:
 
 #pragma region Inline
 #pragma region Transform

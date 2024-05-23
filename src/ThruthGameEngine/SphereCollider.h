@@ -12,8 +12,19 @@ namespace Truth
 		float m_radius;
 
 	public:
-		SphereCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		SphereCollider(bool _isTrigger = true);
+		SphereCollider(float _radius, bool _isTrigger = true);
+		SphereCollider(Vector3 _pos, float _radius, bool _isTrigger = true);
 		virtual ~SphereCollider();
+
+		void SetRadius(float _radius);
+
+	private:
+		METHOD(Awake);
+		void Awake();
+
+		METHOD(Initalize);
+		void Initalize();
 	};
 }
 

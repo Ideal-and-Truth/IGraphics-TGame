@@ -17,14 +17,18 @@ namespace Truth
 		std::shared_ptr<Ideal::ICamera> m_camera;
 
 	public:
-		Camera(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		Camera();
 		virtual ~Camera();
 
-		void Update(std::any _p);
+		void Update();
 
 		void SetLens(float _fovY, float _aspect, float _nearZ, float _farZ);
 
 		void SetMainCamera();
+
+	private:
+		METHOD(Awake);
+		void Awake();
 	};
 }
 

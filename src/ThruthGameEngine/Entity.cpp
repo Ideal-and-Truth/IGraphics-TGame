@@ -7,6 +7,8 @@ Truth::Entity::Entity()
 	: m_manager()
 	, m_name("Empty Enitity")
 	, m_ID(m_entityCount++)
+	, m_layer(0)
+	, m_tag("None")
 {
 }
 
@@ -17,7 +19,17 @@ Truth::Entity::~Entity()
 
 void Truth::Entity::Initailize()
 {
-	AddComponent<Transform>();
+	m_transform = AddComponent<Transform>();
+}
+
+void Truth::Entity::SetPosition(Vector3 _pos) const
+{
+	m_transform->SetPosition(_pos);
+}
+
+DirectX::SimpleMath::Vector3 Truth::Entity::GetPosition() const
+{
+	return m_transform->m_position;
 }
 
 void Truth::Entity::Awake()
@@ -31,18 +43,14 @@ void Truth::Entity::Awake()
 			met->Invoke<void>(c.get());
 		}
 	}
-	DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
+	// DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
 }
 
 void Truth::Entity::Destroy()
 {
-	for (auto& c : m_components)
+	for (auto& p : m_destroy)
 	{
-		auto met = c->GetTypeInfo().GetMethod("Destroy");
-		if (met)
-		{
-			met->Invoke<void>(c.get());
-		}
+		p.second->Invoke<void>(p.first);
 	}
 }
 
@@ -55,6 +63,62 @@ void Truth::Entity::Start()
 		{
 			met->Invoke<void>(c.get());
 		}
+	}
+}
+
+void Truth::Entity::Update()
+{
+	for (auto& p : m_update)
+	{
+		p.second->Invoke<void>(p.first);
+	}
+}
+
+void Truth::Entity::OnCollisionEnter(Collider* _other)
+{
+	for (auto& p : m_onCollisionEnter)
+	{
+		p.second->Invoke<void>(p.first, _other);
+	}
+}
+
+void Truth::Entity::OnCollisionStay(Collider* _other)
+{
+	for (auto& p : m_onCollisionStay)
+	{
+		p.second->Invoke<void>(p.first, _other);
+	}
+}
+
+void Truth::Entity::OnCollisionExit(Collider* _other)
+{
+	for (auto& p : m_onCollisionExit)
+	{
+		p.second->Invoke<void>(p.first, _other);
+	}
+}
+
+void Truth::Entity::OnTriggerEnter(Collider* _other)
+{
+	for (auto& p : m_onTriggerEnter)
+	{
+		p.second->Invoke<void>(p.first, _other);
+	}
+}
+
+void Truth::Entity::OnTriggerStay(Collider* _other)
+{
+	for (auto& p : m_onTriggerStay)
+	{
+		p.second->Invoke<void>(p.first, _other);
+	}
+}
+
+void Truth::Entity::OnTriggerExit(Collider* _other)
+{
+	for (auto& p : m_onTriggerExit)
+	{
+		p.second->Invoke<void>(p.first, _other);
 	}
 }
 

@@ -3,18 +3,15 @@
 #include "GraphicsManager.h"
 #include "ISkinnedMeshObject.h"
 
-Truth::Mesh::Mesh(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner)
-	: Component(_managers, _owner)
+Truth::Mesh::Mesh()
+	: Component()
 {
 }
 
-Truth::Mesh::Mesh(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner, std::wstring _path)
-	: Component(_managers, _owner)
+Truth::Mesh::Mesh(std::wstring _path)
+	: Component()
+	, m_path(_path)
 {
-	SetMesh(_path);
-	SetRenderable(true);
-
-	EventBind("Update", &Truth::Mesh::Update);
 }
 
 Truth::Mesh::~Mesh()
@@ -44,4 +41,12 @@ void Truth::Mesh::Update(std::any _p)
 		m_mesh->SetDrawObject(test);
 		test = !test;
 	}
+}
+
+void Truth::Mesh::Awake()
+{
+	SetMesh(m_path);
+	SetRenderable(true);
+
+	EventBind("Update", &Truth::Mesh::Update);
 }

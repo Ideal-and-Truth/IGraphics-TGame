@@ -14,15 +14,23 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(BoxCollider)
 
 	public:
+		PROPERTY(size);
 		Vector3 m_size;
 
 	public:
-		BoxCollider(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		BoxCollider(bool _isTrigger = true);
+		BoxCollider(Vector3 _size, bool _isTrigger = true);
+		BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger = true);
 		virtual ~BoxCollider();
+
+		void SetSize(Vector3 _size);
 
 	private:
 		METHOD(Awake);
 		void Awake();
+
+		METHOD(Initalize);
+		void Initalize();
 	};
 }
 

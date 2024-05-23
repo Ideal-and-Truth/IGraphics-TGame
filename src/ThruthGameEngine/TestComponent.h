@@ -17,7 +17,7 @@ namespace Truth
 		int m_testInt;
 
 	public:
-		TestComponent(std::shared_ptr<Managers> _managers, std::shared_ptr<Entity> _owner);
+		TestComponent();
 		virtual	~TestComponent();
 
 		METHOD(Awake);
@@ -25,7 +25,7 @@ namespace Truth
 
 	public:
 		METHOD(Update);
-		void Update(std::any _p);
+		void Update();
 
 		void QUP(std::any _p);
 		void QDOWN(std::any _p);
