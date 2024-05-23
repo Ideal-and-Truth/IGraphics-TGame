@@ -6,6 +6,10 @@
 #include "ISkinnedMeshObject.h"
 #include "IRenderScene.h"
 #include "IAnimation.h"
+#include "GraphicsManager.h"
+#include "imgui.h"
+
+Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 
 Processor::Processor()
 	: m_hwnd(nullptr)
@@ -69,7 +73,10 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 {
 	HDC			hdc;
 	PAINTSTRUCT ps;
-
+	if (g_Renderer)
+	{
+		g_Renderer->SetImGuiWin32WndProcHandler(hWnd, message, wParam, lParam);
+	}
 	switch (message)
 	{
 	case WM_PAINT:
@@ -103,6 +110,8 @@ void Processor::FixedUpdate()
 
 void Processor::Render()
 {
+	g_Renderer->ClearImGui();
+	ImGui::ShowDemoWindow(&show_demo_window);
 	m_manager->Render();
 }
 
@@ -130,8 +139,11 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 
 	RegisterClassExW(&wcex);
 
+	RECT windowRect = { 0,0, 1920, 1080 };
+	::AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, false);
+
 	m_hwnd = CreateWindowW(szAppName, szAppName, WS_OVERLAPPEDWINDOW,
-		100, 100, _width, _height, NULL, NULL, _hInstance, NULL);
+		100, 100, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, _hInstance, NULL);
 
 	if (!m_hwnd)
 	{
@@ -147,27 +159,28 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 
 	GetWindowRect(m_hwnd, &nowRect);
 
-	RECT newRect = {};
-	newRect.left = 0;
-	newRect.top = 0;
-	newRect.right = _width;
-	newRect.bottom = _height;
-
-	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
-	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
-
-	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
-	int _newWidth = (newRect.right - newRect.left);
-	int _newHeight = (newRect.bottom - newRect.top);
-
-	SetWindowPos(m_hwnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
-		_newWidth, _newHeight, SWP_SHOWWINDOW);
+// 	RECT newRect = {};
+// 	newRect.left = 0;
+// 	newRect.top = 0;
+// 	newRect.right = _width;
+// 	newRect.bottom = _height;
+// 
+// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+// 
+// 	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
+// 	int _newWidth = (newRect.right - newRect.left);
+// 	int _newHeight = (newRect.bottom - newRect.top);
+// 
+// 	SetWindowPos(m_hwnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
+// 		_newWidth, _newHeight, SWP_SHOWWINDOW);
 }
 
 void Processor::InitializeManager()
 {
 	m_manager = std::make_shared<Truth::Managers>();
 	m_manager->Initialize(m_hwnd, m_wight, m_height);
+	g_Renderer = m_manager->Graphics()->GetRenderer().get();
 }
 
 void Processor::SetStartScene(std::string _name)

@@ -32,8 +32,12 @@ private:
 	HWND m_hwnd;
 	MSG m_msg;
 
+	static Ideal::IdealRenderer* g_Renderer;
+
 	uint32 m_wight;
 	uint32 m_height;
+
+	bool show_demo_window = true;
 
 public:
 	// 특수 멤버함수
@@ -53,6 +57,7 @@ public:
 
 	// 윈도우 함수
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	// LRESULT CALLBACK WndProcInClass(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
 	void Update();

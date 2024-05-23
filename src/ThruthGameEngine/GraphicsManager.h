@@ -43,6 +43,8 @@ namespace Truth
 		void SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera);
 
 		float GetAspect() const { return m_aspect; }
+
+		std::shared_ptr<Ideal::IdealRenderer> GetRenderer() const {return m_renderer;}
 	};
 }
 
