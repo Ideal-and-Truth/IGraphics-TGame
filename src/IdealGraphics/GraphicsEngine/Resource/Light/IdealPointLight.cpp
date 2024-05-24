@@ -13,6 +13,11 @@ Ideal::IdealPointLight::~IdealPointLight()
 
 }
 
+DirectX::SimpleMath::Color Ideal::IdealPointLight::GetLightColor()
+{
+	return m_pointLight.Color;
+}
+
 void Ideal::IdealPointLight::SetLightColor(const Color& LightColor)
 {
 	m_pointLight.Color = LightColor;

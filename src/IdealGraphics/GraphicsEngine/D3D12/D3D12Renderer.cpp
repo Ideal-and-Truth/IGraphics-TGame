@@ -149,12 +149,22 @@ finishAdapter:
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.SampleDesc.Count = 1;
 
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
+	fullScreenDesc.RefreshRate.Numerator = 60;
+	fullScreenDesc.RefreshRate.Denominator = 1;
+	fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+	swapChainDesc.Stereo = FALSE;
+	fullScreenDesc.Windowed = true;
+
 	ComPtr<IDXGISwapChain1> swapChain;
 	Check(factory->CreateSwapChainForHwnd(
 		m_commandQueue.Get(),
 		m_hwnd,
 		&swapChainDesc,
-		nullptr,
+		//nullptr,
+		&fullScreenDesc,
 		nullptr,
 		swapChain.GetAddressOf()
 	));
@@ -277,6 +287,7 @@ finishAdapter:
 	// 2024.05.22
 	InitImgui();
 
+	OffWarningRenderTargetClearValue();
 }
 
 void Ideal::D3D12Renderer::Tick()
@@ -327,48 +338,6 @@ void Ideal::D3D12Renderer::Tick()
 
 void Ideal::D3D12Renderer::Render()
 {
-	////------IMGUI BEGIN------//
-	//ClearImGui();
-	//{
-	//	//------IMGUI Tick------//
-	//	ImGuiIO& io = ImGui::GetIO();
-
-	//	if (show_demo_window)
-	//		ImGui::ShowDemoWindow(&show_demo_window);
-	//	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-	//	{
-	//		static float f = 0.0f;
-	//		static int counter = 0;
-
-	//		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-	//		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-	//		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-	//		ImGui::Checkbox("Another Window", &show_another_window);
-
-	//		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-	//		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-	//		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-	//			counter++;
-	//		ImGui::SameLine();
-	//		ImGui::Text("counter = %d", counter);
-
-	//		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-	//		ImGui::End();
-	//	}
-
-	//	// 3. Show another simple window.
-	//	if (show_another_window)
-	//	{
-	//		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-	//		ImGui::Text("Hello from another window!");
-	//		if (ImGui::Button("Close Me"))
-	//			show_another_window = false;
-	//		ImGui::End();
-	//	}
-	//}
-
 	ResetCommandList();
 	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateMatrix2();
@@ -391,7 +360,6 @@ void Ideal::D3D12Renderer::Render()
 		}
 		{
 			//------IMGUI RENDER------//
-			//ClearImGui();
 			ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
 			m_commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 			ImGui::Render();
@@ -582,7 +550,19 @@ void Ideal::D3D12Renderer::BeginRender()
 	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 	//m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
-	m_commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::DimGray, 0, nullptr);
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
+	m_swapChain->GetDesc1(&swapChainDesc);
+
+	float c[4] = { 0.f, 0.f, 0.f, 1.f };
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = swapChainDesc.Format;
+	clearValue.Color[0] = c[0];
+	clearValue.Color[1] = c[1];
+	clearValue.Color[2] = c[2];
+	clearValue.Color[3] = c[3];
+
+
+	m_commandList->ClearRenderTargetView(rtvHandle, clearValue.Color, 0, nullptr);
 
 	// 2024.04.14 Clear DSV
 	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
@@ -771,4 +751,29 @@ void Ideal::D3D12Renderer::InitImgui()
 		m_resourceManager->GetImguiSRVHeap().Get(),
 		m_imguiSRVHandle.GetCpuHandle(),
 		m_imguiSRVHandle.GetGpuHandle());
+}
+
+void Ideal::D3D12Renderer::OffWarningRenderTargetClearValue()
+{
+	ComPtr<ID3D12InfoQueue> infoQueue;
+	m_device.As(&infoQueue);
+	D3D12_MESSAGE_ID denyIds[] =
+	{
+		D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
+	};
+	D3D12_MESSAGE_SEVERITY severities[] =
+	{
+		D3D12_MESSAGE_SEVERITY_INFO
+	};
+	D3D12_INFO_QUEUE_FILTER filter{};
+	filter.DenyList.NumIDs = _countof(denyIds);
+	filter.DenyList.pIDList = denyIds;
+	filter.DenyList.NumSeverities = _countof(severities);
+	filter.DenyList.pSeverityList = severities;
+
+	infoQueue->PushStorageFilter(&filter);
+
+	// 아래의 코드는 경고가 뜨면 바로 디버그 브레이크 해버림.
+	//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+	//https://blog.techlab-xe.net/dx12-debug-id3d12infoqueue/
 }

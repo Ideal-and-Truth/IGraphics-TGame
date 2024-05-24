@@ -333,6 +333,8 @@ void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Te
 		D3D12_HEAP_FLAG_NONE,
 		&resourceDesc,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		//D3D12_RESOURCE_STATE_COMMON,
+		//nullptr,
 		&clearValue,
 		IID_PPV_ARGS(resource.GetAddressOf())
 	));
@@ -350,8 +352,14 @@ void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Te
 	Ideal::D3D12DescriptorHandle rtvHandle;
 	if (MakeRTV)
 	{
+		D3D12_RENDER_TARGET_VIEW_DESC RTVDesc{};
+		RTVDesc.Format = resource->GetDesc().Format;
+		RTVDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+		RTVDesc.Texture2D.MipSlice = 0;
+
 		rtvHandle = m_rtvHeap->Allocate();
-		m_device->CreateRenderTargetView(resource.Get(), nullptr, rtvHandle.GetCpuHandle());
+		m_device->CreateRenderTargetView(resource.Get(), &RTVDesc, rtvHandle.GetCpuHandle());
+		//m_device->CreateRenderTargetView(resource.Get(), nullptr, rtvHandle.GetCpuHandle());
 	}
 
 	//-----Final Create-----//
@@ -627,8 +635,9 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12
 
 	// Binding info
 	staticMesh->FinalCreate(Renderer);
-
 	OutMesh->SetStaticMesh(staticMesh);
+
+	m_staticMeshes[key] = staticMesh;
 }
 
 void ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
