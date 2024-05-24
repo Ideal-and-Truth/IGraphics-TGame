@@ -181,6 +181,7 @@ void Processor::InitializeManager()
 	m_manager = std::make_shared<Truth::Managers>();
 	m_manager->Initialize(m_hwnd, m_wight, m_height);
 	g_Renderer = m_manager->Graphics()->GetRenderer().get();
+	// g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
 }
 
 void Processor::SetStartScene(std::string _name)

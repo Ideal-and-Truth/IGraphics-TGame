@@ -51,7 +51,7 @@ void Truth::Camera::SetMainCamera()
 void Truth::Camera::Awake()
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
-	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
+	m_camera->SetPosition(Vector3(0.f, 0.f, -1500.f));
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 3000.f);
 	SetMainCamera();
 }

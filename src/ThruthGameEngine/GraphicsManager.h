@@ -33,12 +33,13 @@ namespace Truth
 
 		void SetImguiStyle();
 
-		void AddObject(std::shared_ptr<Ideal::ISkinnedMeshObject> _mesh);
+		void AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh);
 		void AddAnimation();
 
 		void ConvertAsset(std::wstring _path, bool _isSkind);
 
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMesh(std::wstring _path);
+		std::shared_ptr<Ideal::IMeshObject> CreateMesh(std::wstring _path);
 		void CreateAnimation(std::wstring _path);
 
 		std::shared_ptr<Ideal::ICamera> CreateCamera();

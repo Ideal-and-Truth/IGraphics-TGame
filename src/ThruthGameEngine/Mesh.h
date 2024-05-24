@@ -8,7 +8,7 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Mesh)
 
 	private:
-		std::shared_ptr<Ideal::ISkinnedMeshObject> m_mesh;
+		std::shared_ptr<Ideal::IMeshObject> m_mesh;
 
 		PROPERTY(path)
 		std::wstring m_path;

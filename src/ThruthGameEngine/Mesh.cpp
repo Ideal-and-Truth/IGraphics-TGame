@@ -22,7 +22,7 @@ Truth::Mesh::~Mesh()
 void Truth::Mesh::SetMesh(std::wstring _path)
 {
 	m_path = _path;
-	m_mesh = m_managers.lock()->Graphics()->CreateSkinnedMesh(_path);
+	m_mesh = m_managers.lock()->Graphics()->CreateMesh(_path);
 }
 
 void Truth::Mesh::SetRenderable(bool _isRenderable)
