@@ -31,6 +31,8 @@ namespace Truth
 		void Tick();
 		void Render();
 
+		void SetImguiStyle();
+
 		void AddObject(std::shared_ptr<Ideal::ISkinnedMeshObject> _mesh);
 		void AddAnimation();
 
