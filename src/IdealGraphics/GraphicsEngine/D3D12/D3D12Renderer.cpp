@@ -287,7 +287,9 @@ finishAdapter:
 	// 2024.05.22
 	InitImgui();
 
+#ifdef _DEBUG
 	OffWarningRenderTargetClearValue();
+#endif
 }
 
 void Ideal::D3D12Renderer::Tick()
