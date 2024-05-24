@@ -55,7 +55,8 @@ namespace Ideal
 	{
 	public:
 		enum { FRAME_BUFFER_COUNT = 2 };
-
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = 2;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
+		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;

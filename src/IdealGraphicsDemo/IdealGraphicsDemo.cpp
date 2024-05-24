@@ -248,7 +248,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
-				//ImGuiTest();
+				ImGuiTest();
 				DirLightAngle(&angleX, &angleY, &angleZ);
 				PointLightInspecter(pointLight);
 				// MAIN LOOP
