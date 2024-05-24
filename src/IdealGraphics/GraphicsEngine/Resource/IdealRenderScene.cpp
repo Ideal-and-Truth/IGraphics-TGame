@@ -578,7 +578,17 @@ void Ideal::IdealRenderScene::TransitionGBufferToRTVandClear(std::shared_ptr<Ide
 	// TODO : ClearRenderTarget
 	for (uint32 i = 0; i < m_gBufferNum; ++i)
 	{
-		commandList->ClearRenderTargetView(m_gBuffers[i]->GetRTV().GetCpuHandle(), m_gBufferClearColors[i], 0, nullptr);
+		float c[4] = { 0.f, 0.f, 0.f, 1.f };
+		D3D12_CLEAR_VALUE clearValue = {};
+		clearValue.Format = m_gBuffers[i]->GetResource()->GetDesc().Format;
+		clearValue.Color[0] = m_gBufferClearColors[i][0];
+		clearValue.Color[1] = m_gBufferClearColors[i][1];
+		clearValue.Color[2] = m_gBufferClearColors[i][2];
+		clearValue.Color[3] = m_gBufferClearColors[i][3];
+
+		//commandList->ClearRenderTargetView(m_gBuffers[i]->GetRTV().GetCpuHandle(), m_gBufferClearColors[i], 0, nullptr);
+		auto desc = m_gBuffers[i]->GetResource()->GetDesc();
+		commandList->ClearRenderTargetView(m_gBuffers[i]->GetRTV().GetCpuHandle(), clearValue.Color, 0, nullptr);
 	}
 }
 

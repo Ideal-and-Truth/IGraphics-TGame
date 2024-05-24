@@ -14,6 +14,7 @@ namespace Ideal
 		virtual ~IPointLight() {}
 
 	public:
+		virtual Color GetLightColor() abstract;
 		virtual void SetLightColor(const Color& LightColor) abstract;
 		virtual Vector3 GetPosition() abstract;
 		virtual void SetPosition(const Vector3& LightPosition) abstract;

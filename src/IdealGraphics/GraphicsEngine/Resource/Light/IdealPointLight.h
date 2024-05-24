@@ -11,6 +11,7 @@ namespace Ideal
 		virtual ~IdealPointLight();
 
 	public:
+		virtual Color GetLightColor() override;
 		virtual void SetLightColor(const Color& LightColor) override;
 		virtual Vector3 GetPosition() override { return m_pointLight.Position; }
 		virtual void SetPosition(const Vector3& LightPosition) override;

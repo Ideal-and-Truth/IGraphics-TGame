@@ -52,6 +52,7 @@ std::shared_ptr<Ideal::IdealRenderer> gRenderer = nullptr;
 bool show_demo_window = true;
 bool show_another_window = false;
 bool show_angle_window = true;
+bool show_point_light_window = true;
 
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -69,7 +70,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera);
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera);
 void ImGuiTest();
-void DirLightAngle(float* angle);
+void DirLightAngle(float* x, float* y, float* z);
+void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -143,7 +145,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
-		
+
 		std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
@@ -156,6 +158,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
+
+		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
+		{
+			for (int i = 0; i < 30; i++)
+			{
+				std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+				Matrix mat = Matrix::Identity;
+				mat.Translation(Vector3(i * 150.f, 0.f, 0.f));
+				mesh->SetTransformMatrix(mat);
+				renderScene->AddObject(mesh);
+				meshes.push_back(mesh);
+			}
+		}
 		//renderScene->AddObject(mesh2);
 		//renderScene->AddObject(mesh3);
 
@@ -185,6 +200,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
+		float angleX = 0.f;
+		float angleY = 0.f;
+		float angleZ = 0.f;
 
 		while (msg.message != WM_QUIT)
 		{
@@ -196,7 +214,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			else
 			{
 				CameraTick(camera);
-				pointLight->SetPosition(camera->GetPosition());
+				//pointLight->SetPosition(camera->GetPosition());
 				auto cp = camera->GetPosition();
 				auto pp = pointLight->GetPosition();
 
@@ -206,7 +224,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					angle = 0.f;
 				}
 				world = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
-				world2 = Matrix::CreateRotationY(DirectX::XMConvertToRadians(angle)) * Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+
+				world2 = Matrix::CreateRotationX(DirectX::XMConvertToRadians(angleX))
+					* Matrix::CreateRotationY(DirectX::XMConvertToRadians(angleY))
+					* Matrix::CreateRotationZ(DirectX::XMConvertToRadians(angleZ))
+					* Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 
 				dirLight->SetDirection(world2.Forward());
 
@@ -227,8 +249,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				//ImGuiTest();
-				DirLightAngle(&angle);
-
+				DirLightAngle(&angleX, &angleY, &angleZ);
+				PointLightInspecter(pointLight);
 				// MAIN LOOP
 				gRenderer->Tick();
 				gRenderer->Render();
@@ -361,15 +383,41 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
 	}
 }
-void DirLightAngle(float* angle)
+void DirLightAngle(float* x, float* y, float* z)
 {
-	if(show_angle_window)
+	if (show_angle_window)
 	{
 		ImGui::Begin("Directional Light Angle Window");
-		ImGui::SliderFloat("Angle", angle, 0.0f, 360.0f);
+		ImGui::SliderFloat("X", x, 0.0f, 360.0f);
+		ImGui::SliderFloat("Y", y, 0.0f, 360.0f);
+		ImGui::SliderFloat("Z", z, 0.0f, 360.0f);
 		ImGui::End();
 	}
 }
+
+void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
+{
+	ImVec4 lightColor;
+	{
+		lightColor.x = light->GetLightColor().R();
+		lightColor.y = light->GetLightColor().G();
+		lightColor.z = light->GetLightColor().B();
+		lightColor.w = light->GetLightColor().A();
+	}
+
+	Vector3 lightPosition = light->GetPosition();
+	if (show_point_light_window)
+	{
+		ImGui::Begin("Point Light Inspector");
+		ImGui::ColorEdit3("Light Color", (float*)&lightColor);
+		light->SetLightColor(Color(lightColor.x, lightColor.y, lightColor.z, lightColor.w));
+		ImGui::InputFloat3("Position", &lightPosition.x);
+		light->SetPosition(lightPosition);
+		ImGui::SameLine();
+		ImGui::End();
+	}
+}
+
 void ImGuiTest()
 {
 	{
