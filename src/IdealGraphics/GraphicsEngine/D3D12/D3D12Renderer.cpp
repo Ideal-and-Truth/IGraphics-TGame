@@ -812,3 +812,34 @@ void Ideal::D3D12Renderer::CreateAndInitOverlappedRenderingResources()
 		m_cbAllocator[i]->Init(MAX_DRAW_COUNT_PER_FRAME);
 	}
 }
+
+uint64 Ideal::D3D12Renderer::OverlappedRenderingFence()
+{
+	m_graphicsFenceValue++;
+	m_commandQueue->Signal(m_graphicsFence.Get(), m_graphicsFenceValue);
+	m_lastFenceValues[m_currentContextIndex] = m_graphicsFenceValue;
+
+	return m_graphicsFenceValue;
+}
+
+void Ideal::D3D12Renderer::OverlappedBeginRender()
+{
+	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
+	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
+
+	Check(commandAllocator->Reset());
+	Check(commandList->Reset(commandAllocator.Get(), nullptr));
+
+	commandList->RSSetViewports(1, &m_viewport->GetViewport());
+	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+
+	CD3DX12_RESOURCE_BARRIER backBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex].Get(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	commandList->ResourceBarrier(1, &backBufferBarrier);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+}

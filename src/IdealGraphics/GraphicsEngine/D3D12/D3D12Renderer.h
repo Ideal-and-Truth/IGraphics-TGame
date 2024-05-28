@@ -243,7 +243,10 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT];
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT];
+		uint64 m_currentContextIndex = 0;
 
 		void CreateAndInitOverlappedRenderingResources();
+		uint64 OverlappedRenderingFence();
+		void OverlappedBeginRender();
 	};
 }
