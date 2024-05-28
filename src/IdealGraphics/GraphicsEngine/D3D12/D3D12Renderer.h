@@ -239,6 +239,7 @@ namespace Ideal
 		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT];
 		ComPtr<ID3D12GraphicsCommandList> m_commandLists[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT];
+		//std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_constantBufe
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT];
 
 	};
