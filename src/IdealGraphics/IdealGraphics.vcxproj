@@ -166,7 +166,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="D3D12DynamicConstantBufferAllocator.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
     <ClInclude Include="GraphicsEngine\public\imconfig.h" />
     <ClInclude Include="GraphicsEngine\public\imgui.h" />
     <ClInclude Include="Editor\imgui\imgui_impl_dx12.h" />
@@ -232,7 +232,7 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3D12DynamicConstantBufferAllocator.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.cpp" />
     <ClCompile Include="Editor\imgui\imgui.cpp" />
     <ClCompile Include="Editor\imgui\imgui_demo.cpp" />
     <ClCompile Include="Editor\imgui\imgui_draw.cpp" />

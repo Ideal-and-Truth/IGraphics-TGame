@@ -6,7 +6,7 @@ struct ID3D12Device;
 namespace Ideal
 {
 	class D3D12ConstantBufferPool;
-	class ConstantBufferContainer;
+	struct ConstantBufferContainer;
 }
 
 namespace Ideal

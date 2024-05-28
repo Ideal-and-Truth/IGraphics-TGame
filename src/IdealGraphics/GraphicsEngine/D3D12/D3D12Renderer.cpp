@@ -14,6 +14,7 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Viewport.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 #include "GraphicsEngine/Resource/IdealCamera.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
@@ -778,4 +779,36 @@ void Ideal::D3D12Renderer::OffWarningRenderTargetClearValue()
 	// 아래의 코드는 경고가 뜨면 바로 디버그 브레이크 해버림.
 	//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
 	//https://blog.techlab-xe.net/dx12-debug-id3d12infoqueue/
+}
+
+void Ideal::D3D12Renderer::CreateAndInitOverlappedRenderingResources()
+{
+	// CreateCommand List
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		HRESULT hr;
+		hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_commandAllocators[i].GetAddressOf()));
+		Check(hr);
+		hr = m_device->CreateCommandList(
+			0,
+			D3D12_COMMAND_LIST_TYPE_DIRECT,
+			m_commandAllocators[i].Get(),
+			nullptr,
+			IID_PPV_ARGS(m_commandLists[i].GetAddressOf())
+		);
+		Check(hr);
+		m_commandLists[i]->Close();
+	}
+
+
+	// descriptor heap, constant buffer pool Allocator
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		// descriptor heap
+		m_descriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
+		m_descriptorHeaps[i]->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
+
+		// Dynamic CB Pool Allocator
+		m_cbAllocator[i]->Init(MAX_DRAW_COUNT_PER_FRAME);
+	}
 }

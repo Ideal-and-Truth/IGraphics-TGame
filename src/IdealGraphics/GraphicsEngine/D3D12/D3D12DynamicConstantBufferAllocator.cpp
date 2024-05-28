@@ -1,7 +1,8 @@
-#include "D3D12DynamicConstantBufferAllocator.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 
 Ideal::D3D12DynamicConstantBufferAllocator::D3D12DynamicConstantBufferAllocator()
+	: m_maxCBVNumPerPool(0)
 {
 
 }

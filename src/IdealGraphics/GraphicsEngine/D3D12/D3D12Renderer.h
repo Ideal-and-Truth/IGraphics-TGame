@@ -40,6 +40,7 @@ namespace Ideal
 
 	// Manager
 	class D3D12ConstantBufferPool;
+	class D3D12DynamicConstantBufferAllocator;
 
 	// Interface
 	class ICamera;
@@ -235,12 +236,14 @@ namespace Ideal
 
 		// Overlapped Redering
 		// D3D12 Frame Resources
+		// 2024.05.28
 	private:
 		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT];
 		ComPtr<ID3D12GraphicsCommandList> m_commandLists[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT];
-		//std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_constantBufe
+		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT];
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT];
 
+		void CreateAndInitOverlappedRenderingResources();
 	};
 }
