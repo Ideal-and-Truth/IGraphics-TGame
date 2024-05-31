@@ -72,12 +72,4 @@ void Ideal::IdealSkinnedMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> 
 	{
 		mesh->Create(d3d12Renderer);
 	}
-	{
-		const uint32 bufferSize = sizeof(CB_Transform);
-		//m_cbTransform.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-	}
-	{
-		const uint32 bufferSize = sizeof(CB_Bone);
-		//m_cbBoneTransform.Create(device, bufferSize, D3D12Renderer::FRAME_BUFFER_COUNT);
-	}
 }

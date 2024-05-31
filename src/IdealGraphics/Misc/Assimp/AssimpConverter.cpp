@@ -95,7 +95,7 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 		// todo : write
 
 		//Write CSV File
-		{
+		/*{
 			FILE* file;
 			fopen_s(&file, "../Vertices.csv", "w");
 
@@ -125,7 +125,7 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 			}
 
 			fclose(file);
-		}
+		}*/
 	}
 	else
 	{

@@ -1,14 +1,14 @@
 #include "Core/Core.h"
-#include "GraphicsEngine/Resource/IdealBone.h"
 #include "IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
+#include "GraphicsEngine/Resource/IdealSkinnedMesh.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
-#include "GraphicsEngine/Resource/IdealSkinnedMesh.h"
-#include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
 {
@@ -47,8 +47,7 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 
 	{
 		// Bind Transform
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Transform));
-		auto cb = cbPool->Allocate();
+		auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Transform));
 		if (!cb)
 		{
 			__debugbreak();
@@ -66,9 +65,7 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 
 	// Bind Bone
 	{
-		//std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Bone));
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBBonePool();
-		auto cb = cbPool->Allocate();
+		auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Bone));
 		if (!cb)
 		{
 			__debugbreak();
@@ -209,5 +206,4 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 			}
 		}
 	}
-
 }

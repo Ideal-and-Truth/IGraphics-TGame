@@ -8,7 +8,8 @@
 #include <d3d12.h>
 #include "d3dx12.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
-
+//#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+//#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 // TEMP
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -38,8 +39,10 @@ namespace Ideal
 	class IdealSkinnedMeshObject;
 	class IdealScreenQuad;
 
+	struct ConstantBufferContainer;
 	// Manager
 	class D3D12ConstantBufferPool;
+	class D3D12DynamicConstantBufferAllocator;
 
 	// Interface
 	class ICamera;
@@ -54,8 +57,8 @@ namespace Ideal
 	class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12Renderer>
 	{
 	public:
-		enum { FRAME_BUFFER_COUNT = 2 };
-
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = 4;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
+		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;
@@ -100,24 +103,28 @@ namespace Ideal
 	public:
 		void Release();
 
+		//----Create----//
+		void CreateAndInitRenderingResources();
+		void CreateFence();
+
 		//-------Device------//
 		ComPtr<ID3D12Device> GetDevice();
 
 		//------Render-----//
 		void ResetCommandList();
-		void BeginRender();
-		void EndRender();
-		void GraphicsPresent();
 		uint32 GetFrameIndex() const;
 
+		void BeginRender();
+		void EndRender();
+		void Present();
+
 		//------CommandList------//
-		void CreateCommandList();
 		ComPtr<ID3D12GraphicsCommandList> GetCommandList();
 		ComPtr<ID3D12CommandQueue> GetCommandQueue() { return m_commandQueue; }
+		
 		//------Fence------//
-		void CreateGraphicsFence();
-		uint64 GraphicsFence();
-		void WaitForGraphicsFenceValue();
+		uint64 Fence();
+		void WaitForFenceValue(uint64 ExpectedFenceValue);
 
 		//------Graphics Manager------//
 		std::shared_ptr<Ideal::ResourceManager> GetResourceManager();
@@ -127,12 +134,9 @@ namespace Ideal
 		void CreateDescriptorHeap();
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetMainDescriptorHeap();
 
-		// Test : 2024.05.07; Type마다 CBPool을 만들어야하나?
-		void CreateCBPool();
-
-		// 2024.05.08; 256의 512, 1024 로 만들어서 필요한 용량에 따라 사용해도 괜찮을 듯?
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> GetCBPool(uint32 SizePerCB);
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> GetCBBonePool();
+		// 2024.05.31 : Dynamic ConstantBuffer Allocator 에서 직접 CBContainer를 받아오도록 수정
+		std::shared_ptr<Ideal::ConstantBufferContainer> ConstantBufferAllocate(uint32 SizePerCB);
+		
 
 		//------Camera------//
 		void CreateDefaultCamera(); // default camera
@@ -163,7 +167,7 @@ namespace Ideal
 		// RTV
 		ComPtr<ID3D12DescriptorHeap> m_rtvHeap = nullptr;
 		uint32 m_rtvDescriptorSize = 0;
-		ComPtr<ID3D12Resource> m_renderTargets[FRAME_BUFFER_COUNT];
+		ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
 
 		// DSV
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
@@ -171,12 +175,11 @@ namespace Ideal
 
 		// Command
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;
-		ComPtr<ID3D12GraphicsCommandList> m_commandList = nullptr;
 
 		// Fence
-		ComPtr<ID3D12Fence> m_graphicsFence = nullptr;
-		uint64 m_graphicsFenceValue = 0;
-		HANDLE m_graphicsFenceEvent = NULL;
+		ComPtr<ID3D12Fence> m_fence = nullptr;
+		uint64 m_fenceValue = 0;
+		HANDLE m_fenceEvent = NULL;
 
 		// RenderScene
 		std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
@@ -184,15 +187,6 @@ namespace Ideal
 	private:
 		// D3D12 Data Manager
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeap = nullptr;
-
-		// 2024.05.08; 256의 512, 1024 로 만들어서 필요한 용량에 따라 사용해도 괜찮을 듯?
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb256Pool = nullptr;
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb512Pool = nullptr;
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb1024Pool = nullptr;
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb2048Pool = nullptr;
-
-		// bone의 데이터가 크다. 일단은 따로 만들다가 나중에 SRV로 넘겨주든 해야겠다.
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cbBonePool = nullptr;
 
 	private:
 		float m_aspectRatio = 0.f;
@@ -230,6 +224,20 @@ namespace Ideal
 
 		// Warning Off
 	private:
+		// debuging messeage OFF
 		void OffWarningRenderTargetClearValue();
+
+		// Overlapped Redering
+		// D3D12 Frame Resources
+		// 2024.05.28
+	private:
+		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT] = {};
+		ComPtr<ID3D12GraphicsCommandList> m_commandLists[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
+		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
+		uint64 m_currentContextIndex = 0;
+
+
 	};
 }

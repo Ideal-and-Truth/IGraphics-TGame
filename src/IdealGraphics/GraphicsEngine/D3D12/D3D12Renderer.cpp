@@ -14,6 +14,7 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Viewport.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 #include "GraphicsEngine/Resource/IdealCamera.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
@@ -32,8 +33,8 @@ Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 	m_height(height),
 	//m_viewport,
 	m_frameIndex(0),
-	m_graphicsFenceEvent(NULL),
-	m_graphicsFenceValue(0),
+	m_fenceEvent(NULL),
+	m_fenceValue(0),
 	m_rtvDescriptorSize(0)
 {
 	m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
@@ -41,6 +42,12 @@ Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 
 Ideal::D3D12Renderer::~D3D12Renderer()
 {
+	Fence();
+	for (uint64 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+
 	// Release Resource Manager
 	m_resourceManager = nullptr;
 	ImGui_ImplDX12_Shutdown();
@@ -133,15 +140,14 @@ finishAdapter:
 	Check(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(m_commandQueue.GetAddressOf())));
 
 	//------------Create Command List-------------//
-	CreateCommandList();
 
 	//------------Create Fence---------------//
-	CreateGraphicsFence();
+	CreateFence();
 
 	//---------------------SwapChain-------------------------//
 
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-	swapChainDesc.BufferCount = FRAME_BUFFER_COUNT;
+	swapChainDesc.BufferCount = SWAP_CHAIN_FRAME_COUNT;
 	swapChainDesc.Width = m_width;
 	swapChainDesc.Height = m_height;
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -178,7 +184,7 @@ finishAdapter:
 
 	// rtv descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-	rtvHeapDesc.NumDescriptors = FRAME_BUFFER_COUNT;
+	rtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	Check(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
@@ -196,7 +202,7 @@ finishAdapter:
 	{
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-		for (uint32 i = 0; i < FRAME_BUFFER_COUNT; i++)
+		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
 		{
 			Check(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_renderTargets[i])));
 			m_device->CreateRenderTargetView(m_renderTargets[i].Get(), nullptr, rtvHandle);
@@ -271,17 +277,11 @@ finishAdapter:
 
 	//------------------Create Main Descriptor Heap---------------------//
 	CreateDescriptorHeap();
-	//------------------Create CB Pool---------------------//
-	CreateCBPool();
 
-	// 2024.05.14 : MRT Test
-	//m_resourceManager->CreateEmptyTexture2D(t1, m_width, m_height, true);
-	/*for (uint32 i = 0; i < m_gBufferCount; ++i)
-	{
-		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		m_resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, true);
-		m_gBuffers.push_back(gBuffer);
-	}*/
+	// 2024.05.31 
+	//------------------Create CB Pool---------------------//
+	CreateAndInitRenderingResources();
+	
 
 	//---------------------Init Imgui-----------------------//
 	// 2024.05.22
@@ -361,26 +361,19 @@ void Ideal::D3D12Renderer::Render()
 			}
 		}
 		{
+			ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 			//------IMGUI RENDER------//
 			ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
-			m_commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
+			commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 			ImGui::Render();
-			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandList.Get());
+			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
 		}
 	}
 	//-------------End Render------------//
 	EndRender();
 
 	//----------------Present-------------------//
-	GraphicsPresent();
-
-	//-----------Reset Pool-----------//
-	m_descriptorHeap->Reset();
-	m_cb256Pool->Reset();
-	m_cb512Pool->Reset();
-	m_cb1024Pool->Reset();
-	m_cb2048Pool->Reset();
-	m_cbBonePool->Reset();
+	Present();
 	return;
 }
 
@@ -528,75 +521,13 @@ Microsoft::WRL::ComPtr<ID3D12Device> Ideal::D3D12Renderer::GetDevice()
 
 void Ideal::D3D12Renderer::ResetCommandList()
 {
-	Check(m_commandAllocator->Reset());
-	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
-}
+	//Check(m_commandAllocator->Reset());
+	//Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
+	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 
-void Ideal::D3D12Renderer::BeginRender()
-{
-	// 2024.04.15 pipeline state를 m_currentPipelineState에 있는 것으로 세팅한다.
-
-	m_commandList->RSSetViewports(1, &m_viewport->GetViewport());
-	m_commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-
-	CD3DX12_RESOURCE_BARRIER backBufferRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	m_commandList->ResourceBarrier(1, &backBufferRenderTarget);
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
-	// 2024.04.14 dsv세팅
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-	//m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
-	m_swapChain->GetDesc1(&swapChainDesc);
-
-	float c[4] = { 0.f, 0.f, 0.f, 1.f };
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = swapChainDesc.Format;
-	clearValue.Color[0] = c[0];
-	clearValue.Color[1] = c[1];
-	clearValue.Color[2] = c[2];
-	clearValue.Color[3] = c[3];
-
-
-	m_commandList->ClearRenderTargetView(rtvHandle, clearValue.Color, 0, nullptr);
-
-	// 2024.04.14 Clear DSV
-	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-}
-
-void Ideal::D3D12Renderer::EndRender()
-{
-	CD3DX12_RESOURCE_BARRIER backBufferPresent = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT
-	);
-
-	m_commandList->ResourceBarrier(1, &backBufferPresent);
-
-	Check(m_commandList->Close());
-	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-}
-
-void Ideal::D3D12Renderer::GraphicsPresent()
-{
-	HRESULT hr = m_swapChain->Present(1, 0);
-	if (DXGI_ERROR_DEVICE_REMOVED == hr)
-	{
-		__debugbreak();
-	}
-
-	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-	GraphicsFence();
-	WaitForGraphicsFenceValue();
+	Check(commandAllocator->Reset());
+	Check(commandList->Reset(commandAllocator.Get(), nullptr));
 }
 
 uint32 Ideal::D3D12Renderer::GetFrameIndex() const
@@ -604,43 +535,19 @@ uint32 Ideal::D3D12Renderer::GetFrameIndex() const
 	return m_frameIndex;
 }
 
-void Ideal::D3D12Renderer::CreateCommandList()
-{
-	Check(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
-	Check(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
-	m_commandList->Close();
-}
-
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Ideal::D3D12Renderer::GetCommandList()
 {
-	return m_commandList;
+	return m_commandLists[m_currentContextIndex];
+	//return m_commandList;
 }
 
-void Ideal::D3D12Renderer::CreateGraphicsFence()
+void Ideal::D3D12Renderer::CreateFence()
 {
-	Check(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_graphicsFence.GetAddressOf())));
+	Check(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.GetAddressOf())));
 
-	m_graphicsFenceValue = 0;
+	m_fenceValue = 0;
 
-	m_graphicsFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-}
-
-uint64 Ideal::D3D12Renderer::GraphicsFence()
-{
-	m_graphicsFenceValue++;
-	m_commandQueue->Signal(m_graphicsFence.Get(), m_graphicsFenceValue);
-	return m_graphicsFenceValue;
-}
-
-void Ideal::D3D12Renderer::WaitForGraphicsFenceValue()
-{
-	const uint64 expectedFenceValue = m_graphicsFenceValue;
-
-	if (m_graphicsFence->GetCompletedValue() < expectedFenceValue)
-	{
-		m_graphicsFence->SetEventOnCompletion(expectedFenceValue, m_graphicsFenceEvent);
-		WaitForSingleObject(m_graphicsFenceEvent, INFINITE);
-	}
+	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 std::shared_ptr<Ideal::ResourceManager> Ideal::D3D12Renderer::GetResourceManager()
@@ -656,52 +563,16 @@ void Ideal::D3D12Renderer::CreateDescriptorHeap()
 
 std::shared_ptr<Ideal::D3D12DescriptorHeap> Ideal::D3D12Renderer::GetMainDescriptorHeap()
 {
-	return m_descriptorHeap;
+	return m_descriptorHeaps[m_currentContextIndex];
+	//return m_descriptorHeap;
 }
 
-void Ideal::D3D12Renderer::CreateCBPool()
+std::shared_ptr<Ideal::ConstantBufferContainer> Ideal::D3D12Renderer::ConstantBufferAllocate(uint32 SizePerCB)
 {
-	m_cb256Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb256Pool->Init(m_device.Get(), 256, MAX_DRAW_COUNT_PER_FRAME);
-
-	m_cb512Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb512Pool->Init(m_device.Get(), 512, MAX_DRAW_COUNT_PER_FRAME);
-
-	m_cb1024Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb1024Pool->Init(m_device.Get(), 1024, MAX_DRAW_COUNT_PER_FRAME);
-
-	m_cb2048Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb2048Pool->Init(m_device.Get(), 2048, MAX_DRAW_COUNT_PER_FRAME);
-
-	// TEMP
-	m_cbBonePool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(static_cast<uint32>(sizeof(CB_Bone))), MAX_DRAW_COUNT_PER_FRAME);
-}
-
-std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBPool(uint32 SizePerCB)
-{
-	if (SizePerCB <= 256)
-	{
-		return m_cb256Pool;
-	}
-	else if (SizePerCB <= 512)
-	{
-		return m_cb512Pool;
-	}
-	else if (SizePerCB <= 1024)
-	{
-		return m_cb1024Pool;
-	}
-	else if (SizePerCB <= 2048)
-	{
-		return m_cb2048Pool;
-	}
-	return nullptr;
-}
-
-std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBBonePool()
-{
-	return m_cbBonePool;
+	// TEMP : Index = 0 
+	// TODO : 중첩 렌더링 후 현재 인덱스를 받아오도록 수정
+	//return m_cbAllocator[0]->Allocate(m_device.Get(), SizePerCB);
+	return m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), SizePerCB);
 }
 
 void Ideal::D3D12Renderer::CreateDefaultCamera()
@@ -778,4 +649,114 @@ void Ideal::D3D12Renderer::OffWarningRenderTargetClearValue()
 	// 아래의 코드는 경고가 뜨면 바로 디버그 브레이크 해버림.
 	//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
 	//https://blog.techlab-xe.net/dx12-debug-id3d12infoqueue/
+}
+
+void Ideal::D3D12Renderer::CreateAndInitRenderingResources()
+{
+	// CreateCommand List
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		HRESULT hr;
+		hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_commandAllocators[i].GetAddressOf()));
+		Check(hr);
+		hr = m_device->CreateCommandList(
+			0,
+			D3D12_COMMAND_LIST_TYPE_DIRECT,
+			m_commandAllocators[i].Get(),
+			nullptr,
+			IID_PPV_ARGS(m_commandLists[i].GetAddressOf())
+		);
+		Check(hr);
+		m_commandLists[i]->Close();
+	}
+
+	// descriptor heap, constant buffer pool Allocator
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		// descriptor heap
+		m_descriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
+		m_descriptorHeaps[i]->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
+
+		// Dynamic CB Pool Allocator
+		m_cbAllocator[i] = std::make_shared<Ideal::D3D12DynamicConstantBufferAllocator>();
+		m_cbAllocator[i]->Init(MAX_DRAW_COUNT_PER_FRAME);
+	}
+}
+
+uint64 Ideal::D3D12Renderer::Fence()
+{
+	m_fenceValue++;
+	m_commandQueue->Signal(m_fence.Get(), m_fenceValue);
+	m_lastFenceValues[m_currentContextIndex] = m_fenceValue;
+
+	return m_fenceValue;
+}
+
+void Ideal::D3D12Renderer::BeginRender()
+{
+	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
+	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
+
+	//Check(commandAllocator->Reset());
+	//Check(commandList->Reset(commandAllocator.Get(), nullptr));
+
+	CD3DX12_RESOURCE_BARRIER backBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex].Get(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	commandList->ResourceBarrier(1, &backBufferBarrier);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
+	commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::Black, 0, nullptr);
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	commandList->RSSetViewports(1, &m_viewport->GetViewport());
+	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+}
+
+void Ideal::D3D12Renderer::EndRender()
+{
+	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex].Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PRESENT
+	);
+
+	commandList->ResourceBarrier(1, &barrier);
+	Check(commandList->Close());
+	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+}
+
+void Ideal::D3D12Renderer::Present()
+{
+	Fence();
+
+	HRESULT hr;
+	hr = m_swapChain->Present(1, 0);
+	Check(hr);
+
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+	uint32 nextContextIndex = (m_currentContextIndex + 1) % MAX_PENDING_FRAME_COUNT;
+	WaitForFenceValue(m_lastFenceValues[nextContextIndex]);
+
+	m_descriptorHeaps[nextContextIndex]->Reset();
+	m_cbAllocator[nextContextIndex]->Reset();
+
+	m_currentContextIndex = nextContextIndex;
+}
+
+void Ideal::D3D12Renderer::WaitForFenceValue(uint64 ExpectedFenceValue)
+{
+	if (m_fence->GetCompletedValue() < ExpectedFenceValue)
+	{
+		m_fence->SetEventOnCompletion(ExpectedFenceValue, m_fenceEvent);
+		WaitForSingleObject(m_fenceEvent, INFINITE);
+	}
 }
