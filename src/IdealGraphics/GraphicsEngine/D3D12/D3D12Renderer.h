@@ -57,8 +57,7 @@ namespace Ideal
 	class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12Renderer>
 	{
 	public:
-		enum { FRAME_BUFFER_COUNT = 2 };
-		static const uint32 SWAP_CHAIN_FRAME_COUNT = 2;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = 4;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
@@ -164,8 +163,7 @@ namespace Ideal
 		// RTV
 		ComPtr<ID3D12DescriptorHeap> m_rtvHeap = nullptr;
 		uint32 m_rtvDescriptorSize = 0;
-		ComPtr<ID3D12Resource> m_renderTargets[FRAME_BUFFER_COUNT];
-
+		ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
 
 		// DSV
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
@@ -230,11 +228,11 @@ namespace Ideal
 		// D3D12 Frame Resources
 		// 2024.05.28
 	private:
-		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT];
-		ComPtr<ID3D12GraphicsCommandList> m_commandLists[MAX_PENDING_FRAME_COUNT];
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT];
-		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT];
-		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT];
+		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT] = {};
+		ComPtr<ID3D12GraphicsCommandList> m_commandLists[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
+		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
 
 		void CreateAndInitOverlappedRenderingResources();

@@ -42,6 +42,12 @@ Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 
 Ideal::D3D12Renderer::~D3D12Renderer()
 {
+	OverlappedRenderingFence();
+	for (uint64 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+
 	// Release Resource Manager
 	m_resourceManager = nullptr;
 	ImGui_ImplDX12_Shutdown();
@@ -142,7 +148,7 @@ finishAdapter:
 	//---------------------SwapChain-------------------------//
 
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-	swapChainDesc.BufferCount = FRAME_BUFFER_COUNT;
+	swapChainDesc.BufferCount = SWAP_CHAIN_FRAME_COUNT;
 	swapChainDesc.Width = m_width;
 	swapChainDesc.Height = m_height;
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -179,7 +185,7 @@ finishAdapter:
 
 	// rtv descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-	rtvHeapDesc.NumDescriptors = FRAME_BUFFER_COUNT;
+	rtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	Check(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
@@ -197,7 +203,7 @@ finishAdapter:
 	{
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-		for (uint32 i = 0; i < FRAME_BUFFER_COUNT; i++)
+		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
 		{
 			Check(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_renderTargets[i])));
 			m_device->CreateRenderTargetView(m_renderTargets[i].Get(), nullptr, rtvHandle);
@@ -343,7 +349,8 @@ void Ideal::D3D12Renderer::Render()
 	m_currentRenderScene->DrawGBuffer(shared_from_this());
 
 	//-------------Begin Render------------//
-	BeginRender();
+	//BeginRender();
+	OverlappedBeginRender();
 	{
 
 		//-------------Render Command-------------//
@@ -356,24 +363,27 @@ void Ideal::D3D12Renderer::Render()
 			}
 		}
 		{
+			ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 			//------IMGUI RENDER------//
 			ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
-			m_commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
+			commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 			ImGui::Render();
-			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandList.Get());
+			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
 		}
 	}
 	//-------------End Render------------//
-	EndRender();
+	//EndRender();
+	OverlappedEndRender();
 
 	//----------------Present-------------------//
-	GraphicsPresent();
+	//GraphicsPresent();
+	OverlappedRenderingPresent();
 
 	//-----------Reset Pool-----------//
-	m_descriptorHeap->Reset();
+	//m_descriptorHeap->Reset();
 
-	// TEMP : 
-	m_cbAllocator[0]->Reset();
+	// TEMP : index
+	//m_cbAllocator[0]->Reset();
 	return;
 }
 
@@ -521,8 +531,13 @@ Microsoft::WRL::ComPtr<ID3D12Device> Ideal::D3D12Renderer::GetDevice()
 
 void Ideal::D3D12Renderer::ResetCommandList()
 {
-	Check(m_commandAllocator->Reset());
-	Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+	//Check(m_commandAllocator->Reset());
+	//Check(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
+	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
+
+	Check(commandAllocator->Reset());
+	Check(commandList->Reset(commandAllocator.Get(), nullptr));
 }
 
 void Ideal::D3D12Renderer::BeginRender()
@@ -606,7 +621,8 @@ void Ideal::D3D12Renderer::CreateCommandList()
 
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Ideal::D3D12Renderer::GetCommandList()
 {
-	return m_commandList;
+	return m_commandLists[m_currentContextIndex];
+	//return m_commandList;
 }
 
 void Ideal::D3D12Renderer::CreateGraphicsFence()
@@ -649,14 +665,16 @@ void Ideal::D3D12Renderer::CreateDescriptorHeap()
 
 std::shared_ptr<Ideal::D3D12DescriptorHeap> Ideal::D3D12Renderer::GetMainDescriptorHeap()
 {
-	return m_descriptorHeap;
+	return m_descriptorHeaps[m_currentContextIndex];
+	//return m_descriptorHeap;
 }
 
 std::shared_ptr<Ideal::ConstantBufferContainer> Ideal::D3D12Renderer::ConstantBufferAllocate(uint32 SizePerCB)
 {
 	// TEMP : Index = 0 
 	// TODO : 중첩 렌더링 후 현재 인덱스를 받아오도록 수정
-	return m_cbAllocator[0]->Allocate(m_device.Get(), SizePerCB);
+	//return m_cbAllocator[0]->Allocate(m_device.Get(), SizePerCB);
+	return m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), SizePerCB);
 }
 
 void Ideal::D3D12Renderer::CreateDefaultCamera()
@@ -754,7 +772,6 @@ void Ideal::D3D12Renderer::CreateAndInitOverlappedRenderingResources()
 		m_commandLists[i]->Close();
 	}
 
-
 	// descriptor heap, constant buffer pool Allocator
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
@@ -782,8 +799,8 @@ void Ideal::D3D12Renderer::OverlappedBeginRender()
 	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
 	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 
-	Check(commandAllocator->Reset());
-	Check(commandList->Reset(commandAllocator.Get(), nullptr));
+	//Check(commandAllocator->Reset());
+	//Check(commandList->Reset(commandAllocator.Get(), nullptr));
 
 	CD3DX12_RESOURCE_BARRIER backBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_renderTargets[m_frameIndex].Get(),
@@ -821,6 +838,8 @@ void Ideal::D3D12Renderer::OverlappedEndRender()
 
 void Ideal::D3D12Renderer::OverlappedRenderingPresent()
 {
+	OverlappedRenderingFence();
+
 	HRESULT hr;
 	hr = m_swapChain->Present(1, 0);
 	Check(hr);
