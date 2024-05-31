@@ -103,24 +103,28 @@ namespace Ideal
 	public:
 		void Release();
 
+		//----Create----//
+		void CreateAndInitRenderingResources();
+		void CreateFence();
+
 		//-------Device------//
 		ComPtr<ID3D12Device> GetDevice();
 
 		//------Render-----//
 		void ResetCommandList();
-		void BeginRender();
-		void EndRender();
-		void GraphicsPresent();
 		uint32 GetFrameIndex() const;
 
+		void BeginRender();
+		void EndRender();
+		void Present();
+
 		//------CommandList------//
-		void CreateCommandList();
 		ComPtr<ID3D12GraphicsCommandList> GetCommandList();
 		ComPtr<ID3D12CommandQueue> GetCommandQueue() { return m_commandQueue; }
+		
 		//------Fence------//
-		void CreateGraphicsFence();
-		uint64 GraphicsFence();
-		void WaitForGraphicsFenceValue();
+		uint64 Fence();
+		void WaitForFenceValue(uint64 ExpectedFenceValue);
 
 		//------Graphics Manager------//
 		std::shared_ptr<Ideal::ResourceManager> GetResourceManager();
@@ -171,7 +175,6 @@ namespace Ideal
 
 		// Command
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;
-		ComPtr<ID3D12GraphicsCommandList> m_commandList = nullptr;
 
 		// Fence
 		ComPtr<ID3D12Fence> m_fence = nullptr;
@@ -235,11 +238,6 @@ namespace Ideal
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
 
-		void CreateAndInitOverlappedRenderingResources();
-		uint64 OverlappedRenderingFence();
-		void OverlappedBeginRender();
-		void OverlappedEndRender();
-		void OverlappedRenderingPresent();
-		void WaitForFenceValue(uint64 ExpectedFenceValue);
+
 	};
 }

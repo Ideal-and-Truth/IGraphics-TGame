@@ -42,7 +42,7 @@ Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height)
 
 Ideal::D3D12Renderer::~D3D12Renderer()
 {
-	OverlappedRenderingFence();
+	Fence();
 	for (uint64 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
@@ -140,10 +140,9 @@ finishAdapter:
 	Check(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(m_commandQueue.GetAddressOf())));
 
 	//------------Create Command List-------------//
-	CreateCommandList();
 
 	//------------Create Fence---------------//
-	CreateGraphicsFence();
+	CreateFence();
 
 	//---------------------SwapChain-------------------------//
 
@@ -281,7 +280,7 @@ finishAdapter:
 
 	// 2024.05.31 
 	//------------------Create CB Pool---------------------//
-	CreateAndInitOverlappedRenderingResources();
+	CreateAndInitRenderingResources();
 	
 
 	//---------------------Init Imgui-----------------------//
@@ -349,8 +348,7 @@ void Ideal::D3D12Renderer::Render()
 	m_currentRenderScene->DrawGBuffer(shared_from_this());
 
 	//-------------Begin Render------------//
-	//BeginRender();
-	OverlappedBeginRender();
+	BeginRender();
 	{
 
 		//-------------Render Command-------------//
@@ -372,18 +370,10 @@ void Ideal::D3D12Renderer::Render()
 		}
 	}
 	//-------------End Render------------//
-	//EndRender();
-	OverlappedEndRender();
+	EndRender();
 
 	//----------------Present-------------------//
-	//GraphicsPresent();
-	OverlappedRenderingPresent();
-
-	//-----------Reset Pool-----------//
-	//m_descriptorHeap->Reset();
-
-	// TEMP : index
-	//m_cbAllocator[0]->Reset();
+	Present();
 	return;
 }
 
@@ -540,83 +530,9 @@ void Ideal::D3D12Renderer::ResetCommandList()
 	Check(commandList->Reset(commandAllocator.Get(), nullptr));
 }
 
-void Ideal::D3D12Renderer::BeginRender()
-{
-	// 2024.04.15 pipeline state를 m_currentPipelineState에 있는 것으로 세팅한다.
-
-	m_commandList->RSSetViewports(1, &m_viewport->GetViewport());
-	m_commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-
-	CD3DX12_RESOURCE_BARRIER backBufferRenderTarget = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	m_commandList->ResourceBarrier(1, &backBufferRenderTarget);
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
-	// 2024.04.14 dsv세팅
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-	//m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
-	m_swapChain->GetDesc1(&swapChainDesc);
-
-	float c[4] = { 0.f, 0.f, 0.f, 1.f };
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = swapChainDesc.Format;
-	clearValue.Color[0] = c[0];
-	clearValue.Color[1] = c[1];
-	clearValue.Color[2] = c[2];
-	clearValue.Color[3] = c[3];
-
-
-	m_commandList->ClearRenderTargetView(rtvHandle, clearValue.Color, 0, nullptr);
-
-	// 2024.04.14 Clear DSV
-	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-}
-
-void Ideal::D3D12Renderer::EndRender()
-{
-	CD3DX12_RESOURCE_BARRIER backBufferPresent = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT
-	);
-
-	m_commandList->ResourceBarrier(1, &backBufferPresent);
-
-	Check(m_commandList->Close());
-	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-}
-
-void Ideal::D3D12Renderer::GraphicsPresent()
-{
-	HRESULT hr = m_swapChain->Present(1, 0);
-	if (DXGI_ERROR_DEVICE_REMOVED == hr)
-	{
-		__debugbreak();
-	}
-
-	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-	GraphicsFence();
-	WaitForGraphicsFenceValue();
-}
-
 uint32 Ideal::D3D12Renderer::GetFrameIndex() const
 {
 	return m_frameIndex;
-}
-
-void Ideal::D3D12Renderer::CreateCommandList()
-{
-	Check(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
-	Check(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
-	m_commandList->Close();
 }
 
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Ideal::D3D12Renderer::GetCommandList()
@@ -625,31 +541,13 @@ Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> Ideal::D3D12Renderer::GetComma
 	//return m_commandList;
 }
 
-void Ideal::D3D12Renderer::CreateGraphicsFence()
+void Ideal::D3D12Renderer::CreateFence()
 {
 	Check(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.GetAddressOf())));
 
 	m_fenceValue = 0;
 
 	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-}
-
-uint64 Ideal::D3D12Renderer::GraphicsFence()
-{
-	m_fenceValue++;
-	m_commandQueue->Signal(m_fence.Get(), m_fenceValue);
-	return m_fenceValue;
-}
-
-void Ideal::D3D12Renderer::WaitForGraphicsFenceValue()
-{
-	const uint64 expectedFenceValue = m_fenceValue;
-
-	if (m_fence->GetCompletedValue() < expectedFenceValue)
-	{
-		m_fence->SetEventOnCompletion(expectedFenceValue, m_fenceEvent);
-		WaitForSingleObject(m_fenceEvent, INFINITE);
-	}
 }
 
 std::shared_ptr<Ideal::ResourceManager> Ideal::D3D12Renderer::GetResourceManager()
@@ -753,7 +651,7 @@ void Ideal::D3D12Renderer::OffWarningRenderTargetClearValue()
 	//https://blog.techlab-xe.net/dx12-debug-id3d12infoqueue/
 }
 
-void Ideal::D3D12Renderer::CreateAndInitOverlappedRenderingResources()
+void Ideal::D3D12Renderer::CreateAndInitRenderingResources()
 {
 	// CreateCommand List
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
@@ -785,7 +683,7 @@ void Ideal::D3D12Renderer::CreateAndInitOverlappedRenderingResources()
 	}
 }
 
-uint64 Ideal::D3D12Renderer::OverlappedRenderingFence()
+uint64 Ideal::D3D12Renderer::Fence()
 {
 	m_fenceValue++;
 	m_commandQueue->Signal(m_fence.Get(), m_fenceValue);
@@ -794,7 +692,7 @@ uint64 Ideal::D3D12Renderer::OverlappedRenderingFence()
 	return m_fenceValue;
 }
 
-void Ideal::D3D12Renderer::OverlappedBeginRender()
+void Ideal::D3D12Renderer::BeginRender()
 {
 	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
 	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
@@ -820,7 +718,7 @@ void Ideal::D3D12Renderer::OverlappedBeginRender()
 	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 }
 
-void Ideal::D3D12Renderer::OverlappedEndRender()
+void Ideal::D3D12Renderer::EndRender()
 {
 	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 
@@ -836,9 +734,9 @@ void Ideal::D3D12Renderer::OverlappedEndRender()
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 }
 
-void Ideal::D3D12Renderer::OverlappedRenderingPresent()
+void Ideal::D3D12Renderer::Present()
 {
-	OverlappedRenderingFence();
+	Fence();
 
 	HRESULT hr;
 	hr = m_swapChain->Present(1, 0);

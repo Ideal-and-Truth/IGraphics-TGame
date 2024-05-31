@@ -163,7 +163,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 		{
-			for (int i = 0; i < 20; i++)
+			/*for (int i = 0; i < 20; i++)
 			{
 				std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 				Matrix mat = Matrix::Identity;
@@ -171,7 +171,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				mesh->SetTransformMatrix(mat);
 				renderScene->AddObject(mesh);
 				meshes.push_back(mesh);
-			}
+			}*/
 		}
 		//renderScene->AddObject(mesh2);
 		//renderScene->AddObject(mesh3);
