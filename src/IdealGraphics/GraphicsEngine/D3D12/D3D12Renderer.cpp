@@ -181,13 +181,11 @@ finishAdapter:
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 	//---------------------RTV-------------------------//
+	m_rtvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, SWAP_CHAIN_FRAME_COUNT);
 
-	// rtv descriptor heap
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-	rtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT;
-	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	Check(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
+	m_imguiSRVHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, SWAP_CHAIN_FRAME_COUNT + 1/*FONT*/);
 
 	float c[4] = { 0.f,0.f,0.f,1.f };
 	D3D12_CLEAR_VALUE clearValue = {};
@@ -200,13 +198,34 @@ finishAdapter:
 	// descriptor heap 에서 rtv Descriptor의 크기
 	m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+		//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
-		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
+		// Create RenderTarget Texture
+		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
 		{
-			Check(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_renderTargets[i])));
-			m_device->CreateRenderTargetView(m_renderTargets[i].Get(), nullptr, rtvHandle);
-			rtvHandle.Offset(1, m_rtvDescriptorSize);
+			m_renderTargets[i] = std::make_shared<Ideal::D3D12Texture>();
+		}
+
+		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+		{
+			auto handle = m_rtvHeap->Allocate();
+			ComPtr<ID3D12Resource> resource;
+			Check(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource)));
+			m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
+			m_renderTargets[i]->Create(resource);
+			m_renderTargets[i]->EmplaceRTV(handle);
+		}
+
+		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+		{
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.Format = m_renderTargets[i]->GetResource()->GetDesc().Format;
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture2D.MipLevels = 1;
+			Ideal::D3D12DescriptorHandle srvHandle = m_imguiSRVHeap->Allocate();
+			m_device->CreateShaderResourceView(m_renderTargets[i]->GetResource(), &srvDesc, srvHandle.GetCpuHandle());
+			m_renderTargets[i]->EmplaceSRV(srvHandle);
 		}
 	}
 
@@ -281,7 +300,7 @@ finishAdapter:
 	// 2024.05.31 
 	//------------------Create CB Pool---------------------//
 	CreateAndInitRenderingResources();
-	
+
 
 	//---------------------Init Imgui-----------------------//
 	// 2024.05.22
@@ -294,6 +313,7 @@ finishAdapter:
 
 void Ideal::D3D12Renderer::Tick()
 {
+	ImGuiTest();
 	float speed = 2.f;
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 	{
@@ -326,7 +346,7 @@ void Ideal::D3D12Renderer::Tick()
 	}
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
-		m_mainCamera->SetLook(Vector3(0.f,1.f,1.f));
+		m_mainCamera->SetLook(Vector3(0.f, 1.f, 1.f));
 	}
 	if (GetAsyncKeyState('K') & 0x8000)
 	{
@@ -365,7 +385,8 @@ void Ideal::D3D12Renderer::Render()
 
 			ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 			//------IMGUI RENDER------//
-			ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
+			//ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
+			ID3D12DescriptorHeap* descriptorHeap[] = { m_imguiSRVHeap->GetDescriptorHeap().Get() };
 			commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 			ImGui::Render();
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
@@ -627,13 +648,15 @@ void Ideal::D3D12Renderer::InitImgui()
 	//ImGui::StyleColorsLight();
 
 	//-----Allocate Srv-----//
-	m_imguiSRVHandle = m_resourceManager->GetImGuiSRVPool()->Allocate();
+	//m_imguiSRVHandle = m_resourceManager->GetImGuiSRVPool()->Allocate();
+	m_imguiSRVHandle = m_imguiSRVHeap->Allocate();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(m_hwnd);
 	ImGui_ImplDX12_Init(m_device.Get(), SWAP_CHAIN_FRAME_COUNT,
 		DXGI_FORMAT_R8G8B8A8_UNORM,
-		m_resourceManager->GetImguiSRVHeap().Get(),
+		//m_resourceManager->GetImguiSRVHeap().Get(),
+		m_imguiSRVHeap->GetDescriptorHeap().Get(),
 		m_imguiSRVHandle.GetCpuHandle(),
 		m_imguiSRVHandle.GetGpuHandle());
 }
@@ -661,6 +684,34 @@ void Ideal::D3D12Renderer::OffWarningRenderTargetClearValue()
 	// 아래의 코드는 경고가 뜨면 바로 디버그 브레이크 해버림.
 	//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
 	//https://blog.techlab-xe.net/dx12-debug-id3d12infoqueue/
+}
+
+void Ideal::D3D12Renderer::ImGuiTest()
+{
+	ImGui::Begin("MAIN SCREEN");                          // Create a window called "Hello, world!" and append into it.
+
+	ImVec2 size(m_width, m_height);
+
+	// to srv
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex]->GetResource(),
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+
+	ImGui::Image((ImTextureID)(m_renderTargets[m_frameIndex]->GetSRV().GetGpuHandle().ptr), size);
+
+	// to present
+	barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex]->GetResource(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_PRESENT
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+
+	ImGui::End();
+
 }
 
 void Ideal::D3D12Renderer::CreateAndInitRenderingResources()
@@ -713,21 +764,24 @@ void Ideal::D3D12Renderer::BeginRender()
 	//Check(commandList->Reset(commandAllocator.Get(), nullptr));
 
 	CD3DX12_RESOURCE_BARRIER backBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
+		m_renderTargets[m_frameIndex]->GetResource(),
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
 	commandList->ResourceBarrier(1, &backBufferBarrier);
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
-	commandList->ClearRenderTargetView(rtvHandle, DirectX::Colors::Black, 0, nullptr);
+	auto rtvHandle = m_renderTargets[m_frameIndex]->GetRTV();
+
+
+	commandList->ClearRenderTargetView(rtvHandle.GetCpuHandle(), DirectX::Colors::Black, 0, nullptr);
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	commandList->RSSetViewports(1, &m_viewport->GetViewport());
 	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
 }
 
 void Ideal::D3D12Renderer::EndRender()
@@ -735,7 +789,7 @@ void Ideal::D3D12Renderer::EndRender()
 	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_renderTargets[m_frameIndex].Get(),
+		m_renderTargets[m_frameIndex]->GetResource(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PRESENT
 	);

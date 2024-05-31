@@ -165,9 +165,13 @@ namespace Ideal
 		uint32 m_frameIndex = 0;
 
 		// RTV
-		ComPtr<ID3D12DescriptorHeap> m_rtvHeap = nullptr;
+		//ComPtr<ID3D12DescriptorHeap> m_rtvHeap = nullptr;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_imguiSRVHeap;
+
 		uint32 m_rtvDescriptorSize = 0;
-		ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
+		//ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
+		std::shared_ptr<Ideal::D3D12Texture> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
 
 		// DSV
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
@@ -238,6 +242,10 @@ namespace Ideal
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
 
+
+		// TEMP IMGUI
+		void ImGuiTest();
+		
 
 	};
 }
