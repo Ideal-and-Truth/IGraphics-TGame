@@ -415,9 +415,7 @@ void Ideal::IdealRenderScene::UpdateGlobalCBData(std::shared_ptr<IdealRenderer> 
 	m_cbGlobal->eyePos = d3d12Renderer->GetEyePos();
 
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
-	std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Global));
-
-	auto cb = cbPool->Allocate();
+	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Global));
 	if (!cb)
 	{
 		__debugbreak();
@@ -487,9 +485,7 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 	}
 
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
-	std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_LightList));
-
-	auto cb = cbPool->Allocate();
+	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_LightList));
 	if (!cb)
 	{
 		__debugbreak();

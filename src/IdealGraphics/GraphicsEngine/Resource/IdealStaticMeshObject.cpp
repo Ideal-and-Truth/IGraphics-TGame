@@ -34,9 +34,7 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
-	std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Transform));
-
-	auto cb = cbPool->Allocate();
+	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Transform));
 	if (!cb)
 	{
 		__debugbreak();

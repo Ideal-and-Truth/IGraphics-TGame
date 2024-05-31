@@ -272,8 +272,6 @@ finishAdapter:
 
 	//------------------Create Main Descriptor Heap---------------------//
 	CreateDescriptorHeap();
-	//------------------Create CB Pool---------------------//
-	CreateCBPool();
 
 	// 2024.05.31 
 	//------------------Create CB Pool---------------------//
@@ -373,11 +371,9 @@ void Ideal::D3D12Renderer::Render()
 
 	//-----------Reset Pool-----------//
 	m_descriptorHeap->Reset();
-	m_cb256Pool->Reset();
-	m_cb512Pool->Reset();
-	m_cb1024Pool->Reset();
-	m_cb2048Pool->Reset();
-	m_cbBonePool->Reset();
+
+	// TEMP : 
+	m_cbAllocator[0]->Reset();
 	return;
 }
 
@@ -656,54 +652,11 @@ std::shared_ptr<Ideal::D3D12DescriptorHeap> Ideal::D3D12Renderer::GetMainDescrip
 	return m_descriptorHeap;
 }
 
-void Ideal::D3D12Renderer::CreateCBPool()
+std::shared_ptr<Ideal::ConstantBufferContainer> Ideal::D3D12Renderer::ConstantBufferAllocate(uint32 SizePerCB)
 {
-	m_cb256Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb256Pool->Init(m_device.Get(), 256, MAX_DRAW_COUNT_PER_FRAME);
-
-	m_cb512Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb512Pool->Init(m_device.Get(), 512, MAX_DRAW_COUNT_PER_FRAME);
-
-	m_cb1024Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb1024Pool->Init(m_device.Get(), 1024, MAX_DRAW_COUNT_PER_FRAME);
-
-	m_cb2048Pool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cb2048Pool->Init(m_device.Get(), 2048, MAX_DRAW_COUNT_PER_FRAME);
-
-	// TEMP
-	m_cbBonePool = std::make_shared<Ideal::D3D12ConstantBufferPool>();
-	m_cbBonePool->Init(m_device.Get(), AlignConstantBufferSize(static_cast<uint32>(sizeof(CB_Bone))), MAX_DRAW_COUNT_PER_FRAME);
-}
-
-std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBPool(uint32 SizePerCB)
-{
-	// 2024.05.31 D3D12DynamicConstantBufferAllocator test
-	//m_cbAllocator->
-
-	//return nullptr;
-
-	if (SizePerCB <= 256)
-	{
-		return m_cb256Pool;
-	}
-	else if (SizePerCB <= 512)
-	{
-		return m_cb512Pool;
-	}
-	else if (SizePerCB <= 1024)
-	{
-		return m_cb1024Pool;
-	}
-	else if (SizePerCB <= 2048)
-	{
-		return m_cb2048Pool;
-	}
-	return nullptr;
-}
-
-std::shared_ptr<Ideal::D3D12ConstantBufferPool> Ideal::D3D12Renderer::GetCBBonePool()
-{
-	return m_cbBonePool;
+	// TEMP : Index = 0 
+	// TODO : 중첩 렌더링 후 현재 인덱스를 받아오도록 수정
+	return m_cbAllocator[0]->Allocate(m_device.Get(), SizePerCB);
 }
 
 void Ideal::D3D12Renderer::CreateDefaultCamera()

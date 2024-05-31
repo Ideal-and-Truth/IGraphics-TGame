@@ -8,7 +8,8 @@
 #include <d3d12.h>
 #include "d3dx12.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
-
+//#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+//#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 // TEMP
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -38,6 +39,7 @@ namespace Ideal
 	class IdealSkinnedMeshObject;
 	class IdealScreenQuad;
 
+	struct ConstantBufferContainer;
 	// Manager
 	class D3D12ConstantBufferPool;
 	class D3D12DynamicConstantBufferAllocator;
@@ -129,12 +131,9 @@ namespace Ideal
 		void CreateDescriptorHeap();
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetMainDescriptorHeap();
 
-		// Test : 2024.05.07; Type마다 CBPool을 만들어야하나?
-		void CreateCBPool();
-
-		// 2024.05.08; 256의 512, 1024 로 만들어서 필요한 용량에 따라 사용해도 괜찮을 듯?
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> GetCBPool(uint32 SizePerCB);
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> GetCBBonePool();
+		// 2024.05.31 : Dynamic ConstantBuffer Allocator 에서 직접 CBContainer를 받아오도록 수정
+		std::shared_ptr<Ideal::ConstantBufferContainer> ConstantBufferAllocate(uint32 SizePerCB);
+		
 
 		//------Camera------//
 		void CreateDefaultCamera(); // default camera
@@ -187,15 +186,6 @@ namespace Ideal
 	private:
 		// D3D12 Data Manager
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeap = nullptr;
-
-		// 2024.05.08; 256의 512, 1024 로 만들어서 필요한 용량에 따라 사용해도 괜찮을 듯?
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb256Pool = nullptr;
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb512Pool = nullptr;
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb1024Pool = nullptr;
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cb2048Pool = nullptr;
-
-		// bone의 데이터가 크다. 일단은 따로 만들다가 나중에 SRV로 넘겨주든 해야겠다.
-		std::shared_ptr<Ideal::D3D12ConstantBufferPool> m_cbBonePool = nullptr;
 
 	private:
 		float m_aspectRatio = 0.f;

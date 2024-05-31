@@ -49,9 +49,7 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
-	std::shared_ptr<Ideal::D3D12ConstantBufferPool> cbPool = d3d12Renderer->GetCBPool(sizeof(CB_Material));
-
-	auto cb = cbPool->Allocate();
+	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Material));
 	if (!cb)
 	{
 		__debugbreak();
