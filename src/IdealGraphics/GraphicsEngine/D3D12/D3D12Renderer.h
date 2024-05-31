@@ -167,6 +167,7 @@ namespace Ideal
 		uint32 m_rtvDescriptorSize = 0;
 		ComPtr<ID3D12Resource> m_renderTargets[FRAME_BUFFER_COUNT];
 
+
 		// DSV
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
 		ComPtr<ID3D12Resource> m_depthStencil = nullptr;
@@ -176,9 +177,9 @@ namespace Ideal
 		ComPtr<ID3D12GraphicsCommandList> m_commandList = nullptr;
 
 		// Fence
-		ComPtr<ID3D12Fence> m_graphicsFence = nullptr;
-		uint64 m_graphicsFenceValue = 0;
-		HANDLE m_graphicsFenceEvent = NULL;
+		ComPtr<ID3D12Fence> m_fence = nullptr;
+		uint64 m_fenceValue = 0;
+		HANDLE m_fenceEvent = NULL;
 
 		// RenderScene
 		std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
@@ -232,6 +233,7 @@ namespace Ideal
 
 		// Warning Off
 	private:
+		// debuging messeage OFF
 		void OffWarningRenderTargetClearValue();
 
 		// Overlapped Redering
@@ -248,5 +250,8 @@ namespace Ideal
 		void CreateAndInitOverlappedRenderingResources();
 		uint64 OverlappedRenderingFence();
 		void OverlappedBeginRender();
+		void OverlappedEndRender();
+		void OverlappedRenderingPresent();
+		void WaitForFenceValue(uint64 ExpectedFenceValue);
 	};
 }
