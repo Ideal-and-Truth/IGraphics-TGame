@@ -313,6 +313,7 @@ finishAdapter:
 
 void Ideal::D3D12Renderer::Tick()
 {
+	//ShowMainDockSpace();
 	ImGuiTest();
 	float speed = 2.f;
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
@@ -367,6 +368,9 @@ void Ideal::D3D12Renderer::Render()
 	//2024.05.16 Draw GBuffer
 	m_currentRenderScene->DrawGBuffer(shared_from_this());
 
+#ifdef _DEBUG
+	//m_currentRenderScene->DrawScreenEditor(shared_from_this());
+#endif
 	//-------------Begin Render------------//
 	BeginRender();
 	{
@@ -538,6 +542,7 @@ void Ideal::D3D12Renderer::ClearImGui()
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	ImGui::DockSpaceOverViewport();
 }
 
 void Ideal::D3D12Renderer::Release()
@@ -700,7 +705,7 @@ void Ideal::D3D12Renderer::ImGuiTest()
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
 
-	ImGui::Image((ImTextureID)(m_renderTargets[m_frameIndex]->GetSRV().GetGpuHandle().ptr), size);
+	//ImGui::Image((ImTextureID)(m_renderTargets[m_frameIndex]->GetSRV().GetGpuHandle().ptr), size);
 
 	// to present
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(

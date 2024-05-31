@@ -45,6 +45,7 @@ namespace Ideal
 		// 2024.05.15 : buffer render
 		void DrawGBuffer(std::shared_ptr<IdealRenderer> Renderer);
 		void DrawScreen(std::shared_ptr<IdealRenderer> Renderer);
+		void DrawScreenEditor(std::shared_ptr<IdealRenderer> Renderer);
 
 	public:
 		//----------IRenderScene Interface-----------//
@@ -80,6 +81,7 @@ namespace Ideal
 		void InitScreenQuad(std::shared_ptr<IdealRenderer> Renderer);
 		void CreateScreenQuadRootSignature(std::shared_ptr<IdealRenderer> Renderer);
 		void CreateScreenQuadPSO(std::shared_ptr<IdealRenderer> Renderer);
+		void InitScreenQuadEditor(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 	private:
 		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
@@ -112,6 +114,9 @@ namespace Ideal
 
 		// DSV
 		std::shared_ptr<Ideal::D3D12Texture> m_depthBuffer = nullptr;
+
+		// MainScreen Texture
+		std::shared_ptr<Ideal::D3D12Texture> m_screenBuffer = nullptr;
 
 		// ScreenQuad
 		std::shared_ptr<Ideal::IdealScreenQuad> m_fullScreenQuad;

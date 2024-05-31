@@ -148,7 +148,6 @@ namespace Ideal
 		//-----etc-----//
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 		std::shared_ptr<Ideal::D3D12Viewport> GetViewport() { return m_viewport; }
-
 		//----Screen----//
 		uint32 GetWidth() { return m_width; }
 		uint32 GetHeight() { return m_height; }
@@ -245,7 +244,5 @@ namespace Ideal
 
 		// TEMP IMGUI
 		void ImGuiTest();
-		
-
 	};
 }
