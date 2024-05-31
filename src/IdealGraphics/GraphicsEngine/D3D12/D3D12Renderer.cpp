@@ -361,12 +361,22 @@ void Ideal::D3D12Renderer::Render()
 			}
 		}
 		{
+			ImGuiIO& io = ImGui::GetIO();
+
 			ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 			//------IMGUI RENDER------//
 			ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
 			commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 			ImGui::Render();
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
+
+			// Update and Render additional Platform Windows
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList.Get());
+			}
+
 		}
 	}
 	//-------------End Render------------//
@@ -610,6 +620,8 @@ void Ideal::D3D12Renderer::InitImgui()
 	(void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsLight();
@@ -619,7 +631,7 @@ void Ideal::D3D12Renderer::InitImgui()
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(m_hwnd);
-	ImGui_ImplDX12_Init(m_device.Get(), 2,
+	ImGui_ImplDX12_Init(m_device.Get(), SWAP_CHAIN_FRAME_COUNT,
 		DXGI_FORMAT_R8G8B8A8_UNORM,
 		m_resourceManager->GetImguiSRVHeap().Get(),
 		m_imguiSRVHandle.GetCpuHandle(),
