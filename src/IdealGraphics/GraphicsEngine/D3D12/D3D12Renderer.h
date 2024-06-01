@@ -29,6 +29,7 @@ namespace Ideal
 	class ResourceManager;
 
 	class D3D12DescriptorHeap;
+	class D3D12DynamicDescriptorHeap;
 	class D3D12Texture;
 	class D3D12PipelineStateObject;
 	class D3D12Viewport;
@@ -150,7 +151,7 @@ namespace Ideal
 		//-----etc-----//
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 		std::shared_ptr<Ideal::D3D12Viewport> GetViewport() { return m_viewport; }
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetImguiSRVHeap() { return m_imguiSRVHeap; }
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetImguiSRVHeap() { return m_imguiSRVHeap; }
 		//----Screen----//
 		uint32 GetWidth() { return m_width; }
 		uint32 GetHeight() { return m_height; }
@@ -169,9 +170,8 @@ namespace Ideal
 		uint32 m_frameIndex = 0;
 
 		// RTV
-		//ComPtr<ID3D12DescriptorHeap> m_rtvHeap = nullptr;
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_imguiSRVHeap;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
 
 		uint32 m_rtvDescriptorSize = 0;
 		//ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
@@ -191,7 +191,7 @@ namespace Ideal
 		HANDLE m_fenceEvent = NULL;
 
 		// RenderScene
-		std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
+		std::weak_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
 
 	private:
 		// D3D12 Data Manager
@@ -220,8 +220,6 @@ namespace Ideal
 		std::wstring m_assetPath;
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
-
-		std::shared_ptr<Ideal::D3D12Texture> t1 = nullptr;
 
 		// EDITOR 
 	private:
@@ -256,7 +254,7 @@ namespace Ideal
 		void ResizeImGuiMainCameraWindow(uint32 Width, uint32 Height);
 		void CreateEditorRTV(uint32 Width, uint32 Height);
 		// Editor RTV // 2024.06.01
-		std::shared_ptr<Ideal::D3D12Texture> m_ImGuiMainCameraRenderTarget;
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_editorRTVHeap;
+		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 	};
 }

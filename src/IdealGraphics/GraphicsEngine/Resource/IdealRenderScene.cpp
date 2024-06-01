@@ -31,7 +31,13 @@ Ideal::IdealRenderScene::IdealRenderScene()
 
 Ideal::IdealRenderScene::~IdealRenderScene()
 {
-
+	int a = 3;
+	/*for (auto& t : m_gBuffers)
+	{
+		t.reset();
+	}
+	m_depthBuffer.reset();
+	m_screenBuffer.reset();*/
 }
 
 void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
@@ -69,7 +75,7 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 {
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
-	
+
 	commandList->SetDescriptorHeaps(1, d3d12Renderer->GetMainDescriptorHeap()->GetDescriptorHeap().GetAddressOf());
 
 	// CB
@@ -226,23 +232,23 @@ void Ideal::IdealRenderScene::AddLight(std::shared_ptr<Ideal::ILight> Light)
 		{
 			__debugbreak();
 		}
-			break;
+		break;
 		case ELightType::Directional:
 		{
 			// Directional Light는 그냥 바꿔준다.
 			m_directionalLight = std::static_pointer_cast<IdealDirectionalLight>(Light);
 		}
-			break;
+		break;
 		case ELightType::Spot:
 		{
 			m_spotLights.push_back(std::static_pointer_cast<IdealSpotLight>(Light));
 		}
-			break;
+		break;
 		case ELightType::Point:
 		{
 			m_pointLights.push_back(std::static_pointer_cast<IdealPointLight>(Light));
 		}
-			break;
+		break;
 		default:
 		{
 
@@ -512,7 +518,7 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 	CB_LightList* cbLightList = (CB_LightList*)cb->SystemMemAddr;
 	*cbLightList = *m_cbLightList;
 	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	
+
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(m_cbGlobalHandle.GetCpuHandle(), GLOBAL_DESCRIPTOR_INDEX_CBV_LIGHTLIST, incrementSize);
 	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
@@ -619,7 +625,7 @@ void Ideal::IdealRenderScene::CreateDSV(std::shared_ptr<IdealRenderer> Renderer)
 
 	//-------DSV-------//
 	resourceManager->CreateTextureDSV(m_depthBuffer, m_width, m_height);
-	
+
 }
 
 void Ideal::IdealRenderScene::InitScreenQuad(std::shared_ptr<IdealRenderer> Renderer)

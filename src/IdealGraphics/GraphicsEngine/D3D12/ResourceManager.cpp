@@ -34,6 +34,13 @@ ResourceManager::ResourceManager()
 ResourceManager::~ResourceManager()
 {
 	WaitForFenceValue();
+	for (auto& t : m_textures)
+	{
+		if (!t.expired())
+		{
+			t.lock().reset();
+		}
+	}
 }
 
 void ResourceManager::Init(ComPtr<ID3D12Device> Device)
@@ -61,22 +68,17 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	m_fence->SetName(L"ResourceManager Fence");
 
 	//------------SRV Heap-----------//
-	m_srvHeap = std::make_shared<D3D12DescriptorHeap>();
+	m_srvHeap = std::make_shared<D3D12DynamicDescriptorHeap>();
 	m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
 
 	//------------RTV Heap-----------//
-	m_rtvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_rtvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	//m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
 	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 32);
 
 	//-----------DSV Heap------------//
-	m_dsvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_dsvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
-
-	//------------Imgui SRV Heap-----------//
-	m_imguiSrvHeap = std::make_shared<D3D12DescriptorHeap>();
-	m_imguiSrvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, m_imguiSrvHeapCount);
-	m_imguiSrvHeap->SetName(L"imguiSRVHeap");
 }
 
 void ResourceManager::Fence()
@@ -229,6 +231,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	{
 		OutTexture = std::make_shared<Ideal::D3D12Texture>();
 	}
+	m_textures.push_back(OutTexture);
 	// 2024.05.14 : 이 함수 Texture에 있어야 할지도// 
 	// 2024.05.15 : fence때문에 잘 모르겠다. 일단 넘어간다.
 
@@ -310,6 +313,7 @@ void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Te
 	{
 		OutTexture = std::make_shared<Ideal::D3D12Texture>();
 	}
+	m_textures.push_back(OutTexture);
 
 	ComPtr<ID3D12Resource> resource;
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -379,6 +383,7 @@ void ResourceManager::CreateTextureDSV(std::shared_ptr<Ideal::D3D12Texture>& Out
 	{
 		OutTexture = std::make_shared<Ideal::D3D12Texture>();
 	}
+	m_textures.push_back(OutTexture);
 
 	ComPtr<ID3D12Resource> resource;
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);

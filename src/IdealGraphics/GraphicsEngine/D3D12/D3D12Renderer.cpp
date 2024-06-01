@@ -49,6 +49,10 @@ Ideal::D3D12Renderer::~D3D12Renderer()
 		WaitForFenceValue(m_lastFenceValues[i]);
 	}
 
+	//TEMP;
+	m_imguiSRVHandle.Free();
+	m_editorTexture.reset();
+	m_editorRTVHeap.reset();
 	// Release Resource Manager
 	m_resourceManager = nullptr;
 	ImGui_ImplDX12_Shutdown();
@@ -187,9 +191,8 @@ finishAdapter:
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 	//------ImGuiSRVHeap------//
-	m_imguiSRVHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	//m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
-	m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 10 /*FONT*/ /*Main Camera*/);
+	m_imguiSRVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
 
 	//---------------------RTV-------------------------//
 	m_rtvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
@@ -239,9 +242,8 @@ finishAdapter:
 	}
 	//---------------------Editor RTV-------------------------//
 	// heap
-	m_editorRTVHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	//m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
-	m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 3);
+	m_editorRTVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
 
 	CreateEditorRTV(m_width, m_height);
 
@@ -349,13 +351,13 @@ void Ideal::D3D12Renderer::Render()
 	m_mainCamera->UpdateMatrix2();
 
 	//2024.05.16 Draw GBuffer
-	m_currentRenderScene->DrawGBuffer(shared_from_this());
+	m_currentRenderScene.lock()->DrawGBuffer(shared_from_this());
 
 #ifdef _DEBUG
 	if (m_isEditor)
 	{
 		SetImGuiCameraRenderTarget();
-		m_currentRenderScene->DrawScreen(shared_from_this());
+		m_currentRenderScene.lock()->DrawScreen(shared_from_this());
 		DrawImGuiMainCamera();
 	}
 #endif
@@ -366,12 +368,12 @@ void Ideal::D3D12Renderer::Render()
 		//-------------Render Command-------------//
 		{
 			//----------Render Scene-----------//
-			if (m_currentRenderScene != nullptr)
+			if (!m_currentRenderScene.expired())
 			{
 #ifdef _DEBUG
 				if (!m_isEditor)
 #endif
-					m_currentRenderScene->DrawScreen(shared_from_this());
+					m_currentRenderScene.lock()->DrawScreen(shared_from_this());
 			}
 		}
 		{
@@ -450,7 +452,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 
 	m_mainCamera->SetAspectRatio(float(Width) / Height);
 
-	m_currentRenderScene->Resize(shared_from_this());
+	m_currentRenderScene.lock()->Resize(shared_from_this());
 #ifdef _DEBUG
 
 	if (m_isEditor)
@@ -507,7 +509,6 @@ std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12Renderer::CreateRenderScene()
 {
 	std::shared_ptr<Ideal::IdealRenderScene> newScene = std::make_shared<Ideal::IdealRenderScene>();
 	newScene->Init(shared_from_this());
-
 	return newScene;
 }
 
@@ -797,13 +798,13 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 
 	// to srv
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_ImGuiMainCameraRenderTarget->GetResource(),
+		m_editorTexture->GetResource(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
 
-	ImGui::Image((ImTextureID)(m_ImGuiMainCameraRenderTarget->GetSRV().GetGpuHandle().ptr), size);
+	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
 	// to present
 	/*barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_editorRenderTarget->GetResource(),
@@ -822,7 +823,7 @@ void Ideal::D3D12Renderer::SetImGuiCameraRenderTarget()
 	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
 
 	CD3DX12_RESOURCE_BARRIER editorBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_ImGuiMainCameraRenderTarget->GetResource(),
+		m_editorTexture->GetResource(),
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
@@ -830,7 +831,7 @@ void Ideal::D3D12Renderer::SetImGuiCameraRenderTarget()
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
-	auto rtvHandle = m_ImGuiMainCameraRenderTarget->GetRTV();
+	auto rtvHandle = m_editorTexture->GetRTV();
 
 
 	commandList->ClearRenderTargetView(rtvHandle.GetCpuHandle(), DirectX::Colors::Black, 0, nullptr);
@@ -843,12 +844,13 @@ void Ideal::D3D12Renderer::SetImGuiCameraRenderTarget()
 
 void Ideal::D3D12Renderer::ResizeImGuiMainCameraWindow(uint32 Width, uint32 Height)
 {
+	//m_editorRTVHeap->Reset();
 	CreateEditorRTV(Width, Height);
 }
 
 void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 {
-	m_ImGuiMainCameraRenderTarget = std::make_shared<Ideal::D3D12Texture>();
+	m_editorTexture = std::make_shared<Ideal::D3D12Texture>();
 	{
 		{
 			ComPtr<ID3D12Resource> resource;
@@ -870,7 +872,7 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 				nullptr,
 				IID_PPV_ARGS(resource.GetAddressOf())
 			));
-			m_ImGuiMainCameraRenderTarget->Create(resource);
+			m_editorTexture->Create(resource);
 
 			//-----SRV-----//
 			{
@@ -881,7 +883,7 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 				srvDesc.Texture2D.MipLevels = 1;
 				Ideal::D3D12DescriptorHandle srvHandle = m_imguiSRVHeap->Allocate();
 				m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
-				m_ImGuiMainCameraRenderTarget->EmplaceSRV(srvHandle);
+				m_editorTexture->EmplaceSRV(srvHandle);
 			}
 			//-----RTV-----//
 			{
@@ -892,9 +894,9 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 
 				Ideal::D3D12DescriptorHandle rtvHandle = m_editorRTVHeap->Allocate();
 				m_device->CreateRenderTargetView(resource.Get(), &RTVDesc, rtvHandle.GetCpuHandle());
-				m_ImGuiMainCameraRenderTarget->EmplaceRTV(rtvHandle);
+				m_editorTexture->EmplaceRTV(rtvHandle);
 			}
-			m_ImGuiMainCameraRenderTarget->GetResource()->SetName(L"Editor Texture");
+			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
 	}
 }
