@@ -66,7 +66,8 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 
 	//------------RTV Heap-----------//
 	m_rtvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
+	//m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
+	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 32);
 
 	//-----------DSV Heap------------//
 	m_dsvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();

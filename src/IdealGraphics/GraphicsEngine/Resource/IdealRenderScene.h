@@ -41,6 +41,7 @@ namespace Ideal
 	public:
 		void Init(std::shared_ptr<IdealRenderer> Renderer);
 		void Draw(std::shared_ptr<IdealRenderer> Renderer);
+		void Resize(std::shared_ptr<IdealRenderer> Renderer);
 
 		// 2024.05.15 : buffer render
 		void DrawGBuffer(std::shared_ptr<IdealRenderer> Renderer);

@@ -188,7 +188,8 @@ finishAdapter:
 
 	//------ImGuiSRVHeap------//
 	m_imguiSRVHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
+	//m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
+	m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 10 /*FONT*/ /*Main Camera*/);
 
 	//---------------------RTV-------------------------//
 	m_rtvHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
@@ -237,61 +238,12 @@ finishAdapter:
 		}*/
 	}
 	//---------------------Editor RTV-------------------------//
+	// heap
 	m_editorRTVHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
-	m_ImGuiMainCameraRenderTarget = std::make_shared<Ideal::D3D12Texture>();
-	{
-		uint32 width, height;
-		auto desc = m_renderTargets[0]->GetResource()->GetDesc();
-		width = desc.Width;
-		height = desc.Height;
-		{
-			ComPtr<ID3D12Resource> resource;
-			CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-			CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-				DXGI_FORMAT_R8G8B8A8_UNORM,
-				width,
-				height, 1, 1
-			);
-			resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-			//------Create------//
-			Check(m_device->CreateCommittedResource(
-				&heapProp,
-				D3D12_HEAP_FLAG_NONE,
-				&resourceDesc,
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-				//D3D12_RESOURCE_STATE_COMMON,
-				//nullptr,
-				&clearValue,
-				IID_PPV_ARGS(resource.GetAddressOf())
-			));
-			m_ImGuiMainCameraRenderTarget->Create(resource);
+	//m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+	m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 3);
 
-			//-----SRV-----//
-			{
-				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-				srvDesc.Format = resource->GetDesc().Format;
-				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-				srvDesc.Texture2D.MipLevels = 1;
-				Ideal::D3D12DescriptorHandle srvHandle = m_imguiSRVHeap->Allocate();
-				m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
-				m_ImGuiMainCameraRenderTarget->EmplaceSRV(srvHandle);
-			}
-			//-----RTV-----//
-			{
-				D3D12_RENDER_TARGET_VIEW_DESC RTVDesc{};
-				RTVDesc.Format = resource->GetDesc().Format;
-				RTVDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-				RTVDesc.Texture2D.MipSlice = 0;
-
-				Ideal::D3D12DescriptorHandle rtvHandle = m_editorRTVHeap->Allocate();
-				m_device->CreateRenderTargetView(resource.Get(), &RTVDesc, rtvHandle.GetCpuHandle());
-				m_ImGuiMainCameraRenderTarget->EmplaceRTV(rtvHandle);
-			}
-			m_ImGuiMainCameraRenderTarget->GetResource()->SetName(L"Editor Texture");
-		}
-	}
+	CreateEditorRTV(m_width, m_height);
 
 	//---------------------DSV-------------------------//
 	// 2024.04.14 : dsv를 만들겠다. 먼저 descriptor heap을 만든다.
@@ -457,8 +409,6 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 	if (m_width == Width && m_height == Height)
 		return;
 
-	m_width = Width;
-	m_height = Height;
 
 	// Wait For All Commands
 	Fence();
@@ -469,9 +419,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 
 	DXGI_SWAP_CHAIN_DESC1 desc;
 	HRESULT hr = m_swapChain->GetDesc1(&desc);
-	Check(hr);
-
-	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
 	{
 		m_renderTargets[i]->Release();
 	}
@@ -491,22 +439,24 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 		m_renderTargets[i]->Create(resource);
 		m_renderTargets[i]->EmplaceRTV(handle);
 	}
-
 	// CreateDepthStencil
 	CreateDSV(Width, Height);
+
+	m_width = Width;
+	m_height = Height;
 
 	// Viewport Reize
 	m_viewport->ReSize(Width, Height);
 
 	m_mainCamera->SetAspectRatio(float(Width) / Height);
 
-
+	m_currentRenderScene->Resize(shared_from_this());
 #ifdef _DEBUG
 
-	//if (m_isEditor)
-	//{
-	//	m_ImGuiMainCameraRenderTarget
-	//}
+	if (m_isEditor)
+	{
+		ResizeImGuiMainCameraWindow(Width, Height);
+	}
 #endif
 }
 
@@ -889,6 +839,64 @@ void Ideal::D3D12Renderer::SetImGuiCameraRenderTarget()
 	commandList->RSSetViewports(1, &m_viewport->GetViewport());
 	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
 	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
+}
+
+void Ideal::D3D12Renderer::ResizeImGuiMainCameraWindow(uint32 Width, uint32 Height)
+{
+	CreateEditorRTV(Width, Height);
+}
+
+void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
+{
+	m_ImGuiMainCameraRenderTarget = std::make_shared<Ideal::D3D12Texture>();
+	{
+		{
+			ComPtr<ID3D12Resource> resource;
+			CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+			CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+				DXGI_FORMAT_R8G8B8A8_UNORM,
+				Width,
+				Height, 1, 1
+			);
+			resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			//------Create------//
+			Check(m_device->CreateCommittedResource(
+				&heapProp,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				//D3D12_RESOURCE_STATE_COMMON,
+				//nullptr,
+				nullptr,
+				IID_PPV_ARGS(resource.GetAddressOf())
+			));
+			m_ImGuiMainCameraRenderTarget->Create(resource);
+
+			//-----SRV-----//
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				srvDesc.Format = resource->GetDesc().Format;
+				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Texture2D.MipLevels = 1;
+				Ideal::D3D12DescriptorHandle srvHandle = m_imguiSRVHeap->Allocate();
+				m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
+				m_ImGuiMainCameraRenderTarget->EmplaceSRV(srvHandle);
+			}
+			//-----RTV-----//
+			{
+				D3D12_RENDER_TARGET_VIEW_DESC RTVDesc{};
+				RTVDesc.Format = resource->GetDesc().Format;
+				RTVDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				RTVDesc.Texture2D.MipSlice = 0;
+
+				Ideal::D3D12DescriptorHandle rtvHandle = m_editorRTVHeap->Allocate();
+				m_device->CreateRenderTargetView(resource.Get(), &RTVDesc, rtvHandle.GetCpuHandle());
+				m_ImGuiMainCameraRenderTarget->EmplaceRTV(rtvHandle);
+			}
+			m_ImGuiMainCameraRenderTarget->GetResource()->SetName(L"Editor Texture");
+		}
+	}
 }
 
 void Ideal::D3D12Renderer::CreateAndInitRenderingResources()

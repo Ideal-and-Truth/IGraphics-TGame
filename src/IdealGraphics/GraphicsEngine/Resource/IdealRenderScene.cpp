@@ -110,6 +110,11 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 	}
 }
 
+void Ideal::IdealRenderScene::Resize(std::shared_ptr<IdealRenderer> Renderer)
+{
+	CreateGBuffer(Renderer);
+}
+
 void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Renderer)
 {
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
@@ -517,25 +522,27 @@ void Ideal::IdealRenderScene::CreateGBuffer(std::shared_ptr<IdealRenderer> Rende
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	std::shared_ptr<Ideal::ResourceManager> resourceManager = d3d12Renderer->GetResourceManager();
 
-	//for (uint32 i = 0; i < m_gBufferNum; ++i)
+	uint32 width = d3d12Renderer->GetWidth();
+	uint32 height = d3d12Renderer->GetHeight();
+	m_gBuffers.clear();
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
 		m_gBuffers.push_back(gBuffer);
 	}
 

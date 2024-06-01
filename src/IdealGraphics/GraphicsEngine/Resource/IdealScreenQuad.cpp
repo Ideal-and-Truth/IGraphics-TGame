@@ -96,3 +96,8 @@ void Ideal::IdealScreenQuad::Draw(std::shared_ptr<IdealRenderer> Renderer, std::
 	// Final Draw
 	commandList->DrawIndexedInstanced(m_quadMesh->GetElementCount(), 1, 0, 0, 0);
 }
+
+void Ideal::IdealScreenQuad::Resize(std::shared_ptr<IdealRenderer> Renderer)
+{
+
+}

@@ -177,9 +177,6 @@ namespace Ideal
 		//ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12Texture> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
 
-		// Editor RTV // 2024.06.01
-		std::shared_ptr<Ideal::D3D12Texture> m_ImGuiMainCameraRenderTarget;
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_editorRTVHeap;
 
 		// DSV
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
@@ -256,6 +253,10 @@ namespace Ideal
 		// TEMP IMGUI
 		void DrawImGuiMainCamera();
 		void SetImGuiCameraRenderTarget();
-		void ResizeImGuiMainCameraWindow();
+		void ResizeImGuiMainCameraWindow(uint32 Width, uint32 Height);
+		void CreateEditorRTV(uint32 Width, uint32 Height);
+		// Editor RTV // 2024.06.01
+		std::shared_ptr<Ideal::D3D12Texture> m_ImGuiMainCameraRenderTarget;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_editorRTVHeap;
 	};
 }
