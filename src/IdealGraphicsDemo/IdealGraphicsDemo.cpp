@@ -319,6 +319,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	switch (message)
 	{
+		case WM_SIZE:
+		{
+			if (gRenderer)
+			{
+				RECT rect;
+				GetClientRect(g_hWnd, &rect);
+				//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+				DWORD width = rect.right - rect.left;
+				DWORD height = rect.bottom - rect.top;
+				gRenderer->Resize(width, height);
+			}
+		}
+			break;
 		case WM_COMMAND:
 		{
 			int wmId = LOWORD(wParam);
@@ -372,6 +385,7 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 	{
 		Camera->Strafe(speed);
 	}
+	return;
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
 		Camera->SetLook(Vector3(0.f, 1.f, 1.f));

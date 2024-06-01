@@ -26,6 +26,7 @@ namespace Ideal
 		virtual void Init() abstract;
 		virtual void Tick() abstract;
 		virtual void Render() abstract;
+		virtual void Resize(UINT Width, UINT Height) abstract;
 
 	public:
 		virtual std::shared_ptr<ICamera>					CreateCamera() abstract;

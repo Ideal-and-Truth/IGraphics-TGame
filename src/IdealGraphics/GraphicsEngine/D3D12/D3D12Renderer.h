@@ -73,6 +73,7 @@ namespace Ideal
 		virtual void Init() override;
 		virtual void Tick() override;
 		virtual void Render() override;
+		virtual void Resize(UINT Width, UINT Height) override;
 
 		virtual std::shared_ptr<Ideal::ICamera> CreateCamera() override;
 		virtual void SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera) override;
@@ -106,6 +107,7 @@ namespace Ideal
 		//----Create----//
 		void CreateAndInitRenderingResources();
 		void CreateFence();
+		void CreateDSV(uint32 Width, uint32 Height);
 
 		//-------Device------//
 		ComPtr<ID3D12Device> GetDevice();
@@ -162,6 +164,8 @@ namespace Ideal
 		ComPtr<ID3D12Device> m_device = nullptr;
 		ComPtr<ID3D12CommandQueue> m_commandQueue = nullptr;
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
+		UINT m_swapChainFlags;
+
 		uint32 m_frameIndex = 0;
 
 		// RTV
