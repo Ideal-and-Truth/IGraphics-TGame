@@ -244,6 +244,7 @@ finishAdapter:
 	// heap
 	m_editorRTVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+	//m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
 
 	CreateEditorRTV(m_width, m_height);
 
@@ -411,7 +412,6 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 	if (m_width == Width && m_height == Height)
 		return;
 
-
 	// Wait For All Commands
 	Fence();
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
@@ -421,7 +421,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 
 	DXGI_SWAP_CHAIN_DESC1 desc;
 	HRESULT hr = m_swapChain->GetDesc1(&desc);
-		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
 	{
 		m_renderTargets[i]->Release();
 	}
@@ -438,6 +438,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 		ComPtr<ID3D12Resource> resource = m_renderTargets[i]->GetResource();
 		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
 		m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
+		
 		m_renderTargets[i]->Create(resource);
 		m_renderTargets[i]->EmplaceRTV(handle);
 	}
@@ -453,8 +454,8 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 	m_mainCamera->SetAspectRatio(float(Width) / Height);
 
 	m_currentRenderScene.lock()->Resize(shared_from_this());
-#ifdef _DEBUG
 
+#ifdef _DEBUG
 	if (m_isEditor)
 	{
 		ResizeImGuiMainCameraWindow(Width, Height);

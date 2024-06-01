@@ -103,7 +103,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		gRenderer = CreateRenderer(
-			EGraphicsInterfaceType::D3D12_EDITOR,
+			EGraphicsInterfaceType::D3D12,
 			&g_hWnd,
 			WIDTH,
 			HEIGHT,

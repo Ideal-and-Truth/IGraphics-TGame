@@ -18,11 +18,6 @@ Ideal::D3D12Texture::~D3D12Texture()
 
 void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource)
 {
-	if (m_resource)
-	{
-		//m_resource->Release();
-		m_resource = nullptr;
-	}
 	m_resource = Resource;
 }
 
