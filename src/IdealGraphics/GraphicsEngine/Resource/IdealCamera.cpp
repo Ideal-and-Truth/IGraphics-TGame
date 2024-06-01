@@ -87,6 +87,7 @@ void Ideal::IdealCamera::SetLook(Vector3 Look)
 void IdealCamera::SetAspectRatio(float AspectRatio)
 {
 	m_aspect = AspectRatio;
+	SetLens(m_fovY, AspectRatio, m_nearZ, m_farZ);
 }
 
 void IdealCamera::UpdateMatrix2()

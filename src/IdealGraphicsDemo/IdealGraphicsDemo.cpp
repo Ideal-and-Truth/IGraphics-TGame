@@ -319,19 +319,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	switch (message)
 	{
-		case WM_SIZE:
-		{
-			if (gRenderer)
-			{
-				RECT rect;
-				GetClientRect(g_hWnd, &rect);
-				//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
-				DWORD width = rect.right - rect.left;
-				DWORD height = rect.bottom - rect.top;
-				gRenderer->Resize(width, height);
-			}
-		}
-			break;
 		case WM_COMMAND:
 		{
 			int wmId = LOWORD(wParam);
@@ -346,6 +333,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					return DefWindowProc(hWnd, message, wParam, lParam);
 			}
 		}
+		break;
+		case WM_SIZE:
+		{
+			if (gRenderer)
+			{
+				RECT rect;
+				GetClientRect(g_hWnd, &rect);
+				//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+				DWORD width = rect.right - rect.left;
+				DWORD height = rect.bottom - rect.top;
+				gRenderer->Resize(width, height);
+			}
+		}
+		break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;

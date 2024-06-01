@@ -256,5 +256,6 @@ namespace Ideal
 		// TEMP IMGUI
 		void DrawImGuiMainCamera();
 		void SetImGuiCameraRenderTarget();
+		void ResizeImGuiMainCameraWindow();
 	};
 }

@@ -451,6 +451,9 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 	if (m_width == Width && m_height == Height)
 		return;
 
+	m_width = Width;
+	m_height = Height;
+
 	// Wait For All Commands
 	Fence();
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
@@ -464,9 +467,10 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 
 	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
 	{
-		//m_renderTargets[i]->GetResource()->Release();
 		m_renderTargets[i]->Release();
 	}
+	m_depthStencil.Reset();
+
 	// ResizeBuffers
 	Check(m_swapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, Width, Height, DXGI_FORMAT_R8G8B8A8_UNORM, m_swapChainFlags));
 
@@ -475,28 +479,38 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
 	{
 		auto handle = m_renderTargets[i]->GetRTV();
-		//auto resource = m_renderTargets[i]->GetResource();
-		ID3D12Resource* resource = m_renderTargets[i]->GetResource();
+		ComPtr<ID3D12Resource> resource = m_renderTargets[i]->GetResource();
 		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
-		m_device->CreateRenderTargetView(resource, nullptr, handle.GetCpuHandle());
-		ComPtr<ID3D12Resource> cResource = resource;
-		m_renderTargets[i]->Create(cResource);
-
+		m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
+		m_renderTargets[i]->Create(resource);
+		m_renderTargets[i]->EmplaceRTV(handle);
 	}
 
+	//for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+	//{
+	//	auto handle = m_renderTargets[i]->GetRTV();
+	//	//auto resource = m_renderTargets[i]->GetResource();
+	//	ID3D12Resource* resource = m_renderTargets[i]->GetResource();
+	//	m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
+	//	m_device->CreateRenderTargetView(resource, nullptr, handle.GetCpuHandle());
+	//	ComPtr<ID3D12Resource> cResource = resource;
+	//	m_renderTargets[i]->Create(cResource);
+	//	m_renderTargets[i]->EmplaceRTV(handle);
+	//}
+
 	// CreateDepthStencil
-	m_depthStencil.Get()->Release();
 	CreateDSV(Width, Height);
 
-	m_width = Width;
-	m_height = Height;
+
 
 	// Viewport Reize
 	m_viewport->ReSize(Width, Height);
 
-	m_mainCamera->SetAspectRatio((float)Width / Height);
+	m_mainCamera->SetAspectRatio(float(Width) / Height);
+
 
 #ifdef _DEBUG
+
 	//if (m_isEditor)
 	//{
 	//	m_ImGuiMainCameraRenderTarget
@@ -838,7 +852,9 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 {
 	ImGui::Begin("MAIN SCREEN");                          // Create a window called "Hello, world!" and append into it.
 
-	ImVec2 size(m_width, m_height);
+	ImVec2 windowSize = ImGui::GetWindowSize();
+	ImVec2 size(windowSize.x, windowSize.y);
+	//ImVec2 size(m_width/4, m_height/4);
 
 	// to srv
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -849,7 +865,6 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
 
 	ImGui::Image((ImTextureID)(m_ImGuiMainCameraRenderTarget->GetSRV().GetGpuHandle().ptr), size);
-
 	// to present
 	/*barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_editorRenderTarget->GetResource(),
