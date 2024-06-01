@@ -65,7 +65,7 @@ namespace Ideal
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
 
 	public:
-		D3D12Renderer(HWND hwnd, uint32 width, uint32 height);
+		D3D12Renderer(HWND hwnd, uint32 width, uint32 height, bool EditorMode);
 		virtual ~D3D12Renderer();
 
 	public:
@@ -173,6 +173,10 @@ namespace Ideal
 		//ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12Texture> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
 
+		// Editor RTV // 2024.06.01
+		std::shared_ptr<Ideal::D3D12Texture> m_ImGuiMainCameraRenderTarget;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_editorRTVHeap;
+
 		// DSV
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
 		ComPtr<ID3D12Resource> m_depthStencil = nullptr;
@@ -218,13 +222,15 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::D3D12Texture> t1 = nullptr;
 
-		// EDITOR TEST
+		// EDITOR 
 	private:
 		void InitImgui();
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 		Ideal::D3D12DescriptorHandle m_imguiSRVHandle;
+
+		bool m_isEditor;
 
 		// Warning Off
 	private:
@@ -244,6 +250,7 @@ namespace Ideal
 
 
 		// TEMP IMGUI
-		void ImGuiTest();
+		void DrawImGuiMainCamera();
+		void SetImGuiCameraRenderTarget();
 	};
 }
