@@ -294,6 +294,13 @@ finishAdapter:
 	}
 
 	//---------------------DSV-------------------------//
+	// 2024.04.14 : dsv를 만들겠다. 먼저 descriptor heap을 만든다.
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	Check(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
+
 	CreateDSV(m_width, m_height);
 
 	//------------------Create Default Camera------------------//
@@ -397,7 +404,7 @@ void Ideal::D3D12Renderer::Render()
 	{
 		SetImGuiCameraRenderTarget();
 		m_currentRenderScene->DrawScreen(shared_from_this());
-		Tick();
+		DrawImGuiMainCamera();
 	}
 #endif
 	//-------------Begin Render------------//
@@ -451,8 +458,6 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 	if (m_width == Width && m_height == Height)
 		return;
 
-	m_width = Width;
-	m_height = Height;
 
 	// Wait For All Commands
 	Fence();
@@ -486,35 +491,25 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 		m_renderTargets[i]->EmplaceRTV(handle);
 	}
 
-	//for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
-	//{
-	//	auto handle = m_renderTargets[i]->GetRTV();
-	//	//auto resource = m_renderTargets[i]->GetResource();
-	//	ID3D12Resource* resource = m_renderTargets[i]->GetResource();
-	//	m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
-	//	m_device->CreateRenderTargetView(resource, nullptr, handle.GetCpuHandle());
-	//	ComPtr<ID3D12Resource> cResource = resource;
-	//	m_renderTargets[i]->Create(cResource);
-	//	m_renderTargets[i]->EmplaceRTV(handle);
-	//}
-
 	// CreateDepthStencil
 	CreateDSV(Width, Height);
 
-
+	m_width = Width;
+	m_height = Height;
 
 	// Viewport Reize
 	m_viewport->ReSize(Width, Height);
+	float aspect = float(Width) / Height;
 
-	m_mainCamera->SetAspectRatio(float(Width) / Height);
+	m_mainCamera->SetAspectRatio(aspect);
 
 
 #ifdef _DEBUG
 
-	//if (m_isEditor)
-	//{
-	//	m_ImGuiMainCameraRenderTarget
-	//}
+	if (m_isEditor)
+	{
+		ResizeImGuiCameraRenderTarget(Width,Height);
+	}
 #endif
 }
 
@@ -699,12 +694,6 @@ void Ideal::D3D12Renderer::CreateFence()
 void Ideal::D3D12Renderer::CreateDSV(uint32 Width, uint32 Height)
 {
 
-	// 2024.04.14 : dsv를 만들겠다. 먼저 descriptor heap을 만든다.
-	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-	dsvHeapDesc.NumDescriptors = 1;
-	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	Check(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
 
 	
 		D3D12_CLEAR_VALUE depthClearValue = {};
@@ -854,8 +843,13 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 size(windowSize.x, windowSize.y);
-	//ImVec2 size(m_width/4, m_height/4);
 
+	// MainCamera의 AspectRatio를 이 창의 비율로 맞춘다.
+	m_width = windowSize.x;
+	m_height = windowSize.y;
+	m_aspectRatio = float(m_width) / m_height;
+	m_mainCamera->SetAspectRatio(m_aspectRatio);
+	 
 	// to srv
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_ImGuiMainCameraRenderTarget->GetResource(),
@@ -900,6 +894,62 @@ void Ideal::D3D12Renderer::SetImGuiCameraRenderTarget()
 	commandList->RSSetViewports(1, &m_viewport->GetViewport());
 	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
 	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
+}
+
+void Ideal::D3D12Renderer::ResizeImGuiCameraRenderTarget(uint32 Width, uint32 Height)
+{
+	m_ImGuiMainCameraRenderTarget->Release();
+	{
+		uint32 width, height;
+		width = Width;
+		height = Height;
+		{
+			ComPtr<ID3D12Resource> resource;
+			CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+			CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+				DXGI_FORMAT_R8G8B8A8_UNORM,
+				width,
+				height, 1, 1
+			);
+			resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			//------Create------//
+			Check(m_device->CreateCommittedResource(
+				&heapProp,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				//D3D12_RESOURCE_STATE_COMMON,
+				nullptr,
+				//&clearValue,
+				IID_PPV_ARGS(resource.GetAddressOf())
+			));
+			m_ImGuiMainCameraRenderTarget->Create(resource);
+
+			//-----SRV-----//
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				srvDesc.Format = resource->GetDesc().Format;
+				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Texture2D.MipLevels = 1;
+				Ideal::D3D12DescriptorHandle srvHandle = m_ImGuiMainCameraRenderTarget->GetSRV();//m_imguiSRVHeap->Allocate();
+				m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
+				m_ImGuiMainCameraRenderTarget->EmplaceSRV(srvHandle);
+			}
+			//-----RTV-----//
+			{
+				D3D12_RENDER_TARGET_VIEW_DESC RTVDesc{};
+				RTVDesc.Format = resource->GetDesc().Format;
+				RTVDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				RTVDesc.Texture2D.MipSlice = 0;
+
+				Ideal::D3D12DescriptorHandle rtvHandle = m_ImGuiMainCameraRenderTarget->GetRTV(); //m_editorRTVHeap->Allocate();
+				m_device->CreateRenderTargetView(resource.Get(), &RTVDesc, rtvHandle.GetCpuHandle());
+				m_ImGuiMainCameraRenderTarget->EmplaceRTV(rtvHandle);
+			}
+			m_ImGuiMainCameraRenderTarget->GetResource()->SetName(L"Editor Texture");
+		}
+	}
 }
 
 void Ideal::D3D12Renderer::CreateAndInitRenderingResources()
