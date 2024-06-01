@@ -253,9 +253,9 @@ namespace Ideal
 		uint64 m_currentContextIndex = 0;
 
 
-		// IMGUI Main Camera Window
+		// TEMP IMGUI
 		void DrawImGuiMainCamera();
 		void SetImGuiCameraRenderTarget();
-		void ResizeImGuiCameraRenderTarget(uint32 Width, uint32 Height);
+		void ResizeImGuiMainCameraWindow();
 	};
 }
