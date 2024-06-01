@@ -294,6 +294,13 @@ finishAdapter:
 	}
 
 	//---------------------DSV-------------------------//
+	// 2024.04.14 : dsv를 만들겠다. 먼저 descriptor heap을 만든다.
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	Check(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
+
 	CreateDSV(m_width, m_height);
 
 	//------------------Create Default Camera------------------//
@@ -336,7 +343,7 @@ finishAdapter:
 void Ideal::D3D12Renderer::Tick()
 {
 	//ShowMainDockSpace();
-	DrawImGuiMainCamera();
+	//DrawImGuiMainCamera();
 
 	return;
 	float speed = 2.f;
@@ -397,7 +404,7 @@ void Ideal::D3D12Renderer::Render()
 	{
 		SetImGuiCameraRenderTarget();
 		m_currentRenderScene->DrawScreen(shared_from_this());
-		Tick();
+		DrawImGuiMainCamera();
 	}
 #endif
 	//-------------Begin Render------------//
@@ -409,11 +416,10 @@ void Ideal::D3D12Renderer::Render()
 			//----------Render Scene-----------//
 			if (m_currentRenderScene != nullptr)
 			{
-				//m_currentRenderScene->Draw(shared_from_this());
 #ifdef _DEBUG
-				if(!m_isEditor)
+				if (!m_isEditor)
 #endif
-				m_currentRenderScene->DrawScreen(shared_from_this());
+					m_currentRenderScene->DrawScreen(shared_from_this());
 			}
 		}
 		{
@@ -486,22 +492,8 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 		m_renderTargets[i]->EmplaceRTV(handle);
 	}
 
-	//for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
-	//{
-	//	auto handle = m_renderTargets[i]->GetRTV();
-	//	//auto resource = m_renderTargets[i]->GetResource();
-	//	ID3D12Resource* resource = m_renderTargets[i]->GetResource();
-	//	m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
-	//	m_device->CreateRenderTargetView(resource, nullptr, handle.GetCpuHandle());
-	//	ComPtr<ID3D12Resource> cResource = resource;
-	//	m_renderTargets[i]->Create(cResource);
-	//	m_renderTargets[i]->EmplaceRTV(handle);
-	//}
-
 	// CreateDepthStencil
 	CreateDSV(Width, Height);
-
-
 
 	// Viewport Reize
 	m_viewport->ReSize(Width, Height);
@@ -698,49 +690,40 @@ void Ideal::D3D12Renderer::CreateFence()
 
 void Ideal::D3D12Renderer::CreateDSV(uint32 Width, uint32 Height)
 {
+	D3D12_CLEAR_VALUE depthClearValue = {};
+	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthClearValue.DepthStencil.Depth = 1.0f;
+	depthClearValue.DepthStencil.Stencil = 0;
 
-	// 2024.04.14 : dsv를 만들겠다. 먼저 descriptor heap을 만든다.
-	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-	dsvHeapDesc.NumDescriptors = 1;
-	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	Check(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
+	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		Width,
+		Height,
+		1,
+		0,
+		1,
+		0,
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+	);
 
-	
-		D3D12_CLEAR_VALUE depthClearValue = {};
-		depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthClearValue.DepthStencil.Depth = 1.0f;
-		depthClearValue.DepthStencil.Stencil = 0;
+	Check(m_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		&depthClearValue,
+		IID_PPV_ARGS(m_depthStencil.GetAddressOf())
+	));
 
-		CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-		CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-			DXGI_FORMAT_D24_UNORM_S8_UINT,
-			Width,
-			Height,
-			1,
-			0,
-			1,
-			0,
-			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
-		);
+	// create dsv
+	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
 
-		Check(m_device->CreateCommittedResource(
-			&heapProp,
-			D3D12_HEAP_FLAG_NONE,
-			&resourceDesc,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			&depthClearValue,
-			IID_PPV_ARGS(m_depthStencil.GetAddressOf())
-		));
+	m_device->CreateDepthStencilView(m_depthStencil.Get(), &depthStencilDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
-		// create dsv
-		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-		depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-		m_device->CreateDepthStencilView(m_depthStencil.Get(), &depthStencilDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-	
 }
 
 std::shared_ptr<Ideal::ResourceManager> Ideal::D3D12Renderer::GetResourceManager()
@@ -855,6 +838,12 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 size(windowSize.x, windowSize.y);
 	//ImVec2 size(m_width/4, m_height/4);
+
+	m_width = windowSize.x;
+	m_height = windowSize.y;
+	m_aspectRatio = float(m_width) / m_height;
+	m_mainCamera->SetAspectRatio(m_aspectRatio);
+
 
 	// to srv
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
