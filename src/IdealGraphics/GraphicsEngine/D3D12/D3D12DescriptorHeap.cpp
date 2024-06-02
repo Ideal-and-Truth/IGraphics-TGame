@@ -156,7 +156,8 @@ void D3D12DescriptorHeap::Reset()
 
 D3D12DynamicDescriptorHeap::D3D12DynamicDescriptorHeap()
 	: m_descriptorSize(0),
-	m_maxCount(0)
+	m_maxCount(0),
+	m_isShaderVisible(true)
 {
 
 }
@@ -168,6 +169,9 @@ D3D12DynamicDescriptorHeap::~D3D12DynamicDescriptorHeap()
 
 void D3D12DynamicDescriptorHeap::Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount)
 {
+	if (Flags == D3D12_DESCRIPTOR_HEAP_FLAG_NONE)
+		m_isShaderVisible = false;
+
 	m_maxCount = MaxCount;
 	m_indexCreator.Init(MaxCount);
 
@@ -182,6 +186,9 @@ void D3D12DynamicDescriptorHeap::Create(std::shared_ptr<Ideal::D3D12Renderer> Re
 
 void D3D12DynamicDescriptorHeap::Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount)
 {
+	if (Flags == D3D12_DESCRIPTOR_HEAP_FLAG_NONE)
+		m_isShaderVisible = false;
+
 	m_maxCount = MaxCount;
 	m_indexCreator.Init(MaxCount);
 
@@ -204,9 +211,18 @@ Ideal::D3D12DescriptorHandle D3D12DynamicDescriptorHeap::Allocate(uint32 Count /
 	}
 
 	int32 index = m_indexCreator.Allocate();
+
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuAddress;
+	gpuAddress.ptr = -1;
+	if (m_isShaderVisible)
+	{
+		gpuAddress = m_descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	}
+
 	Ideal::D3D12DescriptorHandle ret = Ideal::D3D12DescriptorHandle(
 		m_descriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		m_descriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		//m_descriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		gpuAddress,
 		shared_from_this(),
 		index
 	);

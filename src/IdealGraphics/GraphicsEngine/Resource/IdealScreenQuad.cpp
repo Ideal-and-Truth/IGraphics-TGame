@@ -70,14 +70,14 @@ void Ideal::IdealScreenQuad::Draw(std::shared_ptr<IdealRenderer> Renderer, std::
 			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_NORMAL, incrementSize);
 			device->CopyDescriptorsSimple(1, srvDest, normalCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
-		// PosH	// temp
+		// PosH
 		{
 			Ideal::D3D12DescriptorHandle posHomogeneousHandle = GBufferTextures[2]->GetSRV();
 			D3D12_CPU_DESCRIPTOR_HANDLE posHomogeneousCPUAddress = posHomogeneousHandle.GetCpuHandle();
 			CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), SCREEN_DESCRIPTOR_INDEX_SRV_POSH, incrementSize);
 			device->CopyDescriptorsSimple(1, srvDest, posHomogeneousCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		}
-		// Tangent
+		// POSW
 		{
 			Ideal::D3D12DescriptorHandle tangentHandle = GBufferTextures[3]->GetSRV();
 			D3D12_CPU_DESCRIPTOR_HANDLE tangentCPUAddress = tangentHandle.GetCpuHandle();

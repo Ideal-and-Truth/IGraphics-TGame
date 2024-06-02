@@ -307,13 +307,13 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	OutTexture->EmplaceSRV(srvHandle);
 }
 
-void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, bool MakeRTV /*= false*/)
+void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name, bool MakeRTV /*= false*/)
 {
 	if (!OutTexture)
 	{
 		OutTexture = std::make_shared<Ideal::D3D12Texture>();
 	}
-	m_textures.push_back(OutTexture);
+	//m_textures.push_back(OutTexture);
 
 	ComPtr<ID3D12Resource> resource;
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -370,7 +370,7 @@ void Ideal::ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Te
 	//-----Final Create-----//
 	OutTexture->Create(resource);
 	OutTexture->EmplaceSRV(srvHandle);
-	resource->SetName(L"TEST TEXTURE");
+	resource->SetName(Name.c_str());
 	if (MakeRTV)
 	{
 		OutTexture->EmplaceRTV(rtvHandle);
@@ -391,7 +391,7 @@ void ResourceManager::CreateTextureDSV(std::shared_ptr<Ideal::D3D12Texture>& Out
 		//DXGI_FORMAT_D24_UNORM_S8_UINT,
 		DXGI_FORMAT_D32_FLOAT,
 		Width,
-		Height,1,0,1,0
+		Height, 1, 0, 1, 0
 	);
 
 	D3D12_CLEAR_VALUE depthClearValue = {};
@@ -437,6 +437,58 @@ void ResourceManager::CreateTextureDSV(std::shared_ptr<Ideal::D3D12Texture>& Out
 	OutTexture->EmplaceDSV(dsvHandle);
 
 	resource->SetName(L"DSV TEXTURE");
+}
+
+void ResourceManager::CreateRTV(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name)
+{
+	if (!OutTexture)
+	{
+		OutTexture = std::make_shared<Ideal::D3D12Texture>();
+	}
+
+	ComPtr<ID3D12Resource> resource;
+	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		Format,
+		Width,
+		Height, 1, 1
+	);
+
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	const float c[4] = { 0.f,0.f,0.f,1.f };
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = Format;
+	clearValue.Color[0] = c[0];
+	clearValue.Color[1] = c[1];
+	clearValue.Color[2] = c[2];
+	clearValue.Color[3] = c[3];
+
+	Check(m_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		//D3D12_RESOURCE_STATE_COMMON,
+		//nullptr,
+		&clearValue,
+		IID_PPV_ARGS(resource.GetAddressOf())
+	));
+
+	//-------------RTV------------//
+	Ideal::D3D12DescriptorHandle rtvHandle;
+	D3D12_RENDER_TARGET_VIEW_DESC RTVDesc{};
+	RTVDesc.Format = resource->GetDesc().Format;
+	RTVDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	RTVDesc.Texture2D.MipSlice = 0;
+
+	rtvHandle = m_rtvHeap->Allocate();
+	m_device->CreateRenderTargetView(resource.Get(), &RTVDesc, rtvHandle.GetCpuHandle());
+
+	//-----Final Create-----//
+	OutTexture->Create(resource);
+	resource->SetName(Name.c_str());
+	OutTexture->EmplaceRTV(rtvHandle);
 }
 
 void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)

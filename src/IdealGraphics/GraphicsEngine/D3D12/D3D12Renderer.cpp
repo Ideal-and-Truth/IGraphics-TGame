@@ -171,7 +171,7 @@ finishAdapter:
 	swapChainDesc.Stereo = FALSE;
 	swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 	fullScreenDesc.Windowed = true;
-
+	
 	m_swapChainFlags = swapChainDesc.Flags;
 
 	ComPtr<IDXGISwapChain1> swapChain;

@@ -135,7 +135,6 @@ Texture2D gAlbedoTexture : register(t0);
 Texture2D gNormalTexture : register(t1);
 Texture2D gPosH: register(t2);
 Texture2D gPosW: register(t3);
-Texture2D gDepth: register(t4);
 
 SamplerState basicSampler : register(s0);
 
@@ -145,7 +144,6 @@ float4 main(VertexOut input) : SV_TARGET
 	float4 normalOri = gNormalTexture.Sample(basicSampler, input.uv);
     float4 posH = gPosH.Sample(basicSampler, input.uv);
     float4 posW = gPosW.Sample(basicSampler, input.uv);
-    float depth = gDepth.Sample(basicSampler, input.uv).r;
     
     if(normalOri.w >= 1.f)
     {

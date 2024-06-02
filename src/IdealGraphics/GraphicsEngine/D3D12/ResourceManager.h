@@ -85,8 +85,9 @@ namespace Ideal
 		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
 		// 2024.05.14 : MRT를 위한 RenderTarget용 텍스쳐를 만드는 함수
-		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, bool MakeRTV = false);
+		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name, bool MakeRTV = false);
 		void CreateTextureDSV(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height);
+		void CreateRTV(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name);
 
 		void CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);

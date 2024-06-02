@@ -124,6 +124,7 @@ namespace Ideal
 		uint32 m_maxCount;
 		uint32 m_count = 0;
 
+		bool m_isShaderVisible;
 		// Index
 		IndexCreator m_indexCreator;
 	};
