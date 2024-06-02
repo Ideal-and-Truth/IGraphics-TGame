@@ -11,7 +11,9 @@ Ideal::D3D12Texture::D3D12Texture()
 
 Ideal::D3D12Texture::~D3D12Texture()
 {
-
+	m_srvHandle.Free();
+	m_rtvHandle.Free();
+	m_dsvHandle.Free();
 }
 
 void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource)

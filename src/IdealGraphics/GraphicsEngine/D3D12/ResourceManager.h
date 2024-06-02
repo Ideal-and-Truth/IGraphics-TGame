@@ -34,15 +34,11 @@ namespace Ideal
 
 	public:
 		void Init(ComPtr<ID3D12Device> Device);
-
 		void Fence();
 		void WaitForFenceValue();
 
 		ComPtr<ID3D12DescriptorHeap> GetSRVHeap() { return m_srvHeap->GetDescriptorHeap(); }
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetSRVPool() { return m_srvHeap; }
-
-		ComPtr<ID3D12DescriptorHeap> GetImguiSRVHeap() { return m_imguiSrvHeap->GetDescriptorHeap(); }
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> GetImGuiSRVPool() { return m_imguiSrvHeap; }
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetSRVPool() { return m_srvHeap; }
 
 		void CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBuffer>& VertexBuffer);
 		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer);
@@ -89,8 +85,9 @@ namespace Ideal
 		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
 		// 2024.05.14 : MRT를 위한 RenderTarget용 텍스쳐를 만드는 함수
-		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, bool MakeRTV = false);
+		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name, bool MakeRTV = false);
 		void CreateTextureDSV(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height);
+		void CreateRTV(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name);
 
 		void CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
@@ -110,15 +107,12 @@ namespace Ideal
 
 	private:
 		// Descriptor heaps
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_srvHeap;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_srvHeap;
 		const uint32 m_srvHeapCount = 256U;
 
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_imguiSrvHeap;
-		const uint32 m_imguiSrvHeapCount = 3;
-
 		// 2024.05.14 Multi Render Target
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_dsvHeap;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_rtvHeap;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_dsvHeap;
 
 	private:
 		std::wstring m_assetPath;
@@ -128,5 +122,8 @@ namespace Ideal
 		std::map<std::string, std::shared_ptr<Ideal::IdealStaticMesh>> m_staticMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealSkinnedMesh>> m_dynamicMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
+
+		// 2024.06.02 죄를 짊어진 배열
+		std::vector<std::weak_ptr<Ideal::D3D12Texture>> m_textures;
 	};
 }

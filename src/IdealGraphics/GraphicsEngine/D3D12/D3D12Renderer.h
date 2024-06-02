@@ -8,8 +8,7 @@
 #include <d3d12.h>
 #include "d3dx12.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
-//#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
-//#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+
 // TEMP
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -29,6 +28,7 @@ namespace Ideal
 	class ResourceManager;
 
 	class D3D12DescriptorHeap;
+	class D3D12DynamicDescriptorHeap;
 	class D3D12Texture;
 	class D3D12PipelineStateObject;
 	class D3D12Viewport;
@@ -65,7 +65,7 @@ namespace Ideal
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
 
 	public:
-		D3D12Renderer(HWND hwnd, uint32 width, uint32 height);
+		D3D12Renderer(HWND hwnd, uint32 width, uint32 height, bool EditorMode);
 		virtual ~D3D12Renderer();
 
 	public:
@@ -73,6 +73,7 @@ namespace Ideal
 		virtual void Init() override;
 		virtual void Tick() override;
 		virtual void Render() override;
+		virtual void Resize(UINT Width, UINT Height) override;
 
 		virtual std::shared_ptr<Ideal::ICamera> CreateCamera() override;
 		virtual void SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera) override;
@@ -106,6 +107,7 @@ namespace Ideal
 		//----Create----//
 		void CreateAndInitRenderingResources();
 		void CreateFence();
+		void CreateDSV(uint32 Width, uint32 Height);
 
 		//-------Device------//
 		ComPtr<ID3D12Device> GetDevice();
@@ -148,7 +150,7 @@ namespace Ideal
 		//-----etc-----//
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() { return m_dsvHeap->GetCPUDescriptorHandleForHeapStart(); }
 		std::shared_ptr<Ideal::D3D12Viewport> GetViewport() { return m_viewport; }
-
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetImguiSRVHeap() { return m_imguiSRVHeap; }
 		//----Screen----//
 		uint32 GetWidth() { return m_width; }
 		uint32 GetHeight() { return m_height; }
@@ -162,12 +164,18 @@ namespace Ideal
 		ComPtr<ID3D12Device> m_device = nullptr;
 		ComPtr<ID3D12CommandQueue> m_commandQueue = nullptr;
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
+		UINT m_swapChainFlags;
+
 		uint32 m_frameIndex = 0;
 
 		// RTV
-		ComPtr<ID3D12DescriptorHeap> m_rtvHeap = nullptr;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
+
 		uint32 m_rtvDescriptorSize = 0;
-		ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
+		//ComPtr<ID3D12Resource> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
+		std::shared_ptr<Ideal::D3D12Texture> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
+
 
 		// DSV
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
@@ -182,7 +190,7 @@ namespace Ideal
 		HANDLE m_fenceEvent = NULL;
 
 		// RenderScene
-		std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
+		std::weak_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
 
 	private:
 		// D3D12 Data Manager
@@ -212,15 +220,15 @@ namespace Ideal
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
 
-		std::shared_ptr<Ideal::D3D12Texture> t1 = nullptr;
-
-		// EDITOR TEST
+		// EDITOR 
 	private:
 		void InitImgui();
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 		Ideal::D3D12DescriptorHandle m_imguiSRVHandle;
+
+		bool m_isEditor;
 
 		// Warning Off
 	private:
@@ -239,5 +247,13 @@ namespace Ideal
 		uint64 m_currentContextIndex = 0;
 
 
+		// TEMP IMGUI
+		void DrawImGuiMainCamera();
+		void SetImGuiCameraRenderTarget();
+		void ResizeImGuiMainCameraWindow(uint32 Width, uint32 Height);
+		void CreateEditorRTV(uint32 Width, uint32 Height);
+		// Editor RTV // 2024.06.01
+		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 	};
 }

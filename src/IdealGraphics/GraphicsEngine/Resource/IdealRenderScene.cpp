@@ -31,7 +31,13 @@ Ideal::IdealRenderScene::IdealRenderScene()
 
 Ideal::IdealRenderScene::~IdealRenderScene()
 {
-
+	int a = 3;
+	/*for (auto& t : m_gBuffers)
+	{
+		t.reset();
+	}
+	m_depthBuffer.reset();
+	m_screenBuffer.reset();*/
 }
 
 void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
@@ -50,6 +56,10 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 	CreateScreenQuadRootSignature(Renderer);
 	CreateScreenQuadPSO(Renderer);
 
+#ifdef _DEBUG
+	InitScreenQuadEditor(Renderer);
+#endif
+
 	//---Global CB---//
 	CreateGlobalCB(Renderer);
 	//---Light CB---//
@@ -65,7 +75,7 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 {
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
-	
+
 	commandList->SetDescriptorHeaps(1, d3d12Renderer->GetMainDescriptorHeap()->GetDescriptorHeap().GetAddressOf());
 
 	// CB
@@ -104,6 +114,17 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 			}
 		}
 	}
+}
+
+void Ideal::IdealRenderScene::Resize(std::shared_ptr<IdealRenderer> Renderer)
+{
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+
+	m_width = d3d12Renderer->GetWidth();
+	m_height = d3d12Renderer->GetHeight();
+
+	CreateGBuffer(Renderer);
+	InitScreenQuad(Renderer);
 }
 
 void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Renderer)
@@ -176,14 +197,23 @@ void Ideal::IdealRenderScene::DrawScreen(std::shared_ptr<IdealRenderer> Renderer
 
 	TransitionGBufferToSRV(Renderer);
 
-	//CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-	//	m_depthBuffer->GetResource(),
-	//	D3D12_RESOURCE_STATE_DEPTH_WRITE,
-	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	//	//D3D12_RESOURCE_STATE_GENERIC_READ
-	//);
+	m_fullScreenQuad->Draw(Renderer, m_gBuffers, m_depthBuffer);
+}
 
-	//commandList->ResourceBarrier(1, &dsvBarrier);
+void Ideal::IdealRenderScene::DrawScreenEditor(std::shared_ptr<IdealRenderer> Renderer)
+{
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
+
+	UpdateLightCBData(Renderer);
+
+	commandList->SetPipelineState(m_screenQuadPSO->GetPipelineState().Get());
+	commandList->SetGraphicsRootSignature(m_screenQuadRootSignature.Get());
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	BindDescriptorTable(Renderer);
+
+	TransitionGBufferToSRV(Renderer);
 
 	m_fullScreenQuad->Draw(Renderer, m_gBuffers, m_depthBuffer);
 }
@@ -208,23 +238,23 @@ void Ideal::IdealRenderScene::AddLight(std::shared_ptr<Ideal::ILight> Light)
 		{
 			__debugbreak();
 		}
-			break;
+		break;
 		case ELightType::Directional:
 		{
 			// Directional Light는 그냥 바꿔준다.
 			m_directionalLight = std::static_pointer_cast<IdealDirectionalLight>(Light);
 		}
-			break;
+		break;
 		case ELightType::Spot:
 		{
 			m_spotLights.push_back(std::static_pointer_cast<IdealSpotLight>(Light));
 		}
-			break;
+		break;
 		case ELightType::Point:
 		{
 			m_pointLights.push_back(std::static_pointer_cast<IdealPointLight>(Light));
 		}
-			break;
+		break;
 		default:
 		{
 
@@ -494,7 +524,7 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 	CB_LightList* cbLightList = (CB_LightList*)cb->SystemMemAddr;
 	*cbLightList = *m_cbLightList;
 	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	
+
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(m_cbGlobalHandle.GetCpuHandle(), GLOBAL_DESCRIPTOR_INDEX_CBV_LIGHTLIST, incrementSize);
 	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
@@ -504,25 +534,28 @@ void Ideal::IdealRenderScene::CreateGBuffer(std::shared_ptr<IdealRenderer> Rende
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	std::shared_ptr<Ideal::ResourceManager> resourceManager = d3d12Renderer->GetResourceManager();
 
-	//for (uint32 i = 0; i < m_gBufferNum; ++i)
+	uint32 width = d3d12Renderer->GetWidth();
+	uint32 height = d3d12Renderer->GetHeight();
+
+	m_gBuffers.clear();
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, L"G0", true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, L"G1", true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, L"G2", true);
 		m_gBuffers.push_back(gBuffer);
 	}
 	{
 		std::shared_ptr<Ideal::D3D12Texture> gBuffer = nullptr;
-		resourceManager->CreateEmptyTexture2D(gBuffer, m_width, m_height, DXGI_FORMAT_R32G32B32A32_FLOAT, true);
+		resourceManager->CreateEmptyTexture2D(gBuffer, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, L"G3", true);
 		m_gBuffers.push_back(gBuffer);
 	}
 
@@ -555,21 +588,28 @@ void Ideal::IdealRenderScene::TransitionGBufferToRTVandClear(std::shared_ptr<Ide
 		commandList->ResourceBarrier(1, &backBufferRenderTarget);
 	}
 
-	// TODO : OMSetRenderTarget
-	//commandList->OMSetRenderTargets(m_gBufferNum, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), FALSE, nullptr);
-	//commandList->OMSetRenderTargets(1, &resourceManager->GetRTVHeap(), FALSE, nullptr);
-	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, nullptr);
-	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
+	//// 모든 RTV의 크기가 동일한지 확인
+	//for (size_t i = 1; i < m_gBuffers.size(); ++i)
+	//{
+	//	auto desc0 = m_gBuffers[0]->GetResource()->GetDesc();
+	//	auto desc1 = m_gBuffers[i]->GetResource()->GetDesc();
+	//	assert(desc0.Width == desc1.Width);
+	//	assert(desc0.Height == desc1.Height);
+	//	assert(desc0.SampleDesc.Count == desc1.SampleDesc.Count);
+	//	assert(desc0.SampleDesc.Quality == desc1.SampleDesc.Quality);
+	//}
 
-	/*CD3DX12_RESOURCE_BARRIER dsvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_depthBuffer->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	commandList->ResourceBarrier(1, &dsvBarrier);*/
-	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &m_depthBuffer->GetDSV().GetCpuHandle());
-	//commandList->ClearDepthStencilView(m_depthBuffer->GetDSV().GetCpuHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle[4] =
+	{
+		m_gBuffers[0]->GetRTV().GetCpuHandle(),
+		m_gBuffers[1]->GetRTV().GetCpuHandle(),
+		m_gBuffers[2]->GetRTV().GetCpuHandle(),
+		m_gBuffers[3]->GetRTV().GetCpuHandle()
+	};
+	//commandList->OMSetRenderTargets(4, &(m_gBuffers[0]->GetRTV().GetCpuHandle()), TRUE, &d3d12Renderer->GetDSV());
+	//commandList->OMSetRenderTargets(4, rtvHandle, TRUE, &d3d12Renderer->GetDSV());
+	commandList->OMSetRenderTargets(4, rtvHandle, FALSE, &d3d12Renderer->GetDSV());
 	commandList->ClearDepthStencilView(d3d12Renderer->GetDSV(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-	//m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-	//commandList->OMSetRenderTargets(1, &resourceManager->GetRTVHeap(), FALSE, nullptr);
-	
 
 	// TODO : ClearRenderTarget
 	for (uint32 i = 0; i < m_gBufferNum; ++i)
@@ -612,13 +652,17 @@ void Ideal::IdealRenderScene::CreateDSV(std::shared_ptr<IdealRenderer> Renderer)
 
 	//-------DSV-------//
 	resourceManager->CreateTextureDSV(m_depthBuffer, m_width, m_height);
-	
+
 }
 
 void Ideal::IdealRenderScene::InitScreenQuad(std::shared_ptr<IdealRenderer> Renderer)
 {
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::ResourceManager> resourceManager = d3d12Renderer->GetResourceManager();
+
 	m_fullScreenQuad = std::make_shared<Ideal::IdealScreenQuad>();
 	m_fullScreenQuad->Init(Renderer);
+
 }
 
 void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(std::shared_ptr<IdealRenderer> Renderer)
@@ -692,4 +736,13 @@ void Ideal::IdealRenderScene::CreateScreenQuadPSO(std::shared_ptr<IdealRenderer>
 	m_screenQuadPSO->SetTargetFormat(1, rtvFormat, dsvFormat);
 
 	m_screenQuadPSO->Create(d3d12Renderer);
+}
+
+void Ideal::IdealRenderScene::InitScreenQuadEditor(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+{
+	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	std::shared_ptr<Ideal::ResourceManager> resourceManager = d3d12Renderer->GetResourceManager();
+	// main texture rtv // 2024.06.02
+	m_screenBuffer = nullptr;
+	resourceManager->CreateRTV(m_screenBuffer, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, L"ScreenQuad");
 }

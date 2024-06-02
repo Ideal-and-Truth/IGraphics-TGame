@@ -11,6 +11,7 @@ namespace Ideal
 		virtual ~D3D12Viewport();
 
 		void Init();
+		void ReSize(uint32 Width, uint32 Height);
 
 	public:
 		const CD3DX12_VIEWPORT& GetViewport() const;
