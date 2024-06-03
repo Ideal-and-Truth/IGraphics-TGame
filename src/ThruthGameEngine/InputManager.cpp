@@ -6,6 +6,12 @@ Truth::InputManager::InputManager()
 	, m_hwnd(nullptr)
 	, m_currentMousePos{}
 	, m_prevMousePos{}
+	, m_oldMousePosX(0)
+	, m_oldMousePosY(0)
+	, m_nowMousePosX(0)
+	, m_nowMousePosY(0)
+	, m_mouseDx(0)
+	, m_mouseDy(0)
 {
 	DEBUG_PRINT("Create InputManager\n");
 }
@@ -110,20 +116,42 @@ void Truth::InputManager::Finalize()
 	Reset();
 }
 
+
+
+void Truth::InputManager::OnMouseMove(int _btnState, int _x, int _y)
+{
+	if (GetKeyState(KEY::D) == KEY_STATE::DOWN)
+	{
+		int a = -1;
+	}
+	m_oldMousePosX = m_nowMousePosX;
+	m_oldMousePosY = m_nowMousePosY;
+
+	m_nowMousePosX = _x;
+	m_nowMousePosY = _y;
+
+	m_mouseDx = m_nowMousePosX - m_oldMousePosX;
+	m_mouseDy = m_nowMousePosY - m_oldMousePosY;
+}
+
+void Truth::InputManager::ResetMouseMovement(int _x /*= 0*/, int _y /*= 0*/)
+{
+	m_mouseDx = 0;
+	m_mouseDy = 0;
+}
+
 KEY_STATE Truth::InputManager::GetKeyState(KEY _eKey) const
 {
 	return m_keyInfomation[(int)_eKey].state;
 }
 
-/// <summary>
-/// 마우스가 이동한 거리 
-/// </summary>
-/// <returns>마우스가 이동한 거리</returns>
-POINT Truth::InputManager::GetMouseMove() const
+int16 Truth::InputManager::GetMouseMoveX() const
 {
-	POINT result = {};
-	result.x = m_currentMousePos.x - m_prevMousePos.x;
-	result.y = m_currentMousePos.y - m_prevMousePos.y;
-	return result;
+	return m_mouseDx;
+}
+
+int16 Truth::InputManager::GetMouseMoveY() const
+{
+	return m_mouseDy;
 }
 

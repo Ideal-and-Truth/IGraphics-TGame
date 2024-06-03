@@ -19,22 +19,32 @@ void Truth::Camera::Update()
 {
 	float dt = GetDeltaTime();
 	float speed = 100;
-	if (GetKey(KEY::UP))
+	if (GetKey(KEY::W))
 	{
-		// m_camera->Walk(dt * speed);
-		m_camera->SetLook(Vector3(0.0f, 1.0f, 1.0f));
+		m_camera->Walk(dt * speed);
+		// m_camera->SetLook(Vector3(0.0f, 1.0f, 1.0f));
 	}
-	if (GetKey(KEY::DOWN))
+	if (GetKey(KEY::S))
 	{
 		m_camera->Walk(-dt * speed);
 	}
-	if (GetKey(KEY::LEFT))
+	if (GetKey(KEY::A))
 	{
 		m_camera->Strafe(-dt * speed);
 	}
-	if (GetKey(KEY::RIGHT))
+	if (GetKey(KEY::D))
 	{
 		m_camera->Strafe(dt * speed);
+	}
+
+	if (GetKey(KEY::LMOUSE))
+	{
+		if (GetKey(KEY::D))
+		{
+			int n = 1;
+		}
+		m_camera->Pitch(MouseDy() * 0.003f);
+		m_camera->RotateY(MouseDx() * 0.003f);
 	}
 }
 

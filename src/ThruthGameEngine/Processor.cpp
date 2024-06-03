@@ -8,8 +8,10 @@
 #include "IAnimation.h"
 #include "GraphicsManager.h"
 #include "imgui.h"
+#include "InputManager.h"
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
+Truth::InputManager* Processor::g_inputmanager = nullptr;
 
 Processor::Processor()
 	: m_hwnd(nullptr)
@@ -35,6 +37,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 {
 	CreateMainWindow(_hInstance);
 	InitializeManager();
+	g_inputmanager = m_manager->Input().get();
 }
 
 void Processor::Finalize()
@@ -87,7 +90,23 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		g_inputmanager->ResetMouseMovement(LOWORD(lParam), HIWORD(lParam));
+		break;
+
+	case WM_MOUSEMOVE:
+		g_inputmanager->OnMouseMove(static_cast<int>(wParam), LOWORD(lParam), HIWORD(lParam));
+		break;
+
 	default:
+		if (g_inputmanager)
+		{
+			g_inputmanager->ResetMouseMovement();
+		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
@@ -159,21 +178,21 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 
 	GetWindowRect(m_hwnd, &nowRect);
 
-// 	RECT newRect = {};
-// 	newRect.left = 0;
-// 	newRect.top = 0;
-// 	newRect.right = _width;
-// 	newRect.bottom = _height;
-// 
-// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
-// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
-// 
-// 	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
-// 	int _newWidth = (newRect.right - newRect.left);
-// 	int _newHeight = (newRect.bottom - newRect.top);
-// 
-// 	SetWindowPos(m_hwnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
-// 		_newWidth, _newHeight, SWP_SHOWWINDOW);
+	// 	RECT newRect = {};
+	// 	newRect.left = 0;
+	// 	newRect.top = 0;
+	// 	newRect.right = _width;
+	// 	newRect.bottom = _height;
+	// 
+	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+	// 
+	// 	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
+	// 	int _newWidth = (newRect.right - newRect.left);
+	// 	int _newHeight = (newRect.bottom - newRect.top);
+	// 
+	// 	SetWindowPos(m_hwnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
+	// 		_newWidth, _newHeight, SWP_SHOWWINDOW);
 }
 
 void Processor::InitializeManager()

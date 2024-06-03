@@ -13,6 +13,7 @@ Truth::DefalutCamera::~DefalutCamera()
 
 void Truth::DefalutCamera::Initailize()
 {
-	 auto c = AddComponent<Truth::Camera>();
-	 c->SetMainCamera();
+	__super::Initailize();
+	auto c = AddComponent<Truth::Camera>();
+	c->SetMainCamera();
 }

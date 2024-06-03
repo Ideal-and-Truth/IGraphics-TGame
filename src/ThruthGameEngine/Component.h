@@ -90,6 +90,14 @@ namespace Truth
 			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::HOLD);
 		}
 
+		inline int16 MouseDx()
+		{
+			return m_managers.lock()->Input()->GetMouseMoveX();
+		}
+		inline int16 MouseDy()
+		{
+			return m_managers.lock()->Input()->GetMouseMoveY();
+		}
 		// 시간 관련 함수들
 		inline float GetDeltaTime()
 		{

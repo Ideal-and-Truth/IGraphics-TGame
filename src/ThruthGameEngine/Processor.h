@@ -33,6 +33,7 @@ private:
 	MSG m_msg;
 
 	static Ideal::IdealRenderer* g_Renderer;
+	static Truth::InputManager* g_inputmanager;
 
 	uint32 m_wight;
 	uint32 m_height;
