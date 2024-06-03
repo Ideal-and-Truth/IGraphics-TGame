@@ -19,7 +19,7 @@ Truth::GraphicsManager::~GraphicsManager()
 void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height)
 {
 	m_renderer = CreateRenderer(
-		EGraphicsInterfaceType::D3D12,
+		EGraphicsInterfaceType::D3D12_EDITOR,
 		&_hwnd,
 		_wight,
 		_height,
