@@ -266,11 +266,6 @@ finishAdapter:
 	//m_mainCamera->UpdateViewMatrix();
 	//m_mainCamera->UpdateMatrix2();
 
-	c1 = CreateCamera();
-	c1->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
-	c2 = CreateCamera();
-	c2->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
-
 	//------------------Resource Manager---------------------//
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
 	m_resourceManager->Init(m_device);
@@ -288,7 +283,7 @@ finishAdapter:
 
 	//---------------------Init Imgui-----------------------//
 	// 2024.05.22
-	InitImgui();
+	InitImGui();
 
 #ifdef _DEBUG
 	OffWarningRenderTargetClearValue();
@@ -297,52 +292,8 @@ finishAdapter:
 
 void Ideal::D3D12Renderer::Tick()
 {
-	//ShowMainDockSpace();
-	//DrawImGuiMainCamera();
-
+	__debugbreak();
 	return;
-	float speed = 2.f;
-	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
-	{
-		speed = 0.2f;
-	}
-	if (GetAsyncKeyState('O') & 0x8000)
-	{
-		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c1);
-	}
-	if (GetAsyncKeyState('P') & 0x8000)
-	{
-		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c2);
-	}
-
-	if (GetAsyncKeyState('W') & 0x8000)
-	{
-		m_mainCamera->Walk(speed);
-	}
-	if (GetAsyncKeyState('S') & 0x8000)
-	{
-		m_mainCamera->Walk(-speed);
-	}
-	if (GetAsyncKeyState('A') & 0x8000)
-	{
-		m_mainCamera->Strafe(-speed);
-	}
-	if (GetAsyncKeyState('D') & 0x8000)
-	{
-		m_mainCamera->Strafe(speed);
-	}
-	if (GetAsyncKeyState('L') & 0x8000)
-	{
-		m_mainCamera->SetLook(Vector3(0.f, 1.f, 1.f));
-	}
-	if (GetAsyncKeyState('K') & 0x8000)
-	{
-		m_mainCamera->SetLook(Vector3(0.f, 0.f, -1.f));
-	}
-	if (GetAsyncKeyState('J') & 0x8000)
-	{
-		m_mainCamera->SetLook(Vector3(0.f, 0.f, 1.f));
-	}
 }
 
 void Ideal::D3D12Renderer::Render()
@@ -730,7 +681,7 @@ DirectX::SimpleMath::Vector3 Ideal::D3D12Renderer::GetEyePos()
 	return m_mainCamera->GetPosition();
 }
 
-void Ideal::D3D12Renderer::InitImgui()
+void Ideal::D3D12Renderer::InitImGui()
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

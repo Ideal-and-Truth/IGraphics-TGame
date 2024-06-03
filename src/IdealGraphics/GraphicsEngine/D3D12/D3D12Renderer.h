@@ -123,7 +123,7 @@ namespace Ideal
 		//------CommandList------//
 		ComPtr<ID3D12GraphicsCommandList> GetCommandList();
 		ComPtr<ID3D12CommandQueue> GetCommandQueue() { return m_commandQueue; }
-		
+
 		//------Fence------//
 		uint64 Fence();
 		void WaitForFenceValue(uint64 ExpectedFenceValue);
@@ -138,7 +138,7 @@ namespace Ideal
 
 		// 2024.05.31 : Dynamic ConstantBuffer Allocator 에서 직접 CBContainer를 받아오도록 수정
 		std::shared_ptr<Ideal::ConstantBufferContainer> ConstantBufferAllocate(uint32 SizePerCB);
-		
+
 
 		//------Camera------//
 		void CreateDefaultCamera(); // default camera
@@ -183,6 +183,12 @@ namespace Ideal
 
 		// Command
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;
+		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT] = {};
+		ComPtr<ID3D12GraphicsCommandList> m_commandLists[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
+		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
+		uint64 m_currentContextIndex = 0;
 
 		// Fence
 		ComPtr<ID3D12Fence> m_fence = nullptr;
@@ -211,18 +217,13 @@ namespace Ideal
 		std::shared_ptr<Ideal::IdealCamera> m_mainCamera = nullptr;
 
 	private:
-		// Test Camera 2
-		std::shared_ptr<Ideal::ICamera> c1 = nullptr;
-		std::shared_ptr<Ideal::ICamera> c2 = nullptr;
-
-	private:
 		std::wstring m_assetPath;
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
 
 		// EDITOR 
 	private:
-		void InitImgui();
+		void InitImGui();
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -235,25 +236,13 @@ namespace Ideal
 		// debuging messeage OFF
 		void OffWarningRenderTargetClearValue();
 
-		// Overlapped Redering
-		// D3D12 Frame Resources
-		// 2024.05.28
-	private:
-		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT] = {};
-		ComPtr<ID3D12GraphicsCommandList> m_commandLists[MAX_PENDING_FRAME_COUNT] = {};
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
-		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
-		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
-		uint64 m_currentContextIndex = 0;
-
-
-		// TEMP IMGUI
+		// IMGUI
 		void DrawImGuiMainCamera();
 		void SetImGuiCameraRenderTarget();
 		void ResizeImGuiMainCameraWindow(uint32 Width, uint32 Height);
 		void CreateEditorRTV(uint32 Width, uint32 Height);
 		// Editor RTV // 2024.06.01
-		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
+		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
 	};
 }

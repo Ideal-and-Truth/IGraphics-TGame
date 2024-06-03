@@ -150,6 +150,7 @@
     <ClInclude Include="Editor\imgui\imstb_truetype.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
     <ClInclude Include="Misc\Utils\IndexCreator.h" />
+    <ClInclude Include="Misc\Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
