@@ -49,15 +49,24 @@ Ideal::D3D12Renderer::~D3D12Renderer()
 		WaitForFenceValue(m_lastFenceValues[i]);
 	}
 
-	//TEMP;
-	m_imguiSRVHandle.Free();
-	m_editorTexture.reset();
-	m_editorRTVHeap.reset();
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		m_imguiSRVHandle.Free();
+	}
+#endif 
+
 	// Release Resource Manager
 	m_resourceManager = nullptr;
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+	}
+#endif
 }
 
 void Ideal::D3D12Renderer::Init()
@@ -171,7 +180,7 @@ finishAdapter:
 	swapChainDesc.Stereo = FALSE;
 	swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 	fullScreenDesc.Windowed = true;
-	
+
 	m_swapChainFlags = swapChainDesc.Flags;
 
 	ComPtr<IDXGISwapChain1> swapChain;
@@ -209,8 +218,6 @@ finishAdapter:
 	// descriptor heap 에서 rtv Descriptor의 크기
 	m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	{
-		//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-
 		// Create RenderTarget Texture
 		for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
 		{
@@ -226,27 +233,7 @@ finishAdapter:
 			m_renderTargets[i]->Create(resource);
 			m_renderTargets[i]->EmplaceRTV(handle);
 		}
-
-		//---srv---//
-		/*for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
-		{
-			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			srvDesc.Format = m_renderTargets[i]->GetResource()->GetDesc().Format;
-			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-			srvDesc.Texture2D.MipLevels = 1;
-			Ideal::D3D12DescriptorHandle srvHandle = m_imguiSRVHeap->Allocate();
-			m_device->CreateShaderResourceView(m_renderTargets[i]->GetResource(), &srvDesc, srvHandle.GetCpuHandle());
-			m_renderTargets[i]->EmplaceSRV(srvHandle);
-		}*/
 	}
-	//---------------------Editor RTV-------------------------//
-	// heap
-	m_editorRTVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
-	//m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
-
-	CreateEditorRTV(m_width, m_height);
 
 	//---------------------DSV-------------------------//
 	// 2024.04.14 : dsv를 만들겠다. 먼저 descriptor heap을 만든다.
@@ -266,11 +253,6 @@ finishAdapter:
 	//m_mainCamera->UpdateViewMatrix();
 	//m_mainCamera->UpdateMatrix2();
 
-	c1 = CreateCamera();
-	c1->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
-	c2 = CreateCamera();
-	c2->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
-
 	//------------------Resource Manager---------------------//
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
 	m_resourceManager->Init(m_device);
@@ -286,63 +268,27 @@ finishAdapter:
 	CreateAndInitRenderingResources();
 
 
-	//---------------------Init Imgui-----------------------//
-	// 2024.05.22
-	InitImgui();
-
 #ifdef _DEBUG
+	//---------------------Editor RTV-------------------------//
+	m_editorRTVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+
+	CreateEditorRTV(m_width, m_height);
+	//---------------------Init Imgui-----------------------//
+	if (m_isEditor)
+	{
+		InitImGui();
+	}
+
+	//---------------------Warning OFF-----------------------//
 	OffWarningRenderTargetClearValue();
 #endif
 }
 
 void Ideal::D3D12Renderer::Tick()
 {
-	//ShowMainDockSpace();
-	//DrawImGuiMainCamera();
-
+	__debugbreak();
 	return;
-	float speed = 2.f;
-	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
-	{
-		speed = 0.2f;
-	}
-	if (GetAsyncKeyState('O') & 0x8000)
-	{
-		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c1);
-	}
-	if (GetAsyncKeyState('P') & 0x8000)
-	{
-		m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(c2);
-	}
-
-	if (GetAsyncKeyState('W') & 0x8000)
-	{
-		m_mainCamera->Walk(speed);
-	}
-	if (GetAsyncKeyState('S') & 0x8000)
-	{
-		m_mainCamera->Walk(-speed);
-	}
-	if (GetAsyncKeyState('A') & 0x8000)
-	{
-		m_mainCamera->Strafe(-speed);
-	}
-	if (GetAsyncKeyState('D') & 0x8000)
-	{
-		m_mainCamera->Strafe(speed);
-	}
-	if (GetAsyncKeyState('L') & 0x8000)
-	{
-		m_mainCamera->SetLook(Vector3(0.f, 1.f, 1.f));
-	}
-	if (GetAsyncKeyState('K') & 0x8000)
-	{
-		m_mainCamera->SetLook(Vector3(0.f, 0.f, -1.f));
-	}
-	if (GetAsyncKeyState('J') & 0x8000)
-	{
-		m_mainCamera->SetLook(Vector3(0.f, 0.f, 1.f));
-	}
 }
 
 void Ideal::D3D12Renderer::Render()
@@ -378,23 +324,26 @@ void Ideal::D3D12Renderer::Render()
 			}
 		}
 		{
-			ImGuiIO& io = ImGui::GetIO();
-
-			ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
-			//------IMGUI RENDER------//
-			//ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
-			ID3D12DescriptorHeap* descriptorHeap[] = { m_imguiSRVHeap->GetDescriptorHeap().Get() };
-			commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
-			ImGui::Render();
-			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
-
-			// Update and Render additional Platform Windows
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+#ifdef _DEBUG
+			if (m_isEditor)
 			{
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList.Get());
-			}
+				ImGuiIO& io = ImGui::GetIO();
+				ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
+				//------IMGUI RENDER------//
+				//ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
+				ID3D12DescriptorHeap* descriptorHeap[] = { m_imguiSRVHeap->GetDescriptorHeap().Get() };
+				commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
+				ImGui::Render();
+				ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
 
+				// Update and Render additional Platform Windows
+				if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+				{
+					ImGui::UpdatePlatformWindows();
+					ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList.Get());
+				}
+			}
+#endif
 		}
 	}
 	//-------------End Render------------//
@@ -438,7 +387,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 		ComPtr<ID3D12Resource> resource = m_renderTargets[i]->GetResource();
 		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
 		m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
-		
+
 		m_renderTargets[i]->Create(resource);
 		m_renderTargets[i]->EmplaceRTV(handle);
 	}
@@ -589,14 +538,15 @@ bool Ideal::D3D12Renderer::SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPAR
 
 void Ideal::D3D12Renderer::ClearImGui()
 {
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
+#ifdef _DEBUG
 	if (m_isEditor)
 	{
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
 		ImGui::DockSpaceOverViewport();
 	}
+#endif
 }
 
 void Ideal::D3D12Renderer::Release()
@@ -730,7 +680,7 @@ DirectX::SimpleMath::Vector3 Ideal::D3D12Renderer::GetEyePos()
 	return m_mainCamera->GetPosition();
 }
 
-void Ideal::D3D12Renderer::InitImgui()
+void Ideal::D3D12Renderer::InitImGui()
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -845,7 +795,6 @@ void Ideal::D3D12Renderer::SetImGuiCameraRenderTarget()
 
 void Ideal::D3D12Renderer::ResizeImGuiMainCameraWindow(uint32 Width, uint32 Height)
 {
-	//m_editorRTVHeap->Reset();
 	CreateEditorRTV(Width, Height);
 }
 

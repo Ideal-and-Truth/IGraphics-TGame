@@ -102,8 +102,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
+		bool isEditor = false;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		if (isEditor)
+		{
+			type = EGraphicsInterfaceType::D3D12_EDITOR;
+		}
+
 		gRenderer = CreateRenderer(
-			EGraphicsInterfaceType::D3D12_EDITOR,
+			type,
 			&g_hWnd,
 			WIDTH,
 			HEIGHT,
@@ -250,9 +257,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
-				ImGuiTest();
-				DirLightAngle(&angleX, &angleY, &angleZ);
-				PointLightInspecter(pointLight);
+				if (isEditor)
+				{
+					ImGuiTest();
+					DirLightAngle(&angleX, &angleY, &angleZ);
+					PointLightInspecter(pointLight);
+				}
 				// MAIN LOOP
 				//gRenderer->Tick();
 				gRenderer->Render();
