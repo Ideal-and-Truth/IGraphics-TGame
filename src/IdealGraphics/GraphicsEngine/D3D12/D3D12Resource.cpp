@@ -22,6 +22,13 @@ ID3D12Resource* D3D12Resource::GetResource() const
 	return m_resource.Get();
 }
 
+void D3D12Resource::Release()
+{
+	//m_resource->Release();
+	//m_resource = nullptr;
+	m_resource.Reset();
+}
+
 //------------------------UploadBuffer------------------------//
 
 D3D12UploadBuffer::D3D12UploadBuffer()

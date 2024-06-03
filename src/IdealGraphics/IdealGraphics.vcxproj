@@ -166,6 +166,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
     <ClInclude Include="GraphicsEngine\public\imconfig.h" />
     <ClInclude Include="GraphicsEngine\public\imgui.h" />
     <ClInclude Include="Editor\imgui\imgui_impl_dx12.h" />
@@ -206,6 +207,7 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
     <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
+    <ClInclude Include="Misc\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
     <ClInclude Include="Core\ForDebug.h" />
@@ -231,6 +233,7 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.cpp" />
     <ClCompile Include="Editor\imgui\imgui.cpp" />
     <ClCompile Include="Editor\imgui\imgui_demo.cpp" />
     <ClCompile Include="Editor\imgui\imgui_draw.cpp" />
@@ -258,6 +261,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
+    <ClCompile Include="Misc\Utils\IndexCreator.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConverter.cpp" />

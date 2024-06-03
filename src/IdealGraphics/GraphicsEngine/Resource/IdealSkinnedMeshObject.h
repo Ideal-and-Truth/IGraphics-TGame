@@ -1,6 +1,7 @@
 #pragma once
 #include "GraphicsEngine/public/ISkinnedMeshObject.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
+#include "GraphicsEngine/Resource/IdealBone.h"
 
 namespace Ideal
 {
@@ -46,7 +47,7 @@ namespace Ideal
 	private:
 		bool m_isDraw = true;
 
-		std::shared_ptr<IdealSkinnedMesh> m_skinnedMesh;
+		std::shared_ptr<Ideal::IdealSkinnedMesh> m_skinnedMesh;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
 
 		CB_Bone m_cbBoneData;

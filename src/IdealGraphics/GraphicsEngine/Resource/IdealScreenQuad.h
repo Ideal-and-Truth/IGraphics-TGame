@@ -25,6 +25,7 @@ namespace Ideal
 	public:
 		void Init(std::shared_ptr<IdealRenderer> Renderer);
 		void Draw(std::shared_ptr<IdealRenderer> Renderer, std::vector<std::shared_ptr<Ideal::D3D12Texture>>& GBufferTextures, std::shared_ptr<Ideal::D3D12Texture> DSTexture);
+		void Resize(std::shared_ptr<IdealRenderer> Renderer);
 
 	private:
 		std::shared_ptr<Ideal::IdealMesh<ScreenQuadVertex>> m_quadMesh;

@@ -43,3 +43,10 @@ const CD3DX12_RECT& D3D12Viewport::GetScissorRect() const
 {
 	return m_scissorRect;
 }
+
+void D3D12Viewport::ReSize(uint32 Width, uint32 Height)
+{
+	m_width = Width;
+	m_height = Height;
+	Init();
+}

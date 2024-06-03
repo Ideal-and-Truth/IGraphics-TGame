@@ -12,6 +12,7 @@ namespace Ideal
 		D3D12Resource();
 		virtual ~D3D12Resource();
 
+		void Release();
 	public:
 		ID3D12Resource* GetResource() const;
 

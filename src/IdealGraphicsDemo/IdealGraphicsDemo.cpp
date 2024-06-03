@@ -10,13 +10,13 @@
 #pragma comment(lib, "ReleaseLib/GraphicsEngine/IdealGraphics.lib")
 #endif
 
-#ifdef _DEBUG
-#ifdef UNICODE
-#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
-#else
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-#endif
-#endif
+//#ifdef _DEBUG
+//#ifdef UNICODE
+//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+//#else
+//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+//#endif
+//#endif
 
 #include <iostream>
 using namespace std;
@@ -103,7 +103,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		gRenderer = CreateRenderer(
-			EGraphicsInterfaceType::D3D12,
+			EGraphicsInterfaceType::D3D12_EDITOR,
 			&g_hWnd,
 			WIDTH,
 			HEIGHT,
@@ -140,29 +140,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 		//-------------------Create Mesh Object-------------------//
-		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
-		std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
-		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
-
-		std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		//std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		//std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
+		//std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
+		//std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
+		//
+		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
-		ka->AddAnimation("Run", runAnim);
-		ka->SetAnimation("Run", true);
-		cat->AddAnimation("Walk", walkAnim);
+		//ka->AddAnimation("Run", runAnim);
+		//ka->SetAnimation("Run", true);
+		//cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
+		//renderScene->AddObject(mesh2);
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 		{
-			for (int i = 0; i < 30; i++)
+			/*for (int i = 0; i < 20; i++)
 			{
 				std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 				Matrix mat = Matrix::Identity;
@@ -170,7 +172,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				mesh->SetTransformMatrix(mat);
 				renderScene->AddObject(mesh);
 				meshes.push_back(mesh);
-			}
+			}*/
 		}
 		//renderScene->AddObject(mesh2);
 		//renderScene->AddObject(mesh3);
@@ -196,7 +198,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddLight(pointLight2);
 
 
-		mesh3->SetTransformMatrix(Matrix::CreateRotationX(DirectX::XMConvertToRadians(90.f)));
+		//mesh3->SetTransformMatrix(Matrix::CreateRotationX(DirectX::XMConvertToRadians(90.f)));
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -249,11 +251,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
-				//ImGuiTest();
+				ImGuiTest();
 				DirLightAngle(&angleX, &angleY, &angleZ);
 				PointLightInspecter(pointLight);
 				// MAIN LOOP
-				gRenderer->Tick();
+				//gRenderer->Tick();
 				gRenderer->Render();
 			}
 		}
@@ -332,6 +334,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					return DefWindowProc(hWnd, message, wParam, lParam);
 			}
 		}
+		break;
+		case WM_SIZE:
+		{
+			if (gRenderer)
+			{
+				RECT rect;
+				GetClientRect(g_hWnd, &rect);
+				//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+				DWORD width = rect.right - rect.left;
+				DWORD height = rect.bottom - rect.top;
+				gRenderer->Resize(width, height);
+			}
+		}
+		break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
@@ -371,6 +387,7 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 	{
 		Camera->Strafe(speed);
 	}
+	return;
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
 		Camera->SetLook(Vector3(0.f, 1.f, 1.f));
@@ -446,6 +463,9 @@ void ImGuiTest()
 			ImGui::Text("counter = %d", counter);
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+			
+			//ImGui::Image()
+
 			ImGui::End();
 		}
 
