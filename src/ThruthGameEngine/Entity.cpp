@@ -27,9 +27,19 @@ void Truth::Entity::SetPosition(Vector3 _pos) const
 	m_transform->SetPosition(_pos);
 }
 
+void Truth::Entity::SetScale(Vector3 _scale) const
+{
+	m_transform->SetScale(_scale);
+}
+
 DirectX::SimpleMath::Vector3 Truth::Entity::GetPosition() const
 {
 	return m_transform->m_position;
+}
+
+void Truth::Entity::ApplyTransform() const
+{
+	m_transform->ApplyTransform();
 }
 
 void Truth::Entity::Awake()
@@ -120,5 +130,10 @@ void Truth::Entity::OnTriggerExit(Collider* _other)
 	{
 		p.second->Invoke<void>(p.first, _other);
 	}
+}
+
+DirectX::SimpleMath::Matrix Truth::Entity::GetWorldTM() const
+{
+	return m_transform->m_transformMatrix;
 }
 

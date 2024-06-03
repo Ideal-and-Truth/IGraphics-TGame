@@ -3,8 +3,10 @@
 #include "EventManager.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "Entity.h"
+#include "Transform.h"
 
-Truth::Component::Component() 
+Truth::Component::Component()
 	: m_canMultiple(false)
 	, m_managers()
 	, m_owner()
@@ -19,4 +21,9 @@ Truth::Component::~Component()
 	{
 		m_managers.lock()->Event()->RemoveListener(this);
 	}
+}
+
+void Truth::Component::Translate(Vector3& _val)
+{
+	m_owner.lock()->m_transform->Translate(_val);
 }

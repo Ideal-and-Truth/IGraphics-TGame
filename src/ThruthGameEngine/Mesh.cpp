@@ -2,6 +2,7 @@
 #include "Managers.h"
 #include "GraphicsManager.h"
 #include "ISkinnedMeshObject.h"
+#include "Entity.h"
 
 Truth::Mesh::Mesh()
 	: Component()
@@ -33,20 +34,13 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 	}
 }
 
-void Truth::Mesh::Update(std::any _p)
+void Truth::Mesh::Update()
 {
-	static bool test = true;
-	if (GetKeyDown(KEY::C))
-	{
-		m_mesh->SetDrawObject(test);
-		test = !test;
-	}
+	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
 }
 
 void Truth::Mesh::Awake()
 {
 	SetMesh(m_path);
 	SetRenderable(true);
-
-	EventBind("Update", &Truth::Mesh::Update);
 }

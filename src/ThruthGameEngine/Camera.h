@@ -21,7 +21,7 @@ namespace Truth
 		virtual ~Camera();
 
 		METHOD(Update);
-		void Update();
+		virtual void Update();
 
 		void SetLens(float _fovY, float _aspect, float _nearZ, float _farZ);
 
@@ -29,7 +29,7 @@ namespace Truth
 
 	private:
 		METHOD(Awake);
-		void Awake();
+		virtual void Awake();
 	};
 }
 

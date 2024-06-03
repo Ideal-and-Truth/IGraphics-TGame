@@ -9,6 +9,8 @@
 #include "GraphicsManager.h"
 #include "imgui.h"
 #include "InputManager.h"
+#include "../IdealGraphics/Misc/Utils/FileUtils.h"
+
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
@@ -38,6 +40,32 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
+
+
+	g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx", false, true);
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
+
+	// 저장할 배열
+	std::vector<Vector3> pos;
+
+	unsigned int meshNum = file->Read<unsigned int>();
+
+	for (int i = 0; i < meshNum; i++)
+	{
+		unsigned int verticesNum = file->Read<unsigned int>();
+		for (int j = 0; j < verticesNum; j++)
+		{
+			Vector3 p;
+			p.x = file->Read<float>();
+			p.y = file->Read<float>();
+			p.z = file->Read<float>();
+			pos.push_back(p);
+		}
+	}
+
+	int a = 3;
 }
 
 void Processor::Finalize()
@@ -80,6 +108,10 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	{
 		g_Renderer->SetImGuiWin32WndProcHandler(hWnd, message, wParam, lParam);
 	}
+	if (g_inputmanager)
+	{
+		g_inputmanager->ResetMouseMovement();
+	}
 	switch (message)
 	{
 	case WM_PAINT:
@@ -103,10 +135,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		break;
 
 	default:
-		if (g_inputmanager)
-		{
-			g_inputmanager->ResetMouseMovement();
-		}
+
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;

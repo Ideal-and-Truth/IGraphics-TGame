@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Core.h"
+#include <string.h>
 
 enum class FileMode :uint8
 {

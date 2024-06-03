@@ -31,6 +31,8 @@ namespace Truth
 
 		void Update() const;
 
+		void ApplyTransform() const;
+
 		void StartGameScene() const;
 
 		void ChangeScene(std::any _p);

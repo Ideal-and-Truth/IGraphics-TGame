@@ -109,6 +109,9 @@ namespace Truth
 			return m_managers.lock()->Time()->GetFDT();
 		}
 
+		void Translate(Vector3& _val);
+
+
 		template <typename E>
 		void AddEntity();
 #pragma endregion inline

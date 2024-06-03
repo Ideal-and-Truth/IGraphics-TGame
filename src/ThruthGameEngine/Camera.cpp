@@ -18,7 +18,7 @@ Truth::Camera::~Camera()
 void Truth::Camera::Update()
 {
 	float dt = GetDeltaTime();
-	float speed = 100;
+	float speed = 300;
 	if (GetKey(KEY::W))
 	{
 		m_camera->Walk(dt * speed);
@@ -39,10 +39,6 @@ void Truth::Camera::Update()
 
 	if (GetKey(KEY::LMOUSE))
 	{
-		if (GetKey(KEY::D))
-		{
-			int n = 1;
-		}
 		m_camera->Pitch(MouseDy() * 0.003f);
 		m_camera->RotateY(MouseDx() * 0.003f);
 	}
@@ -61,7 +57,7 @@ void Truth::Camera::SetMainCamera()
 void Truth::Camera::Awake()
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
-	m_camera->SetPosition(Vector3(0.f, 0.f, -1500.f));
-	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 3000.f);
+	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
+	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
 	SetMainCamera();
 }

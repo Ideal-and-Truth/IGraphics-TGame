@@ -34,6 +34,7 @@ namespace Truth
 		void DeleteEntity(std::any _p);
 
 		void Update();
+		void ApplyTransform();
 
 		virtual void Awake() abstract;
 		virtual void Enter() abstract;

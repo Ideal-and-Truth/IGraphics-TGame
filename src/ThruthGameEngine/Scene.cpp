@@ -59,6 +59,14 @@ void Truth::Scene::Update()
 	}
 }
 
+void Truth::Scene::ApplyTransform()
+{
+	for (auto& e : m_entities)
+	{
+		e->ApplyTransform();
+	}
+}
+
 void Truth::Scene::ClearEntity()
 {
 	m_entities.clear();

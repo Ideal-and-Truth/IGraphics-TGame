@@ -2,6 +2,7 @@
 #include "BoxCollider.h"
 #include "RigidBody.h"
 #include "Mesh.h"
+#include "TestMovement.h"
 
 Wall::Wall()
 {
@@ -20,6 +21,8 @@ void Wall::Initailize()
 	AddComponent<Truth::RigidBody>();
 	AddComponent<Truth::BoxCollider>(Vector3{20.0f, 20.0f, 2.0f}, false);
 	AddComponent<Truth::Mesh>(L"debugCube/debugCube");
+	// AddComponent<TestMovement>();
 	SetPosition(Vector3(0.0f, 20.0f, 0.0f));
+	SetScale(Vector3(20.0f, 20.0f, 2.0f));
 	// AddComponent<Truth::Mesh>();
 }

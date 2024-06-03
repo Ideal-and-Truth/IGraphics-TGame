@@ -26,11 +26,11 @@ namespace Truth
 		virtual ~Transform();
 
 		// 변환 내용 적용
-		void ApplyTransform(std::any _p);
+		void ApplyTransform();
+
+
 
 	private:
-		METHOD(Awake);
-		void Awake();
 
 	public:
 

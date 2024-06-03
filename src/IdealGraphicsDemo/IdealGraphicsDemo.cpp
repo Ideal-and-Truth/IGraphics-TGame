@@ -133,7 +133,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		// gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		gRenderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
 
 		//-------------------Test Vertices Pos-------------------//
@@ -148,7 +148,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		//
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"debugCube/debugCube");
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
