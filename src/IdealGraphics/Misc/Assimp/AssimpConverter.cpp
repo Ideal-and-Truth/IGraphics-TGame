@@ -60,12 +60,15 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	flag |= aiProcess_GenUVCoords;
 	flag |= aiProcess_GenNormals;
 	flag |= aiProcess_CalcTangentSpace;
+	flag |= aiProcess_GlobalScale;
+
 	if (!isSkinnedData)
 	{
 		flag |= aiProcess_OptimizeMeshes;
 		flag |= aiProcess_PreTransformVertices;
 	}
 	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
+	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
 
 	m_scene = m_importer->ReadFile(
 		ConvertWStringToString(fileStr),
@@ -542,6 +545,9 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 			BasicVertex vertex;
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
+				/*vertex.Position.x *= 0.01;
+				vertex.Position.y *= 0.01;
+				vertex.Position.z *= 0.01;*/
 			}
 
 			// UV
@@ -612,6 +618,7 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
 			SkinnedVertex vertex;
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
+				//vertex.Position *= 0.01;
 			}
 
 			// UV
@@ -700,7 +707,6 @@ std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNod
 			frameData.translation.x = key.mValue.x;
 			frameData.translation.y = key.mValue.y;
 			frameData.translation.z = key.mValue.z;
-
 			found = true;
 		}
 
@@ -727,7 +733,6 @@ std::shared_ptr<AssimpConvert::AnimationNode> AssimpConverter::ParseAnimationNod
 			frameData.scale.x = key.mValue.x;
 			frameData.scale.y = key.mValue.y;
 			frameData.scale.z = key.mValue.z;
-
 			found = true;
 		}
 
@@ -773,7 +778,6 @@ void AssimpConverter::ReadKeyFrameData(std::shared_ptr<AssimpConvert::Animation>
 		{
 			frameData = findNode->keyframe[i];
 		}
-
 		keyFrame->transforms.push_back(frameData);
 	}
 
