@@ -102,8 +102,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
+		bool isEditor = false;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		if (isEditor)
+		{
+			type = EGraphicsInterfaceType::D3D12_EDITOR;
+		}
+
 		gRenderer = CreateRenderer(
-			EGraphicsInterfaceType::D3D12_EDITOR,
+			type,
 			&g_hWnd,
 			WIDTH,
 			HEIGHT,
@@ -128,13 +135,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		// gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
+		gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -142,22 +148,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Create Mesh Object-------------------//
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		//std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		//std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		//std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		//std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		//
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"debugCube/debugCube");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
-		//ka->AddAnimation("Run", runAnim);
+		ka->AddAnimation("Run", runAnim);
 		//ka->SetAnimation("Run", true);
 		//cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
-		//renderScene->AddObject(ka);
+		renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
 		renderScene->AddObject(mesh);
 		//renderScene->AddObject(mesh2);
@@ -251,9 +257,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
-				ImGuiTest();
-				DirLightAngle(&angleX, &angleY, &angleZ);
-				PointLightInspecter(pointLight);
+				if (isEditor)
+				{
+					ImGuiTest();
+					DirLightAngle(&angleX, &angleY, &angleZ);
+					PointLightInspecter(pointLight);
+				}
 				// MAIN LOOP
 				//gRenderer->Tick();
 				gRenderer->Render();
@@ -361,7 +370,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	float aspectRatio = float(WIDTH) / HEIGHT;
 	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	Camera->SetPosition(Vector3(0.f, 100.f, -200.f));
+	//Camera->SetPosition(Vector3(0.f, 100.f, -200.f));
 }
 
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
