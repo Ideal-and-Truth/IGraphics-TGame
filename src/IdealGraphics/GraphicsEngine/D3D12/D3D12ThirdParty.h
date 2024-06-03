@@ -4,6 +4,7 @@
 #include <d3d12.h>
 #include <dxgi.h>
 #include <dxgi1_4.h>
+#include <dxgi1_6.h>
 //#include <d3dx12.h>
 #include "ThirdParty/Common/d3dx12.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
@@ -31,6 +32,22 @@ inline void Check(HRESULT hr)
 		assert(false);
 	}
 }
+
+inline void Check(HRESULT hr, const wchar_t* Message)
+{
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, Message, L"Check", MB_OK);
+		assert(false);
+	}
+}
+
+inline void FailedDebugBox(const wchar_t* Message)
+{
+	MessageBox(NULL, Message, L"Failed", MB_OK);
+	assert(false);
+}
+
 
 inline void GetErrorBlob(ID3DBlob* ErrorBlob)
 {

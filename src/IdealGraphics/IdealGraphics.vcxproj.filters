@@ -151,6 +151,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
     <ClInclude Include="Misc\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\Utils\Utils.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -230,6 +231,7 @@
     <ClCompile Include="Editor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.cpp" />
     <ClCompile Include="Misc\Utils\IndexCreator.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

@@ -249,7 +249,7 @@ finishAdapter:
 	CreateDefaultCamera();
 	// Temp
 	//m_mainCamera->Walk(50.f);
-	m_mainCamera->SetPosition(Vector3(0.f, 100.f, -200.f));
+	//m_mainCamera->SetPosition(Vector3(0.f, 100.f, -200.f));
 	//m_mainCamera->UpdateViewMatrix();
 	//m_mainCamera->UpdateMatrix2();
 
