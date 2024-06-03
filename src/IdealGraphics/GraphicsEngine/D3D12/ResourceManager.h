@@ -130,6 +130,7 @@ namespace Ideal
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
 
+		// TODO : weak ptr
 		std::map<std::string, std::shared_ptr<Ideal::IdealStaticMesh>> m_staticMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealSkinnedMesh>> m_dynamicMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;

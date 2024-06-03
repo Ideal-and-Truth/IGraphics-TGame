@@ -139,7 +139,6 @@ namespace Ideal
 		// 2024.05.31 : Dynamic ConstantBuffer Allocator 에서 직접 CBContainer를 받아오도록 수정
 		std::shared_ptr<Ideal::ConstantBufferContainer> ConstantBufferAllocate(uint32 SizePerCB);
 
-
 		//------Camera------//
 		void CreateDefaultCamera(); // default camera
 		Matrix GetView();
@@ -154,6 +153,11 @@ namespace Ideal
 		//----Screen----//
 		uint32 GetWidth() { return m_width; }
 		uint32 GetHeight() { return m_height; }
+
+		// Warning Off
+	private:
+		// debuging messeage OFF
+		void OffWarningRenderTargetClearValue();
 
 	private:
 		uint32 m_width = 0;
@@ -224,17 +228,9 @@ namespace Ideal
 		// EDITOR 
 	private:
 		void InitImGui();
-		bool show_demo_window = true;
-		bool show_another_window = false;
-		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 		Ideal::D3D12DescriptorHandle m_imguiSRVHandle;
-
 		bool m_isEditor;
-
-		// Warning Off
-	private:
-		// debuging messeage OFF
-		void OffWarningRenderTargetClearValue();
 
 		// IMGUI
 		void DrawImGuiMainCamera();
