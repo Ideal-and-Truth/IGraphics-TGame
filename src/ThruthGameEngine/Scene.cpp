@@ -5,6 +5,7 @@
 
 Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 	: m_managers(_managers)
+	, m_name("No Name Scene")
 {
 	m_managers->Event()->Subscribe("Delete", MakeListenerInfo(&Truth::Scene::DeleteEntity));
 }
