@@ -54,7 +54,7 @@ namespace Ideal
 		//void InitializeBuffer();
 		uint32 GetBufferSize() const;
 		uint32 GetElementCount() const;
-		uint32 GetElemnetSize() const;
+		uint32 GetElementSize() const;
 
 	protected:
 		std::wstring m_name;

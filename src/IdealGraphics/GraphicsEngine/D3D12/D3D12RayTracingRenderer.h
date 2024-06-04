@@ -6,6 +6,8 @@
 #include <d3d12.h>
 #include "d3dx12.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+//Test
+#include "GraphicsEngine/VertexInfo.h"
 
 struct ID3D12Device;
 struct ID3D12CommandQueue;
@@ -43,19 +45,29 @@ namespace Ideal
 	class IMeshObject;
 	class ISkinnedMeshObject;
 	class IRenderScene;
+
+
+	// TEST : DELETE
+	template<typename>
+	class IdealMesh;
 }
+struct TestVertex;
 
 namespace Ideal
 {
 	class D3D12RayTracingRenderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12RayTracingRenderer>
 	{
 	public:
-		static const uint32 SWAP_CHAIN_FRAME_COUNT = 4;
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = SWAP_CHAIN_NUM;
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
+
+	public:
+		D3D12RayTracingRenderer(HWND hwnd, uint32 Width, uint32 Height, bool EditorMode);
+		virtual ~D3D12RayTracingRenderer();
 
 	public:
 		void Init() override;
@@ -88,6 +100,7 @@ namespace Ideal
 		void CreateRTV();
 		void CreateDSVHeap();
 		void CreateDSV(uint32 Width, uint32 Height);
+		void CreateFence();
 
 	private:
 		void CreateDefaultCamera();
@@ -96,6 +109,10 @@ namespace Ideal
 		void ResetCommandList();
 		void BeginRender();
 		void EndRender();
+		void Present();
+
+		uint64 Fence();
+		void WaitForFenceValue(uint64 ExpectedFenceValue);
 
 	private:
 		uint32 m_width = 0;
@@ -124,9 +141,28 @@ namespace Ideal
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap = nullptr;
 		ComPtr<ID3D12Resource> m_depthStencil = nullptr;
 
+		ComPtr<ID3D12Fence> m_fence = nullptr;
+		uint64 m_fenceValue = 0;
+		HANDLE m_fenceEvent = NULL;
+
 	private:
 		// Main Camera
 		std::shared_ptr<Ideal::IdealCamera> m_mainCamera = nullptr;
 		float m_aspectRatio = 0.f;
+
+		// resource Manager
+		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
+
+	private:
+		void InitializeBLAS();
+		void InitializeTLAS();
+		void UploadBuffer(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
+		void CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
+
+		std::shared_ptr<Ideal::IdealMesh<TestVertex>> mesh;
+		ComPtr<ID3D12Resource> blasScratch;
+		ComPtr<ID3D12Resource> blasResult;
+		ComPtr<ID3D12Resource> tlasScratch;
+		ComPtr<ID3D12Resource> tlasResult;
 	};
 }

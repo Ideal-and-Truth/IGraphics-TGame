@@ -32,7 +32,7 @@ namespace Ideal
 	} IdealTextureTypeFlag;
 	DEFINE_ENUM_FLAG_OPERATORS(IdealTextureTypeFlag);
 
-	class ResourceManager
+	class ResourceManager : public std::enable_shared_from_this<ResourceManager>
 	{
 	public:
 		ResourceManager();
@@ -53,7 +53,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetSRVPool() { return m_srvHeap; }
 
 		void CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBuffer>& VertexBuffer);
-		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer);
+		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer>& IndexBuffer);
 
 		template <typename TVertexType>
 		void CreateVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> OutVertexBuffer,

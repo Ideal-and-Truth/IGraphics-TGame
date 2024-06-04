@@ -117,7 +117,7 @@ uint32 D3D12GPUBuffer::GetElementCount() const
 	return m_elementCount;
 }
 
-uint32 D3D12GPUBuffer::GetElemnetSize() const
+uint32 D3D12GPUBuffer::GetElementSize() const
 {
 	return m_elementSize;
 }

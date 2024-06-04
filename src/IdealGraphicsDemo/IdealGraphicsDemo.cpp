@@ -103,7 +103,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		bool isEditor = false;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
 		{
 			type = EGraphicsInterfaceType::D3D12_EDITOR;
@@ -158,14 +159,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
-		ka->AddAnimation("Run", runAnim);
+		//ka->AddAnimation("Run", runAnim);
 		//ka->SetAnimation("Run", true);
 		//cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
-		renderScene->AddObject(ka);
+		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
-		renderScene->AddObject(mesh);
+		//renderScene->AddObject(mesh);
 		//renderScene->AddObject(mesh2);
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
@@ -184,23 +185,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
-		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
-		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		//std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
-		dirLight->SetDirection(Vector3(1.f, 0.f, 1.f));
+		//dirLight->SetDirection(Vector3(1.f, 0.f, 1.f));
 
-		pointLight->SetPosition(pointLightPosition);
-		pointLight->SetRange(300.f);
-		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		pointLight->SetIntensity(10.f);
+		//pointLight->SetPosition(pointLightPosition);
+		//pointLight->SetRange(300.f);
+		//pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		//pointLight->SetIntensity(10.f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
-		renderScene->AddLight(dirLight);
-		renderScene->AddLight(spotLight);
-		renderScene->AddLight(pointLight);
+		//renderScene->AddLight(dirLight);
+		//renderScene->AddLight(spotLight);
+		//renderScene->AddLight(pointLight);
 		//renderScene->AddLight(pointLight2);
 
 
@@ -224,8 +225,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				CameraTick(camera);
 				//pointLight->SetPosition(camera->GetPosition());
-				auto cp = camera->GetPosition();
-				auto pp = pointLight->GetPosition();
+				//auto cp = camera->GetPosition();
+				//auto pp = pointLight->GetPosition();
 
 				//angle += 0.4f;
 				if (angle > 360.f)
@@ -239,9 +240,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					* Matrix::CreateRotationZ(DirectX::XMConvertToRadians(angleZ))
 					* Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 
-				dirLight->SetDirection(world2.Forward());
+				//dirLight->SetDirection(world2.Forward());
 
-				world.CreateRotationY(angle);
+				//world.CreateRotationY(angle);
 
 				//mesh2->SetTransformMatrix(world);
 
@@ -256,12 +257,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 
 				//-----ImGui Test-----//
-				gRenderer->ClearImGui();
+				//gRenderer->ClearImGui();
 				if (isEditor)
 				{
-					ImGuiTest();
-					DirLightAngle(&angleX, &angleY, &angleZ);
-					PointLightInspecter(pointLight);
+					//ImGuiTest();
+					//DirLightAngle(&angleX, &angleY, &angleZ);
+					//PointLightInspecter(pointLight);
 				}
 				// MAIN LOOP
 				//gRenderer->Tick();

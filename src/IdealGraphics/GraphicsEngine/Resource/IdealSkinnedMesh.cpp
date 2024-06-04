@@ -4,6 +4,7 @@
 #include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
 
 Ideal::IdealSkinnedMesh::IdealSkinnedMesh()
 {
@@ -63,13 +64,10 @@ void Ideal::IdealSkinnedMesh::AddMaterial(std::shared_ptr<Ideal::IdealMaterial> 
 	}
 }
 
-void Ideal::IdealSkinnedMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+void Ideal::IdealSkinnedMesh::FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
-	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
-
 	for (auto& mesh : m_meshes)
 	{
-		mesh->Create(d3d12Renderer);
+		mesh->Create(ResourceManager);
 	}
 }

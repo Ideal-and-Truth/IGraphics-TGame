@@ -134,7 +134,7 @@ void ResourceManager::CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBu
 	WaitForFenceValue();
 }
 
-void ResourceManager::CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer)
+void ResourceManager::CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer>& IndexBuffer)
 {
 	m_commandAllocator->Reset();
 	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
@@ -364,7 +364,6 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 
 		OutTexture->EmplaceRTV(rtvHandle);
 	}
-
 }
 
 void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
@@ -440,8 +439,6 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12
 				staticMesh->AddMesh(mesh);
 			}
 		}
-
-
 	}
 
 	// Material
@@ -568,7 +565,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12
 	}
 
 	// Binding info
-	staticMesh->FinalCreate(Renderer);
+	staticMesh->FinalCreate(shared_from_this());
 	OutMesh->SetStaticMesh(staticMesh);
 
 	m_staticMeshes[key] = staticMesh;
@@ -775,7 +772,7 @@ void ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Render
 	}
 
 	// Binding info
-	skinnedMesh->FinalCreate(Renderer);
+	skinnedMesh->FinalCreate(shared_from_this());
 
 	OutMesh->SetSkinnedMesh(skinnedMesh);
 

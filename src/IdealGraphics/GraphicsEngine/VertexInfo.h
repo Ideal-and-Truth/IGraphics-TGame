@@ -8,6 +8,18 @@ struct VertexTest2
 	Vector2 UV;
 };
 
+struct TestVertex
+{
+	Vector3 Position;
+	Vector4 Color;
+
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+
+public:
+	static const int32 InputElementCount = 2;
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+};
+
 struct BasicVertex
 {
 	Vector3 Position;
@@ -37,18 +49,6 @@ struct SkinnedVertex
 public:
 	static const int32 InputElementCount = 6;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
-};
-
-struct alignas(256) SimpleBoxConstantBuffer
-{
-	Matrix worldViewProjection;
-};
-
-struct Mesh
-{
-	std::vector<BasicVertex> vertices;
-	std::vector<uint32> indices;
-	std::wstring diffuseMap;
 };
 
 struct ScreenQuadVertex

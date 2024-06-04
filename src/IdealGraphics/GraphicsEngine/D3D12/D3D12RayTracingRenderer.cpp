@@ -27,6 +27,29 @@
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
+
+
+Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width, uint32 Height, bool EditorMode)
+	: m_hwnd(hwnd),
+	m_width(Width),
+	m_height(Height),
+	m_frameIndex(0),
+	m_fenceEvent(NULL),
+	m_fenceValue(0)
+{
+
+}
+
+Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
+{
+	Fence();
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+	m_resourceManager = nullptr;
+}
+
 void Ideal::D3D12RayTracingRenderer::Init()
 {
 	uint32 dxgiFactoryFlags = 0;
@@ -111,21 +134,33 @@ finishAdapter:
 	CreateRTV();
 	CreateDSVHeap();
 	CreateDSV(m_width, m_height);
-
+	CreateFence();
 	CreatePools();
+
+	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
+	m_resourceManager->Init(m_device);
+
+	// --- Test --- //
+	InitializeBLAS();
+	InitializeTLAS();
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
 {
 	// 테스트 용으로 쓰는 곳
 	__debugbreak();
-	return; 
+	return;
 }
 
 void Ideal::D3D12RayTracingRenderer::Render()
 {
 	ResetCommandList();
 	m_mainCamera->UpdateMatrix2();
+
+	BeginRender();
+	EndRender();
+	Present();
+	return;
 }
 
 void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
@@ -140,7 +175,7 @@ std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
 
 void Ideal::D3D12RayTracingRenderer::SetMainCamera(std::shared_ptr<ICamera> Camera)
 {
-	m_mainCamera = std::make_shared<Ideal::IdealCamera>(Camera);
+	m_mainCamera = std::static_pointer_cast<Ideal::IdealCamera>(Camera);
 }
 
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStaticMeshObject(const std::wstring& FileName)
@@ -212,6 +247,7 @@ void Ideal::D3D12RayTracingRenderer::ConvertAnimationAssetToMyFormat(std::wstrin
 
 bool Ideal::D3D12RayTracingRenderer::SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	return false;
 }
 
 void Ideal::D3D12RayTracingRenderer::ClearImGui()
@@ -339,6 +375,13 @@ void Ideal::D3D12RayTracingRenderer::CreateDSV(uint32 Width, uint32 Height)
 
 }
 
+void Ideal::D3D12RayTracingRenderer::CreateFence()
+{
+	Check(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.GetAddressOf())), L"Failed to create fence!");
+	m_fenceValue = 0;
+	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+}
+
 void Ideal::D3D12RayTracingRenderer::CreateCommandlists()
 {
 	// CreateCommand List
@@ -351,11 +394,11 @@ void Ideal::D3D12RayTracingRenderer::CreateCommandlists()
 
 		Check(
 			m_device->CreateCommandList(
-			0,
-			D3D12_COMMAND_LIST_TYPE_DIRECT,
-			m_commandAllocators[i].Get(),
-			nullptr,
-			IID_PPV_ARGS(m_commandLists[i].GetAddressOf())),
+				0,
+				D3D12_COMMAND_LIST_TYPE_DIRECT,
+				m_commandAllocators[i].Get(),
+				nullptr,
+				IID_PPV_ARGS(m_commandLists[i].GetAddressOf())),
 			L"Failed to create command list"
 		);
 		m_commandLists[i]->Close();
@@ -433,4 +476,186 @@ void Ideal::D3D12RayTracingRenderer::EndRender()
 	Check(commandList->Close());
 	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+}
+
+void Ideal::D3D12RayTracingRenderer::Present()
+{
+	Fence();
+
+	HRESULT hr;
+	hr = m_swapChain->Present(1, 0);
+	Check(hr);
+
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+	uint32 nextContextIndex = (m_currentContextIndex + 1) % MAX_PENDING_FRAME_COUNT;
+	WaitForFenceValue(m_lastFenceValues[nextContextIndex]);
+
+	m_descriptorHeaps[nextContextIndex]->Reset();
+	m_cbAllocator[nextContextIndex]->Reset();
+
+	m_currentContextIndex = nextContextIndex;
+}
+
+uint64 Ideal::D3D12RayTracingRenderer::Fence()
+{
+	m_fenceValue++;
+	m_commandQueue->Signal(m_fence.Get(), m_fenceValue);
+	m_lastFenceValues[m_currentContextIndex] = m_fenceValue;
+
+	return m_fenceValue;
+}
+
+void Ideal::D3D12RayTracingRenderer::WaitForFenceValue(uint64 ExpectedFenceValue)
+{
+	if (m_fence->GetCompletedValue() < ExpectedFenceValue)
+	{
+		m_fence->SetEventOnCompletion(ExpectedFenceValue, m_fenceEvent);
+		WaitForSingleObject(m_fenceEvent, INFINITE);
+	}
+}
+
+void Ideal::D3D12RayTracingRenderer::InitializeBLAS()
+{
+	std::vector<TestVertex> vertices;
+	std::vector<uint32> indices;
+	
+	{
+		indices = { 0,1,2 };
+		float depthValue = 1.0;
+		float offset = 0.7f;
+		vertices =
+		{
+			{Vector3(0, -offset, depthValue), Vector4(1,0,0,1)},
+			{Vector3(-offset, offset, depthValue), Vector4(0,1,0,1)},
+			{Vector3(offset, offset, depthValue), Vector4(0,0,1,1)}
+		};
+	}
+
+	std::shared_ptr<Ideal::D3D12VertexBuffer> vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+	std::shared_ptr<Ideal::D3D12IndexBuffer> indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
+
+	m_resourceManager->CreateVertexBuffer(vertexBuffer, vertices);
+	m_resourceManager->CreateIndexBuffer(indexBuffer, indices);
+
+	D3D12_RAYTRACING_GEOMETRY_DESC geometry;
+	geometry.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
+	geometry.Triangles.VertexBuffer.StartAddress = vertexBuffer->GetResource()->GetGPUVirtualAddress();
+	geometry.Triangles.VertexBuffer.StrideInBytes = vertexBuffer->GetElementSize();
+	geometry.Triangles.VertexCount = static_cast<uint32>(vertices.size());
+	geometry.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	geometry.Triangles.IndexBuffer = indexBuffer->GetResource()->GetGPUVirtualAddress();
+	geometry.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+	geometry.Triangles.IndexCount = static_cast<uint32>(indexBuffer->GetElementCount());
+	geometry.Triangles.Transform3x4 = 0;
+	geometry.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;	// 지오메트리가 불투명하다면 opaque로 지정 아니면 _Flag_none으로 지정
+
+	// blas input desc
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS ASInputs = {};
+	ASInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
+	ASInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+
+	ASInputs.pGeometryDescs = &geometry;
+
+	ASInputs.NumDescs = 1;
+
+	// 예상되는 BLAS 사용, 메모리와 성능 최적화 허용을 나타냄, _FLAG_MINIMIZE_MEMORY, COMPACATION플래그는 필요한 메모리를 줄이는데 도움이 된다.
+	ASInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;	
+
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO ASBuildInfo = {};
+	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&ASInputs, &ASBuildInfo);
+
+	UploadBuffer(ASBuildInfo, blasScratch, blasResult);
+	CreateAS(ASInputs, blasScratch, blasResult);
+}
+
+void Ideal::D3D12RayTracingRenderer::UploadBuffer(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result)
+{
+	// UAV 업로드
+	//auto uavDesc =CD3DX12_RESOURCE_DESC::Buffer()
+	D3D12_RESOURCE_DESC bufferDesc = {};
+	bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	bufferDesc.Alignment = 0;
+	bufferDesc.Width = info.ResultDataMaxSizeInBytes;
+	bufferDesc.Height = 1;
+	bufferDesc.DepthOrArraySize = 1;
+	bufferDesc.DepthOrArraySize = 1;
+	bufferDesc.MipLevels = 1;
+	bufferDesc.Format = DXGI_FORMAT_UNKNOWN;
+	bufferDesc.SampleDesc.Count = 1;
+	bufferDesc.SampleDesc.Quality = 0;
+	bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	// allow
+	bufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	CD3DX12_HEAP_PROPERTIES heapProp(D3D12_HEAP_TYPE_DEFAULT);
+	
+	m_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&bufferDesc,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		nullptr,
+		IID_PPV_ARGS(&blasResult)
+	);
+
+	bufferDesc.Width = info.ScratchDataSizeInBytes;
+
+	m_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&bufferDesc,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		nullptr,
+		IID_PPV_ARGS(&blasScratch)
+	);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result)
+{
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC desc = {};
+	desc.Inputs = input;
+	desc.ScratchAccelerationStructureData = blasScratch->GetGPUVirtualAddress();
+	desc.DestAccelerationStructureData = blasResult->GetGPUVirtualAddress();
+
+	// Create
+	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&desc, 0, nullptr);
+
+	// ResourceBarrier
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		blasResult.Get(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+}
+
+void Ideal::D3D12RayTracingRenderer::InitializeTLAS()
+{
+	// TLAS Desc
+	D3D12_RAYTRACING_INSTANCE_DESC instances = {};
+	// 셰이더에서 사용 가능
+	instances.InstanceID = 0;
+	// 충돌 그룹 셰이더 선택
+	instances.InstanceContributionToHitGroupIndex = 0;
+	// TraceRay() 파라미터로 비트 단위 AND
+	instances.InstanceMask = 1;
+	instances.Transform[0][0] = instances.Transform[1][1] = instances.Transform[2][2] = 1;
+	// 투명한가? 컬링인가?
+	instances.Flags = D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
+	instances.AccelerationStructure = blasResult->GetGPUVirtualAddress();
+
+	//D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC desc = {};
+	
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS ASInputs = {};
+	ASInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+	ASInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+	ASInputs.NumDescs = 1;
+	ASInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO ASBuildInfo = {};
+	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&ASInputs, &ASBuildInfo);
+
+	UploadBuffer(ASBuildInfo, tlasScratch, tlasResult);
+	CreateAS(ASInputs, tlasScratch, tlasResult);
 }

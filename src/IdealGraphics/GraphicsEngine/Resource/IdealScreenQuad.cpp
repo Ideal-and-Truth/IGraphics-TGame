@@ -29,7 +29,7 @@ void Ideal::IdealScreenQuad::Init(std::shared_ptr<IdealRenderer> Renderer)
 	m_quadMesh = std::make_shared<Ideal::IdealMesh<ScreenQuadVertex>>();
 	m_quadMesh->AddVertices(m_vertices);
 	m_quadMesh->AddIndices(m_indices);
-	m_quadMesh->Create(d3d12Renderer);
+	m_quadMesh->Create(d3d12Renderer->GetResourceManager());
 	//CreateRootSignature(Renderer);
 	//CreatePipelineState(Renderer);
 }

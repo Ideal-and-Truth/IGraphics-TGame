@@ -32,16 +32,15 @@ namespace Ideal
 		virtual ~IdealMesh() {};
 
 	public:
-		void Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer)
+		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 		{
-			std::shared_ptr<Ideal::ResourceManager> resourceManager = Renderer->GetResourceManager();
 			//-------------VB-------------//
 			m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
-			resourceManager->CreateVertexBuffer<TVertexType>(m_vertexBuffer, m_vertices);
+			ResourceManager->CreateVertexBuffer<TVertexType>(m_vertexBuffer, m_vertices);
 
 			//-------------IB-------------//
 			m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
-			resourceManager->CreateIndexBuffer(m_indexBuffer, m_indices);
+			ResourceManager->CreateIndexBuffer(m_indexBuffer, m_indices);
 
 			//------------Clear-----------//
 			m_vertices.clear();
@@ -50,7 +49,7 @@ namespace Ideal
 			//----------Material----------//
 			if (m_material)
 			{
-				m_material->Create(Renderer);
+				m_material->Create(ResourceManager);
 			}
 		}
 
