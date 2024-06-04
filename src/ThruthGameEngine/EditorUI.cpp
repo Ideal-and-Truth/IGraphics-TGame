@@ -135,7 +135,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 	auto s = t.Get();
 
 
-	if (ImGui::CollapsingHeader(/*s.c_str()*/ ""))
+	if (ImGui::CollapsingHeader(s.c_str()))
 	{
 
 	}

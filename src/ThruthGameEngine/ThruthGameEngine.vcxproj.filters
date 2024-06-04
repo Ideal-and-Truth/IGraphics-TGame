@@ -91,6 +91,9 @@
     <Filter Include="Utils\Math">
       <UniqueIdentifier>{0a9672c8-1637-4454-8eb5-5a260ed8067d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EditorUI">
+      <UniqueIdentifier>{8cdc901d-3d08-4976-8218-64869e380411}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -177,6 +180,9 @@
     <ClCompile Include="MathConverter.cpp" />
     <ClCompile Include="PxEventCallback.cpp">
       <Filter>Manager\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorUI.cpp">
+      <Filter>EditorUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +290,9 @@
     <ClInclude Include="MathConverter.h" />
     <ClInclude Include="PxEventCallback.h">
       <Filter>Manager\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorUI.h">
+      <Filter>EditorUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
