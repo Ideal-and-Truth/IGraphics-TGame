@@ -13,9 +13,13 @@ namespace Truth
 	class Scene
 		: public EventHandler
 	{
-	protected:
+		GENERATE_CLASS_TYPE_INFO(Scene)
+	public:
+			PROPERTY(name);
 		std::string m_name;
+	protected:
 
+		PROPERTY(entities);
 		std::vector<std::shared_ptr<Entity>> m_entities;
 
 		std::shared_ptr<Managers> m_managers;

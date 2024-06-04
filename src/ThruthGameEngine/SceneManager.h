@@ -1,7 +1,7 @@
 #pragma once
 #include "Headers.h"
 #include "EventHandler.h"
-
+#include "Scene.h"
 namespace Truth
 {
 	class Scene;

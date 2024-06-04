@@ -10,6 +10,7 @@
 #include "imgui.h"
 #include "InputManager.h"
 //#include "../IdealGraphics/Misc/Utils/FileUtils.h"
+#include "EditorUI.h"
 
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
@@ -21,6 +22,7 @@ Processor::Processor()
 	, m_manager(nullptr)
 	, m_wight(0)
 	, m_height(0)
+	, m_editor(nullptr)
 {
 	DEBUG_PRINT("start process\n");
 }
@@ -42,7 +44,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	g_inputmanager = m_manager->Input().get();
 
 
-	g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx", false, true);
+//	g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx", false, true);
 
 // 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 // 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
@@ -66,6 +68,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	}
 // 
 // 	int a = 3;
+	m_editor = new EditorUI(m_manager);
 }
 
 void Processor::Finalize()
@@ -159,7 +162,9 @@ void Processor::FixedUpdate()
 void Processor::Render()
 {
 	g_Renderer->ClearImGui();
-	ImGui::ShowDemoWindow(&show_demo_window);
+	//ImGui::ShowDemoWindow(&show_demo_window);
+	m_editor->ShowInspectorWindow(&show_demo_window);
+	m_editor->ShowHierarchyWindow(&show_demo_window);
 	m_manager->Render();
 }
 

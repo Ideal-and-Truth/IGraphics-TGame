@@ -8,6 +8,7 @@ namespace Truth
 	class Managers;
 	class Scene;
 }
+	class EditorUI;
 
 namespace Ideal
 {
@@ -23,6 +24,7 @@ namespace Ideal
 class Processor
 {
 private:
+	EditorUI* m_editor;
 	std::shared_ptr<Truth::Managers> m_manager;
 
 	std::shared_ptr<Ideal::IMeshObject> mesh;
