@@ -9,7 +9,7 @@
 #include "GraphicsManager.h"
 #include "imgui.h"
 #include "InputManager.h"
-#include "../IdealGraphics/Misc/Utils/FileUtils.h"
+//#include "../IdealGraphics/Misc/Utils/FileUtils.h"
 
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
@@ -44,28 +44,28 @@ void Processor::Initialize(HINSTANCE _hInstance)
 
 	g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx", false, true);
 
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
-
-	// 저장할 배열
-	std::vector<Vector3> pos;
-
-	unsigned int meshNum = file->Read<unsigned int>();
-
-	for (int i = 0; i < meshNum; i++)
-	{
-		unsigned int verticesNum = file->Read<unsigned int>();
-		for (int j = 0; j < verticesNum; j++)
-		{
-			Vector3 p;
-			p.x = file->Read<float>();
-			p.y = file->Read<float>();
-			p.z = file->Read<float>();
-			pos.push_back(p);
-		}
-	}
-
-	int a = 3;
+// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
+// 
+// 	// 저장할 배열
+// 	std::vector<Vector3> pos;
+// 
+// 	unsigned int meshNum = file->Read<unsigned int>();
+// 
+// 	for (int i = 0; i < meshNum; i++)
+// 	{
+// 		unsigned int verticesNum = file->Read<unsigned int>();
+// 		for (int j = 0; j < verticesNum; j++)
+// 		{
+// 			Vector3 p;
+// 			p.x = file->Read<float>();
+// 			p.y = file->Read<float>();
+// 			p.z = file->Read<float>();
+// 			pos.push_back(p);
+// 		}
+// 	}
+// 
+// 	int a = 3;
 }
 
 void Processor::Finalize()

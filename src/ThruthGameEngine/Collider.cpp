@@ -24,7 +24,7 @@ Truth::Collider::~Collider()
 {
 }
 
-void Truth::Collider::SetPosition(Vector3 _pos)
+void Truth::Collider::SetPhysxPosition(Vector3 _pos)
 {
 	m_center = _pos;
 	if (m_body != nullptr)

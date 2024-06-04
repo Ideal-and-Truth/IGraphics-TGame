@@ -55,7 +55,7 @@ namespace Truth
 		virtual void OnTriggerEnter() {};
 		virtual void OnTriggerExit() {};
 		virtual void OnTriggerStay() {};
-		
+
 
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }
 		std::weak_ptr<Entity> GetOwner() const { return m_owner; }
@@ -108,8 +108,11 @@ namespace Truth
 		{
 			return m_managers.lock()->Time()->GetFDT();
 		}
-
+	public:
 		void Translate(Vector3& _val);
+
+		void SetPosition(Vector3& _val);
+		void SetRotation(Quaternion& _val);
 
 
 		template <typename E>

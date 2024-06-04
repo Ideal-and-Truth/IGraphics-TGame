@@ -22,7 +22,7 @@ void Bullet::Initailize()
 	AddComponent<BulletMove>();
 	AddComponent<Truth::RigidBody>();
 	AddComponent<Truth::SphereCollider>(2.0f, false);
-	AddComponent<Truth::Mesh>(L"statue_chronos/SMown_chronos_statue2");
-// 	SetPosition(Vector3{ 0.0f, 50.0f, 50.0f });
-// 	SetScale(Vector3(2.0f, 2.0f, 2.0f));
+	AddComponent<Truth::Mesh>(L"debugCube/debugCube");
+	SetPosition(Vector3{ 0.0f, 50.0f, 50.0f });
+	SetScale(Vector3(4.0f, 4.0f, 4.0f));
 }

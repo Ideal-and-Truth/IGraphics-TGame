@@ -23,6 +23,6 @@ void Wall::Initailize()
 	AddComponent<Truth::Mesh>(L"debugCube/debugCube");
 	// AddComponent<TestMovement>();
 	SetPosition(Vector3(0.0f, 20.0f, 0.0f));
-	SetScale(Vector3(20.0f, 20.0f, 2.0f));
+	SetScale(Vector3(40.0f, 40.0f, 4.0f));
 	// AddComponent<Truth::Mesh>();
 }

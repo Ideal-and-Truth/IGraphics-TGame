@@ -16,7 +16,7 @@ Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
 	SetSize(_size);
-	SetPosition(m_center);
+	SetPhysxPosition(m_center);
 }
 
 Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)

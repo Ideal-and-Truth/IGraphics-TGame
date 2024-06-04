@@ -27,3 +27,13 @@ void Truth::Component::Translate(Vector3& _val)
 {
 	m_owner.lock()->m_transform->Translate(_val);
 }
+
+void Truth::Component::SetPosition(Vector3& _val)
+{
+	m_owner.lock()->m_transform->SetPosition(_val);
+}
+
+void Truth::Component::SetRotation(Quaternion& _val)
+{
+	m_owner.lock()->m_transform->SetRotate(_val);
+}
