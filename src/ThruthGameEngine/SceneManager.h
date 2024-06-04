@@ -31,6 +31,8 @@ namespace Truth
 
 		void Update() const;
 
+		void ApplyTransform() const;
+
 		void StartGameScene() const;
 
 		void ChangeScene(std::any _p);
@@ -51,6 +53,7 @@ namespace Truth
 			return;
 		}
 		m_sceneMap[_name] = std::make_shared<S>(_managers);
+		m_sceneMap[_name]->m_name = _name;
 	}
 }
 

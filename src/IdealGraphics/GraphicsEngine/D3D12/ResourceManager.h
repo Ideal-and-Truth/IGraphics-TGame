@@ -1,6 +1,6 @@
 #pragma once
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
-
+#include <winnt.h>
 // 따로 GPU에 메모리를 업로드 하는 command list를 파서 여기서 사용한다.
 
 namespace Ideal
@@ -20,6 +20,18 @@ namespace Ideal
 
 namespace Ideal
 {
+	typedef
+	enum IdealTextureTypeFlag
+	{
+		IDEAL_TEXTURE_NONE	= 0,
+		IDEAL_TEXTURE_SRV	= 0x1,
+		IDEAL_TEXTURE_RTV	= 0x2,
+		IDEAL_TEXTURE_DSV	= 0x4,
+		// 0x1,0x2,0x4,0x8
+		// 0x10,0x20,0x40,0x80
+	} IdealTextureTypeFlag;
+	DEFINE_ENUM_FLAG_OPERATORS(IdealTextureTypeFlag);
+
 	class ResourceManager
 	{
 	public:
@@ -82,12 +94,11 @@ namespace Ideal
 			std::vector<uint32>& Indices
 		);
 
+		// 파일 로드하여 srv로 만든다.
 		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
-		// 2024.05.14 : MRT를 위한 RenderTarget용 텍스쳐를 만드는 함수
-		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name, bool MakeRTV = false);
-		void CreateTextureDSV(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height);
-		void CreateRTV(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32& Height, DXGI_FORMAT Format, const std::wstring& Name);
+		// 2024.06.03 : Refactor : Create Texture with flag
+		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name);
 
 		void CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
@@ -119,11 +130,9 @@ namespace Ideal
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
 
+		// TODO : weak ptr
 		std::map<std::string, std::shared_ptr<Ideal::IdealStaticMesh>> m_staticMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealSkinnedMesh>> m_dynamicMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
-
-		// 2024.06.02 죄를 짊어진 배열
-		std::vector<std::weak_ptr<Ideal::D3D12Texture>> m_textures;
 	};
 }

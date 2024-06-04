@@ -44,6 +44,7 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
+	m_sceneManager->ApplyTransform();
 	m_graphicsManager->Render();
 }
 

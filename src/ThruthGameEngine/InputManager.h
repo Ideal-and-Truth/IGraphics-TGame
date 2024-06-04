@@ -195,6 +195,14 @@ namespace Truth
 		// 과거 프레임 마우스 위치
 		POINT m_prevMousePos;
 
+		int m_oldMousePosX;
+		int m_oldMousePosY;
+		int m_nowMousePosX;
+		int m_nowMousePosY;
+
+		int m_mouseDx;
+		int m_mouseDy;
+
 		// 이벤트 발행을 위한 이벤트 매니저
 		// 그때 그때 생성하는거 보다 미리 받아놓는다.
 		std::weak_ptr<EventManager> m_eventManager;
@@ -214,9 +222,13 @@ namespace Truth
 
 		void Finalize();
 
+		void OnMouseMove(int _btnState, int _x, int _y);
+		void ResetMouseMovement(int _x = 0, int _y = 0);
+
 		KEY_STATE GetKeyState(KEY _eKey) const;
 
-		POINT GetMouseMove() const;
+		int16 GetMouseMoveX() const;
+		int16 GetMouseMoveY() const;
 	};
 
 }

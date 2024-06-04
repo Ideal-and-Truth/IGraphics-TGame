@@ -63,8 +63,13 @@ namespace Truth
 		virtual ~Entity();
 
 		virtual void Initailize();
+
 		void SetPosition(Vector3 _pos) const;
+		void SetScale(Vector3 _scale) const;
+
 		Vector3 GetPosition() const;
+
+		void ApplyTransform() const;
 
 		void Awake();
 		void Destroy();
@@ -94,6 +99,8 @@ namespace Truth
 		void SetManager(std::shared_ptr<Managers> _val) { m_manager = _val; };
 
 		std::string& GetName() { return m_name; };
+
+		Matrix GetWorldTM() const;
 
 	private:
 	};
@@ -198,6 +205,59 @@ namespace Truth
 				met->Invoke<void>(component.get());
 			}
 			m_components.push_back(component);
+
+			const auto& mets = component->GetTypeInfo().GetMethods();
+
+			for (const auto& m : mets)
+			{
+				std::string metName = m->GetName();
+
+				auto p = std::make_pair(component.get(), m);
+
+				if (metName == "OnCollisionEnter")
+				{
+					m_onCollisionEnter.push_back(p);
+				}
+				if (metName == "OnCollisionStay")
+				{
+					m_onCollisionStay.push_back(p);
+				}
+				if (metName == "OnCollisionExit")
+				{
+					m_onCollisionExit.push_back(p);
+				}
+
+				if (metName == "OnTriggerEnter")
+				{
+					m_onTriggerEnter.push_back(p);
+				}
+				if (metName == "OnTriggerStay")
+				{
+					m_onTriggerStay.push_back(p);
+				}
+				if (metName == "OnTriggerExit")
+				{
+					m_onTriggerExit.push_back(p);
+				}
+
+				if (metName == "Update")
+				{
+					m_update.push_back(p);
+				}
+				if (metName == "FixedUpdate")
+				{
+					m_fixedUpdate.push_back(p);
+				}
+				if (metName == "LateUpdate")
+				{
+					m_latedUpdate.push_back(p);
+				}
+
+				if (metName == "Destroy")
+				{
+					m_destroy.push_back(p);
+				}
+			}
 
 			return component;
 		}

@@ -24,7 +24,6 @@ void TestScene::Enter()
 	CreateEntity(std::make_shared<BulletShooter>());
 	CreateEntity(std::make_shared<Truth::DefalutCamera>());
 	CreateEntity(std::make_shared<TriggerWall>());
-
 }
 
 void TestScene::Awake()

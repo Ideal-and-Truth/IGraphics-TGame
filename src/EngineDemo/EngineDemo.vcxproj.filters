@@ -34,6 +34,9 @@
     <Filter Include="Entity\BulletSpowner">
       <UniqueIdentifier>{7bdae6a6-f93c-4e5d-9fef-b4e72e114ab3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\DebugComponent">
+      <UniqueIdentifier>{efe874c3-c70a-4af3-ad04-09ed6df054f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -72,6 +75,9 @@
     <ClInclude Include="TriggerWall.h">
       <Filter>Entity\Wall</Filter>
     </ClInclude>
+    <ClInclude Include="TestMovement.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -100,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="TriggerWall.cpp">
       <Filter>Entity\Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="TestMovement.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

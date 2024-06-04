@@ -38,6 +38,11 @@ void Truth::SceneManager::Update() const
 	m_currentScene.lock()->Update();
 }
 
+void Truth::SceneManager::ApplyTransform() const
+{
+	m_currentScene.lock()->ApplyTransform();
+}
+
 void Truth::SceneManager::StartGameScene() const
 {
 	m_currentScene.lock()->Enter();
