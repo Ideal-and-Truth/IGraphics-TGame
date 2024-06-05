@@ -4,7 +4,8 @@
 #include "Mesh.h"
 TriggerWall::TriggerWall()
 {
-
+	m_name = "TriggerWall";
+	m_layer = 1;
 }
 
 TriggerWall::~TriggerWall()

@@ -9,6 +9,7 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(SphereCollider)
 
 	public:
+		PROPERTY(radius);
 		float m_radius;
 
 	public:
@@ -17,6 +18,7 @@ namespace Truth
 		SphereCollider(Vector3 _pos, float _radius, bool _isTrigger = true);
 		virtual ~SphereCollider();
 
+		METHOD(SetRadius);
 		void SetRadius(float _radius);
 
 	private:

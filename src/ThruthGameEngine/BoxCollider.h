@@ -23,6 +23,7 @@ namespace Truth
 		BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger = true);
 		virtual ~BoxCollider();
 
+		METHOD(SetSize);
 		void SetSize(Vector3 _size);
 
 	private:

@@ -1,6 +1,6 @@
 #include "TestScene.h"
 #include "TestEntity.h"
-#include "DefalutCamera.h"
+#include "DefaultCamera.h"
 #include "Wall.h"
 #include "Bullet.h"
 #include "BulletShooter.h"
@@ -22,8 +22,9 @@ void TestScene::Enter()
 	CreateEntity(std::make_shared<Wall>());
 	// CreateEntity(std::make_shared<Bullet>());
 	CreateEntity(std::make_shared<BulletShooter>());
-	CreateEntity(std::make_shared<Truth::DefalutCamera>());
+	CreateEntity(std::make_shared<Truth::DefaultCamera>());
 	CreateEntity(std::make_shared<TriggerWall>());
+	// DEBUG_PRINT(GetTypeInfo().Dump(this).c_str());
 }
 
 void TestScene::Awake()

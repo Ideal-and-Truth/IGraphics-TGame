@@ -49,7 +49,7 @@
     <ClInclude Include="ShapeType.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="StringConverter.h" />
-    <ClInclude Include="DefalutCamera.h" />
+    <ClInclude Include="DefaultCamera.h" />
     <ClInclude Include="TestComponent.h" />
     <ClInclude Include="TestEntity.h" />
     <ClInclude Include="TimeManager.h" />
@@ -83,7 +83,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="StringConverter.cpp" />
-    <ClCompile Include="DefalutCamera.cpp" />
+    <ClCompile Include="DefaultCamera.cpp" />
     <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="TestEntity.cpp" />
     <ClCompile Include="TimeManager.cpp" />

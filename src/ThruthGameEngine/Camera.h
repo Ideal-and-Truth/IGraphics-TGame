@@ -23,6 +23,7 @@ namespace Truth
 		METHOD(Update);
 		virtual void Update();
 
+		METHOD(SetLens);
 		void SetLens(float _fovY, float _aspect, float _nearZ, float _farZ);
 
 		void SetMainCamera();

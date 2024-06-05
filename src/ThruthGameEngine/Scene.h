@@ -17,8 +17,8 @@ namespace Truth
 	public:
 			PROPERTY(name);
 		std::string m_name;
-	protected:
 
+	protected:
 		PROPERTY(entities);
 		std::vector<std::shared_ptr<Entity>> m_entities;
 

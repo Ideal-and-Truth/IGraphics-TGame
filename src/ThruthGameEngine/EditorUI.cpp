@@ -1,12 +1,25 @@
 #include "EditorUI.h"
+#include "GraphicsManager.h"
 #include "imgui.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "Entity.h"
+#include "Transform.h"
+#include "InputManager.h"
+
+int32 EditorUI::m_selectedEntity = -1;
 
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager)
 	: m_manager(Manager)
+	, m_notUsedID(0)
 {
+	m_selectedEntity = -1;
+}
 
+void EditorUI::RenderUI(bool* p_open)
+{
+	ShowInspectorWindow(p_open);
+	ShowHierarchyWindow(p_open);
 }
 
 void EditorUI::ShowInspectorWindow(bool* p_open)
@@ -66,9 +79,29 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
 
+	/// 여기부터 UI 만들기
+
+	auto a = m_manager->Scene()->m_currentScene.lock()->GetTypeInfo().GetProperty("entities");
+	auto b = a->Get<std::vector<std::shared_ptr<Truth::Entity>>>(m_manager->Scene()->m_currentScene.lock().get());
+	auto c = b.Get();
 
 
-	// End of ShowDemoWindow()
+	if (m_selectedEntity >= 0)
+	{
+		for (auto& e : c[m_selectedEntity]->m_components)
+		{
+			auto componentName = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
+
+			//TranslateProperty(e->GetTypeInfo());
+			TranslateComponent(e);
+
+			//ImGui::Text(componentName.c_str());
+
+		}
+	}
+
+
+	/// End of ShowDemoWindow()
 	ImGui::PopItemWidth();
 	ImGui::End();
 
@@ -130,17 +163,389 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 	// e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
-	auto e = m_manager->Scene()->m_currentScene.lock()->GetTypeInfo().GetProperty("name");
-	auto t = e->Get<std::string>(m_manager->Scene()->m_currentScene.lock().get());
-	auto s = t.Get();
+
+	/// 여기부터 UI 만들기
+
+	auto currentScene = m_manager->Scene()->m_currentScene.lock();
+
+	auto currentSceneName = currentScene->GetTypeInfo().GetProperty("name")->Get<std::string>(currentScene.get()).Get();
+
+	auto currentSceneEntities = currentScene->GetTypeInfo().GetProperty("entities")->Get<std::vector<std::shared_ptr<Truth::Entity>>>(currentScene.get()).Get();
+
+	uint32 n = 0;
+
+	if (ImGui::CollapsingHeader(currentSceneName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		uint32 overlapedCount = 2;
+		std::string entityName1;
+		std::string entityName2;
+
+		// 중복 엔티티 이름 아이디 추가
+		for (auto& e : currentSceneEntities)
+		{
+			for (auto& f : currentSceneEntities)
+			{
+				if (e != f)
+				{
+					entityName1 = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
+					entityName2 = f->GetTypeInfo().GetProperty("name")->Get<std::string>(f.get()).Get();
+					if (entityName1 == entityName2)
+					{
+						entityName2.insert(entityName2.length(), "##");
+						entityName2.insert(entityName2.length(), StringConverter::ToString(overlapedCount));
+						overlapedCount++;
+
+						f->GetTypeInfo().GetProperty("name")->Set(f.get(), entityName2);
+					}
+				}
+			}
+		}
+		for (auto& e : currentSceneEntities)
+		{
+			auto entityName = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
+			if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == n))
+			{
+				m_selectedEntity = n;
+			}
+
+			n++;
+		}
+	}
+
+	/// End of ShowDemoWindow()
+	ImGui::PopItemWidth();
+	ImGui::End();
+}
+
+void EditorUI::TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent)
+{
+	auto componentName = EntityComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(EntityComponent.get()).Get();
 
 
-	if (ImGui::CollapsingHeader(s.c_str()))
+	if (componentName == "Transform")
+	{
+		TransformUI(EntityComponent);
+	}
+	else if (componentName == "Rigidbody")
+	{
+		RigidbodyUI(EntityComponent);
+	}
+	else if (componentName == "Camera")
+	{
+		CameraUI(EntityComponent);
+	}
+	else if (componentName == "Mesh Filter")
+	{
+		MeshFilterUI(EntityComponent);
+		MeshRendererUI(EntityComponent);
+	}
+	else if (componentName == "Box Collider")
+	{
+		BoxColliderUI(EntityComponent);
+	}
+	else if (componentName == "Sphere Collider")
+	{
+		SphereColliderUI(EntityComponent);
+	}
+	else if (componentName == "Capsule Collider")
+	{
+		CapsuleColliderUI(EntityComponent);
+	}
+	else
+	{
+		if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		{
+
+		}
+	}
+
+}
+
+void EditorUI::TransformUI(std::shared_ptr<Truth::Component> TransformComponent)
+{
+
+	// 컴포넌트 이름
+	auto componentName = TransformComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(TransformComponent.get()).Get();
+
+	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		// Position UI
+		float position[3];
+		Vector3 posVec3 = TransformComponent->GetTypeInfo().GetProperty("position")->Get<Vector3>(TransformComponent.get()).Get();
+
+		position[0] = posVec3.x;
+		position[1] = posVec3.y;
+		position[2] = posVec3.z;
+
+		ImGui::DragFloat3("Position", position, 0.01f);
+
+// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
+// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
+// 		ImGui::SameLine(0, 10);
+// 		ImGui::SetNextItemWidth(125);
+// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
+// 		ImGui::SameLine(0, 10);
+// 		ImGui::SetNextItemWidth(125);
+// 		ImGui::DragFloat("Position", &position[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
+		posVec3.x = position[0];
+		posVec3.y = position[1];
+		posVec3.z = position[2];
+		TransformComponent->GetTypeInfo().GetProperty("position")->Set(TransformComponent.get(), posVec3);
+
+		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+	}
+}
+
+void EditorUI::RigidbodyUI(std::shared_ptr<Truth::Component> RigidbodyComponent)
+{
+	// 컴포넌트 이름
+	auto componentName = RigidbodyComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(RigidbodyComponent.get()).Get();
+
+	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		// Mass
+		float mass = RigidbodyComponent->GetTypeInfo().GetProperty("mass")->Get<float>(RigidbodyComponent.get()).Get();
+		ImGui::DragFloat("Mass", &mass, 0.01f, 1e-07f, 1e+09f);
+		RigidbodyComponent->GetTypeInfo().GetProperty("mass")->Set(RigidbodyComponent.get(), mass);
+
+		// Drag
+		float drag = RigidbodyComponent->GetTypeInfo().GetProperty("drag")->Get<float>(RigidbodyComponent.get()).Get();
+		ImGui::DragFloat("Drag", &drag, 0.01f, 0.f, (float)3.42e+38);
+		RigidbodyComponent->GetTypeInfo().GetProperty("drag")->Set(RigidbodyComponent.get(), drag);
+
+		// Angular Drag
+		float angularDrag = RigidbodyComponent->GetTypeInfo().GetProperty("angularDrag")->Get<float>(RigidbodyComponent.get()).Get();
+		ImGui::DragFloat("Angular Drag", &angularDrag, 0.01f, 0.f, (float)3.42e+38);
+		RigidbodyComponent->GetTypeInfo().GetProperty("angularDrag")->Set(RigidbodyComponent.get(), angularDrag);
+
+		// Use Gravity
+		bool useGravity = RigidbodyComponent->GetTypeInfo().GetProperty("useGravity")->Get<bool>(RigidbodyComponent.get()).Get();
+		ImGui::Checkbox("Use Gravity", &useGravity);
+		RigidbodyComponent->GetTypeInfo().GetProperty("useGravity")->Set(RigidbodyComponent.get(), useGravity);
+
+		// Is Kinematic
+		bool isKinematic = RigidbodyComponent->GetTypeInfo().GetProperty("isKinematic")->Get<bool>(RigidbodyComponent.get()).Get();
+		ImGui::Checkbox("Is Kinematic", &isKinematic);
+		RigidbodyComponent->GetTypeInfo().GetProperty("isKinematic")->Set(RigidbodyComponent.get(), isKinematic);
+
+		if (ImGui::TreeNode("Constraints"))
+		{
+			// Freeze Position
+			{
+				std::vector<bool> vFreezePosition = RigidbodyComponent->GetTypeInfo().GetProperty("freezePosition")->Get<std::vector<bool>>(RigidbodyComponent.get()).Get();
+				ImGui::Text("Freeze Position");
+
+				bool cFreezePosition[3] = { vFreezePosition[0],vFreezePosition[1],vFreezePosition[2] };
+
+				ImGui::SameLine();
+				ImGui::Checkbox("X", &cFreezePosition[0]);
+				ImGui::SameLine();
+				ImGui::Checkbox("Y", &cFreezePosition[1]);
+				ImGui::SameLine();
+				ImGui::Checkbox("Z", &cFreezePosition[2]);
+
+				vFreezePosition[0] = cFreezePosition[0];
+				vFreezePosition[1] = cFreezePosition[1];
+				vFreezePosition[2] = cFreezePosition[2];
+
+				RigidbodyComponent->GetTypeInfo().GetProperty("freezePosition")->Set(RigidbodyComponent.get(), vFreezePosition);
+			}
+
+			// Freeze Rotation
+			{
+				std::vector<bool> vFreezeRotation = RigidbodyComponent->GetTypeInfo().GetProperty("freezeRotation")->Get<std::vector<bool>>(RigidbodyComponent.get()).Get();
+				ImGui::Text("Freeze Rotation");
+
+				bool cFreezeRotation[3] = { vFreezeRotation[0],vFreezeRotation[1],vFreezeRotation[2] };
+
+				ImGui::SameLine();
+				ImGui::Checkbox("X##2", &cFreezeRotation[0]);
+				ImGui::SameLine();
+				ImGui::Checkbox("Y##2", &cFreezeRotation[1]);
+				ImGui::SameLine();
+				ImGui::Checkbox("Z##2", &cFreezeRotation[2]);
+
+				vFreezeRotation[0] = cFreezeRotation[0];
+				vFreezeRotation[1] = cFreezeRotation[1];
+				vFreezeRotation[2] = cFreezeRotation[2];
+
+				RigidbodyComponent->GetTypeInfo().GetProperty("freezeRotation")->Set(RigidbodyComponent.get(), vFreezeRotation);
+			}
+
+			ImGui::TreePop();
+			ImGui::Spacing();
+		}
+	}
+}
+
+void EditorUI::CameraUI(std::shared_ptr<Truth::Component> CameraComponent)
+{
+	// 컴포넌트 이름
+	auto componentName = CameraComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(CameraComponent.get()).Get();
+
+	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		static float _fov = 0.25f * 3.141592f;
+		float _aspect = m_manager->Graphics()->GetAspect();
+		static float _near = 1.f;
+		static float _far = 100000.f;
+
+		// Field of View
+		ImGui::SliderFloat("Field of View", &_fov, 1e-05f, 179);
+		ImGui::DragFloat("Near", &_near, 0.01f, 0.01f, (float)3.42e+38);
+		ImGui::DragFloat("Far", &_far, 0.01f, 0.01f, (float)3.42e+38);
+
+		if (_far < _near)
+		{
+			_far = _near + 0.01f;
+		}
+
+		if (_fov > 0.f && _near > 0.f && _far > 0.f)
+		{
+			auto met = CameraComponent->GetTypeInfo().GetMethod("SetLens");
+			if (met)
+			{
+				met->Invoke<void>(CameraComponent.get(), _fov, _aspect, _near, _far);
+			}
+		}
+		else
+		{
+			_fov = 0.25f * 3.141592f;
+			_near = 1.f;
+			_far = 100000.f;
+		}
+
+	}
+}
+
+void EditorUI::MeshFilterUI(std::shared_ptr<Truth::Component> MeshFilterComponent)
+{
+	// 컴포넌트 이름
+	auto componentName = MeshFilterComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(MeshFilterComponent.get()).Get();
+
+	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		std::wstring wsMeshPath = MeshFilterComponent->GetTypeInfo().GetProperty("path")->Get<std::wstring>(MeshFilterComponent.get()).Get();
+		std::string sMeshPath(wsMeshPath.begin(), wsMeshPath.end());
+		char* cMeshPath = (char*)sMeshPath.c_str();
+		ImGui::InputText("Mesh", cMeshPath, 128);
+
+		wsMeshPath = std::wstring(cMeshPath, cMeshPath + strlen(cMeshPath));
+
+		MeshFilterComponent->GetTypeInfo().GetProperty("path")->Set(MeshFilterComponent.get(), wsMeshPath);
+
+		if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+		{
+			auto met = MeshFilterComponent->GetTypeInfo().GetMethod("Awake");
+			if (met)
+			{
+				met->Invoke<void>(MeshFilterComponent.get());
+			}
+		}
+	}
+}
+
+void EditorUI::MeshRendererUI(std::shared_ptr<Truth::Component> MeshFilterComponent)
+{
+	bool isRendering = MeshFilterComponent->GetTypeInfo().GetProperty("isRendering")->Get<bool>(MeshFilterComponent.get()).Get();
+	ImGui::Checkbox(MakeBlankName().c_str(), &isRendering);
+	MeshFilterComponent->GetTypeInfo().GetProperty("isRendering")->Set(MeshFilterComponent.get(), isRendering);
+	ImGui::SameLine();
+	if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 
 	}
+}
 
-	// End of ShowDemoWindow()
-	ImGui::PopItemWidth();
-	ImGui::End();
+void EditorUI::BoxColliderUI(std::shared_ptr<Truth::Component> ColliderComponent)
+{
+	// 컴포넌트 이름
+	auto componentName = ColliderComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(ColliderComponent.get()).Get();
+
+	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		Vector3 vecSize = ColliderComponent->GetTypeInfo().GetProperty("size")->Get<Vector3>(ColliderComponent.get()).Get();
+
+		float size[3];
+		size[0] = vecSize.x;
+		size[1] = vecSize.y;
+		size[2] = vecSize.z;
+
+// 		float x = ImGui::GetFontSize();
+// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
+// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
+// 		ImGui::SameLine(0, 10);
+// 		ImGui::SetNextItemWidth(125);
+// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
+// 		ImGui::SameLine(0, 10);
+// 		ImGui::SetNextItemWidth(125);
+// 		ImGui::DragFloat("Size", &size[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
+// 
+// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+
+		ImGui::DragFloat3("Size", size, 0.01f);
+
+		vecSize.x = size[0];
+		vecSize.y = size[1];
+		vecSize.z = size[2];
+
+		auto met = ColliderComponent->GetTypeInfo().GetMethod("SetSize");
+		if (met)
+		{
+			met->Invoke<void>(ColliderComponent.get(), vecSize);
+		}
+	}
+}
+
+void EditorUI::SphereColliderUI(std::shared_ptr<Truth::Component> ColliderComponent)
+{
+	// 컴포넌트 이름
+	auto componentName = ColliderComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(ColliderComponent.get()).Get();
+
+	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float radius = ColliderComponent->GetTypeInfo().GetProperty("radius")->Get<float>(ColliderComponent.get()).Get();
+		ImGui::DragFloat("Radius", &radius, 0.01f);
+
+		auto met = ColliderComponent->GetTypeInfo().GetMethod("SetRadius");
+		if (met)
+		{
+			met->Invoke<void>(ColliderComponent.get(), radius);
+		}
+	}
+}
+
+void EditorUI::CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderComponent)
+{
+	// 컴포넌트 이름
+	auto componentName = ColliderComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(ColliderComponent.get()).Get();
+
+	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float radius = ColliderComponent->GetTypeInfo().GetProperty("radius")->Get<float>(ColliderComponent.get()).Get();
+		ImGui::DragFloat("Radius", &radius, 0.01f);
+
+		auto met = ColliderComponent->GetTypeInfo().GetMethod("SetRadius");
+		if (met)
+		{
+			met->Invoke<void>(ColliderComponent.get(), radius);
+		}
+
+		float height = ColliderComponent->GetTypeInfo().GetProperty("height")->Get<float>(ColliderComponent.get()).Get();
+		ImGui::DragFloat("Height", &height, 0.01f);
+
+		auto met2 = ColliderComponent->GetTypeInfo().GetMethod("SetHeight");
+		if (met2)
+		{
+			met2->Invoke<void>(ColliderComponent.get(), height);
+		}
+	}
+}
+
+std::string EditorUI::MakeBlankName()
+{
+	m_notUsedID++;
+	std::string blankName = "##";
+	blankName.insert(blankName.length(), StringConverter::ToString(m_notUsedID));
+	return blankName;
 }

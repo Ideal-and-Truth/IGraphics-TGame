@@ -171,7 +171,7 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Component\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="DefalutCamera.cpp">
+    <ClCompile Include="DefaultCamera.cpp">
       <Filter>Enitity\TestCamera</Filter>
     </ClCompile>
     <ClCompile Include="StringConverter.cpp">
@@ -278,7 +278,7 @@
     <ClInclude Include="Camera.h">
       <Filter>Component\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="DefalutCamera.h">
+    <ClInclude Include="DefaultCamera.h">
       <Filter>Enitity\TestCamera</Filter>
     </ClInclude>
     <ClInclude Include="ShapeType.h">

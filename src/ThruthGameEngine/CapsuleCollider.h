@@ -20,7 +20,9 @@ namespace Truth
 		CapsuleCollider(Vector3 _pos, float _radius, float _height, bool _isTrigger = true);
 		virtual ~CapsuleCollider();
 
+		METHOD(SetRadius);
 		void SetRadius(float _radius);
+		METHOD(SetHeight);
 		void SetHeight(float _height);
 
 	private:

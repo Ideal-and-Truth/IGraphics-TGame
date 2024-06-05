@@ -9,12 +9,15 @@ Truth::BoxCollider::BoxCollider(bool _isTrigger)
 	: Collider(_isTrigger)
 	, m_size{ 1.0f, 1.0f, 1.0f }
 {
+	m_name = "Box Collider";
 }
 
 
 Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
+	m_name = "Box Collider";
+
 	SetSize(_size);
 	SetPhysxPosition(m_center);
 }
@@ -22,6 +25,8 @@ Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
 Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)
 	: Collider(_isTrigger)
 {
+	m_name = "Box Collider";
+
 	SetSize(_size);
 }
 

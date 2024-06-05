@@ -94,6 +94,7 @@ void Processor::Loop()
 			if (m_msg.message == WM_QUIT) break;
 
 			DispatchMessage(&m_msg);
+			TranslateMessage(&m_msg);
 		}
 		else
 		{
@@ -163,8 +164,7 @@ void Processor::Render()
 {
 	g_Renderer->ClearImGui();
 	//ImGui::ShowDemoWindow(&show_demo_window);
-	m_editor->ShowInspectorWindow(&show_demo_window);
-	m_editor->ShowHierarchyWindow(&show_demo_window);
+	m_editor->RenderUI(&show_demo_window);
 	m_manager->Render();
 }
 

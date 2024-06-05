@@ -8,6 +8,7 @@
 
 Bullet::Bullet()
 {
+	m_name = "Bullet";
 	m_layer = 2;
 }
 

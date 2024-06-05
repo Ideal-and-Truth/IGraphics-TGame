@@ -3,7 +3,8 @@
 
 BulletShooter::BulletShooter()
 {
-
+	m_name = "BulletShooter";
+	m_layer = 1;
 }
 
 BulletShooter::~BulletShooter()
