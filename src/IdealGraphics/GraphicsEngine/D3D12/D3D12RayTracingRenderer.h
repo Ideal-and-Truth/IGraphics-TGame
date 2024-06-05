@@ -4,10 +4,14 @@
 #include "GraphicsEngine/public/IdealRenderer.h"
 
 #include <d3d12.h>
-#include "d3dx12.h"
+//#include "d3dx12.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 //Test
 #include "GraphicsEngine/VertexInfo.h"
+
+#include <dxcapi.h>
+#include <d3dx12.h>
+#include <atlbase.h>
 
 struct ID3D12Device;
 struct ID3D12CommandQueue;
@@ -153,16 +157,48 @@ namespace Ideal
 		// resource Manager
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 
+
+		// RAY TRACING FRAMEWORK
+	private:
+		// shader
+		void CreateShaderCompiler();
+		void CompileShader(IDxcLibrary* lib, IDxcCompiler* comp, LPCWSTR filename, IDxcBlob** blob);
+
+		ComPtr<IDxcCompiler> m_compiler;
+		ComPtr<IDxcLibrary> m_library;
+
 	private:
 		void InitializeBLAS();
 		void InitializeTLAS();
 		void UploadBuffer(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
 		void CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
+		void InitShader();
 
 		std::shared_ptr<Ideal::IdealMesh<TestVertex>> mesh;
 		ComPtr<ID3D12Resource> blasScratch;
 		ComPtr<ID3D12Resource> blasResult;
 		ComPtr<ID3D12Resource> tlasScratch;
 		ComPtr<ID3D12Resource> tlasResult;
+		
+		CComPtr<IDxcIncludeHandler> dxcIncIncludeHandler;
+
+		// 컴파일된 셰이더 DXIL 바이트 코드
+		ComPtr<IDxcBlob> rgsBytecode;
+		ComPtr<IDxcBlob> missBytecode;
+		ComPtr<IDxcBlob> chsBytecode;
+		ComPtr<IDxcBlob> ahsBytecode;
+
+		// 레이 트레이싱 파이프라인 상태 오브젝트
+		void CreateRTPSO();
+		D3D12_STATE_SUBOBJECT CreateShaderSubobject(const wchar_t* Name, const wchar_t* EntryName, ComPtr<IDxcBlob> ShaderByteCode);
+
+		ComPtr<ID3D12StateObject> rtpso;
+		ComPtr<ID3D12StateObjectProperties> rtpsoInfo;
+
+		// 셰이더, 루트 서명 ,설정 데이터에 대한 상태 서브오브젝트 정의
+		std::vector<D3D12_STATE_SUBOBJECT> subobjects;
+
+		void InitShaderSubobject();
+		void InitHitGroupSubobject();
 	};
 }

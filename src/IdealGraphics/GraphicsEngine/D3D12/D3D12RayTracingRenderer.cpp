@@ -27,6 +27,8 @@
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
+#include <d3dx12.h>
+#include <dxcapi.h>
 
 
 Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width, uint32 Height, bool EditorMode)
@@ -139,6 +141,8 @@ finishAdapter:
 
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
 	m_resourceManager->Init(m_device);
+
+	CreateShaderCompiler();
 
 	// --- Test --- //
 	InitializeBLAS();
@@ -628,6 +632,96 @@ void Ideal::D3D12RayTracingRenderer::CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATIO
 		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+}
+
+void Ideal::D3D12RayTracingRenderer::InitShader()
+{
+	CompileShader(m_library.Get(), m_compiler.Get(), L"RayGen.hlsl", &rgsBytecode);
+	CompileShader(m_library.Get(), m_compiler.Get(), L"Miss.hlsl", &missBytecode);
+	CompileShader(m_library.Get(), m_compiler.Get(), L"ClosestHit.hlsl", &chsBytecode);
+	CompileShader(m_library.Get(), m_compiler.Get(), L"AnyHit.hlsl", &ahsBytecode);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateRTPSO()
+{
+
+	// 이건 헬퍼
+	//CD3DX12_STATE_OBJECT_DESC raytracingPipeline{ D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE };
+
+
+	// -----> 여기 사이에 subObjects 넣어주기 <------//
+	
+	D3D12_STATE_OBJECT_DESC rtpsoDesc = {};
+	rtpsoDesc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
+	rtpsoDesc.NumSubobjects = static_cast<uint32>(subobjects.size());
+	rtpsoDesc.pSubobjects = subobjects.data();
+
+	// 레이 트레이싱 파이프라인 상태 오브젝트 생성
+	m_device->CreateStateObject(&rtpsoDesc, IID_PPV_ARGS(&rtpso));
+
+	// 레이 트레이싱 파이프라인 상태 오브젝트의 속성 얻기
+	rtpso->QueryInterface(IID_PPV_ARGS(&rtpsoInfo));
+}
+
+void Ideal::D3D12RayTracingRenderer::InitShaderSubobject()
+{
+	subobjects.push_back(CreateShaderSubobject(L"Unique_RayGenerationShader_Name", L"RayGen", rgsBytecode));
+	subobjects.push_back(CreateShaderSubobject(L"Unique_Miss_Name", L"Miss", missBytecode));
+	subobjects.push_back(CreateShaderSubobject(L"Unique_ClosestHitShader_Name", L"ClosestHit", chsBytecode));
+	subobjects.push_back(CreateShaderSubobject(L"Unique_AnyHitShader_Name", L"AnyHit", ahsBytecode));
+}
+
+void Ideal::D3D12RayTracingRenderer::InitHitGroupSubobject()
+{
+	D3D12_HIT_GROUP_DESC hitGroupDesc = {};
+	hitGroupDesc.ClosestHitShaderImport = L"Unique_ClosestHitShader_Name";
+	hitGroupDesc.AnyHitShaderImport = L"Unique_AnyHitShader_Name";
+	hitGroupDesc.IntersectionShaderImport = nullptr; // 이건 나도 모르겠음
+
+}
+
+D3D12_STATE_SUBOBJECT Ideal::D3D12RayTracingRenderer::CreateShaderSubobject(const wchar_t* Name, const wchar_t* EntryName, ComPtr<IDxcBlob> ShaderByteCode)
+{
+	// DXIL 라이브러리의 진입점과 이름을 기술한다.
+	D3D12_EXPORT_DESC rgsExportDesc = {};
+	// 고유한 이름(다른 곳에서 참조하기 위해)
+	rgsExportDesc.Name = Name;
+	// HLSL 셰이더 소스의 진입점
+	rgsExportDesc.ExportToRename = EntryName;
+	rgsExportDesc.Flags = D3D12_EXPORT_FLAG_NONE;
+
+	// DXIL 라이브러리 설명
+	D3D12_DXIL_LIBRARY_DESC libDesc = {};
+	libDesc.DXILLibrary.BytecodeLength = ShaderByteCode->GetBufferSize();
+	libDesc.DXILLibrary.pShaderBytecode = ShaderByteCode->GetBufferPointer();
+	libDesc.NumExports = 1;
+	libDesc.pExports = &rgsExportDesc;
+
+	// 광선 생성 셰이더 상태 서브오브젝트 설명
+	D3D12_STATE_SUBOBJECT subobject = {};
+	subobject.Type = D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY;
+	subobject.pDesc = &libDesc;
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateShaderCompiler()
+{
+	Check(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&m_compiler)), L"Failed To Create DXC Compiler Instance");
+	Check(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&m_library)), L"Failed To Create DXC Library Instance");
+}
+
+void Ideal::D3D12RayTracingRenderer::CompileShader(IDxcLibrary* lib, IDxcCompiler* comp, LPCWSTR filename, IDxcBlob** blob)
+{
+	uint32 codePage = 0;
+	IDxcBlobEncoding* pShaderText = nullptr;
+	IDxcOperationResult* result = nullptr;
+
+	// 셰이더 파일을 로드하고 인코딩한다.
+	lib->CreateBlobFromFile(filename, &codePage, &pShaderText);
+
+	// 셰이더 컴파일, "main"은 실행이 시작하는 곳
+	comp->Compile(pShaderText, filename, L"main", L"lib_6_3", nullptr, 0, nullptr, 0, dxcIncIncludeHandler, &result);
+
+	result->GetResult(blob);
 }
 
 void Ideal::D3D12RayTracingRenderer::InitializeTLAS()

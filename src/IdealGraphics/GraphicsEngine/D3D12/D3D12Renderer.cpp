@@ -27,6 +27,7 @@
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
+
 Ideal::D3D12Renderer::D3D12Renderer(HWND hwnd, uint32 width, uint32 height, bool EditorMode)
 	: m_hwnd(hwnd),
 	m_width(width),

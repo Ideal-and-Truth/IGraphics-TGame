@@ -270,5 +270,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\Light.hlsli" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
