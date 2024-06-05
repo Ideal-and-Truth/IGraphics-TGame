@@ -27,9 +27,50 @@
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
+#include "GraphicsEngine/D3D12/TestShader.h"
+
 #include <d3dx12.h>
 #include <dxcapi.h>
 
+#define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
+
+inline void AllocateUploadBuffer(ID3D12Device* pDevice, void* pData, UINT64 datasize, ID3D12Resource** ppResource, const wchar_t* resourceName = nullptr)
+{
+	auto uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(datasize);
+	Check(pDevice->CreateCommittedResource(
+		&uploadHeapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&bufferDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(ppResource)));
+	if (resourceName)
+	{
+		(*ppResource)->SetName(resourceName);
+	}
+	void* pMappedData;
+	(*ppResource)->Map(0, nullptr, &pMappedData);
+	memcpy(pMappedData, pData, datasize);
+	(*ppResource)->Unmap(0, nullptr);
+}
+
+inline void AllocateUAVBuffer(ID3D12Device* pDevice, UINT64 bufferSize, ID3D12Resource** ppResource, D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON, const wchar_t* resourceName = nullptr)
+{
+	auto uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	Check(pDevice->CreateCommittedResource(
+		&uploadHeapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&bufferDesc,
+		initialResourceState,
+		nullptr,
+		IID_PPV_ARGS(ppResource)));
+	if (resourceName)
+	{
+		(*ppResource)->SetName(resourceName);
+	}
+}
 
 Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width, uint32 Height, bool EditorMode)
 	: m_hwnd(hwnd),
@@ -145,8 +186,7 @@ finishAdapter:
 	CreateShaderCompiler();
 
 	// --- Test --- //
-	InitializeBLAS();
-	InitializeTLAS();
+	CreateDeviceDependentResources();
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -522,7 +562,7 @@ void Ideal::D3D12RayTracingRenderer::InitializeBLAS()
 {
 	std::vector<TestVertex> vertices;
 	std::vector<uint32> indices;
-	
+
 	{
 		indices = { 0,1,2 };
 		float depthValue = 1.0;
@@ -563,7 +603,7 @@ void Ideal::D3D12RayTracingRenderer::InitializeBLAS()
 	ASInputs.NumDescs = 1;
 
 	// 예상되는 BLAS 사용, 메모리와 성능 최적화 허용을 나타냄, _FLAG_MINIMIZE_MEMORY, COMPACATION플래그는 필요한 메모리를 줄이는데 도움이 된다.
-	ASInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;	
+	ASInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
 
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO ASBuildInfo = {};
 	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&ASInputs, &ASBuildInfo);
@@ -593,7 +633,7 @@ void Ideal::D3D12RayTracingRenderer::UploadBuffer(D3D12_RAYTRACING_ACCELERATION_
 	bufferDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	CD3DX12_HEAP_PROPERTIES heapProp(D3D12_HEAP_TYPE_DEFAULT);
-	
+
 	m_device->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
@@ -634,73 +674,13 @@ void Ideal::D3D12RayTracingRenderer::CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATIO
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
 }
 
-void Ideal::D3D12RayTracingRenderer::InitShader()
+void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 {
-	CompileShader(m_library.Get(), m_compiler.Get(), L"RayGen.hlsl", &rgsBytecode);
-	CompileShader(m_library.Get(), m_compiler.Get(), L"Miss.hlsl", &missBytecode);
-	CompileShader(m_library.Get(), m_compiler.Get(), L"ClosestHit.hlsl", &chsBytecode);
-	CompileShader(m_library.Get(), m_compiler.Get(), L"AnyHit.hlsl", &ahsBytecode);
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateRTPSO()
-{
-
-	// 이건 헬퍼
-	//CD3DX12_STATE_OBJECT_DESC raytracingPipeline{ D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE };
-
-
-	// -----> 여기 사이에 subObjects 넣어주기 <------//
-	
-	D3D12_STATE_OBJECT_DESC rtpsoDesc = {};
-	rtpsoDesc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
-	rtpsoDesc.NumSubobjects = static_cast<uint32>(subobjects.size());
-	rtpsoDesc.pSubobjects = subobjects.data();
-
-	// 레이 트레이싱 파이프라인 상태 오브젝트 생성
-	m_device->CreateStateObject(&rtpsoDesc, IID_PPV_ARGS(&rtpso));
-
-	// 레이 트레이싱 파이프라인 상태 오브젝트의 속성 얻기
-	rtpso->QueryInterface(IID_PPV_ARGS(&rtpsoInfo));
-}
-
-void Ideal::D3D12RayTracingRenderer::InitShaderSubobject()
-{
-	subobjects.push_back(CreateShaderSubobject(L"Unique_RayGenerationShader_Name", L"RayGen", rgsBytecode));
-	subobjects.push_back(CreateShaderSubobject(L"Unique_Miss_Name", L"Miss", missBytecode));
-	subobjects.push_back(CreateShaderSubobject(L"Unique_ClosestHitShader_Name", L"ClosestHit", chsBytecode));
-	subobjects.push_back(CreateShaderSubobject(L"Unique_AnyHitShader_Name", L"AnyHit", ahsBytecode));
-}
-
-void Ideal::D3D12RayTracingRenderer::InitHitGroupSubobject()
-{
-	D3D12_HIT_GROUP_DESC hitGroupDesc = {};
-	hitGroupDesc.ClosestHitShaderImport = L"Unique_ClosestHitShader_Name";
-	hitGroupDesc.AnyHitShaderImport = L"Unique_AnyHitShader_Name";
-	hitGroupDesc.IntersectionShaderImport = nullptr; // 이건 나도 모르겠음
-
-}
-
-D3D12_STATE_SUBOBJECT Ideal::D3D12RayTracingRenderer::CreateShaderSubobject(const wchar_t* Name, const wchar_t* EntryName, ComPtr<IDxcBlob> ShaderByteCode)
-{
-	// DXIL 라이브러리의 진입점과 이름을 기술한다.
-	D3D12_EXPORT_DESC rgsExportDesc = {};
-	// 고유한 이름(다른 곳에서 참조하기 위해)
-	rgsExportDesc.Name = Name;
-	// HLSL 셰이더 소스의 진입점
-	rgsExportDesc.ExportToRename = EntryName;
-	rgsExportDesc.Flags = D3D12_EXPORT_FLAG_NONE;
-
-	// DXIL 라이브러리 설명
-	D3D12_DXIL_LIBRARY_DESC libDesc = {};
-	libDesc.DXILLibrary.BytecodeLength = ShaderByteCode->GetBufferSize();
-	libDesc.DXILLibrary.pShaderBytecode = ShaderByteCode->GetBufferPointer();
-	libDesc.NumExports = 1;
-	libDesc.pExports = &rgsExportDesc;
-
-	// 광선 생성 셰이더 상태 서브오브젝트 설명
-	D3D12_STATE_SUBOBJECT subobject = {};
-	subobject.Type = D3D12_STATE_SUBOBJECT_TYPE_DXIL_LIBRARY;
-	subobject.pDesc = &libDesc;
+	//CreateRayTracingInterfaces();
+	CreateRootSignatures();
+	CreateRayTracingPipelineStateObject();
+	BuildGeometry();
+	BuildAccelerationStructures();
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateShaderCompiler()
@@ -740,7 +720,7 @@ void Ideal::D3D12RayTracingRenderer::InitializeTLAS()
 	instances.AccelerationStructure = blasResult->GetGPUVirtualAddress();
 
 	//D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC desc = {};
-	
+
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS ASInputs = {};
 	ASInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 	ASInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
@@ -752,4 +732,308 @@ void Ideal::D3D12RayTracingRenderer::InitializeTLAS()
 
 	UploadBuffer(ASBuildInfo, tlasScratch, tlasResult);
 	CreateAS(ASInputs, tlasScratch, tlasResult);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateRayTracingInterfaces()
+{
+
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateRootSignatures()
+{
+	// Global Root Signature
+	// 이 루트 시그니쳐는 DispatchRays()가 호출되는 동안 모든 레이트레이싱에서의 접근이 허용된다.
+	{
+		CD3DX12_DESCRIPTOR_RANGE UAVDescriptor;
+		UAVDescriptor.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
+		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];
+		rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsDescriptorTable(1, &UAVDescriptor);
+		rootParameters[GlobalRootSignatureParams::AccelerationStructureSlot].InitAsShaderResourceView(0);
+		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
+		SerializeAndCreateRayTracingRootSignature(globalRootSignatureDesc, &m_raytracingGlobalRootSignature);
+	}
+	// Local Root Signature
+	// 이 루트 시그니쳐는 쉐이더 테이블에서 나온 유니크 인자들을 쉐이더가 가질 수 있게 한다.
+	{
+		CD3DX12_ROOT_PARAMETER rootParameters[LocalRootSignatureParams::Count];
+		rootParameters[LocalRootSignatureParams::ViewportConstantSlot].InitAsConstants(SizeOfInUint32(m_rayGenCB), 0, 0);
+		CD3DX12_ROOT_SIGNATURE_DESC localRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
+		localRootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE;
+		SerializeAndCreateRayTracingRootSignature(localRootSignatureDesc, &m_raytracingLocalRootSignature);
+	}
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateRootSignatures2()
+{
+	// Global Root Signature
+	// This is a root signature that is shared across all raytracing shaders invoked during a DispatchRays() call.
+	{
+		CD3DX12_DESCRIPTOR_RANGE UAVDescriptor;
+		UAVDescriptor.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
+		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];
+		rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsDescriptorTable(1, &UAVDescriptor);
+		rootParameters[GlobalRootSignatureParams::AccelerationStructureSlot].InitAsShaderResourceView(0);
+		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
+		SerializeAndCreateRayTracingRootSignature(globalRootSignatureDesc, &m_raytracingGlobalRootSignature);
+	}
+
+	// Local Root Signature
+	// This is a root signature that enables a shader to have unique arguments that come from shader tables.
+	{
+		CD3DX12_ROOT_PARAMETER rootParameters[LocalRootSignatureParams::Count];
+		rootParameters[LocalRootSignatureParams::ViewportConstantSlot].InitAsConstants(SizeOfInUint32(m_rayGenCB), 0, 0);
+		CD3DX12_ROOT_SIGNATURE_DESC localRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
+		localRootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE;
+		SerializeAndCreateRayTracingRootSignature(localRootSignatureDesc, &m_raytracingLocalRootSignature);
+	}
+}
+
+void Ideal::D3D12RayTracingRenderer::SerializeAndCreateRayTracingRootSignature(D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>* rootsig)
+{
+	ComPtr<ID3DBlob> blob;
+	ComPtr<ID3DBlob> error;
+
+	Check(
+		D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
+		error? static_cast<wchar_t*>(error->GetBufferPointer()) : nullptr
+	);
+	Check(
+		m_device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&(*rootsig))),
+		L"Failed to Create RootSignature!"
+	);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateRayTracingPipelineStateObject()
+{
+	// 7개의 subobject를 만들어 RTPSO와 결합한다. (ray tracing pipe line state sobject)
+	// subobject들은 default 연결 또는 명시적 연결을 통해 DXIL 익스포트(즉, 셰이더)와 연결해야 한다.
+	// default 연결은 익스포트된 모든 셰이더 엔트리 포인트에 동일한 유형의 서브오브젝트가 연결되지 않은 모든 셰이더 엔트리포인트에 적용이 된다.
+	// 이 샘플은 데모용으로 명시적으로 지정된 로컬 루트 서명 서브 오브젝트를 제외한 기본 셰이더 연결을 활용
+	// 1 - DXIL library
+	// 1 - Triangle hit group
+	// 1 - shader config
+	// 2 - local root signature and association
+	// 1 - Global root signature
+	// 1 - pipeline config
+	CD3DX12_STATE_OBJECT_DESC raytracingPipeline{ D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE };
+
+	//-------------------DXIL library-------------------//
+	// 이것은 스테이트 오브젝트를 위해 쉐이더들과 쉐이더들의 엔트리 포인트들을 포함한다.
+	// 셰이더는 서브오브젝트로 간주되지 않으므로 DXIL 라이브러리 서브오브젝트를 통해 전달해야 한다.
+	CD3DX12_DXIL_LIBRARY_SUBOBJECT* lib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
+	D3D12_SHADER_BYTECODE libdxil = CD3DX12_SHADER_BYTECODE((void*)g_pRaytracing, ARRAYSIZE(g_pRaytracing));
+	lib->SetDXILLibrary(&libdxil);
+	// 라이브러리에서 표면화할 쉐이더 export를 정의한다
+	// 만약 DXIL 라이브러리 서브 오브젝트에 대해 정의된 셰이더 익스포트가 없는 경우 모든 쉐이더가 표면화된다.
+	// 이 샘플에서는 라이브러리의 모든 쉐이더를 사용하므로 편의상 생략할 수 있다.
+	{
+		lib->DefineExport(m_raygenShaderName);
+		lib->DefineExport(m_closestHitShaderName);
+		lib->DefineExport(m_missShaderName);
+	}
+	//-------------------Triangle hit group-------------------//
+	// 히트 그룹은 광선이 지오메트리의 삼각형 / AABB와 교차할 때 실행할 가장 가까운 hit, any hit 및 intersection 쉐이더를 지정
+	// 이 샘플에서는 closest shader가 있는 삼각형 지오메트리만 사용하므로 다른 쉐이더는 설정하지 않았다.
+	CD3DX12_HIT_GROUP_SUBOBJECT* hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
+	hitGroup->SetClosestHitShaderImport(m_closestHitShaderName);
+	hitGroup->SetHitGroupExport(m_hitGroupName);
+	hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
+
+	// Shader Config
+	// ray payload 와 attribute structure의 최대 크기를 바이트 단위로 정의한다.
+	CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT* shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
+	uint32 payloadSize = sizeof(Color); // float4 color
+	uint32 attributeSize = 2 * sizeof(float); //float 2 barycentrics (질량 중심 좌표?)
+	shaderConfig->Config(payloadSize, attributeSize);
+
+	// Local root signature and shader association
+	CreateLocalRootSignatureSubobjects(&raytracingPipeline);
+
+	// Global root signature
+	CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT* globalRootSignature = raytracingPipeline.CreateSubobject<CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT>();
+	globalRootSignature->SetRootSignature(m_raytracingGlobalRootSignature.Get());
+
+	// Pipeline config
+	// TraceRay() 재귀 depths의 최대를 정의한다
+	CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT* pipelineConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT>();
+	// 퍼포먼스 팁 : 드라이버가 낮은 재귀 깊이에 대한 최적화 전략을 적용할 수 있으므로 최대 재귀 깊이를 필요한 만큼 낮게 설정해라
+	uint32 maxRecursionDepth = 1; // 재귀 한번만
+	pipelineConfig->Config(maxRecursionDepth);
+
+	// Create StateObject
+	Check(
+		m_device->CreateStateObject(
+			raytracingPipeline,
+			IID_PPV_ARGS(&m_dxrStateObject)),
+		L"Failed to create DirectX Raytracing state object"
+	);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline)
+{
+	CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT* localRootSignature = raytracingPipeline->CreateSubobject<CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT>();
+	localRootSignature->SetRootSignature(m_raytracingLocalRootSignature.Get());
+
+	// Shader association  연관성?
+	CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT* rootSignatureAssociation = raytracingPipeline->CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
+	rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
+	rootSignatureAssociation->AddExport(m_raygenShaderName);
+
+}
+
+void Ideal::D3D12RayTracingRenderer::BuildGeometry()
+{
+	std::vector<uint32> indices = { 0,1,2 };
+
+	float depthValue = 1.0;
+	float offset = 0.7f;
+	std::vector<GeometryVertex> vertices;
+	{
+		indices = { 0,1,2 };
+		float depthValue = 1.0;
+		float offset = 0.7f;
+		vertices =
+		{
+			{Vector3(0, -offset, depthValue)},
+			{Vector3(-offset, offset, depthValue)},
+			{Vector3(offset, offset, depthValue)}
+		};
+	}
+
+	m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+	m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
+
+	m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
+	m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
+
+}
+
+void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
+{
+	ComPtr<ID3D12GraphicsCommandList4> commandList = m_commandLists[m_currentContextIndex];
+	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
+
+	// Reset
+	commandList->Reset(commandAllocator.Get(), nullptr);
+
+	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
+	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
+	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
+	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
+	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+	geometryDesc.Triangles.Transform3x4 = 0;
+	geometryDesc.Triangles.VertexFormat = GeometryVertex::VertexFormat;
+	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
+	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
+	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
+
+	// 퍼포먼스 팁: 지오메트리를 불투명으로 표시하면 중요한 광선 처리 최적화를 활성화할 수 있으므로 해당될 때마다 불투명으로 표시하세요.
+	// 참고: 광선이 불투명한 지오메트리를 만나면 히트 셰이더는 존재 여부와 상관없이 실행되지 않습니다.
+	// 불투명
+	geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+
+	// 가속구조에 필요한 사이즈를 가져온다
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+
+	//---------TLAS----------//
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS topLevelInputs = {};
+	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+	topLevelInputs.Flags = buildFlags;
+	topLevelInputs.NumDescs = 1;
+	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO topLevelPrebuildInfo = {};
+	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &topLevelPrebuildInfo);
+	Check(topLevelPrebuildInfo.ResultDataMaxSizeInBytes > 0);
+
+	//---------BLAS---------//
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO bottomLevelPrebuildInfo = {};
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS bottomLevelInputs = topLevelInputs;
+	bottomLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
+	bottomLevelInputs.pGeometryDescs = &geometryDesc;
+	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&bottomLevelInputs, &bottomLevelPrebuildInfo);
+	Check(bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes > 0);
+
+	ComPtr<ID3D12Resource> scratchResource;
+	AllocateUAVBuffer(m_device.Get(), max(topLevelPrebuildInfo.ScratchDataSizeInBytes, bottomLevelPrebuildInfo.ScratchDataSizeInBytes), scratchResource.GetAddressOf(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ScratchResource");
+
+	// 가속 구조에 리소스를 할당
+	// 가속 구조체는 기본 힙( 또는 이에 상응하는 사용자 정의 힙)에 생성된 리소스에만 배치할 수 있다.
+	// 기본 힙은 애플리케이션에 CPU 읽기/쓰기 액세스가 필요하지 않으므로 괜찮다
+	// 가속 구조가 포함될 리소스는 D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE 상태로 생성되어야 한다.
+	// 리소스 플래그 D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS가 있어야 한다. ALLOW_UNORDERED_ACCESS 요구 사항은 다음의 두 가지를 모두 인정한다.
+	//	- 시스템이 백그라운드에서 가속 구조 빌드를 구현할 때 이러한 유형의 액세스를 수행한다.
+	//	- 앱의 관점에서 가속 구조에 대한 쓰기/읽기 동기화는 UAV 배리어를 사용하여 수행된다.
+	{
+		D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+
+		AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_bottomLevelAccelerationStructure, initialResourceState, L"BottomLevelAccelerationStructure");
+		AllocateUAVBuffer(m_device.Get(), topLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_topLevelAccelerationStructure, initialResourceState, L"TopLevelAccelerationStructure");
+	}
+
+	// 바텀 레벨 가속 구조에 필요한 instance desc을 만든다
+	ComPtr<ID3D12Resource> instanceDescs;
+	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
+	instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1; // identity
+	instanceDesc.InstanceMask = 1;
+	instanceDesc.AccelerationStructure = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
+	AllocateUploadBuffer(m_device.Get(), &instanceDesc, sizeof(instanceDesc), &instanceDescs, L"InstanceDescs");
+
+	// 바텀 레벨 가속 구조 desc
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC bottomLevelBuildDesc = {};
+	{
+		bottomLevelBuildDesc.Inputs = bottomLevelInputs;
+		bottomLevelBuildDesc.ScratchAccelerationStructureData = scratchResource->GetGPUVirtualAddress();
+		bottomLevelBuildDesc.DestAccelerationStructureData = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
+	}
+
+	// 탑 레벨 가속 구조 desc
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC topLevelBuildDesc = {};
+	{
+		topLevelInputs.InstanceDescs = instanceDescs->GetGPUVirtualAddress();
+		topLevelBuildDesc.Inputs = topLevelInputs;
+		topLevelBuildDesc.DestAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
+		topLevelBuildDesc.ScratchAccelerationStructureData = scratchResource->GetGPUVirtualAddress();
+	}
+
+	// 가속 구조 빌드
+	commandList->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
+	{
+		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_bottomLevelAccelerationStructure.Get());
+		commandList->ResourceBarrier(1, &barrier);
+	}
+	commandList->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
+
+	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	Fence();
+	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateRayTracingOutputResources()
+{
+	/*DXGI_FORMAT format = m_renderTargets[0]->GetResource()->GetDesc().Format;
+
+	CD3DX12_RESOURCE_DESC uavDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		format,
+		m_width,
+		m_height,
+		1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
+	);
+
+	CD3DX12_HEAP_PROPERTIES heapProp(D3D12_HEAP_TYPE_DEFAULT);
+	Check(m_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&uavDesc,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		nullptr,
+		IID_PPV_ARGS(m_raytracingOutput.GetAddressOf())),
+		L"Failed to Create RayTracing Output!"
+		);
+	m_raytracingOutput->SetName(L"RayTracing_OutPut");
+
+	D3D12_CPU_DESCRIPTOR_HANDLE uavDescriptorHandle;
+	m_raytracingOutputResourceUAVDescriptorHeapIndex = CD3DX12_GPU_DESCRIPTOR_HANDLE()*/
 }

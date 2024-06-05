@@ -6,7 +6,7 @@
 
 
 #include <d3d12.h>
-#include "d3dx12.h"
+//#include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 // TEMP

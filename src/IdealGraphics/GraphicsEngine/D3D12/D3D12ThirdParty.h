@@ -9,7 +9,6 @@
 #include "ThirdParty/Common/d3dx12.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
-
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -38,6 +37,10 @@ inline void Check(HRESULT hr, const wchar_t* Message)
 {
 	if (FAILED(hr))
 	{
+		if (Message == nullptr)
+		{
+			return;
+		}
 		MessageBox(NULL, Message, L"Check", MB_OK);
 		assert(false);
 	}
@@ -45,6 +48,10 @@ inline void Check(HRESULT hr, const wchar_t* Message)
 
 inline void FailedDebugBox(const wchar_t* Message)
 {
+	if (Message == nullptr)
+	{
+		return;
+	}
 	MessageBox(NULL, Message, L"Failed", MB_OK);
 	assert(false);
 }

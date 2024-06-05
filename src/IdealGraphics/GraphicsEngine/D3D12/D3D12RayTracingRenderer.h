@@ -10,7 +10,7 @@
 #include "GraphicsEngine/VertexInfo.h"
 
 #include <dxcapi.h>
-#include <d3dx12.h>
+//#include <d3dx12.h>
 #include <atlbase.h>
 
 struct ID3D12Device;
@@ -22,6 +22,20 @@ struct ID3D12CommandAllocator;
 struct ID3D12GraphicsCommandList;
 struct ID3D12Fence;
 
+namespace GlobalRootSignatureParams {
+	enum Value {
+		OutputViewSlot = 0,
+		AccelerationStructureSlot,
+		Count
+	};
+}
+
+namespace LocalRootSignatureParams {
+	enum Value {
+		ViewportConstantSlot = 0,
+		Count
+	};
+}
 namespace Ideal
 {
 	class ResourceManager;
@@ -54,6 +68,8 @@ namespace Ideal
 	// TEST : DELETE
 	template<typename>
 	class IdealMesh;
+	class D3D12VertexBuffer;
+	class D3D12IndexBuffer;
 }
 struct TestVertex;
 
@@ -182,12 +198,6 @@ namespace Ideal
 		
 		CComPtr<IDxcIncludeHandler> dxcIncIncludeHandler;
 
-		// 컴파일된 셰이더 DXIL 바이트 코드
-		ComPtr<IDxcBlob> rgsBytecode;
-		ComPtr<IDxcBlob> missBytecode;
-		ComPtr<IDxcBlob> chsBytecode;
-		ComPtr<IDxcBlob> ahsBytecode;
-
 		// 레이 트레이싱 파이프라인 상태 오브젝트
 		void CreateRTPSO();
 		D3D12_STATE_SUBOBJECT CreateShaderSubobject(const wchar_t* Name, const wchar_t* EntryName, ComPtr<IDxcBlob> ShaderByteCode);
@@ -195,10 +205,49 @@ namespace Ideal
 		ComPtr<ID3D12StateObject> rtpso;
 		ComPtr<ID3D12StateObjectProperties> rtpsoInfo;
 
-		// 셰이더, 루트 서명 ,설정 데이터에 대한 상태 서브오브젝트 정의
-		std::vector<D3D12_STATE_SUBOBJECT> subobjects;
 
-		void InitShaderSubobject();
-		void InitHitGroupSubobject();
+
+		// 다시 //
+		const wchar_t* m_raygenShaderName = L"MyRaygenShader";
+		const wchar_t* m_closestHitShaderName = L"MyClosestHitShader";
+		const wchar_t* m_missShaderName = L"MyMissShader";
+		const wchar_t* m_hitGroupName = L"MyHitGroup";
+
+		struct RayGenConstantBuffer
+		{
+			Viewport viewport;
+			Viewport stencil;
+		};
+
+		void CreateDeviceDependentResources();
+		void CreateRayTracingInterfaces();
+		void CreateRootSignatures();
+		void CreateRootSignatures2();
+
+		void SerializeAndCreateRayTracingRootSignature(D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>* rootsig);
+		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
+		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
+		RayGenConstantBuffer m_rayGenCB;
+		void CreateRayTracingPipelineStateObject();
+		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
+		ComPtr<ID3D12StateObject> m_dxrStateObject;
+
+		void BuildGeometry();
+		void BuildAccelerationStructures();
+		
+		
+		// 레이트레이싱을 위한 2d output texture를 만든다.
+		void CreateRayTracingOutputResources();
+		ComPtr<ID3D12Resource> m_raytracingOutput;
+		uint32 m_raytracingOutputResourceUAVDescriptorHeapIndex;
+
+
+		//geometry
+		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
+		std::shared_ptr<Ideal::D3D12IndexBuffer> m_indexBuffer;
+		// AS
+		ComPtr<ID3D12Resource> m_accelerationStructure;
+		ComPtr<ID3D12Resource> m_bottomLevelAccelerationStructure;
+		ComPtr<ID3D12Resource> m_topLevelAccelerationStructure;
 	};
 }
