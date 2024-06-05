@@ -4,8 +4,7 @@ namespace Truth
 {
 	class EventHandler
 	{
-	public:
-		std::string m_name;
+
 
 	public:
 		// EventSystem 에 등록하기 위한 Callable 생성

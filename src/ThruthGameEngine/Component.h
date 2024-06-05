@@ -7,6 +7,8 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
+
+
 /// <summary>
 /// 모든 컴포넌트의 부모 클래스
 /// 일단은 이렇게 구현해보자...
@@ -21,14 +23,22 @@ namespace Truth
 	class Managers;
 }
 
-
-
 namespace Truth
 {
 	class Component
 		: public EventHandler
 	{
-		GENERATE_CLASS_TYPE_INFO(Component)
+		GENERATE_CLASS_TYPE_INFO(Component);
+
+	public:
+		PROPERTY(name);
+		std::string m_name;
+
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	protected:
 		PROPERTY(canMultiple);
@@ -119,6 +129,13 @@ namespace Truth
 		void AddEntity();
 #pragma endregion inline
 	};
+}
+
+template<typename Archive>
+void Truth::Component::serialize(Archive& _ar, const unsigned int _version)
+{
+	_ar& m_name;
+	_ar& m_canMultiple;
 }
 
 template <typename E>

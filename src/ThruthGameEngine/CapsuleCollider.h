@@ -6,7 +6,11 @@ namespace Truth
 	class CapsuleCollider
 		: public Collider
 	{
-		GENERATE_CLASS_TYPE_INFO(CapsuleCollider)
+		GENERATE_CLASS_TYPE_INFO(CapsuleCollider);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
 		PROPERTY(radius);
@@ -31,5 +35,12 @@ namespace Truth
 		METHOD(Initalize);
 		void Initalize();
 	};
+
+	template<class Archive>
+	void Truth::CapsuleCollider::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Collider>(*this);
+	}
+
 }
 

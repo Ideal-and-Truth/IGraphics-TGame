@@ -7,7 +7,12 @@ namespace Truth
 	class Collider :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(Collider)
+		GENERATE_CLASS_TYPE_INFO(Collider);
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
 		bool m_isTrigger;
@@ -49,10 +54,15 @@ namespace Truth
 		}
 	};
 
+	template<class Archive>
+	void Truth::Collider::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+	}
+
 	struct Collision
 	{
 		std::weak_ptr<Collider> m_collA;
 		std::weak_ptr<Collider> m_collB;
 	};
 }
-

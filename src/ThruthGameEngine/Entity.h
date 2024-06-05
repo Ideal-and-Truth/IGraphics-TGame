@@ -1,5 +1,6 @@
 #pragma once
 #include "Headers.h"
+#include "Component.h"
 
 /// <summary>
 /// 모든 엔티티의 부모 클래스
@@ -15,10 +16,16 @@ namespace Truth
 
 namespace Truth
 {
-	class Entity abstract
+	class Entity final
 		: public std::enable_shared_from_this<Entity>
 	{
-		GENERATE_CLASS_TYPE_INFO(Entity)
+		GENERATE_CLASS_TYPE_INFO(Entity);
+
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int file_version);
 
 	protected:
 		static uint32 m_entityCount;
@@ -28,12 +35,16 @@ namespace Truth
 
 		PROPERTY(ID);
 		uint32 m_ID;
-		PROPERTY(name);
-		std::string m_name;
 		std::shared_ptr<Managers> m_manager;
 
 	public:
 		// key 값의 경우 type id 를 통해 유추한다.
+		PROPERTY(layer);
+		uint8 m_layer;
+
+		PROPERTY(name);
+		std::string m_name;
+
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
@@ -54,15 +65,14 @@ namespace Truth
 
 		std::vector<std::pair<Component*, const Method*>> m_destroy;
 
-		uint8 m_layer;
 
 		std::shared_ptr<Transform> m_transform;
 
 	public:
-		Entity();
-		virtual ~Entity();
+		Entity(std::shared_ptr<Managers> _mangers);
+		~Entity();
 
-		virtual void Initailize();
+		void Initailize();
 
 		void SetPosition(Vector3 _pos) const;
 		void SetScale(Vector3 _scale) const;
@@ -106,6 +116,15 @@ namespace Truth
 	};
 
 	/// template로 작성된 함수 목록
+
+	template<class Archive>
+	void Entity::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& m_name;
+		_ar& m_ID;
+		_ar& m_layer;
+		_ar& m_components;
+	}
 
 	/// <summary>
 	/// 엔티티에 컴포넌트 추가

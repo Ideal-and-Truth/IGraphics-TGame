@@ -17,6 +17,7 @@ Truth::Scene::~Scene()
 
 void Truth::Scene::CreateEntity(std::shared_ptr<Entity> _p)
 {
+	_p->Initailize();
 	m_createdEntity.push(_p);
 }
 
@@ -68,13 +69,23 @@ void Truth::Scene::ApplyTransform()
 	}
 }
 
+void Truth::Scene::Awake()
+{
+
+}
+
+void Truth::Scene::Enter()
+{
+
+}
+
+void Truth::Scene::Exit()
+{
+	ClearEntity();
+}
+
 void Truth::Scene::ClearEntity()
 {
 	m_entities.clear();
-}
-
-void Truth::Scene::SetManger(std::shared_ptr<Managers> _managers)
-{
-	m_managers = _managers;
 }
 

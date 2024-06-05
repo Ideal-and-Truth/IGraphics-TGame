@@ -6,8 +6,11 @@ namespace Truth
 	class SphereCollider :
 		public Collider
 	{
-		GENERATE_CLASS_TYPE_INFO(SphereCollider)
-
+		GENERATE_CLASS_TYPE_INFO(SphereCollider);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 	public:
 		float m_radius;
 
@@ -26,5 +29,11 @@ namespace Truth
 		METHOD(Initalize);
 		void Initalize();
 	};
+
+	template<class Archive>
+	void Truth::SphereCollider::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Collider>(*this);
+	}
 }
 

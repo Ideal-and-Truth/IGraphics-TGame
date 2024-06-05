@@ -1,26 +1,6 @@
 #pragma once
-#include "Component.h"
 #include "Headers.h"
-
-namespace Truth
-{
-	class Transform;
-
-	struct RigidBodyDecs
-	{
-		float m_mass;
-		float m_drag;
-		float m_angularDrag;
-
-		bool m_useGravity;
-		bool m_isKinematic;
-
-		bool m_freezePosition[3];
-		bool m_freezeRotation[3];
-
-		Vector3 m_velocity;
-	};
-}
+#include "Component.h"
 
 namespace physx
 {
@@ -32,7 +12,11 @@ namespace Truth
 	class RigidBody :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(RigidBody)
+		GENERATE_CLASS_TYPE_INFO(RigidBody);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
 		PROPERTY(mass);
@@ -85,7 +69,6 @@ namespace Truth
 
 		void InitalizeMassAndInertia();
 
-		void SetRigidData(RigidBodyDecs _data);
 	private:
 		METHOD(Awake);
 		void Awake();
@@ -97,5 +80,11 @@ namespace Truth
 		METHOD(Start);
 		void Start();
 	};
+
+	template<class Archive>
+	void Truth::RigidBody::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+	}
 }
 

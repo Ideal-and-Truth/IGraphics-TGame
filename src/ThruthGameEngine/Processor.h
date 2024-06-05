@@ -42,6 +42,8 @@ private:
 
 	bool show_demo_window = true;
 
+	const std::string m_savedFilePath = "../data";
+
 public:
 	// 특수 멤버함수
 	Processor();
@@ -53,14 +55,17 @@ public:
 	void Process();
 	void Loop();
 
-	template<typename S, typename std::enable_if_t<std::is_base_of_v<Truth::Scene, S>, S>* = nullptr>
-	void AddScene(std::string _name);
+	void AddScene(std::shared_ptr<Truth::Scene> _scene);
 
 	void SetStartScene(std::string _name);
 
 	// 윈도우 함수
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	// LRESULT CALLBACK WndProcInClass(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+	void SaveSceneData();
+
+	std::shared_ptr<Truth::Managers> GetManagers() const { return m_manager; };
 
 private:
 	void Update();
@@ -72,9 +77,5 @@ private:
 	void InitializeManager();
 };
 
-template<typename S, typename std::enable_if_t<std::is_base_of_v<Truth::Scene, S>, S>*>
-void Processor::AddScene(std::string _name)
-{
-	m_manager->Scene()->AddScene<S>(_name, m_manager);
-}
+
 

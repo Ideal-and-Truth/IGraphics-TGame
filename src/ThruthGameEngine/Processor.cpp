@@ -13,6 +13,7 @@
 #include "EditorUI.h"
 
 
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -103,6 +104,11 @@ void Processor::Loop()
 	}
 }
 
+void Processor::AddScene(std::shared_ptr<Truth::Scene> _scene)
+{
+	m_manager->Scene()->AddScene(_scene);
+}
+
 LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HDC			hdc;
@@ -142,6 +148,13 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+void Processor::SaveSceneData()
+{
+	std::ofstream outputstream(m_savedFilePath);
+	boost::archive::text_oarchive outputArchive(outputstream);
+	outputArchive << m_manager->Scene()->m_currentScene;
 }
 
 void Processor::Update()

@@ -1,5 +1,5 @@
 #include "Shooter.h"
-#include "Bullet.h"
+// #include "Bullet.h"
 
 Shooter::Shooter()
 {
@@ -19,6 +19,6 @@ void Shooter::Update()
 {
 	if (GetKeyDown(KEY::SPACE))
 	{
-		AddEntity<Bullet>();
+		// AddEntity<Bullet>();
 	}
 }

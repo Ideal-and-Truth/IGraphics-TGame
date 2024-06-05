@@ -8,6 +8,10 @@ namespace Truth
 		public Truth::Component
 	{
 		GENERATE_CLASS_TYPE_INFO(Transform);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
 		PROPERTY(position);
@@ -88,5 +92,12 @@ namespace Truth
 		}
 #pragma endregion Inline
 	};
+
+	template<class Archive>
+	void Truth::Transform::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+	}
+
 }
 

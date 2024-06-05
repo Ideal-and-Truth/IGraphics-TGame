@@ -3,13 +3,15 @@
 
 uint32 Truth::Entity::m_entityCount = 0;
 
-Truth::Entity::Entity()
-	: m_manager()
+Truth::Entity::Entity(std::shared_ptr<Managers> _mangers)
+	: m_manager(_mangers)
 	, m_name("Empty Enitity")
 	, m_ID(m_entityCount++)
 	, m_layer(0)
 	, m_tag("None")
 {
+	m_transform = std::make_shared<Transform>();
+	m_components.push_back(m_transform);
 }
 
 Truth::Entity::~Entity()
@@ -19,7 +21,7 @@ Truth::Entity::~Entity()
 
 void Truth::Entity::Initailize()
 {
-	m_transform = AddComponent<Transform>();
+	m_transform->SetOwner(shared_from_this());
 }
 
 void Truth::Entity::SetPosition(Vector3 _pos) const
@@ -44,7 +46,6 @@ void Truth::Entity::ApplyTransform() const
 
 void Truth::Entity::Awake()
 {
-	Initailize();
 	for (auto& c : m_components)
 	{
 		auto met = c->GetTypeInfo().GetMethod("Awake");

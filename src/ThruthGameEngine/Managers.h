@@ -23,6 +23,9 @@ namespace Truth
 		std::shared_ptr<Truth::PhysicsManager> m_physXManager;
 		std::shared_ptr<Truth::GraphicsManager> m_graphicsManager;
 
+	private:
+		const std::string m_savedFilePath = "../data";
+
 	public:
 		Managers();
 		~Managers();
@@ -35,6 +38,9 @@ namespace Truth
 		void Render() const;
 
 		void Finalize() const;
+
+		void SaveSceneData() const;
+
 
 		inline std::shared_ptr<Truth::TimeManager> Time() const { return m_timeManager; };
 		inline std::shared_ptr<Truth::InputManager> Input() const { return m_inputManager; };

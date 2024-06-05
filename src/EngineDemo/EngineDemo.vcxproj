@@ -139,31 +139,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Bullet.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="BulletMove.h" />
-    <ClInclude Include="BulletShooter.h" />
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shooter.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestMovement.h" />
-    <ClInclude Include="TestScene.h" />
-    <ClInclude Include="TestScene2.h" />
-    <ClInclude Include="TriggerWall.h" />
-    <ClInclude Include="Wall.h" />
+    <ClInclude Include="TestScene.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Bullet.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="BulletMove.cpp" />
-    <ClCompile Include="BulletShooter.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
     <ClCompile Include="Shooter.cpp" />
     <ClCompile Include="TestMovement.cpp" />
-    <ClCompile Include="TestScene.cpp" />
-    <ClCompile Include="TestScene2.cpp" />
-    <ClCompile Include="TriggerWall.cpp" />
-    <ClCompile Include="Wall.cpp">
+    <ClCompile Include="TestScene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>

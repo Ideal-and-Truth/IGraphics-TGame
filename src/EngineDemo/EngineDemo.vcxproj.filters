@@ -51,14 +51,8 @@
     <ClInclude Include="EngineDemo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene2.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Wall.h">
-      <Filter>Entity\Wall</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Entity\Bullet</Filter>
@@ -68,12 +62,6 @@
     </ClInclude>
     <ClInclude Include="Shooter.h">
       <Filter>Component\Bullet</Filter>
-    </ClInclude>
-    <ClInclude Include="BulletShooter.h">
-      <Filter>Entity\BulletSpowner</Filter>
-    </ClInclude>
-    <ClInclude Include="TriggerWall.h">
-      <Filter>Entity\Wall</Filter>
     </ClInclude>
     <ClInclude Include="TestMovement.h">
       <Filter>헤더 파일</Filter>
@@ -86,12 +74,6 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="TestScene2.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Wall.cpp">
-      <Filter>Entity\Wall</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Entity\Bullet</Filter>
     </ClCompile>
@@ -100,12 +82,6 @@
     </ClCompile>
     <ClCompile Include="Shooter.cpp">
       <Filter>Component\Bullet</Filter>
-    </ClCompile>
-    <ClCompile Include="BulletShooter.cpp">
-      <Filter>Entity\BulletSpowner</Filter>
-    </ClCompile>
-    <ClCompile Include="TriggerWall.cpp">
-      <Filter>Entity\Wall</Filter>
     </ClCompile>
     <ClCompile Include="TestMovement.cpp">
       <Filter>소스 파일</Filter>

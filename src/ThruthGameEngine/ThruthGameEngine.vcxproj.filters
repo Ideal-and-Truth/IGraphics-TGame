@@ -114,9 +114,6 @@
     <ClCompile Include="TestComponent.cpp">
       <Filter>Component\Test</Filter>
     </ClCompile>
-    <ClCompile Include="TestEntity.cpp">
-      <Filter>Enitity\Test</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -171,9 +168,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Component\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="DefalutCamera.cpp">
-      <Filter>Enitity\TestCamera</Filter>
-    </ClCompile>
     <ClCompile Include="StringConverter.cpp">
       <Filter>Utils\String</Filter>
     </ClCompile>
@@ -204,9 +198,6 @@
     </ClInclude>
     <ClInclude Include="TestComponent.h">
       <Filter>Component\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="TestEntity.h">
-      <Filter>Enitity\Test</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Scene</Filter>
@@ -277,9 +268,6 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Component\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="DefalutCamera.h">
-      <Filter>Enitity\TestCamera</Filter>
     </ClInclude>
     <ClInclude Include="ShapeType.h">
       <Filter>Manager\PhysX</Filter>

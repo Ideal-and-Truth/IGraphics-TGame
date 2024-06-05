@@ -17,6 +17,17 @@ void Truth::SceneManager::Initalize(std::shared_ptr<EventManager> _eventManger)
 	m_eventManager.lock()->Subscribe("Change Scene", MakeListenerInfo(&SceneManager::ChangeScene));
 }
 
+void Truth::SceneManager::AddScene(std::shared_ptr<Scene> _scene)
+{
+	std::string& sName = _scene->m_name;
+	if (HasScene(sName))
+	{
+		DEBUG_PRINT("There is a scene with the same name : %s", sName);
+		return;
+	}
+	m_sceneMap[sName] = _scene;
+}
+
 void Truth::SceneManager::SetCurrnetScene(std::string _name)
 {
 	if (!HasScene(_name))

@@ -10,7 +10,11 @@ namespace Truth
 	class TestComponent :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(TestComponent)
+		GENERATE_CLASS_TYPE_INFO(TestComponent);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
 		PROPERTY(testInt);
@@ -30,5 +34,11 @@ namespace Truth
 		void QUP(std::any _p);
 		void QDOWN(std::any _p);
 	};
-}
 
+	template<class Archive>
+	void Truth::TestComponent::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+	}
+
+}

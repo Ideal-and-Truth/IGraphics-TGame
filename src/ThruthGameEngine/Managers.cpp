@@ -25,6 +25,10 @@ void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
 void Truth::Managers::Update() const
 {
 	m_inputManager->Update();
+	if (m_inputManager->GetKeyState(KEY::A) == KEY_STATE::DOWN)
+	{
+		SaveSceneData();
+	}
 	m_timeManager->Update();
 	m_physXManager->Update();
 	m_sceneManager->Update();
@@ -55,6 +59,13 @@ void Truth::Managers::Finalize() const
 	m_timeManager->Finalize();
 	m_eventManager->Finalize();
 	m_physXManager->Finalize();
+}
+
+void Truth::Managers::SaveSceneData() const
+{
+	std::ofstream outputstream(m_savedFilePath);
+	boost::archive::text_oarchive outputArchive(outputstream);
+	outputArchive << m_sceneManager->m_currentScene;
 }
 
 void Truth::Managers::CreateManagers()

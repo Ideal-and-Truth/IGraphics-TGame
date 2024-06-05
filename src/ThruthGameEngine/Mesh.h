@@ -5,7 +5,11 @@ namespace Truth
 	class Mesh :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(Mesh)
+		GENERATE_CLASS_TYPE_INFO(Mesh);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	private:
 		std::shared_ptr<Ideal::IMeshObject> m_mesh;
@@ -28,5 +32,12 @@ namespace Truth
 		METHOD(Awake);
 		void Awake();
 	};
+
+	template<class Archive>
+	void Truth::Mesh::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+	}
+
 }
 

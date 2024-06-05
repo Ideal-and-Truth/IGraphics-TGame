@@ -1,0 +1,30 @@
+22 serialization::archive 19 0 0 0 1 2 1 0
+0 4 test 0 0 4 1 0 1 5 1 0
+1 4 Wall 0 1 0 0 4 1 0 1 9 16 Truth::Transform 1 0
+2 1 0
+3 9 Transform 0 10 16 Truth::RigidBody 1 0
+4
+5 22 class Truth::RigidBody 0 11 18 Truth::BoxCollider 1 0
+6 1 0
+7
+8 22 class Truth::Component 0 13 11 Truth::Mesh 1 0
+9
+10 22 class Truth::Component 0 5
+11 7 Shooter 1 1 2 1 9
+12
+13 9 Transform 0 14 7 Shooter 1 0
+14
+15 22 class Truth::Component 0 5
+16 6 Camera 2 1 2 1 9
+17
+18 9 Transform 0 15 13 Truth::Camera 1 0
+19
+20 22 class Truth::Component 0 5
+21 13 Empty Enitity 3 0 3 1 9
+22
+23 9 Transform 0 11
+24
+25
+26 22 class Truth::Component 0 13
+27
+28 22 class Truth::Component 0

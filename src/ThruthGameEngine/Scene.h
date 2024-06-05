@@ -1,21 +1,27 @@
 #pragma once
 #include "Headers.h"
 #include "EventHandler.h"
-
+#include "Entity.h"
 /// <summary>
 /// 게임이 실제로 돌아가는 씬
 /// </summary>
 namespace Truth
 {
-	class Entity;
 	class Managers;
 
-	class Scene
+	class Scene final
 		: public EventHandler
 	{
-		GENERATE_CLASS_TYPE_INFO(Scene)
+		GENERATE_CLASS_TYPE_INFO(Scene);
+
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
+
 	public:
-			PROPERTY(name);
+		PROPERTY(name);
 		std::string m_name;
 	protected:
 
@@ -40,12 +46,17 @@ namespace Truth
 		void Update();
 		void ApplyTransform();
 
-		virtual void Awake() abstract;
-		virtual void Enter() abstract;
-		virtual void Exit() abstract;
+		void Awake();
+		void Enter();
+		void Exit();
 
 		void ClearEntity();
-
-		void SetManger(std::shared_ptr<Managers> _managers);
 	};
+
+	template<class Archive>
+	void Truth::Scene::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& m_name;
+		_ar& m_entities;
+	}
 }

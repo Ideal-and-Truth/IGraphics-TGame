@@ -26,8 +26,7 @@ namespace Truth
 
 		void Initalize(std::shared_ptr<EventManager> _eventManger);
 
-		template<typename S, typename std::enable_if<std::is_base_of_v<Scene, S>, S>::type* = nullptr>
-		void AddScene(std::string _name, std::shared_ptr<Managers> _managers);
+		void AddScene(std::shared_ptr<Scene> _scene);
 
 		void Update() const;
 
@@ -44,16 +43,6 @@ namespace Truth
 	private:
 		bool HasScene(std::string _name);
 	};
-	template<typename S, typename std::enable_if<std::is_base_of_v<Scene, S>, S>::type*>
-	void SceneManager::AddScene(std::string _name, std::shared_ptr<Managers> _managers)
-	{
-		if (HasScene(_name))
-		{
-			DEBUG_PRINT("There is a scene with the same name : %s", _name);
-			return;
-		}
-		m_sceneMap[_name] = std::make_shared<S>(_managers);
-		m_sceneMap[_name]->m_name = _name;
-	}
+
 }
 
