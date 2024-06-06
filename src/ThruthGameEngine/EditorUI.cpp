@@ -255,7 +255,7 @@ void EditorUI::TranslateComponent(std::shared_ptr<Truth::Component> EntityCompon
 	{
 		if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-
+			ScriptUI(EntityComponent);
 		}
 	}
 
@@ -279,14 +279,14 @@ void EditorUI::TransformUI(std::shared_ptr<Truth::Component> TransformComponent)
 
 		ImGui::DragFloat3("Position", position, 0.01f);
 
-// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
-// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
-// 		ImGui::SameLine(0, 10);
-// 		ImGui::SetNextItemWidth(125);
-// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
-// 		ImGui::SameLine(0, 10);
-// 		ImGui::SetNextItemWidth(125);
-// 		ImGui::DragFloat("Position", &position[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
+		// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
+		// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
+		// 		ImGui::SameLine(0, 10);
+		// 		ImGui::SetNextItemWidth(125);
+		// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
+		// 		ImGui::SameLine(0, 10);
+		// 		ImGui::SetNextItemWidth(125);
+		// 		ImGui::DragFloat("Position", &position[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
 		posVec3.x = position[0];
 		posVec3.y = position[1];
 		posVec3.z = position[2];
@@ -471,17 +471,17 @@ void EditorUI::BoxColliderUI(std::shared_ptr<Truth::Component> ColliderComponent
 		size[1] = vecSize.y;
 		size[2] = vecSize.z;
 
-// 		float x = ImGui::GetFontSize();
-// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
-// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
-// 		ImGui::SameLine(0, 10);
-// 		ImGui::SetNextItemWidth(125);
-// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
-// 		ImGui::SameLine(0, 10);
-// 		ImGui::SetNextItemWidth(125);
-// 		ImGui::DragFloat("Size", &size[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
-// 
-// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+		// 		float x = ImGui::GetFontSize();
+		// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
+		// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
+		// 		ImGui::SameLine(0, 10);
+		// 		ImGui::SetNextItemWidth(125);
+		// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
+		// 		ImGui::SameLine(0, 10);
+		// 		ImGui::SetNextItemWidth(125);
+		// 		ImGui::DragFloat("Size", &size[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
+		// 
+		// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
 		ImGui::DragFloat3("Size", size, 0.01f);
 
@@ -538,6 +538,22 @@ void EditorUI::CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderCompo
 		if (met2)
 		{
 			met2->Invoke<void>(ColliderComponent.get(), height);
+		}
+	}
+}
+
+void EditorUI::ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent)
+{
+	// 컴포넌트 이름
+	auto componentName = UserMadeComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(UserMadeComponent.get()).Get();
+	std::string label(componentName + " (Script)");
+
+	if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		auto a = UserMadeComponent->GetTypeInfo().GetProperties();
+		for (auto& e : UserMadeComponent->GetTypeInfo().GetProperties())
+		{
+			auto name = e->GetTypeInfo().GetName();
 		}
 	}
 }
