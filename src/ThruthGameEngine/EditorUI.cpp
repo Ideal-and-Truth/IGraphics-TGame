@@ -81,22 +81,61 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 
 	/// 여기부터 UI 만들기
 
-	auto a = m_manager->Scene()->m_currentScene.lock()->GetTypeInfo().GetProperty("entities");
-	auto b = a->Get<std::vector<std::shared_ptr<Truth::Entity>>>(m_manager->Scene()->m_currentScene.lock().get());
-	auto c = b.Get();
+	auto currentSceneEntities = m_manager->Scene()->m_currentScene.lock()->GetTypeInfo().GetProperty("entities");
+	auto getEntities = currentSceneEntities->Get<std::vector<std::shared_ptr<Truth::Entity>>>(m_manager->Scene()->m_currentScene.lock().get());
+	auto entities = getEntities.Get();
 
+	/// TEST : 비어있는 엔티티 씬에 추가 할 수 있는지 해봄
+	/// 나중에 방법 알아내기
+	if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+	{
+		//m_manager->Scene()->m_currentScene.lock()->CreateEntity(std::make_shared<Truth::Entity>());
+	}
 
 	if (m_selectedEntity >= 0)
 	{
-		for (auto& e : c[m_selectedEntity]->m_components)
+		// Set Entity Name
 		{
-			auto componentName = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
+			std::string sEntityName = entities[m_selectedEntity]->GetTypeInfo().GetProperty("name")->Get<std::string>(entities[m_selectedEntity].get());
+			char* cEntityName = (char*)sEntityName.c_str();
+			bool isShown = true;
+			ImGui::Checkbox("##1", &isShown);
+			ImGui::SameLine();
+			ImGui::InputText("##2", cEntityName, 128);
+			if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+			{
+				sEntityName = std::string(cEntityName, cEntityName + strlen(cEntityName));
+				entities[m_selectedEntity]->GetTypeInfo().GetProperty("name")->Set(entities[m_selectedEntity].get(), sEntityName);
+			}
+		}
 
-			//TranslateProperty(e->GetTypeInfo());
+		// Show Components
+		for (auto& e : entities[m_selectedEntity]->m_components)
+		{
+			// Checking Component
 			TranslateComponent(e);
+		}
 
-			//ImGui::Text(componentName.c_str());
-
+		// Add Component
+		{
+			static bool isOpenComponentMenu = false;
+			int item_current = -1;
+			if (ImGui::Button("Add Component"))
+			{
+				isOpenComponentMenu = !isOpenComponentMenu;
+			}
+			if (isOpenComponentMenu)
+			{
+				/// TODO : 모든 컴포넌트의 이름을 받아올 수 있게 하고
+				/// 같은게 있는 지 없는 지 확인하고 
+				/// 있다면 중복 가능한지 확인해서
+				/// 중복 가능하면 추가
+				/// 불가능하면 안 추가
+				/// 없다면 그냥 추가
+				/// New Script 기능은 추가할 수 있는걸까
+				const char* items[] = { "Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon" };
+				ImGui::ListBox("Component", &item_current, items, IM_ARRAYSIZE(items), 4);
+			}
 		}
 	}
 
@@ -166,49 +205,67 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 
 	/// 여기부터 UI 만들기
 
-	auto currentScene = m_manager->Scene()->m_currentScene.lock();
-
-	auto currentSceneName = currentScene->GetTypeInfo().GetProperty("name")->Get<std::string>(currentScene.get()).Get();
-
-	auto currentSceneEntities = currentScene->GetTypeInfo().GetProperty("entities")->Get<std::vector<std::shared_ptr<Truth::Entity>>>(currentScene.get()).Get();
-
-	uint32 n = 0;
-
-	if (ImGui::CollapsingHeader(currentSceneName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+	// Hierarchy UI
 	{
-		uint32 overlapedCount = 2;
-		std::string entityName1;
-		std::string entityName2;
+		auto currentScene = m_manager->Scene()->m_currentScene.lock();
+		auto currentSceneName = currentScene->GetTypeInfo().GetProperty("name")->Get<std::string>(currentScene.get()).Get();
+		auto currentSceneEntities = currentScene->GetTypeInfo().GetProperty("entities")->Get<std::vector<std::shared_ptr<Truth::Entity>>>(currentScene.get()).Get();
 
-		// 중복 엔티티 이름 아이디 추가
-		for (auto& e : currentSceneEntities)
+		uint32 selectCount = 0;
+
+		// Current Scene Name
+		if (ImGui::CollapsingHeader(currentSceneName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			for (auto& f : currentSceneEntities)
-			{
-				if (e != f)
-				{
-					entityName1 = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
-					entityName2 = f->GetTypeInfo().GetProperty("name")->Get<std::string>(f.get()).Get();
-					if (entityName1 == entityName2)
-					{
-						entityName2.insert(entityName2.length(), "##");
-						entityName2.insert(entityName2.length(), StringConverter::ToString(overlapedCount));
-						overlapedCount++;
+			uint32 overlapedCount = 2;
+			std::string entityName1;
+			std::string entityName2;
 
-						f->GetTypeInfo().GetProperty("name")->Set(f.get(), entityName2);
+			// 중복 엔티티 이름에 아이디 추가
+			for (auto& e : currentSceneEntities)
+			{
+				for (auto& f : currentSceneEntities)
+				{
+					if (e != f)
+					{
+						entityName1 = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
+						entityName2 = f->GetTypeInfo().GetProperty("name")->Get<std::string>(f.get()).Get();
+						if (entityName1 == entityName2)
+						{
+							entityName2.insert(entityName2.length(), "##");
+							entityName2.insert(entityName2.length(), StringConverter::ToString(overlapedCount));
+							overlapedCount++;
+
+							f->GetTypeInfo().GetProperty("name")->Set(f.get(), entityName2);
+						}
 					}
 				}
 			}
-		}
-		for (auto& e : currentSceneEntities)
-		{
-			auto entityName = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
-			if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == n))
+
+			for (auto& e : currentSceneEntities)
 			{
-				m_selectedEntity = n;
+				auto entityName = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
+				
+				// Select Entity
+				if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == selectCount))
+				{
+
+					m_selectedEntity = selectCount;
+				}
+
+				// Entity's Popup Menu
+				if (ImGui::BeginPopupContextItem())
+				{
+					if (ImGui::Selectable("Delete"))
+					{
+						/// TODO : 엔티티 삭제방법을 모르겠음
+						m_manager->Scene()->m_currentScene.lock()->DeleteEntity(e);
+					}
+
+					ImGui::EndPopup();
+				}
+				selectCount++;
 			}
 
-			n++;
 		}
 	}
 
@@ -253,10 +310,7 @@ void EditorUI::TranslateComponent(std::shared_ptr<Truth::Component> EntityCompon
 	}
 	else
 	{
-		if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ScriptUI(EntityComponent);
-		}
+		ScriptUI(EntityComponent);
 	}
 
 }
@@ -279,14 +333,6 @@ void EditorUI::TransformUI(std::shared_ptr<Truth::Component> TransformComponent)
 
 		ImGui::DragFloat3("Position", position, 0.01f);
 
-		// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
-		// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
-		// 		ImGui::SameLine(0, 10);
-		// 		ImGui::SetNextItemWidth(125);
-		// 		ImGui::DragFloat(MakeBlankName().c_str(), &position[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
-		// 		ImGui::SameLine(0, 10);
-		// 		ImGui::SetNextItemWidth(125);
-		// 		ImGui::DragFloat("Position", &position[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
 		posVec3.x = position[0];
 		posVec3.y = position[1];
 		posVec3.z = position[2];
@@ -303,6 +349,16 @@ void EditorUI::RigidbodyUI(std::shared_ptr<Truth::Component> RigidbodyComponent)
 
 	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (ImGui::BeginPopupContextItem())
+		{
+			// 팝업 메뉴에 들어갈 코드
+			if (ImGui::Selectable("Remove Component"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();   // 이거까지 한세트
+		}
 		// Mass
 		float mass = RigidbodyComponent->GetTypeInfo().GetProperty("mass")->Get<float>(RigidbodyComponent.get()).Get();
 		ImGui::DragFloat("Mass", &mass, 0.01f, 1e-07f, 1e+09f);
@@ -448,7 +504,7 @@ void EditorUI::MeshFilterUI(std::shared_ptr<Truth::Component> MeshFilterComponen
 void EditorUI::MeshRendererUI(std::shared_ptr<Truth::Component> MeshFilterComponent)
 {
 	bool isRendering = MeshFilterComponent->GetTypeInfo().GetProperty("isRendering")->Get<bool>(MeshFilterComponent.get()).Get();
-	ImGui::Checkbox(MakeBlankName().c_str(), &isRendering);
+	ImGui::Checkbox("##3", &isRendering);
 	MeshFilterComponent->GetTypeInfo().GetProperty("isRendering")->Set(MeshFilterComponent.get(), isRendering);
 	ImGui::SameLine();
 	if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
@@ -471,17 +527,6 @@ void EditorUI::BoxColliderUI(std::shared_ptr<Truth::Component> ColliderComponent
 		size[1] = vecSize.y;
 		size[2] = vecSize.z;
 
-		// 		float x = ImGui::GetFontSize();
-		// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -30);
-		// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[0], 0.01f, -999999.f, -999999.f, "X  %0.3f");
-		// 		ImGui::SameLine(0, 10);
-		// 		ImGui::SetNextItemWidth(125);
-		// 		ImGui::DragFloat(MakeBlankName().c_str(), &size[1], 0.01f, -999999.f, -999999.f, "Y  %0.3f");
-		// 		ImGui::SameLine(0, 10);
-		// 		ImGui::SetNextItemWidth(125);
-		// 		ImGui::DragFloat("Size", &size[2], 0.01f, -999999.f, -999999.f, "Z  %0.3f");
-		// 
-		// 		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
 		ImGui::DragFloat3("Size", size, 0.01f);
 
@@ -550,18 +595,31 @@ void EditorUI::ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent)
 
 	if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		auto a = UserMadeComponent->GetTypeInfo().GetProperties();
 		for (auto& e : UserMadeComponent->GetTypeInfo().GetProperties())
 		{
-			auto name = e->GetTypeInfo().GetName();
+			auto valueName = e->GetTypeInfo().GetFullName();
+			std::string propertyName = e->GetName();
+
+			// 자료형마다 해줘야됨...
+			if (valueName == "bool" && propertyName != "canMultiple")
+			{
+				auto propertyValue = e->Get<bool>(UserMadeComponent.get()).Get();
+				ImGui::Checkbox(propertyName.c_str(), &propertyValue);
+				e->Set(UserMadeComponent.get(), propertyValue);
+			}
+			else if (valueName == "int")
+			{
+				auto propertyValue = e->Get<int>(UserMadeComponent.get()).Get();
+				ImGui::DragInt(propertyName.c_str(), &propertyValue);
+				e->Set(UserMadeComponent.get(), propertyValue);
+			}
+			else if (valueName == "float")
+			{
+				auto propertyValue = e->Get<float>(UserMadeComponent.get()).Get();
+				ImGui::DragFloat(propertyName.c_str(), &propertyValue);
+				e->Set(UserMadeComponent.get(), propertyValue);
+			}
 		}
 	}
 }
 
-std::string EditorUI::MakeBlankName()
-{
-	m_notUsedID++;
-	std::string blankName = "##";
-	blankName.insert(blankName.length(), StringConverter::ToString(m_notUsedID));
-	return blankName;
-}

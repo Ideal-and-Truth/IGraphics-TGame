@@ -33,7 +33,5 @@ public:
 	void CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
 	void ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent);
 
-private:
-	std::string MakeBlankName();
 };
 
