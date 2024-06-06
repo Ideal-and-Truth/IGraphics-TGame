@@ -565,60 +565,6 @@ void Ideal::D3D12RayTracingRenderer::WaitForFenceValue(uint64 ExpectedFenceValue
 	}
 }
 
-void Ideal::D3D12RayTracingRenderer::InitializeBLAS()
-{
-	std::vector<TestVertex> vertices;
-	std::vector<uint32> indices;
-
-	{
-		indices = { 0,1,2 };
-		float depthValue = 1.0;
-		float offset = 0.7f;
-		vertices =
-		{
-			{Vector3(0, -offset, depthValue), Vector4(1,0,0,1)},
-			{Vector3(-offset, offset, depthValue), Vector4(0,1,0,1)},
-			{Vector3(offset, offset, depthValue), Vector4(0,0,1,1)}
-		};
-	}
-
-	std::shared_ptr<Ideal::D3D12VertexBuffer> vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
-	std::shared_ptr<Ideal::D3D12IndexBuffer> indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
-
-	m_resourceManager->CreateVertexBuffer(vertexBuffer, vertices);
-	m_resourceManager->CreateIndexBuffer(indexBuffer, indices);
-
-	D3D12_RAYTRACING_GEOMETRY_DESC geometry;
-	geometry.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-	geometry.Triangles.VertexBuffer.StartAddress = vertexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometry.Triangles.VertexBuffer.StrideInBytes = vertexBuffer->GetElementSize();
-	geometry.Triangles.VertexCount = static_cast<uint32>(vertices.size());
-	geometry.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-	geometry.Triangles.IndexBuffer = indexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometry.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
-	geometry.Triangles.IndexCount = static_cast<uint32>(indexBuffer->GetElementCount());
-	geometry.Triangles.Transform3x4 = 0;
-	geometry.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;	// 지오메트리가 불투명하다면 opaque로 지정 아니면 _Flag_none으로 지정
-
-	// blas input desc
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS ASInputs = {};
-	ASInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
-	ASInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
-
-	ASInputs.pGeometryDescs = &geometry;
-
-	ASInputs.NumDescs = 1;
-
-	// 예상되는 BLAS 사용, 메모리와 성능 최적화 허용을 나타냄, _FLAG_MINIMIZE_MEMORY, COMPACATION플래그는 필요한 메모리를 줄이는데 도움이 된다.
-	ASInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
-
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO ASBuildInfo = {};
-	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&ASInputs, &ASBuildInfo);
-
-	UploadBuffer(ASBuildInfo, blasScratch, blasResult);
-	CreateAS(ASInputs, blasScratch, blasResult);
-}
-
 void Ideal::D3D12RayTracingRenderer::UploadBuffer(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result)
 {
 	// UAV 업로드
@@ -909,11 +855,14 @@ void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 		};
 	}
 
-	m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
-	m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
+	AllocateUploadBuffer(m_device.Get(), vertices.data(), sizeof(GeometryVertex) * vertices.size(), &m_vb2);
+	AllocateUploadBuffer(m_device.Get(), indices.data(), sizeof(uint32) * indices.size(), &m_ib2);
 
-	m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
-	m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
+	//m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+	//m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
+
+	//m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
+	//m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
 
 }
 
@@ -923,11 +872,19 @@ void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 	ComPtr<ID3D12GraphicsCommandList4> commandList = m_commandLists[m_currentContextIndex];
 	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
 
-	// Reset
-	//commandList->Reset(commandAllocator.Get(), nullptr);
-	//ResetCommandList();
-
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
+	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
+	geometryDesc.Triangles.IndexBuffer = m_ib2->GetGPUVirtualAddress();
+	geometryDesc.Triangles.IndexCount = static_cast<uint32>(m_ib2->GetDesc().Width) / sizeof(uint32);
+	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+	geometryDesc.Triangles.Transform3x4 = 0;
+	geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	geometryDesc.Triangles.VertexCount = static_cast<uint32>(m_vb2->GetDesc().Width) / sizeof(GeometryVertex);
+	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vb2->GetGPUVirtualAddress();
+	geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(GeometryVertex);
+
+
+	/*D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
 	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
@@ -936,7 +893,7 @@ void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 	geometryDesc.Triangles.VertexFormat = GeometryVertex::VertexFormat;
 	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
 	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
+	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();*/
 
 	// 퍼포먼스 팁: 지오메트리를 불투명으로 표시하면 중요한 광선 처리 최적화를 활성화할 수 있으므로 해당될 때마다 불투명으로 표시하세요.
 	// 참고: 광선이 불투명한 지오메트리를 만나면 히트 셰이더는 존재 여부와 상관없이 실행되지 않습니다.
@@ -1201,6 +1158,7 @@ void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 void Ideal::D3D12RayTracingRenderer::UpdateForSizeChange(uint32 Width, uint32 Height)
 {
 	float border = 0.1f;
+	//border = 0.0f;
 	if (m_width <= m_height)
 	{
 		m_rayGenCB.stencil =

@@ -219,15 +219,11 @@ namespace Ideal
 		ComPtr<ID3D12StateObject> rtpso;
 		ComPtr<ID3D12StateObjectProperties> rtpsoInfo;
 
-
-
 		// ´Ù½Ã //
 		const wchar_t* m_raygenShaderName = L"MyRaygenShader";
 		const wchar_t* m_closestHitShaderName = L"MyClosestHitShader";
 		const wchar_t* m_missShaderName = L"MyMissShader";
 		const wchar_t* m_hitGroupName = L"MyHitGroup";
-
-		
 
 		void CreateDeviceDependentResources();
 		void CreateRayTracingInterfaces();
@@ -258,6 +254,10 @@ namespace Ideal
 		//geometry
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> m_indexBuffer;
+		ComPtr<ID3D12Resource> m_vb2;
+		ComPtr<ID3D12Resource> m_ib2;
+
+
 		// AS
 		ComPtr<ID3D12Resource> m_accelerationStructure;
 		ComPtr<ID3D12Resource> m_bottomLevelAccelerationStructure;
