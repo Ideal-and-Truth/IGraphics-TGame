@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\;$(SolutionDir)IdealGraphics\Editor\imgui\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\;$(SolutionDir)IdealGraphics\Editor\imgui\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -147,7 +147,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\;$(SolutionDir)IdealGraphics\Editor\imgui\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\;$(SolutionDir)IdealGraphics\Editor\imgui\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -164,7 +164,7 @@
     </Link>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Common;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\;$(SolutionDir)IdealGraphics\Editor\imgui\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\;$(SolutionDir)IdealGraphics\Editor\imgui\</AdditionalIncludeDirectories>
       <ConformanceMode>false</ConformanceMode>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -176,6 +176,7 @@
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
     <ClInclude Include="GraphicsEngine\D3D12\TestShader.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\Raytracing\D3D12RaytracingResources.h" />
     <ClInclude Include="GraphicsEngine\public\imconfig.h" />
     <ClInclude Include="GraphicsEngine\public\imgui.h" />
     <ClInclude Include="Editor\imgui\imgui_impl_dx12.h" />
@@ -241,7 +242,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="GraphicsEngine\VertexInfo.h" />
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
-    <ClInclude Include="ThirdParty\Common\d3dx12.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.cpp">

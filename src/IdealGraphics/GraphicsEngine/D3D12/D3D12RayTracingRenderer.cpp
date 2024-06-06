@@ -4,8 +4,9 @@
 #include "Misc/Utils/PIX.h"
 #include "Misc/Assimp/AssimpConverter.h"
 
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/Raytracing/D3D12RaytracingResources.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
@@ -30,8 +31,8 @@
 #include "GraphicsEngine/D3D12/TestShader.h"
 
 #include <d3dx12.h>
+//#include "d3dx12.h"
 #include <dxcapi.h>
-
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
 inline void AllocateUploadBuffer(ID3D12Device* pDevice, void* pData, UINT64 datasize, ID3D12Resource** ppResource, const wchar_t* resourceName = nullptr)
@@ -80,7 +81,7 @@ Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width,
 	m_fenceEvent(NULL),
 	m_fenceValue(0)
 {
-
+	m_aspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
 }
 
 Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
@@ -90,6 +91,8 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 	}
+	m_raytacingOutputResourceUAVGpuDescriptorHandle.Free();
+
 	m_resourceManager = nullptr;
 }
 
@@ -184,8 +187,10 @@ finishAdapter:
 	m_resourceManager->Init(m_device);
 
 	CreateShaderCompiler();
-
+	CreateDescriptorHeap();
 	// --- Test --- //
+	m_rayGenCB.viewport = { -1.f,-1.f,1.f,1.f };
+	UpdateForSizeChange(m_width, m_height);
 	CreateDeviceDependentResources();
 }
 
@@ -202,6 +207,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_mainCamera->UpdateMatrix2();
 
 	BeginRender();
+	DoRaytracing();
+	CopyRaytracingOutputToBackBuffer();
 	EndRender();
 	Present();
 	return;
@@ -445,7 +452,7 @@ void Ideal::D3D12RayTracingRenderer::CreateCommandlists()
 				IID_PPV_ARGS(m_commandLists[i].GetAddressOf())),
 			L"Failed to create command list"
 		);
-		m_commandLists[i]->Close();
+		Check(m_commandLists[i]->Close(), L"Failed to close commandlist");
 	}
 
 }
@@ -676,11 +683,13 @@ void Ideal::D3D12RayTracingRenderer::CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATIO
 
 void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 {
-	//CreateRayTracingInterfaces();
 	CreateRootSignatures();
+	//CreateRayTracingInterfaces();
 	CreateRayTracingPipelineStateObject();
 	BuildGeometry();
 	BuildAccelerationStructures();
+	BuildShaderTables();
+	CreateRayTracingOutputResources();
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateShaderCompiler()
@@ -795,7 +804,7 @@ void Ideal::D3D12RayTracingRenderer::SerializeAndCreateRayTracingRootSignature(D
 
 	Check(
 		D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
-		error? static_cast<wchar_t*>(error->GetBufferPointer()) : nullptr
+		error ? static_cast<wchar_t*>(error->GetBufferPointer()) : nullptr
 	);
 	Check(
 		m_device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&(*rootsig))),
@@ -910,11 +919,13 @@ void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 
 void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 {
+
 	ComPtr<ID3D12GraphicsCommandList4> commandList = m_commandLists[m_currentContextIndex];
 	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
 
 	// Reset
-	commandList->Reset(commandAllocator.Get(), nullptr);
+	//commandList->Reset(commandAllocator.Get(), nullptr);
+	//ResetCommandList();
 
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
@@ -1009,11 +1020,77 @@ void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 
 	Fence();
 	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+
+	/*Ideal::D3D12UploadBuffer tempUploadBufer;
+	tempUploadBufer.Create(m_device.Get(), 64);*/
+}
+
+void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
+{
+	void* rayGenShaderIdentifier;
+	void* missShaderIdentifier;
+	void* hitGroupShaderIdentifier;
+
+	uint32 shaderIdentifierSize;
+	auto GetShaderIdentifiers = [&](auto* stateObjectProperties)
+	{
+		rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
+		missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
+		hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
+	};
+
+	// Get shader identifiers
+	{
+		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
+		Check(m_dxrStateObject.As(&stateObjectProperties));
+		GetShaderIdentifiers(stateObjectProperties.Get());
+		shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+	}
+
+	//rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
+	//missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
+	//hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
+
+	// Ray gen shader table
+	{
+		struct RootArguments
+		{
+			RayGenConstantBuffer cb;
+		} rootArguments;
+		rootArguments.cb = m_rayGenCB;
+
+		uint32 numShaderRecords = 1;
+		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(rootArguments);
+
+		//Ideal::D3D12UploadBuffer tempUploadBufer;
+		//tempUploadBufer.Create(m_device.Get(), 64);
+		Ideal::D3D12ShaderTable rayGenShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"RayGenShaderTable");
+		rayGenShaderTable.push_back(Ideal::D3D12ShaderRecord(rayGenShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
+		m_rayGenShaderTable = rayGenShaderTable.GetResource();
+	}
+
+	// Miss shader table
+	{
+		uint32 numShaderRecords = 1;
+		uint32 shaderRecordSize = shaderIdentifierSize;
+		Ideal::D3D12ShaderTable missShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"MissShaderTable");
+		missShaderTable.push_back(Ideal::D3D12ShaderRecord(missShaderIdentifier, shaderIdentifierSize));
+		m_missShaderTable = missShaderTable.GetResource();
+	}
+
+	// Hit group shader table
+	{
+		uint32 numShaderRecords = 1;
+		uint32 shaderRecordSize = shaderIdentifierSize;
+		Ideal::D3D12ShaderTable hitGroupShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
+		hitGroupShaderTable.push_back(Ideal::D3D12ShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize));
+		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateRayTracingOutputResources()
 {
-	/*DXGI_FORMAT format = m_renderTargets[0]->GetResource()->GetDesc().Format;
+	DXGI_FORMAT format = m_renderTargets[0]->GetResource()->GetDesc().Format;
 
 	CD3DX12_RESOURCE_DESC uavDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		format,
@@ -1031,9 +1108,117 @@ void Ideal::D3D12RayTracingRenderer::CreateRayTracingOutputResources()
 		nullptr,
 		IID_PPV_ARGS(m_raytracingOutput.GetAddressOf())),
 		L"Failed to Create RayTracing Output!"
-		);
+	);
 	m_raytracingOutput->SetName(L"RayTracing_OutPut");
 
+	//m_descriptorHeaps[m_currentContextIndex]->GetC
+
+	m_raytacingOutputResourceUAVGpuDescriptorHandle = m_uavDescriptorHeap->Allocate();
 	D3D12_CPU_DESCRIPTOR_HANDLE uavDescriptorHandle;
-	m_raytracingOutputResourceUAVDescriptorHeapIndex = CD3DX12_GPU_DESCRIPTOR_HANDLE()*/
+	//m_raytracingOutputResourceUAVDescriptorHeapIndex = CD3DX12_GPU_DESCRIPTOR_HANDLE()
+	D3D12_UNORDERED_ACCESS_VIEW_DESC UAVDesc = {};
+	UAVDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	m_device->CreateUnorderedAccessView(m_raytracingOutput.Get(), nullptr, &UAVDesc, m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle());
+	//m_raytacingOutputResourceUAVGpuDescriptorHandle = m_raytacingOutputResourceUAVGpuDescriptorHandle.GetGpuHandle();
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateDescriptorHeap()
+{
+	m_uavDescriptorHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_uavDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
+}
+
+void Ideal::D3D12RayTracingRenderer::DoRaytracing()
+{
+	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
+
+	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
+	{
+		dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
+		dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
+		dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
+
+		dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
+		dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
+		dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
+
+		dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
+		dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
+
+		dispatchDesc->Width = m_width;
+		dispatchDesc->Height = m_height;
+		dispatchDesc->Depth = 1;
+		commandlist->SetPipelineState1(stateObject);
+		commandlist->DispatchRays(dispatchDesc);
+	};
+
+	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
+
+	// Bind the hepas, 가속구조, dispatch rays
+	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
+
+	commandlist->SetDescriptorHeaps(1, m_uavDescriptorHeap->GetDescriptorHeap().GetAddressOf());
+	commandlist->SetComputeRootDescriptorTable(GlobalRootSignatureParams::OutputViewSlot, m_raytacingOutputResourceUAVGpuDescriptorHandle.GetGpuHandle());
+	commandlist->SetComputeRootShaderResourceView(GlobalRootSignatureParams::AccelerationStructureSlot, m_topLevelAccelerationStructure->GetGPUVirtualAddress());
+	DispatchRays(commandlist.Get(), m_dxrStateObject.Get(), &dispatchDesc);
+}
+
+void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
+{
+	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
+	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
+
+	CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
+	preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+		renderTarget->GetResource(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_COPY_DEST
+	);
+	preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_raytracingOutput.Get(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_COPY_SOURCE
+	);
+	commandlist->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
+	commandlist->CopyResource(renderTarget->GetResource(), m_raytracingOutput.Get());
+
+	CD3DX12_RESOURCE_BARRIER postCopyBarriers[2];
+	postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+		renderTarget->GetResource(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		//D3D12_RESOURCE_STATE_PRESENT
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_raytracingOutput.Get(),
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+
+	commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
+}
+
+void Ideal::D3D12RayTracingRenderer::UpdateForSizeChange(uint32 Width, uint32 Height)
+{
+	float border = 0.1f;
+	if (m_width <= m_height)
+	{
+		m_rayGenCB.stencil =
+		{
+			-1 + border,
+			-1 + border * m_aspectRatio,
+			1.0f - border,
+			1 - border * m_aspectRatio
+		};
+	}
+	else
+	{
+		m_rayGenCB.stencil =
+		{
+			-1 + border / m_aspectRatio,
+			-1 + border,
+			1 - border / m_aspectRatio,
+			1.f - border
+		};
+	}
 }

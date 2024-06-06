@@ -36,6 +36,21 @@ namespace LocalRootSignatureParams {
 		Count
 	};
 }
+
+struct cbViewport
+{
+	float left;
+	float top;
+	float right;
+	float bottom;
+};
+
+struct RayGenConstantBuffer
+{
+	cbViewport viewport;
+	cbViewport stencil;
+};
+
 namespace Ideal
 {
 	class ResourceManager;
@@ -188,7 +203,6 @@ namespace Ideal
 		void InitializeTLAS();
 		void UploadBuffer(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
 		void CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
-		void InitShader();
 
 		std::shared_ptr<Ideal::IdealMesh<TestVertex>> mesh;
 		ComPtr<ID3D12Resource> blasScratch;
@@ -213,11 +227,7 @@ namespace Ideal
 		const wchar_t* m_missShaderName = L"MyMissShader";
 		const wchar_t* m_hitGroupName = L"MyHitGroup";
 
-		struct RayGenConstantBuffer
-		{
-			Viewport viewport;
-			Viewport stencil;
-		};
+		
 
 		void CreateDeviceDependentResources();
 		void CreateRayTracingInterfaces();
@@ -235,12 +245,15 @@ namespace Ideal
 		void BuildGeometry();
 		void BuildAccelerationStructures();
 		
+		void BuildShaderTables();
 		
 		// 레이트레이싱을 위한 2d output texture를 만든다.
 		void CreateRayTracingOutputResources();
 		ComPtr<ID3D12Resource> m_raytracingOutput;
 		uint32 m_raytracingOutputResourceUAVDescriptorHeapIndex;
-
+		void CreateDescriptorHeap();
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_uavDescriptorHeap;
+		Ideal::D3D12DescriptorHandle m_raytacingOutputResourceUAVGpuDescriptorHandle;
 
 		//geometry
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
@@ -249,5 +262,18 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_accelerationStructure;
 		ComPtr<ID3D12Resource> m_bottomLevelAccelerationStructure;
 		ComPtr<ID3D12Resource> m_topLevelAccelerationStructure;
+
+		RayGenConstantBuffer m_cbRayGen;
+
+		ComPtr<ID3D12Resource> m_missShaderTable;
+		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
+		ComPtr<ID3D12Resource> m_rayGenShaderTable;
+
+
+		// Render
+		void DoRaytracing();
+		void CopyRaytracingOutputToBackBuffer();
+
+		void UpdateForSizeChange(uint32 Width, uint32 Height);
 	};
 }

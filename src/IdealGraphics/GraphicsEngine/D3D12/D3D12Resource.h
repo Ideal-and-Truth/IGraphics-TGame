@@ -30,6 +30,7 @@ namespace Ideal
 		// 업로드 버퍼를 만든다. 
 		void Create(ID3D12Device* Device, uint32 BufferSize);
 		void* Map();
+		void* MapCpuWriteOnly();
 		void UnMap();
 
 	private:

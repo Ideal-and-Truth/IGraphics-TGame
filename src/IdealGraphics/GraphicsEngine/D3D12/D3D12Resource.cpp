@@ -39,7 +39,10 @@ D3D12UploadBuffer::D3D12UploadBuffer()
 
 D3D12UploadBuffer::~D3D12UploadBuffer()
 {
-
+	if (m_resource.Get())
+	{
+		m_resource->Unmap(0, nullptr);
+	}
 }
 
 void Ideal::D3D12UploadBuffer::Create(ID3D12Device* Device, uint32 BufferSize)
@@ -58,7 +61,15 @@ void Ideal::D3D12UploadBuffer::Create(ID3D12Device* Device, uint32 BufferSize)
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(m_resource.GetAddressOf())
-	));
+	), L"Failed to create upload buffer");
+}
+
+void* D3D12UploadBuffer::MapCpuWriteOnly()
+{
+	void* mappedData;
+	CD3DX12_RANGE readRange(0, 0);
+	Check(m_resource->Map(0, &readRange, &mappedData), L"Failed to mapped data");
+	return mappedData;
 }
 
 void* D3D12UploadBuffer::Map()
