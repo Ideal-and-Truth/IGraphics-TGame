@@ -232,10 +232,10 @@ void Ideal::D3D12RayTracingRenderer::Init()
 		{
 			debugController->EnableDebugLayer();
 
-			//if (SUCCEEDED(debugController->QueryInterface(IID_PPV_ARGS(&debugController1))))
-			//{
-			//	debugController1->SetEnableGPUBasedValidation(true);
-			//}
+			/*if (SUCCEEDED(debugController->QueryInterface(IID_PPV_ARGS(&debugController1))))
+			{
+				debugController1->SetEnableGPUBasedValidation(true);
+			}*/
 			dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 		}
 	}
@@ -730,42 +730,22 @@ void Ideal::D3D12RayTracingRenderer::CreateRootSignatures()
 	// Global Root Signature
 	// 이 루트 시그니쳐는 DispatchRays()가 호출되는 동안 모든 레이트레이싱에서의 접근이 허용된다.
 	{
-		CD3DX12_DESCRIPTOR_RANGE UAVDescriptor;
-		UAVDescriptor.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
-		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];
-		rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsDescriptorTable(1, &UAVDescriptor);
+		//CD3DX12_DESCRIPTOR_RANGE UAVDescriptor;
+		CD3DX12_DESCRIPTOR_RANGE rangeRenderTarget[1];
+		rangeRenderTarget[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : RenderTarget
+
+		// root parameter이지만 지금 생각해보니 slot이라 생각해도 될 것 같다.
+		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];	
+
+		// 첫번째 슬롯은 renderTarget
+		rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsDescriptorTable(_countof(rangeRenderTarget), rangeRenderTarget, D3D12_SHADER_VISIBILITY_ALL);	// OutViewSlot(RenderTarget)을
+		// 두번째 슬롯은 SRV로 넘겨주네? AS(가속구조)를 넘겨준다.
 		rootParameters[GlobalRootSignatureParams::AccelerationStructureSlot].InitAsShaderResourceView(0);
 		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
-		//CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE);
 		SerializeAndCreateRayTracingRootSignature(globalRootSignatureDesc, &m_raytracingGlobalRootSignature);
 	}
 	// Local Root Signature
 	// 이 루트 시그니쳐는 쉐이더 테이블에서 나온 유니크 인자들을 쉐이더가 가질 수 있게 한다.
-	{
-		CD3DX12_ROOT_PARAMETER rootParameters[LocalRootSignatureParams::Count];
-		rootParameters[LocalRootSignatureParams::ViewportConstantSlot].InitAsConstants(SizeOfInUint32(m_rayGenCB), 0, 0);
-		CD3DX12_ROOT_SIGNATURE_DESC localRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
-		localRootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE;
-		SerializeAndCreateRayTracingRootSignature(localRootSignatureDesc, &m_raytracingLocalRootSignature);
-	}
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateRootSignatures2()
-{
-	// Global Root Signature
-	// This is a root signature that is shared across all raytracing shaders invoked during a DispatchRays() call.
-	{
-		CD3DX12_DESCRIPTOR_RANGE UAVDescriptor;
-		UAVDescriptor.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
-		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];
-		rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsDescriptorTable(1, &UAVDescriptor);
-		rootParameters[GlobalRootSignatureParams::AccelerationStructureSlot].InitAsShaderResourceView(0);
-		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
-		SerializeAndCreateRayTracingRootSignature(globalRootSignatureDesc, &m_raytracingGlobalRootSignature);
-	}
-
-	// Local Root Signature
-	// This is a root signature that enables a shader to have unique arguments that come from shader tables.
 	{
 		CD3DX12_ROOT_PARAMETER rootParameters[LocalRootSignatureParams::Count];
 		rootParameters[LocalRootSignatureParams::ViewportConstantSlot].InitAsConstants(SizeOfInUint32(m_rayGenCB), 0, 0);
@@ -780,10 +760,13 @@ void Ideal::D3D12RayTracingRenderer::SerializeAndCreateRayTracingRootSignature(D
 	ComPtr<ID3DBlob> blob;
 	ComPtr<ID3DBlob> error;
 
+	// 루트 시그니쳐 직렬화
 	Check(
 		D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
 		error ? static_cast<wchar_t*>(error->GetBufferPointer()) : nullptr
 	);
+
+	// 루트 시그니쳐 생성
 	Check(
 		m_device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&(*rootsig))),
 		L"Failed to Create RootSignature!"
@@ -859,25 +842,13 @@ void Ideal::D3D12RayTracingRenderer::CreateRaytracingPipelineStateObject()
 
 void Ideal::D3D12RayTracingRenderer::CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline)
 {
-	{
-		auto localRootSignature = raytracingPipeline->CreateSubobject<CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT>();
-		localRootSignature->SetRootSignature(m_raytracingLocalRootSignature.Get());
-		// Shader association
-		auto rootSignatureAssociation = raytracingPipeline->CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
-		rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
-		rootSignatureAssociation->AddExport(m_raygenShaderName);
-	}
-	
+	CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT* localRootSignature = raytracingPipeline->CreateSubobject<CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT>();
+	localRootSignature->SetRootSignature(m_raytracingLocalRootSignature.Get());
 
-
-	//CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT* localRootSignature = raytracingPipeline->CreateSubobject<CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT>();
-	//localRootSignature->SetRootSignature(m_raytracingLocalRootSignature.Get());
-
-	//// Shader association  연관성?
-	//CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT* rootSignatureAssociation = raytracingPipeline->CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
-	//rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
-	//rootSignatureAssociation->AddExport(m_raygenShaderName);
-
+	// Shader association  연관성?
+	CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT* rootSignatureAssociation = raytracingPipeline->CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
+	rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
+	rootSignatureAssociation->AddExport(m_raygenShaderName);
 }
 
 void Ideal::D3D12RayTracingRenderer::BuildGeometry()
@@ -1037,25 +1008,17 @@ void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
 	void* hitGroupShaderIdentifier;
 
 	uint32 shaderIdentifierSize;
-	auto GetShaderIdentifiers = [&](auto* stateObjectProperties)
-		{
-			rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
-			missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
-			hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
-		};
-
+	
 	// Get shader identifiers
 	{
 		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
 		Check(m_dxrStateObject.As(&stateObjectProperties));
-		GetShaderIdentifiers(stateObjectProperties.Get());
 		shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+
+		rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
+		missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
+		hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
 	}
-
-	//rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
-	//missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
-	//hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
-
 	// Ray gen shader table
 	{
 		struct RootArguments

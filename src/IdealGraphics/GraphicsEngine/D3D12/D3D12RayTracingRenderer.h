@@ -151,7 +151,6 @@ namespace Ideal
 
 		uint64 Fence();
 		void WaitForFenceValue(uint64 ExpectedFenceValue);
-
 	private:
 		uint32 m_width = 0;
 		uint32 m_height = 0;
@@ -191,7 +190,6 @@ namespace Ideal
 		// resource Manager
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 
-
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
@@ -203,8 +201,6 @@ namespace Ideal
 		CComPtr<IDxcIncludeHandler> dxcIncIncludeHandler;
 
 	private:
-
-		// 다시 //
 		const wchar_t* m_raygenShaderName = L"MyRaygenShader";
 		const wchar_t* m_closestHitShaderName = L"MyClosestHitShader";
 		const wchar_t* m_missShaderName = L"MyMissShader";
@@ -213,19 +209,18 @@ namespace Ideal
 		void CreateDeviceDependentResources();
 		void CreateRayTracingInterfaces();
 		void CreateRootSignatures();
-		void CreateRootSignatures2();
 
 		void SerializeAndCreateRayTracingRootSignature(D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>* rootsig);
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
 		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
 		RayGenConstantBuffer m_rayGenCB;
+
 		void CreateRaytracingPipelineStateObject();
 		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
 		ComPtr<ID3D12StateObject> m_dxrStateObject;
 
 		void BuildGeometry();
 		void BuildAccelerationStructures();
-		
 		void BuildShaderTables();
 		
 		// 레이트레이싱을 위한 2d output texture를 만든다.
@@ -242,7 +237,6 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_vb2;
 		ComPtr<ID3D12Resource> m_ib2;
 
-
 		// AS
 		ComPtr<ID3D12Resource> m_accelerationStructure;
 		ComPtr<ID3D12Resource> m_bottomLevelAccelerationStructure;
@@ -254,11 +248,9 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
 
-
 		// Render
 		void DoRaytracing();
 		void CopyRaytracingOutputToBackBuffer();
-
 		void UpdateForSizeChange(uint32 Width, uint32 Height);
 	};
 }
