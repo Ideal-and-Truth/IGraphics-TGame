@@ -14,7 +14,9 @@
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3d12.h>
+#include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
@@ -51,11 +53,11 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 	//---GBuffer SRV RTV---//
 	CreateGBuffer(Renderer);
 	//CreateDSV(Renderer);
-
+	
 	//---Screen Quad---//
 	InitScreenQuad(Renderer);
-	CreateScreenQuadRootSignature(Renderer);
-	CreateScreenQuadPSO(Renderer);
+	CreateScreenQuadRootSignature(d3d12Renderer->GetDevice().Get());
+	CreateScreenQuadPSO(d3d12Renderer->GetDevice().Get());
 
 #ifdef _DEBUG
 	InitScreenQuadEditor(Renderer);
@@ -65,10 +67,9 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 	CreateGlobalCB(Renderer);
 	//---Light CB---//
 	CreateLightCB(Renderer);
-
 	//---Mesh---//
-	CreateStaticMeshPSO(Renderer);
-	CreateSkinnedMeshPSO(Renderer);
+	CreateStaticMeshPSO(d3d12Renderer->GetDevice().Get());
+	CreateSkinnedMeshPSO(d3d12Renderer->GetDevice().Get());
 
 }
 
@@ -265,9 +266,9 @@ void Ideal::IdealRenderScene::AddLight(std::shared_ptr<Ideal::ILight> Light)
 	}
 }
 
-void Ideal::IdealRenderScene::CreateStaticMeshPSO(std::shared_ptr<IdealRenderer> Renderer)
+void Ideal::IdealRenderScene::CreateStaticMeshPSO(ID3D12Device* Device)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Device);
 
 	//-------------------Sampler--------------------//
 	CD3DX12_STATIC_SAMPLER_DESC sampler(
@@ -305,7 +306,7 @@ void Ideal::IdealRenderScene::CreateStaticMeshPSO(std::shared_ptr<IdealRenderer>
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;
 	Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-	Check(d3d12Renderer->GetDevice()->CreateRootSignature(
+	Check(Device->CreateRootSignature(
 		0,
 		signature->GetBufferPointer(),
 		signature->GetBufferSize(),
@@ -337,12 +338,12 @@ void Ideal::IdealRenderScene::CreateStaticMeshPSO(std::shared_ptr<IdealRenderer>
 
 	m_staticMeshPSO->SetTargetFormat(m_gBufferNum, rtvFormat, dsvFormat);
 
-	m_staticMeshPSO->Create(d3d12Renderer);
+	m_staticMeshPSO->Create(Device);
 }
 
-void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer> Renderer)
+void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(ID3D12Device* Device)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Device);
 
 	//-------------------Sampler--------------------//
 	CD3DX12_STATIC_SAMPLER_DESC sampler(
@@ -380,7 +381,7 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;
 	Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-	Check(d3d12Renderer->GetDevice()->CreateRootSignature(
+	Check(Device->CreateRootSignature(
 		0,
 		signature->GetBufferPointer(),
 		signature->GetBufferSize(),
@@ -414,7 +415,7 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer
 
 	m_skinnedMeshPSO->SetTargetFormat(m_gBufferNum, rtvFormat, dsvFormat);
 
-	m_skinnedMeshPSO->Create(d3d12Renderer);
+	m_skinnedMeshPSO->Create(Device);
 }
 
 void Ideal::IdealRenderScene::AllocateFromDescriptorHeap(std::shared_ptr<IdealRenderer> Renderer)
@@ -660,9 +661,9 @@ void Ideal::IdealRenderScene::InitScreenQuad(std::shared_ptr<IdealRenderer> Rend
 
 }
 
-void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(std::shared_ptr<IdealRenderer> Renderer)
+void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(ID3D12Device* Device)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Device);
 
 	//-------------------Sampler--------------------//
 	CD3DX12_STATIC_SAMPLER_DESC sampler(
@@ -695,7 +696,7 @@ void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(std::shared_ptr<Idea
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;
 	Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-	Check(d3d12Renderer->GetDevice()->CreateRootSignature(
+	Check(Device->CreateRootSignature(
 		0,
 		signature->GetBufferPointer(),
 		signature->GetBufferSize(),
@@ -703,9 +704,9 @@ void Ideal::IdealRenderScene::CreateScreenQuadRootSignature(std::shared_ptr<Idea
 	));
 }
 
-void Ideal::IdealRenderScene::CreateScreenQuadPSO(std::shared_ptr<IdealRenderer> Renderer)
+void Ideal::IdealRenderScene::CreateScreenQuadPSO(ID3D12Device* Device)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Device);
 
 	m_screenQuadPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
 	m_screenQuadPSO->SetInputLayout(ScreenQuadVertex::InputElements, ScreenQuadVertex::InputElementCount);
@@ -730,7 +731,7 @@ void Ideal::IdealRenderScene::CreateScreenQuadPSO(std::shared_ptr<IdealRenderer>
 
 	m_screenQuadPSO->SetTargetFormat(1, rtvFormat, dsvFormat);
 
-	m_screenQuadPSO->Create(d3d12Renderer);
+	m_screenQuadPSO->Create(Device);
 }
 
 void Ideal::IdealRenderScene::InitScreenQuadEditor(std::shared_ptr<Ideal::IdealRenderer> Renderer)

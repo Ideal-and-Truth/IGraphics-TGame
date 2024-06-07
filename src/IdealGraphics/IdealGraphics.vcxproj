@@ -169,6 +169,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>

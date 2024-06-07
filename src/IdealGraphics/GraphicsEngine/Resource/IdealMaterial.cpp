@@ -1,6 +1,7 @@
 #include "Core/Core.h"
 #include "IdealMaterial.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3d12.h>
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"

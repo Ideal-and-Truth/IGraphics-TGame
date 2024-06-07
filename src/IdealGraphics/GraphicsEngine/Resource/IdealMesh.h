@@ -1,15 +1,16 @@
 #pragma once
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12Renderer.h"
+//#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 // Resource Head
 #include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
-#include "GraphicsEngine/D3D12/D3D12Renderer.h"
+//#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3d12.h>
+#include <d3dx12.h>
 namespace Ideal
 {
 	class IdealMaterial;

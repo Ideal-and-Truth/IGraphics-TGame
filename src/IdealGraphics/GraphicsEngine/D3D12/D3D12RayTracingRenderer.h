@@ -2,15 +2,17 @@
 
 #include "Core/Core.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 #include <d3d12.h>
-//#include "d3dx12.h"
-#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include <d3dx12.h>
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 //Test
 #include "GraphicsEngine/VertexInfo.h"
+#include <dxgi.h>
+#include <dxgi1_6.h>
 
 #include <dxcapi.h>
-//#include <d3dx12.h>
 #include <atlbase.h>
 
 struct ID3D12Device;

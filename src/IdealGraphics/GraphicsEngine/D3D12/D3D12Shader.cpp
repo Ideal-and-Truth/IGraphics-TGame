@@ -1,5 +1,6 @@
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "D3D12Shader.h"
+#include <d3dcompiler.h>
 
 Ideal::D3D12Shader::D3D12Shader()
 {

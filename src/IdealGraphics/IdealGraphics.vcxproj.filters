@@ -154,6 +154,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.h" />
     <ClInclude Include="GraphicsEngine\D3D12\TestShader.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\D3D12RaytracingResources.h" />
+    <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">

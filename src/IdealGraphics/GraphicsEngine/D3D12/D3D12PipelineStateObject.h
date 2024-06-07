@@ -1,7 +1,8 @@
 #pragma once
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3d12.h>
+#include <d3dx12.h>
 namespace Ideal
 {
 	class D3D12RootSignature;
@@ -28,7 +29,7 @@ namespace Ideal
 		void SetBlendState		(const D3D12_BLEND_DESC BlendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT));
 		void SetTargetFormat(const uint32 RTVNum, DXGI_FORMAT* RTVFormat, const DXGI_FORMAT& DSVFormat);
 
-		void Create				(std::shared_ptr<Ideal::D3D12Renderer> Renderer);
+		void Create (ID3D12Device* Device);
 
 		ComPtr<ID3D12PipelineState> GetPipelineState() { return m_pipelineState; }
 

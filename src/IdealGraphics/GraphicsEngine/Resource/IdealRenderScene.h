@@ -55,8 +55,8 @@ namespace Ideal
 
 	private:
 		// Ver2 : 2024.05.07 : cb pool, descriptor pool을 사용하는 방식으로 바꾸겠다.
-		void CreateStaticMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
-		void CreateSkinnedMeshPSO(std::shared_ptr<IdealRenderer> Renderer);
+		void CreateStaticMeshPSO(ID3D12Device* Device);
+		void CreateSkinnedMeshPSO(ID3D12Device* Device);
 
 		// 2024.05.17 : ScreenQuad Data
 		void AllocateFromDescriptorHeap(std::shared_ptr<IdealRenderer> Renderer);
@@ -80,8 +80,8 @@ namespace Ideal
 
 		// 2024.05.15 : MainScreenQuad
 		void InitScreenQuad(std::shared_ptr<IdealRenderer> Renderer);
-		void CreateScreenQuadRootSignature(std::shared_ptr<IdealRenderer> Renderer);
-		void CreateScreenQuadPSO(std::shared_ptr<IdealRenderer> Renderer);
+		void CreateScreenQuadRootSignature(ID3D12Device* Device);
+		void CreateScreenQuadPSO(ID3D12Device* Device);
 		void InitScreenQuadEditor(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 	private:

@@ -4,7 +4,7 @@
 #include "Misc/Utils/PIX.h"
 #include "Misc/Assimp/AssimpConverter.h"
 
-//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/Raytracing/D3D12RaytracingResources.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
@@ -30,9 +30,6 @@
 
 #include "GraphicsEngine/D3D12/TestShader.h"
 
-#include <d3dx12.h>
-//#include "d3dx12.h"
-#include <dxcapi.h>
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
 inline void AllocateUploadBuffer(ID3D12Device* pDevice, void* pData, UINT64 datasize, ID3D12Resource** ppResource, const wchar_t* resourceName = nullptr)
@@ -186,7 +183,7 @@ finishAdapter:
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
 	m_resourceManager->Init(m_device);
 
-	CreateShaderCompiler();
+	//CreateShaderCompiler();
 	CreateDescriptorHeap();
 	// --- Test --- //
 	m_rayGenCB.viewport = { -1.f,-1.f,1.f,1.f };
@@ -629,8 +626,8 @@ void Ideal::D3D12RayTracingRenderer::CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATIO
 
 void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 {
-	CreateRootSignatures();
 	//CreateRayTracingInterfaces();
+	CreateRootSignatures();
 	CreateRayTracingPipelineStateObject();
 	BuildGeometry();
 	BuildAccelerationStructures();

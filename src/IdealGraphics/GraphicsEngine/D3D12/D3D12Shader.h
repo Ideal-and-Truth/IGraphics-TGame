@@ -2,7 +2,7 @@
 
 #include "Core/Core.h"
 #include <d3dcommon.h>
-//#include <d3dx12.h>
+#include <d3dx12.h>
 
 namespace Ideal
 {

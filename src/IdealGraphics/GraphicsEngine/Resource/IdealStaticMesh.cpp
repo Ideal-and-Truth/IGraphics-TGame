@@ -2,6 +2,7 @@
 
 #include "GraphicsEngine/Resource/IdealMesh.h"
 #include "GraphicsEngine/Resource/IdealBone.h"
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 
 Ideal::IdealStaticMesh::IdealStaticMesh()
 {

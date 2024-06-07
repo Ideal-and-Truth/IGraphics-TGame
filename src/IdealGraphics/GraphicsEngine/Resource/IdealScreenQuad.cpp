@@ -4,7 +4,7 @@
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
-
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include <d3d12.h>
 
 Ideal::IdealScreenQuad::IdealScreenQuad()

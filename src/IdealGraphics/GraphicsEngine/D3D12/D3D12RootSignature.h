@@ -1,8 +1,8 @@
 #pragma once
 #include "Core/Core.h"
 //#include "d3dx12.h"
-//#include <d3dx12.h>
-#include "d3dx12.h"
+#include <d3d12.h>
+#include <d3dx12.h>
 
 namespace Ideal
 {

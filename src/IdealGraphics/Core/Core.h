@@ -31,3 +31,37 @@ inline size_t AlignConstantBufferSize(size_t size)
 	size_t aligned_size = (size + 255) & (~255);
 	return aligned_size;
 }
+
+
+inline void Check(HRESULT hr)
+{
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, L"어디선가", L"Check", MB_OK);
+		assert(false);
+	}
+}
+
+inline void Check(HRESULT hr, const wchar_t* Message)
+{
+	if (FAILED(hr))
+	{
+		if (Message == nullptr)
+		{
+			return;
+		}
+		MessageBox(NULL, Message, L"Check", MB_OK);
+		assert(false);
+	}
+}
+
+inline void FailedDebugBox(const wchar_t* Message)
+{
+	if (Message == nullptr)
+	{
+		return;
+	}
+	MessageBox(NULL, Message, L"Failed", MB_OK);
+	assert(false);
+}
+

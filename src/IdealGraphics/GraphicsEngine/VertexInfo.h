@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3d12.h>
 
 struct VertexTest2
 {

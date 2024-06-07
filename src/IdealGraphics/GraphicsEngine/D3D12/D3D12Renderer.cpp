@@ -5,6 +5,7 @@
 #include "Misc/Assimp/AssimpConverter.h"
 
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
@@ -637,7 +638,7 @@ std::shared_ptr<Ideal::ResourceManager> Ideal::D3D12Renderer::GetResourceManager
 void Ideal::D3D12Renderer::CreateDescriptorHeap()
 {
 	m_descriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	m_descriptorHeap->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
+	m_descriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 }
 
 std::shared_ptr<Ideal::D3D12DescriptorHeap> Ideal::D3D12Renderer::GetMainDescriptorHeap()
@@ -876,7 +877,7 @@ void Ideal::D3D12Renderer::CreateAndInitRenderingResources()
 	{
 		// descriptor heap
 		m_descriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
-		m_descriptorHeaps[i]->Create(shared_from_this(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
+		m_descriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 
 		// Dynamic CB Pool Allocator
 		m_cbAllocator[i] = std::make_shared<Ideal::D3D12DynamicConstantBufferAllocator>();

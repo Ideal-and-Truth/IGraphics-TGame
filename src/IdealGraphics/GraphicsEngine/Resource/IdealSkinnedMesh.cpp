@@ -5,7 +5,7 @@
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
-
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 Ideal::IdealSkinnedMesh::IdealSkinnedMesh()
 {
 
