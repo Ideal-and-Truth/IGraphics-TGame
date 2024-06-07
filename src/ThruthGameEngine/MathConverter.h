@@ -10,6 +10,7 @@ namespace MathConverter
 	Vector3 Convert(physx::PxVec3 _val);
 
 	Quaternion Convert(physx::PxQuat& _val);
+	physx::PxQuat Convert(Quaternion _val);
 
 	Matrix Convert(physx::PxTransform&& _val);
 };

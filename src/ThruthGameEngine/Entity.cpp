@@ -102,6 +102,11 @@ DirectX::SimpleMath::Vector3 Truth::Entity::GetPosition() const
 	return m_transform->m_position;
 }
 
+DirectX::SimpleMath::Quaternion Truth::Entity::GetRotation() const
+{
+	return m_transform->m_rotation;
+}
+
 void Truth::Entity::ApplyTransform() const
 {
 	m_transform->ApplyTransform();

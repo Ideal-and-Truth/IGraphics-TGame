@@ -17,6 +17,7 @@ namespace Truth
 	public:
 		bool m_isTrigger;
 		Vector3 m_center;
+		Quaternion m_rotation;
 		inline static uint32 m_colliderIDGenerator = 0;
 		uint32 m_colliderID;
 		physx::PxShape* m_collider;
@@ -29,7 +30,8 @@ namespace Truth
 		Collider(Vector3 _pos, bool _isTrigger = true);
 		virtual ~Collider();
 
-		void SetPhysxPosition(Vector3 _pos);
+		void SetPhysxTransform(Vector3 _pos, Quaternion _rot);
+		void SetPhysxTransform(Vector3 _pos);
 
 	protected:
 		inline physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
@@ -60,6 +62,7 @@ namespace Truth
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_isTrigger;
 		_ar& m_center;
+		_ar& m_rotation;
 	}
 
 	struct Collision

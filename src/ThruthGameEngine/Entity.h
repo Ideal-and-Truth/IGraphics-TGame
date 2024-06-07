@@ -79,6 +79,7 @@ namespace Truth
 		void SetScale(Vector3 _scale) const;
 
 		Vector3 GetPosition() const;
+		Quaternion GetRotation() const;
 
 		void ApplyTransform() const;
 
@@ -140,66 +141,7 @@ namespace Truth
 			component = std::make_shared<C>();
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
-
-			auto met = component->GetTypeInfo().GetMethod("Initalize");
-			if (met)
-			{
-				met->Invoke<void>(component.get());
-			}
 			m_components.push_back(component);
-
-			const auto& mets = component->GetTypeInfo().GetMethods();
-
-			for (const auto& m : mets)
-			{
-				std::string metName = m->GetName();
-
-				auto p = std::make_pair(component.get(), m);
-
-				if (metName == "OnCollisionEnter")
-				{
-					m_onCollisionEnter.push_back(p);
-				}
-				if (metName == "OnCollisionStay")
-				{
-					m_onCollisionStay.push_back(p);
-				}
-				if (metName == "OnCollisionExit")
-				{
-					m_onCollisionExit.push_back(p);
-				}
-
-				if (metName == "OnTriggerEnter")
-				{
-					m_onTriggerEnter.push_back(p);
-				}
-				if (metName == "OnTriggerStay")
-				{
-					m_onTriggerStay.push_back(p);
-				}
-				if (metName == "OnTriggerExit")
-				{
-					m_onTriggerExit.push_back(p);
-				}
-
-				if (metName == "Update")
-				{
-					m_update.push_back(p);
-				}
-				if (metName == "FixedUpdate")
-				{
-					m_fixedUpdate.push_back(p);
-				}
-				if (metName == "LateUpdate")
-				{
-					m_latedUpdate.push_back(p);
-				}
-
-				if (metName == "Destroy")
-				{
-					m_destroy.push_back(p);
-				}
-			}
 
 			return component;
 		}
@@ -218,66 +160,7 @@ namespace Truth
 			component = std::make_shared<C>(_args...);
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
-
-			auto met = component->GetTypeInfo().GetMethod("Initalize");
-			if (met)
-			{
-				met->Invoke<void>(component.get());
-			}
 			m_components.push_back(component);
-
-			const auto& mets = component->GetTypeInfo().GetMethods();
-
-			for (const auto& m : mets)
-			{
-				std::string metName = m->GetName();
-
-				auto p = std::make_pair(component.get(), m);
-
-				if (metName == "OnCollisionEnter")
-				{
-					m_onCollisionEnter.push_back(p);
-				}
-				if (metName == "OnCollisionStay")
-				{
-					m_onCollisionStay.push_back(p);
-				}
-				if (metName == "OnCollisionExit")
-				{
-					m_onCollisionExit.push_back(p);
-				}
-
-				if (metName == "OnTriggerEnter")
-				{
-					m_onTriggerEnter.push_back(p);
-				}
-				if (metName == "OnTriggerStay")
-				{
-					m_onTriggerStay.push_back(p);
-				}
-				if (metName == "OnTriggerExit")
-				{
-					m_onTriggerExit.push_back(p);
-				}
-
-				if (metName == "Update")
-				{
-					m_update.push_back(p);
-				}
-				if (metName == "FixedUpdate")
-				{
-					m_fixedUpdate.push_back(p);
-				}
-				if (metName == "LateUpdate")
-				{
-					m_latedUpdate.push_back(p);
-				}
-
-				if (metName == "Destroy")
-				{
-					m_destroy.push_back(p);
-				}
-			}
 
 			return component;
 		}

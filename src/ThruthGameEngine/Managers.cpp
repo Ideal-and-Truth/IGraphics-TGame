@@ -25,6 +25,10 @@ void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
 void Truth::Managers::Update() const
 {
 	m_inputManager->Update();
+	if (m_inputManager->GetKeyState(KEY::B) == KEY_STATE::DOWN)
+	{
+		m_sceneManager->SaveSceneData();
+	}
 	m_timeManager->Update();
 	m_physXManager->Update();
 	m_sceneManager->Update();

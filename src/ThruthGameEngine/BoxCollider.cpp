@@ -16,7 +16,7 @@ Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
 	SetSize(_size);
-	SetPhysxPosition(m_center);
+	SetPhysxTransform(m_center);
 }
 
 Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)
@@ -54,7 +54,10 @@ void Truth::BoxCollider::Awake()
 	{
 		m_body = m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 		m_body->attachShape(*m_collider);
-		physx::PxTransform t(MathConverter::Convert(m_owner.lock()->GetPosition()));
+		physx::PxTransform t(
+			MathConverter::Convert(m_owner.lock()->GetPosition()),
+			MathConverter::Convert(m_owner.lock()->GetRotation())
+		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
 	}

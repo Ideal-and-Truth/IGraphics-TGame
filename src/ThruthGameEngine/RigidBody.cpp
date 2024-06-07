@@ -86,7 +86,10 @@ void Truth::RigidBody::Awake()
 	for (auto& c : collider)
 	{
 		m_body->attachShape(*(c.lock()->m_collider));
-		physx::PxTransform t(MathConverter::Convert(m_owner.lock()->GetPosition()));
+		physx::PxTransform t(
+			MathConverter::Convert(m_owner.lock()->GetPosition()),
+			MathConverter::Convert(m_owner.lock()->GetRotation())
+		);
 		m_body->setGlobalPose(t);
 		physx::PxRigidBodyExt::updateMassAndInertia(*m_body, 10.0f);
 	}

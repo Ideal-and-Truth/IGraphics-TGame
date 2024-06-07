@@ -24,12 +24,32 @@ Truth::Collider::~Collider()
 {
 }
 
-void Truth::Collider::SetPhysxPosition(Vector3 _pos)
+void Truth::Collider::SetPhysxTransform(Vector3 _pos)
 {
 	m_center = _pos;
 	if (m_body != nullptr)
 	{
-		m_body->setGlobalPose(physx::PxTransform(_pos.x, _pos.y, _pos.z));
+		physx::PxQuat q;
+		q.x = m_rotation.x;
+		q.y = m_rotation.y;
+		q.z = m_rotation.z;
+		q.w = m_rotation.w;
+		m_body->setGlobalPose(physx::PxTransform(_pos.x, _pos.y, _pos.z, q));
+	}
+}
+
+void Truth::Collider::SetPhysxTransform(Vector3 _pos, Quaternion _rot)
+{
+	m_center = _pos;
+	m_rotation = _rot;
+	if (m_body != nullptr)
+	{
+		physx::PxQuat q;
+		q.x = m_rotation.x;
+		q.y = m_rotation.y;
+		q.z = m_rotation.z;
+		q.w = m_rotation.w;
+		m_body->setGlobalPose(physx::PxTransform(_pos.x, _pos.y, _pos.z, q));
 	}
 }
 

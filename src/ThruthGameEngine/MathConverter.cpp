@@ -5,6 +5,11 @@ physx::PxVec3 MathConverter::Convert(Vector3 _val)
 	return physx::PxVec3(_val.x, _val.y, _val.z);
 }
 
+physx::PxQuat MathConverter::Convert(Quaternion _val)
+{
+	return physx::PxQuat(_val.x, _val.y, _val.z, _val.w);
+}
+
 DirectX::SimpleMath::Quaternion MathConverter::Convert(physx::PxQuat& _val)
 {
 	return Quaternion(_val.x, _val.y, _val.z, _val.w);
