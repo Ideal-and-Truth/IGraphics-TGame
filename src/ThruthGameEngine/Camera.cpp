@@ -47,6 +47,10 @@ void Truth::Camera::Update()
 void Truth::Camera::SetLens(float _fovY, float _aspect, float _nearZ, float _farZ)
 {
 	m_camera->SetLens(_fovY, _aspect, _nearZ, _farZ);
+	m_fov = _fovY;
+	m_aspect = _aspect;
+	m_nearZ = _nearZ;
+	m_farZ = _farZ;
 }
 
 void Truth::Camera::SetMainCamera()

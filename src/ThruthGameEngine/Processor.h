@@ -57,6 +57,8 @@ public:
 
 	void AddScene(std::shared_ptr<Truth::Scene> _scene);
 
+	void LoadScene(std::string _path);
+
 	void SetStartScene(std::string _name);
 
 	// 윈도우 함수

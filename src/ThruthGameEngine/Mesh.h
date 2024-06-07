@@ -25,6 +25,9 @@ namespace Truth
 		void SetMesh(std::wstring _path);
 		void SetRenderable(bool _isRenderable);
 
+		METHOD(Initalize);
+		void Initalize();
+
 		METHOD(Update);
 		void Update();
 

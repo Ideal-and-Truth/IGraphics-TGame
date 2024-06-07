@@ -7,7 +7,7 @@ Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 	: m_managers(_managers)
 	, m_name("No Name Scene")
 {
-	m_managers->Event()->Subscribe("Delete", MakeListenerInfo(&Truth::Scene::DeleteEntity));
+	m_managers.lock()->Event()->Subscribe("Delete", MakeListenerInfo(&Truth::Scene::DeleteEntity));
 }
 
 Truth::Scene::~Scene()
@@ -24,6 +24,22 @@ void Truth::Scene::CreateEntity(std::shared_ptr<Entity> _p)
 void Truth::Scene::DeleteEntity(std::any _p)
 {
 	m_deletedEntity.push(std::any_cast<std::shared_ptr<Entity>>(_p));
+}
+
+void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
+{
+	m_managers = _manager;
+	for (auto& e : m_entities)
+	{
+		e->SetManager(m_managers);
+		e->Initailize();
+		e->Awake();
+	}
+
+	for (auto& e : m_entities)
+	{
+		e->Start();
+	}
 }
 
 void Truth::Scene::Update()

@@ -17,6 +17,8 @@ namespace Truth
 	private:
 		std::map<std::string, std::shared_ptr<Scene>> m_sceneMap;
 		std::weak_ptr<EventManager> m_eventManager;
+		std::weak_ptr<Managers> m_mangers;
+		const std::string m_savedFilePath = "../Scene/";
 
 	public:
 		std::weak_ptr<Scene> m_currentScene;
@@ -24,7 +26,7 @@ namespace Truth
 		SceneManager();
 		~SceneManager();
 
-		void Initalize(std::shared_ptr<EventManager> _eventManger);
+		void Initalize(std::shared_ptr<Managers> _mangers);
 
 		void AddScene(std::shared_ptr<Scene> _scene);
 
@@ -39,6 +41,9 @@ namespace Truth
 		void SetCurrnetScene(std::string _name);
 
 		void Finalize();
+
+		void SaveSceneData() const;
+		void LoadSceneData(std::string _path);
 
 	private:
 		bool HasScene(std::string _name);

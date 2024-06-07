@@ -36,6 +36,7 @@ namespace Truth
 
 		void SetMainCamera();
 
+
 	private:
 		METHOD(Awake);
 		virtual void Awake();

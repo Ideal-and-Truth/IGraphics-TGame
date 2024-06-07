@@ -34,6 +34,11 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 	}
 }
 
+void Truth::Mesh::Initalize()
+{
+	SetMesh(m_path);
+}
+
 void Truth::Mesh::Update()
 {
 	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());

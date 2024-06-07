@@ -11,9 +11,10 @@ Truth::SceneManager::~SceneManager()
 	DEBUG_PRINT("Finalize SceneManager\n");
 }
 
-void Truth::SceneManager::Initalize(std::shared_ptr<EventManager> _eventManger)
+void Truth::SceneManager::Initalize(std::shared_ptr<Managers> _mangers)
 {
-	m_eventManager = _eventManger;
+	m_mangers = _mangers;
+	m_eventManager = _mangers->Event();
 	m_eventManager.lock()->Subscribe("Change Scene", MakeListenerInfo(&SceneManager::ChangeScene));
 }
 
@@ -90,4 +91,25 @@ void Truth::SceneManager::ResetScene(std::any _p) const
 bool Truth::SceneManager::HasScene(std::string _name)
 {
 	return m_sceneMap.find(_name) != m_sceneMap.end();
+}
+
+void Truth::SceneManager::SaveSceneData() const
+{
+	std::ofstream outputstream(m_savedFilePath + m_currentScene.lock()->m_name + ".scene");
+	boost::archive::text_oarchive outputArchive(outputstream);
+	outputArchive << m_currentScene.lock().get();
+}
+
+void Truth::SceneManager::LoadSceneData(std::string _path)
+{
+	std::ifstream inputstream(_path);
+	boost::archive::text_iarchive inputArchive(inputstream);
+	Truth::Scene* s(nullptr);
+	inputArchive >> s;
+
+	s->Initalize(m_mangers);
+	
+	std::shared_ptr<Truth::Scene> ss = std::shared_ptr<Truth::Scene>(s);
+
+	AddScene(ss);
 }

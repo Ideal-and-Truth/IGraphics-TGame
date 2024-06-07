@@ -35,7 +35,7 @@ namespace Truth
 
 		PROPERTY(ID);
 		uint32 m_ID;
-		std::shared_ptr<Managers> m_manager;
+		std::weak_ptr<Managers> m_manager;
 
 	public:
 		// key 값의 경우 type id 를 통해 유추한다.
@@ -107,7 +107,7 @@ namespace Truth
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::vector<std::weak_ptr<C>> GetComponents();
 
-		void SetManager(std::shared_ptr<Managers> _val) { m_manager = _val; };
+		void SetManager(std::weak_ptr<Managers> _val) { m_manager = _val; };
 
 		std::string& GetName() { return m_name; };
 

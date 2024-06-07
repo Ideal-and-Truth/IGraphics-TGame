@@ -109,6 +109,11 @@ void Processor::AddScene(std::shared_ptr<Truth::Scene> _scene)
 	m_manager->Scene()->AddScene(_scene);
 }
 
+void Processor::LoadScene(std::string _path)
+{
+	m_manager->Scene()->LoadSceneData(_path);
+}
+
 LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HDC			hdc;

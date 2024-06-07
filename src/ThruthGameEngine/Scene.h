@@ -28,7 +28,7 @@ namespace Truth
 		PROPERTY(entities);
 		std::vector<std::shared_ptr<Entity>> m_entities;
 
-		std::shared_ptr<Managers> m_managers;
+		std::weak_ptr<Managers> m_managers;
 
 	private:
 		std::queue<std::shared_ptr<Entity>> m_deletedEntity;
@@ -43,6 +43,8 @@ namespace Truth
 		// 후에 씬에 오브젝트가 추가되어 다음 프레임부터 Update 시작
 		void CreateEntity(std::shared_ptr<Entity> _p);
 		void DeleteEntity(std::any _p);
+
+		void Initalize(std::weak_ptr<Managers> _manager);
 
 		void Update();
 		void ApplyTransform();
