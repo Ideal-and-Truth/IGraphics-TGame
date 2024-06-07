@@ -51,7 +51,7 @@ inline void Check(HRESULT hr, const wchar_t* Message)
 			return;
 		}
 		MessageBox(NULL, Message, L"Check", MB_OK);
-		assert(false);
+ 		assert(false);
 	}
 }
 

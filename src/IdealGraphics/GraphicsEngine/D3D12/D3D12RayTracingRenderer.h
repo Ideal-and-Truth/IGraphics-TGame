@@ -6,6 +6,7 @@
 
 #include <d3d12.h>
 #include <d3dx12.h>
+
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 //Test
 #include "GraphicsEngine/VertexInfo.h"
@@ -199,27 +200,9 @@ namespace Ideal
 
 		ComPtr<IDxcCompiler> m_compiler;
 		ComPtr<IDxcLibrary> m_library;
-
-	private:
-		void InitializeBLAS();
-		void InitializeTLAS();
-		void UploadBuffer(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO info, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
-		void CreateAS(D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS input, ComPtr<ID3D12Resource> Scratch, ComPtr<ID3D12Resource> Result);
-
-		std::shared_ptr<Ideal::IdealMesh<TestVertex>> mesh;
-		ComPtr<ID3D12Resource> blasScratch;
-		ComPtr<ID3D12Resource> blasResult;
-		ComPtr<ID3D12Resource> tlasScratch;
-		ComPtr<ID3D12Resource> tlasResult;
-		
 		CComPtr<IDxcIncludeHandler> dxcIncIncludeHandler;
 
-		// 레이 트레이싱 파이프라인 상태 오브젝트
-		void CreateRTPSO();
-		D3D12_STATE_SUBOBJECT CreateShaderSubobject(const wchar_t* Name, const wchar_t* EntryName, ComPtr<IDxcBlob> ShaderByteCode);
-
-		ComPtr<ID3D12StateObject> rtpso;
-		ComPtr<ID3D12StateObjectProperties> rtpsoInfo;
+	private:
 
 		// 다시 //
 		const wchar_t* m_raygenShaderName = L"MyRaygenShader";
@@ -236,7 +219,7 @@ namespace Ideal
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
 		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
 		RayGenConstantBuffer m_rayGenCB;
-		void CreateRayTracingPipelineStateObject();
+		void CreateRaytracingPipelineStateObject();
 		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
 		ComPtr<ID3D12StateObject> m_dxrStateObject;
 
