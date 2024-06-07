@@ -70,6 +70,7 @@ namespace Truth
 
 	public:
 		Entity(std::shared_ptr<Managers> _mangers);
+		Entity() = default;
 		~Entity();
 
 		void Initailize();

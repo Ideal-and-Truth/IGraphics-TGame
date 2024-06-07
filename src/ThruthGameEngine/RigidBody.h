@@ -85,6 +85,14 @@ namespace Truth
 	void Truth::RigidBody::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+
+		_ar& m_mass;
+		_ar& m_drag;
+		_ar& m_angularDrag;
+		_ar& m_useGravity;
+		_ar& m_isKinematic;
+		_ar& m_freezePosition;
+		_ar& m_freezeRotation;
 	}
 }
 

@@ -97,6 +97,11 @@ namespace Truth
 	void Truth::Transform::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_position;
+		_ar& m_scale;
+		_ar& m_rotation;
+		_ar& m_transformMatrix;
+		_ar& m_look;
 	}
 
 }

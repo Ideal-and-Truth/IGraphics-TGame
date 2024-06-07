@@ -20,6 +20,11 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
+		float m_fov;
+		float m_aspect;
+		float m_nearZ;
+		float m_farZ;
+
 	public:
 		Camera();
 		virtual ~Camera();
@@ -40,5 +45,9 @@ namespace Truth
 	void Truth::Camera::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_fov;
+		_ar& m_aspect;
+		_ar& m_nearZ;
+		_ar& m_farZ;
 	}
 }

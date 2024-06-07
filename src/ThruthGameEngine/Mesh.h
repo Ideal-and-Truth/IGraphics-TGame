@@ -37,6 +37,7 @@ namespace Truth
 	void Truth::Mesh::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_path;
 	}
 
 }

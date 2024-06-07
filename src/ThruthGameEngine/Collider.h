@@ -58,6 +58,8 @@ namespace Truth
 	void Truth::Collider::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_isTrigger;
+		_ar& m_center;
 	}
 
 	struct Collision

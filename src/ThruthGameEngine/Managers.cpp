@@ -65,7 +65,7 @@ void Truth::Managers::SaveSceneData() const
 {
 	std::ofstream outputstream(m_savedFilePath);
 	boost::archive::text_oarchive outputArchive(outputstream);
-	outputArchive << m_sceneManager->m_currentScene;
+	outputArchive << m_sceneManager->m_currentScene.lock().get();
 }
 
 void Truth::Managers::CreateManagers()

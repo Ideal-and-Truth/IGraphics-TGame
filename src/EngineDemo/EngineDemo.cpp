@@ -85,5 +85,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	processor->Loop();
 
+	std::ifstream inputstream("../data");
+	boost::archive::text_iarchive inputArchive(inputstream);
+	Truth::Scene* s(nullptr);
+	inputArchive >> s;
+
+	int a = 1;
+
 	return 0;
 }

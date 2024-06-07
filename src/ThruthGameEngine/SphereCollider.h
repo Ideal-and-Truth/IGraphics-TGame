@@ -34,6 +34,7 @@ namespace Truth
 	void Truth::SphereCollider::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Collider>(*this);
+		_ar& m_radius;
 	}
 }
 

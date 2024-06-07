@@ -37,6 +37,7 @@ namespace Truth
 
 	public:
 		Scene(std::shared_ptr<Managers> _managers);
+		Scene() = default;
 		virtual ~Scene();
 
 		// 후에 씬에 오브젝트가 추가되어 다음 프레임부터 Update 시작
