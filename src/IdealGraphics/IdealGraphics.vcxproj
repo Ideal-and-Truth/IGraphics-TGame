@@ -169,7 +169,11 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h" />
+    <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
@@ -240,6 +244,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMesh.h" />
+    <ClInclude Include="GraphicsEngine\Resource\ShaderManager.h" />
     <ClInclude Include="Shaders\Raytracing\RaytracingHlslCompat.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -297,6 +302,7 @@
     <ClCompile Include="GraphicsEngine\Resource\ResourceBase.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealStaticMesh.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\ShaderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />
@@ -306,6 +312,14 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Shaders\Raytracing\Raytracing.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.3</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">6.3</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.3</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Shaders\AnimationDefault.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>

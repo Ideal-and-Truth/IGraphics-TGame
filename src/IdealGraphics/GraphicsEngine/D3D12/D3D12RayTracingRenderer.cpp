@@ -17,6 +17,7 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
+#include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/Resource/IdealCamera.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
@@ -37,6 +38,9 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <istream>
+#include <fstream>
+#include <vector>
 // Pretty-print a state object tree.
 inline void PrintStateObjectDesc(const D3D12_STATE_OBJECT_DESC* desc)
 {
@@ -281,7 +285,7 @@ finishAdapter:
 	Check(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &caps, sizeof(caps)), L"Device dose not support ray tracing!");
 	if (caps.RaytracingTier < D3D12_RAYTRACING_TIER_1_0)
 	{
-		FailedDebugBox(L"Device dose not support ray tracing!");
+		MyMessageBoxW(L"Device dose not support ray tracing!");
 	}
 
 	//---------------Command Queue-----------------//
@@ -303,12 +307,22 @@ finishAdapter:
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
 	m_resourceManager->Init(m_device);
 
-	//CreateShaderCompiler();
+	m_shaderManager = std::make_shared<Ideal::ShaderManager>();
+	m_shaderManager->Init();
+	m_shaderManager->AddIncludeDirectories(L"../Shaders/Raytracing/");
+
 	CreateDescriptorHeap();
 	// --- Test --- //
+	//CreateShaderCompiler();
 	m_rayGenCB.viewport = { -1.f,-1.f,1.f,1.f };
 	UpdateForSizeChange(m_width, m_height);
 
+	// shader test
+	//InitShader();
+	//CompileShader2(L"../Shaders/Raytracing/Raytracing.hlsl", m_raygenShaderName, m_testBlob);
+	m_shaderManager->CompileShader(L"../Shaders/Raytracing/Raytracing.hlsl", L"lib_6_3", m_testBlob);
+	//m_shaderManager->CompileShader()
+	// create resource
 	CreateDeviceDependentResources();
 }
 
@@ -696,25 +710,49 @@ void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 	CreateRayTracingOutputResources();
 }
 
-void Ideal::D3D12RayTracingRenderer::CreateShaderCompiler()
+void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob)
 {
-	Check(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&m_compiler)), L"Failed To Create DXC Compiler Instance");
-	Check(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&m_library)), L"Failed To Create DXC Library Instance");
-}
+	ComPtr<IDxcCompiler3> compiler;
+	ComPtr<IDxcUtils> utils;
+	ComPtr<IDxcIncludeHandler> includeHandler;
+	// Create compiler
+	Check(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)), L"Failed To Create DXC Compiler Instance");
+	Check(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils)), L"Failed To Create DXC Compiler Instance");
+	std::ifstream shaderFile(FilePath, std::ios::binary);
+	// temp
+	std::vector<char> shaderSource((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
 
-void Ideal::D3D12RayTracingRenderer::CompileShader(IDxcLibrary* lib, IDxcCompiler* comp, LPCWSTR filename, IDxcBlob** blob)
-{
-	uint32 codePage = 0;
-	IDxcBlobEncoding* pShaderText = nullptr;
-	IDxcOperationResult* result = nullptr;
+	// hlsl compile
+	DxcBuffer sourceBuffer;
+	sourceBuffer.Ptr = shaderSource.data();
+	sourceBuffer.Size = shaderSource.size();
+	sourceBuffer.Encoding = DXC_CP_UTF8;
 
-	// 셰이더 파일을 로드하고 인코딩한다.
-	lib->CreateBlobFromFile(filename, &codePage, &pShaderText);
+	// header
+	ComPtr<IDxcBlob> includeSource = nullptr;
+	utils->CreateDefaultIncludeHandler(&includeHandler);
+	//includeHandler->LoadSource(L"../Shaders/Raytracing/RaytracingHlslCompat.h", &includeSource);
+	//includeHandler->LoadSource(L"RaytracingHlslCompat.h", &includeSource);
 
-	// 셰이더 컴파일, "main"은 실행이 시작하는 곳
-	comp->Compile(pShaderText, filename, L"main", L"lib_6_3", nullptr, 0, nullptr, 0, dxcIncIncludeHandler, &result);
+	LPCWSTR args[] = {
+		//L"-E", EntryPoint.c_str(),	// raytracing 쉐이더는 엔트리포인트가 필요 없음
+		L"-T", L"lib_6_3",
+		L"-I", L"../Shaders/Raytracing/"
+	};
+	ComPtr<IDxcResult> result;
+	//compiler->Compile(&sourceBuffer, nullptr, 0, includeHandler.Get(), IID_PPV_ARGS(&result));
+	compiler->Compile(&sourceBuffer, args, _countof(args), includeHandler.Get(), IID_PPV_ARGS(&result));
 
-	result->GetResult(blob);
+	
+	ComPtr<IDxcBlobEncoding> encoding = nullptr;
+	result->GetErrorBuffer(&encoding);
+	if (encoding)
+	{
+		auto a = (char*)encoding->GetBufferPointer();
+		int b = 3;
+	}
+
+	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob),nullptr);
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateRayTracingInterfaces()
@@ -792,16 +830,25 @@ void Ideal::D3D12RayTracingRenderer::CreateRaytracingPipelineStateObject()
 	// 이것은 스테이트 오브젝트를 위해 쉐이더들과 쉐이더들의 엔트리 포인트들을 포함한다.
 	// 셰이더는 서브오브젝트로 간주되지 않으므로 DXIL 라이브러리 서브오브젝트를 통해 전달해야 한다.
 	CD3DX12_DXIL_LIBRARY_SUBOBJECT* lib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
-	D3D12_SHADER_BYTECODE libdxil = CD3DX12_SHADER_BYTECODE((void*)g_pRaytracing, ARRAYSIZE(g_pRaytracing));
-	lib->SetDXILLibrary(&libdxil);
-	// 라이브러리에서 표면화할 쉐이더 export를 정의한다
-	// 만약 DXIL 라이브러리 서브 오브젝트에 대해 정의된 셰이더 익스포트가 없는 경우 모든 쉐이더가 표면화된다.
-	// 이 샘플에서는 라이브러리의 모든 쉐이더를 사용하므로 편의상 생략할 수 있다.
-	{
-		lib->DefineExport(m_raygenShaderName);
-		lib->DefineExport(m_closestHitShaderName);
-		lib->DefineExport(m_missShaderName);
-	}
+	//D3D12_SHADER_BYTECODE libdxil = CD3DX12_SHADER_BYTECODE((void*)g_pRaytracing, ARRAYSIZE(g_pRaytracing));
+	//lib->SetDXILLibrary(&libdxil);
+	//// 라이브러리에서 표면화할 쉐이더 export를 정의한다
+	//// 만약 DXIL 라이브러리 서브 오브젝트에 대해 정의된 셰이더 익스포트가 없는 경우 모든 쉐이더가 표면화된다.
+	//// 이 샘플에서는 라이브러리의 모든 쉐이더를 사용하므로 편의상 생략할 수 있다.
+	//{
+	//	lib->DefineExport(m_raygenShaderName);
+	//	lib->DefineExport(m_closestHitShaderName);
+	//	lib->DefineExport(m_missShaderName);
+	//}
+
+	//Test
+	D3D12_SHADER_BYTECODE libdxil2 = CD3DX12_SHADER_BYTECODE(m_testBlob->GetBufferPointer(), m_testBlob->GetBufferSize());
+	lib->SetDXILLibrary(&libdxil2);
+	lib->DefineExport(m_raygenShaderName);
+	lib->DefineExport(m_closestHitShaderName);
+	lib->DefineExport(m_missShaderName);
+	
+
 	//-------------------Triangle hit group-------------------//
 	// 히트 그룹은 광선이 지오메트리의 삼각형 / AABB와 교차할 때 실행할 가장 가까운 hit, any hit 및 intersection 쉐이더를 지정
 	// 이 샘플에서는 closest shader가 있는 삼각형 지오메트리만 사용하므로 다른 쉐이더는 설정하지 않았다.

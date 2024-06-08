@@ -55,7 +55,7 @@ inline void Check(HRESULT hr, const wchar_t* Message)
 	}
 }
 
-inline void FailedDebugBox(const wchar_t* Message)
+inline void MyMessageBoxW(const wchar_t* Message)
 {
 	if (Message == nullptr)
 	{
@@ -65,3 +65,12 @@ inline void FailedDebugBox(const wchar_t* Message)
 	assert(false);
 }
 
+inline void MyMessageBox(const char* Message)
+{
+	if (Message == nullptr)
+	{
+		return;
+	}
+	MessageBoxA(NULL, Message, "Failed", MB_OK);
+	assert(false);
+}

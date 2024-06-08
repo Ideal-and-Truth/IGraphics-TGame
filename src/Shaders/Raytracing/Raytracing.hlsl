@@ -12,21 +12,7 @@
 #ifndef RAYTRACING_HLSL
 #define RAYTRACING_HLSL
 
-//#include "RaytracingHlslCompat.h"
-
-struct Viewport
-{
-    float left;
-    float top;
-    float right;
-    float bottom;
-};
-
-struct RayGenConstantBuffer
-{
-    Viewport viewport;
-    Viewport stencil;
-};
+#include "RaytracingHlslCompat.h"
 
 RaytracingAccelerationStructure Scene : register(t0, space0);
 RWTexture2D<float4> RenderTarget : register(u0);

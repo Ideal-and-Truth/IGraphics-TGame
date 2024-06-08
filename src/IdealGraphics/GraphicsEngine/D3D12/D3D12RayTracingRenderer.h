@@ -57,6 +57,7 @@ struct RayGenConstantBuffer
 namespace Ideal
 {
 	class ResourceManager;
+	class ShaderManager;
 
 	class D3D12DescriptorHeap;
 	class D3D12DynamicDescriptorHeap;
@@ -193,12 +194,11 @@ namespace Ideal
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
-		void CreateShaderCompiler();
-		void CompileShader(IDxcLibrary* lib, IDxcCompiler* comp, LPCWSTR filename, IDxcBlob** blob);
-
-		ComPtr<IDxcCompiler> m_compiler;
-		ComPtr<IDxcLibrary> m_library;
-		CComPtr<IDxcIncludeHandler> dxcIncIncludeHandler;
+		std::shared_ptr<Ideal::ShaderManager> m_shaderManager;
+		void CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob);
+		ComPtr<IDxcCompiler3> m_compiler3;
+		ComPtr<IDxcUtils> m_dxcUtils;
+		ComPtr<IDxcBlob> m_testBlob;
 
 	private:
 		const wchar_t* m_raygenShaderName = L"MyRaygenShader";
