@@ -221,6 +221,11 @@ namespace Ideal
 
 		void BuildGeometry();
 		void BuildAccelerationStructures();
+		void BuildAccelerationStructures2();
+		// AS
+		void BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer);
+		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer);
+
 		void BuildShaderTables();
 		
 		// 레이트레이싱을 위한 2d output texture를 만든다.

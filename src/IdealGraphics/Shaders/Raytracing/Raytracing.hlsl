@@ -12,7 +12,7 @@
 #ifndef RAYTRACING_HLSL
 #define RAYTRACING_HLSL
 
-//#include "RaytracingHlslCompat.h"
+#include "RaytracingHlslCompat.h"
 
 struct Viewport
 {

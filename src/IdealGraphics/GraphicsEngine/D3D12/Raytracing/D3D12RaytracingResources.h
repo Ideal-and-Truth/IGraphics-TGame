@@ -54,7 +54,6 @@ namespace Ideal
 	public:
 		D3D12ShaderTable(ID3D12Device* device, uint32 numShaderRecords, uint32 shaderRecordSize, LPCWSTR resourceName = nullptr)
 		{
-			//m_resource->SetName(resourceName);
 			m_shaderRecordSize = Align(shaderRecordSize, D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
 			m_shaderRecords.reserve(numShaderRecords);
 			uint32 bufferSize = numShaderRecords * m_shaderRecordSize;

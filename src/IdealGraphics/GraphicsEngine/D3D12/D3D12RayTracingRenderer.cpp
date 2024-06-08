@@ -48,21 +48,21 @@ inline void PrintStateObjectDesc(const D3D12_STATE_OBJECT_DESC* desc)
 	if (desc->Type == D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE) wstr << L"Raytracing Pipeline\n";
 
 	auto ExportTree = [](UINT depth, UINT numExports, const D3D12_EXPORT_DESC* exports)
+	{
+		std::wostringstream woss;
+		for (UINT i = 0; i < numExports; i++)
 		{
-			std::wostringstream woss;
-			for (UINT i = 0; i < numExports; i++)
+			woss << L"|";
+			if (depth > 0)
 			{
-				woss << L"|";
-				if (depth > 0)
-				{
-					for (UINT j = 0; j < 2 * depth - 1; j++) woss << L" ";
-				}
-				woss << L" [" << i << L"]: ";
-				if (exports[i].ExportToRename) woss << exports[i].ExportToRename << L" --> ";
-				woss << exports[i].Name << L"\n";
+				for (UINT j = 0; j < 2 * depth - 1; j++) woss << L" ";
 			}
-			return woss.str();
-		};
+			woss << L" [" << i << L"]: ";
+			if (exports[i].ExportToRename) woss << exports[i].ExportToRename << L" --> ";
+			woss << exports[i].Name << L"\n";
+		}
+		return woss.str();
+	};
 
 	for (UINT i = 0; i < desc->NumSubobjects; i++)
 	{
@@ -249,7 +249,7 @@ void Ideal::D3D12RayTracingRenderer::Init()
 	ComPtr<IDXGIFactory6> factory;
 	Check(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(factory.GetAddressOf())), L"Failed To Create DXGIFactory1");
 
-	D3D_FEATURE_LEVEL featureLevels[] = { 
+	D3D_FEATURE_LEVEL featureLevels[] = {
 		D3D_FEATURE_LEVEL_12_2,
 		D3D_FEATURE_LEVEL_12_1
 	};
@@ -690,7 +690,8 @@ void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 	CreateRootSignatures();
 	CreateRaytracingPipelineStateObject();
 	BuildGeometry();
-	BuildAccelerationStructures();
+	//BuildAccelerationStructures();
+	BuildAccelerationStructures2();
 	BuildShaderTables();
 	CreateRayTracingOutputResources();
 }
@@ -735,7 +736,7 @@ void Ideal::D3D12RayTracingRenderer::CreateRootSignatures()
 		rangeRenderTarget[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : RenderTarget
 
 		// root parameter이지만 지금 생각해보니 slot이라 생각해도 될 것 같다.
-		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];	
+		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];
 
 		// 첫번째 슬롯은 renderTarget
 		rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsDescriptorTable(_countof(rangeRenderTarget), rangeRenderTarget, D3D12_SHADER_VISIBILITY_ALL);	// OutViewSlot(RenderTarget)을
@@ -870,36 +871,35 @@ void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 		};
 	}
 
-	AllocateUploadBuffer(m_device.Get(), vertices.data(), sizeof(GeometryVertex) * vertices.size(), &m_vb2);
-	AllocateUploadBuffer(m_device.Get(), indices.data(), sizeof(uint32) * indices.size(), &m_ib2);
+	//AllocateUploadBuffer(m_device.Get(), vertices.data(), sizeof(GeometryVertex) * vertices.size(), &m_vb2);
+	//AllocateUploadBuffer(m_device.Get(), indices.data(), sizeof(uint32) * indices.size(), &m_ib2);
 
-	//m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
-	//m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
+	m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+	m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
 
-	//m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
-	//m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
+	m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
+	m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
 
 }
 
 void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 {
-
 	ComPtr<ID3D12GraphicsCommandList4> commandList = m_commandLists[m_currentContextIndex];
 	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
 
+	//D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
+	//geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
+	//geometryDesc.Triangles.IndexBuffer = m_ib2->GetGPUVirtualAddress();
+	//geometryDesc.Triangles.IndexCount = static_cast<uint32>(m_ib2->GetDesc().Width) / sizeof(uint32);
+	//geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+	//geometryDesc.Triangles.Transform3x4 = 0;
+	//geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	//geometryDesc.Triangles.VertexCount = static_cast<uint32>(m_vb2->GetDesc().Width) / sizeof(GeometryVertex);
+	//geometryDesc.Triangles.VertexBuffer.StartAddress = m_vb2->GetGPUVirtualAddress();
+	//geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(GeometryVertex);
+
+
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
-	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-	geometryDesc.Triangles.IndexBuffer = m_ib2->GetGPUVirtualAddress();
-	geometryDesc.Triangles.IndexCount = static_cast<uint32>(m_ib2->GetDesc().Width) / sizeof(uint32);
-	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
-	geometryDesc.Triangles.Transform3x4 = 0;
-	geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-	geometryDesc.Triangles.VertexCount = static_cast<uint32>(m_vb2->GetDesc().Width) / sizeof(GeometryVertex);
-	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vb2->GetGPUVirtualAddress();
-	geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(GeometryVertex);
-
-
-	/*D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
 	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
@@ -908,12 +908,12 @@ void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 	geometryDesc.Triangles.VertexFormat = GeometryVertex::VertexFormat;
 	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
 	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();*/
+	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
 
 	// 퍼포먼스 팁: 지오메트리를 불투명으로 표시하면 중요한 광선 처리 최적화를 활성화할 수 있으므로 해당될 때마다 불투명으로 표시하세요.
 	// 참고: 광선이 불투명한 지오메트리를 만나면 히트 셰이더는 존재 여부와 상관없이 실행되지 않습니다.
 	// 불투명
-	geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+	/*geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;*/
 
 	// 가속구조에 필요한 사이즈를 가져온다
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
@@ -978,7 +978,7 @@ void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 		topLevelBuildDesc.DestAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
 		topLevelBuildDesc.ScratchAccelerationStructureData = scratchResource->GetGPUVirtualAddress();
 	}
-	
+
 	// 가속 구조를 만들 때는 commandlist가 Reset된 상태여야 한다.
 	ResetCommandList();
 	// 가속 구조 빌드
@@ -996,9 +996,114 @@ void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 
 	Fence();
 	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+}
 
-	/*Ideal::D3D12UploadBuffer tempUploadBufer;
-	tempUploadBufer.Create(m_device.Get(), 64);*/
+void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures2()
+{
+	ResetCommandList();
+
+	//-------BLAS-------//
+	ComPtr<ID3D12Resource> BottomScratch;	// UAV
+	BuildBottomLevelAccelerationStructure(BottomScratch);
+
+	//-------BLAS-------//
+	ComPtr<ID3D12Resource> TopScratch;	// UAV
+	ComPtr<ID3D12Resource> instanceBuffer;	//Upload
+	BuildTopLevelAccelerationStructure(TopScratch, instanceBuffer);
+
+	m_commandLists[m_currentContextIndex]->Close();
+	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	Fence();
+	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer)
+{
+	//---------BLAS-----------//
+	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
+	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
+	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
+	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
+	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+	geometryDesc.Triangles.Transform3x4 = 0;
+	geometryDesc.Triangles.VertexFormat = GeometryVertex::VertexFormat;
+	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
+	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
+	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
+
+	// 가속구조에 필요한 사이즈를 가져온다
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO bottomLevelPrebuildInfo = {};
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS bottomLevelInputs = {};
+	bottomLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+	bottomLevelInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+	bottomLevelInputs.NumDescs = 1;
+	bottomLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
+	bottomLevelInputs.pGeometryDescs = &geometryDesc;
+
+	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&bottomLevelInputs, &bottomLevelPrebuildInfo);
+	Check(bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes > 0);
+
+	// 임시 스크래치 데이터
+	AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ScratchDataSizeInBytes, ScratchBuffer.GetAddressOf(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ScratchResource");
+
+	// BLAS 버퍼를 저장할 UAV를 할당
+	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+	AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_bottomLevelAccelerationStructure, initialResourceState, L"BottomLevelAccelerationStructure");
+
+	// 최종 빌드
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC bottomLevelBuildDesc = {};
+	{
+		bottomLevelBuildDesc.Inputs = bottomLevelInputs;
+		bottomLevelBuildDesc.ScratchAccelerationStructureData = ScratchBuffer->GetGPUVirtualAddress();
+		bottomLevelBuildDesc.DestAccelerationStructureData = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
+	}
+	
+	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
+	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_bottomLevelAccelerationStructure.Get());
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &uavBarrier);
+}
+
+void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer)
+{
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS topLevelInputs = {};
+	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+	topLevelInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+	topLevelInputs.NumDescs = 1;
+	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO topLevelPreBuildInfo = {};
+	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &topLevelPreBuildInfo);
+	Check(topLevelPreBuildInfo.ResultDataMaxSizeInBytes > 0);
+
+	//---------Create Scratch Buffer----------//
+	AllocateUAVBuffer(m_device.Get(), topLevelPreBuildInfo.ScratchDataSizeInBytes, Scratch.GetAddressOf(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ScratchResource");
+
+	//---------Create TLAS BUFFER----------//
+	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+	AllocateUAVBuffer(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, &m_topLevelAccelerationStructure, initialResourceState, L"TopLevelAccelerationStructure");
+
+	//----------Instance Desc---------//
+	//ComPtr<ID3D12Resource> instanceBuffer;
+	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
+	instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1; // identity
+	instanceDesc.InstanceMask = 1;
+	instanceDesc.AccelerationStructure = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
+	AllocateUploadBuffer(m_device.Get(), &instanceDesc, sizeof(instanceDesc), &instanceBuffer, L"InstanceDescs");
+
+	//---------TLAS DESC----------//
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC topLevelBuildDesc = {};
+	{
+		topLevelInputs.InstanceDescs = instanceBuffer->GetGPUVirtualAddress();
+		topLevelBuildDesc.Inputs = topLevelInputs;
+		topLevelBuildDesc.DestAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
+		topLevelBuildDesc.ScratchAccelerationStructureData = Scratch->GetGPUVirtualAddress();
+	}
+
+	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
+	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAccelerationStructure.Get());
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &uavBarrier);
 }
 
 void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
@@ -1008,7 +1113,7 @@ void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
 	void* hitGroupShaderIdentifier;
 
 	uint32 shaderIdentifierSize;
-	
+
 	// Get shader identifiers
 	{
 		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
@@ -1030,8 +1135,6 @@ void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
 		uint32 numShaderRecords = 1;
 		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(rootArguments);
 
-		//Ideal::D3D12UploadBuffer tempUploadBufer;
-		//tempUploadBufer.Create(m_device.Get(), 64);
 		Ideal::D3D12ShaderTable rayGenShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"RayGenShaderTable");
 		rayGenShaderTable.push_back(Ideal::D3D12ShaderRecord(rayGenShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
 		m_rayGenShaderTable = rayGenShaderTable.GetResource();
@@ -1101,24 +1204,24 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
 
 	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
-		{
-			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
-			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
-			dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
+	{
+		dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
+		dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
+		dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
 
-			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
-			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
-			dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
+		dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
+		dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
+		dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
 
-			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
-			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
+		dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
+		dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
 
-			dispatchDesc->Width = m_width;
-			dispatchDesc->Height = m_height;
-			dispatchDesc->Depth = 1;
-			commandlist->SetPipelineState1(stateObject);
-			commandlist->DispatchRays(dispatchDesc);
-		};
+		dispatchDesc->Width = m_width;
+		dispatchDesc->Height = m_height;
+		dispatchDesc->Depth = 1;
+		commandlist->SetPipelineState1(stateObject);
+		commandlist->DispatchRays(dispatchDesc);
+	};
 
 	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
 
