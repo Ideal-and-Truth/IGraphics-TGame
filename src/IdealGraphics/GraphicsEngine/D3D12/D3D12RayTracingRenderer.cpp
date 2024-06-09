@@ -714,7 +714,7 @@ void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 	CreateRaytracingPipelineStateObject();
 	BuildGeometry();
 	//BuildAccelerationStructures();
-	BuildAccelerationStructures2();
+	BuildAccelerationStructures();
 	BuildShaderTables();
 	CreateRayTracingOutputResources();
 }
@@ -941,122 +941,6 @@ void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 
 void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 {
-	ComPtr<ID3D12GraphicsCommandList4> commandList = m_commandLists[m_currentContextIndex];
-	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
-
-	//D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
-	//geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-	//geometryDesc.Triangles.IndexBuffer = m_ib2->GetGPUVirtualAddress();
-	//geometryDesc.Triangles.IndexCount = static_cast<uint32>(m_ib2->GetDesc().Width) / sizeof(uint32);
-	//geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
-	//geometryDesc.Triangles.Transform3x4 = 0;
-	//geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-	//geometryDesc.Triangles.VertexCount = static_cast<uint32>(m_vb2->GetDesc().Width) / sizeof(GeometryVertex);
-	//geometryDesc.Triangles.VertexBuffer.StartAddress = m_vb2->GetGPUVirtualAddress();
-	//geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(GeometryVertex);
-
-
-	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
-	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
-	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
-	geometryDesc.Triangles.Transform3x4 = 0;
-	geometryDesc.Triangles.VertexFormat = GeometryVertex::VertexFormat;
-	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
-	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
-
-	// 퍼포먼스 팁: 지오메트리를 불투명으로 표시하면 중요한 광선 처리 최적화를 활성화할 수 있으므로 해당될 때마다 불투명으로 표시하세요.
-	// 참고: 광선이 불투명한 지오메트리를 만나면 히트 셰이더는 존재 여부와 상관없이 실행되지 않습니다.
-	// 불투명
-	/*geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;*/
-
-	// 가속구조에 필요한 사이즈를 가져온다
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
-
-	//---------TLAS----------//
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS topLevelInputs = {};
-	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
-	topLevelInputs.Flags = buildFlags;
-	topLevelInputs.NumDescs = 1;
-	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
-
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO topLevelPrebuildInfo = {};
-	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &topLevelPrebuildInfo);
-	Check(topLevelPrebuildInfo.ResultDataMaxSizeInBytes > 0);
-
-	//---------BLAS---------//
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO bottomLevelPrebuildInfo = {};
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS bottomLevelInputs = topLevelInputs;
-	bottomLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
-	bottomLevelInputs.pGeometryDescs = &geometryDesc;
-	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&bottomLevelInputs, &bottomLevelPrebuildInfo);
-	Check(bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes > 0);
-
-	ComPtr<ID3D12Resource> scratchResource;
-	AllocateUAVBuffer(m_device.Get(), max(topLevelPrebuildInfo.ScratchDataSizeInBytes, bottomLevelPrebuildInfo.ScratchDataSizeInBytes), scratchResource.GetAddressOf(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ScratchResource");
-
-	// 가속 구조에 리소스를 할당
-	// 가속 구조체는 기본 힙( 또는 이에 상응하는 사용자 정의 힙)에 생성된 리소스에만 배치할 수 있다.
-	// 기본 힙은 애플리케이션에 CPU 읽기/쓰기 액세스가 필요하지 않으므로 괜찮다
-	// 가속 구조가 포함될 리소스는 D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE 상태로 생성되어야 한다.
-	// 리소스 플래그 D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS가 있어야 한다. ALLOW_UNORDERED_ACCESS 요구 사항은 다음의 두 가지를 모두 인정한다.
-	//	- 시스템이 백그라운드에서 가속 구조 빌드를 구현할 때 이러한 유형의 액세스를 수행한다.
-	//	- 앱의 관점에서 가속 구조에 대한 쓰기/읽기 동기화는 UAV 배리어를 사용하여 수행된다.
-	{
-		D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-
-		AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_bottomLevelAccelerationStructure, initialResourceState, L"BottomLevelAccelerationStructure");
-		AllocateUAVBuffer(m_device.Get(), topLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_topLevelAccelerationStructure, initialResourceState, L"TopLevelAccelerationStructure");
-	}
-
-	// 바텀 레벨 가속 구조에 필요한 instance desc을 만든다
-	ComPtr<ID3D12Resource> instanceDescs;
-	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
-	instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1; // identity
-	instanceDesc.InstanceMask = 1;
-	instanceDesc.AccelerationStructure = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
-	AllocateUploadBuffer(m_device.Get(), &instanceDesc, sizeof(instanceDesc), &instanceDescs, L"InstanceDescs");
-
-	// 바텀 레벨 가속 구조 desc
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC bottomLevelBuildDesc = {};
-	{
-		bottomLevelBuildDesc.Inputs = bottomLevelInputs;
-		bottomLevelBuildDesc.ScratchAccelerationStructureData = scratchResource->GetGPUVirtualAddress();
-		bottomLevelBuildDesc.DestAccelerationStructureData = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
-	}
-
-	// 탑 레벨 가속 구조 desc
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC topLevelBuildDesc = {};
-	{
-		topLevelInputs.InstanceDescs = instanceDescs->GetGPUVirtualAddress();
-		topLevelBuildDesc.Inputs = topLevelInputs;
-		topLevelBuildDesc.DestAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
-		topLevelBuildDesc.ScratchAccelerationStructureData = scratchResource->GetGPUVirtualAddress();
-	}
-
-	// 가속 구조를 만들 때는 commandlist가 Reset된 상태여야 한다.
-	ResetCommandList();
-	// 가속 구조 빌드
-	commandList->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
-	{
-		CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_bottomLevelAccelerationStructure.Get());
-		commandList->ResourceBarrier(1, &barrier);
-	}
-	commandList->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
-
-	// commandlist를 닫아주고 execute 후 wait
-	commandList->Close();
-	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	Fence();
-	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures2()
-{
 	ResetCommandList();
 
 	//-------BLAS-------//
@@ -1107,8 +991,9 @@ void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPt
 
 	// BLAS 버퍼를 저장할 UAV를 할당
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-	AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_bottomLevelAccelerationStructure, initialResourceState, L"BottomLevelAccelerationStructure");
-
+	//AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_bottomLevelAccelerationStructure, initialResourceState, L"BottomLevelAccelerationStructure");
+	m_bottomLevelAccelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
+	m_bottomLevelAccelerationStructure->Create(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, initialResourceState, L"BottomLevelAccelerationStructure");
 	// 최종 빌드
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC bottomLevelBuildDesc = {};
 	{
@@ -1118,7 +1003,7 @@ void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPt
 	}
 	
 	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
-	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_bottomLevelAccelerationStructure.Get());
+	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_bottomLevelAccelerationStructure->GetResource());
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &uavBarrier);
 }
 
@@ -1139,8 +1024,9 @@ void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure(ComPtr<I
 
 	//---------Create TLAS BUFFER----------//
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-	AllocateUAVBuffer(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, &m_topLevelAccelerationStructure, initialResourceState, L"TopLevelAccelerationStructure");
-
+	//AllocateUAVBuffer(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, &m_topLevelAccelerationStructure, initialResourceState, L"TopLevelAccelerationStructure");
+	m_topLevelAccelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
+	m_topLevelAccelerationStructure->Create(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, L"TopLevelAccelerationStructure");
 	//----------Instance Desc---------//
 	//ComPtr<ID3D12Resource> instanceBuffer;
 	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
@@ -1159,7 +1045,7 @@ void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure(ComPtr<I
 	}
 
 	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
-	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAccelerationStructure.Get());
+	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAccelerationStructure->GetResource());
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &uavBarrier);
 }
 

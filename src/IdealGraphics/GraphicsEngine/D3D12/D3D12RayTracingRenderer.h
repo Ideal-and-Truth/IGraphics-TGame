@@ -90,6 +90,7 @@ namespace Ideal
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12Shader;
+	class D3D12UAVBuffer;
 }
 struct TestVertex;
 
@@ -224,7 +225,6 @@ namespace Ideal
 
 		void BuildGeometry();
 		void BuildAccelerationStructures();
-		void BuildAccelerationStructures2();
 		// AS
 		void BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer);
 		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer);
@@ -247,8 +247,8 @@ namespace Ideal
 
 		// AS
 		ComPtr<ID3D12Resource> m_accelerationStructure;
-		ComPtr<ID3D12Resource> m_bottomLevelAccelerationStructure;
-		ComPtr<ID3D12Resource> m_topLevelAccelerationStructure;
+		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure;
+		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
 
 		RayGenConstantBuffer m_cbRayGen;
 

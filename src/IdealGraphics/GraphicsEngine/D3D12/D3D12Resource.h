@@ -130,4 +130,15 @@ namespace Ideal
 
 		bool m_isMapped;
 	};
+
+	class D3D12UAVBuffer : public D3D12Resource
+	{
+	public:
+		D3D12UAVBuffer();
+		virtual ~D3D12UAVBuffer();
+
+	public:
+		void Create(ID3D12Device* Device, uint32 BufferSize, D3D12_RESOURCE_STATES InitialResourceState = D3D12_RESOURCE_STATE_COMMON, const wchar_t* Name = nullptr);
+		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress();
+	};
 }
