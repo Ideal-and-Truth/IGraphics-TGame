@@ -1,5 +1,8 @@
 #include "GraphicsEngine/Resource/ShaderManager.h"
+#include "Misc/Utils/FileUtils.h"
+#include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include <fstream>
+#include <filesystem>
 
 using namespace Ideal;
 
@@ -77,6 +80,46 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 
 	// Get Blob
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
+}
+
+void Ideal::ShaderManager::CompileShaderAndSave(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob)
+{
+	CompileShader(FilePath, ShaderModel, OutBlob);
+
+	//
+	uint32 Size = OutBlob->GetBufferSize();
+	void* pointer = OutBlob->GetBufferPointer();
+	//
+	std::wstring finalPath = SavePath + SaveName + L".shader";
+	auto path = std::filesystem::path(finalPath);
+	std::filesystem::create_directory(path.parent_path());
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(finalPath, FileMode::Write);
+
+	file->Write<uint32>(Size);
+	// buffer size
+	file->Write(pointer, Size);
+
+	// buffer data
+}
+
+void Ideal::ShaderManager::LoadShaderFile(const std::wstring& FilePath, std::shared_ptr<Ideal::D3D12Shader>& OutShader)
+{
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(FilePath, FileMode::Read);
+
+	const uint32 size = file->Read<uint32>();
+
+	std::vector<unsigned char> shader;
+	shader.resize(size);
+	void* data = shader.data();
+	file->Read(&data, sizeof(unsigned char) * size);
+
+	if (!OutShader)
+	{
+		OutShader = std::make_shared<Ideal::D3D12Shader>();
+	}
+	OutShader->AddShaderData(shader);
 }
 
 void Ideal::ShaderManager::ReadShaderFile(const std::wstring& FilePath, DxcBuffer* OutSourceBuffer, std::vector<char>& SourceData)

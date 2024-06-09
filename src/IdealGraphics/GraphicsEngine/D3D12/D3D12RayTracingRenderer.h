@@ -89,6 +89,7 @@ namespace Ideal
 	class IdealMesh;
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
+	class D3D12Shader;
 }
 struct TestVertex;
 
@@ -199,6 +200,8 @@ namespace Ideal
 		ComPtr<IDxcCompiler3> m_compiler3;
 		ComPtr<IDxcUtils> m_dxcUtils;
 		ComPtr<IDxcBlob> m_testBlob;
+
+		std::shared_ptr<Ideal::D3D12Shader> m_myShader;
 
 	private:
 		const wchar_t* m_raygenShaderName = L"MyRaygenShader";

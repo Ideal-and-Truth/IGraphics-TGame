@@ -4,6 +4,11 @@
 
 namespace Ideal
 {
+	class D3D12Shader;
+}
+
+namespace Ideal
+{
 	class ShaderManager
 	{
 	public:
@@ -14,6 +19,12 @@ namespace Ideal
 		void Init();
 		void CompileShader(const std::wstring& FilePath, const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob);
 		void CompileShader(const std::wstring& FilePath, const std::wstring& ShaderModel, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob);
+
+		void CompileShaderAndSave(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName,
+			const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob
+		);
+		
+		void LoadShaderFile(const std::wstring& FilePath, std::shared_ptr<Ideal::D3D12Shader>& OutShader);
 
 		void AddIncludeDirectories(const std::wstring& IncludeDir) { m_includeDirectories.push_back(IncludeDir); }
 

@@ -30,6 +30,7 @@
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 #include "GraphicsEngine/D3D12/TestShader.h"
+#include "GraphicsEngine/D3D12/D3D12Shader.h"
 
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
@@ -321,6 +322,14 @@ finishAdapter:
 	//InitShader();
 	//CompileShader2(L"../Shaders/Raytracing/Raytracing.hlsl", m_raygenShaderName, m_testBlob);
 	m_shaderManager->CompileShader(L"../Shaders/Raytracing/Raytracing.hlsl", L"lib_6_3", m_testBlob);
+	m_shaderManager->CompileShaderAndSave(
+		L"../Shaders/Raytracing/Raytracing.hlsl",
+		L"../Shaders/Raytracing/",
+		L"SimpleRaytracingShader",
+		L"lib_6_3",
+		m_testBlob
+	);
+	m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/SimpleRaytracingShader.shader", m_myShader);
 	//m_shaderManager->CompileShader()
 	// create resource
 	CreateDeviceDependentResources();
@@ -842,7 +851,8 @@ void Ideal::D3D12RayTracingRenderer::CreateRaytracingPipelineStateObject()
 	//}
 
 	//Test
-	D3D12_SHADER_BYTECODE libdxil2 = CD3DX12_SHADER_BYTECODE(m_testBlob->GetBufferPointer(), m_testBlob->GetBufferSize());
+	//D3D12_SHADER_BYTECODE libdxil2 = CD3DX12_SHADER_BYTECODE(m_testBlob->GetBufferPointer(), m_testBlob->GetBufferSize());
+	D3D12_SHADER_BYTECODE libdxil2 = CD3DX12_SHADER_BYTECODE(m_myShader->GetBufferPointer(), m_myShader->GetSize());
 	lib->SetDXILLibrary(&libdxil2);
 	lib->DefineExport(m_raygenShaderName);
 	lib->DefineExport(m_closestHitShaderName);
