@@ -4,7 +4,14 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Entity.h"
+#include "EmptyEntity.h"
 #include "Transform.h"
+#include "BoxCollider.h"
+#include "Mesh.h"
+#include "RigidBody.h"
+#include "Camera.h"
+#include "CapsuleCollider.h"
+#include "SphereCollider.h"
 #include "InputManager.h"
 
 int32 EditorUI::m_selectedEntity = -1;
@@ -118,24 +125,8 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 
 		// Add Component
 		{
-			static bool isOpenComponentMenu = false;
-			int item_current = -1;
-			if (ImGui::Button("Add Component"))
-			{
-				isOpenComponentMenu = !isOpenComponentMenu;
-			}
-			if (isOpenComponentMenu)
-			{
-				/// TODO : 모든 컴포넌트의 이름을 받아올 수 있게 하고
-				/// 같은게 있는 지 없는 지 확인하고 
-				/// 있다면 중복 가능한지 확인해서
-				/// 중복 가능하면 추가
-				/// 불가능하면 안 추가
-				/// 없다면 그냥 추가
-				/// New Script 기능은 추가할 수 있는걸까
-				const char* items[] = { "Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon" };
-				ImGui::ListBox("Component", &item_current, items, IM_ARRAYSIZE(items), 4);
-			}
+			// Show Components List
+			AddComponentList(entities[m_selectedEntity]);
 		}
 	}
 
@@ -192,6 +183,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 	if (!ImGui::Begin("Hierarchy", p_open, window_flags))
 	{
 		// Early out if the window is collapsed, as an optimization.
+
 		ImGui::End();
 		return;
 	}
@@ -201,6 +193,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 	//ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.35f);
 	// e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+
 
 
 	/// 여기부터 UI 만들기
@@ -216,6 +209,15 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 		// Current Scene Name
 		if (ImGui::CollapsingHeader(currentSceneName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (ImGui::BeginPopupContextItem())
+			{
+				if (ImGui::Selectable("Create Empty"))
+				{
+					currentScene->CreateEntity(std::make_shared<EmptyEntity>());
+				}
+
+				ImGui::EndPopup();
+			}
 			uint32 overlapedCount = 2;
 			std::string entityName1;
 			std::string entityName2;
@@ -244,7 +246,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 			for (auto& e : currentSceneEntities)
 			{
 				auto entityName = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
-				
+
 				// Select Entity
 				if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == selectCount))
 				{
@@ -338,7 +340,21 @@ void EditorUI::TransformUI(std::shared_ptr<Truth::Component> TransformComponent)
 		posVec3.z = position[2];
 		TransformComponent->GetTypeInfo().GetProperty("position")->Set(TransformComponent.get(), posVec3);
 
-		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+
+		// Scale UI
+		float scale[3];
+		Vector3 scaleVec3 = TransformComponent->GetTypeInfo().GetProperty("scale")->Get<Vector3>(TransformComponent.get()).Get();
+
+		scale[0] = scaleVec3.x;
+		scale[1] = scaleVec3.y;
+		scale[2] = scaleVec3.z;
+
+		ImGui::DragFloat3("Scale", scale, 0.01f);
+
+		scaleVec3.x = scale[0];
+		scaleVec3.y = scale[1];
+		scaleVec3.z = scale[2];
+		TransformComponent->GetTypeInfo().GetProperty("scale")->Set(TransformComponent.get(), scaleVec3);
 	}
 }
 
@@ -568,7 +584,7 @@ void EditorUI::CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderCompo
 	if (ImGui::CollapsingHeader(componentName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		float radius = ColliderComponent->GetTypeInfo().GetProperty("radius")->Get<float>(ColliderComponent.get()).Get();
-		ImGui::DragFloat("Radius", &radius, 0.01f);
+		ImGui::DragFloat("Radius##2", &radius, 0.01f);
 
 		auto met = ColliderComponent->GetTypeInfo().GetMethod("SetRadius");
 		if (met)
@@ -619,6 +635,191 @@ void EditorUI::ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent)
 				ImGui::DragFloat(propertyName.c_str(), &propertyValue);
 				e->Set(UserMadeComponent.get(), propertyValue);
 			}
+		}
+	}
+}
+
+void EditorUI::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
+{
+	static bool isOpenComponentMenu = false;
+	int item_current = -1;
+	if (ImGui::Button("Add Component"))
+	{
+		isOpenComponentMenu = !isOpenComponentMenu;
+	}
+	if (isOpenComponentMenu)
+	{
+		/// TODO : 모든 컴포넌트의 이름을 받아올 수 있게 하고
+		/// 같은게 있는 지 없는 지 확인하고 
+		/// 있다면 중복 가능한지 확인해서
+		/// 중복 가능하면 추가
+		/// 불가능하면 안 추가
+		/// 없다면 그냥 추가
+		/// New Script 기능은 추가할 수 있는걸까
+		const char* items[] = { "BoxCollider", "CapsuleCollider", "SphereCollider", "RigidBody", "Mesh", "Camera" };
+		ImGui::ListBox("Component", &item_current, items, IM_ARRAYSIZE(items), 4);
+
+		switch (item_current)
+		{
+			// Add BoxCollider
+		case 0:
+			if (SelectedEntity->GetComponent<Truth::BoxCollider>().lock().get())
+			{
+				auto entityPtr = SelectedEntity->GetComponent<Truth::BoxCollider>().lock().get();
+				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
+				{
+					SelectedEntity->AddComponent<Truth::BoxCollider>();
+
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+				else
+				{
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+			}
+			else
+			{
+				SelectedEntity->AddComponent<Truth::BoxCollider>();
+
+				isOpenComponentMenu = !isOpenComponentMenu;
+				break;
+			}
+			break;
+
+			// Add CapsuleCollider
+		case 1:
+			if (SelectedEntity->GetComponent<Truth::CapsuleCollider>().lock().get())
+			{
+				auto entityPtr = SelectedEntity->GetComponent<Truth::CapsuleCollider>().lock().get();
+				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
+				{
+					SelectedEntity->AddComponent<Truth::CapsuleCollider>();
+
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+				else
+				{
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+			}
+			else
+			{
+				SelectedEntity->AddComponent<Truth::CapsuleCollider>();
+
+				isOpenComponentMenu = !isOpenComponentMenu;
+				break;
+			}
+			break;
+
+			// Add SphereCollider
+		case 2:
+			if (SelectedEntity->GetComponent<Truth::SphereCollider>().lock().get())
+			{
+				auto entityPtr = SelectedEntity->GetComponent<Truth::SphereCollider>().lock().get();
+				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
+				{
+					SelectedEntity->AddComponent<Truth::SphereCollider>();
+
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+				else
+				{
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+			}
+			else
+			{
+				SelectedEntity->AddComponent<Truth::SphereCollider>();
+
+				isOpenComponentMenu = !isOpenComponentMenu;
+				break;
+			}
+			break;
+
+			// Add RigidBody
+		case 3:
+			if (SelectedEntity->GetComponent<Truth::RigidBody>().lock().get())
+			{
+				auto entityPtr = SelectedEntity->GetComponent<Truth::RigidBody>().lock().get();
+				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
+				{
+					SelectedEntity->AddComponent<Truth::RigidBody>();
+
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+				else
+				{
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+			}
+			else
+			{
+				SelectedEntity->AddComponent<Truth::RigidBody>();
+				isOpenComponentMenu = !isOpenComponentMenu;
+				break;
+			}
+			break;
+
+			// Add Mesh
+		case 4:
+			if (SelectedEntity->GetComponent<Truth::Mesh>().lock().get())
+			{
+				auto entityPtr = SelectedEntity->GetComponent<Truth::Mesh>().lock().get();
+				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
+				{
+					SelectedEntity->AddComponent<Truth::Mesh>(L"debugCube/debugCube");
+
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+				else
+				{
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+			}
+			else
+			{
+				SelectedEntity->AddComponent<Truth::Mesh>(L"debugCube/debugCube");
+
+				isOpenComponentMenu = !isOpenComponentMenu;
+				break;
+			}
+			break;
+
+			// Add Camera
+		case 5:
+			if (SelectedEntity->GetComponent<Truth::Camera>().lock().get())
+			{
+				auto entityPtr = SelectedEntity->GetComponent<Truth::Camera>().lock().get();
+				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
+				{
+					SelectedEntity->AddComponent<Truth::Camera>();
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+				else
+				{
+					isOpenComponentMenu = !isOpenComponentMenu;
+					break;
+				}
+			}
+			else
+			{
+				SelectedEntity->AddComponent<Truth::Camera>();
+				isOpenComponentMenu = !isOpenComponentMenu;
+				break;
+			}
+			break;
+
 		}
 	}
 }

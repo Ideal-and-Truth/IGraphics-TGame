@@ -94,6 +94,9 @@
     <Filter Include="EditorUI">
       <UniqueIdentifier>{8cdc901d-3d08-4976-8218-64869e380411}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Enitity\EmptyEntity">
+      <UniqueIdentifier>{2d319ca0-4c34-4fd9-b308-e4b02abbc473}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -183,6 +186,9 @@
     </ClCompile>
     <ClCompile Include="EditorUI.cpp">
       <Filter>EditorUI</Filter>
+    </ClCompile>
+    <ClCompile Include="EmptyEntity.cpp">
+      <Filter>Enitity\EmptyEntity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -293,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="EditorUI.h">
       <Filter>EditorUI</Filter>
+    </ClInclude>
+    <ClInclude Include="EmptyEntity.h">
+      <Filter>Enitity\EmptyEntity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

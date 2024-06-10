@@ -19,7 +19,7 @@ public:
 	void RenderUI(bool* p_open);
 	void ShowInspectorWindow(bool* p_open);
 	void ShowHierarchyWindow(bool* p_open);
-	
+
 
 	//void TranslateProperty(const TypeInfo& value);
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
@@ -32,6 +32,6 @@ public:
 	void SphereColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
 	void CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
 	void ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent);
-
+	void AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity);
 };
 

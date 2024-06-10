@@ -22,6 +22,7 @@ Truth::RigidBody::RigidBody()
 	, m_isChanged(true)
 	, m_freezePosition{ false, false , false }
 	, m_freezeRotation{ false, false , false }
+	, m_body(nullptr)
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
