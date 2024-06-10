@@ -206,3 +206,67 @@ DirectX::SimpleMath::Matrix Truth::Entity::GetWorldTM() const
 	return m_transform->m_transformMatrix;
 }
 
+void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
+{
+	_c->SetOwner(shared_from_this());
+	_c->SetManager(m_manager);
+
+	const auto& mets = _c->GetTypeInfo().GetMethods();
+
+	for (const auto& m : mets)
+	{
+		std::string metName = m->GetName();
+
+		auto p = std::make_pair(_c.get(), m);
+
+		if (metName == "OnCollisionEnter")
+		{
+			m_onCollisionEnter.push_back(p);
+		}
+		if (metName == "OnCollisionStay")
+		{
+			m_onCollisionStay.push_back(p);
+		}
+		if (metName == "OnCollisionExit")
+		{
+			m_onCollisionExit.push_back(p);
+		}
+
+		if (metName == "OnTriggerEnter")
+		{
+			m_onTriggerEnter.push_back(p);
+		}
+		if (metName == "OnTriggerStay")
+		{
+			m_onTriggerStay.push_back(p);
+		}
+		if (metName == "OnTriggerExit")
+		{
+			m_onTriggerExit.push_back(p);
+		}
+
+		if (metName == "Update")
+		{
+			m_update.push_back(p);
+		}
+		if (metName == "FixedUpdate")
+		{
+			m_fixedUpdate.push_back(p);
+		}
+		if (metName == "LateUpdate")
+		{
+			m_latedUpdate.push_back(p);
+		}
+
+		if (metName == "Destroy")
+		{
+			m_destroy.push_back(p);
+		}
+
+		if (metName == "Initalize")
+		{
+			m->Invoke<void>(_c.get());
+		}
+	}
+}
+

@@ -115,6 +115,9 @@ namespace Truth
 		Matrix GetWorldTM() const;
 
 	private:
+
+		void ApplyComponent(std::shared_ptr<Component> _c);
+
 	};
 
 	/// template로 작성된 함수 목록
@@ -142,6 +145,8 @@ namespace Truth
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
 			m_components.push_back(component);
+			component->Initalize();
+			ApplyComponent(component);
 
 			return component;
 		}
@@ -161,6 +166,8 @@ namespace Truth
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
 			m_components.push_back(component);
+			component->Initalize();
+			ApplyComponent(component);
 
 			return component;
 		}

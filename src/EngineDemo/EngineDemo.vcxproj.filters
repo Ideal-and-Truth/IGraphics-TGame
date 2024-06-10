@@ -51,9 +51,6 @@
     <ClInclude Include="EngineDemo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Entity\Bullet</Filter>
     </ClInclude>
@@ -70,9 +67,6 @@
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
       <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Entity\Bullet</Filter>

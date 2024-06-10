@@ -69,13 +69,12 @@ namespace Truth
 
 		void InitalizeMassAndInertia();
 
-	private:
-		METHOD(Awake);
-		void Awake();
-
 		METHOD(Initalize);
 		void Initalize();
 
+	private:
+		METHOD(Awake);
+		void Awake();
 
 		METHOD(Start);
 		void Start();

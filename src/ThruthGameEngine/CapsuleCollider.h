@@ -30,13 +30,13 @@ namespace Truth
 		METHOD(SetHeight);
 		void SetHeight(float _height);
 
+		METHOD(Initalize);
+		void Initalize();
+
 	private:
 		METHOD(Awake);
 		void Awake();
 
-
-		METHOD(Initalize);
-		void Initalize();
 	};
 
 	template<class Archive>

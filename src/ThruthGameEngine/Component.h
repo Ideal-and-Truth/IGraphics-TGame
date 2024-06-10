@@ -40,10 +40,6 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
-	public:
-		PROPERTY(name);
-		std::string m_name;
-
 	protected:
 		PROPERTY(canMultiple);
 		bool m_canMultiple;
@@ -69,7 +65,7 @@ namespace Truth
 		virtual void OnTriggerEnter() {};
 		virtual void OnTriggerExit() {};
 		virtual void OnTriggerStay() {};
-
+		virtual void Initalize() {};
 
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }
 		std::weak_ptr<Entity> GetOwner() const { return m_owner; }

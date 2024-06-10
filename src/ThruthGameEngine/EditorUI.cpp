@@ -4,7 +4,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Entity.h"
-#include "EmptyEntity.h"
+// #include "EmptyEntity.h"
 #include "Transform.h"
 #include "BoxCollider.h"
 #include "Mesh.h"
@@ -213,7 +213,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 			{
 				if (ImGui::Selectable("Create Empty"))
 				{
-					currentScene->CreateEntity(std::make_shared<EmptyEntity>());
+					currentScene->CreateEntity(std::make_shared<Truth::Entity>());
 				}
 
 				ImGui::EndPopup();

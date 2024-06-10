@@ -25,12 +25,13 @@ namespace Truth
 		METHOD(SetRadius);
 		void SetRadius(float _radius);
 
+		METHOD(Initalize);
+		void Initalize();
+
 	private:
 		METHOD(Awake);
 		void Awake();
 
-		METHOD(Initalize);
-		void Initalize();
 	};
 
 	template<class Archive>
