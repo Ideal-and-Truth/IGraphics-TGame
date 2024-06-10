@@ -1,4 +1,5 @@
 #include "Collider.h"
+#include "PhysicsManager.h"
 
 Truth::Collider::Collider(bool _isTrigger)
 	: Component()
@@ -36,6 +37,28 @@ void Truth::Collider::SetPhysxTransform(Vector3 _pos)
 		q.w = m_rotation.w;
 		m_body->setGlobalPose(physx::PxTransform(_pos.x, _pos.y, _pos.z, q));
 	}
+}
+
+physx::PxShape* Truth::Collider::CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
+{
+	return m_managers.lock()->Physics()->CreateCollider(_shape, _args);
+}
+
+physx::PxRigidDynamic* Truth::Collider::GetDefaultDynamic()
+{
+	return m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
+}
+
+physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
+{
+	return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
+}
+
+void Truth::Collider::SetUpFiltering(uint32 _filterGroup)
+{
+	physx::PxFilterData filterData;
+	filterData.word0 = _filterGroup;
+	m_collider->setSimulationFilterData(filterData);
 }
 
 void Truth::Collider::SetPhysxTransform(Vector3 _pos, Quaternion _rot)

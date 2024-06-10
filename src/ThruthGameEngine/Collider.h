@@ -1,6 +1,17 @@
 #pragma once
 #include "Component.h"
-#include "PhysicsManager.h"
+#include "ShapeType.h"
+
+// #include "PhysicsManager.h"
+
+namespace physx
+{
+	class PxShape;
+	class PxRigidDynamic;
+	class PxRigidActor;
+	class PxRigidStatic;
+	struct PxFilterData;
+}
 
 namespace Truth
 {
@@ -34,26 +45,12 @@ namespace Truth
 		void SetPhysxTransform(Vector3 _pos);
 
 	protected:
-		inline physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
-		{
-			return m_managers.lock()->Physics()->CreateCollider(_shape, _args);
-		}
+		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
+		physx::PxRigidDynamic* GetDefaultDynamic();
+		physx::PxRigidStatic* GetDefaultStatic();
 
-		inline physx::PxRigidDynamic* GetDefaultDynamic()
-		{
-			return m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
-		}
-		inline physx::PxRigidStatic* GetDefaultStatic()
-		{
-			return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
-		}
 
-		void SetUpFiltering(physx::PxU32 _filterGroup)
-		{
-			physx::PxFilterData filterData;
-			filterData.word0 = _filterGroup;
-			m_collider->setSimulationFilterData(filterData);
-		}
+		void SetUpFiltering(uint32 _filterGroup);
 	};
 
 	template<class Archive>

@@ -1,6 +1,7 @@
 #pragma once
 #include "Collider.h"
 #include "Headers.h"
+
 namespace Truth
 {
 	class CapsuleCollider

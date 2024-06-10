@@ -1,6 +1,7 @@
 #include "SphereCollider.h"
 #include "Entity.h"
 #include "RigidBody.h"
+#include "PhysicsManager.h"
 
 Truth::SphereCollider::SphereCollider(bool _isTrigger)
 	: Collider(_isTrigger)

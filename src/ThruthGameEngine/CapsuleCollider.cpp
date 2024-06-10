@@ -1,6 +1,7 @@
 #include "CapsuleCollider.h"
 #include "Entity.h"
 #include "RigidBody.h"
+#include "PhysicsManager.h"
 
 Truth::CapsuleCollider::CapsuleCollider(bool _isTrigger)
 	: Collider(_isTrigger)

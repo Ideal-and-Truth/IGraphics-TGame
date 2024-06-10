@@ -1,6 +1,13 @@
 ﻿// EngineDemo.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
 
+// #pragma warning(push)
+// #pragma warning(disable: 26495)
+// #pragma warning(disable: 33010)
+// #pragma warning(disable: 6297)
+// #include <PxPhysicsAPI.h>
+// #pragma warning(pop)
+
 #include "framework.h"
 #include "EngineDemo.h"
 #include "Processor.h"
@@ -19,7 +26,6 @@
 #include "TestComponent.h"
 #include "BulletMove.h"
 #pragma endregion test Scene
-
 
 BOOST_CLASS_EXPORT(Truth::RigidBody);
 BOOST_CLASS_EXPORT(Truth::Transform);
@@ -44,6 +50,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::unique_ptr<Processor> processor = std::make_unique<Processor>();
 
 	processor->Initialize(hInstance);
+
+
 
 // 	std::shared_ptr<Truth::Scene> testScene = std::make_shared<Truth::Scene>(processor->GetManagers());
 // 	testScene->m_name = "test";

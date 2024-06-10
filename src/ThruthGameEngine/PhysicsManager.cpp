@@ -34,7 +34,7 @@ Truth::PhysicsManager::~PhysicsManager()
 
 void Truth::PhysicsManager::Initalize()
 {
-	m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
+	m_foundation = ::PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
 
 	// m_oPvd = PxCreateOmniPvd(*m_foundation);
 
@@ -42,8 +42,8 @@ void Truth::PhysicsManager::Initalize()
 	m_trasport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
 
-	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
-	PxInitExtensions(*m_physics, m_pvd);
+	m_physics = ::PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
+	::PxInitExtensions(*m_physics, m_pvd);
 	collisionCallback = new Truth::PxEventCallback();
 
 	assert(m_physics && "PxCreatePhysics failed!");
