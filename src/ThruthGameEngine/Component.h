@@ -40,6 +40,10 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
+	public:
+		PROPERTY(name);
+		std::string m_name;
+
 	protected:
 		PROPERTY(canMultiple);
 		bool m_canMultiple;

@@ -17,6 +17,9 @@ namespace Truth
 		PROPERTY(path)
 		std::wstring m_path;
 
+		PROPERTY(isRendering)
+		bool m_isRendering;
+
 	public:
 		Mesh();
 		Mesh(std::wstring _path);

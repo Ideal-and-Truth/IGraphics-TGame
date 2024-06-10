@@ -7,7 +7,7 @@
 
 Shooter::Shooter()
 {
-
+	m_name = "Shooter";
 }
 
 Shooter::~Shooter()

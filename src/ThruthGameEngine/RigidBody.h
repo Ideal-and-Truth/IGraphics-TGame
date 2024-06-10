@@ -32,9 +32,9 @@ namespace Truth
 		bool m_isKinematic;
 
 		PROPERTY(freezePosition);
-		bool m_freezePosition[3];
+		std::vector<bool> m_freezePosition;
 		PROPERTY(freezeRotation);
-		bool m_freezeRotation[3];
+		std::vector<bool> m_freezeRotation;
 
 		Vector3 m_velocity;
 		physx::PxRigidDynamic* m_body;

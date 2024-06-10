@@ -12,6 +12,7 @@ Truth::Mesh::Mesh()
 Truth::Mesh::Mesh(std::wstring _path)
 	: Component()
 	, m_path(_path)
+	, m_isRendering(true)
 {
 }
 
@@ -42,10 +43,12 @@ void Truth::Mesh::Initalize()
 void Truth::Mesh::Update()
 {
 	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
+	m_mesh->SetDrawObject(m_isRendering);
 }
 
 void Truth::Mesh::Awake()
 {
+	m_name = "Mesh Filter";
 	SetMesh(m_path);
 	SetRenderable(true);
 }

@@ -5,7 +5,7 @@
 
 BulletMove::BulletMove()
 {
-
+	m_name = "BulletMove";
 }
 
 BulletMove::~BulletMove()

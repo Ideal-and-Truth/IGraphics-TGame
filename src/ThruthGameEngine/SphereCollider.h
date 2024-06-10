@@ -13,6 +13,7 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 	public:
+		PROPERTY(radius);
 		float m_radius;
 
 	public:
@@ -21,6 +22,7 @@ namespace Truth
 		SphereCollider(Vector3 _pos, float _radius, bool _isTrigger = true);
 		virtual ~SphereCollider();
 
+		METHOD(SetRadius);
 		void SetRadius(float _radius);
 
 	private:

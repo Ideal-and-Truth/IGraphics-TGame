@@ -8,12 +8,15 @@ Truth::CapsuleCollider::CapsuleCollider(bool _isTrigger)
 	, m_radius(0.5f)
 	, m_height(1.0f)
 {
+	m_name = "Capsule Collider";
 
 }
 
 Truth::CapsuleCollider::CapsuleCollider(float _radius, float _height, bool _isTrigger)
 	: Collider(_isTrigger)
 {
+	m_name = "Capsule Collider";
+
 	SetRadius(_radius);
 	SetHeight(_height);
 }
@@ -21,6 +24,8 @@ Truth::CapsuleCollider::CapsuleCollider(float _radius, float _height, bool _isTr
 Truth::CapsuleCollider::CapsuleCollider(Vector3 _pos, float _radius, float _height, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
+	m_name = "Capsule Collider";
+
 	SetRadius(_radius);
 	SetHeight(_height);
 }
@@ -59,6 +64,7 @@ void Truth::CapsuleCollider::SetHeight(float _height)
 
 void Truth::CapsuleCollider::Awake()
 {
+
 }
 
 

@@ -7,7 +7,7 @@
 Truth::Camera::Camera()
 	: Component()
 {
-
+	m_name = "Camera";
 }
 
 Truth::Camera::~Camera()

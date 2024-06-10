@@ -20,9 +20,13 @@ Truth::RigidBody::RigidBody()
 	, m_localMassCenter{ 0.0f, 0.0f, 0.0f }
 	, m_worldMassCenter{ 0.0f, 0.0f, 0.0f }
 	, m_isChanged(true)
+	, m_freezePosition{ false, false , false }
+	, m_freezeRotation{ false, false , false }
+	, m_body(nullptr)
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
+	m_name = "Rigidbody";
 }
 
 Truth::RigidBody::~RigidBody()
@@ -38,7 +42,7 @@ void Truth::RigidBody::Initalize()
 
 void Truth::RigidBody::Start()
 {
-	
+
 }
 
 void Truth::RigidBody::InitalizeMassAndInertia()
@@ -98,7 +102,7 @@ void Truth::RigidBody::Awake()
 
 	m_managers.lock()->Physics()->AddScene(m_body);
 
-	m_mass = m_body->getMass();                                                                                                           
+	m_mass = m_body->getMass();
 	m_drag = m_body->getLinearDamping();
 	m_angularDrag = m_body->getAngularDamping();
 
