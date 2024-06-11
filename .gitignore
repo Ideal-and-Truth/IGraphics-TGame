@@ -36,4 +36,4 @@ pycache/
 *.rej
 *.swp
 *.DS_Store
-!packages/
+packages/
