@@ -121,8 +121,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		bool isEditor = false;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
 		{
 			type = EGraphicsInterfaceType::D3D12_EDITOR;
@@ -154,12 +154,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
-		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -185,6 +185,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
 		//renderScene->AddObject(mesh);
+		renderScene->AddDebugObject(mesh);
 		//renderScene->AddObject(mesh2);
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
@@ -203,7 +204,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
-		//std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
@@ -217,7 +218,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
-		//renderScene->AddLight(dirLight);
+		renderScene->AddLight(dirLight);
 		//renderScene->AddLight(spotLight);
 		//renderScene->AddLight(pointLight);
 		//renderScene->AddLight(pointLight2);

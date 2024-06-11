@@ -1,4 +1,4 @@
-#pragma once
+	#pragma once
 #include "Core/Core.h"
 #include "IRenderScene.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
@@ -51,12 +51,15 @@ namespace Ideal
 	public:
 		//----------IRenderScene Interface-----------//
 		virtual void AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
+		virtual void AddDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
 		virtual void AddLight(std::shared_ptr<Ideal::ILight> Light) override;
 
 	private:
 		// Ver2 : 2024.05.07 : cb pool, descriptor pool을 사용하는 방식으로 바꾸겠다.
 		void CreateStaticMeshPSO(ID3D12Device* Device);
 		void CreateSkinnedMeshPSO(ID3D12Device* Device);
+
+		void CreateDebugStaticMeshPSO(ID3D12Device* Device);
 
 		// 2024.05.17 : ScreenQuad Data
 		void AllocateFromDescriptorHeap(std::shared_ptr<IdealRenderer> Renderer);
@@ -90,6 +93,7 @@ namespace Ideal
 
 		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
 		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
+		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_debugMeshObjects;
 
 		std::weak_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
 		std::vector<std::weak_ptr<Ideal::IdealSpotLight>> m_spotLights;
@@ -98,6 +102,7 @@ namespace Ideal
 	private:
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_skinnedMeshPSO;
+		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_debugStaticMeshPSO;
 
 		ComPtr<ID3D12RootSignature> m_staticMeshRootSignature;
 		ComPtr<ID3D12RootSignature> m_skinnedMeshRootSignature;

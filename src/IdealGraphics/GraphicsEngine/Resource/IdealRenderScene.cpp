@@ -71,6 +71,8 @@ void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
 	CreateStaticMeshPSO(d3d12Renderer->GetDevice().Get());
 	CreateSkinnedMeshPSO(d3d12Renderer->GetDevice().Get());
 
+	// TEMP DEBUG //
+	CreateDebugStaticMeshPSO(d3d12Renderer->GetDevice().Get());
 }
 
 void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
@@ -176,12 +178,22 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 		}
 	}
 
-	/*commandList->Close();
-	ID3D12CommandList* ppCommandLists[] = { commandList.Get() };
-	d3d12Renderer->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-	d3d12Renderer->GraphicsFence();
-	d3d12Renderer->WaitForGraphicsFenceValue();
-	d3d12Renderer->ResetCommandList();*/
+	// TEMP WireFrame Mesh
+	{
+		commandList->SetPipelineState(m_debugStaticMeshPSO->GetPipelineState().Get());
+		commandList->SetGraphicsRootSignature(m_staticMeshRootSignature.Get());
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		BindDescriptorTable(Renderer);
+
+		for (auto& m : m_debugMeshObjects)
+		{
+			if (m.lock() != nullptr)
+			{
+				m.lock()->Draw(d3d12Renderer);
+			}
+		}
+	}
 }
 
 void Ideal::IdealRenderScene::DrawScreen(std::shared_ptr<IdealRenderer> Renderer)
@@ -229,6 +241,14 @@ void Ideal::IdealRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> Mesh
 	else if (std::dynamic_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject) != nullptr)
 	{
 		m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
+	}
+}
+
+void Ideal::IdealRenderScene::AddDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
+{
+	if (std::dynamic_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject) != nullptr)
+	{
+		m_debugMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject));
 	}
 }
 
@@ -416,6 +436,83 @@ void Ideal::IdealRenderScene::CreateSkinnedMeshPSO(ID3D12Device* Device)
 	m_skinnedMeshPSO->SetTargetFormat(m_gBufferNum, rtvFormat, dsvFormat);
 
 	m_skinnedMeshPSO->Create(Device);
+}
+
+void Ideal::IdealRenderScene::CreateDebugStaticMeshPSO(ID3D12Device* Device)
+{
+	////-------------------Sampler--------------------//
+	//CD3DX12_STATIC_SAMPLER_DESC sampler(
+	//	0,
+	//	D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+	//	D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+	//	D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+	//	D3D12_TEXTURE_ADDRESS_MODE_WRAP
+	//);
+
+	////-------------------Range--------------------//
+	//CD3DX12_DESCRIPTOR_RANGE1 rangeGlobal[1];
+	//rangeGlobal[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0 : Global
+
+	//CD3DX12_DESCRIPTOR_RANGE1 rangePerObj[1];
+	//rangePerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);	// b1 : Transform
+
+	//CD3DX12_DESCRIPTOR_RANGE1 rangePerMesh[2];
+	//rangePerMesh[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2 : Material	// mesh마다 다른 material을 가지고 있으니 갈아 끼워야한다.
+	//rangePerMesh[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0);	// t0 ~ t2 : Shader Resource View
+
+	////-------------------Parameter--------------------//
+	//CD3DX12_ROOT_PARAMETER1 rootParameters[3];
+	//rootParameters[0].InitAsDescriptorTable(_countof(rangeGlobal), rangeGlobal, D3D12_SHADER_VISIBILITY_ALL);
+	//rootParameters[1].InitAsDescriptorTable(_countof(rangePerObj), rangePerObj, D3D12_SHADER_VISIBILITY_ALL);
+	//rootParameters[2].InitAsDescriptorTable(_countof(rangePerMesh), rangePerMesh, D3D12_SHADER_VISIBILITY_ALL);
+
+
+	////-------------------Signature--------------------//
+	//D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	//CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	//rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+
+	//ComPtr<ID3DBlob> signature;
+	//ComPtr<ID3DBlob> error;
+	//Check(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+	//Check(Device->CreateRootSignature(
+	//	0,
+	//	signature->GetBufferPointer(),
+	//	signature->GetBufferSize(),
+	//	IID_PPV_ARGS(m_staticMeshRootSignature.GetAddressOf())
+	//));
+
+	m_debugStaticMeshPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
+	m_debugStaticMeshPSO->SetInputLayout(BasicVertex::InputElements, BasicVertex::InputElementCount);
+
+	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
+	vs->CompileFromFile(L"../Shaders/GBufferMesh2.hlsl", nullptr, nullptr, "VS", "vs_5_0");
+	m_debugStaticMeshPSO->SetVertexShader(vs);
+
+	std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
+	ps->CompileFromFile(L"../Shaders/GBufferMesh2.hlsl", nullptr, nullptr, "PS", "ps_5_0");
+	m_debugStaticMeshPSO->SetPixelShader(ps);
+
+	m_debugStaticMeshPSO->SetRootSignature(m_staticMeshRootSignature.Get());
+
+	D3D12_RASTERIZER_DESC rasterizerDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	rasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+	m_debugStaticMeshPSO->SetRasterizerState(rasterizerDesc);
+	m_debugStaticMeshPSO->SetBlendState();
+
+	DXGI_FORMAT rtvFormat[m_gBufferNum] = {
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_R32G32B32A32_FLOAT
+	};
+	DXGI_FORMAT dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	m_debugStaticMeshPSO->SetTargetFormat(m_gBufferNum, rtvFormat, dsvFormat);
+
+	m_debugStaticMeshPSO->Create(Device);
 }
 
 void Ideal::IdealRenderScene::AllocateFromDescriptorHeap(std::shared_ptr<IdealRenderer> Renderer)

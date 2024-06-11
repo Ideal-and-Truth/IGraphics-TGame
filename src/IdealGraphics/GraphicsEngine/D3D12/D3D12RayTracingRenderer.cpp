@@ -806,31 +806,12 @@ void Ideal::D3D12RayTracingRenderer::CreateRootSignatures()
 		rootParameters[0].InitAsDescriptorTable(1, rangeRenderTarget);
 		rootParameters[1].InitAsShaderResourceView(0);
 		rootParameters[2].InitAsDescriptorTable(1, rangeGlobalCB);
-		//rootParameters[2].InitAsConstantBufferView(0);	// b0
 		rootParameters[3].InitAsDescriptorTable(1, rangePerObj);
 
 		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(_countof(rootParameters), rootParameters);
 		SerializeAndCreateRayTracingRootSignature(globalRootSignatureDesc, &m_raytracingGlobalRootSignature);
 	}
 
-	// Global Root Signature
-	// 이 루트 시그니쳐는 DispatchRays()가 호출되는 동안 모든 레이트레이싱에서의 접근이 허용된다.
-	//{
-	//	// RANGE //
-	//	CD3DX12_DESCRIPTOR_RANGE ranges[2];
-	//	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : RenderTarget
-	//	ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1);	// 1 static index and vertex buffers;
-
-	//	// SLOT //
-	//	CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];
-	//	rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsDescriptorTable(1, &ranges[0]);
-	//	rootParameters[GlobalRootSignatureParams::AccelerationStructureSlot].InitAsShaderResourceView(0);
-	//	rootParameters[GlobalRootSignatureParams::SceneConstantSlot].InitAsConstantBufferView(0);
-	//	rootParameters[GlobalRootSignatureParams::VertexBufferSlot].InitAsDescriptorTable(1, &ranges[1]);
-
-	//	CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
-	//	SerializeAndCreateRayTracingRootSignature(globalRootSignatureDesc, &m_raytracingGlobalRootSignature);
-	//}
 	// Local Root Signature
 	// 이 루트 시그니쳐는 쉐이더 테이블에서 나온 유니크 인자들을 쉐이더가 가질 수 있게 한다.
 	{
@@ -1252,7 +1233,6 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 	auto handle2 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
 	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	commandlist->SetComputeRootDescriptorTable(2, handle2.GetGpuHandle());
-	//commandlist->SetComputeRootConstantBufferView(2, cb->GpuMemAddr);
 
 	// parameter3에 바인딩 : VertexBufferSlot
 	auto handle1 = m_descriptorHeaps[m_currentContextIndex]->Allocate(2);
@@ -1261,14 +1241,6 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE vertexDest(handle1.GetCpuHandle(), 1, incrementSize);
 	m_device->CopyDescriptorsSimple(1, vertexDest, m_vertexBufferSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	commandlist->SetComputeRootDescriptorTable(3, handle1.GetGpuHandle());
-
-
-	// ragne 3에 바인딩 : cubdCB
-	//auto cb2 = m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), sizeof(m_cubeCB));
-	//memcpy(cb2->SystemMemAddr, &m_cubeCB, sizeof(m_cubeCB));
-	//auto handle3 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-	//m_device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//commandlist->SetComputeRootDescriptorTable(4, handle3.GetGpuHandle());
 
 	// Bind the hepas, 가속구조, dispatch rays
 	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
