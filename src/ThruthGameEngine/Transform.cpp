@@ -22,7 +22,7 @@ Truth::Transform::~Transform()
 /// 변환 내용을 벡터로 저장 한 후 한번에 연산한다.
 /// 그때그때 연산하는거 보다 이게 더 좋을지 아닐지 고민중
 /// </summary>
-void Truth::Transform::ApplyTransform(std::any _p)
+void Truth::Transform::ApplyTransform()
 {
 	Matrix scaleMT = Matrix::CreateScale(m_scale);
 	Matrix rotationMT = Matrix::CreateFromQuaternion(m_rotation);
@@ -30,9 +30,3 @@ void Truth::Transform::ApplyTransform(std::any _p)
 
 	m_transformMatrix = scaleMT * rotationMT * traslationMT;
 }
-
-void Truth::Transform::Awake()
-{
-	EventBind("Apply Transform", &Transform::ApplyTransform);
-}
-

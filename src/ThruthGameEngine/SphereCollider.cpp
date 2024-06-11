@@ -1,23 +1,29 @@
 #include "SphereCollider.h"
 #include "Entity.h"
 #include "RigidBody.h"
+#include "PhysicsManager.h"
 
 Truth::SphereCollider::SphereCollider(bool _isTrigger)
 	: Collider(_isTrigger)
 	, m_radius(0.5f)
 {
+	m_name = "Sphere Collider";
 
 }
 
 Truth::SphereCollider::SphereCollider(float _radius, bool _isTrigger /*= true*/)
 	: Collider(_isTrigger)
 {
+	m_name = "Sphere Collider";
+
 	SetRadius(_radius);
 }
 
 Truth::SphereCollider::SphereCollider(Vector3 _pos, float _radius, bool _isTrigger /*= true*/)
 	: Collider(_pos, _isTrigger)
 {
+	m_name = "Sphere Collider";
+
 	SetRadius(_radius);
 }
 
@@ -59,6 +65,7 @@ void Truth::SphereCollider::Awake()
 // 		r.lock()->InitalizeMassAndInertia();
 // 	}
 // 	m_managers.lock()->Physics()->AddScene(m_body);
+
 }
 
 void Truth::SphereCollider::Initalize()

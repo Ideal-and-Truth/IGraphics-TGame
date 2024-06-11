@@ -1,17 +1,34 @@
 #pragma once
 #include "Component.h"
-#include "PhysicsManager.h"
+#include "ShapeType.h"
+
+// #include "PhysicsManager.h"
+
+namespace physx
+{
+	class PxShape;
+	class PxRigidDynamic;
+	class PxRigidActor;
+	class PxRigidStatic;
+	struct PxFilterData;
+}
 
 namespace Truth
 {
 	class Collider :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(Collider)
+		GENERATE_CLASS_TYPE_INFO(Collider);
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
 		bool m_isTrigger;
 		Vector3 m_center;
+		Quaternion m_rotation;
 		inline static uint32 m_colliderIDGenerator = 0;
 		uint32 m_colliderID;
 		physx::PxShape* m_collider;
@@ -24,30 +41,26 @@ namespace Truth
 		Collider(Vector3 _pos, bool _isTrigger = true);
 		virtual ~Collider();
 
-		void SetPosition(Vector3 _pos);
+		void SetPhysxTransform(Vector3 _pos, Quaternion _rot);
+		void SetPhysxTransform(Vector3 _pos);
 
 	protected:
-		inline physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args)
-		{
-			return m_managers.lock()->Physics()->CreateCollider(_shape, _args);
-		}
+		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
+		physx::PxRigidDynamic* GetDefaultDynamic();
+		physx::PxRigidStatic* GetDefaultStatic();
 
-		inline physx::PxRigidDynamic* GetDefaultDynamic()
-		{
-			return m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
-		}
-		inline physx::PxRigidStatic* GetDefaultStatic()
-		{
-			return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
-		}
 
-		void SetUpFiltering(physx::PxU32 _filterGroup)
-		{
-			physx::PxFilterData filterData;
-			filterData.word0 = _filterGroup;
-			m_collider->setSimulationFilterData(filterData);
-		}
+		void SetUpFiltering(uint32 _filterGroup);
 	};
+
+	template<class Archive>
+	void Truth::Collider::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_isTrigger;
+		_ar& m_center;
+		_ar& m_rotation;
+	}
 
 	struct Collision
 	{
@@ -55,4 +68,3 @@ namespace Truth
 		std::weak_ptr<Collider> m_collB;
 	};
 }
-

@@ -7,13 +7,17 @@ namespace Truth
 	class Transform :
 		public Truth::Component
 	{
-		GENERATE_CLASS_TYPE_INFO(Transform)
+		GENERATE_CLASS_TYPE_INFO(Transform);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
-		PROPERTY(position)
-			Vector3 m_position;
-		PROPERTY(scale)
-			Vector3 m_scale;
+		PROPERTY(position);
+		Vector3 m_position;
+		PROPERTY(scale);
+		Vector3 m_scale;
 
 		Quaternion m_rotation;
 
@@ -26,11 +30,7 @@ namespace Truth
 		virtual ~Transform();
 
 		// 변환 내용 적용
-		void ApplyTransform(std::any _p);
-
-	private:
-		METHOD(Awake);
-		void Awake();
+		void ApplyTransform();
 
 	public:
 
@@ -92,5 +92,17 @@ namespace Truth
 		}
 #pragma endregion Inline
 	};
+
+	template<class Archive>
+	void Truth::Transform::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_position;
+		_ar& m_scale;
+		_ar& m_rotation;
+		_ar& m_transformMatrix;
+		_ar& m_look;
+	}
+
 }
 

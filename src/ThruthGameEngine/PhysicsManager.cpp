@@ -1,5 +1,7 @@
 #include "PhysicsManager.h"
 #include "PxEventCallback.h"
+#include "Collider.h"
+#include "MathConverter.h"
 
 // static uint8 physx::m_collsionTable[8] = {};
 
@@ -32,7 +34,7 @@ Truth::PhysicsManager::~PhysicsManager()
 
 void Truth::PhysicsManager::Initalize()
 {
-	m_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
+	m_foundation = ::PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
 
 	// m_oPvd = PxCreateOmniPvd(*m_foundation);
 
@@ -40,8 +42,8 @@ void Truth::PhysicsManager::Initalize()
 	m_trasport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
 
-	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
-	PxInitExtensions(*m_physics, m_pvd);
+	m_physics = ::PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
+	::PxInitExtensions(*m_physics, m_pvd);
 	collisionCallback = new Truth::PxEventCallback();
 
 	assert(m_physics && "PxCreatePhysics failed!");
@@ -101,6 +103,37 @@ void Truth::PhysicsManager::FixedUpdate()
 {
 	m_scene->simulate(1.0f / 60.0f);
 	m_scene->fetchResults(true);
+
+	physx::PxU32 nbActiveActors;
+	physx::PxActor** activeActors = m_scene->getActiveActors(nbActiveActors);
+
+	for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
+	{
+		physx::PxRigidActor* rigidActor = activeActors[i]->is<physx::PxRigidActor>();
+		if (rigidActor)
+		{
+			physx::PxU32 nbShape = rigidActor->getNbShapes();
+			if (nbShape > 0)
+			{
+				physx::PxShape** shape = new physx::PxShape*[nbShape];
+				rigidActor->getShapes(shape, nbShape);
+				for (physx::PxU32 j = 0; j < nbShape; j++)
+				{
+					Collider* myCollider = static_cast<Collider*>(shape[j]->userData);
+					if (myCollider != nullptr)
+					{
+						auto physxTM = rigidActor->getGlobalPose();
+						Vector3 pos = MathConverter::Convert(physxTM.p);
+						Quaternion rot = MathConverter::Convert(physxTM.q);
+
+						myCollider->SetPosition(pos);
+						myCollider->SetRotation(rot);
+					}
+				}
+				delete[] shape;
+			}
+		}
+	}
 }
 
 void Truth::PhysicsManager::ResetPhysX()
@@ -263,7 +296,7 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 
 	else if (physx::m_collsionTable[filterData0.word0] & 1 << filterData1.word0)
 	{
-		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT 
+		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT
 			| physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
 			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
 			| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS

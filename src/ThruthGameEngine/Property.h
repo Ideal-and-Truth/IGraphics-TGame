@@ -280,6 +280,7 @@ public:
 	template <typename T>
 	ReturnValueWrapper<T> Get(void* object) const
 	{
+		auto s = typeid(T).name();
 		// 핸들러가 만약 변수 핸들러 인터페이스를 상속 받았으면
 		// 즉 reflection 객체라면	
 		if (m_handler.GetTypeInfo().IsChildOf<IPropertyHandler<T>>())

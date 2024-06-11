@@ -8,6 +8,7 @@ namespace Truth
 	class Managers;
 	class Scene;
 }
+	class EditorUI;
 
 namespace Ideal
 {
@@ -23,6 +24,7 @@ namespace Ideal
 class Processor
 {
 private:
+	EditorUI* m_editor;
 	std::shared_ptr<Truth::Managers> m_manager;
 
 	std::shared_ptr<Ideal::IMeshObject> mesh;
@@ -33,11 +35,14 @@ private:
 	MSG m_msg;
 
 	static Ideal::IdealRenderer* g_Renderer;
+	static Truth::InputManager* g_inputmanager;
 
 	uint32 m_wight;
 	uint32 m_height;
 
 	bool show_demo_window = true;
+
+	const std::string m_savedFilePath = "../data";
 
 public:
 	// 특수 멤버함수
@@ -50,14 +55,19 @@ public:
 	void Process();
 	void Loop();
 
-	template<typename S, typename std::enable_if_t<std::is_base_of_v<Truth::Scene, S>, S>* = nullptr>
-	void AddScene(std::string _name);
+	void AddScene(std::shared_ptr<Truth::Scene> _scene);
+
+	void LoadScene(std::string _path);
 
 	void SetStartScene(std::string _name);
 
 	// 윈도우 함수
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	// LRESULT CALLBACK WndProcInClass(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+	void SaveSceneData();
+
+	std::shared_ptr<Truth::Managers> GetManagers() const { return m_manager; };
 
 private:
 	void Update();
@@ -69,9 +79,5 @@ private:
 	void InitializeManager();
 };
 
-template<typename S, typename std::enable_if_t<std::is_base_of_v<Truth::Scene, S>, S>*>
-void Processor::AddScene(std::string _name)
-{
-	m_manager->Scene()->AddScene<S>(_name, m_manager);
-}
+
 

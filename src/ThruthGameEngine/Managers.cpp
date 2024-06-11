@@ -25,6 +25,10 @@ void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
 void Truth::Managers::Update() const
 {
 	m_inputManager->Update();
+	if (m_inputManager->GetKeyState(KEY::B) == KEY_STATE::DOWN)
+	{
+		m_sceneManager->SaveSceneData();
+	}
 	m_timeManager->Update();
 	m_physXManager->Update();
 	m_sceneManager->Update();
@@ -44,6 +48,7 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
+	m_sceneManager->ApplyTransform();
 	m_graphicsManager->Render();
 }
 
@@ -56,6 +61,8 @@ void Truth::Managers::Finalize() const
 	m_physXManager->Finalize();
 }
 
+
+
 void Truth::Managers::CreateManagers()
 {
 	// TimeManager* temp = new TimeManager();
@@ -67,12 +74,12 @@ void Truth::Managers::CreateManagers()
 	m_graphicsManager = std::make_shared<GraphicsManager>();
 }
 
-void Truth::Managers::InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height) const
+void Truth::Managers::InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height)
 {
 	m_eventManager->Initialize(m_timeManager, m_physXManager);
 	m_timeManager->Initalize(m_eventManager);
 	m_inputManager->Initalize(_hwnd, m_eventManager);
-	m_sceneManager->Initalize(m_eventManager);
+	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();
 	m_graphicsManager->Initalize(_hwnd, _width, _height);
 }

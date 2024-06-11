@@ -14,6 +14,7 @@ namespace Truth
 namespace Truth
 {
 	class Managers
+		: public std::enable_shared_from_this<Managers>
 	{
 	public:
 		std::shared_ptr<Truth::TimeManager> m_timeManager;
@@ -22,6 +23,8 @@ namespace Truth
 		std::shared_ptr<Truth::SceneManager> m_sceneManager;
 		std::shared_ptr<Truth::PhysicsManager> m_physXManager;
 		std::shared_ptr<Truth::GraphicsManager> m_graphicsManager;
+
+
 
 	public:
 		Managers();
@@ -36,6 +39,8 @@ namespace Truth
 
 		void Finalize() const;
 
+
+
 		inline std::shared_ptr<Truth::TimeManager> Time() const { return m_timeManager; };
 		inline std::shared_ptr<Truth::InputManager> Input() const { return m_inputManager; };
 		inline std::shared_ptr<Truth::EventManager> Event() const { return m_eventManager; };
@@ -45,7 +50,7 @@ namespace Truth
 
 	private:
 		void CreateManagers();
-		void InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height) const;
+		void InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height);
 	};
 }
 

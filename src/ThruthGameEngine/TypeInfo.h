@@ -9,6 +9,49 @@ class Method;
 class Property;
 class TypeInfo;
 
+template<typename T>
+struct has_const_iterator
+{
+private:
+	typedef char                      yes;
+	typedef struct { char array[2]; } no;
+
+	template<typename C> static yes test(typename C::const_iterator*);
+	template<typename C> static no  test(...);
+public:
+	static const bool value = sizeof(test<T>(0)) == sizeof(yes);
+	typedef T type;
+};
+
+template <typename T>
+struct has_begin_end
+{
+	template<typename C> static char(&f(typename std::enable_if<
+		std::is_same<decltype(static_cast<typename C::const_iterator(C::*)() const>(&C::begin)),
+		typename C::const_iterator(C::*)() const>::value, void>::type*))[1];
+
+	template<typename C> static char(&f(...))[2];
+
+	template<typename C> static char(&g(typename std::enable_if<
+		std::is_same<decltype(static_cast<typename C::const_iterator(C::*)() const>(&C::end)),
+		typename C::const_iterator(C::*)() const>::value, void>::type*))[1];
+
+	template<typename C> static char(&g(...))[2];
+
+	static bool const beg_value = sizeof(f<T>(0)) == 1;
+	static bool const end_value = sizeof(g<T>(0)) == 1;
+};
+
+template<typename T>
+struct is_container 
+	: std::integral_constant<
+	bool,
+	has_const_iterator<T>::value&& 
+	has_begin_end<T>::beg_value&& 
+	has_begin_end<T>::end_value>
+{ 
+};
+
 /// <summary>
 /// Super 타입이 있는지
 /// </summary>
@@ -102,6 +145,8 @@ private:
 	const char* m_name = nullptr;
 	// 타임의 전체 이름 (typeid.name())
 	std::string m_fullName;
+	// 타입의 별명
+	std::string m_alias;
 	// 부모 클래스의 정보 (있다면)
 	const TypeInfo* m_super = nullptr;
 
@@ -115,6 +160,9 @@ private:
 	// 변수 컨테이너
 	std::vector<const Property*> m_properties;
 	PropertyMap m_propertyMap;
+
+	template<typename T>
+	std::string CreateTypeAlias();
 
 public:
 	std::string Dump(void* _object, int _indent = 0) const;
@@ -175,6 +223,27 @@ public:
 		>
 		static const TypeInfo& GetStaticTypeInfo()
 	{
+// 		if constexpr (is_container<T>::value)
+// 		{
+// 			std::string origin = typeid(T).name();
+// 			std::string result = "";
+// 		}
+// 		else if constexpr (std::is_class_v<T>)
+// 		{
+// 			std::string origin = typeid(T).name();
+// 			std::string result = "";
+// 			if (origin[0] == 'c')
+// 			{
+// 				result += origin.substr(6);
+// 			}
+// 			else if (origin[0] == 's')
+// 			{
+// 				result += origin.substr(7);
+// 			}
+// // 			static TypeInfo typeInfo{ TypeInfoInitializer<T>(result.c_str()) };
+// // 			return typeInfo;
+// 		}
+
 		static TypeInfo typeInfo{ TypeInfoInitializer<T>("unreflected_type_variable") };
 		return typeInfo;
 	}

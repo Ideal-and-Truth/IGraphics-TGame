@@ -1,26 +1,6 @@
 #pragma once
-#include "Component.h"
 #include "Headers.h"
-
-namespace Truth
-{
-	class Transform;
-
-	struct RigidBodyDecs
-	{
-		float m_mass;
-		float m_drag;
-		float m_angularDrag;
-
-		bool m_useGravity;
-		bool m_isKinematic;
-
-		bool m_freezePosition[3];
-		bool m_freezeRotation[3];
-
-		Vector3 m_velocity;
-	};
-}
+#include "Component.h"
 
 namespace physx
 {
@@ -32,7 +12,11 @@ namespace Truth
 	class RigidBody :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(RigidBody)
+		GENERATE_CLASS_TYPE_INFO(RigidBody);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
 		PROPERTY(mass);
@@ -48,9 +32,9 @@ namespace Truth
 		bool m_isKinematic;
 
 		PROPERTY(freezePosition);
-		bool m_freezePosition[3];
+		std::vector<bool> m_freezePosition;
 		PROPERTY(freezeRotation);
-		bool m_freezeRotation[3];
+		std::vector<bool> m_freezeRotation;
 
 		Vector3 m_velocity;
 		physx::PxRigidDynamic* m_body;
@@ -85,17 +69,29 @@ namespace Truth
 
 		void InitalizeMassAndInertia();
 
-		void SetRigidData(RigidBodyDecs _data);
+		METHOD(Initalize);
+		void Initalize();
+
 	private:
 		METHOD(Awake);
 		void Awake();
 
-		METHOD(Initalize);
-		void Initalize();
-
-
 		METHOD(Start);
 		void Start();
 	};
+
+	template<class Archive>
+	void Truth::RigidBody::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+
+		_ar& m_mass;
+		_ar& m_drag;
+		_ar& m_angularDrag;
+		_ar& m_useGravity;
+		_ar& m_isKinematic;
+		_ar& m_freezePosition;
+		_ar& m_freezeRotation;
+	}
 }
 

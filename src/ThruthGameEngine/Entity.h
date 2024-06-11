@@ -1,5 +1,6 @@
 #pragma once
 #include "Headers.h"
+#include "Component.h"
 
 /// <summary>
 /// 모든 엔티티의 부모 클래스
@@ -15,10 +16,16 @@ namespace Truth
 
 namespace Truth
 {
-	class Entity abstract
+	class Entity final
 		: public std::enable_shared_from_this<Entity>
 	{
-		GENERATE_CLASS_TYPE_INFO(Entity)
+		GENERATE_CLASS_TYPE_INFO(Entity);
+
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int file_version);
 
 	protected:
 		static uint32 m_entityCount;
@@ -28,12 +35,16 @@ namespace Truth
 
 		PROPERTY(ID);
 		uint32 m_ID;
-		PROPERTY(name);
-		std::string m_name;
-		std::shared_ptr<Managers> m_manager;
+		std::weak_ptr<Managers> m_manager;
 
 	public:
 		// key 값의 경우 type id 를 통해 유추한다.
+		PROPERTY(layer);
+		uint8 m_layer;
+
+		PROPERTY(name);
+		std::string m_name;
+
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
@@ -54,17 +65,23 @@ namespace Truth
 
 		std::vector<std::pair<Component*, const Method*>> m_destroy;
 
-		uint8 m_layer;
 
 		std::shared_ptr<Transform> m_transform;
 
 	public:
-		Entity();
-		virtual ~Entity();
+		Entity(std::shared_ptr<Managers> _mangers);
+		Entity() = default;
+		~Entity();
 
-		virtual void Initailize();
+		void Initailize();
+
 		void SetPosition(Vector3 _pos) const;
+		void SetScale(Vector3 _scale) const;
+
 		Vector3 GetPosition() const;
+		Quaternion GetRotation() const;
+
+		void ApplyTransform() const;
 
 		void Awake();
 		void Destroy();
@@ -91,14 +108,28 @@ namespace Truth
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::vector<std::weak_ptr<C>> GetComponents();
 
-		void SetManager(std::shared_ptr<Managers> _val) { m_manager = _val; };
+		void SetManager(std::weak_ptr<Managers> _val) { m_manager = _val; };
 
 		std::string& GetName() { return m_name; };
 
+		Matrix GetWorldTM() const;
+
 	private:
+
+		void ApplyComponent(std::shared_ptr<Component> _c);
+
 	};
 
 	/// template로 작성된 함수 목록
+
+	template<class Archive>
+	void Entity::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& m_name;
+		_ar& m_ID;
+		_ar& m_layer;
+		_ar& m_components;
+	}
 
 	/// <summary>
 	/// 엔티티에 컴포넌트 추가
@@ -113,66 +144,9 @@ namespace Truth
 			component = std::make_shared<C>();
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
-
-			auto met = component->GetTypeInfo().GetMethod("Initalize");
-			if (met)
-			{
-				met->Invoke<void>(component.get());
-			}
 			m_components.push_back(component);
-
-			const auto& mets = component->GetTypeInfo().GetMethods();
-
-			for (const auto& m : mets)
-			{
-				std::string metName = m->GetName();
-
-				auto p = std::make_pair(component.get(), m);
-
-				if (metName == "OnCollisionEnter")
-				{
-					m_onCollisionEnter.push_back(p);
-				}
-				if (metName == "OnCollisionStay")
-				{
-					m_onCollisionStay.push_back(p);
-				}
-				if (metName == "OnCollisionExit")
-				{
-					m_onCollisionExit.push_back(p);
-				}
-
-				if (metName == "OnTriggerEnter")
-				{
-					m_onTriggerEnter.push_back(p);
-				}
-				if (metName == "OnTriggerStay")
-				{
-					m_onTriggerStay.push_back(p);
-				}
-				if (metName == "OnTriggerExit")
-				{
-					m_onTriggerExit.push_back(p);
-				}
-
-				if (metName == "Update")
-				{
-					m_update.push_back(p);
-				}
-				if (metName == "FixedUpdate")
-				{
-					m_fixedUpdate.push_back(p);
-				}
-				if (metName == "LateUpdate")
-				{
-					m_latedUpdate.push_back(p);
-				}
-
-				if (metName == "Destroy")
-				{
-					m_destroy.push_back(p);
-				}
-			}
+			component->Initalize();
+			ApplyComponent(component);
 
 			return component;
 		}
@@ -191,13 +165,9 @@ namespace Truth
 			component = std::make_shared<C>(_args...);
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
-
-			auto met = component->GetTypeInfo().GetMethod("Initalize");
-			if (met)
-			{
-				met->Invoke<void>(component.get());
-			}
 			m_components.push_back(component);
+			component->Initalize();
+			ApplyComponent(component);
 
 			return component;
 		}

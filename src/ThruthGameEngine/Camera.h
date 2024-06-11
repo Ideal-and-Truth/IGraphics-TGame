@@ -8,7 +8,7 @@ namespace Ideal
 
 namespace Truth
 {
-	class Camera 
+	class Camera
 		: public Component
 	{
 		GENERATE_CLASS_TYPE_INFO(Camera)
@@ -16,19 +16,40 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::ICamera> m_camera;
 
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& _ar, const unsigned int _file_version);
+
+		float m_fov;
+		float m_aspect;
+		float m_nearZ;
+		float m_farZ;
+
 	public:
 		Camera();
 		virtual ~Camera();
 
-		void Update();
+		METHOD(Update);
+		virtual void Update();
 
+		METHOD(SetLens);
 		void SetLens(float _fovY, float _aspect, float _nearZ, float _farZ);
 
 		void SetMainCamera();
 
+
 	private:
 		METHOD(Awake);
-		void Awake();
+		virtual void Awake();
 	};
-}
 
+	template<class Archive>
+	void Truth::Camera::serialize(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_fov;
+		_ar& m_aspect;
+		_ar& m_nearZ;
+		_ar& m_farZ;
+	}
+}

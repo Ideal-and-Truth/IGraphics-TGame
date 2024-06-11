@@ -121,7 +121,7 @@ void Truth::EventManager::RemoveListener(const EventHandler* _listener)
 {
 	for (auto& l : m_eventHandlerInfo[_listener])
 	{
-		DEBUG_PRINT("%s : event %s removed\n", _listener->m_name.c_str(), l.m_eventID.c_str());
+		DEBUG_PRINT("%s : event %s removed\n", l.m_eventID.c_str());
 		l.m_listRef.erase(l.m_itr);
 	}
 	m_eventHandlerInfo[_listener].clear();

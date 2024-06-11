@@ -19,7 +19,7 @@ Truth::GraphicsManager::~GraphicsManager()
 void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height)
 {
 	m_renderer = CreateRenderer(
-		EGraphicsInterfaceType::D3D12,
+		EGraphicsInterfaceType::D3D12_EDITOR,
 		&_hwnd,
 		_wight,
 		_height,
@@ -121,7 +121,7 @@ void Truth::GraphicsManager::SetImguiStyle()
 
 }
 
-void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::ISkinnedMeshObject> _mesh)
+void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh)
 {
 	m_renderScene->AddObject(_mesh);
 }
@@ -129,6 +129,11 @@ void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::ISkinnedMeshObject
 std::shared_ptr<Ideal::ISkinnedMeshObject> Truth::GraphicsManager::CreateSkinnedMesh(std::wstring _path)
 {
 	return m_renderer->CreateSkinnedMeshObject(_path);
+}
+
+std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateMesh(std::wstring _path)
+{
+	return m_renderer->CreateStaticMeshObject(_path);
 }
 
 std::shared_ptr<Ideal::ICamera> Truth::GraphicsManager::CreateCamera()

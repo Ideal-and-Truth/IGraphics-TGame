@@ -1,7 +1,7 @@
 #pragma once
 #include "Headers.h"
 #include "EventHandler.h"
-
+#include "Scene.h"
 namespace Truth
 {
 	class Scene;
@@ -17,6 +17,8 @@ namespace Truth
 	private:
 		std::map<std::string, std::shared_ptr<Scene>> m_sceneMap;
 		std::weak_ptr<EventManager> m_eventManager;
+		std::weak_ptr<Managers> m_mangers;
+		const std::string m_savedFilePath = "../Scene/";
 
 	public:
 		std::weak_ptr<Scene> m_currentScene;
@@ -24,12 +26,13 @@ namespace Truth
 		SceneManager();
 		~SceneManager();
 
-		void Initalize(std::shared_ptr<EventManager> _eventManger);
+		void Initalize(std::shared_ptr<Managers> _mangers);
 
-		template<typename S, typename std::enable_if<std::is_base_of_v<Scene, S>, S>::type* = nullptr>
-		void AddScene(std::string _name, std::shared_ptr<Managers> _managers);
+		void AddScene(std::shared_ptr<Scene> _scene);
 
 		void Update() const;
+
+		void ApplyTransform() const;
 
 		void StartGameScene() const;
 
@@ -39,18 +42,12 @@ namespace Truth
 
 		void Finalize();
 
+		void SaveSceneData() const;
+		void LoadSceneData(std::string _path);
+
 	private:
 		bool HasScene(std::string _name);
 	};
-	template<typename S, typename std::enable_if<std::is_base_of_v<Scene, S>, S>::type*>
-	void SceneManager::AddScene(std::string _name, std::shared_ptr<Managers> _managers)
-	{
-		if (HasScene(_name))
-		{
-			DEBUG_PRINT("There is a scene with the same name : %s", _name);
-			return;
-		}
-		m_sceneMap[_name] = std::make_shared<S>(_managers);
-	}
+
 }
 
