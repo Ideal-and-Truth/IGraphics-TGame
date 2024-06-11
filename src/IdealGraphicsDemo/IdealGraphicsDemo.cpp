@@ -18,6 +18,23 @@
 //#endif
 //#endif
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// D3D12 Agility SDK Runtime
+
+//extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 613; }
+//
+//#if defined(_M_ARM64EC)
+//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\arm64\\"; }
+//#elif defined(_M_ARM64)
+//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\arm64\\"; }
+//#elif defined(_M_AMD64)
+//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\x64\\"; }
+//#elif defined(_M_IX86)
+//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\x86\\"; }
+//#endif
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 #include <iostream>
 using namespace std;
 
@@ -83,6 +100,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetBreakAlloc(428);
 #endif
 
 	// 전역 문자열을 초기화합니다.
@@ -104,6 +122,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		bool isEditor = false;
 		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
 		{
 			type = EGraphicsInterfaceType::D3D12_EDITOR;
@@ -135,12 +154,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
-		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -158,14 +177,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
-		ka->AddAnimation("Run", runAnim);
+		//ka->AddAnimation("Run", runAnim);
 		//ka->SetAnimation("Run", true);
 		//cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
-		renderScene->AddObject(ka);
+		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
-		renderScene->AddObject(mesh);
+		//renderScene->AddObject(mesh);
+		renderScene->AddDebugObject(mesh);
 		//renderScene->AddObject(mesh2);
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
@@ -185,22 +205,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
-		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
-		dirLight->SetDirection(Vector3(1.f, 0.f, 1.f));
+		//dirLight->SetDirection(Vector3(1.f, 0.f, 1.f));
 
-		pointLight->SetPosition(pointLightPosition);
-		pointLight->SetRange(300.f);
-		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		pointLight->SetIntensity(10.f);
+		//pointLight->SetPosition(pointLightPosition);
+		//pointLight->SetRange(300.f);
+		//pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		//pointLight->SetIntensity(10.f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
 		renderScene->AddLight(dirLight);
-		renderScene->AddLight(spotLight);
-		renderScene->AddLight(pointLight);
+		//renderScene->AddLight(spotLight);
+		//renderScene->AddLight(pointLight);
 		//renderScene->AddLight(pointLight2);
 
 
@@ -224,8 +244,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				CameraTick(camera);
 				//pointLight->SetPosition(camera->GetPosition());
-				auto cp = camera->GetPosition();
-				auto pp = pointLight->GetPosition();
+				//auto cp = camera->GetPosition();
+				//auto pp = pointLight->GetPosition();
 
 				//angle += 0.4f;
 				if (angle > 360.f)
@@ -239,9 +259,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					* Matrix::CreateRotationZ(DirectX::XMConvertToRadians(angleZ))
 					* Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 
-				dirLight->SetDirection(world2.Forward());
+				//dirLight->SetDirection(world2.Forward());
 
-				world.CreateRotationY(angle);
+				//world.CreateRotationY(angle);
 
 				//mesh2->SetTransformMatrix(world);
 
@@ -256,12 +276,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 
 				//-----ImGui Test-----//
-				gRenderer->ClearImGui();
+				//gRenderer->ClearImGui();
 				if (isEditor)
 				{
-					ImGuiTest();
-					DirLightAngle(&angleX, &angleY, &angleZ);
-					PointLightInspecter(pointLight);
+					//ImGuiTest();
+					//DirLightAngle(&angleX, &angleY, &angleZ);
+					//PointLightInspecter(pointLight);
 				}
 				// MAIN LOOP
 				//gRenderer->Tick();

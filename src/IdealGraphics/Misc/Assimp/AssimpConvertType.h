@@ -2,7 +2,7 @@
 #include "Core/Core.h"
 
 #include "GraphicsEngine/VertexInfo.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "assimp/types.h"
 
 namespace AssimpConvert

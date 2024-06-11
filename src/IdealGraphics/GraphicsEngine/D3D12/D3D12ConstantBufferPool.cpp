@@ -1,5 +1,5 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
-
+#include <d3dx12.h>
 using namespace Ideal;
 
 D3D12ConstantBufferPool::D3D12ConstantBufferPool()
