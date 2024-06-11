@@ -18,6 +18,7 @@
 RaytracingAccelerationStructure Scene : register(t0, space0);
 RWTexture2D<float4> RenderTarget : register(u0);
 ByteAddressBuffer Indices : register(t1, space0);
+//StructuredBuffer<uint> Indices : register(t1, space0);
 StructuredBuffer<Vertex> Vertices : register(t2, space0);
 
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
@@ -140,8 +141,13 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     uint baseIndex = PrimitiveIndex() * triangleIndexStride;
 
     // Load up 3 16 bit indices for the triangle.
-    //const uint3 indices = Load3x16BitIndices(baseIndex);
-    const uint3 indices = Indices.Load3(baseIndex);
+    const uint3 indices = Load3x16BitIndices(baseIndex);
+    //const uint3 indices = Indices.Load3(baseIndex);
+//     const uint3 indices = uint3(
+//         Indices[baseIndex],
+//         Indices[baseIndex + 1],
+//         Indices[baseIndex + 2]
+//     );
 
     // Retrieve corresponding vertex normals for the triangle vertices.
     float3 vertexNormals[3] = { 

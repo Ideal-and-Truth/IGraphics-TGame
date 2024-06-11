@@ -121,8 +121,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		bool isEditor = false;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
 		{
 			type = EGraphicsInterfaceType::D3D12_EDITOR;
@@ -185,7 +185,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
 		//renderScene->AddObject(mesh);
-		renderScene->AddDebugObject(mesh);
+		//renderScene->AddDebugObject(mesh);
 		//renderScene->AddObject(mesh2);
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
@@ -204,7 +204,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
-		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		//std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
@@ -218,7 +218,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
-		renderScene->AddLight(dirLight);
+		//renderScene->AddLight(dirLight);
 		//renderScene->AddLight(spotLight);
 		//renderScene->AddLight(pointLight);
 		//renderScene->AddLight(pointLight2);
@@ -395,10 +395,10 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 {
-	float speed = 2.f;
+	float speed = 0.2f;
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 	{
-		speed = 0.2f;
+		speed *= 0.1f;
 	}
 	if (GetAsyncKeyState('W') & 0x8000)
 	{
@@ -416,7 +416,18 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 	{
 		Camera->Strafe(speed);
 	}
-	return;
+	if (GetAsyncKeyState('Q') & 0x8000)
+	{
+		auto p = Camera->GetPosition();
+		p.y += speed;
+		Camera->SetPosition(p);
+	}
+	if (GetAsyncKeyState('E') & 0x8000)
+	{
+		auto p = Camera->GetPosition();
+		p.y -= speed;
+		Camera->SetPosition(p);
+	}
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
 		Camera->SetLook(Vector3(0.f, 1.f, 1.f));

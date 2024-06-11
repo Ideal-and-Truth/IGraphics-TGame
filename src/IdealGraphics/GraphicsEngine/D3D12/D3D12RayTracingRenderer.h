@@ -53,10 +53,10 @@ struct cbViewport
 struct SceneConstantBuffer
 {
 	Matrix ProjToWorld;
-	Vector4 CameraPos;
-	Vector4 lightPos;
-	Vector4 lightAmbient;
-	Vector4 lightDiffuse;
+	DirectX::XMVECTOR CameraPos;
+	DirectX::XMVECTOR lightPos;
+	DirectX::XMVECTOR lightAmbient;
+	DirectX::XMVECTOR lightDiffuse;
 
 };
 

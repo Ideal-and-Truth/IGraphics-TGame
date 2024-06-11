@@ -221,6 +221,39 @@ void ResourceManager::CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer>
 	WaitForFenceValue();
 }
 
+void ResourceManager::CreateIndexBufferUint16(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer, std::vector<uint16>& Indices)
+{
+	m_commandAllocator->Reset();
+	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+
+	const uint32 elementSize = sizeof(uint16);
+	const uint32 elementCount = (uint32)Indices.size();
+	const uint32 bufferSize = elementSize * elementCount;
+
+	Ideal::D3D12UploadBuffer uploadBuffer;
+	uploadBuffer.Create(m_device.Get(), bufferSize);
+	{
+		void* mappedData = uploadBuffer.Map();
+		memcpy(mappedData, Indices.data(), bufferSize);
+		uploadBuffer.UnMap();
+	}
+	OutIndexBuffer->Create(m_device.Get(),
+		m_commandList.Get(),
+		elementSize,
+		elementCount,
+		uploadBuffer
+	);
+
+	//-----------Execute-----------//
+	m_commandList->Close();
+
+	ID3D12CommandList* commandLists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+	Fence();
+	WaitForFenceValue();
+}
+
 void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
 {
 	if (!OutTexture)

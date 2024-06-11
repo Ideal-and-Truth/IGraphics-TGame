@@ -336,14 +336,17 @@ finishAdapter:
 	
 	//
 	m_cubeCB.albedo = Vector4(1.f, 1.f, 1.f, 1.f);
-	m_sceneCB.CameraPos.x = 0;
-	m_sceneCB.CameraPos.y = 0;
-	m_sceneCB.CameraPos.z = 0;
+	//m_sceneCB.CameraPos.x = 0;
+	//m_sceneCB.CameraPos.y = 0;
+	//m_sceneCB.CameraPos.z = 0;
 
-	m_sceneCB.lightPos = Vector4(0.f, 1.8f, -3.f, 0.f);
+	m_sceneCB.CameraPos = Vector4(0.f);
+
+	//m_sceneCB.lightPos = Vector4(0.f, 1.8f, -3.f, 0.f);
+	m_sceneCB.lightPos = Vector4(0.0f, 0.0f, -5.f, 0.f);
 	m_sceneCB.lightAmbient = Vector4(0.5f, 0.5f, 0.5f, 1.f);
-	m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
-
+	//m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
+	m_sceneCB.lightDiffuse = Vector4(1.f, 0.f, 0.f, 1.f);
 	// create resource
 	CreateDeviceDependentResources();
 }
@@ -358,10 +361,11 @@ void Ideal::D3D12RayTracingRenderer::Tick()
 void Ideal::D3D12RayTracingRenderer::Render()
 {
 	m_mainCamera->UpdateMatrix2();
-	m_sceneCB.CameraPos.x = m_mainCamera->GetPosition().x;
-	m_sceneCB.CameraPos.y = m_mainCamera->GetPosition().y;
-	m_sceneCB.CameraPos.z = m_mainCamera->GetPosition().z;
+	//m_sceneCB.CameraPos.x = m_mainCamera->GetPosition().x;
+	//m_sceneCB.CameraPos.y = m_mainCamera->GetPosition().y;
+	//m_sceneCB.CameraPos.z = m_mainCamera->GetPosition().z;
 
+	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
 
 	ResetCommandList();
@@ -924,7 +928,8 @@ void Ideal::D3D12RayTracingRenderer::CreateLocalRootSignatureSubobjects(CD3DX12_
 
 void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 {
-	std::vector<uint32> indices = { 3,1,0,
+	std::vector<uint16> indices = {
+		3,1,0,
 		2,1,3,
 
 		6,4,5,
@@ -947,7 +952,7 @@ void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 		using namespace DirectX;
 		vertices =
 		{
-		 { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
 		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
@@ -983,9 +988,11 @@ void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 	m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
 
 	m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
-	m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
+	//m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
+	m_resourceManager->CreateIndexBufferUint16(m_indexBuffer, indices);
 
-	m_indexBufferSRV = m_resourceManager->CreateSRV(m_indexBuffer, m_indexBuffer->GetElementCount(), 0);
+	//m_indexBufferSRV = m_resourceManager->CreateSRV(m_indexBuffer, m_indexBuffer->GetElementCount(), 0);
+	m_indexBufferSRV = m_resourceManager->CreateSRV(m_indexBuffer, m_indexBuffer->GetElementCount(), m_indexBuffer->GetElementSize());
 	m_vertexBufferSRV = m_resourceManager->CreateSRV(m_vertexBuffer, m_vertexBuffer->GetElementCount(), m_vertexBuffer->GetElementSize());
 }
 
@@ -1017,7 +1024,7 @@ void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPt
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
 	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
-	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R16_UINT;
 	geometryDesc.Triangles.Transform3x4 = 0;
 	geometryDesc.Triangles.VertexFormat = GeometryVertex::VertexFormat;
 	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
@@ -1074,11 +1081,10 @@ void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure(ComPtr<I
 
 	//---------Create TLAS BUFFER----------//
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-	//AllocateUAVBuffer(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, &m_topLevelAccelerationStructure, initialResourceState, L"TopLevelAccelerationStructure");
 	m_topLevelAccelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
 	m_topLevelAccelerationStructure->Create(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, L"TopLevelAccelerationStructure");
+	
 	//----------Instance Desc---------//
-	//ComPtr<ID3D12Resource> instanceBuffer;
 	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
 	instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1; // identity
 	instanceDesc.InstanceMask = 1;
