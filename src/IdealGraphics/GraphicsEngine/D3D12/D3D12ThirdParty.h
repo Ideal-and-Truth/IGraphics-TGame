@@ -15,6 +15,7 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
+
 #include "../Utils/SimpleMath.h"
 
 #ifdef _DEBUG

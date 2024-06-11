@@ -7,6 +7,7 @@
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
+#include "GraphicsEngine/D3D12/D3D12SRV.h"
 #include "GraphicsEngine/VertexInfo.h"
 
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
@@ -366,6 +367,32 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 
 		OutTexture->EmplaceRTV(rtvHandle);
 	}
+}
+
+std::shared_ptr<Ideal::D3D12ShaderResourceView> ResourceManager::CreateSRV(std::shared_ptr<Ideal::D3D12Resource> Resource, uint32 NumElements, uint32 ElementSize)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Buffer.NumElements = NumElements;
+	if (ElementSize == 0)
+	{
+		srvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
+		srvDesc.Buffer.StructureByteStride = 0;
+	}
+	else
+	{
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		srvDesc.Buffer.StructureByteStride = ElementSize;
+	}
+
+	Ideal::D3D12DescriptorHandle allocatedHandle = m_srvHeap->Allocate();
+	m_device->CreateShaderResourceView(Resource->GetResource(), &srvDesc, allocatedHandle.GetCpuHandle());
+	std::shared_ptr<Ideal::D3D12ShaderResourceView> ret = std::make_shared<Ideal::D3D12ShaderResourceView>();
+	ret->SetResourceLocation(allocatedHandle);
+	return ret;
 }
 
 void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)

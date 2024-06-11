@@ -9,6 +9,19 @@ struct VertexTest2
 	Vector2 UV;
 };
 
+struct PositionNormalVertex
+{
+	Vector3 Position;
+	Vector3 Normal;
+
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+
+public:
+	static const DXGI_FORMAT VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	static const int32 InputElementCount = 2;
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+};
+
 struct GeometryVertex
 {
 	Vector3 Position;

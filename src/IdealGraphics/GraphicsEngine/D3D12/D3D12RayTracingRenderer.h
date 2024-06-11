@@ -29,13 +29,15 @@ namespace GlobalRootSignatureParams {
 	enum Value {
 		OutputViewSlot = 0,
 		AccelerationStructureSlot,
+		SceneConstantSlot,
+		VertexBufferSlot,
 		Count
 	};
 }
 
 namespace LocalRootSignatureParams {
 	enum Value {
-		ViewportConstantSlot = 0,
+		CubeConstantSlot = 0,
 		Count
 	};
 }
@@ -48,10 +50,25 @@ struct cbViewport
 	float bottom;
 };
 
+struct SceneConstantBuffer
+{
+	Matrix ProjToWorld;
+	Vector4 CameraPos;
+	Vector4 lightPos;
+	Vector4 lightAmbient;
+	Vector4 lightDiffuse;
+
+};
+
 struct RayGenConstantBuffer
 {
 	cbViewport viewport;
 	cbViewport stencil;
+};
+
+struct CubeConstantBuffer
+{
+	Color albedo;
 };
 
 namespace Ideal
@@ -91,6 +108,7 @@ namespace Ideal
 	class D3D12IndexBuffer;
 	class D3D12Shader;
 	class D3D12UAVBuffer;
+	class D3D12ShaderResourceView;
 }
 struct TestVertex;
 
@@ -241,7 +259,9 @@ namespace Ideal
 
 		//geometry
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
+		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_vertexBufferSRV;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> m_indexBuffer;
+		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_indexBufferSRV;
 		ComPtr<ID3D12Resource> m_vb2;
 		ComPtr<ID3D12Resource> m_ib2;
 
@@ -251,6 +271,8 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
 
 		RayGenConstantBuffer m_cbRayGen;
+		SceneConstantBuffer m_sceneCB;
+		CubeConstantBuffer m_cubeCB;
 
 		ComPtr<ID3D12Resource> m_missShaderTable;
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;

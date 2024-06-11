@@ -12,18 +12,33 @@
 #ifndef RAYTRACINGHLSLCOMPAT_H
 #define RAYTRACINGHLSLCOMPAT_H
 
-struct Viewport
+#ifdef HLSL
+#include "HlslCompat.h"
+#else
+using namespace DirectX;
+
+// Shader will use byte encoding to access indices.
+typedef UINT16 Index;
+#endif
+
+struct SceneConstantBuffer
 {
-    float left;
-    float top;
-    float right;
-    float bottom;
+    XMMATRIX projectionToWorld;
+    XMVECTOR cameraPosition;
+    XMVECTOR lightPosition;
+    XMVECTOR lightAmbientColor;
+    XMVECTOR lightDiffuseColor;
 };
 
-struct RayGenConstantBuffer
+struct CubeConstantBuffer
 {
-    Viewport viewport;
-    Viewport stencil;
+    XMFLOAT4 albedo;
+};
+
+struct Vertex
+{
+    XMFLOAT3 position;
+    XMFLOAT3 normal;
 };
 
 #endif // RAYTRACINGHLSLCOMPAT_H
