@@ -18,10 +18,14 @@
 RaytracingAccelerationStructure Scene : register(t0, space0);
 RWTexture2D<float4> RenderTarget : register(u0);
 StructuredBuffer<uint> Indices : register(t1, space0);
-StructuredBuffer<Vertex> Vertices : register(t2, space0);
+StructuredBuffer<PositionNormalUVVertex> Vertices : register(t2, space0);
 
+// 일단 다 글로벌로 만들겠다
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
 ConstantBuffer<CubeConstantBuffer> g_cubeCB : register(b1);
+Texture2D<float4> g_texDiffuse : register(t3);
+
+SamplerState LinearWrapSampler : register(s0);
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 struct RayPayload
@@ -37,6 +41,13 @@ float3 HitWorldPosition()
 
 // Retrieve attribute at a hit position interpolated from vertex attributes using the hit's barycentrics.
 float3 HitAttribute(float3 vertexAttribute[3], BuiltInTriangleIntersectionAttributes attr)
+{
+    return vertexAttribute[0] +
+        attr.barycentrics.x * (vertexAttribute[1] - vertexAttribute[0]) +
+        attr.barycentrics.y * (vertexAttribute[2] - vertexAttribute[0]);
+}
+
+float2 HitAttribute(float2 vertexAttribute[3], BuiltInTriangleIntersectionAttributes attr)
 {
     return vertexAttribute[0] +
         attr.barycentrics.x * (vertexAttribute[1] - vertexAttribute[0]) +
@@ -69,6 +80,8 @@ float4 CalculateDiffuseLighting(float3 hitPosition, float3 normal)
     float fNDotL = max(0.0f, dot(pixelToLight, normal));
 
     return g_cubeCB.albedo * g_sceneCB.lightDiffuseColor * fNDotL;
+    //float4 diffuseTextureColor = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
+    //return diffuseTextureColor;
 }
 
 [shader("raygeneration")]
@@ -100,7 +113,6 @@ void MyRaygenShader()
 void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 {
     float3 hitPosition = HitWorldPosition();
-
     uint baseIndex = PrimitiveIndex() * 3;
 
      const uint3 indices = uint3(
@@ -116,13 +128,24 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         Vertices[indices[2]].normal 
     };
 
+    PositionNormalUVVertex vertexInfo[3] = {
+        Vertices[indices[0]],
+        Vertices[indices[1]],
+        Vertices[indices[2]]
+    };
+
+    float2 vertexTexCoords[3] = {vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv}; 
+    float2 uv = HitAttribute(vertexTexCoords, attr);
+
+
+    float4 albedo = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
     // Compute the triangle's normal.
     // This is redundant and done for illustration purposes 
     // as all the per-vertex normals are the same and match triangle's normal in this sample. 
     float3 triangleNormal = HitAttribute(vertexNormals, attr);
-
+    
     float4 diffuseColor = CalculateDiffuseLighting(hitPosition, triangleNormal);
-    float4 color = g_sceneCB.lightAmbientColor + diffuseColor;
+    float4 color = albedo * (g_sceneCB.lightAmbientColor + diffuseColor);
 
     payload.color = color;
 }

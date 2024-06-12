@@ -265,6 +265,8 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_vb2;
 		ComPtr<ID3D12Resource> m_ib2;
 
+		std::shared_ptr<Ideal::D3D12Texture> m_texture;
+
 		// AS
 		ComPtr<ID3D12Resource> m_accelerationStructure;
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure;
