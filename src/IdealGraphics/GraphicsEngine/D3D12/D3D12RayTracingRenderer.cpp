@@ -54,21 +54,21 @@ inline void PrintStateObjectDesc(const D3D12_STATE_OBJECT_DESC* desc)
 	if (desc->Type == D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE) wstr << L"Raytracing Pipeline\n";
 
 	auto ExportTree = [](UINT depth, UINT numExports, const D3D12_EXPORT_DESC* exports)
-	{
-		std::wostringstream woss;
-		for (UINT i = 0; i < numExports; i++)
 		{
-			woss << L"|";
-			if (depth > 0)
+			std::wostringstream woss;
+			for (UINT i = 0; i < numExports; i++)
 			{
-				for (UINT j = 0; j < 2 * depth - 1; j++) woss << L" ";
+				woss << L"|";
+				if (depth > 0)
+				{
+					for (UINT j = 0; j < 2 * depth - 1; j++) woss << L" ";
+				}
+				woss << L" [" << i << L"]: ";
+				if (exports[i].ExportToRename) woss << exports[i].ExportToRename << L" --> ";
+				woss << exports[i].Name << L"\n";
 			}
-			woss << L" [" << i << L"]: ";
-			if (exports[i].ExportToRename) woss << exports[i].ExportToRename << L" --> ";
-			woss << exports[i].Name << L"\n";
-		}
-		return woss.str();
-	};
+			return woss.str();
+		};
 
 	for (UINT i = 0; i < desc->NumSubobjects; i++)
 	{
@@ -333,7 +333,7 @@ finishAdapter:
 		m_testBlob
 	);
 	m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/SimpleRaytracingShader2.shader", m_myShader);
-	
+
 	//
 	m_cubeCB.albedo = Vector4(1.f, 1.f, 1.f, 1.f);
 	//m_sceneCB.CameraPos.x = 0;
@@ -342,11 +342,11 @@ finishAdapter:
 
 	m_sceneCB.CameraPos = Vector4(0.f);
 
-	//m_sceneCB.lightPos = Vector4(0.f, 1.8f, -3.f, 0.f);
-	m_sceneCB.lightPos = Vector4(0.0f, 0.0f, -5.f, 0.f);
+	m_sceneCB.lightPos = Vector4(3.f, 1.8f, -3.f, 0.f);
+	//m_sceneCB.lightPos = Vector4(0.5f, 0.5f, -5.f, 0.f);
 	m_sceneCB.lightAmbient = Vector4(0.5f, 0.5f, 0.5f, 1.f);
 	//m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
-	m_sceneCB.lightDiffuse = Vector4(1.f, 0.f, 0.f, 1.f);
+	m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
 	// create resource
 	CreateDeviceDependentResources();
 }
@@ -774,7 +774,7 @@ void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath
 	//compiler->Compile(&sourceBuffer, nullptr, 0, includeHandler.Get(), IID_PPV_ARGS(&result));
 	compiler->Compile(&sourceBuffer, args, _countof(args), includeHandler.Get(), IID_PPV_ARGS(&result));
 
-	
+
 	ComPtr<IDxcBlobEncoding> encoding = nullptr;
 	result->GetErrorBuffer(&encoding);
 	if (encoding)
@@ -783,7 +783,7 @@ void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath
 		int b = 3;
 	}
 
-	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob),nullptr);
+	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateRayTracingInterfaces()
@@ -802,7 +802,7 @@ void Ideal::D3D12RayTracingRenderer::CreateRootSignatures()
 		CD3DX12_DESCRIPTOR_RANGE rangeRenderTarget[2];
 		rangeRenderTarget[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
 		CD3DX12_DESCRIPTOR_RANGE rangeGlobalCB[1];
-		rangeGlobalCB[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); 
+		rangeGlobalCB[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
 		CD3DX12_DESCRIPTOR_RANGE rangePerObj[1];
 		rangePerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1);	// t0 : indices , t1 : vertices
 
@@ -874,7 +874,7 @@ void Ideal::D3D12RayTracingRenderer::CreateRaytracingPipelineStateObject()
 	lib->DefineExport(m_raygenShaderName);
 	lib->DefineExport(m_closestHitShaderName);
 	lib->DefineExport(m_missShaderName);
-	
+
 
 	//-------------------Triangle hit group-------------------//
 	// 히트 그룹은 광선이 지오메트리의 삼각형 / AABB와 교차할 때 실행할 가장 가까운 hit, any hit 및 intersection 쉐이더를 지정
@@ -928,7 +928,7 @@ void Ideal::D3D12RayTracingRenderer::CreateLocalRootSignatureSubobjects(CD3DX12_
 
 void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 {
-	std::vector<uint16> indices = {
+	std::vector<uint32> indices = {
 		3,1,0,
 		2,1,3,
 
@@ -952,44 +952,81 @@ void Ideal::D3D12RayTracingRenderer::BuildGeometry()
 		using namespace DirectX;
 		vertices =
 		{
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			//// Top face
+			//{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+			//{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+			//// Bottom face
+			//{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+			//{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+			//// Left face
+			//{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+			//{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+			//{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+			//{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			//// Right face
+			//{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
+			//{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+			//// Front face
+			//{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
+			//{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+			//// Back face
+			//{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
+			//{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+			//{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) }
+
+			{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+			{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) },
+
+			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+			{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+			{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+			{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) },
+
+			{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) },
+
+			{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) },
+
+			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+			{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+			{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+			{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) },
+
+			{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+			{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+			{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
+			{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
 		};
 	}
+
 
 	m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
 	m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
 
 	m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
-	//m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
-	m_resourceManager->CreateIndexBufferUint16(m_indexBuffer, indices);
+	m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
+	//m_resourceManager->CreateIndexBufferUint16(m_indexBuffer, indices);
 
 	//m_indexBufferSRV = m_resourceManager->CreateSRV(m_indexBuffer, m_indexBuffer->GetElementCount(), 0);
 	m_indexBufferSRV = m_resourceManager->CreateSRV(m_indexBuffer, m_indexBuffer->GetElementCount(), m_indexBuffer->GetElementSize());
@@ -1024,9 +1061,9 @@ void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPt
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
 	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
-	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R16_UINT;
+	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
 	geometryDesc.Triangles.Transform3x4 = 0;
-	geometryDesc.Triangles.VertexFormat = GeometryVertex::VertexFormat;
+	geometryDesc.Triangles.VertexFormat = PositionNormalUVVertex::VertexFormat;
 	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
 	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
 	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
@@ -1058,7 +1095,7 @@ void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPt
 		bottomLevelBuildDesc.ScratchAccelerationStructureData = ScratchBuffer->GetGPUVirtualAddress();
 		bottomLevelBuildDesc.DestAccelerationStructureData = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
 	}
-	
+
 	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
 	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_bottomLevelAccelerationStructure->GetResource());
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &uavBarrier);
@@ -1083,7 +1120,7 @@ void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure(ComPtr<I
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
 	m_topLevelAccelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
 	m_topLevelAccelerationStructure->Create(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, L"TopLevelAccelerationStructure");
-	
+
 	//----------Instance Desc---------//
 	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
 	instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1; // identity
@@ -1202,24 +1239,24 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
 
 	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
-	{
-		dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
-		dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
-		dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
+		{
+			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
+			dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
 
-		dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
-		dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
-		dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
+			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
+			dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
 
-		dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
-		dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
+			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
 
-		dispatchDesc->Width = m_width;
-		dispatchDesc->Height = m_height;
-		dispatchDesc->Depth = 1;
-		commandlist->SetPipelineState1(stateObject);
-		commandlist->DispatchRays(dispatchDesc);
-	};
+			dispatchDesc->Width = m_width;
+			dispatchDesc->Height = m_height;
+			dispatchDesc->Depth = 1;
+			commandlist->SetPipelineState1(stateObject);
+			commandlist->DispatchRays(dispatchDesc);
+		};
 
 	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
 
@@ -1231,8 +1268,8 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 	auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
 	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	commandlist->SetComputeRootDescriptorTable(0, handle0.GetGpuHandle());
-	
-	
+
+
 	// parameter2 에 바인딩 : SceneConstantSlot
 	auto cb = m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), sizeof(m_sceneCB));
 	memcpy(cb->SystemMemAddr, &m_sceneCB, sizeof(m_sceneCB));
@@ -1250,7 +1287,7 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 
 	// Bind the hepas, 가속구조, dispatch rays
 	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
-	
+
 	DispatchRays(commandlist.Get(), m_dxrStateObject.Get(), &dispatchDesc);
 }
 

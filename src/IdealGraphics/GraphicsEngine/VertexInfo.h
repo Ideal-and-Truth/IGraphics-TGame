@@ -22,6 +22,20 @@ public:
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
+struct PositionNormalUVVertex
+{
+	Vector3 Position;
+	Vector3 Normal;
+	Vector2 UV;
+
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+
+public:
+	static const DXGI_FORMAT VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	static const int32 InputElementCount = 3;
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+};
+
 struct GeometryVertex
 {
 	Vector3 Position;

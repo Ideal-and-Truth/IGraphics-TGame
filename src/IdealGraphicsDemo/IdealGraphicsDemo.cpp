@@ -390,7 +390,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	float aspectRatio = float(WIDTH) / HEIGHT;
 	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	//Camera->SetPosition(Vector3(0.f, 100.f, -200.f));
+	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
 
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)

@@ -41,4 +41,10 @@ struct Vertex
     XMFLOAT3 normal;
 };
 
+struct PositionNormalUVVertex
+{
+    XMFLOAT3 position;
+    XMFLOAT3 normal;
+    XMFLOAT3 uv;
+};
 #endif // RAYTRACINGHLSLCOMPAT_H
