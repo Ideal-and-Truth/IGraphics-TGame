@@ -27,6 +27,7 @@
     <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="MathConverter.h" />
@@ -64,6 +65,7 @@
     <ClCompile Include="CapsuleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorUI.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="MathConverter.cpp" />

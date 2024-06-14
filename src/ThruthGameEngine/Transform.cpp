@@ -1,6 +1,7 @@
 #include "Transform.h"
 #include "Managers.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Transform)
 
 Truth::Transform::Transform()
 	: Component()
@@ -27,6 +28,8 @@ void Truth::Transform::ApplyTransform()
 	Matrix scaleMT = Matrix::CreateScale(m_scale);
 	Matrix rotationMT = Matrix::CreateFromQuaternion(m_rotation);
 	Matrix traslationMT = Matrix::CreateTranslation(m_position);
+
+	m_eulerAngle = m_rotation.ToEuler();
 
 	m_transformMatrix = scaleMT * rotationMT * traslationMT;
 }

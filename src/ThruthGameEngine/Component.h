@@ -7,8 +7,6 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-
-
 /// <summary>
 /// 모든 컴포넌트의 부모 클래스
 /// 일단은 이렇게 구현해보자...
@@ -66,6 +64,7 @@ namespace Truth
 		virtual void OnTriggerExit() {};
 		virtual void OnTriggerStay() {};
 		virtual void Initalize() {};
+		virtual void ApplyTransform() {};
 
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }
 		std::weak_ptr<Entity> GetOwner() const { return m_owner; }
@@ -77,11 +76,11 @@ namespace Truth
 		// Component 에서 자주 사용될 함수 목록
 		// 이벤트 관련 함수
 		template <typename T>
-		inline void EventBind(std::string _name, void (T::* func)(std::any))
+		inline void EventBind(std::string _name, void (T::* func)(const void*))
 		{
 			m_managers.lock()->Event()->Subscribe(_name, MakeListenerInfo(func));
 		}
-		inline void EventPublish(std::string _name, std::any _param, float4 _delay = 0.0f)
+		inline void EventPublish(std::string _name, const void* _param, float4 _delay = 0.0f)
 		{
 			m_managers.lock()->Event()->PublishEvent(_name, _param, _delay);
 		}
@@ -121,12 +120,20 @@ namespace Truth
 	public:
 		void Translate(Vector3& _val);
 
-		void SetPosition(Vector3& _val);
-		void SetRotation(Quaternion& _val);
+		void SetRotation(const Quaternion& _val);
+		void SetPosition(const Vector3& _pos) const;
+		void SetScale(const Vector3& _scale) const;
 
+		const Vector3& GetPosition() const;
+		const Quaternion& GetRotation() const;
+		const Vector3& GetScale() const;
+
+		const Matrix& GetWorldTM() const;
+		void SetWorldTM(const Matrix& _tm);
 
 		template <typename E>
 		void AddEntity();
+
 #pragma endregion inline
 	};
 }
@@ -141,5 +148,6 @@ void Truth::Component::serialize(Archive& _ar, const unsigned int _version)
 template <typename E>
 void Truth::Component::AddEntity()
 {
-	m_managers.lock()->Scene()->m_currentScene.lock()->CreateEntity(std::make_shared<E>());
+	m_managers.lock()->Scene()->m_currentScene.lock()->AddEntity(std::make_shared<E>());
 }
+BOOST_CLASS_EXPORT_KEY(Truth::Component)

@@ -5,77 +5,49 @@
 #include "PhysicsManager.h"
 #include "MathConverter.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::BoxCollider)
+
+/// <summary>
+/// 큐브 형태의 콜라이더
+/// </summary>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::BoxCollider::BoxCollider(bool _isTrigger)
 	: Collider(_isTrigger)
-	, m_size{ 1.0f, 1.0f, 1.0f }
 {
 	m_name = "Box Collider";
+	m_size = { 1.0f, 1.0f, 1.0f };
 }
 
-
+/// <summary>
+/// 박스 형태의 콜라이더
+/// </summary>
+/// <param name="_pos">생성 위치</param>
+/// <param name="_size">사이즈</param>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
 	m_name = "Box Collider";
-
-	SetSize(_size);
-	SetPhysxTransform(m_center);
+	m_size = _size;
 }
 
+/// <summary>
+/// 박스 형태의 콜라이더
+/// </summary>
+/// <param name="_size">사이즈</param>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)
 	: Collider(_isTrigger)
 {
 	m_name = "Box Collider";
-
-	SetSize(_size);
-}
-
-Truth::BoxCollider::~BoxCollider()
-{
-	if (m_collider != nullptr)
-	{
-		m_collider->release();
-		m_collider = nullptr;
-	}
-}
-
-void Truth::BoxCollider::SetSize(Vector3 _size)
-{
 	m_size = _size;
-	if (m_body != nullptr)
-	{
-		m_body->detachShape(*m_collider);
-		m_collider->release();
-
-		m_collider = CreateCollider(ColliderShape::BOX, std::vector<float>{ m_size.x, m_size.y, m_size.z });
-		m_body->attachShape(*m_collider);
-	}
 }
 
-void Truth::BoxCollider::Awake()
-{
-	auto r = m_owner.lock()->GetComponent<RigidBody>();
-	if (r.expired())
-	{
-		m_body = m_managers.lock()->Physics()->CreateDefaultRigidStatic();
-		m_body->attachShape(*m_collider);
-		physx::PxTransform t(
-			MathConverter::Convert(m_owner.lock()->GetPosition()),
-			MathConverter::Convert(m_owner.lock()->GetRotation())
-		);
-		m_body->setGlobalPose(t);
-		m_managers.lock()->Physics()->AddScene(m_body);
-	}
-}
-
+/// <summary>
+/// 초기화 해당 Component가 생성 될 때 한번 실행됨
+/// </summary>
 void Truth::BoxCollider::Initalize()
 {
-  	m_collider = CreateCollider(ColliderShape::BOX, std::vector<float>{ m_size.x, m_size.y, m_size.z });
-
-	m_collider->userData = this; 
-
-	SetUpFiltering(m_owner.lock()->m_layer);
-
-	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
-	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
+	Collider::Initalize(ColliderShape::BOX, m_size);
 }
+

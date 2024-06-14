@@ -31,14 +31,12 @@ void Truth::EventManager::Initialize(std::weak_ptr<TimeManager> _timeManager, st
 /// </summary>
 void Truth::EventManager::Update()
 {
-	PublishEvent("Update");
 	ProcessEvent();
 }
 
 void Truth::EventManager::FixedUpdate()
 {
 	m_physicsManager.lock()->FixedUpdate();
-	PublishEvent("FixedUpdate");
 	ProcessEvent();
 }
 
@@ -51,22 +49,13 @@ void Truth::EventManager::Finalize()
 	RemoveAllSubscribes();
 }
 
-void Truth::EventManager::CreateEntity(std::shared_ptr<Entity> _p)
-{
-	m_createdEntity.push(_p);
-}
-void Truth::EventManager::DeleteEntity(std::shared_ptr<Entity> _p)
-{
-	m_deletedEntity.push(_p);
-}
-
 /// <summary>
 /// 이벤트 발행
 /// </summary>
 /// <param name="_eventID">이벤트 이름</param>
 /// <param name="_param">이벤트 함수의 인자 혹은 인자 묶음. 기본 없음</param>
 /// <param name="_delayed">딜레이 시간 기본 0.0f</param>
-void Truth::EventManager::PublishEvent(std::string _eventID, const std::any _param /*= nullptr*/, const float& _delayed /*= 0.0f*/)
+void Truth::EventManager::PublishEvent(std::string _eventID, const void* _param /*= nullptr*/, const float& _delayed /*= 0.0f*/)
 {
 	m_customEvents.push(Event{ _eventID, _param, _delayed });
 }

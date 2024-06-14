@@ -944,7 +944,7 @@ void Ideal::D3D12Renderer::Present()
 	Fence();
 
 	HRESULT hr;
-	hr = m_swapChain->Present(1, 0);
+	hr = m_swapChain->Present(0, 0);
 	Check(hr);
 
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();

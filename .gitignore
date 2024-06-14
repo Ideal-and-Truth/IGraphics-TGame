@@ -37,3 +37,4 @@ pycache/
 *.swp
 *.DS_Store
 packages/
+*.lib

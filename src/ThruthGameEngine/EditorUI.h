@@ -19,7 +19,7 @@ public:
 	void RenderUI(bool* p_open);
 	void ShowInspectorWindow(bool* p_open);
 	void ShowHierarchyWindow(bool* p_open);
-
+	void ShowMenuBar(bool* p_open);
 
 	//void TranslateProperty(const TypeInfo& value);
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);

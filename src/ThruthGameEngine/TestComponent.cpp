@@ -1,6 +1,8 @@
 #include "TestComponent.h"
 #include "Managers.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::TestComponent)
+
 Truth::TestComponent::TestComponent()
 	: Component()
 {
@@ -24,13 +26,12 @@ void Truth::TestComponent::Update()
 {
 }
 
-void Truth::TestComponent::QUP(std::any _p)
+void Truth::TestComponent::QUP(const void* _p)
 {
 	DEBUG_PRINT("Event q up\n");
-	// EventPublish("Change Scene", std::string("test2"));
 }
 
-void Truth::TestComponent::QDOWN(std::any _p)
+void Truth::TestComponent::QDOWN(const void* _p)
 {
 	DEBUG_PRINT("Event q Down\n");
 }

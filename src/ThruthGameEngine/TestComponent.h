@@ -31,8 +31,8 @@ namespace Truth
 		METHOD(Update);
 		void Update();
 
-		void QUP(std::any _p);
-		void QDOWN(std::any _p);
+		void QUP(const void* _p);
+		void QDOWN(const void* _p);
 	};
 
 	template<class Archive>
@@ -42,3 +42,4 @@ namespace Truth
 	}
 
 }
+BOOST_CLASS_EXPORT_KEY(Truth::TestComponent)

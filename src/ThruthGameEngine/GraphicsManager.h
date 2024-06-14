@@ -28,12 +28,10 @@ namespace Truth
 
 		void Initalize(HWND _hwnd, uint32 _wight, uint32 _height);
 		void Finalize();
-		void Tick();
 		void Render();
 
-		void SetImguiStyle();
-
 		void AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh);
+		void AddDebugobject(std::shared_ptr<Ideal::IMeshObject> _mesh);
 		void AddAnimation();
 
 		void ConvertAsset(std::wstring _path, bool _isSkind);

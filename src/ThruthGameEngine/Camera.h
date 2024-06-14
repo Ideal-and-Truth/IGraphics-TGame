@@ -41,6 +41,9 @@ namespace Truth
 	private:
 		METHOD(Awake);
 		virtual void Awake();
+
+		METHOD(Start);
+		virtual void Start();
 	};
 
 	template<class Archive>
@@ -53,3 +56,4 @@ namespace Truth
 		_ar& m_farZ;
 	}
 }
+BOOST_CLASS_EXPORT_KEY(Truth::Camera)

@@ -11,6 +11,8 @@ Truth::TimeManager::TimeManager()
 	, m_prevCount{}
 	, m_frequency{}
 	, m_eventManager()
+	, m_managers()
+	, m_absDeltaTime(0.0f)
 {
 	DEBUG_PRINT("Create TimeManager\n");
 
@@ -26,9 +28,10 @@ Truth::TimeManager::~TimeManager()
 	DEBUG_PRINT("Finalize TimeManager\n");
 }
 
-void Truth::TimeManager::Initalize(std::shared_ptr<EventManager> _eventManager)
+void Truth::TimeManager::Initalize(std::shared_ptr<Managers> _managers)
 {
-	m_eventManager = _eventManager;
+	m_managers = _managers;
+	m_eventManager = m_managers.lock()->Event();
 }
 
 /// <summary>
@@ -49,10 +52,17 @@ void Truth::TimeManager::Update()
 	}
 #endif // _DEBUG
 
+	m_absDeltaTime = delta;
+
 	// 현재 프레임 시간
 	m_deltaTime = delta * m_timeScale;
 	// 고정 프레임 시간
 	m_fixedDeltaTime += delta * m_timeScale;
+
+	if (m_managers.lock()->m_isEdit)
+	{
+		m_fixedDeltaTime = 0.0f;
+	}
 
 	// 만일 고정 프레임 시간이 단위를 넘기게 되면 이벤트를 발행한다.
 	while (m_fixedDeltaTime >= m_fixedTime)

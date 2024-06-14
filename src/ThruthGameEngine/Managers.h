@@ -9,6 +9,8 @@ namespace Truth
 	class SceneManager;
 	class PhysicsManager;
 	class GraphicsManager;
+	class EditorCamera;
+	class Mesh;
 }
 
 namespace Truth
@@ -24,7 +26,11 @@ namespace Truth
 		std::shared_ptr<Truth::PhysicsManager> m_physXManager;
 		std::shared_ptr<Truth::GraphicsManager> m_graphicsManager;
 
-
+#ifdef _DEBUG
+		bool m_isEdit = true;
+	private:
+		std::shared_ptr<EditorCamera> m_editorCamera;
+#endif // _DEBUG
 
 	public:
 		Managers();
@@ -38,6 +44,11 @@ namespace Truth
 		void Render() const;
 
 		void Finalize() const;
+
+#ifdef _DEBUG
+		void EditToGame();
+		void GameToEdit();
+#endif // _DEBUG
 
 
 

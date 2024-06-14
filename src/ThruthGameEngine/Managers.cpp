@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "PhysicsManager.h"
 #include "GraphicsManager.h"
+#include "EditorCamera.h"
 
 Truth::Managers::Managers()
 {
@@ -20,30 +21,45 @@ void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
 {
 	CreateManagers();
 	InitlizeManagers(_hwnd, _width, _height);
+
+#ifdef _DEBUG
+	m_editorCamera = std::make_shared<EditorCamera>(this);
+	m_editorCamera->SetMainCamera();
+#endif // _DEBUG
 }
 
 void Truth::Managers::Update() const
 {
 	m_inputManager->Update();
-	if (m_inputManager->GetKeyState(KEY::B) == KEY_STATE::DOWN)
-	{
-		m_sceneManager->SaveSceneData();
-	}
 	m_timeManager->Update();
+
+#ifdef _DEBUG
+	if (!m_isEdit)
+	{
+		m_physXManager->Update();
+		m_sceneManager->Update();
+		m_eventManager->Update();
+	}
+	else
+	{
+		m_editorCamera->SetMainCamera();
+		m_editorCamera->Update(m_timeManager->GetDT());
+	}
+#else
 	m_physXManager->Update();
 	m_sceneManager->Update();
 	m_eventManager->Update();
-	// m_graphicsManager->Tick();
+#endif // _DEBUG
+
 }
 
 void Truth::Managers::LateUpdate() const
 {
 	m_eventManager->LateUpdate();
 }
- 
+
 void Truth::Managers::FixedUpdate() const
 {
-	m_eventManager->FixedUpdate();
 }
 
 void Truth::Managers::Render() const
@@ -62,6 +78,29 @@ void Truth::Managers::Finalize() const
 }
 
 
+#ifdef _DEBUG
+void Truth::Managers::EditToGame()
+{
+	if (!m_isEdit)
+	{
+		return;
+	}
+	m_sceneManager->SaveSceneData();
+	m_sceneManager->m_currentScene.lock()->Start();
+	m_isEdit = false;
+}
+
+void Truth::Managers::GameToEdit()
+{
+	if (m_isEdit)
+	{
+		return;
+	}
+	m_physXManager->ResetPhysX();
+	m_sceneManager->ReloadSceneData();
+	m_isEdit = true;
+}
+#endif // _DEBUG
 
 void Truth::Managers::CreateManagers()
 {
@@ -77,7 +116,7 @@ void Truth::Managers::CreateManagers()
 void Truth::Managers::InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height)
 {
 	m_eventManager->Initialize(m_timeManager, m_physXManager);
-	m_timeManager->Initalize(m_eventManager);
+	m_timeManager->Initalize(shared_from_this());
 	m_inputManager->Initalize(_hwnd, m_eventManager);
 	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();

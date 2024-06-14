@@ -23,7 +23,6 @@ namespace Truth
 		CapsuleCollider(bool _isTrigger = true);
 		CapsuleCollider(float _radius, float _height, bool _isTrigger = true);
 		CapsuleCollider(Vector3 _pos, float _radius, float _height, bool _isTrigger = true);
-		virtual ~CapsuleCollider();
 
 		METHOD(SetRadius);
 		void SetRadius(float _radius);
@@ -32,11 +31,6 @@ namespace Truth
 
 		METHOD(Initalize);
 		void Initalize();
-
-	private:
-		METHOD(Awake);
-		void Awake();
-
 	};
 
 	template<class Archive>
@@ -49,3 +43,4 @@ namespace Truth
 
 }
 
+BOOST_CLASS_EXPORT_KEY(Truth::CapsuleCollider)

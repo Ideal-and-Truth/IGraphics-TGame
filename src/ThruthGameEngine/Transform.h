@@ -21,6 +21,9 @@ namespace Truth
 
 		Quaternion m_rotation;
 
+		PROPERTY(eulerAngle)
+		Vector3 m_eulerAngle;
+
 		Matrix m_transformMatrix;
 
 		Vector3 m_look;
@@ -37,51 +40,67 @@ namespace Truth
 #pragma region Inline
 #pragma region Transform
 		// 변환 작업 (더하기)
-		inline void Translate(Vector3 _movement)
+		inline void Translate(const Vector3& _movement)
 		{
 			m_position += _movement;
+			m_transformMatrix.Translation(_movement);
 		}
 
-		inline void AddRotate(Vector3 _dgree)
+		inline void AddRotate(const Vector3& _dgree)
 		{
 			m_rotation *= Quaternion::CreateFromYawPitchRoll(_dgree);
+			ApplyTransform();
 		}
-		inline void AddRotate(Quaternion _dgree)
+		inline void AddRotate(const Quaternion& _dgree)
 		{
 			m_rotation *= _dgree;
+			ApplyTransform();
 		}
 
-		inline void AddScale(Vector3 _rate)
+		inline void AddScale(const Vector3& _rate)
 		{
 			m_scale.x *= _rate.x; m_scale.y *= _rate.y; m_scale.z *= _rate.z;
+			ApplyTransform();
 		}
 		inline void AddScale(float4 _rate)
 		{
 			m_scale *= _rate;
+			ApplyTransform();
 		}
 
 		// 변환 작업 (고정값)
-		inline void SetPosition(Vector3 _position)
+		inline void SetPosition(const Vector3& _position)
 		{
 			m_position = _position;
+			ApplyTransform();
 		}
 
-		inline void SetRotate(Vector3 _dgree)
+		inline void SetRotate(const Vector3& _dgree)
 		{
 			m_rotation = Quaternion::CreateFromYawPitchRoll(_dgree);
+			ApplyTransform();
 		}
-		inline void SetRotate(Quaternion _dgree)
+		inline void SetRotate(const Quaternion& _dgree)
 		{
 			m_rotation = _dgree;
+			ApplyTransform();
 		}
 
-		inline void SetScale(Vector3 _rate)
+		inline void SetScale(const Vector3& _rate)
 		{
 			m_scale = _rate;
+			ApplyTransform();
 		}
 		inline void SetScale(float4 _rate)
 		{
 			m_scale = { _rate, _rate, _rate };
+			ApplyTransform();
+		}
+
+		inline void SetWorldTM(Matrix _tm)
+		{
+			m_transformMatrix = _tm;
+			_tm.Decompose(m_scale, m_rotation, m_position);
 		}
 #pragma endregion Transform
 
@@ -106,3 +125,4 @@ namespace Truth
 
 }
 
+BOOST_CLASS_EXPORT_KEY(Truth::Transform)

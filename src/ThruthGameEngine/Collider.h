@@ -15,6 +15,11 @@ namespace physx
 
 namespace Truth
 {
+	class RigidBody;
+}
+
+namespace Truth
+{
 	class Collider :
 		public Component
 	{
@@ -25,30 +30,63 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
+		ColliderShape m_shape;
+
 	public:
 		bool m_isTrigger;
+
+		PROPERTY(center);
 		Vector3 m_center;
-		Quaternion m_rotation;
+		PROPERTY(size);
+		Vector3 m_size;
+
+		Matrix m_localTM;
+		Matrix m_globalTM;
+
 		inline static uint32 m_colliderIDGenerator = 0;
 		uint32 m_colliderID;
 		physx::PxShape* m_collider;
 
-	protected:
 		physx::PxRigidActor* m_body;
+		std::weak_ptr<RigidBody> m_rigidbody;
+
+#ifdef _DEBUG
+		std::shared_ptr<Ideal::IMeshObject> m_debugMesh;
+#endif // _DEBUG
+
+	protected:
 
 	public:
 		Collider(bool _isTrigger = true);
 		Collider(Vector3 _pos, bool _isTrigger = true);
 		virtual ~Collider();
 
-		void SetPhysxTransform(Vector3 _pos, Quaternion _rot);
-		void SetPhysxTransform(Vector3 _pos);
+		METHOD(Destroy);
+		void Destroy();
+
+		METHOD(Awake);
+		void Awake();
+
+		METHOD(Start);
+		void Start();
+
+		METHOD(SetCenter);
+		void SetCenter(Vector3 _pos);
+
+		METHOD(SetSize);
+		void SetSize(Vector3 _size);
+
+#ifdef _DEBUG
+		METHOD(ApplyTransform);
+		void ApplyTransform();
+#endif // _DEBUG
 
 	protected:
-		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
 		physx::PxRigidDynamic* GetDefaultDynamic();
 		physx::PxRigidStatic* GetDefaultStatic();
 
+		void Initalize(ColliderShape _shape, const Vector3& _param);
 
 		void SetUpFiltering(uint32 _filterGroup);
 	};
@@ -59,7 +97,7 @@ namespace Truth
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_isTrigger;
 		_ar& m_center;
-		_ar& m_rotation;
+		_ar& m_size;
 	}
 
 	struct Collision
@@ -68,3 +106,4 @@ namespace Truth
 		std::weak_ptr<Collider> m_collB;
 	};
 }
+BOOST_CLASS_EXPORT_KEY(Truth::Collider)

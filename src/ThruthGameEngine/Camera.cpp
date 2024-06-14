@@ -4,6 +4,8 @@
 #include "InputManager.h"
 #include "GraphicsManager.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Camera)
+
 Truth::Camera::Camera()
 	: Component()
 {
@@ -22,7 +24,6 @@ void Truth::Camera::Update()
 	if (GetKey(KEY::W))
 	{
 		m_camera->Walk(dt * speed);
-		// m_camera->SetLook(Vector3(0.0f, 1.0f, 1.0f));
 	}
 	if (GetKey(KEY::S))
 	{
@@ -63,5 +64,9 @@ void Truth::Camera::Awake()
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
 	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
+}
+
+void Truth::Camera::Start()
+{
 	SetMainCamera();
 }
