@@ -25,6 +25,8 @@
 #include "SphereCollider.h"
 #include "TestComponent.h"
 #include "BulletMove.h"
+#include "PlayerCamera.h"
+#include "PlayerController.h"
 #pragma endregion test Scene
 
 BOOST_CLASS_EXPORT(Truth::RigidBody);
@@ -38,6 +40,8 @@ BOOST_CLASS_EXPORT(Truth::Mesh);
 BOOST_CLASS_EXPORT(Truth::TestComponent);
 BOOST_CLASS_EXPORT(Shooter);
 BOOST_CLASS_EXPORT(BulletMove);
+BOOST_CLASS_EXPORT(PlayerCamera);
+BOOST_CLASS_EXPORT(PlayerController);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -54,15 +58,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::shared_ptr<Truth::Scene> testScene = std::make_shared<Truth::Scene>(processor->GetManagers());
 	testScene->m_name = "test";
 
-// 	auto wall = std::make_shared<Truth::Entity>(processor->GetManagers());
-// 	wall->m_name = "Wall";
-// 	wall->m_layer = 1;
-// 	testScene->CreateEntity(wall);
-// 	wall->AddComponent<Truth::RigidBody>();
-// 	wall->AddComponent<Truth::BoxCollider>(Vector3{ 20.0f, 20.0f, 2.0f }, false);
-// 	wall->AddComponent<Truth::Mesh>(L"debugCube/debugCube");
-// 	wall->SetPosition(Vector3(0.0f, 20.0f, 0.0f));
-// 	wall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
+	auto wall = std::make_shared<Truth::Entity>(processor->GetManagers());
+	wall->m_name = "Wall";
+	wall->m_layer = 1;
+	testScene->CreateEntity(wall);
+	//wall->AddComponent<Truth::RigidBody>();
+	//wall->AddComponent<Truth::BoxCollider>(Vector3{ 20.0f, 20.0f, 2.0f }, false);
+	wall->AddComponent<Truth::Mesh>(L"debugCube/debugCube");
+	wall->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+	wall->SetScale(Vector3(40.0f, 1.0f, 40.0f));
 
 
 	auto shooter = std::make_shared<Truth::Entity>(processor->GetManagers());
@@ -71,11 +75,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	shooter->AddComponent<Shooter>();
 	testScene->CreateEntity(shooter);
 
-	auto camera = std::make_shared<Truth::Entity>(processor->GetManagers());
-	camera->m_name = "Camera";
-	camera->m_layer = 1;
-	camera->AddComponent<Truth::Camera>()->SetMainCamera();
-	testScene->CreateEntity(camera);
+// 	auto camera = std::make_shared<Truth::Entity>(processor->GetManagers());
+// 	camera->m_name = "Camera";
+// 	camera->m_layer = 1;
+// 	camera->AddComponent<Truth::Camera>()->SetMainCamera();
+// 	testScene->CreateEntity(camera);
+
+	auto player = std::make_shared<Truth::Entity>(processor->GetManagers());
+	player->m_name = "Player";
+	player->m_layer = 1;
+	player->AddComponent<PlayerController>();
+	player->AddComponent<Truth::Mesh>(L"debugCube/debugCube");
+	player->AddComponent<Truth::Camera>()->SetMainCamera();
+	player->AddComponent<PlayerCamera>();
+	player->SetPosition(Vector3(0.0f, 2.0f, 0.0f));
+	player->SetScale(Vector3(1.0f, 2.0f, 1.0f));
+	testScene->CreateEntity(player);
+
+// 	auto playerCamera = std::make_shared<Truth::Entity>(processor->GetManagers());
+// 	playerCamera->m_name = "PlayerCamera";
+// 	playerCamera->m_layer = 1;
+// 	playerCamera->AddComponent<Truth::Camera>()->SetMainCamera();
+// 	playerCamera->AddComponent<PlayerCamera>();
+// 	testScene->CreateEntity(playerCamera);
 
 // 	auto triggerWall = std::make_shared<Truth::Entity>(processor->GetManagers());
 // 	triggerWall->AddComponent<Truth::BoxCollider>(Vector3{ 20.0f, 20.0f, 2.0f }, true);

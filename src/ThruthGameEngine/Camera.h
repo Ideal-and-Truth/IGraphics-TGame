@@ -25,9 +25,18 @@ namespace Truth
 		float m_nearZ;
 		float m_farZ;
 
+		PROPERTY(position)
+		Vector3 m_position;
+
+		PROPERTY(look)
+		Vector3 m_look;
+
 	public:
 		Camera();
 		virtual ~Camera();
+
+		METHOD(Start);
+		virtual void Start();
 
 		METHOD(Update);
 		virtual void Update();
@@ -37,6 +46,14 @@ namespace Truth
 
 		void SetMainCamera();
 
+		METHOD(SetLook);
+		void SetLook(Vector3 _val);
+
+		METHOD(Pitch);
+		void Pitch(float angle);
+
+		METHOD(RotateY);
+		void RotateY(float angle);
 
 	private:
 		METHOD(Awake);

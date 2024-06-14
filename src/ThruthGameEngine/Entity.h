@@ -30,7 +30,7 @@ namespace Truth
 	protected:
 		static uint32 m_entityCount;
 
-
+		PROPERTY(tag);
 		std::string m_tag;
 
 		PROPERTY(ID);

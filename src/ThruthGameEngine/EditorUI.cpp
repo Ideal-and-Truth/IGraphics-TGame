@@ -327,7 +327,7 @@ void EditorUI::TransformUI(std::shared_ptr<Truth::Component> TransformComponent)
 	{
 		// Position UI
 		float position[3];
-		Vector3 posVec3 = TransformComponent->GetTypeInfo().GetProperty("position")->Get<Vector3>(TransformComponent.get()).Get();
+		Vector3 posVec3 = TransformComponent->GetTypeInfo().GetProperty("worldPosition")->Get<Vector3>(TransformComponent.get()).Get();
 
 		position[0] = posVec3.x;
 		position[1] = posVec3.y;
@@ -338,7 +338,7 @@ void EditorUI::TransformUI(std::shared_ptr<Truth::Component> TransformComponent)
 		posVec3.x = position[0];
 		posVec3.y = position[1];
 		posVec3.z = position[2];
-		TransformComponent->GetTypeInfo().GetProperty("position")->Set(TransformComponent.get(), posVec3);
+		TransformComponent->GetTypeInfo().GetProperty("worldPosition")->Set(TransformComponent.get(), posVec3);
 
 
 		// Scale UI

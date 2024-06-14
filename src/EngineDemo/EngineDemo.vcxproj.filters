@@ -37,6 +37,24 @@
     <Filter Include="Component\DebugComponent">
       <UniqueIdentifier>{efe874c3-c70a-4af3-ad04-09ed6df054f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Player">
+      <UniqueIdentifier>{03ea1fc6-15c7-4802-bb06-a1c633911e36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\BattleSystem">
+      <UniqueIdentifier>{fbe94c66-3d27-4980-865e-234609cf9e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\BattleSystem\DamageSystem">
+      <UniqueIdentifier>{b3bc1aae-ce59-47ed-9762-826fc15645c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Enemy">
+      <UniqueIdentifier>{e864a2a5-287c-447b-8b00-aa05e9901fee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\StateMachine">
+      <UniqueIdentifier>{cacbf6e2-7b44-4cb6-9461-0d41859c7a3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Player\PlayerState">
+      <UniqueIdentifier>{05865445-d2b9-4210-848d-4a67bab7bfd6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -63,6 +81,30 @@
     <ClInclude Include="TestMovement.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentBase.h">
+      <Filter>Component\DebugComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Damageable.h">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>Component\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Component\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeTriggerEnterDamager.h">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCamera.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -79,6 +121,30 @@
     </ClCompile>
     <ClCompile Include="TestMovement.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentBase.cpp">
+      <Filter>Component\DebugComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Damageable.cpp">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>Component\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Component\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeTriggerEnterDamager.cpp">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCamera.cpp">
+      <Filter>Component\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
