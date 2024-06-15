@@ -160,6 +160,8 @@
     <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructure.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructureManager.h" />
+    <ClInclude Include="D3D12StructuredBuffer.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -244,6 +246,8 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12SRV.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructure.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructureManager.cpp" />
+    <ClCompile Include="D3D12StructuredBuffer.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

@@ -17,6 +17,8 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
+#include "GraphicsEngine/D3D12/D3D12UploadBufferPool.h"
+
 
 #include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/Resource/IdealCamera.h"
@@ -218,6 +220,7 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 	m_raytacingOutputResourceUAVGpuDescriptorHandle.Free();
 
 	m_texture = nullptr;
+	m_texture2 = nullptr;
 	m_vertexBufferSRV = nullptr;
 	m_indexBufferSRV = nullptr;
 	m_resourceManager = nullptr;
@@ -377,20 +380,19 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
 
-	//if (GetAsyncKeyState('V') & 0x8000)
-	{
-		//-------BLAS-------//
-		ComPtr<ID3D12Resource> BottomScratch;	// UAV
-		BuildBottomLevelAccelerationStructure2(BottomScratch);
-
-		//-------TLAS-------//
-		static float rad = 0.f;
-		rad += 0.01f;
-		Matrix mat = Matrix::Identity * Matrix::CreateRotationY(rad);
-		ComPtr<ID3D12Resource> TopScratch;	// UAV
-		ComPtr<ID3D12Resource> instanceBuffer;	//Upload
-		BuildTopLevelAccelerationStructure2(TopScratch, instanceBuffer, mat);
-	}
+	//{
+	//	//-------BLAS-------//
+	//	ComPtr<ID3D12Resource> BottomScratch;	// UAV
+	//	BuildBottomLevelAccelerationStructure2(BottomScratch);
+	//
+	//	//-------TLAS-------//
+	//	static float rad = 0.f;
+	//	rad += 0.01f;
+	//	Matrix mat = Matrix::Identity * Matrix::CreateRotationY(rad);
+	//	ComPtr<ID3D12Resource> TopScratch;	// UAV
+	//	ComPtr<ID3D12Resource> instanceBuffer;	//Upload
+	//	BuildTopLevelAccelerationStructure2(TopScratch, instanceBuffer, mat);
+	//}
 
 	ResetCommandList();
 	BeginRender();
@@ -405,9 +407,10 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		c += 0.01f;
 		m_cubeCB.albedo = Color(c, c, c, c);
 	}
-	BuildShaderTables();
-	//DoRaytracing();
-	DoRaytracing2();
+	UpdateAccelerationStructure();
+	//BuildShaderTables();
+	DoRaytracing();
+	//DoRaytracing2();
 	CopyRaytracingOutputToBackBuffer();
 	EndRender();
 	Present();
@@ -671,6 +674,10 @@ void Ideal::D3D12RayTracingRenderer::CreatePools()
 		m_cbAllocator[i] = std::make_shared<Ideal::D3D12DynamicConstantBufferAllocator>();
 		m_cbAllocator[i]->Init(MAX_DRAW_COUNT_PER_FRAME);
 
+		// Upload Pool
+		m_uploadBufferPool[i] = std::make_shared<Ideal::D3D12UploadBufferPool>();
+		m_uploadBufferPool[i]->Init(m_device.Get(), sizeof(Ideal::DXRInstanceDesc), MAX_DRAW_COUNT_PER_FRAME);
+
 		// shader table Descriptor Heap
 		//m_shaderTableDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 		//m_shaderTableDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
@@ -748,6 +755,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 
 	m_descriptorHeaps[nextContextIndex]->Reset();
 	m_cbAllocator[nextContextIndex]->Reset();
+	m_uploadBufferPool[nextContextIndex]->Reset();
 
 	m_currentContextIndex = nextContextIndex;
 }
@@ -776,8 +784,8 @@ void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 	CreateRootSignatures();
 	CreateRaytracingPipelineStateObject();
 	BuildGeometry();
-	//BuildAccelerationStructures();
-	BuildAccelerationStructures2();
+	BuildAccelerationStructures();
+	//BuildAccelerationStructures2();
 	BuildShaderTables();
 	CreateRayTracingOutputResources();
 }
@@ -1105,7 +1113,7 @@ void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
 	//-------BLAS-------//
 	ComPtr<ID3D12Resource> TopScratch;	// UAV
 	ComPtr<ID3D12Resource> instanceBuffer;	//Upload
-	BuildTopLevelAccelerationStructure(TopScratch, instanceBuffer);
+	BuildTopLevelAccelerationStructure(m_scratch, instanceBuffer);
 
 	m_commandLists[m_currentContextIndex]->Close();
 	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
@@ -1192,6 +1200,10 @@ void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure2(ComPtr<
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS topLevelInputs = {};
 	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 	topLevelInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+
+	// 업데이트 허용
+	topLevelInputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+	
 	topLevelInputs.NumDescs = 1;
 	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 
@@ -1589,4 +1601,46 @@ void Ideal::D3D12RayTracingRenderer::UpdateForSizeChange(uint32 Width, uint32 He
 			1.f - border
 		};
 	}
+}
+
+void Ideal::D3D12RayTracingRenderer::UpdateAccelerationStructure()
+{
+
+	static float rad = 0.f;
+	if (rad > 360.f) rad = 0.f;
+	rad+= 0.001f;
+	Matrix mat = Matrix::Identity * Matrix::CreateRotationY(rad);
+	//Matrix mat = Matrix::Identity;
+	// instance를 다시 올릴 upload buffer의 핸들
+	std::shared_ptr<Ideal::UploadBufferContainer> handle = m_uploadBufferPool[m_currentContextIndex]->Allocate();
+
+	// upload 할 주소를 받고
+	DXRInstanceDesc* ptr = (DXRInstanceDesc*)handle->SystemMemoryAddress;
+	ptr->SetTransform(mat);
+	ptr->InstanceMask = 1;
+	ptr->AccelerationStructure = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
+	// 주소에 데이터 복사 하고
+
+	/// 리빌드
+	// BLAS
+
+	// TLAS
+	D3D12_GPU_VIRTUAL_ADDRESS instanceDescs = handle->GpuVirtualAddress;
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC topLevelBuildDesc = {};
+	{
+		topLevelBuildDesc.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+		topLevelBuildDesc.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+		topLevelBuildDesc.Inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+		topLevelBuildDesc.Inputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
+
+		topLevelBuildDesc.Inputs.NumDescs = 1;	// 일단 한 개
+		topLevelBuildDesc.Inputs.InstanceDescs = instanceDescs;
+
+		topLevelBuildDesc.ScratchAccelerationStructureData = m_scratch->GetGPUVirtualAddress();
+		topLevelBuildDesc.DestAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
+	}
+	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAccelerationStructure->GetResource());
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
 }

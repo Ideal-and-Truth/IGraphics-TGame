@@ -104,6 +104,7 @@ namespace Ideal
 	// Manager
 	class D3D12ConstantBufferPool;
 	class D3D12DynamicConstantBufferAllocator;
+	class D3D12UploadBufferPool;
 
 	// Interface
 	class ICamera;
@@ -198,6 +199,7 @@ namespace Ideal
 		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_uploadBufferPool[MAX_PENDING_FRAME_COUNT] = {};
 		// allocate for save shader table data
 		//std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableDescriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		//std::vector<Ideal::D3D12DescriptorHandle> m_shaderTableDescriptorHandle
@@ -292,6 +294,8 @@ namespace Ideal
 		// AS
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure;
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
+		ComPtr<ID3D12Resource> m_scratch;
+
 
 		// AS
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure2[MAX_PENDING_FRAME_COUNT];
@@ -313,5 +317,8 @@ namespace Ideal
 		void DoRaytracing2();
 		void CopyRaytracingOutputToBackBuffer();
 		void UpdateForSizeChange(uint32 Width, uint32 Height);
+
+		// Test
+		void UpdateAccelerationStructure();
 	};
 }

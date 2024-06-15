@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Core.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include <DirectXMath.h>
 
 namespace Ideal
 {
@@ -78,5 +79,20 @@ namespace Ideal
 
 		// Debug support
 		std::vector<DXRShaderRecord> m_shaderRecords;
+	};
+
+	// add utils
+	struct DXRInstanceDesc : public D3D12_RAYTRACING_INSTANCE_DESC
+	{
+		void SetTransform(const Matrix& NewTransform)
+		{
+			XMStoreFloat3x4(reinterpret_cast<DirectX::XMFLOAT3X4*>(D3D12_RAYTRACING_INSTANCE_DESC::Transform), NewTransform);
+		}
+		Matrix const& GetTransform()
+		{
+			DirectX::XMMATRIX transform =XMLoadFloat3x4(reinterpret_cast<DirectX::XMFLOAT3X4*>(D3D12_RAYTRACING_INSTANCE_DESC::Transform));
+			Matrix ret = transform;
+			return ret;
+		}
 	};
 }
