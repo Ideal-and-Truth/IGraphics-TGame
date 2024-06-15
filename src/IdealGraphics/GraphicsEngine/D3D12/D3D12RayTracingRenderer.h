@@ -71,6 +71,18 @@ struct CubeConstantBuffer
 	Color albedo;
 };
 
+struct RootArgument
+{
+	// Test ConstantBuffer
+	CubeConstantBuffer CB_Cube;
+	// Index
+	D3D12_GPU_DESCRIPTOR_HANDLE SRV_Indices;
+	// Vertex
+	D3D12_GPU_DESCRIPTOR_HANDLE SRV_Vertices;
+	// Diffuse Texture
+	D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
+};
+
 namespace Ideal
 {
 	class ResourceManager;
@@ -186,6 +198,11 @@ namespace Ideal
 		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
+		// allocate for save shader table data
+		//std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableDescriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
+		//std::vector<Ideal::D3D12DescriptorHandle> m_shaderTableDescriptorHandle
+
+
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
 
@@ -245,7 +262,11 @@ namespace Ideal
 		void BuildAccelerationStructures();
 		// AS
 		void BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer);
-		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer);
+		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
+
+		void BuildAccelerationStructures2();
+		void BuildBottomLevelAccelerationStructure2(ComPtr<ID3D12Resource>& ScratchBuffer);
+		void BuildTopLevelAccelerationStructure2(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
 
 		void BuildShaderTables();
 		
@@ -258,30 +279,38 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_raytacingOutputResourceUAVGpuDescriptorHandle;
 
 		//geometry
+		RootArgument m_rootArguments;
+
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
 		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_vertexBufferSRV;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> m_indexBuffer;
-		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_indexBufferSRV;
-		ComPtr<ID3D12Resource> m_vb2;
-		ComPtr<ID3D12Resource> m_ib2;
 
+		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_indexBufferSRV;
 		std::shared_ptr<Ideal::D3D12Texture> m_texture;
+		std::shared_ptr<Ideal::D3D12Texture> m_texture2;
 
 		// AS
-		ComPtr<ID3D12Resource> m_accelerationStructure;
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure;
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
+
+		// AS
+		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure2[MAX_PENDING_FRAME_COUNT];
+		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure2[MAX_PENDING_FRAME_COUNT];
 
 		RayGenConstantBuffer m_cbRayGen;
 		SceneConstantBuffer m_sceneCB;
 		CubeConstantBuffer m_cubeCB;
 
 		ComPtr<ID3D12Resource> m_missShaderTable;
-		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
+		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 
+		ComPtr<ID3D12Resource> m_hitGroupShaderTables[MAX_PENDING_FRAME_COUNT];
+		ComPtr<ID3D12Resource> m_rayGenShaderTables[MAX_PENDING_FRAME_COUNT];
+		ComPtr<ID3D12Resource> m_missShaderTables[MAX_PENDING_FRAME_COUNT];
 		// Render
 		void DoRaytracing();
+		void DoRaytracing2();
 		void CopyRaytracingOutputToBackBuffer();
 		void UpdateForSizeChange(uint32 Width, uint32 Height);
 	};

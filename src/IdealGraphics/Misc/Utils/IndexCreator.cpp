@@ -26,7 +26,7 @@ void IndexCreator::Init(uint32 MaxNum)
 {
 	m_maxNum = MaxNum;
 	m_table = new uint32[MaxNum];
-	::memset(m_table, 0, sizeof(uint32) * MaxNum);
+	::memset(m_table, 0, sizeof(uint32) * MaxNum);	
 	for (uint32 i = 0; i < MaxNum; ++i)
 	{
 		m_table[i] = i;

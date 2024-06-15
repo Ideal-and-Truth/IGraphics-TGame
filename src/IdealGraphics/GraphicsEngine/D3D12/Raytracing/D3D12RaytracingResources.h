@@ -9,16 +9,16 @@ namespace Ideal
 		return (size + (alignment - 1)) & ~(alignment - 1);
 	}
 
-	class D3D12ShaderRecord
+	class DXRShaderRecord
 	{
 	public:
-		D3D12ShaderRecord(void* pShaderIdentifier, uint32 shaderIdentifierSize)
+		DXRShaderRecord(void* pShaderIdentifier, uint32 shaderIdentifierSize)
 			: shaderIdentifier(pShaderIdentifier, shaderIdentifierSize)
 		{
 
 		}
 
-		D3D12ShaderRecord(
+		DXRShaderRecord(
 			void* pShaderIdentifier, uint32 shaderIdentifierSize,
 			void* pLocalRootArguments, uint32 localRootArgumentsSize
 		) : shaderIdentifier(pShaderIdentifier, shaderIdentifierSize),
@@ -49,10 +49,10 @@ namespace Ideal
 		PointerWithSize localRootArguments;
 	};
 
-	class D3D12ShaderTable : public D3D12UploadBuffer
+	class DXRShaderTable : public D3D12UploadBuffer
 	{
 	public:
-		D3D12ShaderTable(ID3D12Device* device, uint32 numShaderRecords, uint32 shaderRecordSize, LPCWSTR resourceName = nullptr)
+		DXRShaderTable(ID3D12Device* device, uint32 numShaderRecords, uint32 shaderRecordSize, LPCWSTR resourceName = nullptr)
 		{
 			m_shaderRecordSize = Align(shaderRecordSize, D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
 			m_shaderRecords.reserve(numShaderRecords);
@@ -62,7 +62,7 @@ namespace Ideal
 			m_resource->SetName(resourceName);
 		}
 
-		void push_back(const D3D12ShaderRecord& shaderRecord)
+		void push_back(const DXRShaderRecord& shaderRecord)
 		{
 			Check(m_shaderRecords.size() < m_shaderRecords.capacity());
 			m_shaderRecords.push_back(shaderRecord);
@@ -77,6 +77,6 @@ namespace Ideal
 		uint32 m_shaderRecordSize;
 
 		// Debug support
-		std::vector<D3D12ShaderRecord> m_shaderRecords;
+		std::vector<DXRShaderRecord> m_shaderRecords;
 	};
 }

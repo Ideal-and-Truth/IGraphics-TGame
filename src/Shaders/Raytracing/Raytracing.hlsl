@@ -15,19 +15,20 @@
 #define HLSL
 #include "RaytracingHlslCompat.h"
 
-RaytracingAccelerationStructure Scene : register(t0, space0);
+//-----------GLOBAL-----------//
 RWTexture2D<float4> RenderTarget : register(u0);
-StructuredBuffer<uint> Indices : register(t1, space0);
-StructuredBuffer<PositionNormalUVVertex> Vertices : register(t2, space0);
-
-// 일단 다 글로벌로 만들겠다
+RaytracingAccelerationStructure Scene : register(t0, space0);
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
-ConstantBuffer<CubeConstantBuffer> g_cubeCB : register(b1);
-Texture2D<float4> g_texDiffuse : register(t3);
-
 SamplerState LinearWrapSampler : register(s0);
 
+//-----------LOCAL-----------//
+ConstantBuffer<CubeConstantBuffer> g_cubeCB : register(b0, space1);
+StructuredBuffer<uint> Indices : register(t0, space1);
+StructuredBuffer<PositionNormalUVVertex> Vertices : register(t1, space1);
+Texture2D<float4> g_texDiffuse : register(t2, space1);
+
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
+
 struct RayPayload
 {
     float4 color;
@@ -79,6 +80,7 @@ float4 CalculateDiffuseLighting(float3 hitPosition, float3 normal)
     // Diffuse contribution.
     float fNDotL = max(0.0f, dot(pixelToLight, normal));
 
+    //return g_cubeCB[1].albedo * g_sceneCB.lightDiffuseColor * fNDotL;
     return g_cubeCB.albedo * g_sceneCB.lightDiffuseColor * fNDotL;
     //float4 diffuseTextureColor = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
     //return diffuseTextureColor;
@@ -146,7 +148,6 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     
     float4 diffuseColor = CalculateDiffuseLighting(hitPosition, triangleNormal);
     float4 color = albedo * (g_sceneCB.lightAmbientColor + diffuseColor);
-
     payload.color = color;
 }
 

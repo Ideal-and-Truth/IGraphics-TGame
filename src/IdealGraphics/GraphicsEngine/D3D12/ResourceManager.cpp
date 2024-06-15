@@ -66,6 +66,7 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	//------------SRV Heap-----------//
 	m_srvHeap = std::make_shared<D3D12DynamicDescriptorHeap>();
 	m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
+	//m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, m_srvHeapCount);
 
 	//------------RTV Heap-----------//
 	m_rtvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
