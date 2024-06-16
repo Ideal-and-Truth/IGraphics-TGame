@@ -266,10 +266,6 @@ namespace Ideal
 		void BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer);
 		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
 
-		void BuildAccelerationStructures2();
-		void BuildBottomLevelAccelerationStructure2(ComPtr<ID3D12Resource>& ScratchBuffer);
-		void BuildTopLevelAccelerationStructure2(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
-
 		void BuildShaderTables();
 		void BuildShaderTables2();
 
@@ -277,6 +273,7 @@ namespace Ideal
 		void CreateRayTracingOutputResources();
 		ComPtr<ID3D12Resource> m_raytracingOutput;
 		uint32 m_raytracingOutputResourceUAVDescriptorHeapIndex;
+
 		void CreateDescriptorHeap();
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_uavDescriptorHeap;
 		Ideal::D3D12DescriptorHandle m_raytacingOutputResourceUAVGpuDescriptorHandle;
@@ -304,12 +301,6 @@ namespace Ideal
 		RayGenConstantBuffer m_cbRayGen;
 		SceneConstantBuffer m_sceneCB;
 		CubeConstantBuffer m_cubeCB;
-
-		// 2024.06.16
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
-		//Ideal::D3D12DescriptorHandle m_indexBufferShaderTableHandle;
-		//Ideal::D3D12DescriptorHandle m_vertexBufferShaderTableHandle;
-		//Ideal::D3D12DescriptorHandle m_textureShaderTableHandle;
 
 		ComPtr<ID3D12Resource> m_missShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
