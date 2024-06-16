@@ -73,6 +73,11 @@ bool show_point_light_window = true;
 
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+DWORD g_FrameCount = 0;
+ULONGLONG g_PrvFrameCheckTick = 0;
+ULONGLONG g_PrvUpdateTick = 0;
+
+
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
@@ -242,6 +247,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
+				g_FrameCount++;
+				ULONGLONG curTick = GetTickCount64();
+				if (curTick - g_PrvUpdateTick > 16)
+				{
+					g_PrvUpdateTick = curTick;
+				}
+				if (curTick - g_PrvFrameCheckTick > 1000)
+				{
+					g_PrvFrameCheckTick = curTick;
+					WCHAR wchTxt[64];
+					swprintf_s(wchTxt, L"FPS:%u", g_FrameCount);
+					SetWindowText(g_hWnd, wchTxt);
+					g_FrameCount = 0;
+				}
+
 				CameraTick(camera);
 				//pointLight->SetPosition(camera->GetPosition());
 				//auto cp = camera->GetPosition();

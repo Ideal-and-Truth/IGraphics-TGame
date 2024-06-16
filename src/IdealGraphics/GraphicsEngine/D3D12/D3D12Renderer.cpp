@@ -944,7 +944,11 @@ void Ideal::D3D12Renderer::Present()
 	Fence();
 
 	HRESULT hr;
-	hr = m_swapChain->Present(0, 0);
+	uint32 SyncInterval = 0;
+	uint32 PresentFlags = 0;
+	PresentFlags = DXGI_PRESENT_ALLOW_TEARING;
+
+	hr = m_swapChain->Present(0, PresentFlags);
 	Check(hr);
 
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();

@@ -199,7 +199,7 @@ namespace Ideal
 		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
-		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_uploadBufferPool[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_BLASInstancePool[MAX_PENDING_FRAME_COUNT] = {};
 		// allocate for save shader table data
 		//std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableDescriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		//std::vector<Ideal::D3D12DescriptorHandle> m_shaderTableDescriptorHandle
@@ -271,7 +271,8 @@ namespace Ideal
 		void BuildTopLevelAccelerationStructure2(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
 
 		void BuildShaderTables();
-		
+		void BuildShaderTables2();
+
 		// 레이트레이싱을 위한 2d output texture를 만든다.
 		void CreateRayTracingOutputResources();
 		ComPtr<ID3D12Resource> m_raytracingOutput;
@@ -296,7 +297,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
 		ComPtr<ID3D12Resource> m_scratch;
 
-
 		// AS
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure2[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure2[MAX_PENDING_FRAME_COUNT];
@@ -305,6 +305,12 @@ namespace Ideal
 		SceneConstantBuffer m_sceneCB;
 		CubeConstantBuffer m_cubeCB;
 
+		// 2024.06.16
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
+		//Ideal::D3D12DescriptorHandle m_indexBufferShaderTableHandle;
+		//Ideal::D3D12DescriptorHandle m_vertexBufferShaderTableHandle;
+		//Ideal::D3D12DescriptorHandle m_textureShaderTableHandle;
+
 		ComPtr<ID3D12Resource> m_missShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
@@ -312,6 +318,7 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_hitGroupShaderTables[MAX_PENDING_FRAME_COUNT];
 		ComPtr<ID3D12Resource> m_rayGenShaderTables[MAX_PENDING_FRAME_COUNT];
 		ComPtr<ID3D12Resource> m_missShaderTables[MAX_PENDING_FRAME_COUNT];
+
 		// Render
 		void DoRaytracing();
 		void DoRaytracing2();
