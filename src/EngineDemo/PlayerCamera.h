@@ -13,7 +13,7 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	Truth::Camera* m_camera;
+	std::shared_ptr<Truth::Camera> m_camera;
 
 	float4 m_cameraDistance;
 	float4 m_elevation;

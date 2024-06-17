@@ -24,18 +24,18 @@ void PlayerCamera::Awake()
 
 void PlayerCamera::Start()
 {
-	m_camera = m_owner.lock().get()->GetComponent<Truth::Camera>().lock().get();
+	m_camera = m_owner.lock().get()->GetComponent<Truth::Camera>().lock();
 
 	auto ownerPos = m_owner.lock().get()->m_transform->m_position;
 	ownerPos.z -= m_cameraDistance;
-	m_camera->GetTypeInfo().GetProperty("position")->Set(m_camera, ownerPos);
+	m_camera.get()->GetTypeInfo().GetProperty("position")->Set(m_camera.get(), ownerPos);
 
 }
 
 void PlayerCamera::Update()
 {
-	auto cameraPos = m_camera->GetTypeInfo().GetProperty("position")->Get<DirectX::SimpleMath::Vector3>(m_camera).Get();
-	auto cameraLook = m_camera->GetTypeInfo().GetProperty("look")->Get<DirectX::SimpleMath::Vector3>(m_camera).Get();
+	auto cameraPos = m_camera.get()->GetTypeInfo().GetProperty("position")->Get<DirectX::SimpleMath::Vector3>(m_camera.get()).Get();
+	auto cameraLook = m_camera.get()->GetTypeInfo().GetProperty("look")->Get<DirectX::SimpleMath::Vector3>(m_camera.get()).Get();
 
 
 	m_elevation += MouseDy() * m_cameraSpeed;
@@ -65,10 +65,10 @@ void PlayerCamera::Update()
 	auto look = ownerPos - cameraPos;
 
 
-	m_camera->GetTypeInfo().GetProperty("position")->Set(m_camera, cameraPos);
-	m_camera->GetTypeInfo().GetProperty("look")->Set(m_camera, look);
+	m_camera.get()->GetTypeInfo().GetProperty("position")->Set(m_camera.get(), cameraPos);
+	m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);
 
-	m_camera->Update();
+	m_camera.get()->Update();
 
 
 

@@ -18,7 +18,7 @@ void Damageable::Awake()
 
 void Damageable::Start()
 {
-	m_collider = m_owner.lock().get()->GetComponent<Truth::Collider>().lock().get();
+
 }
 
 void Damageable::Update()

@@ -25,6 +25,7 @@
 #include "SphereCollider.h"
 #include "TestComponent.h"
 #include "BulletMove.h"
+#include "Player.h"
 #include "PlayerCamera.h"
 #include "PlayerController.h"
 #pragma endregion test Scene
@@ -40,6 +41,7 @@ BOOST_CLASS_EXPORT(Truth::Mesh);
 BOOST_CLASS_EXPORT(Truth::TestComponent);
 BOOST_CLASS_EXPORT(Shooter);
 BOOST_CLASS_EXPORT(BulletMove);
+BOOST_CLASS_EXPORT(Player);
 BOOST_CLASS_EXPORT(PlayerCamera);
 BOOST_CLASS_EXPORT(PlayerController);
 
@@ -87,6 +89,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	player->AddComponent<PlayerController>();
 	player->AddComponent<Truth::Mesh>(L"debugCube/debugCube");
 	player->AddComponent<Truth::Camera>()->SetMainCamera();
+	player->AddComponent<Player>();
 	player->AddComponent<PlayerCamera>();
 	player->SetPosition(Vector3(0.0f, 2.0f, 0.0f));
 	player->SetScale(Vector3(1.0f, 2.0f, 1.0f));

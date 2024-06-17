@@ -3,6 +3,8 @@
 #include "Camera.h"
 
 
+class Player;
+
 class PlayerController :
 	public Truth::Component
 {
@@ -13,7 +15,8 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	Truth::Camera* m_camera;
+	std::shared_ptr<Truth::Camera> m_camera;
+	std::shared_ptr<Player> m_player;
 
 public:
 	PlayerController();

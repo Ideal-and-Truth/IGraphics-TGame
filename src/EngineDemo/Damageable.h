@@ -30,14 +30,12 @@ private:
 
 	PROPERTY(hitAngle);
 	float4 m_hitAngle;
-
+	 
 	PROPERTY(hitForwardRotation);
 	float4 m_hitForwardRotation;
 
 	PROPERTY(isInvulnerable);
 	bool m_isInvulnerable;
-
-	Truth::Collider* m_collider;
 
 public:
 	Damageable();
