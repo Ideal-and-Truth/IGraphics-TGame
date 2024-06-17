@@ -69,8 +69,9 @@ namespace Truth
 		std::vector<std::pair<Component*, const Method*>> m_destroy;
 		std::vector<std::pair<Component*, const Method*>> m_applyTransform;
 
-		std::shared_ptr<Transform> m_transform;
 
+		std::shared_ptr<Transform> m_transform;
+		 
 	public:
 		Entity(std::shared_ptr<Managers> _mangers);
 		Entity() = default;
