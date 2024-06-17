@@ -1,4 +1,5 @@
 #include "DXRAccelerationStructureManager.h"
+#include "GraphicsEngine/D3D12/D3D12UploadBufferPool.h"
 
 Ideal::DXRAccelerationStructureManager::DXRAccelerationStructureManager()
 {
@@ -12,45 +13,92 @@ Ideal::DXRAccelerationStructureManager::~DXRAccelerationStructureManager()
 
 void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, const DXRGeometryInfo& GeometryInfo, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags)
 {
-	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>();
+	// 먼저 같은 이름의 BLAS가 있는지를 검사한다. 만약 있을 경우 이미 추가한 BLAS인 것
+	if (m_bottomLevelAS[GeometryInfo.Name] != nullptr)
+	{
+		__debugbreak();
+	}
+
+	// 처음 추가할 경우 만들어서 넣어준다.
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(GeometryInfo.Name);
 	blas->Create(Device, GeometryInfo, BuildFlags, false);
+	m_bottomLevelAS[GeometryInfo.Name] = blas;
 
-	m_bottomLevelAS.push_back(blas);
-
-	// instance
-	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
-	instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1; // identity
-	instanceDesc.InstanceMask = 0xFF;
-	instanceDesc.AccelerationStructure = blas->GetGPUAddress();
-
-	//// upload buffer
-	//Ideal::D3D12UploadBuffer uploadBuffer;
-	//uploadBuffer.Create(Device, )
+	m_scratchResourceSize = max(blas->RequiredScratchSize(), m_scratchResourceSize);
 }
 
 uint32 Ideal::DXRAccelerationStructureManager::AddInstance(const std::wstring& BLASName, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
 {
-	//uint32 instanceIndex = m_numBLASInstance;
-	//m_numBLASInstance++;
+	// 이름으로 BLAS를 꺼내오고
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = m_bottomLevelAS[BLASName];
+	// 만들 인스턴스의 인덱스를 생성하고
+	uint32 instanceIndex = m_currentBlasIndex;
+	m_currentBlasIndex++;
 
-	//D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
-	//instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1; // identity
-	//instanceDesc.InstanceMask = InstanceMask;
-	////instanceDesc.InstanceContributionToHitGroupIndex = InstanceContributionToHitGroupIndex != UINT_MAX ? InstanceContributionToHitGroupIndex :  
-	//instanceDesc.AccelerationStructure = 
+	Ideal::DXRInstanceDesc instanceDesc = {};
+	instanceDesc.InstanceMask = InstanceMask;
+	instanceDesc.InstanceContributionToHitGroupIndex = InstanceContributionToHitGroupIndex;
+	instanceDesc.AccelerationStructure = blas->GetGPUAddress();
+	instanceDesc.SetTransform(transform);
+	m_instanceDescs.push_back(instanceDesc);
+
+	return instanceIndex;
 }
 
-void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Device, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool allowUpdate /*= false*/)
+void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Device, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool allowUpdate /*= false*/, const wchar_t* TLASName /*= nullptr*/)
 {
-	m_topLevelAS = std::make_shared<Ideal::DXRTopLevelAccelerationStructure>();
-	//m_topLevelAS->Create(Device,)
+	m_topLevelAS = std::make_shared<Ideal::DXRTopLevelAccelerationStructure>(TLASName);
+	m_topLevelAS->Create(Device, m_currentBlasIndex, BuildFlags, allowUpdate);
 
-	uint32 blasNum = (uint32)m_bottomLevelAS.size();
+	m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+	m_scratchResourceSize = max(m_topLevelAS->RequiredScratchSize(), m_scratchResourceSize);
+	m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+}
 
-	Ideal::D3D12UploadBuffer instanceBufferDest;
+void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild /*= false*/)
+{
+	// instanceDescs의 첫 주소를 받아온다.
+	D3D12_GPU_VIRTUAL_ADDRESS instanceDescs = 0;
+	bool isFirst = true;
 
-	instanceBufferDest.Create(Device.Get(), sizeof(D3D12_RAYTRACING_INSTANCE_DESC) * blasNum);
-	void* data = instanceBufferDest.Map();
-	
-	// TODO : instance gpu address
+	// instance 정보를 UpdateBuffer에 올린다.
+	uint32 numInstance = m_instanceDescs.size();
+
+	for (uint32 i = 0; i < numInstance; ++i)
+	{
+		 std::shared_ptr<Ideal::UploadBufferContainer> container = UploadBufferPool->Allocate();
+		 if (isFirst)
+		 {
+			 instanceDescs = container->GpuVirtualAddress;
+			 isFirst = false;
+		 }
+
+		 DXRInstanceDesc* ptr = (DXRInstanceDesc*)container->SystemMemoryAddress;
+		 *ptr = m_instanceDescs[i];
+	}
+
+	// Build BLAS
+	for (auto& blasPair : m_bottomLevelAS)
+	{
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = blasPair.second;
+
+		// 처음에 빌드해야하거나 blas 정보가 수정되어 다시 빌드해야 할 경우
+		if (ForceBuild || blas->IsDirty())
+		{
+			blas->Build(CommandList, m_scratchBuffer->GetResource());
+
+			CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(blas->GetResource().Get());
+			CommandList->ResourceBarrier(1, &uavBarrier);
+		}
+	}
+
+	// Build TLAS
+	{
+		// TLAS는 항상 리빌드한다..
+		// 위에서 받아온 첫 주소를 가져옴
+		m_topLevelAS->Build(CommandList, numInstance, instanceDescs, m_scratchBuffer->GetResource());
+
+		CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAS->GetResource().Get());
+		CommandList->ResourceBarrier(1, &uavBarrier);
+	}
 }

@@ -18,7 +18,8 @@
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
 #include "GraphicsEngine/D3D12/D3D12UploadBufferPool.h"
-
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
 
 #include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/Resource/IdealCamera.h"
@@ -1123,9 +1124,9 @@ void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPt
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
 	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
-	geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+	geometryDesc.Triangles.IndexFormat = INDEX_FORMAT;
 	geometryDesc.Triangles.Transform3x4 = 0;
-	geometryDesc.Triangles.VertexFormat = PositionNormalUVVertex::VertexFormat;
+	geometryDesc.Triangles.VertexFormat = VERTEX_FORMAT;
 	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
 	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
 	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
@@ -1542,9 +1543,9 @@ void Ideal::D3D12RayTracingRenderer::UpdateAccelerationStructure()
 
 	static float rad = 0.f;
 	if (rad > 360.f) rad = 0.f;
-	//rad += 0.01f;
+	rad += 0.01f;
 	Matrix mat = Matrix::Identity * Matrix::CreateRotationY(rad);
-	//Matrix mat = Matrix::Identity;
+	// Matrix mat = Matrix::Identity;
 	// instance를 다시 올릴 upload buffer의 핸들
 	std::shared_ptr<Ideal::UploadBufferContainer> handle = m_BLASInstancePool[m_currentContextIndex]->Allocate();
 
@@ -1579,4 +1580,9 @@ void Ideal::D3D12RayTracingRenderer::UpdateAccelerationStructure()
 
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAccelerationStructure->GetResource());
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+}
+
+void Ideal::D3D12RayTracingRenderer::ASManagerInit()
+{
+
 }

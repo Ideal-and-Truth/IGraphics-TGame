@@ -122,6 +122,8 @@ namespace Ideal
 	class D3D12Shader;
 	class D3D12UAVBuffer;
 	class D3D12ShaderResourceView;
+
+	class DXRAccelerationStructureManager;
 }
 struct TestVertex;
 
@@ -318,5 +320,11 @@ namespace Ideal
 
 		// Test
 		void UpdateAccelerationStructure();
+
+
+
+		// AS Manager Test
+		void ASManagerInit();
+		
 	};
 }

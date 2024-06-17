@@ -1,9 +1,14 @@
 #pragma once
+#include <dxgiformat.h>
 
 #define D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN   ((D3D12_GPU_VIRTUAL_ADDRESS)-1)
 
 // SWAP CHAIN & MAX PENDING
 #define SWAP_CHAIN_NUM 4
+
+// Index Format
+#define INDEX_FORMAT DXGI_FORMAT_R32_UINT
+#define VERTEX_FORMAT DXGI_FORMAT_R32G32B32_FLOAT
 
 /// Static Mesh Macro
 // 2024.05.08

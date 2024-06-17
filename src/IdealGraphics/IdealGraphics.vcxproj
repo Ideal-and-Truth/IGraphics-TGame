@@ -175,10 +175,14 @@
     <ClInclude Include="D3D12StructuredBuffer.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructureManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructure.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\D3D12SRV.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.h">
@@ -263,10 +267,14 @@
     <ClCompile Include="D3D12StructuredBuffer.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructureManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructure.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GraphicsEngine\D3D12\D3D12SRV.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.cpp">

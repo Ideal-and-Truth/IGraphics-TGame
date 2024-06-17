@@ -2,6 +2,7 @@
 #include "Core/Core.h"
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include <d3d12.h>
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
 struct VertexTest2
 {
@@ -17,7 +18,7 @@ struct PositionNormalVertex
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
 
 public:
-	static const DXGI_FORMAT VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	static const DXGI_FORMAT VertexFormat = VERTEX_FORMAT;
 	static const int32 InputElementCount = 2;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
@@ -31,7 +32,7 @@ struct PositionNormalUVVertex
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
 
 public:
-	static const DXGI_FORMAT VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	static const DXGI_FORMAT VertexFormat = VERTEX_FORMAT;
 	static const int32 InputElementCount = 3;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
@@ -43,7 +44,7 @@ struct GeometryVertex
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
 
 public:
-	static const DXGI_FORMAT VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	static const DXGI_FORMAT VertexFormat = VERTEX_FORMAT;
 	static const int32 InputElementCount = 1;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
