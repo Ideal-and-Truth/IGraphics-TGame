@@ -75,3 +75,10 @@ void Truth::Camera::Initalize()
 	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
 }
+
+#ifdef _DEBUG
+void Truth::Camera::EditorSetValue()
+{
+	m_camera->SetLens(m_fov, m_aspect, m_nearZ, m_farZ);
+}
+#endif // _DEBUG

@@ -26,17 +26,8 @@ public:
 	void ShowHierarchyWindow(bool* p_open);
 	void ShowMenuBar(bool* p_open);
 
-	//void TranslateProperty(const TypeInfo& value);
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
-	void TransformUI(std::shared_ptr<Truth::Component> TransformComponent);
-	void RigidbodyUI(std::shared_ptr<Truth::Component> RigidbodyComponent);
-	void CameraUI(std::shared_ptr<Truth::Component> CameraComponent);
-	void MeshFilterUI(std::shared_ptr<Truth::Component> MeshFilterComponent);
-	void MeshRendererUI(std::shared_ptr<Truth::Component> MeshFilterComponent);
-	void BoxColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
-	void SphereColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
-	void CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
-	void ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent);
+
 	void AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity);
 
 	void DisplayComponent(std::shared_ptr<Truth::Component> _component);

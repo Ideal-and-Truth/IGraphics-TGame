@@ -65,11 +65,11 @@ namespace TypeUI
 {
 	// 템플릿 타입에 대한 타입은 여기서 정의한다.
 	template<typename T>
-	bool DisplayType(T& _val, const char* _name)
+	bool DisplayType(T& _val, const char* _name, float _min = 0.0f, float _max = 0.0f)
 	{
 		if constexpr (std::is_same_v<T, int>)
 		{
-			return ImGui::DragInt(_name, &_val);
+			return ImGui::DragInt(_name, &_val, 1.0f, _min, _max);
 		}
 		else if constexpr (std::is_same_v<T, bool>)
 		{
@@ -81,7 +81,7 @@ namespace TypeUI
 		}
 		else if constexpr (std::is_floating_point_v<T>)
 		{
-			return ImGui::DragFloat(_name, &_val);
+			return ImGui::DragFloat(_name, &_val, 0.01f, _min, _max);
 		}
 		else if constexpr (std::is_same_v<T, Vector3>)
 		{

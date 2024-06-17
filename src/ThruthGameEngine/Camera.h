@@ -20,9 +20,13 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
+		PROPERTYM(fov, 0.02, 1);
 		float m_fov;
+		PROPERTY(aspect);
 		float m_aspect;
+		PROPERTY(nearZ);
 		float m_nearZ;
+		PROPERTY(farZ);
 		float m_farZ;
 
 	public:
@@ -39,6 +43,11 @@ namespace Truth
 
 		METHOD(Initalize);
 		virtual void Initalize();
+
+#ifdef _DEBUG
+		virtual void EditorSetValue();
+#endif // _DEBUG
+
 
 	private:
 		METHOD(Awake);
