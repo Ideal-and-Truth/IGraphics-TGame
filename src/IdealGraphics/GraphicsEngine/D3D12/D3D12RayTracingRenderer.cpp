@@ -322,6 +322,9 @@ finishAdapter:
 
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
 	m_resourceManager->Init(m_device);
+	m_resourceManager->SetAssetPath(m_assetPath);
+	m_resourceManager->SetModelPath(m_modelPath);
+	m_resourceManager->SetTexturePath(m_texturePath);
 
 	m_shaderManager = std::make_shared<Ideal::ShaderManager>();
 	m_shaderManager->Init();
@@ -423,8 +426,15 @@ void Ideal::D3D12RayTracingRenderer::SetMainCamera(std::shared_ptr<ICamera> Came
 
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
-	// 인터페이스로 따로 뽑아야 할 듯
-	return nullptr;
+	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
+	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
+
+	newStaticMesh->Init(m_device);
+
+	// temp
+	m_meshObject = newStaticMesh;
+
+	return newStaticMesh;
 }
 
 std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12RayTracingRenderer::CreateSkinnedMeshObject(const std::wstring& FileName)
@@ -470,14 +480,17 @@ std::shared_ptr<Ideal::IPointLight> Ideal::D3D12RayTracingRenderer::CreatePointL
 
 void Ideal::D3D12RayTracingRenderer::SetAssetPath(const std::wstring& AssetPath)
 {
+	m_assetPath = AssetPath;
 }
 
 void Ideal::D3D12RayTracingRenderer::SetModelPath(const std::wstring& ModelPath)
 {
+	m_modelPath = ModelPath;
 }
 
 void Ideal::D3D12RayTracingRenderer::SetTexturePath(const std::wstring& TexturePath)
 {
+	m_texturePath = TexturePath;
 }
 
 void Ideal::D3D12RayTracingRenderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
@@ -1584,5 +1597,7 @@ void Ideal::D3D12RayTracingRenderer::UpdateAccelerationStructure()
 
 void Ideal::D3D12RayTracingRenderer::ASManagerInit()
 {
-
+	m_asManager = std::make_shared<Ideal::DXRAccelerationStructureManager>();
+	m_meshObject->GetTransformMatrix();
+	//m_asManager->AddBLAS()
 }

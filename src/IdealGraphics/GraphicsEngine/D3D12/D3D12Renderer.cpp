@@ -429,9 +429,9 @@ void Ideal::D3D12Renderer::SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera)
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(shared_from_this(), newStaticMesh, FileName);
+	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
 
-	newStaticMesh->Init(shared_from_this());
+	//newStaticMesh->Init(shared_from_this());
 
 	//m_staticMeshObjects.push_back(newStaticMesh);
 

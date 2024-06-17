@@ -429,7 +429,7 @@ std::shared_ptr<Ideal::D3D12ShaderResourceView> ResourceManager::CreateSRV(std::
 	return ret;
 }
 
-void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
+void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);

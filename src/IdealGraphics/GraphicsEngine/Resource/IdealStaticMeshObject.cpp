@@ -16,10 +16,10 @@ Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
 
 }
 
-void Ideal::IdealStaticMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)
+void Ideal::IdealStaticMeshObject::Init(ComPtr<ID3D12Device> Device)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
-	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
+	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Device);
+	//ID3D12Device* device = d3d12Renderer->GetDevice().Get();
 }
 
 void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)

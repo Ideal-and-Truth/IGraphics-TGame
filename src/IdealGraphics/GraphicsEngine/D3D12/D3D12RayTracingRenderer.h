@@ -225,6 +225,11 @@ namespace Ideal
 		HANDLE m_fenceEvent = NULL;
 
 	private:
+		std::wstring m_assetPath;
+		std::wstring m_modelPath;
+		std::wstring m_texturePath;
+
+	private:
 		// Main Camera
 		std::shared_ptr<Ideal::IdealCamera> m_mainCamera = nullptr;
 		float m_aspectRatio = 0.f;
@@ -321,10 +326,9 @@ namespace Ideal
 		// Test
 		void UpdateAccelerationStructure();
 
-
-
 		// AS Manager Test
 		void ASManagerInit();
-		
+		std::shared_ptr<Ideal::DXRAccelerationStructureManager> m_asManager;
+		std::shared_ptr<Ideal::IdealStaticMeshObject> m_meshObject;
 	};
 }

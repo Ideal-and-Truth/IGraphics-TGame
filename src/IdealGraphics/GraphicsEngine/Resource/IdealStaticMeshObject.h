@@ -22,7 +22,7 @@ namespace Ideal
 		IdealStaticMeshObject();
 		virtual ~IdealStaticMeshObject();
 
-		void Init(std::shared_ptr<IdealRenderer> Renderer);
+		void Init(ComPtr<ID3D12Device> Device);
 		// 2024.05.07 Ver2
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
