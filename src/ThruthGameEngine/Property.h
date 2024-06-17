@@ -4,6 +4,7 @@
 #include <cassert>
 #include <string>
 #include "StringConverter.h"
+#include "TypeUI.h"
 
 template<typename T> struct is_array_custom
 {
@@ -29,6 +30,7 @@ public:
 	virtual ~PropertyHandlerBase() = default;
 
 	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
+	virtual bool DisplayUI(void* _object, const char* _name) const abstract;
 };
 
 /// <summary>
@@ -50,6 +52,7 @@ public:
 	virtual ElementType& Get(void* object, size_t index = 0) const abstract;
 	virtual void Set(void* object, const ElementType& value, size_t index = 0) const abstract;
 	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
+	virtual bool DisplayUI(void* _object, const char* _name) const abstract;
 };
 
 /// <summary>
@@ -73,6 +76,30 @@ private:
 	MemberPtr m_ptr = nullptr;
 
 public:
+	virtual bool DisplayUI(void* _object, const char* _name) const override
+	{
+		if constexpr (std::is_array_v<T>)
+		{
+// 			std::string result = "";
+// 			result += "\n";
+// 
+// 			for (int i = 0; i < is_array_custom<T>::size; i++)
+// 			{
+// 				auto& obj = Get(_object, i);
+// 				result += std::string(_indent, '\t');
+// 				result += "[";
+// 				result += StringConverter::ToString(i);
+// 				result += "] : ";
+// 				result += StringConverter::ToString(obj, _indent);
+// 				result += "\n";
+// 			}
+		}
+		else
+		{
+			return TypeUI::DisplayType(Get(_object), _name);
+		}
+	}
+
 	virtual std::string Dump(void* _object, int _indent = 0) const override
 	{
 		if constexpr (std::is_array_v<T>)
@@ -231,6 +258,11 @@ public:
 		result += m_handler.Dump(_object, _indent + 1);
 		result += "\n";
 		return result;
+	}
+
+	bool DisplayUI(void* _object) const
+	{
+		return m_handler.DisplayUI(_object, m_name);
 	}
 
 	// 값 반환 구조체

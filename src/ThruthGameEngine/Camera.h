@@ -37,6 +37,8 @@ namespace Truth
 
 		void SetMainCamera();
 
+		METHOD(Initalize);
+		virtual void Initalize();
 
 	private:
 		METHOD(Awake);
@@ -44,6 +46,7 @@ namespace Truth
 
 		METHOD(Start);
 		virtual void Start();
+
 	};
 
 	template<class Archive>

@@ -134,6 +134,13 @@ void Truth::Collider::ApplyTransform()
 	m_globalTM = m_localTM * ownerTM;
 	m_debugMesh->SetTransformMatrix(m_globalTM);
 }
+
+void Truth::Collider::EditorSetValue()
+{
+	SetCenter(m_center);
+	SetSize(m_size);
+}
+
 #endif // _DEBUG
 
 /// <summary>

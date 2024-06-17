@@ -88,7 +88,7 @@ void Truth::RigidBody::CalculateMassCenter()
 	{
 		pos += c.lock()->m_center;
 	}
-	pos /= m_colliders.size();
+	pos /= static_cast<float>(m_colliders.size());
 
 	m_body->setCMassLocalPose(
 		physx::PxTransform(MathConverter::Convert(pos)));

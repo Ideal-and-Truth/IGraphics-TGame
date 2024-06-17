@@ -139,6 +139,8 @@ private:
 	using MethodMap = std::map<std::string_view, const Method*>;
 	using PropertyMap = std::map<std::string_view, const Property*>;
 
+	static std::vector<std::string> g_components;
+
 	// 타임 이름 해시값
 	size_t m_typeHash;
 	// 이름
@@ -160,9 +162,6 @@ private:
 	// 변수 컨테이너
 	std::vector<const Property*> m_properties;
 	PropertyMap m_propertyMap;
-
-	template<typename T>
-	std::string CreateTypeAlias();
 
 public:
 	std::string Dump(void* _object, int _indent = 0) const;

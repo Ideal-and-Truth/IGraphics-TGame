@@ -60,7 +60,7 @@ const DirectX::SimpleMath::Vector3& Truth::Entity::GetScale() const
 
 void Truth::Entity::ApplyTransform() const
 {
-	// m_transform->ApplyTransform();
+	m_transform->ApplyTransform();
 	for (auto& p : m_applyTransform)
 	{
 		if (p.first->m_name == "Transform")

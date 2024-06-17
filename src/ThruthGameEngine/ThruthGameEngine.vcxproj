@@ -57,6 +57,7 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TypeInfo.h" />
     <ClInclude Include="TypeInfoMacros.h" />
+    <ClInclude Include="TypeUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Utils\SimpleMath.cpp" />
@@ -90,6 +91,7 @@
     <ClCompile Include="TypeInfo.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="TypeUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

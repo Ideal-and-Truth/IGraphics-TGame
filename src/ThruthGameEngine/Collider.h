@@ -79,6 +79,8 @@ namespace Truth
 #ifdef _DEBUG
 		METHOD(ApplyTransform);
 		void ApplyTransform();
+
+		void EditorSetValue();
 #endif // _DEBUG
 
 	protected:

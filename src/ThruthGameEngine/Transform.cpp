@@ -29,7 +29,5 @@ void Truth::Transform::ApplyTransform()
 	Matrix rotationMT = Matrix::CreateFromQuaternion(m_rotation);
 	Matrix traslationMT = Matrix::CreateTranslation(m_position);
 
-	m_eulerAngle = m_rotation.ToEuler();
-
 	m_transformMatrix = scaleMT * rotationMT * traslationMT;
 }

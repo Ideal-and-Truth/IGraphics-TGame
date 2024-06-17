@@ -66,7 +66,7 @@ namespace Truth
 	template<class Archive>
 	void Truth::Scene::serialize(Archive& _ar, const unsigned int _file_version)
 	{
-		_ar& BOOST_SERIALIZATION_NVP(m_name);
-		_ar& BOOST_SERIALIZATION_NVP(m_entities);
+		_ar& (m_name);
+		_ar& (m_entities);
 	}
 }

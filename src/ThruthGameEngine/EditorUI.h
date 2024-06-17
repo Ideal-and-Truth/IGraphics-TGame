@@ -1,8 +1,13 @@
 #pragma once
-#include "Managers.h"
+#include "Headers.h"
 
-class Entity;
-class Transform;
+namespace Truth
+{
+	class Entity;
+	class Transform;
+	class Managers;
+	class Component;
+}
 
 class EditorUI
 {
@@ -33,5 +38,8 @@ public:
 	void CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
 	void ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent);
 	void AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity);
+
+	void DisplayComponent(std::shared_ptr<Truth::Component> _component);
 };
+
 

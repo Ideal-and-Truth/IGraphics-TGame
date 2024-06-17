@@ -2,6 +2,8 @@
 #include "Method.h"
 #include "Property.h"
 
+std::vector<std::string> TypeInfo::g_components = std::vector<std::string>();
+
 const TypeInfo* TypeInfo::GetSuper() const
 {
 	return m_super;

@@ -13,6 +13,7 @@
 #include "CapsuleCollider.h"
 #include "SphereCollider.h"
 #include "InputManager.h"
+#include "Managers.h"
 
 int32 EditorUI::m_selectedEntity = -1;
 
@@ -307,41 +308,7 @@ void EditorUI::TranslateComponent(std::shared_ptr<Truth::Component> EntityCompon
 {
 	const auto& componentName = EntityComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(EntityComponent.get()).Get();
 
-
-	if (componentName == "Transform")
-	{
-		TransformUI(EntityComponent);
-	}
-	else if (componentName == "Rigidbody")
-	{
-		RigidbodyUI(EntityComponent);
-	}
-	else if (componentName == "Camera")
-	{
-		CameraUI(EntityComponent);
-	}
-	else if (componentName == "Mesh Filter")
-	{
-		MeshFilterUI(EntityComponent);
-		MeshRendererUI(EntityComponent);
-	}
-	else if (componentName == "Box Collider")
-	{
-		BoxColliderUI(EntityComponent);
-	}
-	else if (componentName == "Sphere Collider")
-	{
-		SphereColliderUI(EntityComponent);
-	}
-	else if (componentName == "Capsule Collider")
-	{
-		CapsuleColliderUI(EntityComponent);
-	}
-	else
-	{
-		ScriptUI(EntityComponent);
-	}
-
+	DisplayComponent(EntityComponent);
 }
 
 void EditorUI::TransformUI(std::shared_ptr<Truth::Component> TransformComponent)
@@ -868,5 +835,29 @@ void EditorUI::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 
 		}
 	}
+}
+
+void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
+{
+	const TypeInfo& typeinfo = _component->GetTypeInfo();
+
+	// 컴포넌트 이름
+	const char* componentName = typeinfo.GetName();
+
+	auto& properise = typeinfo.GetProperties();
+	bool isSelect = false;
+	if (ImGui::CollapsingHeader(componentName, ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		for (auto* p : properise)
+		{
+			isSelect |= p->DisplayUI(_component.get());
+		}
+	}
+#ifdef _DEBUG
+	if (isSelect)
+	{
+		_component->EditorSetValue();
+	}
+#endif // _DEBUG
 }
 

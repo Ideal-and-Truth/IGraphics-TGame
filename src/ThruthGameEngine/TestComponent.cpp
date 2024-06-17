@@ -8,7 +8,9 @@ Truth::TestComponent::TestComponent()
 {
 	m_canMultiple = true;
 	m_name = typeid(*this).name();
-	m_testInt = 10;
+	m_testF = 10.0f;
+	m_testV3 = { 1.0f, 2.0f, 3.0f };
+	m_testS = "test";
 }
 
 
@@ -18,20 +20,10 @@ Truth::TestComponent::~TestComponent()
 
 void Truth::TestComponent::Awake()
 {
-	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
-	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
 }
 
 void Truth::TestComponent::Update()
 {
+	int a = 1;
 }
 
-void Truth::TestComponent::QUP(const void* _p)
-{
-	DEBUG_PRINT("Event q up\n");
-}
-
-void Truth::TestComponent::QDOWN(const void* _p)
-{
-	DEBUG_PRINT("Event q Down\n");
-}

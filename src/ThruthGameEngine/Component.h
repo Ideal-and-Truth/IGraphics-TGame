@@ -39,7 +39,6 @@ namespace Truth
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	protected:
-		PROPERTY(canMultiple);
 		bool m_canMultiple;
 
 		std::weak_ptr<Entity> m_owner;
@@ -65,6 +64,10 @@ namespace Truth
 		virtual void OnTriggerStay() {};
 		virtual void Initalize() {};
 		virtual void ApplyTransform() {};
+#ifdef _DEBUG
+		virtual void EditorSetValue() {};
+#endif // _DEBUG
+
 
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }
 		std::weak_ptr<Entity> GetOwner() const { return m_owner; }

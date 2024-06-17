@@ -18,11 +18,8 @@ namespace Truth
 		Vector3 m_position;
 		PROPERTY(scale);
 		Vector3 m_scale;
-
+		PROPERTY(rotation);
 		Quaternion m_rotation;
-
-		PROPERTY(eulerAngle)
-		Vector3 m_eulerAngle;
 
 		Matrix m_transformMatrix;
 
