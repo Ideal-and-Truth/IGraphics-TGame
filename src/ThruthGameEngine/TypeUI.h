@@ -7,6 +7,8 @@
 #include <list>
 #include "SimpleMath.h"
 #include "imgui.h"
+#include <atlconv.h>
+
 
 using namespace DirectX::SimpleMath;
 
@@ -114,13 +116,19 @@ namespace TypeUI
 		else if constexpr (std::is_same_v<T, std::string>)
 		{
 			char* cMeshPath = (char*)_val.c_str();
-			return ImGui::InputText(_name, cMeshPath, 128);
+			return ImGui::InputText(_name, cMeshPath, 128, ImGuiInputTextFlags_EnterReturnsTrue);
 		}
-// 		else if constexpr (std::is_same_v<T, std::wstring>)
-// 		{
-// 			wchar_t* cMeshPath = (wchar_t*)_val.c_str();
-// 			return ImGui::InputText(_name, cMeshPath, 128);
-// 		}
+		else if constexpr (std::is_same_v<T, std::wstring>)
+		{
+			USES_CONVERSION;
+			std::string sval(W2A(_val.c_str()));
+			bool success = ImGui::InputText(_name, (char*)sval.c_str(), 128, ImGuiInputTextFlags_EnterReturnsTrue);
+			if (success)
+			{
+				_val = A2W(sval.c_str());
+			}
+			return success;
+		}
 		else if constexpr (std::is_same_v<T, Quaternion>)
 		{
 			float value[3] = {};

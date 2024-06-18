@@ -13,8 +13,8 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	PROPERTY(speed);
-	float4 m_speed;
+	PROPERTY(maxSpeed);
+	float4 m_maxSpeed;
 
 	PROPERTY(jumpForce);
 	float4 m_jumpForce;
@@ -62,10 +62,7 @@ public:
 	METHOD(Update);
 	void Update();
 
-
 private:
-
-
 };
 
 template<class Archive>
@@ -74,4 +71,3 @@ void Player::serialize(Archive& _ar, const unsigned int _file_version)
 	_ar& boost::serialization::base_object<Component>(*this);
 }
 
-BOOST_CLASS_EXPORT_KEY(Player)
