@@ -208,11 +208,6 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 		const auto& currentSceneName = currentScene->GetTypeInfo().GetProperty("name")->Get<std::string>(currentScene.get()).Get();
 		const auto& currentSceneEntities = currentScene->GetTypeInfo().GetProperty("entities")->Get<std::vector<std::shared_ptr<Truth::Entity>>>(currentScene.get()).Get();
 
-		if (ImGui::Button("Add Entity"))
-		{
-
-		}
-
 		uint32 selectCount = 0;
 
 		// Current Scene Name
@@ -222,7 +217,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 			{
 				if (ImGui::Selectable("Create Empty"))
 				{
-					currentScene->AddEntity(std::make_shared<Truth::Entity>());
+					currentScene->AddEntity(std::make_shared<Truth::Entity>(m_manager));
 				}
 
 				ImGui::EndPopup();
