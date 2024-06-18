@@ -52,14 +52,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	wall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
 // 	testScene->AddEntity(wall);
 // 
-// // 	auto wall = std::make_shared<Truth::Entity>(processor->GetManagers());
-// // 	wall->m_name = "Wall";
-// // 	wall->m_layer = 2;
-// // 	wall->AddComponent<Truth::TestComponent>();
-// //  	wall->SetPosition(Vector3(0.0f, 20.0f, 0.0f));
-// //  	wall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
-// // 	testScene->AddEntity(wall);
-// 
 // 	auto shooter = std::make_shared<Truth::Entity>(processor->GetManagers());
 // 	shooter->m_name = "Shooter";
 // 	shooter->m_layer = 1;

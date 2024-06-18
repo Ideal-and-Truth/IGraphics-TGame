@@ -66,15 +66,6 @@ namespace Truth
 		virtual void EditorSetValue();
 #endif // _DEBUG
 
-
-
-	private:
-		METHOD(Awake);
-		virtual void Awake();
-
-		METHOD(Start);
-		virtual void Start();
-
 	};
 
 	template<class Archive>

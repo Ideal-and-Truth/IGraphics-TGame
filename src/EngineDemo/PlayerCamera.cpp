@@ -2,6 +2,8 @@
 #include "Camera.h"
 #include "Transform.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
+
 PlayerCamera::PlayerCamera()
 	: m_camera(nullptr)
 	, m_elevation(0.1f)

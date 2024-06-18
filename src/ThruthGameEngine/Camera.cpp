@@ -12,6 +12,7 @@ Truth::Camera::Camera()
 	, m_aspect(1)
 	, m_nearZ(1)
 	, m_farZ(1000)
+	, m_look(0.f,0.f,1.f)
 {
 	m_name = "Camera";
 }
@@ -21,10 +22,6 @@ Truth::Camera::~Camera()
 
 }
 
-void Truth::Camera::Start()
-{
-	
-}
 
 void Truth::Camera::Update()
 {
@@ -89,10 +86,6 @@ void Truth::Camera::RotateY(float angle)
 	m_camera->RotateY(angle);
 }
 
-void Truth::Camera::Awake()
-{
-
-}
 
 void Truth::Camera::Start()
 {
