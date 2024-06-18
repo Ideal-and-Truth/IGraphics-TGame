@@ -4,6 +4,7 @@
 #include <cassert>
 #include <string>
 #include "StringConverter.h"
+#include "TypeUI.h"
 
 template<typename T> struct is_array_custom
 {
@@ -29,6 +30,7 @@ public:
 	virtual ~PropertyHandlerBase() = default;
 
 	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
+	virtual bool DisplayUI(void* _object, const char* _name, float _min, float _max) const abstract;
 };
 
 /// <summary>
@@ -50,6 +52,7 @@ public:
 	virtual ElementType& Get(void* object, size_t index = 0) const abstract;
 	virtual void Set(void* object, const ElementType& value, size_t index = 0) const abstract;
 	virtual std::string Dump(void* _object, int _indent = 0) const abstract;
+	virtual bool DisplayUI(void* _object, const char* _name, float _min, float _max) const abstract;
 };
 
 /// <summary>
@@ -73,6 +76,30 @@ private:
 	MemberPtr m_ptr = nullptr;
 
 public:
+	virtual bool DisplayUI(void* _object, const char* _name, float _min, float _max) const override
+	{
+		if constexpr (std::is_array_v<T>)
+		{
+// 			std::string result = "";
+// 			result += "\n";
+// 
+// 			for (int i = 0; i < is_array_custom<T>::size; i++)
+// 			{
+// 				auto& obj = Get(_object, i);
+// 				result += std::string(_indent, '\t');
+// 				result += "[";
+// 				result += StringConverter::ToString(i);
+// 				result += "] : ";
+// 				result += StringConverter::ToString(obj, _indent);
+// 				result += "\n";
+// 			}
+		}
+		else
+		{
+			return TypeUI::DisplayType(Get(_object), _name, _min, _max);
+		}
+	}
+
 	virtual std::string Dump(void* _object, int _indent = 0) const override
 	{
 		if constexpr (std::is_array_v<T>)
@@ -217,6 +244,9 @@ private:
 	const PropertyHandlerBase& m_handler;
 	const int m_arraySize;
 
+	float m_min = 0.0f;
+	float m_max = 0.0f;
+
 public:
 	const char* GetName() const { return m_name; }
 
@@ -231,6 +261,11 @@ public:
 		result += m_handler.Dump(_object, _indent + 1);
 		result += "\n";
 		return result;
+	}
+
+	bool DisplayUI(void* _object) const
+	{
+		return m_handler.DisplayUI(_object, m_name, m_min, m_max);
 	}
 
 	// 값 반환 구조체
@@ -363,11 +398,13 @@ public:
 	}
 
 	// 생성자
-	Property(TypeInfo& owner, const PropertyInitializer& initializer, int _arraySize = 0)
+	Property(TypeInfo& owner, const PropertyInitializer& initializer, int _arraySize = 0, float _min = 0.0f, float _max = 0.0f)
 		: m_name(initializer.m_name)
 		, m_type(initializer.m_type)
 		, m_handler(initializer.m_handler)
 		, m_arraySize(_arraySize)
+		, m_min(_min)
+		, m_max(_max)
 	{
 		owner.AddProperty(this);
 	}
@@ -401,7 +438,7 @@ public:
 	/// </summary>
 	/// <param name="name">이름</param>
 	/// <param name="typeInfo">타입 정보</param>
-	PropertyRegister(const char* name, TypeInfo& typeInfo)
+	PropertyRegister(const char* name, TypeInfo& typeInfo, float _min = 0.0f, float _max = 0.0f)
 	{
 		// 만일 멤버 포인터라면
 		if constexpr (std::is_member_pointer_v<TPtr>)
@@ -418,7 +455,7 @@ public:
 			TypeInfo::GetStaticTypeInfo<T>(),
 			handler
 			};
-			static Property property(typeInfo, intializer, size);
+			static Property property(typeInfo, intializer, size, _min, _max);
 		}
 		else
 		{
@@ -434,7 +471,7 @@ public:
 			TypeInfo::GetStaticTypeInfo<T>(),
 			handler
 			};
-			static Property property(typeInfo, intializer);
+			static Property property(typeInfo, intializer, 0, _min, _max);
 		}
 	}
 };

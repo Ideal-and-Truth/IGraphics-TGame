@@ -1,8 +1,15 @@
 #pragma once
-#include "Managers.h"
+#include <memory>
+#include <vector>
+#include "Types.h"
 
-class Entity;
-class Transform;
+namespace Truth
+{
+	class Entity;
+	class Transform;
+	class Managers;
+	class Component;
+}
 
 class EditorUI
 {
@@ -10,6 +17,8 @@ private:
 	std::shared_ptr<Truth::Managers> m_manager;
 	static int32 m_selectedEntity;
 	int m_notUsedID;
+
+	std::vector<const char*>& m_componentList;
 
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager);
@@ -19,19 +28,13 @@ public:
 	void RenderUI(bool* p_open);
 	void ShowInspectorWindow(bool* p_open);
 	void ShowHierarchyWindow(bool* p_open);
+	void ShowMenuBar(bool* p_open);
 
-
-	//void TranslateProperty(const TypeInfo& value);
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
-	void TransformUI(std::shared_ptr<Truth::Component> TransformComponent);
-	void RigidbodyUI(std::shared_ptr<Truth::Component> RigidbodyComponent);
-	void CameraUI(std::shared_ptr<Truth::Component> CameraComponent);
-	void MeshFilterUI(std::shared_ptr<Truth::Component> MeshFilterComponent);
-	void MeshRendererUI(std::shared_ptr<Truth::Component> MeshFilterComponent);
-	void BoxColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
-	void SphereColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
-	void CapsuleColliderUI(std::shared_ptr<Truth::Component> ColliderComponent);
-	void ScriptUI(std::shared_ptr<Truth::Component> UserMadeComponent);
+
 	void AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity);
+
+	void DisplayComponent(std::shared_ptr<Truth::Component> _component);
 };
+
 

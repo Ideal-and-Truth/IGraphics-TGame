@@ -5,6 +5,20 @@ physx::PxVec3 MathConverter::Convert(Vector3 _val)
 	return physx::PxVec3(_val.x, _val.y, _val.z);
 }
 
+physx::PxTransform MathConverter::Convert(Matrix _val)
+{
+	Vector3 pos;
+	Quaternion rot;
+	Vector3 scale;
+
+	_val.Decompose(scale, rot, pos);
+
+	physx::PxTransform result;
+	result.p = Convert(pos);
+	result.q = Convert(rot);
+	return result;
+}
+
 physx::PxQuat MathConverter::Convert(Quaternion _val)
 {
 	return physx::PxQuat(_val.x, _val.y, _val.z, _val.w);

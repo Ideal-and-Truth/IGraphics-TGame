@@ -1,5 +1,6 @@
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 
@@ -39,7 +40,10 @@ D3D12UploadBuffer::D3D12UploadBuffer()
 
 D3D12UploadBuffer::~D3D12UploadBuffer()
 {
-
+	if (m_resource.Get())
+	{
+		m_resource->Unmap(0, nullptr);
+	}
 }
 
 void Ideal::D3D12UploadBuffer::Create(ID3D12Device* Device, uint32 BufferSize)
@@ -58,7 +62,15 @@ void Ideal::D3D12UploadBuffer::Create(ID3D12Device* Device, uint32 BufferSize)
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(m_resource.GetAddressOf())
-	));
+	), L"Failed to create upload buffer");
+}
+
+void* D3D12UploadBuffer::MapCpuWriteOnly()
+{
+	void* mappedData;
+	CD3DX12_RANGE readRange(0, 0);
+	Check(m_resource->Map(0, &readRange, &mappedData), L"Failed to mapped data");
+	return mappedData;
 }
 
 void* D3D12UploadBuffer::Map()
@@ -117,7 +129,7 @@ uint32 D3D12GPUBuffer::GetElementCount() const
 	return m_elementCount;
 }
 
-uint32 D3D12GPUBuffer::GetElemnetSize() const
+uint32 D3D12GPUBuffer::GetElementSize() const
 {
 	return m_elementSize;
 }
@@ -267,4 +279,43 @@ void* D3D12ConstantBuffer::GetMappedMemory(uint32 FrameIndex)
 uint32 D3D12ConstantBuffer::Align(uint32 location, uint32 align /*= D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT*/)
 {
 	return (location + (align - 1)) & ~(align - 1);
+}
+
+//------------------------UAV Buffer------------------------//
+
+D3D12UAVBuffer::D3D12UAVBuffer()
+{
+
+}
+
+D3D12UAVBuffer::~D3D12UAVBuffer()
+{
+
+}
+
+void D3D12UAVBuffer::Create(ID3D12Device* Device, uint32 BufferSize, D3D12_RESOURCE_STATES InitialResourceState/*= D3D12_RESOURCE_STATE_COMMON*/, const wchar_t* Name /*= nullptr*/)
+{
+	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(BufferSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+
+	Check(Device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		InitialResourceState,
+		nullptr,
+		IID_PPV_ARGS(&m_resource))
+		,
+		L"Failed to create UAV Buffer!"
+	);
+
+	if (Name)
+	{
+		m_resource->SetName(Name);
+	}
+}
+
+D3D12_GPU_VIRTUAL_ADDRESS D3D12UAVBuffer::GetGPUVirtualAddress()
+{
+	return m_resource->GetGPUVirtualAddress();
 }

@@ -1,6 +1,7 @@
 #include "Core/Core.h"
 #include "IdealMaterial.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3d12.h>
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
@@ -20,26 +21,26 @@ Ideal::IdealMaterial::~IdealMaterial()
 
 }
 
-void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
+	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(ResourceManager);
 
 	if (m_diffuseTextureFile.length() > 0)
 	{
 		m_diffuseTexture = std::make_shared<Ideal::D3D12Texture>();
-		d3d12Renderer->GetResourceManager()->CreateTexture(m_diffuseTexture, m_diffuseTextureFile);
+		ResourceManager->CreateTexture(m_diffuseTexture, m_diffuseTextureFile);
 	}
 
 	if (m_specularTextureFile.length() > 0)
 	{
 		m_specularTexture = std::make_shared<Ideal::D3D12Texture>();
-		d3d12Renderer->GetResourceManager()->CreateTexture(m_specularTexture, m_specularTextureFile);
+		ResourceManager->CreateTexture(m_specularTexture, m_specularTextureFile);
 	}
 
 	if (m_normalTextureFile.length() > 0)
 	{
 		m_normalTexture = std::make_shared<Ideal::D3D12Texture>();
-		d3d12Renderer->GetResourceManager()->CreateTexture(m_normalTexture, m_normalTextureFile);
+		ResourceManager->CreateTexture(m_normalTexture, m_normalTextureFile);
 	}
 }
 
@@ -52,7 +53,7 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Material));
 	if (!cb)
 	{
-		__debugbreak();
+ 		__debugbreak();
 	}
 
 	// 2024.05.07

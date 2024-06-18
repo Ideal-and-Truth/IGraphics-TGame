@@ -36,14 +36,15 @@ namespace Truth
 
 		void StartGameScene() const;
 
-		void ChangeScene(std::any _p);
-		void ResetScene(std::any _p) const;
+		void ChangeScene(std::string&& _name);
+		void ResetScene() const;
 		void SetCurrnetScene(std::string _name);
 
 		void Finalize();
 
 		void SaveSceneData() const;
 		void LoadSceneData(std::string _path);
+		void ReloadSceneData();
 
 	private:
 		bool HasScene(std::string _name);

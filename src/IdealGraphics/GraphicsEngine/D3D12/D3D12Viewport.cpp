@@ -1,7 +1,6 @@
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Viewport.h"
-
 using namespace Ideal;
 
 D3D12Viewport::D3D12Viewport(HWND Hwnd, uint32 Width, uint32 Height)

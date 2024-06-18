@@ -2,6 +2,7 @@
 
 #include "GraphicsEngine/Resource/IdealMesh.h"
 #include "GraphicsEngine/Resource/IdealBone.h"
+#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 
 Ideal::IdealStaticMesh::IdealStaticMesh()
 {
@@ -61,11 +62,10 @@ void Ideal::IdealStaticMesh::AddMaterial(std::shared_ptr<Ideal::IdealMaterial> M
 	}
 }
 
-void Ideal::IdealStaticMesh::FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer)
+void Ideal::IdealStaticMesh::FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	for (auto& mesh : m_meshes)
 	{
-		mesh->Create(d3d12Renderer);
+		mesh->Create(ResourceManager);
 	}
 }

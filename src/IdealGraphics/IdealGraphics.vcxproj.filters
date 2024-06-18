@@ -152,6 +152,12 @@
     <ClInclude Include="Misc\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\Utils\Utils.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\TestShader.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\Raytracing\D3D12RaytracingResources.h" />
+    <ClInclude Include="Shaders\Raytracing\RaytracingHlslCompat.h" />
+    <ClInclude Include="GraphicsEngine\Resource\ShaderManager.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12SRV.h" />
+    <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -232,6 +238,8 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.cpp" />
     <ClCompile Include="Misc\Utils\IndexCreator.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\ShaderManager.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12SRV.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -264,11 +272,14 @@
     <FxCompile Include="Shaders\AnimationGeometry.hlsl" />
     <FxCompile Include="Shaders\GBufferMesh2.hlsl" />
     <FxCompile Include="Shaders\AnimationGeometry2.hlsl" />
+    <FxCompile Include="Shaders\Raytracing\Raytracing.hlsl" />
+    <FxCompile Include="..\Shaders\Raytracing\Raytracing.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\Light.hlsli" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

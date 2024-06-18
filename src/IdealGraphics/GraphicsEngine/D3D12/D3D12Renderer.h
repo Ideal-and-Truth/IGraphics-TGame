@@ -6,9 +6,9 @@
 
 
 #include <d3d12.h>
-#include "d3dx12.h"
+//#include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
-
+#include <GraphicsEngine/D3D12/D3D12Definitions.h>
 // TEMP
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -57,7 +57,7 @@ namespace Ideal
 	class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12Renderer>
 	{
 	public:
-		static const uint32 SWAP_CHAIN_FRAME_COUNT = 4;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = SWAP_CHAIN_NUM;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:

@@ -1,12 +1,16 @@
 #include "TestComponent.h"
 #include "Managers.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::TestComponent)
+
 Truth::TestComponent::TestComponent()
 	: Component()
 {
 	m_canMultiple = true;
 	m_name = typeid(*this).name();
-	m_testInt = 10;
+	m_testF = 10.0f;
+	m_testV3 = { 1.0f, 2.0f, 3.0f };
+	m_testS = "test";
 }
 
 
@@ -16,21 +20,10 @@ Truth::TestComponent::~TestComponent()
 
 void Truth::TestComponent::Awake()
 {
-	EventBind<TestComponent>("Q_UP", &TestComponent::QUP);
-	EventBind<TestComponent>("Q_DOWN", &TestComponent::QDOWN);
 }
 
 void Truth::TestComponent::Update()
 {
+	int a = 1;
 }
 
-void Truth::TestComponent::QUP(std::any _p)
-{
-	DEBUG_PRINT("Event q up\n");
-	// EventPublish("Change Scene", std::string("test2"));
-}
-
-void Truth::TestComponent::QDOWN(std::any _p)
-{
-	DEBUG_PRINT("Event q Down\n");
-}

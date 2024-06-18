@@ -1,5 +1,5 @@
 #pragma once
-
+#include <d3dx12.h>
 struct IDXGISwapChain3;
 
 namespace Ideal
@@ -24,7 +24,5 @@ namespace Ideal
 
 		CD3DX12_VIEWPORT m_viewport;
 		CD3DX12_RECT m_scissorRect;
-
-		ComPtr<IDXGISwapChain3> m_swapChain;
 	};
 }

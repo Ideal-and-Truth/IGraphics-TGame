@@ -1,7 +1,8 @@
 #pragma once
 #include "Core/Types.h"
 #include <memory>
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include <d3d12.h>
+#include <d3dx12.h>
 #include "Misc/Utils/IndexCreator.h"
 
 namespace Ideal
@@ -71,7 +72,6 @@ namespace Ideal
 		virtual ~D3D12DescriptorHeap();
 
 	public:
-		void Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);
 		void Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);
 		ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() { return m_descriptorHeap; }
 
@@ -105,7 +105,6 @@ namespace Ideal
 		virtual ~D3D12DynamicDescriptorHeap();
 
 	public:
-		void Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);
 		void Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);
 		ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() { return m_descriptorHeap; }
 

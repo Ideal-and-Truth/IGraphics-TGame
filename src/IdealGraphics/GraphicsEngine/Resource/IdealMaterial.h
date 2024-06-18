@@ -6,6 +6,7 @@ namespace Ideal
 {
 	class IdealRenderer;
 	class D3D12Texture;
+	class ResourceManager;
 }
 
 namespace Ideal
@@ -21,7 +22,7 @@ namespace Ideal
 		void SetSpecular(Color c) { m_specular = c; }
 		void SetEmissive(Color c) { m_emissive = c; }
 
-		void Create(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		// 쉐이더랑 바인드를 한다.
 		void BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 

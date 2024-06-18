@@ -25,9 +25,6 @@
     <Filter Include="Manager\Event">
       <UniqueIdentifier>{a6e8ad69-7903-4335-9998-6fbe2029f319}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Enitity\Test">
-      <UniqueIdentifier>{8a6a19c0-2595-4b39-9fac-027d9f8e5f9c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\Test">
       <UniqueIdentifier>{cc0d497e-382f-4f8f-ac7f-57f051aaf647}</UniqueIdentifier>
     </Filter>
@@ -82,9 +79,6 @@
     <Filter Include="Component\Camera">
       <UniqueIdentifier>{1671b10b-9e22-416a-ab9e-f588fcb23b9b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Enitity\TestCamera">
-      <UniqueIdentifier>{14d40754-8c73-4d08-ad1f-ff4282d98281}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utils\String">
       <UniqueIdentifier>{f1866153-6909-4bab-8ded-dceb35cf8139}</UniqueIdentifier>
     </Filter>
@@ -94,8 +88,14 @@
     <Filter Include="EditorUI">
       <UniqueIdentifier>{8cdc901d-3d08-4976-8218-64869e380411}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Enitity\EmptyEntity">
-      <UniqueIdentifier>{2d319ca0-4c34-4fd9-b308-e4b02abbc473}</UniqueIdentifier>
+    <Filter Include="EditorUI\EditorCamera">
+      <UniqueIdentifier>{cf2d5463-4092-42c4-9b6a-03ccc12e279a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ImguiTypeUI">
+      <UniqueIdentifier>{a0902df5-5f5d-4973-90a9-d85ffe22b24d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ComponentFactory">
+      <UniqueIdentifier>{ea702d86-b2cb-426b-a344-423f6facc789}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -181,9 +181,11 @@
     <ClCompile Include="EditorUI.cpp">
       <Filter>EditorUI</Filter>
     </ClCompile>
-    <ClCompile Include="EmptyEntity.cpp">
-      <Filter>Enitity\EmptyEntity</Filter>
+    <ClCompile Include="EditorCamera.cpp" />
+    <ClCompile Include="TypeUI.cpp">
+      <Filter>Utils\ImguiTypeUI</Filter>
     </ClCompile>
+    <ClCompile Include="ComponentFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -288,9 +290,11 @@
     <ClInclude Include="EditorUI.h">
       <Filter>EditorUI</Filter>
     </ClInclude>
-    <ClInclude Include="EmptyEntity.h">
-      <Filter>Enitity\EmptyEntity</Filter>
+    <ClInclude Include="EditorCamera.h" />
+    <ClInclude Include="TypeUI.h">
+      <Filter>Utils\ImguiTypeUI</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

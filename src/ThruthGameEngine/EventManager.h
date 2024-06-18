@@ -15,10 +15,10 @@ namespace Truth
 	struct Event
 	{
 		std::string m_eventID;
-		std::any m_parameter;
+		const void* m_parameter;
 		float m_delayedTime;
 
-		Event(std::string _id, std::any _param, const float& _delayed)
+		Event(std::string _id, const void* _param, const float& _delayed)
 			: m_eventID(_id), m_parameter(_param), m_delayedTime(_delayed) {}
 	};
 }
@@ -34,9 +34,9 @@ namespace Truth
 	struct ListenerInfo
 	{
 		const EventHandler* m_listener = nullptr;
-		std::function<void(std::any)> EventFunction;
+		std::function<void(const void*)> EventFunction;
 
-		ListenerInfo(const Truth::EventHandler* _listener, const std::function<void(std::any)>& _func)
+		ListenerInfo(const Truth::EventHandler* _listener, const std::function<void(const void*)>& _func)
 			: m_listener(_listener), EventFunction(_func) {}
 	};
 }
@@ -92,12 +92,9 @@ namespace Truth
 		// 소멸
 		void Finalize();
 
-		void CreateEntity(std::shared_ptr<Entity> _p);
-		void DeleteEntity(std::shared_ptr<Entity> _p);
-
 	public:
 		// 이벤트 발행 (_eventID에 해당하는 이벤트가 발생했다고 알림)
-		void PublishEvent(std::string _eventID, const std::any _param = nullptr, const float& _delayed = 0.0f);
+		void PublishEvent(std::string _eventID, const void* _param = nullptr, const float& _delayed = 0.0f);
 		// 이벤트 구독(특정 이벤트가 발생하는 것을 보고있음)
 		void Subscribe(std::string _eventID, const Truth::ListenerInfo& _listenerInfo);
 

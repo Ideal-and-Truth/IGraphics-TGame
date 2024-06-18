@@ -7,6 +7,7 @@ namespace Ideal
 {
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
+	class D3D12ShaderResourceView;
 	class D3D12Texture;
 	class D3D12DescriptorHeap;
 	class IdealStaticMeshObject;
@@ -32,7 +33,15 @@ namespace Ideal
 	} IdealTextureTypeFlag;
 	DEFINE_ENUM_FLAG_OPERATORS(IdealTextureTypeFlag);
 
-	class ResourceManager
+	typedef
+	enum IdealAllocateTypeFlag
+	{
+		IDEAL_BUFFER_ALLOCATE_DEFAULT = 0,
+		IDEAL_BUFFER_ALLOCATE_SRV = 0x1,
+	} IdealAllocateTypeFlag;
+	DEFINE_ENUM_FLAG_OPERATORS(IdealAllocateTypeFlag);
+
+	class ResourceManager : public std::enable_shared_from_this<ResourceManager>
 	{
 	public:
 		ResourceManager();
@@ -43,7 +52,6 @@ namespace Ideal
 		void SetModelPath(const std::wstring& ModelPath) { m_modelPath = ModelPath; }
 		void SetTexturePath(const std::wstring& TexturePath) { m_texturePath = TexturePath; }
 
-
 	public:
 		void Init(ComPtr<ID3D12Device> Device);
 		void Fence();
@@ -53,7 +61,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetSRVPool() { return m_srvHeap; }
 
 		void CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBuffer>& VertexBuffer);
-		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer);
+		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer>& IndexBuffer);
 
 		template <typename TVertexType>
 		void CreateVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> OutVertexBuffer,
@@ -99,6 +107,10 @@ namespace Ideal
 
 		// 2024.06.03 : Refactor : Create Texture with flag
 		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name);
+
+		// 2024.06.10 : Create Texture2D by already Committed Resource
+		//void CreateSRV(std::shared_ptr<Ideal::D3D12ShaderResourceView> OutSRV, uint32);
+		std::shared_ptr<Ideal::D3D12ShaderResourceView> CreateSRV(std::shared_ptr<Ideal::D3D12Resource> Resource, uint32 NumElements, uint32 ElementSize);
 
 		void CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);

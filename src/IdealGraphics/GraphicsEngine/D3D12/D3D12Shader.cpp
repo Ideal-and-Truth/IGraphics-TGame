@@ -1,5 +1,6 @@
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "D3D12Shader.h"
+#include <d3dcompiler.h>
 
 Ideal::D3D12Shader::D3D12Shader()
 {
@@ -44,4 +45,9 @@ void Ideal::D3D12Shader::CompileFromFile(const std::wstring& Path, D3D_SHADER_MA
 const CD3DX12_SHADER_BYTECODE& Ideal::D3D12Shader::GetShaderByteCode()
 {
 	return m_shaderByteCode;
+}
+
+void Ideal::D3D12Shader::AddShaderData(const std::vector<unsigned char>& byteCodes)
+{
+	m_shaderCodes.insert(m_shaderCodes.end(), byteCodes.begin(), byteCodes.end());
 }

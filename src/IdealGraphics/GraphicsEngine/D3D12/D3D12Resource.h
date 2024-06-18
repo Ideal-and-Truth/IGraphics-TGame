@@ -30,6 +30,7 @@ namespace Ideal
 		// 업로드 버퍼를 만든다. 
 		void Create(ID3D12Device* Device, uint32 BufferSize);
 		void* Map();
+		void* MapCpuWriteOnly();
 		void UnMap();
 
 	private:
@@ -54,7 +55,7 @@ namespace Ideal
 		//void InitializeBuffer();
 		uint32 GetBufferSize() const;
 		uint32 GetElementCount() const;
-		uint32 GetElemnetSize() const;
+		uint32 GetElementSize() const;
 
 	protected:
 		std::wstring m_name;
@@ -128,5 +129,16 @@ namespace Ideal
 		void* m_mappedConstantBuffer;
 
 		bool m_isMapped;
+	};
+
+	class D3D12UAVBuffer : public D3D12Resource
+	{
+	public:
+		D3D12UAVBuffer();
+		virtual ~D3D12UAVBuffer();
+
+	public:
+		void Create(ID3D12Device* Device, uint32 BufferSize, D3D12_RESOURCE_STATES InitialResourceState = D3D12_RESOURCE_STATE_COMMON, const wchar_t* Name = nullptr);
+		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress();
 	};
 }

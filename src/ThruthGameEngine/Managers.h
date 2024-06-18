@@ -9,6 +9,9 @@ namespace Truth
 	class SceneManager;
 	class PhysicsManager;
 	class GraphicsManager;
+	class EditorCamera;
+	class Mesh;
+	class ComponentFactory;
 }
 
 namespace Truth
@@ -17,14 +20,20 @@ namespace Truth
 		: public std::enable_shared_from_this<Managers>
 	{
 	public:
-		std::shared_ptr<Truth::TimeManager> m_timeManager;
-		std::shared_ptr<Truth::InputManager> m_inputManager;
-		std::shared_ptr<Truth::EventManager> m_eventManager;
-		std::shared_ptr<Truth::SceneManager> m_sceneManager;
-		std::shared_ptr<Truth::PhysicsManager> m_physXManager;
-		std::shared_ptr<Truth::GraphicsManager> m_graphicsManager;
+		std::shared_ptr<TimeManager> m_timeManager;
+		std::shared_ptr<InputManager> m_inputManager;
+		std::shared_ptr<EventManager> m_eventManager;
+		std::shared_ptr<SceneManager> m_sceneManager;
+		std::shared_ptr<PhysicsManager> m_physXManager;
+		std::shared_ptr<GraphicsManager> m_graphicsManager;
 
+		std::unique_ptr<ComponentFactory> m_componentFactory;
 
+#ifdef _DEBUG
+		bool m_isEdit = true;
+	private:
+		std::shared_ptr<EditorCamera> m_editorCamera;
+#endif // _DEBUG
 
 	public:
 		Managers();
@@ -38,6 +47,11 @@ namespace Truth
 		void Render() const;
 
 		void Finalize() const;
+
+#ifdef _DEBUG
+		void EditToGame();
+		void GameToEdit();
+#endif // _DEBUG
 
 
 

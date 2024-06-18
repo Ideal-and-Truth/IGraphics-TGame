@@ -65,7 +65,7 @@ void Ideal::D3D12PipelineStateObject::SetTargetFormat(const uint32 RTVNum, DXGI_
 	m_psoDesc.DSVFormat = DSVFormat;
 }
 
-void Ideal::D3D12PipelineStateObject::Create(std::shared_ptr<Ideal::D3D12Renderer> Renderer)
+void Ideal::D3D12PipelineStateObject::Create(ID3D12Device* Device)
 {
 	//RootSignature
 	//IA
@@ -81,5 +81,5 @@ void Ideal::D3D12PipelineStateObject::Create(std::shared_ptr<Ideal::D3D12Rendere
 	//m_psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	m_psoDesc.SampleDesc.Count = 1;
 
-	Check(Renderer->GetDevice()->CreateGraphicsPipelineState(&m_psoDesc, IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf())));
+	Check(Device->CreateGraphicsPipelineState(&m_psoDesc, IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf())));
 }

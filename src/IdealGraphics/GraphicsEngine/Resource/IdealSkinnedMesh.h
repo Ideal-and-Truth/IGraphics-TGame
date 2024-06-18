@@ -7,6 +7,7 @@ namespace Ideal
 	class IdealMaterial;
 	class IdealRenderer;
 	class IdealBone;
+	class ResourceManager;
 }
 
 struct SkinnedVertex;
@@ -26,7 +27,7 @@ namespace Ideal
 		void AddMaterial(std::shared_ptr<Ideal::IdealMaterial> Material);
 		void AddBone(std::shared_ptr<Ideal::IdealBone> Bone) { m_bones.push_back(Bone); }
 
-		void FinalCreate(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+		void FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
 		std::vector<std::shared_ptr<Ideal::IdealBone>>& GetBones() { return m_bones; }
 

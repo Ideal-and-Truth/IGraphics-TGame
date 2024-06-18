@@ -1,8 +1,10 @@
 #include "Core/Core.h"
-#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
+#include <d3d12.h>
+#include <d3dx12.h>
 
 Ideal::D3D12Texture::D3D12Texture()
 {

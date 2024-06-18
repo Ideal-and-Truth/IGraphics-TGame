@@ -2,7 +2,7 @@
 
 #include "Core/Core.h"
 #include <d3dcommon.h>
-#include "d3dx12.h"
+#include <d3dx12.h>
 
 namespace Ideal
 {
@@ -22,9 +22,16 @@ namespace Ideal
 		);
 
 		const CD3DX12_SHADER_BYTECODE& GetShaderByteCode();
-
 	private:
 		ComPtr<ID3DBlob> m_shader;
 		CD3DX12_SHADER_BYTECODE m_shaderByteCode;
+
+	public:
+		void AddShaderData(const std::vector<unsigned char>& byteCodes);
+		void* GetBufferPointer() { return m_shaderCodes.data(); }
+		uint32 GetSize() { return m_shaderCodes.size(); }
+
+	private:
+		std::vector<unsigned char> m_shaderCodes;
 	};
 }

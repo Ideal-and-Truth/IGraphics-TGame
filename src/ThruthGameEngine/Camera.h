@@ -20,9 +20,13 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
+		PROPERTYM(fov, 0.02f, 1.0f);
 		float m_fov;
+		PROPERTY(aspect);
 		float m_aspect;
+		PROPERTY(nearZ);
 		float m_nearZ;
+		PROPERTY(farZ);
 		float m_farZ;
 
 		PROPERTY(position)
@@ -55,9 +59,22 @@ namespace Truth
 		METHOD(RotateY);
 		void RotateY(float angle);
 
+		METHOD(Initalize);
+		virtual void Initalize();
+
+#ifdef _DEBUG
+		virtual void EditorSetValue();
+#endif // _DEBUG
+
+
+
 	private:
 		METHOD(Awake);
 		virtual void Awake();
+
+		METHOD(Start);
+		virtual void Start();
+
 	};
 
 	template<class Archive>
@@ -70,3 +87,4 @@ namespace Truth
 		_ar& m_farZ;
 	}
 }
+BOOST_CLASS_EXPORT_KEY(Truth::Camera)

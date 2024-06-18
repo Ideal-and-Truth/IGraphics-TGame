@@ -33,11 +33,14 @@ namespace Truth
 		PROPERTY(tag);
 		std::string m_tag;
 
-		PROPERTY(ID);
-		uint32 m_ID;
 		std::weak_ptr<Managers> m_manager;
 
 	public:
+		int32 m_index;
+
+		PROPERTY(ID);
+		uint32 m_ID;
+
 		// key 값의 경우 type id 를 통해 유추한다.
 		PROPERTY(layer);
 		uint8 m_layer;
@@ -64,22 +67,26 @@ namespace Truth
 		std::vector<std::pair<Component*, const Method*>> m_onBecomeInvisible;
 
 		std::vector<std::pair<Component*, const Method*>> m_destroy;
-
+		std::vector<std::pair<Component*, const Method*>> m_applyTransform;
 
 		std::shared_ptr<Transform> m_transform;
-
+		 
 	public:
 		Entity(std::shared_ptr<Managers> _mangers);
-		Entity() = default;
+		Entity();
 		~Entity();
 
 		void Initailize();
 
-		void SetPosition(Vector3 _pos) const;
-		void SetScale(Vector3 _scale) const;
+		void SetPosition(const Vector3& _pos) const;
+		void SetScale(const Vector3& _scale) const;
 
-		Vector3 GetPosition() const;
-		Quaternion GetRotation() const;
+		const Vector3& GetPosition() const;
+		const Quaternion& GetRotation() const;
+		const Vector3& GetScale() const;
+
+		const Matrix& GetWorldTM() const;
+		void SetWorldTM(const Matrix& _tm) const;
 
 		void ApplyTransform() const;
 
@@ -102,6 +109,8 @@ namespace Truth
 		template<typename C, typename... Args, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent(Args... _args);
 
+		void AddComponent(std::shared_ptr<Component> _component);
+
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::weak_ptr<C> GetComponent();
 
@@ -112,7 +121,6 @@ namespace Truth
 
 		std::string& GetName() { return m_name; };
 
-		Matrix GetWorldTM() const;
 
 	private:
 
