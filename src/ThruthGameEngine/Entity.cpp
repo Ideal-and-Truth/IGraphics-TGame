@@ -198,7 +198,6 @@ void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 {
 	_c->SetOwner(shared_from_this());
 	_c->SetManager(m_manager);
-
 	const auto& mets = _c->GetTypeInfo().GetMethods();
 
 	for (const auto& m : mets)
