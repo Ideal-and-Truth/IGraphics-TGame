@@ -3,7 +3,7 @@
 
 
 Player::Player()
-	: m_speed(0.1f)
+	: m_maxSpeed(0.1f)
 	, m_jumpForce(10.f)
 	, m_lookRotationDampFactor(10.f)
 	, m_attackCoefficient(0.1f)

@@ -4,6 +4,7 @@
 
 PlayerController::PlayerController()
 	: m_camera(nullptr)
+	, m_nowSpeed(0.f)
 {
 	m_name = "PlayerController";
 }
@@ -26,13 +27,21 @@ void PlayerController::Start()
 
 void PlayerController::Update()
 {
+	// 플레이어 이동
+	PlayerMove();
+
+}
+
+void PlayerController::PlayerMove()
+{
+	// 플레이어 이동
 	Vector3 cameraPos = m_camera.get()->GetTypeInfo().GetProperty("position")->Get<DirectX::SimpleMath::Vector3>(m_camera.get()).Get();
 
-	float speed = m_player.get()->GetTypeInfo().GetProperty("speed")->Get<float4>(m_player.get()).Get();
+	float maxSpeed = m_player.get()->GetTypeInfo().GetProperty("maxSpeed")->Get<float4>(m_player.get()).Get();
 
 	if (GetKey(KEY::LSHIFT))
 	{
-		speed = 3.f;
+		maxSpeed = 3.f;
 	}
 
 	Vector3 playerPos = m_owner.lock().get()->m_transform->m_position;
@@ -46,20 +55,21 @@ void PlayerController::Update()
 
 	if (GetKey(KEY::W))
 	{
-		m_owner.lock().get()->m_transform->m_position += direction * speed;
+		m_owner.lock().get()->m_transform->m_position += direction * m_nowSpeed;
 	}
 	else if (GetKey(KEY::S))
 	{
-		m_owner.lock().get()->m_transform->m_position -= direction * speed;
+		m_owner.lock().get()->m_transform->m_position -= direction * m_nowSpeed;
 	}
 
 	if (GetKey(KEY::A))
 	{
-		m_owner.lock().get()->m_transform->m_position -= right * speed;
+		m_owner.lock().get()->m_transform->m_position -= right * m_nowSpeed;
 	}
 	else if (GetKey(KEY::D))
 	{
-		m_owner.lock().get()->m_transform->m_position += right * speed;
+		m_owner.lock().get()->m_transform->m_position += right * m_nowSpeed;
 	}
+
 
 }

@@ -18,6 +18,8 @@ private:
 	std::shared_ptr<Truth::Camera> m_camera;
 	std::shared_ptr<Player> m_player;
 
+	float4 m_nowSpeed;
+
 public:
 	PlayerController();
 	virtual ~PlayerController();
@@ -30,6 +32,9 @@ public:
 
 	METHOD(Update);
 	void Update();
+
+private:
+	void PlayerMove();
 };
 
 template<class Archive>
