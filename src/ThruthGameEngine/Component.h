@@ -29,7 +29,6 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Component);
 
 	public:
-		PROPERTY(name);
 		std::string m_name;
 
 	private:

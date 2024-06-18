@@ -18,7 +18,7 @@ Truth::Entity::Entity(std::shared_ptr<Managers> _mangers)
 Truth::Entity::Entity()
 	: m_layer()
 	, m_index()
-	, m_ID()
+	, m_ID(m_entityCount++)
 {
 
 }

@@ -69,8 +69,11 @@ Truth::Collider::~Collider()
 /// </summary>
 void Truth::Collider::Destroy()
 {
-	m_collider->userData = nullptr;
-	m_body->detachShape(*m_collider);
+	if (m_collider)
+	{
+		m_collider->userData = nullptr;
+		m_body->detachShape(*m_collider);
+	}
 }
 
 /// <summary>
@@ -93,7 +96,7 @@ void Truth::Collider::Awake()
 
 	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-	
+
 	m_rigidbody = m_owner.lock()->GetComponent<RigidBody>();
 
 	if (m_rigidbody.expired())
@@ -134,7 +137,7 @@ void Truth::Collider::ApplyTransform()
 	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
 	m_globalTM = m_localTM * ownerTM;
 	m_debugMesh->SetTransformMatrix(m_globalTM);
-	
+
 }
 
 void Truth::Collider::EditorSetValue()
