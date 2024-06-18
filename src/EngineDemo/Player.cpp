@@ -33,6 +33,9 @@ void Player::Awake()
 
 void Player::Update()
 {
-
+	if (m_currentTP > 0.f)
+	{
+		m_currentTP -= GetDeltaTime();
+	}
 }
 
