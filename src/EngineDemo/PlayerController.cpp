@@ -60,7 +60,7 @@ void PlayerController::PlayerMove()
 	{
 		m_forwardInput = 1.f;
 	}
-	else if (GetKey(KEY::W))
+	else if (GetKey(KEY::S))
 	{
 		m_forwardInput = -1.f;
 	}

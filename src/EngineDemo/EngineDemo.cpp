@@ -65,6 +65,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	testScene->AddEntity(camera);
 // 
 // 	auto triggerWall = std::make_shared<Truth::Entity>(processor->GetManagers());
+// 	triggerWall->m_name = "TriggerWall";
 // 	triggerWall->AddComponent<Truth::BoxCollider>(true);
 // 	triggerWall->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
 // 	triggerWall->SetPosition(Vector3(0.0f, 20.0f, 10.0f));
