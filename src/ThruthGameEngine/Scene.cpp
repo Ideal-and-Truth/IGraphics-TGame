@@ -51,7 +51,7 @@ void Truth::Scene::DeleteEntity(uint32 _index)
 	{
 		return;
 	}
-	m_beginDestroy.push(_index);
+	m_beginDestroy.push(m_entities[_index]);
 }
 
 /// <summary>
@@ -60,7 +60,21 @@ void Truth::Scene::DeleteEntity(uint32 _index)
 /// <param name="_p">삭제될 엔티티</param>
 void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 {
-	m_beginDestroy.push(_p->m_index);
+#ifdef _DEBUG
+	if (m_managers.lock()->m_isEdit)
+	{
+		_p->Destroy();
+		m_entities.back()->m_index = _p->m_index;
+		std::iter_swap(m_entities.begin() + _p->m_index, m_entities.begin() + (m_entities.size() - 1));
+		m_entities.pop_back();
+	}
+	else
+	{
+		m_beginDestroy.push(_p);
+	}
+#else
+	m_beginDestroy.push(_p);
+#endif // _DEBUG
 }
 
 /// <summary>
@@ -90,10 +104,11 @@ void Truth::Scene::Update()
 	}
 	while (!m_beginDestroy.empty())
 	{
-		auto e = m_beginDestroy.front();
-		m_entities[e]->Destroy();
-		std::iter_swap(m_entities.begin() + e, m_entities.begin() + (m_entities.size() - 1));
-		m_finishDestroy.push(m_entities[e]);
+		auto& e = m_beginDestroy.front();
+		e->Destroy();
+		m_entities.back()->m_index = e->m_index;
+		std::iter_swap(m_entities.begin() + e->m_index, m_entities.begin() + (m_entities.size() - 1));
+		m_finishDestroy.push(e);
 		m_entities.pop_back();
 		m_beginDestroy.pop();
 	}
@@ -116,7 +131,14 @@ void Truth::Scene::Update()
 	}
 	for (auto& e : m_entities)
 	{
-		e->Update();
+		if (!e->m_isDead)
+		{
+			e->Update();
+		}
+		else
+		{
+			m_beginDestroy.push(e);
+		}
 	}
 }
 
@@ -139,7 +161,6 @@ void Truth::Scene::Start()
 	while (!m_awakedEntity.empty())
 	{
 		auto& e = m_awakedEntity.front();
-		e->m_index = static_cast<int32>(m_entities.size());
 		m_startedEntity.push(e);
 		e->Awake();
 		m_awakedEntity.pop();
@@ -157,6 +178,11 @@ void Truth::Scene::Start()
 /// </summary>
 void Truth::Scene::Enter()
 {
+	int32 index = 0;
+	for (auto& e : m_entities)
+	{
+		e->m_index = index++;
+	}
 }
 
 /// <summary>

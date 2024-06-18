@@ -30,18 +30,18 @@ namespace Truth
 	protected:
 		static uint32 m_entityCount;
 
-		PROPERTY(tag);
-		std::string m_tag;
 
 		std::weak_ptr<Managers> m_manager;
 
 	public:
 		int32 m_index;
 
+		PROPERTY(tag);
+		std::string m_tag;
+
 		PROPERTY(ID);
 		uint32 m_ID;
 
-		// key 값의 경우 type id 를 통해 유추한다.
 		PROPERTY(layer);
 		uint8 m_layer;
 
@@ -50,6 +50,8 @@ namespace Truth
 
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
+
+		bool m_isDead = false;
 
 		std::vector<std::pair<Component*, const Method*>> m_onCollisionEnter;
 		std::vector<std::pair<Component*, const Method*>> m_onCollisionStay;

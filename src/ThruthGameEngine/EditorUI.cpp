@@ -201,12 +201,11 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 
 	/// 여기부터 UI 만들기
 
-	// Hierarchy UI
+	/// Hierarchy UI
 	{
-
-		auto currentScene = m_manager->Scene()->m_currentScene.lock();
-		const auto& currentSceneName = currentScene->GetTypeInfo().GetProperty("name")->Get<std::string>(currentScene.get()).Get();
-		const auto& currentSceneEntities = currentScene->GetTypeInfo().GetProperty("entities")->Get<std::vector<std::shared_ptr<Truth::Entity>>>(currentScene.get()).Get();
+		std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene.lock();
+		const auto& currentSceneName = currentScene->m_name;
+		const auto& currentSceneEntities = currentScene->m_entities;
 
 		uint32 selectCount = 0;
 
@@ -222,34 +221,10 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 
 				ImGui::EndPopup();
 			}
-			uint32 overlapedCount = 2;
-			std::string entityName1;
-			std::string entityName2;
-
-			// 중복 엔티티 이름에 아이디 추가
-			for (auto& e : currentSceneEntities)
-			{
-				for (auto& f : currentSceneEntities)
-				{
-					if (e != f)
-					{
-						entityName1 = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
-						entityName2 = f->GetTypeInfo().GetProperty("name")->Get<std::string>(f.get()).Get();
-						if (entityName1 == entityName2)
-						{
-							entityName2.insert(entityName2.length(), "##");
-							entityName2.insert(entityName2.length(), StringConverter::ToString(overlapedCount));
-							overlapedCount++;
-
-							f->GetTypeInfo().GetProperty("name")->Set(f.get(), entityName2);
-						}
-					}
-				}
-			}
 
 			for (auto& e : currentSceneEntities)
 			{
-				const auto& entityName = e->GetTypeInfo().GetProperty("name")->Get<std::string>(e.get()).Get();
+				const std::string entityName = e->m_name + "##" + std::to_string(e->m_ID);
 
 				// Select Entity
 				if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == selectCount))
@@ -265,6 +240,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 					{
 						/// TODO : 엔티티 삭제방법을 모르겠음
 						m_manager->Scene()->m_currentScene.lock()->DeleteEntity(e);
+						m_selectedEntity = -1;
 					}
 
 					ImGui::EndPopup();
@@ -308,8 +284,6 @@ void EditorUI::ShowMenuBar(bool* p_open)
 
 void EditorUI::TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent)
 {
-	const auto& componentName = EntityComponent->GetTypeInfo().GetProperty("name")->Get<std::string>(EntityComponent.get()).Get();
-
 	DisplayComponent(EntityComponent);
 }
 

@@ -16,6 +16,7 @@ namespace Truth
 
 	private:
 		friend class boost::serialization::access;
+		friend class EditorUI;
 
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
@@ -24,20 +25,20 @@ namespace Truth
 		PROPERTY(name);
 		std::string m_name;
 
-	protected:
+	private:
+		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
-		std::vector<std::shared_ptr<Entity>> m_entities;
+		EntityVector m_entities;
 
 		std::weak_ptr<Managers> m_managers;
 
 	private:
-		std::queue<int> m_beginDestroy;
+		std::queue<std::shared_ptr<Entity>> m_beginDestroy;
 		std::queue<std::shared_ptr<Entity>> m_finishDestroy;
 
 		std::queue<std::shared_ptr<Entity>> m_awakedEntity;
 		std::queue<std::shared_ptr<Entity>> m_startedEntity;
-		std::queue<std::shared_ptr<Entity>> m_watingEntity;
-		
+
 	public:
 		Scene(std::shared_ptr<Managers> _managers);
 		Scene() = default;
