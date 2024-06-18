@@ -15,9 +15,18 @@ Truth::Mesh::Mesh(std::wstring _path)
 	m_name = "Mesh Filter";
 }
 
+
+Truth::Mesh::Mesh()
+	: Component()
+	, m_path(L"DebugObject/debugCube")
+	, m_isRendering(true)
+	, m_mesh(nullptr)
+{
+	m_name = "Mesh Filter";
+}
+
 Truth::Mesh::~Mesh()
 {
-	int a = 1;
 }
 
 void Truth::Mesh::SetMesh(std::wstring _path)

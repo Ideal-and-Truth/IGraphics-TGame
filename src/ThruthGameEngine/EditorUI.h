@@ -1,5 +1,7 @@
 #pragma once
-#include "Headers.h"
+#include <memory>
+#include <vector>
+#include "Types.h"
 
 namespace Truth
 {
@@ -15,6 +17,8 @@ private:
 	std::shared_ptr<Truth::Managers> m_manager;
 	static int32 m_selectedEntity;
 	int m_notUsedID;
+
+	std::vector<const char*>& m_componentList;
 
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager);

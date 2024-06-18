@@ -4,10 +4,16 @@
 #include <vector>
 #include <typeinfo>
 #include <memory>
+#include "ComponentFactory.h"
 
 class Method;
 class Property;
 class TypeInfo;
+
+namespace Truth
+{
+	class Component;
+}
 
 template<typename T>
 struct has_const_iterator
@@ -75,7 +81,7 @@ struct HasStaticTypeInfoFunc
 {
 };
 template<typename T>
-struct HasStaticTypeInfoFunc<T, std::void_t<decltype(std::declval<T>().HasStaticTypeInfoFunc())>>
+struct HasStaticTypeInfoFunc<T, std::void_t<decltype(std::declval<T>().StaticTypeInfo())>>
 	: std::true_type
 {
 };
@@ -139,7 +145,6 @@ private:
 	using MethodMap = std::map<std::string_view, const Method*>;
 	using PropertyMap = std::map<std::string_view, const Property*>;
 
-	static std::vector<std::string> g_components;
 
 	// 타임 이름 해시값
 	size_t m_typeHash;
@@ -162,6 +167,9 @@ private:
 	// 변수 컨테이너
 	std::vector<const Property*> m_properties;
 	PropertyMap m_propertyMap;
+
+public:
+	static std::unique_ptr<Truth::ComponentFactory> g_factory;
 
 public:
 	std::string Dump(void* _object, int _indent = 0) const;
@@ -189,6 +197,20 @@ public:
 				CollectSuperProperties();
 			}
 		}
+
+		if constexpr (std::is_base_of_v<Truth::Component, T> && !std::is_abstract_v<T>)
+		{
+			if (g_factory == nullptr)
+			{
+				g_factory = std::make_unique<Truth::ComponentFactory>();
+			}
+			g_factory->RegisterType(m_name, []() { return std::make_shared<T>(); });
+		}
+	}
+
+	static const std::shared_ptr<Truth::Component> CreateComponent(std::string& _name)
+	{
+		return g_factory->Create(_name);
 	}
 
 	// 부모의 타입 정보 가져오기

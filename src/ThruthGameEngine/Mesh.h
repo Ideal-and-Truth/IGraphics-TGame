@@ -21,7 +21,7 @@ namespace Truth
 		bool m_isRendering;
 
 	public:
-		Mesh() = default;
+		Mesh();
 		Mesh(std::wstring _path);
 		virtual ~Mesh();
 

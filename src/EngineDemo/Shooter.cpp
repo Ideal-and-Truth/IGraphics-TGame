@@ -30,7 +30,7 @@ void Shooter::Update()
 		bullet->AddComponent<Truth::RigidBody>();
 		bullet->AddComponent<Truth::SphereCollider>(false);
 		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugSphere");
-		bullet->SetPosition(Vector3{ 0.0f, 50.0f, 50.0f });
+		bullet->SetPosition(GetPosition());
 		bullet->SetScale(Vector3(4.0f, 4.0f, 4.0f));
 		bullet->m_name = "bullet";
 		m_managers.lock()->Scene()->m_currentScene.lock()->CreateEntity(bullet);

@@ -23,7 +23,7 @@ namespace Truth
 
 namespace Truth
 {
-	class Component
+	class Component abstract
 		: public EventHandler
 	{
 		GENERATE_CLASS_TYPE_INFO(Component);
@@ -153,4 +153,5 @@ void Truth::Component::AddEntity()
 {
 	m_managers.lock()->Scene()->m_currentScene.lock()->AddEntity(std::make_shared<E>());
 }
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Truth::Component)
 BOOST_CLASS_EXPORT_KEY(Truth::Component)

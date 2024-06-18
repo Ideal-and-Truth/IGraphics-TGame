@@ -94,6 +94,9 @@
     <Filter Include="Utils\ImguiTypeUI">
       <UniqueIdentifier>{a0902df5-5f5d-4973-90a9-d85ffe22b24d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\ComponentFactory">
+      <UniqueIdentifier>{ea702d86-b2cb-426b-a344-423f6facc789}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -179,7 +182,10 @@
       <Filter>EditorUI</Filter>
     </ClCompile>
     <ClCompile Include="EditorCamera.cpp" />
-    <ClCompile Include="TypeUI.cpp" />
+    <ClCompile Include="TypeUI.cpp">
+      <Filter>Utils\ImguiTypeUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -285,7 +291,10 @@
       <Filter>EditorUI</Filter>
     </ClInclude>
     <ClInclude Include="EditorCamera.h" />
-    <ClInclude Include="TypeUI.h" />
+    <ClInclude Include="TypeUI.h">
+      <Filter>Utils\ImguiTypeUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

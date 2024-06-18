@@ -8,6 +8,10 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Camera)
 
 Truth::Camera::Camera()
 	: Component()
+	, m_fov(0.25f * 3.141592f)
+	, m_aspect(1)
+	, m_nearZ(1)
+	, m_farZ(1000)
 {
 	m_name = "Camera";
 }

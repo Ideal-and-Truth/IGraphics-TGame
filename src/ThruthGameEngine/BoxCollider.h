@@ -30,7 +30,7 @@ namespace Truth
 	template<class Archive>
 	void Truth::BoxCollider::serialize(Archive& _ar, const unsigned int _file_version)
 	{
-		_ar& boost::serialization::base_object<Collider>(*this);
+		_ar& boost::serialization::base_object<Collider, BoxCollider>(*this);
 	}
 }
 

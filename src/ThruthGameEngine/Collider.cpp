@@ -23,6 +23,7 @@ Truth::Collider::Collider(bool _isTrigger /*= true*/)
 #ifdef _DEBUG
 	, m_debugMesh(nullptr)
 #endif // _DEBUG
+	, m_shape()
 
 {
 	m_center = { 0.0f, 0.0f, 0.0f };
@@ -133,6 +134,7 @@ void Truth::Collider::ApplyTransform()
 	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
 	m_globalTM = m_localTM * ownerTM;
 	m_debugMesh->SetTransformMatrix(m_globalTM);
+	
 }
 
 void Truth::Collider::EditorSetValue()

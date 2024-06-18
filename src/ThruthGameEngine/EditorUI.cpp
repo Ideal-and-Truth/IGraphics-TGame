@@ -20,6 +20,7 @@ int32 EditorUI::m_selectedEntity = -1;
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager)
 	: m_manager(Manager)
 	, m_notUsedID(0)
+	, m_componentList(TypeInfo::g_factory->m_componentList)
 {
 	m_selectedEntity = -1;
 }
@@ -313,185 +314,13 @@ void EditorUI::TranslateComponent(std::shared_ptr<Truth::Component> EntityCompon
 
 void EditorUI::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 {
-	static bool isOpenComponentMenu = false;
-	int item_current = -1;
-	if (ImGui::Button("Add Component"))
-	{
-		isOpenComponentMenu = !isOpenComponentMenu;
-	}
-	if (isOpenComponentMenu)
-	{
-		/// TODO : 모든 컴포넌트의 이름을 받아올 수 있게 하고
-		/// 같은게 있는 지 없는 지 확인하고 
-		/// 있다면 중복 가능한지 확인해서
-		/// 중복 가능하면 추가
-		/// 불가능하면 안 추가
-		/// 없다면 그냥 추가
-		/// New Script 기능은 추가할 수 있는걸까
-		const char* items[] = { "BoxCollider", "CapsuleCollider", "SphereCollider", "RigidBody", "Mesh", "Camera" };
-		ImGui::ListBox("Component", &item_current, items, IM_ARRAYSIZE(items), 4);
 
-		switch (item_current)
+	if (ImGui::CollapsingHeader("Add Component"))
+	{
+		int selectedItem = -1;
+		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), m_componentList.size(), 4))
 		{
-			// Add BoxCollider
-		case 0:
-			if (SelectedEntity->GetComponent<Truth::BoxCollider>().lock().get())
-			{
-				auto entityPtr = SelectedEntity->GetComponent<Truth::BoxCollider>().lock().get();
-				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
-				{
-					SelectedEntity->AddComponent<Truth::BoxCollider>();
-
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-				else
-				{
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-			}
-			else
-			{
-				SelectedEntity->AddComponent<Truth::BoxCollider>();
-
-				isOpenComponentMenu = !isOpenComponentMenu;
-				break;
-			}
-			break;
-
-			// Add CapsuleCollider
-		case 1:
-			if (SelectedEntity->GetComponent<Truth::CapsuleCollider>().lock().get())
-			{
-				auto entityPtr = SelectedEntity->GetComponent<Truth::CapsuleCollider>().lock().get();
-				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
-				{
-					SelectedEntity->AddComponent<Truth::CapsuleCollider>();
-
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-				else
-				{
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-			}
-			else
-			{
-				SelectedEntity->AddComponent<Truth::CapsuleCollider>();
-
-				isOpenComponentMenu = !isOpenComponentMenu;
-				break;
-			}
-			break;
-
-			// Add SphereCollider
-		case 2:
-			if (SelectedEntity->GetComponent<Truth::SphereCollider>().lock().get())
-			{
-				auto entityPtr = SelectedEntity->GetComponent<Truth::SphereCollider>().lock().get();
-				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
-				{
-					SelectedEntity->AddComponent<Truth::SphereCollider>();
-
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-				else
-				{
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-			}
-			else
-			{
-				SelectedEntity->AddComponent<Truth::SphereCollider>();
-
-				isOpenComponentMenu = !isOpenComponentMenu;
-				break;
-			}
-			break;
-
-			// Add RigidBody
-		case 3:
-			if (SelectedEntity->GetComponent<Truth::RigidBody>().lock().get())
-			{
-				auto entityPtr = SelectedEntity->GetComponent<Truth::RigidBody>().lock().get();
-				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
-				{
-					SelectedEntity->AddComponent<Truth::RigidBody>();
-
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-				else
-				{
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-			}
-			else
-			{
-				SelectedEntity->AddComponent<Truth::RigidBody>();
-				isOpenComponentMenu = !isOpenComponentMenu;
-				break;
-			}
-			break;
-
-			// Add Mesh
-		case 4:
-			if (SelectedEntity->GetComponent<Truth::Mesh>().lock().get())
-			{
-				auto entityPtr = SelectedEntity->GetComponent<Truth::Mesh>().lock().get();
-				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
-				{
-					SelectedEntity->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
-
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-				else
-				{
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-			}
-			else
-			{
-				SelectedEntity->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
-
-				isOpenComponentMenu = !isOpenComponentMenu;
-				break;
-			}
-			break;
-
-			// Add Camera
-		case 5:
-			if (SelectedEntity->GetComponent<Truth::Camera>().lock().get())
-			{
-				auto entityPtr = SelectedEntity->GetComponent<Truth::Camera>().lock().get();
-				if (entityPtr->GetTypeInfo().GetProperty("canMultiple")->Get<bool>(entityPtr).Get())
-				{
-					SelectedEntity->AddComponent<Truth::Camera>();
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-				else
-				{
-					isOpenComponentMenu = !isOpenComponentMenu;
-					break;
-				}
-			}
-			else
-			{
-				SelectedEntity->AddComponent<Truth::Camera>();
-				isOpenComponentMenu = !isOpenComponentMenu;
-				break;
-			}
-			break;
-
+			SelectedEntity->AddComponent(TypeInfo::g_factory->Create(m_componentList[selectedItem]));
 		}
 	}
 }

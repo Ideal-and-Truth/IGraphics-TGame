@@ -15,6 +15,14 @@ Truth::Entity::Entity(std::shared_ptr<Managers> _mangers)
 	m_components.push_back(m_transform);
 }
 
+Truth::Entity::Entity()
+	: m_layer()
+	, m_index()
+	, m_ID()
+{
+
+}
+
 Truth::Entity::~Entity()
 {
 	m_components.clear();
@@ -161,12 +169,21 @@ void Truth::Entity::OnTriggerExit(Collider* _other)
 	}
 }
 
+void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
+{
+	_component->SetManager(m_manager);
+	_component->SetOwner(shared_from_this());
+	m_components.push_back(_component);
+	_component->Initalize();
+	ApplyComponent(_component);
+}
+
 const DirectX::SimpleMath::Matrix& Truth::Entity::GetWorldTM() const
 {
 	return m_transform->m_transformMatrix;
 }
 
-void Truth::Entity::SetWorldTM(const Matrix& _tm)
+void Truth::Entity::SetWorldTM(const Matrix& _tm) const
 {
 	m_transform->m_transformMatrix = _tm;
 }

@@ -116,6 +116,11 @@ namespace TypeUI
 			char* cMeshPath = (char*)_val.c_str();
 			return ImGui::InputText(_name, cMeshPath, 128);
 		}
+// 		else if constexpr (std::is_same_v<T, std::wstring>)
+// 		{
+// 			wchar_t* cMeshPath = (wchar_t*)_val.c_str();
+// 			return ImGui::InputText(_name, cMeshPath, 128);
+// 		}
 		else if constexpr (std::is_same_v<T, Quaternion>)
 		{
 			float value[3] = {};

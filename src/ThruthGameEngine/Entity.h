@@ -73,7 +73,7 @@ namespace Truth
 		 
 	public:
 		Entity(std::shared_ptr<Managers> _mangers);
-		Entity() = default;
+		Entity();
 		~Entity();
 
 		void Initailize();
@@ -86,7 +86,7 @@ namespace Truth
 		const Vector3& GetScale() const;
 
 		const Matrix& GetWorldTM() const;
-		void SetWorldTM(const Matrix& _tm);
+		void SetWorldTM(const Matrix& _tm) const;
 
 		void ApplyTransform() const;
 
@@ -108,6 +108,8 @@ namespace Truth
 		std::shared_ptr<C> AddComponent();
 		template<typename C, typename... Args, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent(Args... _args);
+
+		void AddComponent(std::shared_ptr<Component> _component);
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::weak_ptr<C> GetComponent();

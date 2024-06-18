@@ -20,7 +20,7 @@ namespace Truth
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
-		PROPERTYM(fov, 0.02, 1);
+		PROPERTYM(fov, 0.02f, 1.0f);
 		float m_fov;
 		PROPERTY(aspect);
 		float m_aspect;

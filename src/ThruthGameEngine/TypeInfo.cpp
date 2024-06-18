@@ -2,7 +2,7 @@
 #include "Method.h"
 #include "Property.h"
 
-std::vector<std::string> TypeInfo::g_components = std::vector<std::string>();
+std::unique_ptr<Truth::ComponentFactory> TypeInfo::g_factory;
 
 const TypeInfo* TypeInfo::GetSuper() const
 {

@@ -6,6 +6,7 @@
 #include "PhysicsManager.h"
 #include "GraphicsManager.h"
 #include "EditorCamera.h"
+#include "ComponentFactory.h"
 
 Truth::Managers::Managers()
 {
@@ -21,7 +22,7 @@ void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
 {
 	CreateManagers();
 	InitlizeManagers(_hwnd, _width, _height);
-
+	m_componentFactory = std::make_unique<ComponentFactory>();
 #ifdef _DEBUG
 	m_editorCamera = std::make_shared<EditorCamera>(this);
 	m_editorCamera->SetMainCamera();

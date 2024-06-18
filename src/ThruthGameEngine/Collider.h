@@ -20,8 +20,8 @@ namespace Truth
 
 namespace Truth
 {
-	class Collider :
-		public Component
+	class Collider abstract 
+		: public Component
 	{
 		GENERATE_CLASS_TYPE_INFO(Collider);
 	private:
@@ -108,4 +108,5 @@ namespace Truth
 		std::weak_ptr<Collider> m_collB;
 	};
 }
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Truth::Collider)
 BOOST_CLASS_EXPORT_KEY(Truth::Collider)
