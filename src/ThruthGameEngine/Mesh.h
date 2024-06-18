@@ -33,6 +33,11 @@ namespace Truth
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();
+
+#ifdef _DEBUG
+		virtual void EditorSetValue();
+#endif // _DEBUG
+
 	};
 
 	template<class Archive>

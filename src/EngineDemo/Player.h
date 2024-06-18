@@ -62,11 +62,7 @@ public:
 	METHOD(Update);
 	void Update();
 
-	void QUP(std::any _p);
-
 private:
-
-
 };
 
 template<class Archive>

@@ -1,6 +1,7 @@
 #include "StringConverter.h"
 #include "Component.h"
 #include "Entity.h"
+
 template<>
 std::string StringConverter::ToString(bool _val, int _indent)
 {
@@ -82,3 +83,4 @@ std::string StringConverter::ToString(std::wstring _val, int _indent)
 {
 	return "wstring Data";
 }
+

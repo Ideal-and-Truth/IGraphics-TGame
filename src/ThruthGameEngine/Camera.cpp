@@ -21,42 +21,37 @@ Truth::Camera::~Camera()
 
 }
 
-void Truth::Camera::Start()
-{
-	
-}
-
 void Truth::Camera::Update()
 {
 	float dt = GetDeltaTime();
 	float speed = 300;
 
-	m_camera->SetPosition(m_position);
-	
-	m_camera->SetLook(m_look);
-// 	if (GetKey(KEY::W))
-// 	{
-// 		m_camera->Walk(dt * speed);
-// 		// m_camera->SetLook(Vector3(0.0f, 1.0f, 1.0f));
-// 	}
-// 	if (GetKey(KEY::S))
-// 	{
-// 		m_camera->Walk(-dt * speed);
-// 	}
-// 	if (GetKey(KEY::A))
-// 	{
-// 		m_camera->Strafe(-dt * speed);
-// 	}
-// 	if (GetKey(KEY::D))
-// 	{
-// 		m_camera->Strafe(dt * speed);
-// 	}
-// 
-// 	if (GetKey(KEY::LMOUSE))
-// 	{
-// 		m_camera->Pitch(MouseDy() * 0.003f);
-// 		m_camera->RotateY(MouseDx() * 0.003f);
-// 	}
+// 	m_camera->SetPosition(m_position);
+// 	
+// 	m_camera->SetLook(m_look);
+	if (GetKey(KEY::W))
+	{
+		m_camera->Walk(dt * speed);
+		// m_camera->SetLook(Vector3(0.0f, 1.0f, 1.0f));
+	}
+	if (GetKey(KEY::S))
+	{
+		m_camera->Walk(-dt * speed);
+	}
+	if (GetKey(KEY::A))
+	{
+		m_camera->Strafe(-dt * speed);
+	}
+	if (GetKey(KEY::D))
+	{
+		m_camera->Strafe(dt * speed);
+	}
+
+	if (GetKey(KEY::LMOUSE))
+	{
+		m_camera->Pitch(MouseDy() * 0.003f);
+		m_camera->RotateY(MouseDx() * 0.003f);
+	}
 
 }
 
@@ -89,15 +84,7 @@ void Truth::Camera::RotateY(float angle)
 	m_camera->RotateY(angle);
 }
 
-void Truth::Camera::Awake()
-{
 
-}
-
-void Truth::Camera::Start()
-{
-	SetMainCamera();
-}
 
 void Truth::Camera::Initalize()
 {
@@ -113,3 +100,8 @@ void Truth::Camera::EditorSetValue()
 	m_camera->SetLens(m_fov, m_aspect, m_nearZ, m_farZ);
 }
 #endif // _DEBUG
+
+void Truth::Camera::Start()
+{
+	SetMainCamera();
+}

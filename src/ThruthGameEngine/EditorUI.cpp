@@ -203,9 +203,15 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 
 	// Hierarchy UI
 	{
+
 		auto currentScene = m_manager->Scene()->m_currentScene.lock();
 		const auto& currentSceneName = currentScene->GetTypeInfo().GetProperty("name")->Get<std::string>(currentScene.get()).Get();
 		const auto& currentSceneEntities = currentScene->GetTypeInfo().GetProperty("entities")->Get<std::vector<std::shared_ptr<Truth::Entity>>>(currentScene.get()).Get();
+
+		if (ImGui::Button("Add Entity"))
+		{
+
+		}
 
 		uint32 selectCount = 0;
 
@@ -318,7 +324,7 @@ void EditorUI::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 	if (ImGui::CollapsingHeader("Add Component"))
 	{
 		int selectedItem = -1;
-		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), m_componentList.size(), 4))
+		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), static_cast<int32>(m_componentList.size()), 4))
 		{
 			SelectedEntity->AddComponent(TypeInfo::g_factory->Create(m_componentList[selectedItem]));
 		}

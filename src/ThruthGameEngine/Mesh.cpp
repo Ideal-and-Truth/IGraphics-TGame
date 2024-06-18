@@ -65,3 +65,10 @@ void Truth::Mesh::ApplyTransform()
 	m_mesh->SetDrawObject(m_isRendering);
 }
 
+#ifdef _DEBUG
+void Truth::Mesh::EditorSetValue()
+{
+	SetMesh(m_path);
+}
+#endif // _DEBUG
+
