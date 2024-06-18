@@ -71,11 +71,11 @@ void Truth::Entity::ApplyTransform() const
 	m_transform->ApplyTransform();
 	for (auto& p : m_applyTransform)
 	{
-		if (p.first->m_name == "Transform")
+		if (p.first.lock()->m_name == "Transform")
 		{
 			continue;
 		}
-		p.second->Invoke<void>(p.first);
+		p.second->Invoke<void>(p.first.lock().get());
 	}
 }
 
@@ -96,7 +96,7 @@ void Truth::Entity::Destroy()
 {
 	for (auto& p : m_destroy)
 	{
-		p.second->Invoke<void>(p.first);
+		p.second->Invoke<void>(p.first.lock().get());
 	}
 	m_components.clear();
 }
@@ -117,7 +117,7 @@ void Truth::Entity::Update()
 {
 	for (auto& p : m_update)
 	{
-		p.second->Invoke<void>(p.first);
+		p.second->Invoke<void>(p.first.lock().get());
 	}
 }
 
@@ -125,7 +125,7 @@ void Truth::Entity::OnCollisionEnter(Collider* _other)
 {
 	for (auto& p : m_onCollisionEnter)
 	{
-		p.second->Invoke<void>(p.first, _other);
+		p.second->Invoke<void>(p.first.lock().get(), _other);
 	}
 }
 
@@ -133,7 +133,7 @@ void Truth::Entity::OnCollisionStay(Collider* _other)
 {
 	for (auto& p : m_onCollisionStay)
 	{
-		p.second->Invoke<void>(p.first, _other);
+		p.second->Invoke<void>(p.first.lock().get(), _other);
 	}
 }
 
@@ -141,7 +141,7 @@ void Truth::Entity::OnCollisionExit(Collider* _other)
 {
 	for (auto& p : m_onCollisionExit)
 	{
-		p.second->Invoke<void>(p.first, _other);
+		p.second->Invoke<void>(p.first.lock().get(), _other);
 	}
 }
 
@@ -149,7 +149,7 @@ void Truth::Entity::OnTriggerEnter(Collider* _other)
 {
 	for (auto& p : m_onTriggerEnter)
 	{
-		p.second->Invoke<void>(p.first, _other);
+		p.second->Invoke<void>(p.first.lock().get(), _other);
 	}
 }
 
@@ -157,7 +157,7 @@ void Truth::Entity::OnTriggerStay(Collider* _other)
 {
 	for (auto& p : m_onTriggerStay)
 	{
-		p.second->Invoke<void>(p.first, _other);
+		p.second->Invoke<void>(p.first.lock().get(), _other);
 	}
 }
 
@@ -165,8 +165,14 @@ void Truth::Entity::OnTriggerExit(Collider* _other)
 {
 	for (auto& p : m_onTriggerExit)
 	{
-		p.second->Invoke<void>(p.first, _other);
+		p.second->Invoke<void>(p.first.lock().get(), _other);
 	}
+}
+
+void Truth::Entity::DeleteComponent(int32 _index)
+{
+	std::iter_swap(m_components.begin() + _index, m_components.begin() + (m_components.size() - 1));
+	m_components.pop_back();
 }
 
 void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
@@ -199,7 +205,7 @@ void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 	{
 		std::string metName = m->GetName();
 
-		auto p = std::make_pair(_c.get(), m);
+		auto p = std::make_pair(_c, m);
 
 		if (metName == "OnCollisionEnter")
 		{
