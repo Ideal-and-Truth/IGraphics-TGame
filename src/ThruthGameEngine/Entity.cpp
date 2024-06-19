@@ -31,6 +31,7 @@ Truth::Entity::~Entity()
 void Truth::Entity::Initailize()
 {
 	m_transform = GetComponent<Transform>().lock();
+	int32 index = 0;
 	for (auto& c : m_components)
 	{
 		c->SetOwner(shared_from_this());
@@ -38,6 +39,7 @@ void Truth::Entity::Initailize()
 
 		c->Initalize();
 		ApplyComponent(c);
+		c->m_index = index++;
 	}
 }
 
@@ -66,16 +68,28 @@ const DirectX::SimpleMath::Vector3& Truth::Entity::GetScale() const
 	return m_transform->m_scale;
 }
 
-void Truth::Entity::ApplyTransform() const
+void Truth::Entity::ApplyTransform()
 {
 	m_transform->ApplyTransform();
-	for (auto& p : m_applyTransform)
+	for (auto p = m_applyTransform.begin(); p != m_applyTransform.end() ; p++)
 	{
-		if (p.first.lock()->m_name == "Transform")
+		if (p->first.expired())
+		{
+			auto temp = m_applyTransform.end() - 1;
+			std::iter_swap(p, temp);
+			m_applyTransform.pop_back();
+			p = temp;
+			if (m_applyTransform.empty())
+			{
+				return;
+			}
+		}
+
+		if (p->first.lock()->m_name == "Transform")
 		{
 			continue;
 		}
-		p.second->Invoke<void>(p.first.lock().get());
+		p->second->Invoke<void>(p->first.lock().get());
 	}
 }
 
@@ -94,10 +108,7 @@ void Truth::Entity::Awake()
 
 void Truth::Entity::Destroy()
 {
-	for (auto& p : m_destroy)
-	{
-		p.second->Invoke<void>(p.first.lock().get());
-	}
+	IterateComponentMethod(m_destroy);
 	m_components.clear();
 }
 
@@ -115,62 +126,47 @@ void Truth::Entity::Start()
 
 void Truth::Entity::Update()
 {
-	for (auto& p : m_update)
-	{
-		p.second->Invoke<void>(p.first.lock().get());
-	}
+	IterateComponentMethod(m_update);
 }
 
 void Truth::Entity::OnCollisionEnter(Collider* _other)
 {
-	for (auto& p : m_onCollisionEnter)
-	{
-		p.second->Invoke<void>(p.first.lock().get(), _other);
-	}
+	IterateComponentMethod(m_onCollisionEnter, _other);
 }
 
 void Truth::Entity::OnCollisionStay(Collider* _other)
 {
-	for (auto& p : m_onCollisionStay)
-	{
-		p.second->Invoke<void>(p.first.lock().get(), _other);
-	}
+	IterateComponentMethod(m_onCollisionStay, _other);
 }
 
 void Truth::Entity::OnCollisionExit(Collider* _other)
 {
-	for (auto& p : m_onCollisionExit)
-	{
-		p.second->Invoke<void>(p.first.lock().get(), _other);
-	}
+	IterateComponentMethod(m_onCollisionExit, _other);
 }
 
 void Truth::Entity::OnTriggerEnter(Collider* _other)
 {
-	for (auto& p : m_onTriggerEnter)
-	{
-		p.second->Invoke<void>(p.first.lock().get(), _other);
-	}
+	IterateComponentMethod(m_onTriggerEnter, _other);
 }
 
 void Truth::Entity::OnTriggerStay(Collider* _other)
 {
-	for (auto& p : m_onTriggerStay)
-	{
-		p.second->Invoke<void>(p.first.lock().get(), _other);
-	}
+	IterateComponentMethod(m_onTriggerStay, _other);
 }
 
 void Truth::Entity::OnTriggerExit(Collider* _other)
 {
-	for (auto& p : m_onTriggerExit)
-	{
-		p.second->Invoke<void>(p.first.lock().get(), _other);
-	}
+	IterateComponentMethod(m_onTriggerExit, _other);
 }
 
 void Truth::Entity::DeleteComponent(int32 _index)
 {
+	if (_index >= m_components.size())
+	{
+		return;
+	}
+
+	m_components.back()->m_index = _index;
 	std::iter_swap(m_components.begin() + _index, m_components.begin() + (m_components.size() - 1));
 	m_components.pop_back();
 }
@@ -262,3 +258,42 @@ void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 	}
 }
 
+void Truth::Entity::IterateComponentMethod(ComponentMethod& _cm)
+{
+	for (auto p = _cm.begin(); p != _cm.end(); p++)
+	{
+		if (p->first.expired())
+		{
+			auto temp = _cm.end() - 1;
+			std::iter_swap(p, temp);
+			_cm.pop_back();
+			p = temp;
+
+			if (_cm.empty())
+			{
+				return;
+			}
+		}
+		p->second->Invoke<void>(p->first.lock().get());
+	}
+}
+
+void Truth::Entity::IterateComponentMethod(ComponentMethod& _cm, Collider* _param)
+{
+	for (auto p = _cm.begin(); p != _cm.end(); p++)
+	{
+		if (p->first.expired())
+		{
+			auto temp = _cm.end() - 1;
+			std::iter_swap(p, temp);
+			_cm.pop_back();
+			p = temp;
+
+			if (_cm.empty())
+			{
+				return;
+			}
+		}
+		p->second->Invoke<void>(p->first.lock().get(), _param);
+	}
+}

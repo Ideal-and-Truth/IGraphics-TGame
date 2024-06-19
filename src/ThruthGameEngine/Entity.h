@@ -52,7 +52,6 @@ namespace Truth
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
-		std::vector<std::vector<std::pair<ComponentMethod&, ComponentMethod::iterator>>> m_milestone;
 
 		bool m_isDead = false;
 
@@ -94,7 +93,7 @@ namespace Truth
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm) const;
 
-		void ApplyTransform() const;
+		void ApplyTransform();
 
 		void Awake();
 		void Destroy();
@@ -132,6 +131,9 @@ namespace Truth
 
 	private:
 		void ApplyComponent(std::shared_ptr<Component> _c);
+
+		void IterateComponentMethod(ComponentMethod& _cm);
+		void IterateComponentMethod(ComponentMethod& _cm, Collider* _param);
 	};
 
 	/// template로 작성된 함수 목록
@@ -158,6 +160,7 @@ namespace Truth
 			component = std::make_shared<C>();
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
+			component->m_index = m_components.size();
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);
@@ -179,6 +182,7 @@ namespace Truth
 			component = std::make_shared<C>(_args...);
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
+			component->m_index = m_components.size();
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);

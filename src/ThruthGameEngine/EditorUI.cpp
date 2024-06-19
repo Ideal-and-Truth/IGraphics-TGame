@@ -90,23 +90,13 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 
 
 	/// 여기부터 UI 만들기
-
-	auto currentSceneEntities = m_manager->Scene()->m_currentScene.lock()->GetTypeInfo().GetProperty("entities");
-	auto getEntities = currentSceneEntities->Get<std::vector<std::shared_ptr<Truth::Entity>>>(m_manager->Scene()->m_currentScene.lock().get());
-	const auto& entities = getEntities.Get();
-
-	/// TEST : 비어있는 엔티티 씬에 추가 할 수 있는지 해봄
-	/// 나중에 방법 알아내기
-	if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
-	{
-		//m_manager->Scene()->m_currentScene.lock()->CreateEntity(std::make_shared<Truth::Entity>());
-	}
+	const auto& entities = m_manager->Scene()->m_currentScene.lock()->m_entities;
 
 	if (m_selectedEntity >= 0)
 	{
 		// Set Entity Name
 		{
-			std::string sEntityName = entities[m_selectedEntity]->GetTypeInfo().GetProperty("name")->Get<std::string>(entities[m_selectedEntity].get());
+			std::string sEntityName = entities[m_selectedEntity]->m_name;
 			char* cEntityName = (char*)sEntityName.c_str();
 			bool isShown = true;
 			ImGui::Checkbox("##1", &isShown);
@@ -115,7 +105,7 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 			if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
 			{
 				sEntityName = std::string(cEntityName, cEntityName + strlen(cEntityName));
-				entities[m_selectedEntity]->GetTypeInfo().GetProperty("name")->Set(entities[m_selectedEntity].get(), sEntityName);
+				entities[m_selectedEntity]->m_name = sEntityName;
 			}
 		}
 
@@ -229,7 +219,6 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 				// Select Entity
 				if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == selectCount))
 				{
-
 					m_selectedEntity = selectCount;
 				}
 
@@ -238,7 +227,6 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 				{
 					if (ImGui::Selectable("Delete"))
 					{
-						/// TODO : 엔티티 삭제방법을 모르겠음
 						m_manager->Scene()->m_currentScene.lock()->DeleteEntity(e);
 						m_selectedEntity = -1;
 					}
@@ -307,11 +295,23 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 	// 컴포넌트 이름
 	const char* componentName = typeinfo.GetName();
 
-	auto& properise = typeinfo.GetProperties();
+	auto& properties = typeinfo.GetProperties();
 	bool isSelect = false;
+
+	const auto& entities = m_manager->Scene()->m_currentScene.lock()->m_entities;
+
 	if (ImGui::CollapsingHeader(componentName, ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		for (auto* p : properise)
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::Selectable("Remove Component"))
+			{
+				entities[m_selectedEntity]->DeleteComponent(_component->m_index);
+			}
+
+			ImGui::EndPopup();
+		}
+		for (auto* p : properties)
 		{
 			isSelect |= p->DisplayUI(_component.get());
 		}

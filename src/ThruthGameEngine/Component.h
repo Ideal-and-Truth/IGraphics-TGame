@@ -30,6 +30,7 @@ namespace Truth
 
 	public:
 		std::string m_name;
+		int32 m_index;
 
 	private:
 		friend class boost::serialization::access;
