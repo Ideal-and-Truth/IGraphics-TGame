@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <string>
 #include "Types.h"
 
 namespace Truth
@@ -20,12 +21,14 @@ private:
 
 	std::vector<const char*>& m_componentList;
 
+	char inputTextBuffer[128];
+
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager);
 	~EditorUI() {}
-
-public:
 	void RenderUI(bool* p_open);
+
+private:
 	void ShowInspectorWindow(bool* p_open);
 	void ShowHierarchyWindow(bool* p_open);
 	void ShowMenuBar(bool* p_open);

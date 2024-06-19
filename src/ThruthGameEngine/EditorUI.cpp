@@ -253,10 +253,35 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	// Verify ABI compatibility between caller code and compiled version of Dear ImGui. This helps detects some build issues.
 	IMGUI_CHECKVERSION();
 
-	ImGui::BeginMainMenuBar();
+	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene.lock();
+	const auto& currentSceneName = currentScene->m_name;
+	const auto& currentSceneEntities = currentScene->m_entities;
 
-	float4 dt = m_manager->Time()->GetADT();
-	ImGui::Text("frame : %.2f\t", 1 / dt);
+	ImGui::BeginMainMenuBar();
+	ImGui::Button("Menu");
+
+	static bool newScene = false, saveScene = false, loadScene = false;
+
+	if (ImGui::BeginPopupContextItem("menu", 0))
+	{
+		if (ImGui::Selectable("New Scene"))
+		{
+			newScene = true;
+		}
+		if (ImGui::Selectable("Save Scene"))
+		{
+			saveScene = true;
+		}
+		if (ImGui::Selectable("Load Scene"))
+		{
+			loadScene = true;
+		}
+		if (ImGui::Selectable("Create Empty"))
+		{
+			currentScene->AddEntity(std::make_shared<Truth::Entity>(m_manager));
+		}
+		ImGui::EndPopup();
+	}
 
 	if (ImGui::Button("Play"))
 	{
@@ -265,6 +290,47 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	if (ImGui::Button("Stop"))
 	{
 		m_manager->GameToEdit();
+	}
+
+	float4 dt = m_manager->Time()->GetADT();
+	ImGui::Text("frame : %.2f\t", 1 / dt);
+
+	if (newScene)
+	{
+		ImGui::OpenPopup("Input String");
+		if (ImGui::BeginPopupModal("Input String", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Enter your text below:");
+			ImGui::InputText("##input", inputTextBuffer, IM_ARRAYSIZE(inputTextBuffer));
+
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
+				std::shared_ptr<Truth::Scene> ns = std::make_shared<Truth::Scene>(m_manager);
+				ns->m_name = inputTextBuffer;
+				m_manager->Scene()->SaveScene(ns);
+				std::string path = "../Scene/" + ns->m_name + ".scene";
+				m_manager->Scene()->LoadSceneData(path);
+				m_manager->Scene()->SetCurrnetScene(ns->m_name);
+				newScene = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				newScene = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+	else if (saveScene)
+	{
+	}
+	else if (loadScene)
+	{
 	}
 
 	ImGui::EndMainMenuBar();

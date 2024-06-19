@@ -159,14 +159,12 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 void Processor::SaveCurrentScene()
 {
-	m_manager->Scene()->SaveSceneData();
+	m_manager->Scene()->SaveCurrentScene();
 }
 
 void Processor::SaveScene(std::shared_ptr<Truth::Scene> _scene)
 {
-	std::ofstream outputstream(m_savedFilePath + _scene->m_name + ".scene");
-	boost::archive::text_oarchive outputArchive(outputstream);
-	outputArchive << _scene;
+	m_manager->Scene()->SaveScene(_scene);
 }
 
 void Processor::Update()

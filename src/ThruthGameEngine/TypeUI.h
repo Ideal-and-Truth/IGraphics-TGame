@@ -62,7 +62,8 @@ namespace Truth
 	class Component;
 	class Scene;
 }
-
+#pragma warning(disable : 6387)
+#pragma warning(disable : 6255)
 namespace TypeUI
 {
 	// 템플릿 타입에 대한 타입은 여기서 정의한다.

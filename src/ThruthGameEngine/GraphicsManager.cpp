@@ -130,3 +130,10 @@ void Truth::GraphicsManager::SetMainCamera(std::shared_ptr<Ideal::ICamera> _came
 	m_renderer->SetMainCamera(_camera);
 }
 
+void Truth::GraphicsManager::ResetRenderScene()
+{
+	m_renderScene.reset();
+	m_renderScene = m_renderer->CreateRenderScene();
+	m_renderer->SetRenderScene(m_renderScene);
+}
+

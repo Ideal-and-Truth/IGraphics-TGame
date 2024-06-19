@@ -160,7 +160,7 @@ namespace Truth
 			component = std::make_shared<C>();
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
-			component->m_index = m_components.size();
+			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);
@@ -182,7 +182,7 @@ namespace Truth
 			component = std::make_shared<C>(_args...);
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
-			component->m_index = m_components.size();
+			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);

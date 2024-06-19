@@ -86,7 +86,7 @@ void Truth::Managers::EditToGame()
 	{
 		return;
 	}
-	m_sceneManager->SaveSceneData();
+	m_sceneManager->SaveCurrentScene();
 	m_sceneManager->m_currentScene.lock()->Start();
 	m_isEdit = false;
 }
