@@ -44,7 +44,8 @@ namespace Truth
 
 		void SaveCurrentScene() const;
 		void SaveScene(std::shared_ptr<Scene> _scene) const;
-		void LoadSceneData(std::string _path);
+		void SaveAsScene(std::wstring& _path) const;
+		void LoadSceneData(std::wstring _path);
 		void ReloadSceneData();
 
 	private:

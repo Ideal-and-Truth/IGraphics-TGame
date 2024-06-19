@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <windows.h>
 #include "Types.h"
 
 namespace Truth
@@ -23,8 +24,15 @@ private:
 
 	char inputTextBuffer[128];
 
+	OPENFILENAME m_openFileName;
+	TCHAR m_filePathBuffer[128] = L"";
+	TCHAR m_fileBuffer[128] = L"";
+	const TCHAR* m_fileFilter = L"Scene ÆÄÀÏ\0*.scene";
+
+	HWND m_hwnd;
+
 public:
-	EditorUI(std::shared_ptr<Truth::Managers> Manager);
+	EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd);
 	~EditorUI() {}
 	void RenderUI(bool* p_open);
 

@@ -39,50 +39,50 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	processor->Initialize(hInstance);
 
-// 	std::shared_ptr<Truth::Scene> testScene = std::make_shared<Truth::Scene>(processor->GetManagers());
-// 	testScene->m_name = "test";
-// 
+	std::shared_ptr<Truth::Scene> testScene = std::make_shared<Truth::Scene>(processor->GetManagers());
+	testScene->m_name = "test";
+
+	auto wall = std::make_shared<Truth::Entity>(processor->GetManagers());
+	wall->m_name = "Wall";
+	wall->m_layer = 2;
+	wall->AddComponent<Truth::RigidBody>();
+	wall->AddComponent<Truth::BoxCollider>(false);
+	wall->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
+	wall->SetPosition(Vector3(0.0f, 20.0f, 0.0f));
+	wall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
+	testScene->AddEntity(wall);
+
 // 	auto wall = std::make_shared<Truth::Entity>(processor->GetManagers());
 // 	wall->m_name = "Wall";
 // 	wall->m_layer = 2;
-// 	wall->AddComponent<Truth::RigidBody>();
-// 	wall->AddComponent<Truth::BoxCollider>(false);
-// 	wall->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
-// 	wall->SetPosition(Vector3(0.0f, 20.0f, 0.0f));
-// 	wall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
+// 	wall->AddComponent<Truth::TestComponent>();
+//  	wall->SetPosition(Vector3(0.0f, 20.0f, 0.0f));
+//  	wall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
 // 	testScene->AddEntity(wall);
-// 
-// // 	auto wall = std::make_shared<Truth::Entity>(processor->GetManagers());
-// // 	wall->m_name = "Wall";
-// // 	wall->m_layer = 2;
-// // 	wall->AddComponent<Truth::TestComponent>();
-// //  	wall->SetPosition(Vector3(0.0f, 20.0f, 0.0f));
-// //  	wall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
-// // 	testScene->AddEntity(wall);
-// 
-// 	auto shooter = std::make_shared<Truth::Entity>(processor->GetManagers());
-// 	shooter->m_name = "Shooter";
-// 	shooter->m_layer = 1;
-// 	shooter->AddComponent<Shooter>();
-// 	testScene->AddEntity(shooter);
-// 
-// 	auto camera = std::make_shared<Truth::Entity>(processor->GetManagers());
-// 	camera->m_name = "Camera";
-// 	camera->m_layer = 1;
-// 	camera->AddComponent<Truth::Camera>()->SetMainCamera();
-// 	testScene->AddEntity(camera);
-// 
-// 	auto triggerWall = std::make_shared<Truth::Entity>(processor->GetManagers());
-// 	triggerWall->AddComponent<Truth::BoxCollider>(true);
-// 	triggerWall->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
-// 	triggerWall->SetPosition(Vector3(0.0f, 20.0f, 10.0f));
-// 	triggerWall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
-// 	testScene->AddEntity(triggerWall);
-// 
-// 	processor->AddScene(testScene);
-// 
-// 	processor->SaveScene(testScene);
- 	processor->LoadScene("../Scene/test.scene");
+
+	auto shooter = std::make_shared<Truth::Entity>(processor->GetManagers());
+	shooter->m_name = "Shooter";
+	shooter->m_layer = 1;
+	shooter->AddComponent<Shooter>();
+	testScene->AddEntity(shooter);
+
+	auto camera = std::make_shared<Truth::Entity>(processor->GetManagers());
+	camera->m_name = "Camera";
+	camera->m_layer = 1;
+	camera->AddComponent<Truth::Camera>()->SetMainCamera();
+	testScene->AddEntity(camera);
+
+	auto triggerWall = std::make_shared<Truth::Entity>(processor->GetManagers());
+	triggerWall->AddComponent<Truth::BoxCollider>(true);
+	triggerWall->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
+	triggerWall->SetPosition(Vector3(0.0f, 20.0f, 10.0f));
+	triggerWall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
+	testScene->AddEntity(triggerWall);
+
+	processor->AddScene(testScene);
+
+	processor->SaveScene(testScene);
+ 	processor->LoadScene(L"../Scene/test.scene");
 
 	processor->SetStartScene("test");
 	///...///

@@ -138,7 +138,7 @@ void Truth::SceneManager::SaveCurrentScene() const
 {
 	std::ofstream outputstream(m_savedFilePath + m_currentScene.lock()->m_name + ".scene");
 	boost::archive::text_oarchive outputArchive(outputstream);
-	outputArchive << m_currentScene.lock().get();
+	outputArchive << m_currentScene.lock();
 }
 
 /// <summary>
@@ -151,12 +151,19 @@ void Truth::SceneManager::SaveScene(std::shared_ptr<Scene> _scene) const
 	outputArchive << _scene;
 }
 
+void Truth::SceneManager::SaveAsScene(std::wstring& _path) const
+{
+	std::ofstream outputstream(_path);
+	boost::archive::text_oarchive outputArchive(outputstream);
+	outputArchive << m_currentScene.lock();
+}
+
 /// <summary>
 /// Scene 로드
 /// 현재 Scene으로 지정 하지는 않는다.
 /// </summary>
 /// <param name="_path">Scene 파일 경로</param>
-void Truth::SceneManager::LoadSceneData(std::string _path)
+void Truth::SceneManager::LoadSceneData(std::wstring _path)
 {
 	std::ifstream inputstream(_path);
 	boost::archive::text_iarchive inputArchive(inputstream);
@@ -173,14 +180,12 @@ void Truth::SceneManager::ReloadSceneData()
 	std::string sceneName = m_currentScene.lock()->m_name;
 	std::ifstream inputstream(m_savedFilePath + sceneName + ".scene");
 	boost::archive::text_iarchive inputArchive(inputstream);
-	Truth::Scene* s(nullptr);
+	std::shared_ptr<Truth::Scene> s;
 	inputArchive >> s;
 
 	s->Initalize(m_mangers);
 
-	std::shared_ptr<Truth::Scene> ss = std::shared_ptr<Truth::Scene>(s);
-
 	m_sceneMap[sceneName].reset();
-	m_sceneMap[sceneName] = ss;
-	m_currentScene = ss;
+	m_sceneMap[sceneName] = s;
+	m_currentScene = s;
 }

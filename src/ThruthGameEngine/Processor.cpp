@@ -12,8 +12,6 @@
 //#include "../IdealGraphics/Misc/Utils/FileUtils.h"
 #include "EditorUI.h"
 
-
-
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -70,7 +68,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 
 // 	int a = 3;
 
-	m_editor = new EditorUI(m_manager);
+	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }
 
 void Processor::Finalize()
@@ -111,7 +109,7 @@ void Processor::AddScene(std::shared_ptr<Truth::Scene> _scene)
 	m_manager->Scene()->AddScene(_scene);
 }
 
-void Processor::LoadScene(std::string _path)
+void Processor::LoadScene(std::wstring _path)
 {
 	m_manager->Scene()->LoadSceneData(_path);
 }

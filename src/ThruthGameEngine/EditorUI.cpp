@@ -14,15 +14,25 @@
 #include "SphereCollider.h"
 #include "InputManager.h"
 #include "Managers.h"
+#include <commdlg.h>
 
 int32 EditorUI::m_selectedEntity = -1;
 
-EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager)
+EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
 	: m_manager(Manager)
 	, m_notUsedID(0)
 	, m_componentList(TypeInfo::g_factory->m_componentList)
+	, inputTextBuffer{}
+	, m_hwnd(_hwnd)
 {
 	m_selectedEntity = -1;
+	memset(&m_openFileName, 0, sizeof(OPENFILENAME));
+	m_openFileName.lStructSize = sizeof(OPENFILENAME);
+	m_openFileName.hwndOwner = m_hwnd;
+	m_openFileName.lpstrFilter = m_fileFilter;
+	m_openFileName.lpstrFile = m_fileBuffer;
+	m_openFileName.nMaxFile = 100;
+	m_openFileName.lpstrInitialDir = L".";
 }
 
 void EditorUI::RenderUI(bool* p_open)
@@ -260,7 +270,10 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	ImGui::BeginMainMenuBar();
 	ImGui::Button("Menu");
 
-	static bool newScene = false, saveScene = false, loadScene = false;
+	static bool newScene = false;
+	static bool saveAsScene = false;
+	static bool loadScene = false;
+	static bool	saveScene = false;
 
 	if (ImGui::BeginPopupContextItem("menu", 0))
 	{
@@ -271,6 +284,10 @@ void EditorUI::ShowMenuBar(bool* p_open)
 		if (ImGui::Selectable("Save Scene"))
 		{
 			saveScene = true;
+		}
+		if (ImGui::Selectable("Save as Scene"))
+		{
+			saveAsScene = true;
 		}
 		if (ImGui::Selectable("Load Scene"))
 		{
@@ -305,11 +322,12 @@ void EditorUI::ShowMenuBar(bool* p_open)
 
 			if (ImGui::Button("OK", ImVec2(120, 0)))
 			{
+				USES_CONVERSION;
 				std::shared_ptr<Truth::Scene> ns = std::make_shared<Truth::Scene>(m_manager);
 				ns->m_name = inputTextBuffer;
 				m_manager->Scene()->SaveScene(ns);
 				std::string path = "../Scene/" + ns->m_name + ".scene";
-				m_manager->Scene()->LoadSceneData(path);
+				m_manager->Scene()->LoadSceneData(A2W(path.c_str()));
 				m_manager->Scene()->SetCurrnetScene(ns->m_name);
 				newScene = false;
 				ImGui::CloseCurrentPopup();
@@ -328,9 +346,27 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	}
 	else if (saveScene)
 	{
+		saveScene = false;
+		m_manager->Scene()->SaveCurrentScene();
+
+	}
+	else if (saveAsScene)
+	{
+		saveAsScene = false;
+		if (GetSaveFileName(&m_openFileName) != 0)
+		{
+			std::wstring filepath = m_openFileName.lpstrFile;
+			m_manager->Scene()->SaveAsScene(filepath);
+		}
 	}
 	else if (loadScene)
 	{
+		loadScene = false;
+		if (GetOpenFileName(&m_openFileName) != 0)
+		{
+			std::wstring filepath = m_openFileName.lpstrFile;
+			m_manager->Scene()->LoadSceneData(filepath);
+		}
 	}
 
 	ImGui::EndMainMenuBar();

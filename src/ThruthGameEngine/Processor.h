@@ -24,7 +24,7 @@ namespace Ideal
 class Processor
 {
 private:
-	EditorUI* m_editor;
+	std::unique_ptr<EditorUI> m_editor;
 	std::shared_ptr<Truth::Managers> m_manager;
 
 	std::shared_ptr<Ideal::IMeshObject> mesh;
@@ -59,7 +59,7 @@ public:
 
 	void SaveCurrentScene();
 	void SaveScene(std::shared_ptr<Truth::Scene> _scene);
-	void LoadScene(std::string _path);
+	void LoadScene(std::wstring _path);
 
 	void SetStartScene(std::string _name);
 
