@@ -233,6 +233,7 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
     <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
     <ClInclude Include="Misc\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
@@ -252,6 +253,7 @@
     <ClInclude Include="Misc\Utils\tinyxml2.h" />
     <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
     <ClInclude Include="Misc\Utils\Utils.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMesh.h" />
@@ -310,6 +312,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
     <ClCompile Include="Misc\Utils\IndexCreator.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
@@ -327,6 +330,7 @@
     <ClCompile Include="GraphicsEngine\Resource\ModelAnimation.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealStaticMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ShaderManager.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />

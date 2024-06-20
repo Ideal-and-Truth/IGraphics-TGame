@@ -20,14 +20,16 @@
 #include "GraphicsEngine/D3D12/D3D12UploadBufferPool.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
+#include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 
 #include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/Resource/IdealCamera.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
-#include "GraphicsEngine/Resource/IdealRenderScene.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
+#include "GraphicsEngine/Resource/IdealRenderScene.h"
+#include "GraphicsEngine/Resource/IdealRaytracingRenderScene.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
@@ -220,9 +222,9 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 
 	m_raytacingOutputResourceUAVGpuDescriptorHandle.Free();
 
-	//m_indexBufferShaderTableHandle.Free();
-	//m_vertexBufferShaderTableHandle.Free();
-	//m_textureShaderTableHandle.Free();
+	m_indexBufferShaderTableHandle.Free();
+	m_vertexBufferShaderTableHandle.Free();
+	m_textureShaderTableHandle.Free();
 
 	m_texture = nullptr;
 	m_texture2 = nullptr;
@@ -368,6 +370,7 @@ finishAdapter:
 
 	// create resource
 	CreateDeviceDependentResources();
+	RaytracingManagerInit();
 
 }
 
@@ -385,6 +388,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
 
+
 	ResetCommandList();
 	BeginRender();
 	//test
@@ -398,11 +402,27 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		c += 0.001f;
 		m_cubeCB.albedo = Color(c, c, c, c);
 	}
-	UpdateAccelerationStructure();
-	//BuildShaderTables();
-	BuildShaderTables2();
+	// 메인 박스 레이트레이싱
+	//UpdateAccelerationStructure();
 	//DoRaytracing();
-	DoRaytracing2();
+
+	// Raytracing Manager 레이트레이싱
+	//RaytracingManagerUpdate();
+	RaytracingManagerUpdate();
+	DoRaytracing4();
+
+	//UpdateAccelerationStructure();
+	//BuildShaderTables2();
+	//DoRaytracing2();
+
+	//TestDrawRenderScene();
+	//BuildShaderTables2();
+	//DoRaytracing3();
+
+	//BuildShaderTables2();
+	//RaytracingManagerUpdate();
+	//DoRaytracing4();
+
 	CopyRaytracingOutputToBackBuffer();
 	EndRender();
 	Present();
@@ -429,12 +449,13 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStatic
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
 	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
 
-	newStaticMesh->Init(m_device);
+	//newStaticMesh->Init(m_device);
 
 	// temp
-	m_meshObject = newStaticMesh;
-
+	m_staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newStaticMesh);
+	RaytracingManagerAddObject(m_staticMeshObject);
 	return newStaticMesh;
+	//return nullptr;
 }
 
 std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12RayTracingRenderer::CreateSkinnedMeshObject(const std::wstring& FileName)
@@ -451,13 +472,25 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimati
 
 std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12RayTracingRenderer::CreateRenderScene()
 {
-	// 인터페이스로 따로 뽑아야 할 듯
-	return nullptr;
+	ResetCommandList();
+
+	std::shared_ptr<Ideal::IdealRaytracingRenderScene> ret = std::make_shared<Ideal::IdealRaytracingRenderScene>();
+	ret->Init(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+
+	m_commandLists[m_currentContextIndex]->Close();
+	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	Fence();
+	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+	return ret;
 }
 
 void Ideal::D3D12RayTracingRenderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene)
 {
 	// 인터페이스로 따로 뽑아야 할 듯
+	std::shared_ptr<Ideal::IdealRaytracingRenderScene> renderScene = std::static_pointer_cast<Ideal::IdealRaytracingRenderScene>(RenderScene);
+	m_renderScene = renderScene;
 }
 
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12RayTracingRenderer::CreateDirectionalLight()
@@ -793,7 +826,7 @@ void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 	BuildGeometry();
 	BuildAccelerationStructures();
 	//BuildAccelerationStructures2();
-	//BuildShaderTables();
+	BuildShaderTables();
 	CreateRayTracingOutputResources();
 }
 
@@ -1179,9 +1212,12 @@ void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPt
 
 void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform /*= Matrix::Identity*/)
 {
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS tlasFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+	tlasFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS topLevelInputs = {};
 	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
-	topLevelInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+	topLevelInputs.Flags = tlasFlags;
 	topLevelInputs.NumDescs = 1;
 	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 
@@ -1263,19 +1299,19 @@ void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
 		rootArguments.CB_Cube = m_cubeCB;
 
 		// indices
-		auto m_indexBufferShaderTableHandle = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
+		m_indexBufferShaderTableHandle = m_shaderTableHeap->Allocate(1);
 		//m_indexBufferShaderTableHandle = m_shaderTableHeap->Allocate(1);
 		m_device->CopyDescriptorsSimple(1, m_indexBufferShaderTableHandle.GetCpuHandle(), m_indexBufferSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		rootArguments.SRV_Indices = m_indexBufferShaderTableHandle.GetGpuHandle();
 
 		// vertices
-		auto m_vertexBufferShaderTableHandle = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
+		m_vertexBufferShaderTableHandle = m_shaderTableHeap->Allocate(1);
 		//m_vertexBufferShaderTableHandle = m_shaderTableHeap->Allocate(1);
 		m_device->CopyDescriptorsSimple(1, m_vertexBufferShaderTableHandle.GetCpuHandle(), m_vertexBufferSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		rootArguments.SRV_Vertices = m_vertexBufferShaderTableHandle.GetGpuHandle();
 
 		// diffuse
-		auto m_textureShaderTableHandle = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
+		m_textureShaderTableHandle = m_shaderTableHeap->Allocate(1);
 		//m_textureShaderTableHandle = m_shaderTableHeap->Allocate(1);
 		m_device->CopyDescriptorsSimple(1, m_textureShaderTableHandle.GetCpuHandle(), m_texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		rootArguments.SRV_DiffuseTexture = m_textureShaderTableHandle.GetGpuHandle();
@@ -1285,72 +1321,6 @@ void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
 		Ideal::DXRShaderTable hitGroupShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
 		hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
 		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
-	}
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildShaderTables2()
-{
-	void* rayGenShaderIdentifier;
-	void* missShaderIdentifier;
-	void* hitGroupShaderIdentifier;
-
-	uint32 shaderIdentifierSize;
-
-	// Get shader identifiers
-	{
-		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
-		Check(m_dxrStateObject.As(&stateObjectProperties));
-		shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
-
-		rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
-		missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
-		hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
-	}
-	// Ray gen shader table
-	{
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize;
-		Ideal::DXRShaderTable rayGenShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"RayGenShaderTable");
-		rayGenShaderTable.push_back(Ideal::DXRShaderRecord(rayGenShaderIdentifier, shaderIdentifierSize));
-		m_rayGenShaderTables[m_currentContextIndex] = rayGenShaderTable.GetResource();
-	}
-
-	// Miss shader table
-	{
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize;
-		Ideal::DXRShaderTable missShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"MissShaderTable");
-		missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier, shaderIdentifierSize));
-		m_missShaderTables[m_currentContextIndex] = missShaderTable.GetResource();
-	}
-
-	// Hit group shader table
-	{
-		RootArgument rootArguments;
-
-		// cb
-		rootArguments.CB_Cube = m_cubeCB;
-
-		// indices
-		auto m_indexBufferShaderTableHandle = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-		m_device->CopyDescriptorsSimple(1, m_indexBufferShaderTableHandle.GetCpuHandle(), m_indexBufferSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		rootArguments.SRV_Indices = m_indexBufferShaderTableHandle.GetGpuHandle();
-
-		// vertices
-		auto m_vertexBufferShaderTableHandle = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-		m_device->CopyDescriptorsSimple(1, m_vertexBufferShaderTableHandle.GetCpuHandle(), m_vertexBufferSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		rootArguments.SRV_Vertices = m_vertexBufferShaderTableHandle.GetGpuHandle();
-
-		// diffuse
-		auto m_textureShaderTableHandle = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-		m_device->CopyDescriptorsSimple(1, m_textureShaderTableHandle.GetCpuHandle(), m_texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		rootArguments.SRV_DiffuseTexture = m_textureShaderTableHandle.GetGpuHandle();
-
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(rootArguments);
-		Ideal::DXRShaderTable hitGroupShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
-		hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
-		m_hitGroupShaderTables[m_currentContextIndex] = hitGroupShaderTable.GetResource();
 	}
 }
 
@@ -1392,6 +1362,8 @@ void Ideal::D3D12RayTracingRenderer::CreateDescriptorHeap()
 	m_uavDescriptorHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	//m_uavDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
 	m_uavDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+	m_shaderTableHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_shaderTableHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DRAW_COUNT_PER_FRAME);	// temp : 20
 }
 
 void Ideal::D3D12RayTracingRenderer::DoRaytracing()
@@ -1471,6 +1443,102 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing2()
 
 	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
 	commandlist->SetComputeRootShaderResourceView(1, m_topLevelAccelerationStructure->GetGPUVirtualAddress());
+
+	// parameter0에 바인딩 : render target
+	auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
+	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	commandlist->SetComputeRootDescriptorTable(0, handle0.GetGpuHandle());
+
+	// parameter2 에 바인딩 : SceneConstantSlot
+	auto cb = m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), sizeof(m_sceneCB));
+	memcpy(cb->SystemMemAddr, &m_sceneCB, sizeof(m_sceneCB));
+	auto handle2 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
+	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	commandlist->SetComputeRootDescriptorTable(2, handle2.GetGpuHandle());
+
+	// Bind the hepas, 가속구조, dispatch rays
+	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
+
+	DispatchRays(commandlist.Get(), m_dxrStateObject.Get(), &dispatchDesc);
+}
+
+void Ideal::D3D12RayTracingRenderer::DoRaytracing3()
+{
+	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
+
+	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
+		{
+			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
+			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTables[m_currentContextIndex]->GetDesc().Width;
+			dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
+
+			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
+			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTables[m_currentContextIndex]->GetDesc().Width;
+			dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
+
+			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
+			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTables[m_currentContextIndex]->GetDesc().Width;
+
+			dispatchDesc->Width = m_width;
+			dispatchDesc->Height = m_height;
+			dispatchDesc->Depth = 1;
+			commandlist->SetPipelineState1(stateObject);
+			commandlist->DispatchRays(dispatchDesc);
+		};
+
+	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
+	commandlist->SetDescriptorHeaps(1, m_descriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().GetAddressOf());
+
+	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
+	commandlist->SetComputeRootShaderResourceView(1, m_renderScene->GetTLASResource()->GetGPUVirtualAddress());
+
+	// parameter0에 바인딩 : render target
+	auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
+	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	commandlist->SetComputeRootDescriptorTable(0, handle0.GetGpuHandle());
+
+	// parameter2 에 바인딩 : SceneConstantSlot
+	auto cb = m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), sizeof(m_sceneCB));
+	memcpy(cb->SystemMemAddr, &m_sceneCB, sizeof(m_sceneCB));
+	auto handle2 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
+	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	commandlist->SetComputeRootDescriptorTable(2, handle2.GetGpuHandle());
+
+	// Bind the hepas, 가속구조, dispatch rays
+	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
+
+	DispatchRays(commandlist.Get(), m_dxrStateObject.Get(), &dispatchDesc);
+}
+
+void Ideal::D3D12RayTracingRenderer::DoRaytracing4()
+{
+	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
+
+	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
+		{
+			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
+			dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
+
+			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
+			dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
+
+			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
+
+			dispatchDesc->Width = m_width;
+			dispatchDesc->Height = m_height;
+			dispatchDesc->Depth = 1;
+			commandlist->SetPipelineState1(stateObject);
+			commandlist->DispatchRays(dispatchDesc);
+		};
+
+	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
+	commandlist->SetDescriptorHeaps(1, m_descriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().GetAddressOf());
+
+	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
+	commandlist->SetComputeRootShaderResourceView(1, m_raytracingManager->GetTLASResource()->GetGPUVirtualAddress());
 
 	// parameter0에 바인딩 : render target
 	auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
@@ -1579,6 +1647,7 @@ void Ideal::D3D12RayTracingRenderer::UpdateAccelerationStructure()
 		topLevelBuildDesc.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 		topLevelBuildDesc.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 		topLevelBuildDesc.Inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+		topLevelBuildDesc.Inputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 		topLevelBuildDesc.Inputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
 
 		topLevelBuildDesc.Inputs.NumDescs = 1;	// 일단 한 개
@@ -1595,9 +1664,73 @@ void Ideal::D3D12RayTracingRenderer::UpdateAccelerationStructure()
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
 }
 
-void Ideal::D3D12RayTracingRenderer::ASManagerInit()
+void Ideal::D3D12RayTracingRenderer::InitRenderScene()
 {
-	m_asManager = std::make_shared<Ideal::DXRAccelerationStructureManager>();
-	m_meshObject->GetTransformMatrix();
-	//m_asManager->AddBLAS()
+	//m_renderScene->Init(m_device, TODO, TODO);
+}
+
+void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
+{
+	m_renderScene->Draw(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
+{
+	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
+	m_raytracingManager->Init();
+
+	// geometry
+	BLASGeometry geo1;
+	geo1.Name = L"g1";
+	geo1.VertexBuffer = m_vertexBuffer;
+	geo1.IndexBuffer = m_indexBuffer;
+
+	BLASGeometry geo2;
+	geo2.Name = L"g2";
+	geo2.VertexBuffer = m_vertexBuffer;
+	geo2.IndexBuffer = m_indexBuffer;
+
+	BLASGeometryDesc desc1;
+	desc1.Geometries.push_back(geo1);
+	desc1.Geometries.push_back(geo2);
+
+	BLASGeometryDesc desc2;
+	desc2.Geometries.push_back(geo2);
+
+	uint32 index1 = m_raytracingManager->AddBLAS(m_device, desc1, L"BLAS1");
+	uint32 index2 = m_raytracingManager->AddBLAS(m_device, desc2, L"BLAS2");
+
+	ResetCommandList();
+
+	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+
+	m_commandLists[m_currentContextIndex]->Close();
+	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	Fence();
+	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+
+	Matrix trs = Matrix::Identity * Matrix::CreateTranslation(Vector3(5, 0, 0));
+	m_raytracingManager->SetGeometryTransformByIndex(index2, trs);
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
+{
+	m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
+{
+	ResetCommandList();
+
+	m_staticMeshObject->AllocateBLASInstanceID(m_device, m_raytracingManager);
+	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+
+	m_commandLists[m_currentContextIndex]->Close();
+	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	Fence();
+	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
 }

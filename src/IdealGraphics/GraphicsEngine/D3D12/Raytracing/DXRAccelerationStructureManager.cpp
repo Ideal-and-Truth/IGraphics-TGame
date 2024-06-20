@@ -11,20 +11,32 @@ Ideal::DXRAccelerationStructureManager::~DXRAccelerationStructureManager()
 
 }
 
-void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, const DXRGeometryInfo& GeometryInfo, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags)
+void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, BLASGeometryDesc& GeometryInfo, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, const wchar_t* Name)
 {
 	// 먼저 같은 이름의 BLAS가 있는지를 검사한다. 만약 있을 경우 이미 추가한 BLAS인 것
-	if (m_bottomLevelAS[GeometryInfo.Name] != nullptr)
+	if (m_bottomLevelAS[Name] != nullptr)
 	{
-		__debugbreak();
+		__debugbreak(); // 아마 여기 걸렸으면 다음 코드에서 이름으로 제대로 찾아오면 문제는 없을 것이다. 
+		return;
 	}
 
 	// 처음 추가할 경우 만들어서 넣어준다.
-	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(GeometryInfo.Name);
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(Name);
 	blas->Create(Device, GeometryInfo, BuildFlags, false);
-	m_bottomLevelAS[GeometryInfo.Name] = blas;
+	m_bottomLevelAS[Name] = blas;
 
-	m_scratchResourceSize = max(blas->RequiredScratchSize(), m_scratchResourceSize);
+	if (blas->RequiredScratchSize() > m_scratchResourceSize)
+	{
+		m_scratchResourceSize = blas->RequiredScratchSize();
+		if (!m_scratchBuffer)
+		{
+			m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+		}
+		m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+	}
+
+	//m_scratchResourceSize = max(blas->RequiredScratchSize(), m_scratchResourceSize);
+
 }
 
 uint32 Ideal::DXRAccelerationStructureManager::AddInstance(const std::wstring& BLASName, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)

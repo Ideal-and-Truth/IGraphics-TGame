@@ -28,7 +28,7 @@ Ideal::DXRBottomLevelAccelerationStructure::~DXRBottomLevelAccelerationStructure
 
 }
 
-void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, const DXRGeometryInfo& GeometryInfo, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate)
+void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, BLASGeometryDesc& GeometryDescs, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate)
 {
 	m_allowUpdate = AllowUpdate;
 
@@ -37,7 +37,7 @@ void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> De
 		m_buildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 
 	// build geometry desc
-	BuildGeometries();
+	BuildGeometries(GeometryDescs);
 
 	// Prebuild
 	{
@@ -49,7 +49,7 @@ void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> De
 		bottomLevelInputs.pGeometryDescs = m_geometryDescs.data();
 
 		Device->GetRaytracingAccelerationStructurePrebuildInfo(&bottomLevelInputs, &m_preBuildInfo);
-		if (m_preBuildInfo.ResultDataMaxSizeInBytes > 0) __debugbreak();
+		if (m_preBuildInfo.ResultDataMaxSizeInBytes <= 0) __debugbreak();
 	}
 
 	m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
@@ -59,14 +59,16 @@ void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> De
 		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
 		m_name.c_str()
 	);
+	m_isDirty = true;
+	m_isBuilt = false;
 }
 
 void Ideal::DXRBottomLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer)
 {
 	// sratch 버퍼
 	// 
-
-	if (m_preBuildInfo.ScratchDataSizeInBytes <= ScratchBuffer->GetDesc().Width)
+	uint64 scratchBufferSizeInBytes = ScratchBuffer->GetDesc().Width;
+	if (m_preBuildInfo.ScratchDataSizeInBytes > scratchBufferSizeInBytes)
 	{
 		std::wstring msg = L"Failed to Build BLAS : ";
 		msg += m_name;
@@ -105,20 +107,17 @@ void Ideal::DXRBottomLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsComm
 	m_isBuilt = true;	// 이미 만들어졌다고 저장
 }
 
-void Ideal::DXRBottomLevelAccelerationStructure::AddGeometryInfo(const DXRGeometryInfo& GeometryInfo)
+void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries(BLASGeometryDesc& geometryDesc)
 {
-	m_geometries.push_back(GeometryInfo);
-}
+	std::vector<Ideal::BLASGeometry>& geometries = geometryDesc.Geometries;
 
-void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries()
-{
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDescTemplate = {};
 	geometryDescTemplate.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDescTemplate.Triangles.IndexFormat = INDEX_FORMAT;
 	geometryDescTemplate.Triangles.VertexFormat = VERTEX_FORMAT;
-	m_geometryDescs.reserve(m_geometries.size());
+	m_geometryDescs.reserve(geometries.size());
 
-	for (DXRGeometryInfo& geometry : m_geometries)
+	for (BLASGeometry& geometry : geometries)
 	{
 		D3D12_GPU_VIRTUAL_ADDRESS ibAddress = geometry.IndexBuffer->GetResource()->GetGPUVirtualAddress();
 		uint32 indexCount = geometry.IndexBuffer->GetElementCount();
@@ -170,12 +169,13 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	topLevelInputs.NumDescs = NumInstanceDescs;
 
 	Device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &m_preBuildInfo);
-	if (m_preBuildInfo.ResultDataMaxSizeInBytes > 0)
+	if (m_preBuildInfo.ResultDataMaxSizeInBytes <= 0)
 	{
 		MyMessageBoxW(L"Failed to prebuild AS");
 	}
 
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+	m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
 	m_accelerationStructure->Create(Device.Get(), m_preBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, m_name.c_str());
 }
 

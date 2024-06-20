@@ -17,6 +17,7 @@ namespace Ideal
 	class IdealStaticMesh;
 	class IdealSkinnedMesh;
 	class IdealAnimation;
+	class RaytracingManager;
 }
 
 namespace Ideal
@@ -53,7 +54,7 @@ namespace Ideal
 		void SetTexturePath(const std::wstring& TexturePath) { m_texturePath = TexturePath; }
 
 	public:
-		void Init(ComPtr<ID3D12Device> Device);
+		void Init(ComPtr<ID3D12Device5> Device);
 		void Fence();
 		void WaitForFenceValue();
 
@@ -121,10 +122,10 @@ namespace Ideal
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHeap() { return m_rtvHeap->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(); };
 
 	private:
-		ComPtr<ID3D12Device> m_device = nullptr;
+		ComPtr<ID3D12Device5> m_device = nullptr;
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;
 		ComPtr<ID3D12CommandQueue> m_commandQueue = nullptr;
-		ComPtr<ID3D12GraphicsCommandList> m_commandList = nullptr;
+		ComPtr<ID3D12GraphicsCommandList4> m_commandList = nullptr;
 
 		ComPtr<ID3D12Fence> m_fence = nullptr;
 		uint64 m_fenceValue = 0;

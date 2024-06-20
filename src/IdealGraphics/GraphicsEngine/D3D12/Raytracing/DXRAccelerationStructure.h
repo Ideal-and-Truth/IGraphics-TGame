@@ -14,11 +14,16 @@ namespace Ideal
 
 namespace Ideal
 {
-	struct DXRGeometryInfo
+	struct BLASGeometry
 	{
 		std::wstring Name;
 		std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;
+	};
+
+	struct BLASGeometryDesc
+	{
+		std::vector<Ideal::BLASGeometry> Geometries;
 	};
 
 	class DXRAccelerationStructure
@@ -55,25 +60,22 @@ namespace Ideal
 
 	public:
 		void Create(ComPtr<ID3D12Device5> Device,
-			const DXRGeometryInfo& GeometryInfo,
+			BLASGeometryDesc& GeometryDescs,
 			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
 			bool AllowUpdate
 		);
 		void Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer);
-
-		// BLAS 안에 여러 Geometry가 있을 경우
-		void AddGeometryInfo(const DXRGeometryInfo& GeometryInfo);
 
 		uint32 GetInstanceContributionToHitGroupIndex() { return m_instanceContributionToHitGroupIndex; }
 		void SetInstanceContributionToHitGroupIndex(uint32 Index) { m_instanceContributionToHitGroupIndex = Index; }
 
 		bool IsDirty() { return m_isDirty; }
 	private:
-		void BuildGeometries();
+		void BuildGeometries(BLASGeometryDesc& geometryDescs);
 
 	private:
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffer;
-		std::vector<DXRGeometryInfo> m_geometries;
+		std::vector<BLASGeometry> m_geometries;
 		// geometry Info 로 만든 _geometry_desc을 저장 // 후에 BLAS 빌드할때 쓰임
 		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> m_geometryDescs;
 

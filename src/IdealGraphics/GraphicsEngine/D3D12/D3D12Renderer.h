@@ -165,7 +165,7 @@ namespace Ideal
 		HWND m_hwnd;
 
 		// Device
-		ComPtr<ID3D12Device> m_device = nullptr;
+		ComPtr<ID3D12Device5> m_device = nullptr;
 		ComPtr<ID3D12CommandQueue> m_commandQueue = nullptr;
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
 		UINT m_swapChainFlags;

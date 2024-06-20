@@ -6,6 +6,9 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
+#include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
+#include "Misc/Utils/StringUtils.h"
+
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
 
@@ -56,4 +59,30 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ, handle.GetGpuHandle());
 
 	m_staticMesh->Draw(Renderer);
+}
+
+void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)
+{
+	// 일단 geometry들을 받아온다.
+	auto& geometries = m_staticMesh->GetMeshes();
+
+	uint64 numMesh = geometries.size();
+
+	Ideal::BLASGeometryDesc blasGeometryDesc;
+	for (uint32 i = 0; i < numMesh; ++i)
+	{
+		Ideal::BLASGeometry blasGeometry;
+		blasGeometry.Name = L"";	// temp
+		blasGeometry.VertexBuffer = geometries[i]->GetVertexBuffer();
+		blasGeometry.IndexBuffer = geometries[i]->GetIndexBuffer();
+
+		blasGeometryDesc.Geometries.push_back(blasGeometry);
+	}
+
+	m_instanceID = RaytracingManager->AddBLAS(Device, blasGeometryDesc, L"BLAS3");
+}
+
+void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)
+{
+	RaytracingManager->SetGeometryTransformByIndex(m_instanceID, m_transform);
 }

@@ -8,6 +8,8 @@
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
+#include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
+
 #include "GraphicsEngine/VertexInfo.h"
 
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
@@ -19,6 +21,7 @@
 #include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/ModelAnimation.h"
+
 
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "Misc/Utils/FileUtils.h"
@@ -39,7 +42,7 @@ ResourceManager::~ResourceManager()
 	WaitForFenceValue();
 }
 
-void ResourceManager::Init(ComPtr<ID3D12Device> Device)
+void ResourceManager::Init(ComPtr<ID3D12Device5> Device)
 {
 	m_device = Device;
 
@@ -299,6 +302,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		0, 0, 1, &subResource
 	);
 
+	uploadBuffer.UnMap();
 	//----------------------Resource Barrier--------------------------//
 
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(

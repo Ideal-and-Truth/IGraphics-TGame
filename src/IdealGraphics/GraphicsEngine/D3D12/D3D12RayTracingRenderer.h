@@ -96,6 +96,7 @@ namespace Ideal
 
 	class IdealCamera;
 	class IdealRenderScene;
+	class IdealRaytracingRenderScene;
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
 	class IdealScreenQuad;
@@ -113,7 +114,6 @@ namespace Ideal
 	class ISkinnedMeshObject;
 	class IRenderScene;
 
-
 	// TEST : DELETE
 	template<typename>
 	class IdealMesh;
@@ -124,6 +124,7 @@ namespace Ideal
 	class D3D12ShaderResourceView;
 
 	class DXRAccelerationStructureManager;
+	class RaytracingManager;
 }
 struct TestVertex;
 
@@ -206,6 +207,7 @@ namespace Ideal
 		//std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableDescriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		//std::vector<Ideal::D3D12DescriptorHandle> m_shaderTableDescriptorHandle
 
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
 
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
@@ -274,7 +276,6 @@ namespace Ideal
 		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
 
 		void BuildShaderTables();
-		void BuildShaderTables2();
 
 		// 레이트레이싱을 위한 2d output texture를 만든다.
 		void CreateRayTracingOutputResources();
@@ -301,10 +302,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
 		ComPtr<ID3D12Resource> m_scratch;
 
-		// AS
-		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure2[MAX_PENDING_FRAME_COUNT];
-		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure2[MAX_PENDING_FRAME_COUNT];
-
 		RayGenConstantBuffer m_cbRayGen;
 		SceneConstantBuffer m_sceneCB;
 		CubeConstantBuffer m_cubeCB;
@@ -313,6 +310,10 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 
+		Ideal::D3D12DescriptorHandle m_indexBufferShaderTableHandle;
+		Ideal::D3D12DescriptorHandle m_vertexBufferShaderTableHandle;
+		Ideal::D3D12DescriptorHandle m_textureShaderTableHandle;
+
 		ComPtr<ID3D12Resource> m_hitGroupShaderTables[MAX_PENDING_FRAME_COUNT];
 		ComPtr<ID3D12Resource> m_rayGenShaderTables[MAX_PENDING_FRAME_COUNT];
 		ComPtr<ID3D12Resource> m_missShaderTables[MAX_PENDING_FRAME_COUNT];
@@ -320,15 +321,24 @@ namespace Ideal
 		// Render
 		void DoRaytracing();
 		void DoRaytracing2();
+		void DoRaytracing3();	// scene 버전
+		void DoRaytracing4();	// manager 버전
 		void CopyRaytracingOutputToBackBuffer();
 		void UpdateForSizeChange(uint32 Width, uint32 Height);
 
 		// Test
 		void UpdateAccelerationStructure();
 
-		// AS Manager Test
-		void ASManagerInit();
-		std::shared_ptr<Ideal::DXRAccelerationStructureManager> m_asManager;
-		std::shared_ptr<Ideal::IdealStaticMeshObject> m_meshObject;
+		// Scene Test
+		std::shared_ptr<Ideal::IdealRaytracingRenderScene> m_renderScene;
+		void InitRenderScene();
+		void TestDrawRenderScene();
+
+		// asmanager test
+		void RaytracingManagerInit();
+		void RaytracingManagerUpdate();
+		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
+		std::shared_ptr<Ideal::IdealStaticMeshObject> m_staticMeshObject;
 	};
 }
