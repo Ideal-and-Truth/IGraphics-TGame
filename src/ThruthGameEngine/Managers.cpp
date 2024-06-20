@@ -15,7 +15,7 @@ Truth::Managers::Managers()
 
 Truth::Managers::~Managers()
 {
-	// m_sceneManager->m_currentScene->Exit();
+	DEBUG_PRINT("Finalize Managers\n");
 }
 
 void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
@@ -69,13 +69,22 @@ void Truth::Managers::Render() const
 	m_graphicsManager->Render();
 }
 
-void Truth::Managers::Finalize() const
+void Truth::Managers::Finalize()
 {
 	m_sceneManager->Finalize();
+	m_sceneManager.reset();
+
 	m_inputManager->Finalize();
+	m_inputManager.reset();
+
 	m_timeManager->Finalize();
+	m_timeManager.reset();
+
 	m_eventManager->Finalize();
+	m_eventManager.reset();
+
 	m_physXManager->Finalize();
+	m_physXManager.reset();
 }
 
 

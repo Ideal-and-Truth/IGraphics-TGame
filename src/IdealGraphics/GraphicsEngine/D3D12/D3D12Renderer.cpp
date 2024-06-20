@@ -745,9 +745,9 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 	ImVec2 size(windowSize.x, windowSize.y);
 	//ImVec2 size(m_width/4, m_height/4);
 
-	m_width = windowSize.x;
-	m_height = windowSize.y;
-	m_aspectRatio = float(m_width) / m_height;
+	//m_width = windowSize.x;
+	//m_height = windowSize.y;
+	m_aspectRatio = float(windowSize.x) / windowSize.y;
 	m_mainCamera->SetAspectRatio(m_aspectRatio);
 
 
