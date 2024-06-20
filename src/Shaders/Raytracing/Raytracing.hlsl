@@ -15,47 +15,20 @@
 #define HLSL
 #include "RaytracingHlslCompat.h"
 
-RaytracingAccelerationStructure Scene : register(t0, space0);
+//-----------GLOBAL-----------//
 RWTexture2D<float4> RenderTarget : register(u0);
-ByteAddressBuffer Indices : register(t1, space0);
-StructuredBuffer<Vertex> Vertices : register(t2, space0);
-
+RaytracingAccelerationStructure Scene : register(t0, space0);
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
-ConstantBuffer<CubeConstantBuffer> g_cubeCB : register(b1);
+SamplerState LinearWrapSampler : register(s0);
 
-// Load three 16 bit indices from a byte addressed buffer.
-uint3 Load3x16BitIndices(uint offsetBytes)
-{
-    uint3 indices;
-
-    // ByteAdressBuffer loads must be aligned at a 4 byte boundary.
-    // Since we need to read three 16 bit indices: { 0, 1, 2 } 
-    // aligned at a 4 byte boundary as: { 0 1 } { 2 0 } { 1 2 } { 0 1 } ...
-    // we will load 8 bytes (~ 4 indices { a b | c d }) to handle two possible index triplet layouts,
-    // based on first index's offsetBytes being aligned at the 4 byte boundary or not:
-    //  Aligned:     { 0 1 | 2 - }
-    //  Not aligned: { - 0 | 1 2 }
-    const uint dwordAlignedOffset = offsetBytes & ~3;    // 4 바이트 단위인지 확인
-    const uint2 four16BitIndices = Indices.Load2(dwordAlignedOffset);
- 
-    // Aligned: { 0 1 | 2 - } => retrieve first three 16bit indices
-    if (dwordAlignedOffset == offsetBytes)
-    {
-        indices.x = four16BitIndices.x & 0xffff;
-        indices.y = (four16BitIndices.x >> 16) & 0xffff;
-        indices.z = four16BitIndices.y & 0xffff;
-    }
-    else // Not aligned: { - 0 | 1 2 } => retrieve last three 16bit indices
-    {
-        indices.x = (four16BitIndices.x >> 16) & 0xffff;
-        indices.y = four16BitIndices.y & 0xffff;
-        indices.z = (four16BitIndices.y >> 16) & 0xffff;
-    }
-
-    return indices;
-}
+//-----------LOCAL-----------//
+ConstantBuffer<CubeConstantBuffer> g_cubeCB : register(b0, space1);
+StructuredBuffer<uint> Indices : register(t0, space1);
+StructuredBuffer<PositionNormalUVVertex> Vertices : register(t1, space1);
+Texture2D<float4> g_texDiffuse : register(t2, space1);
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
+
 struct RayPayload
 {
     float4 color;
@@ -69,6 +42,13 @@ float3 HitWorldPosition()
 
 // Retrieve attribute at a hit position interpolated from vertex attributes using the hit's barycentrics.
 float3 HitAttribute(float3 vertexAttribute[3], BuiltInTriangleIntersectionAttributes attr)
+{
+    return vertexAttribute[0] +
+        attr.barycentrics.x * (vertexAttribute[1] - vertexAttribute[0]) +
+        attr.barycentrics.y * (vertexAttribute[2] - vertexAttribute[0]);
+}
+
+float2 HitAttribute(float2 vertexAttribute[3], BuiltInTriangleIntersectionAttributes attr)
 {
     return vertexAttribute[0] +
         attr.barycentrics.x * (vertexAttribute[1] - vertexAttribute[0]) +
@@ -100,7 +80,10 @@ float4 CalculateDiffuseLighting(float3 hitPosition, float3 normal)
     // Diffuse contribution.
     float fNDotL = max(0.0f, dot(pixelToLight, normal));
 
+    //return g_cubeCB[1].albedo * g_sceneCB.lightDiffuseColor * fNDotL;
     return g_cubeCB.albedo * g_sceneCB.lightDiffuseColor * fNDotL;
+    //float4 diffuseTextureColor = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
+    //return diffuseTextureColor;
 }
 
 [shader("raygeneration")]
@@ -132,16 +115,13 @@ void MyRaygenShader()
 void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 {
     float3 hitPosition = HitWorldPosition();
+    uint baseIndex = PrimitiveIndex() * 3;
 
-    // Get the base index of the triangle's first 16 bit index.
-    uint indexSizeInBytes = 2;
-    uint indicesPerTriangle = 3;
-    uint triangleIndexStride = indicesPerTriangle * indexSizeInBytes;
-    uint baseIndex = PrimitiveIndex() * triangleIndexStride;
-
-    // Load up 3 16 bit indices for the triangle.
-    //const uint3 indices = Load3x16BitIndices(baseIndex);
-    const uint3 indices = Indices.Load3(baseIndex);
+     const uint3 indices = uint3(
+         Indices[baseIndex],
+         Indices[baseIndex + 1],
+         Indices[baseIndex + 2]
+     );
 
     // Retrieve corresponding vertex normals for the triangle vertices.
     float3 vertexNormals[3] = { 
@@ -150,14 +130,24 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         Vertices[indices[2]].normal 
     };
 
+    PositionNormalUVVertex vertexInfo[3] = {
+        Vertices[indices[0]],
+        Vertices[indices[1]],
+        Vertices[indices[2]]
+    };
+
+    float2 vertexTexCoords[3] = {vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv}; 
+    float2 uv = HitAttribute(vertexTexCoords, attr);
+
+
+    float4 albedo = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
     // Compute the triangle's normal.
     // This is redundant and done for illustration purposes 
     // as all the per-vertex normals are the same and match triangle's normal in this sample. 
     float3 triangleNormal = HitAttribute(vertexNormals, attr);
-
+    
     float4 diffuseColor = CalculateDiffuseLighting(hitPosition, triangleNormal);
-    float4 color = g_sceneCB.lightAmbientColor + diffuseColor;
-
+    float4 color = albedo * (g_sceneCB.lightAmbientColor + diffuseColor);
     payload.color = color;
 }
 

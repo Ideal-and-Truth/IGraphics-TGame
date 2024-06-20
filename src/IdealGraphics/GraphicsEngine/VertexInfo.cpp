@@ -8,8 +8,20 @@ const D3D12_INPUT_ELEMENT_DESC PositionNormalVertex::InputElements[] =
 };
 const D3D12_INPUT_LAYOUT_DESC PositionNormalVertex::InputLayout =
 {
-	TestVertex::InputElements,
-	TestVertex::InputElementCount
+	PositionNormalVertex::InputElements,
+	PositionNormalVertex::InputElementCount
+};
+
+const D3D12_INPUT_ELEMENT_DESC PositionNormalUVVertex::InputElements[] =
+{
+	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+};
+const D3D12_INPUT_LAYOUT_DESC PositionNormalUVVertex::InputLayout =
+{
+	PositionNormalUVVertex::InputElements,
+	PositionNormalUVVertex::InputElementCount
 };
 
 const D3D12_INPUT_ELEMENT_DESC GeometryVertex::InputElements[] =
@@ -22,7 +34,7 @@ const D3D12_INPUT_LAYOUT_DESC GeometryVertex::InputLayout =
 	TestVertex::InputElementCount
 };
 
-const D3D12_INPUT_ELEMENT_DESC TestVertex::InputElements[] =
+const D3D12_INPUT_ELEMENT_DESC TestVertex::InputElements[] = 
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }

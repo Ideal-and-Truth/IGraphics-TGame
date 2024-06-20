@@ -57,7 +57,7 @@ namespace Ideal
 	class D3D12Renderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12Renderer>
 	{
 	public:
-		static const uint32 SWAP_CHAIN_FRAME_COUNT = SWAP_CHAIN_NUM;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = G_SWAP_CHAIN_NUM;	// TEMP : 사실 FRAME_BUFFER_COUNT와 동일하다.
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
@@ -165,7 +165,7 @@ namespace Ideal
 		HWND m_hwnd;
 
 		// Device
-		ComPtr<ID3D12Device> m_device = nullptr;
+		ComPtr<ID3D12Device5> m_device = nullptr;
 		ComPtr<ID3D12CommandQueue> m_commandQueue = nullptr;
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
 		UINT m_swapChainFlags;
