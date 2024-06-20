@@ -9,7 +9,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Camera)
 Truth::Camera::Camera()
 	: Component()
 	, m_fov(0.25f * 3.141592f)
-	, m_aspect(1)
+	, m_aspect(1.7)
 	, m_nearZ(1)
 	, m_farZ(1000)
 {
@@ -91,7 +91,7 @@ void Truth::Camera::Initalize()
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
 	//m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
 	m_position = { 0.f, 0.f, -150.f };
-	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
+	SetLens(m_fov, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
 }
 
 #ifdef _DEBUG

@@ -51,7 +51,6 @@ bool Truth::EditorCamera::GetKey(KEY _key)
 float Truth::EditorCamera::MouseDy()
 {
 	return m_managers->Input()->GetMouseMoveY();
-
 }
 
 float Truth::EditorCamera::MouseDx()

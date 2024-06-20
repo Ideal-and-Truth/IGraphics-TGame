@@ -15,6 +15,7 @@
 #include "InputManager.h"
 #include "Managers.h"
 #include <commdlg.h>
+#include "StringConverter.h"
 
 int32 EditorUI::m_selectedEntity = -1;
 
@@ -33,6 +34,7 @@ EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
 	m_openFileName.lpstrFile = m_fileBuffer;
 	m_openFileName.nMaxFile = 100;
 	m_openFileName.lpstrInitialDir = L".";
+	m_openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
 }
 
 void EditorUI::RenderUI(bool* p_open)
@@ -100,7 +102,7 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 
 
 	/// 여기부터 UI 만들기
-	const auto& entities = m_manager->Scene()->m_currentScene.lock()->m_entities;
+	const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
 
 	if (m_selectedEntity >= 0)
 	{
@@ -203,7 +205,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 
 	/// Hierarchy UI
 	{
-		std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene.lock();
+		std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
 		const auto& currentSceneName = currentScene->m_name;
 		const auto& currentSceneEntities = currentScene->m_entities;
 
@@ -237,7 +239,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 				{
 					if (ImGui::Selectable("Delete"))
 					{
-						m_manager->Scene()->m_currentScene.lock()->DeleteEntity(e);
+						m_manager->Scene()->m_currentScene->DeleteEntity(e);
 						m_selectedEntity = -1;
 					}
 
@@ -263,7 +265,7 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	// Verify ABI compatibility between caller code and compiled version of Dear ImGui. This helps detects some build issues.
 	IMGUI_CHECKVERSION();
 
-	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene.lock();
+	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
 	const auto& currentSceneName = currentScene->m_name;
 	const auto& currentSceneEntities = currentScene->m_entities;
 
@@ -328,7 +330,6 @@ void EditorUI::ShowMenuBar(bool* p_open)
 				m_manager->Scene()->SaveScene(ns);
 				std::string path = "../Scene/" + ns->m_name + ".scene";
 				m_manager->Scene()->LoadSceneData(A2W(path.c_str()));
-				m_manager->Scene()->SetCurrnetScene(ns->m_name);
 				newScene = false;
 				ImGui::CloseCurrentPopup();
 			}
@@ -352,11 +353,23 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	}
 	else if (saveAsScene)
 	{
+		m_openFileName.lpstrDefExt = L"scene";
 		saveAsScene = false;
 		if (GetSaveFileName(&m_openFileName) != 0)
 		{
 			std::wstring filepath = m_openFileName.lpstrFile;
+			std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
+
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+
 			m_manager->Scene()->SaveAsScene(filepath);
+			USES_CONVERSION;
+			m_manager->Scene()->m_currentScene->m_name = W2A(f.back().c_str());
 		}
 	}
 	else if (loadScene)
@@ -400,7 +413,7 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 	auto& properties = typeinfo.GetProperties();
 	bool isSelect = false;
 
-	const auto& entities = m_manager->Scene()->m_currentScene.lock()->m_entities;
+	const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
 
 	if (ImGui::CollapsingHeader(componentName, ImGuiTreeNodeFlags_DefaultOpen))
 	{

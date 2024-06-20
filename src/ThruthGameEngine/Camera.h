@@ -62,7 +62,7 @@ namespace Truth
 #ifdef _DEBUG
 		virtual void EditorSetValue();
 #endif // _DEBUG
-
+		METHOD(Start);
 		virtual void Start();
 	};
 

@@ -15,7 +15,7 @@ Truth::Managers::Managers()
 
 Truth::Managers::~Managers()
 {
-
+	// m_sceneManager->m_currentScene->Exit();
 }
 
 void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
@@ -87,7 +87,7 @@ void Truth::Managers::EditToGame()
 		return;
 	}
 	m_sceneManager->SaveCurrentScene();
-	m_sceneManager->m_currentScene.lock()->Start();
+	m_sceneManager->m_currentScene->Start();
 	m_isEdit = false;
 }
 

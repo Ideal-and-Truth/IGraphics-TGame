@@ -296,9 +296,9 @@ void Ideal::D3D12Renderer::Tick()
 void Ideal::D3D12Renderer::Render()
 {
 	ResetCommandList();
+
 	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateMatrix2();
-
 	//2024.05.16 Draw GBuffer
 	m_currentRenderScene.lock()->DrawGBuffer(shared_from_this());
 
@@ -309,6 +309,8 @@ void Ideal::D3D12Renderer::Render()
 		m_currentRenderScene.lock()->DrawScreen(shared_from_this());
 		DrawImGuiMainCamera();
 	}
+
+
 #endif
 	//-------------Begin Render------------//
 	BeginRender();
@@ -756,7 +758,7 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
-
+	
 	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
 	// to present
 	/*barrier = CD3DX12_RESOURCE_BARRIER::Transition(

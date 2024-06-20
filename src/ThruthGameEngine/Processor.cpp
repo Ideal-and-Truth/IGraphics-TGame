@@ -104,11 +104,6 @@ void Processor::Loop()
 	}
 }
 
-void Processor::AddScene(std::shared_ptr<Truth::Scene> _scene)
-{
-	m_manager->Scene()->AddScene(_scene);
-}
-
 void Processor::LoadScene(std::wstring _path)
 {
 	m_manager->Scene()->LoadSceneData(_path);
@@ -136,7 +131,19 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-
+	case WM_SIZE:
+	{
+		if (g_Renderer)
+		{
+			RECT rect;
+			GetClientRect(hWnd, &rect);
+			//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+			DWORD width = rect.right - rect.left;
+			DWORD height = rect.bottom - rect.top;
+			g_Renderer->Resize(width, height);
+		}
+		break;
+	}
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 	case WM_LBUTTONUP:
@@ -260,7 +267,3 @@ void Processor::InitializeManager()
 	// g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
 }
 
-void Processor::SetStartScene(std::string _name)
-{
-	m_manager->Scene()->SetCurrnetScene(_name);
-}

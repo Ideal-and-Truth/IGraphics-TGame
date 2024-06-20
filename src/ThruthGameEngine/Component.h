@@ -134,8 +134,8 @@ namespace Truth
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm);
 
-		template <typename E>
-		void AddEntity();
+		void AddEmptyEntity();
+		void AddEntity(std::shared_ptr<Entity> _entity);
 
 #pragma endregion inline
 	};
@@ -146,12 +146,6 @@ void Truth::Component::serialize(Archive& _ar, const unsigned int _version)
 {
 	_ar& m_name;
 	_ar& m_canMultiple;
-}
-
-template <typename E>
-void Truth::Component::AddEntity()
-{
-	m_managers.lock()->Scene()->m_currentScene.lock()->AddEntity(std::make_shared<E>());
 }
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Truth::Component)
 BOOST_CLASS_EXPORT_KEY(Truth::Component)

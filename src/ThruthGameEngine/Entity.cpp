@@ -37,7 +37,7 @@ void Truth::Entity::Initailize()
 		c->SetOwner(shared_from_this());
 		c->SetManager(m_manager);
 
-		c->Initalize();
+		// c->Initalize();
 		ApplyComponent(c);
 		c->m_index = index++;
 	}

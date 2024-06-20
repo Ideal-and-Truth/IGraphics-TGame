@@ -33,6 +33,6 @@ void Shooter::Update()
 		bullet->SetPosition(GetPosition());
 		bullet->SetScale(Vector3(4.0f, 4.0f, 4.0f));
 		bullet->m_name = "bullet";
-		m_managers.lock()->Scene()->m_currentScene.lock()->CreateEntity(bullet);
+		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
 	}
 }

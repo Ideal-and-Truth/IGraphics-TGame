@@ -28,42 +28,19 @@ void Truth::SceneManager::Initalize(std::shared_ptr<Managers> _mangers)
 }
 
 /// <summary>
-/// 씬 추가
-/// 모든 씬은 매니저에 추가 되어져야 사용이 가능하다.
-/// </summary>
-/// <param name="_scene">Scene</param>
-void Truth::SceneManager::AddScene(std::shared_ptr<Scene> _scene)
-{
-	std::string& sName = _scene->m_name;
-	if (HasScene(sName))
-	{
-		DEBUG_PRINT("There is a scene with the same name : %s", sName);
-		return;
-	}
-	m_sceneMap[sName] = _scene;
-}
-
-/// <summary>
 /// 현재 scene 지정
 /// </summary>
 /// <param name="_name">업데이트 될 Scene 지정</param>
-void Truth::SceneManager::SetCurrnetScene(std::string _name)
+void Truth::SceneManager::SetCurrnetScene(std::shared_ptr<Scene> _scene)
 {
-	if (!HasScene(_name))
+	m_eventManager.lock()->RemoveAllEvents();
+	if (m_currentScene != nullptr)
 	{
-		DEBUG_PRINT("There is no scene with the same name : %s", _name);
-		return;
+		m_currentScene->Exit();
+		m_currentScene.reset();
 	}
-	if (m_currentScene.expired())
-	{
-		m_currentScene = m_sceneMap[_name];
-	}
-	else
-	{
-		m_currentScene.lock()->Exit();
-		m_currentScene = m_sceneMap[_name];
-		m_currentScene.lock()->Enter();
-	}
+	m_currentScene = _scene;
+	m_currentScene->Enter();
 }
 
 /// <summary>
@@ -71,8 +48,7 @@ void Truth::SceneManager::SetCurrnetScene(std::string _name)
 /// </summary>
 void Truth::SceneManager::Finalize()
 {
-	m_currentScene.lock()->Exit();
-	m_sceneMap.clear();
+	m_currentScene->Exit();
 }
 
 /// <summary>
@@ -80,7 +56,7 @@ void Truth::SceneManager::Finalize()
 /// </summary>
 void Truth::SceneManager::Update() const
 {
-	m_currentScene.lock()->Update();
+	m_currentScene->Update();
 }
 
 /// <summary>
@@ -88,7 +64,7 @@ void Truth::SceneManager::Update() const
 /// </summary>
 void Truth::SceneManager::ApplyTransform() const
 {
-	m_currentScene.lock()->ApplyTransform();
+	m_currentScene->ApplyTransform();
 }
 
 /// <summary>
@@ -96,19 +72,27 @@ void Truth::SceneManager::ApplyTransform() const
 /// </summary>
 void Truth::SceneManager::StartGameScene() const
 {
-	m_currentScene.lock()->Enter();
+	m_currentScene->Enter();
 }
 
 /// <summary>
 /// Scene 변경
 /// </summary>
 /// <param name="_p">변경할 Scene</param>
-void Truth::SceneManager::ChangeScene(std::string&& _name)
+void Truth::SceneManager::ChangeScene(const std::string& _name)
 {
 	m_eventManager.lock()->RemoveAllEvents();
-	m_currentScene.lock()->Exit();
-	m_currentScene = m_sceneMap[_name];
-	m_currentScene.lock()->Enter();
+
+	m_currentScene->Exit();
+
+	std::ifstream inputstream(m_savedFilePath + _name + ".scene");
+	boost::archive::text_iarchive inputArchive(inputstream);
+	std::shared_ptr<Truth::Scene> s;
+	inputArchive >> s;
+
+	m_currentScene.reset();
+	m_currentScene->Initalize(m_mangers);
+	m_currentScene = s;
 }
 
 /// <summary>
@@ -117,18 +101,8 @@ void Truth::SceneManager::ChangeScene(std::string&& _name)
 /// <param name="_p"></param>
 void Truth::SceneManager::ResetScene() const
 {
-	m_currentScene.lock()->Exit();
-	m_currentScene.lock()->Enter();
-}
-
-/// <summary>
-/// 해당 씬이 있는지 확인
-/// </summary>
-/// <param name="_name">scene name</param>
-/// <returns>보유 여부</returns>
-bool Truth::SceneManager::HasScene(std::string _name)
-{
-	return m_sceneMap.find(_name) != m_sceneMap.end();
+	m_currentScene->Exit();
+	m_currentScene->Enter();
 }
 
 /// <summary>
@@ -136,9 +110,9 @@ bool Truth::SceneManager::HasScene(std::string _name)
 /// </summary>
 void Truth::SceneManager::SaveCurrentScene() const
 {
-	std::ofstream outputstream(m_savedFilePath + m_currentScene.lock()->m_name + ".scene");
+	std::ofstream outputstream(m_savedFilePath + m_currentScene->m_name + ".scene");
 	boost::archive::text_oarchive outputArchive(outputstream);
-	outputArchive << m_currentScene.lock();
+	outputArchive << m_currentScene;
 }
 
 /// <summary>
@@ -155,7 +129,7 @@ void Truth::SceneManager::SaveAsScene(std::wstring& _path) const
 {
 	std::ofstream outputstream(_path);
 	boost::archive::text_oarchive outputArchive(outputstream);
-	outputArchive << m_currentScene.lock();
+	outputArchive << m_currentScene;
 }
 
 /// <summary>
@@ -170,22 +144,32 @@ void Truth::SceneManager::LoadSceneData(std::wstring _path)
 	std::shared_ptr<Truth::Scene> s;
 	inputArchive >> s;
 
-	s->Initalize(m_mangers);
+	if (m_currentScene != nullptr)
+	{
+		m_currentScene->Exit();
+		m_currentScene.reset();
+	}
 
-	AddScene(s);
+	m_currentScene = s;
+ 	m_currentScene->Initalize(m_mangers);
+ 	m_currentScene->Enter();
 }
 
 void Truth::SceneManager::ReloadSceneData()
 {
-	std::string sceneName = m_currentScene.lock()->m_name;
+	std::string sceneName = m_currentScene->m_name;
 	std::ifstream inputstream(m_savedFilePath + sceneName + ".scene");
 	boost::archive::text_iarchive inputArchive(inputstream);
 	std::shared_ptr<Truth::Scene> s;
 	inputArchive >> s;
 
-	s->Initalize(m_mangers);
+	if (m_currentScene != nullptr)
+	{
+		m_currentScene->Exit();
+		m_currentScene.reset();
+	}
 
-	m_sceneMap[sceneName].reset();
-	m_sceneMap[sceneName] = s;
 	m_currentScene = s;
+ 	m_currentScene->Initalize(m_mangers);
+ 	m_currentScene->Enter();
 }

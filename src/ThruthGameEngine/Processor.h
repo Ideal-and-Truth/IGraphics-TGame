@@ -55,13 +55,9 @@ public:
 	void Process();
 	void Loop();
 
-	void AddScene(std::shared_ptr<Truth::Scene> _scene);
-
 	void SaveCurrentScene();
 	void SaveScene(std::shared_ptr<Truth::Scene> _scene);
 	void LoadScene(std::wstring _path);
-
-	void SetStartScene(std::string _name);
 
 	// 윈도우 함수
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

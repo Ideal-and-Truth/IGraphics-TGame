@@ -19,7 +19,7 @@ Truth::GraphicsManager::GraphicsManager()
 /// </summary>
 Truth::GraphicsManager::~GraphicsManager()
 {
-
+	DEBUG_PRINT("Finalize GraphicsManager\n");
 }
 
 /// <summary>
