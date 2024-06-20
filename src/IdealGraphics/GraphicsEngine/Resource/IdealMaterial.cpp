@@ -53,7 +53,7 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Material));
 	if (!cb)
 	{
-		__debugbreak();
+ 		__debugbreak();
 	}
 
 	// 2024.05.07

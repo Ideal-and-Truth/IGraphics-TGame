@@ -1,6 +1,7 @@
 #include "Transform.h"
 #include "Managers.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Transform)
 
 Truth::Transform::Transform()
 	: Component()

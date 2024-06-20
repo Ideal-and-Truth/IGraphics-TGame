@@ -2,7 +2,14 @@
 #include "Entity.h"
 #include "RigidBody.h"
 #include "PhysicsManager.h"
+#include "MathConverter.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::CapsuleCollider)
+
+/// <summary>
+/// 캡슐 형태의 콜라이더
+/// </summary>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::CapsuleCollider::CapsuleCollider(bool _isTrigger)
 	: Collider(_isTrigger)
 	, m_radius(0.5f)
@@ -12,6 +19,12 @@ Truth::CapsuleCollider::CapsuleCollider(bool _isTrigger)
 
 }
 
+/// <summary>
+/// 캡슐 형태의 콜라이더
+/// </summary>
+/// <param name="_radius">반지름</param>
+/// <param name="_height">높이</param>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::CapsuleCollider::CapsuleCollider(float _radius, float _height, bool _isTrigger)
 	: Collider(_isTrigger)
 {
@@ -21,6 +34,13 @@ Truth::CapsuleCollider::CapsuleCollider(float _radius, float _height, bool _isTr
 	SetHeight(_height);
 }
 
+/// <summary>
+/// 캡슐 형태의 콜라이더
+/// </summary>
+/// <param name="_pos">위치</param>
+/// <param name="_radius">반지름</param>
+/// <param name="_height">높이</param>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::CapsuleCollider::CapsuleCollider(Vector3 _pos, float _radius, float _height, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
@@ -30,12 +50,10 @@ Truth::CapsuleCollider::CapsuleCollider(Vector3 _pos, float _radius, float _heig
 	SetHeight(_height);
 }
 
-
-Truth::CapsuleCollider::~CapsuleCollider()
-{
-
-}
-
+/// <summary>
+/// 반지름 조정
+/// </summary>
+/// <param name="_radius">반지름</param>
 void Truth::CapsuleCollider::SetRadius(float _radius)
 {
 	m_radius = _radius;
@@ -44,11 +62,18 @@ void Truth::CapsuleCollider::SetRadius(float _radius)
 		m_body->detachShape(*m_collider);
 		m_collider->release();
 
-		m_collider = CreateCollider(ColliderShape::CAPSULE, std::vector<float>{ m_radius, m_height });
+		m_collider = CreateCollider(ColliderShape::CAPSULE, m_size);
+		SetUpFiltering(m_owner.lock()->m_layer);
+		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 		m_body->attachShape(*m_collider);
 	}
 }
 
+/// <summary>
+/// 높이 조정
+/// </summary>
+/// <param name="_radius">높이</param>
 void Truth::CapsuleCollider::SetHeight(float _height)
 {
 	m_height = _height;
@@ -57,25 +82,18 @@ void Truth::CapsuleCollider::SetHeight(float _height)
 		m_body->detachShape(*m_collider);
 		m_collider->release();
 
-		m_collider = CreateCollider(ColliderShape::CAPSULE, std::vector<float>{ m_radius, m_height });
+		m_collider = CreateCollider(ColliderShape::CAPSULE, m_size);
+		SetUpFiltering(m_owner.lock()->m_layer);
+		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 		m_body->attachShape(*m_collider);
 	}
 }
 
-void Truth::CapsuleCollider::Awake()
-{
-
-}
-
-
+/// <summary>
+/// 초기화 해당 Component가 생성 될 때 한번 실행됨
+/// </summary>
 void Truth::CapsuleCollider::Initalize()
 {
-	m_collider = CreateCollider(ColliderShape::CAPSULE, std::vector<float>{ m_radius, m_height });
-
-	m_collider->userData = this;
-
-	SetUpFiltering(m_owner.lock()->m_layer);
-
-	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+	Collider::Initalize(ColliderShape::CAPSULE, Vector3{m_radius, m_height, m_radius});
 }

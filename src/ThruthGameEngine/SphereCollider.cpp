@@ -2,7 +2,14 @@
 #include "Entity.h"
 #include "RigidBody.h"
 #include "PhysicsManager.h"
+#include "MathConverter.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::SphereCollider)
+
+/// <summary>
+/// 구 형태의 콜라이더
+/// </summary>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::SphereCollider::SphereCollider(bool _isTrigger)
 	: Collider(_isTrigger)
 	, m_radius(0.5f)
@@ -11,6 +18,11 @@ Truth::SphereCollider::SphereCollider(bool _isTrigger)
 
 }
 
+/// <summary>
+/// 구 형태의 콜라이더
+/// </summary>
+/// <param name="_radius">반지름</param>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::SphereCollider::SphereCollider(float _radius, bool _isTrigger /*= true*/)
 	: Collider(_isTrigger)
 {
@@ -19,6 +31,12 @@ Truth::SphereCollider::SphereCollider(float _radius, bool _isTrigger /*= true*/)
 	SetRadius(_radius);
 }
 
+/// <summary>
+/// 구 형태의 콜라이더
+/// </summary>
+/// <param name="_pos">중심점</param>
+/// <param name="_radius">반지름</param>
+/// <param name="_isTrigger">트리거 여부</param>
 Truth::SphereCollider::SphereCollider(Vector3 _pos, float _radius, bool _isTrigger /*= true*/)
 	: Collider(_pos, _isTrigger)
 {
@@ -27,55 +45,34 @@ Truth::SphereCollider::SphereCollider(Vector3 _pos, float _radius, bool _isTrigg
 	SetRadius(_radius);
 }
 
-
-Truth::SphereCollider::~SphereCollider()
-{
-
-}
-
+/// <summary>
+/// 반지름 조정
+/// </summary>
+/// <param name="_radius">반지름</param>
 void Truth::SphereCollider::SetRadius(float _radius)
 {
 	m_radius = _radius;
+
+	// 만일 바디가 있다면 해당 바디의 콜라이더를 제거하고 새로 생성하여 붙여준다.
 	if (m_body != nullptr)
 	{
 		m_body->detachShape(*m_collider);
 		m_collider->release();
 
-		m_collider = CreateCollider(ColliderShape::SPHERE, std::vector<float>{ m_radius });
+		m_collider = CreateCollider(ColliderShape::SPHERE, m_size);
+		SetUpFiltering(m_owner.lock()->m_layer);
+		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
+
 		m_body->attachShape(*m_collider);
 	}
+	m_size = Vector3::One * (m_radius * 2);
 }
 
-void Truth::SphereCollider::Awake()
-{
-// 	auto r = m_owner.lock()->GetComponent<RigidBody>();
-// 	if (r.expired())
-// 	{
-// 		m_body = GetDefaultDynamic();
-// 	}
-// 	else
-// 	{
-// 		m_body = r.lock()->m_body;
-// 	}
-// 	SetPosition(m_center);
-// 	m_body->attachShape(*m_collider);
-// 
-// 	if (!r.expired())
-// 	{
-// 		r.lock()->InitalizeMassAndInertia();
-// 	}
-// 	m_managers.lock()->Physics()->AddScene(m_body);
-
-}
-
+/// <summary>
+/// 초기화 해당 Component가 생성 될 때 한번 실행됨
+/// </summary>
 void Truth::SphereCollider::Initalize()
 {
-	m_collider = CreateCollider(ColliderShape::SPHERE, std::vector<float>{ m_radius});
-
-	m_collider->userData = this;
-
-	SetUpFiltering(m_owner.lock()->m_layer);
-
-	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+	Collider::Initalize(ColliderShape::SPHERE, Vector3{ m_radius , m_radius , m_radius });
 }

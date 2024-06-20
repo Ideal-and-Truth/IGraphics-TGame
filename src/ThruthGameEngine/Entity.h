@@ -26,19 +26,23 @@ namespace Truth
 
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int file_version);
+		typedef std::vector<std::pair<std::weak_ptr<Component>, const Method*>> ComponentMethod;
 
 	protected:
 		static uint32 m_entityCount;
 
 
+		std::weak_ptr<Managers> m_manager;
+
+	public:
+		int32 m_index;
+
+		PROPERTY(tag);
 		std::string m_tag;
 
 		PROPERTY(ID);
 		uint32 m_ID;
-		std::weak_ptr<Managers> m_manager;
 
-	public:
-		// key 값의 경우 type id 를 통해 유추한다.
 		PROPERTY(layer);
 		uint8 m_layer;
 
@@ -48,40 +52,48 @@ namespace Truth
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
-		std::vector<std::pair<Component*, const Method*>> m_onCollisionEnter;
-		std::vector<std::pair<Component*, const Method*>> m_onCollisionStay;
-		std::vector<std::pair<Component*, const Method*>> m_onCollisionExit;
 
-		std::vector<std::pair<Component*, const Method*>> m_onTriggerEnter;
-		std::vector<std::pair<Component*, const Method*>> m_onTriggerStay;
-		std::vector<std::pair<Component*, const Method*>> m_onTriggerExit;
+		bool m_isDead = false;
 
-		std::vector<std::pair<Component*, const Method*>> m_update;
-		std::vector<std::pair<Component*, const Method*>> m_fixedUpdate;
-		std::vector<std::pair<Component*, const Method*>> m_latedUpdate;
 
-		std::vector<std::pair<Component*, const Method*>> m_onBecomeVisible;
-		std::vector<std::pair<Component*, const Method*>> m_onBecomeInvisible;
-
-		std::vector<std::pair<Component*, const Method*>> m_destroy;
-
+		ComponentMethod m_onCollisionEnter;
+		ComponentMethod m_onCollisionStay;
+		ComponentMethod m_onCollisionExit;
+		
+		ComponentMethod m_onTriggerEnter;
+		ComponentMethod m_onTriggerStay;
+		ComponentMethod m_onTriggerExit;
+		
+		ComponentMethod m_update;
+		ComponentMethod m_fixedUpdate;
+		ComponentMethod m_latedUpdate;
+		
+		ComponentMethod m_onBecomeVisible;
+		ComponentMethod m_onBecomeInvisible;
+		
+		ComponentMethod m_destroy;
+		ComponentMethod m_applyTransform;
 
 		std::shared_ptr<Transform> m_transform;
-
+		 
 	public:
 		Entity(std::shared_ptr<Managers> _mangers);
-		Entity() = default;
+		Entity();
 		~Entity();
 
 		void Initailize();
 
-		void SetPosition(Vector3 _pos) const;
-		void SetScale(Vector3 _scale) const;
+		void SetPosition(const Vector3& _pos) const;
+		void SetScale(const Vector3& _scale) const;
 
-		Vector3 GetPosition() const;
-		Quaternion GetRotation() const;
+		const Vector3& GetPosition() const;
+		const Quaternion& GetRotation() const;
+		const Vector3& GetScale() const;
 
-		void ApplyTransform() const;
+		const Matrix& GetWorldTM() const;
+		void SetWorldTM(const Matrix& _tm) const;
+
+		void ApplyTransform();
 
 		void Awake();
 		void Destroy();
@@ -97,10 +109,14 @@ namespace Truth
 		void OnTriggerStay(Collider* _other);
 		void OnTriggerExit(Collider* _other);
 
+		void DeleteComponent(int32 _index);
+
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();
 		template<typename C, typename... Args, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent(Args... _args);
+
+		void AddComponent(std::shared_ptr<Component> _component);
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::weak_ptr<C> GetComponent();
@@ -112,12 +128,12 @@ namespace Truth
 
 		std::string& GetName() { return m_name; };
 
-		Matrix GetWorldTM() const;
 
 	private:
-
 		void ApplyComponent(std::shared_ptr<Component> _c);
 
+		void IterateComponentMethod(ComponentMethod& _cm);
+		void IterateComponentMethod(ComponentMethod& _cm, Collider* _param);
 	};
 
 	/// template로 작성된 함수 목록
@@ -144,6 +160,7 @@ namespace Truth
 			component = std::make_shared<C>();
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
+			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);
@@ -165,6 +182,7 @@ namespace Truth
 			component = std::make_shared<C>(_args...);
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
+			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);

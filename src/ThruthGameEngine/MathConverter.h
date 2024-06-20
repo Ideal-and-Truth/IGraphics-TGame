@@ -13,5 +13,6 @@ namespace MathConverter
 	physx::PxQuat Convert(Quaternion _val);
 
 	Matrix Convert(physx::PxTransform&& _val);
+	physx::PxTransform Convert(Matrix _val);
 };
 

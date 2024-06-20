@@ -26,7 +26,7 @@ using namespace DirectX::SimpleMath;
 // type trait
 #include <type_traits>
 #include <typeinfo>
-#include <any>
+// #include <any>
 
 // assert
 #include <assert.h>
@@ -58,3 +58,8 @@ using namespace DirectX::SimpleMath;
 #include <stdio.h>
 #include <sstream>
 #include <fstream>
+
+#include <locale>
+#include <codecvt>
+#include <string>
+

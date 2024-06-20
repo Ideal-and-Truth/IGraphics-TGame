@@ -44,8 +44,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-
-//	g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 
 // 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 // 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
@@ -69,6 +69,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	}
 // 
 // 	int a = 3;
+
 	m_editor = new EditorUI(m_manager);
 }
 
@@ -156,11 +157,14 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	return 0;
 }
 
-void Processor::SaveSceneData()
+void Processor::SaveCurrentScene()
 {
-	std::ofstream outputstream(m_savedFilePath);
-	boost::archive::text_oarchive outputArchive(outputstream);
-	outputArchive << m_manager->Scene()->m_currentScene;
+	m_manager->Scene()->SaveCurrentScene();
+}
+
+void Processor::SaveScene(std::shared_ptr<Truth::Scene> _scene)
+{
+	m_manager->Scene()->SaveScene(_scene);
 }
 
 void Processor::Update()
@@ -180,9 +184,12 @@ void Processor::FixedUpdate()
 
 void Processor::Render()
 {
+#ifdef _DEBUG
 	g_Renderer->ClearImGui();
 	//ImGui::ShowDemoWindow(&show_demo_window);
 	m_editor->RenderUI(&show_demo_window);
+#endif // _DEBUG
+
 	m_manager->Render();
 }
 

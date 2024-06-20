@@ -4,6 +4,7 @@
 #define D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN   ((D3D12_GPU_VIRTUAL_ADDRESS)-1)
 
 // SWAP CHAIN & MAX PENDING
+
 #define G_SWAP_CHAIN_NUM 4
 
 // Raytracing Ray Recursion Depth
@@ -13,13 +14,14 @@
 #define INDEX_FORMAT DXGI_FORMAT_R32_UINT
 #define VERTEX_FORMAT DXGI_FORMAT_R32G32B32_FLOAT
 
+
 /// Static Mesh Macro
 // 2024.05.08
 // Root Table Index Macro
-#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ 1		// °ø¿ë root parameter
+#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ 1		// Â°Ã¸Â¿Ã« root parameter
 #define	STATIC_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM 0	// b1 : transform
 
-#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH 2		// °³º° ¸Å½¬ root parameter
+#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH 2		// Â°Â³ÂºÂ° Â¸Ã…Â½Â¬ root parameter
 #define	STATIC_MESH_DESCRIPTOR_INDEX_CBV_MATERIAL 0		// b2 : material
 #define	STATIC_MESH_DESCRIPTOR_INDEX_SRV_DIFFUSE 1		// t0 : diffuse
 #define	STATIC_MESH_DESCRIPTOR_INDEX_SRV_SPECULAR 2		// t1 : specular

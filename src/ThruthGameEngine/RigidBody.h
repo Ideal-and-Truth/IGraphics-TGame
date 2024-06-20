@@ -39,6 +39,9 @@ namespace Truth
 		Vector3 m_velocity;
 		physx::PxRigidDynamic* m_body;
 
+		Matrix m_localTM;
+		Matrix m_globalTM;
+
 	private:
 		float m_speed;
 		Vector3 m_angularVelocity;
@@ -49,19 +52,16 @@ namespace Truth
 
 		std::weak_ptr<Transform> m_transform;
 
+		std::vector<std::weak_ptr<Collider>> m_colliders;
+
 		bool m_isChanged;
 
 	public:
 		RigidBody();
 		virtual ~RigidBody();
 
-		void FixedUpdate(std::any _p);
-
-		void FreezePosition(bool _xzy[3]);
-		void FreezeRotation(bool _xzy[3]);
-
 		METHOD(Update);
-		void Update() override;
+		void Update();
 
 		void AddImpulse(Vector3 _force);
 		void SetLinearVelocity(Vector3 _val);
@@ -72,12 +72,20 @@ namespace Truth
 		METHOD(Initalize);
 		void Initalize();
 
+		METHOD(ApplyTransform);
+		void ApplyTransform();
+
 	private:
 		METHOD(Awake);
 		void Awake();
 
 		METHOD(Start);
 		void Start();
+
+		METHOD(Destroy);
+		void Destroy();
+
+		void CalculateMassCenter();
 	};
 
 	template<class Archive>
@@ -94,4 +102,4 @@ namespace Truth
 		_ar& m_freezeRotation;
 	}
 }
-
+BOOST_CLASS_EXPORT_KEY(Truth::RigidBody)

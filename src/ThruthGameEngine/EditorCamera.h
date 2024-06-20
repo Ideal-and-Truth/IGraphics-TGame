@@ -1,0 +1,34 @@
+#pragma once
+#include "Headers.h"
+#include "InputManager.h"
+
+namespace Truth
+{
+	class Managers;
+}
+
+namespace Truth
+{
+	class EditorCamera
+	{
+	public:
+		EditorCamera(Managers* _managers);
+		~EditorCamera();
+
+		void Update(float _dt);
+
+		bool GetKey(KEY _key);
+		float MouseDy();
+		float MouseDx();
+
+		void SetMainCamera();
+
+	public:
+		std::shared_ptr<Ideal::ICamera> m_camera;
+
+		float m_speed;
+
+		Managers* m_managers;
+	};
+}
+
