@@ -35,6 +35,7 @@
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
+
 #include "GraphicsEngine/D3D12/TestShader.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 
@@ -345,12 +346,11 @@ finishAdapter:
 	m_shaderManager->CompileShaderAndSave(
 		L"../Shaders/Raytracing/Raytracing.hlsl",
 		L"../Shaders/Raytracing/",
-		L"SimpleRaytracingShader2",
+		L"SimpleRaytracingShader3",
 		L"lib_6_3",
 		m_testBlob
 	);
-	m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/SimpleRaytracingShader2.shader", m_myShader);
-
+	m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/SimpleRaytracingShader3.shader", m_myShader);
 	//
 	m_cubeCB.albedo = Vector4(1.f, 1.f, 1.f, 1.f);
 	//m_sceneCB.CameraPos.x = 0;
@@ -371,7 +371,6 @@ finishAdapter:
 	// create resource
 	CreateDeviceDependentResources();
 	RaytracingManagerInit();
-
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -436,6 +435,7 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
 {
 	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
+	newCamera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
 	return newCamera;
 }
 
@@ -820,7 +820,6 @@ void Ideal::D3D12RayTracingRenderer::WaitForFenceValue(uint64 ExpectedFenceValue
 
 void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
 {
-	//CreateRayTracingInterfaces();
 	CreateRootSignatures();
 	CreateRaytracingPipelineStateObject();
 	BuildGeometry();
@@ -1581,7 +1580,7 @@ void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init();
+	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader);
 
 	// geometry
 	BLASGeometry geo1;

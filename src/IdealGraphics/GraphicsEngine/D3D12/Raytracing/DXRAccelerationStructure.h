@@ -4,6 +4,7 @@
 #include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 namespace Ideal
 {
@@ -19,7 +20,7 @@ namespace Ideal
 		std::wstring Name;
 		std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;
-		D3D12_GPU_DESCRIPTOR_HANDLE DiffuseTexture;
+		Ideal::D3D12DescriptorHandle DiffuseTexture;
 		//D3D12_GPU_DESCRIPTOR_HANDLE NormalTexture;
 	};
 

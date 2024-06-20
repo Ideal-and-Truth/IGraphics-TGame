@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/Core.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
-
+#include "GraphicsEngine/ConstantBufferInfo.h"
 
 struct ID3D12Device5;
 struct ID3D12GraphicsCommandList4;
@@ -12,13 +12,13 @@ namespace Ideal
 	class D3D12UploadBufferPool;
 	class D3D12Shader;
 	class ResourceManager;
+	class D3D12ShaderResourceView;
+	class D3D12DynamicDescriptorHeap;
+	class D3D12DynamicConstantBufferAllocator;
 }
-
 
 namespace Ideal
 {
-
-
 	namespace GlobalRootSignature
 	{
 		namespace Slot
@@ -76,7 +76,8 @@ namespace Ideal
 		~RaytracingManager();
 
 	public:
-		void Init();
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void DoRaytracing(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height);
 
 		//---AS---//
 		uint32 AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name);
@@ -97,6 +98,8 @@ namespace Ideal
 		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
 	private:
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
+
 		std::unique_ptr<DXRAccelerationStructureManager> m_ASManager;
 
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
@@ -108,6 +111,12 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 
+
+		// temp cb
+		SceneConstantBuffer m_sceneCB;
+		// temp : 임시로 핸들을 다받아두겟음
+		std::vector<Ideal::D3D12DescriptorHandle> handles;
+		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;
 
 		// Shader Table Record의 인덱스
 		// 각 BLAS마다 Geometry의 개수가 다를테니 Add Instance 할 때마다 

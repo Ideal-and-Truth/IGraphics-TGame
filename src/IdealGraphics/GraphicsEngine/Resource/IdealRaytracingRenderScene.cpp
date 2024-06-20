@@ -23,9 +23,10 @@ Ideal::IdealRaytracingRenderScene::~IdealRaytracingRenderScene()
 
 void Ideal::IdealRaytracingRenderScene::Init(ComPtr<ID3D12Device5> InDevice, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
 {
+	return;
 	m_device = InDevice;
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init();
+	//m_raytracingManager->Init(TODO, TODO, TODO);
 	m_raytracingManager->FinalCreate(m_device, CommandList, UploadBufferPool);
 }
 

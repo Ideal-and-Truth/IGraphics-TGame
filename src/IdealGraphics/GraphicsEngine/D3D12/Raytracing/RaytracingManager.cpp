@@ -3,6 +3,10 @@
 #include "GraphicsEngine/D3D12/D3D12UploadBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
+#include "GraphicsEngine/D3D12/D3D12SRV.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -13,11 +17,17 @@ inline void SerializeAndCreateRootSignature(ComPtr<ID3D12Device5> Device, D3D12_
 	ComPtr<ID3DBlob> error;
 
 	HRESULT hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error);
-	if (!error)
+	if (error)
 	{
 		const wchar_t* msg = static_cast<wchar_t*>(error->GetBufferPointer());
 		Check(hr, msg);
 	}
+
+	Check(
+		Device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&(*rootSignature))),
+		L"Failed to create Rootsignature"
+		);
+
 
 	if (ResourceName)
 	{
@@ -35,9 +45,57 @@ Ideal::RaytracingManager::~RaytracingManager()
 
 }
 
-void Ideal::RaytracingManager::Init()
+void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader)
 {
 	m_ASManager = std::make_unique<DXRAccelerationStructureManager>();
+
+	m_shaderTableHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_shaderTableHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 215);	// temp
+
+	CreateRootSignature(Device);	//device
+	CreateRaytracingPipelineStateObject(Device, Shader); // device, shader
+	BuildShaderTables(Device, ResourceManager); // Device, ResourceManager
+}
+
+void Ideal::RaytracingManager::DoRaytracing(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height)
+{
+	CommandList->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
+	CommandList->SetDescriptorHeaps(1, DescriptorHeap->GetDescriptorHeap().GetAddressOf());
+
+	// Parameter 0
+	auto handle0 = DescriptorHeap->Allocate(1);
+	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), OutputUAVHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_Output, handle0.GetGpuHandle());
+
+	// Parameter 1
+	CommandList->SetComputeRootShaderResourceView(Ideal::GlobalRootSignature::Slot::SRV_AccelerationStructure, m_ASManager->GetTLASResource()->GetGPUVirtualAddress());
+
+	// Parameter 2
+	auto cb = CBPool->Allocate(Device.Get(), sizeof(SceneConstantBuffer));
+	memcpy(cb->SystemMemAddr, &m_sceneCB, sizeof(m_sceneCB));
+	auto handle2 = DescriptorHeap->Allocate(1);
+	Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::CBV_Global, handle2.GetGpuHandle());
+
+	//-----------------Dispatch Rays----------------//
+	D3D12_DISPATCH_RAYS_DESC dispatchRayDesc = {};
+	dispatchRayDesc.HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
+	dispatchRayDesc.HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
+	dispatchRayDesc.HitGroupTable.StrideInBytes = dispatchRayDesc.HitGroupTable.SizeInBytes;
+
+	dispatchRayDesc.MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
+	dispatchRayDesc.MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
+	dispatchRayDesc.MissShaderTable.StrideInBytes = dispatchRayDesc.MissShaderTable.SizeInBytes;
+
+	dispatchRayDesc.RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
+	dispatchRayDesc.RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
+	
+	dispatchRayDesc.Width = Width;
+	dispatchRayDesc.Height = Height;
+	dispatchRayDesc.Depth = 1;
+
+	CommandList->SetPipelineState1(m_dxrStateObject.Get());
+	CommandList->DispatchRays(&dispatchRayDesc);
 }
 
 uint32 Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name)
@@ -84,8 +142,8 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 	//-------------Global Root Signature--------------//
 	{
 		CD3DX12_DESCRIPTOR_RANGE ranges[GlobalRootSignature::Slot::Count];
-		ranges[GlobalRootSignature::Slot::UAV_Output].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
-		ranges[GlobalRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+		ranges[GlobalRootSignature::Slot::UAV_Output].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : Output
+		ranges[GlobalRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : Global
 
 		// binding
 		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignature::Slot::Count];
@@ -98,7 +156,7 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
 		{
 			// LinearWrapSampler
-			CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC),
+			CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC),	// s0
 		};
 
 		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(
@@ -154,7 +212,7 @@ void Ideal::RaytracingManager::CreateRaytracingPipelineStateObject(ComPtr<ID3D12
 
 	//------------Global Root Signature------------//
 	CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT* globalRootSignature = raytracingPipeline.CreateSubobject<CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT>();
-	globalRootSignature->SetRootSignature(m_raytracingLocalRootSignature.Get());
+	globalRootSignature->SetRootSignature(m_raytracingGlobalRootSignature.Get());
 
 	//------------Pipeline Configuration------------//
 	CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT* pipelineConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT>();
@@ -214,8 +272,8 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 	// Hit Shader Table
 	{
-		
 		uint32 numShaderRecords = m_contributionToHitGroupIndexCount;
+		if (numShaderRecords == 0) numShaderRecords = 1;
 		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(Ideal::LocalRootSignature::RootArgument);
 		Ideal::DXRShaderTable hitGroupShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
 
@@ -227,17 +285,41 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 			const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
 			for (const BLASGeometry& blasGeometry : blasGeometries)
 			{
+				// TEMP : 아래에서 핸들같은 것들 따로 프리 안해주고 있긴한데 사라지면서 프리가 될 것
 				Ideal::LocalRootSignature::RootArgument rootArguments;
+
 				std::shared_ptr<Ideal::D3D12IndexBuffer> indexBuffer = blasGeometry.IndexBuffer;
 				std::shared_ptr<Ideal::D3D12VertexBuffer> vertexBuffer = blasGeometry.VertexBuffer;
-				ResourceManager->CreateSRV(indexBuffer, indexBuffer->GetElementCount(), indexBuffer->GetElementSize());
-				ResourceManager->CreateSRV(vertexBuffer, vertexBuffer->GetElementCount(), vertexBuffer->GetElementSize());
+
+				auto h1 = ResourceManager->CreateSRV(indexBuffer, indexBuffer->GetElementCount(), indexBuffer->GetElementSize());
+				auto h2 = ResourceManager->CreateSRV(vertexBuffer, vertexBuffer->GetElementCount(), vertexBuffer->GetElementSize());
 				
-				// rootArguments.SRV_Indices = 
+				// Indices
+				auto indicesLocation = m_shaderTableHeap->Allocate(1);
+				Device->CopyDescriptorsSimple(1, indicesLocation.GetCpuHandle(), h1->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+				// vertices
+				auto verticesLocation = m_shaderTableHeap->Allocate(1);
+				Device->CopyDescriptorsSimple(1, verticesLocation.GetCpuHandle(), h2->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+				// diffuse
+				auto textureLocation = m_shaderTableHeap->Allocate(1);
+				Device->CopyDescriptorsSimple(1, textureLocation.GetCpuHandle(), blasGeometry.DiffuseTexture.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+				rootArguments.SRV_Indices = indicesLocation.GetGpuHandle();
+				rootArguments.SRV_Vertices = verticesLocation.GetGpuHandle();
+				rootArguments.SRV_DiffuseTexture = textureLocation.GetGpuHandle();
+
+				hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
+
+				// temp:
+				handles.push_back(indicesLocation);
+				handles.push_back(verticesLocation);
+				handles.push_back(textureLocation);
+				srvs.push_back(h1);
+				srvs.push_back(h2);
 			}
 		}
-
-		//hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
 		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 	}
 }

@@ -22,7 +22,6 @@ ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
 SamplerState LinearWrapSampler : register(s0);
 
 //-----------LOCAL-----------//
-ConstantBuffer<CubeConstantBuffer> g_cubeCB : register(b0, space1);
 StructuredBuffer<uint> Indices : register(t0, space1);
 StructuredBuffer<PositionNormalUVVertex> Vertices : register(t1, space1);
 Texture2D<float4> g_texDiffuse : register(t2, space1);
@@ -81,7 +80,7 @@ float4 CalculateDiffuseLighting(float3 hitPosition, float3 normal)
     float fNDotL = max(0.0f, dot(pixelToLight, normal));
 
     //return g_cubeCB[1].albedo * g_sceneCB.lightDiffuseColor * fNDotL;
-    return g_cubeCB.albedo * g_sceneCB.lightDiffuseColor * fNDotL;
+    return g_sceneCB.lightDiffuseColor * fNDotL;
     //float4 diffuseTextureColor = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
     //return diffuseTextureColor;
 }

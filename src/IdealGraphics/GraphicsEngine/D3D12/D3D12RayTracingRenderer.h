@@ -9,6 +9,7 @@
 
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 //Test
+#include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
 #include <dxgi.h>
 #include <dxgi1_6.h>
@@ -33,15 +34,6 @@ struct cbViewport
 	float bottom;
 };
 
-struct SceneConstantBuffer
-{
-	Matrix ProjToWorld;
-	DirectX::XMVECTOR CameraPos;
-	DirectX::XMVECTOR lightPos;
-	DirectX::XMVECTOR lightAmbient;
-	DirectX::XMVECTOR lightDiffuse;
-
-};
 
 struct RayGenConstantBuffer
 {
@@ -232,6 +224,7 @@ namespace Ideal
 		ComPtr<IDxcBlob> m_testBlob;
 
 		std::shared_ptr<Ideal::D3D12Shader> m_myShader;
+		std::shared_ptr<Ideal::D3D12Shader> m_myShader2;
 
 	private:
 		const wchar_t* m_raygenShaderName = L"MyRaygenShader";

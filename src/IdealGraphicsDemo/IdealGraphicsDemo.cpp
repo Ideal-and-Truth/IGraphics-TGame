@@ -125,7 +125,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
-		bool isEditor = true;
+		bool isEditor = false;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
@@ -189,7 +189,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
-		renderScene->AddObject(mesh);
+		//renderScene->AddObject(mesh);
 		//renderScene->AddDebugObject(mesh);
 		//renderScene->AddObject(mesh2);
 

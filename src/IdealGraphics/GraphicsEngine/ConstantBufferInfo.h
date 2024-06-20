@@ -3,6 +3,18 @@
 
 #define MAX_BONE_TRANSFORMS 250
 #define MAX_MODEL_KEYFRAMES 500
+
+
+struct SceneConstantBuffer
+{
+	Matrix ProjToWorld;
+	DirectX::XMVECTOR CameraPos;
+	DirectX::XMVECTOR lightPos;
+	DirectX::XMVECTOR lightAmbient;
+	DirectX::XMVECTOR lightDiffuse;
+
+};
+
 struct CB_Bone
 {
 	Matrix transforms[MAX_BONE_TRANSFORMS];
