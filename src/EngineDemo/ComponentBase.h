@@ -29,3 +29,4 @@ void ComponentBase::serialize(Archive& _ar, const unsigned int _file_version)
 	_ar& boost::serialization::base_object<Component>(*this);
 }
 
+BOOST_CLASS_EXPORT_KEY(ComponentBase)

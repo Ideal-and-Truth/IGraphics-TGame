@@ -18,7 +18,8 @@ private:
 	std::shared_ptr<Truth::Camera> m_camera;
 	std::shared_ptr<Player> m_player;
 
-	float4 m_nowSpeed;
+	float4 m_forwardInput;
+	float4 m_sideInput;
 
 public:
 	PlayerController();
@@ -43,3 +44,4 @@ void PlayerController::serialize(Archive& _ar, const unsigned int _file_version)
 	_ar& boost::serialization::base_object<Component>(*this);
 }
 
+BOOST_CLASS_EXPORT_KEY(PlayerController)

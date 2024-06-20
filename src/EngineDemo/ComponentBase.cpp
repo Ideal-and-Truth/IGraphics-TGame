@@ -1,5 +1,7 @@
 #include "ComponentBase.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(ComponentBase)
+
 ComponentBase::ComponentBase()
 {
 	m_name = "ComponentBase";
