@@ -1293,7 +1293,7 @@ void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
 
 	// Hit group shader table
 	{
-		RootArgument rootArguments;
+		RootArgumentTest rootArguments;
 
 		// cb
 		rootArguments.CB_Cube = m_cubeCB;
@@ -1395,102 +1395,6 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 
 	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
 	commandlist->SetComputeRootShaderResourceView(1, m_topLevelAccelerationStructure->GetGPUVirtualAddress());
-
-	// parameter0에 바인딩 : render target
-	auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	commandlist->SetComputeRootDescriptorTable(0, handle0.GetGpuHandle());
-
-	// parameter2 에 바인딩 : SceneConstantSlot
-	auto cb = m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), sizeof(m_sceneCB));
-	memcpy(cb->SystemMemAddr, &m_sceneCB, sizeof(m_sceneCB));
-	auto handle2 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	commandlist->SetComputeRootDescriptorTable(2, handle2.GetGpuHandle());
-
-	// Bind the hepas, 가속구조, dispatch rays
-	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
-
-	DispatchRays(commandlist.Get(), m_dxrStateObject.Get(), &dispatchDesc);
-}
-
-void Ideal::D3D12RayTracingRenderer::DoRaytracing2()
-{
-	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
-
-	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
-	{
-		dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
-		dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTables[m_currentContextIndex]->GetDesc().Width;
-		dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
-
-		dispatchDesc->MissShaderTable.StartAddress = m_missShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
-		dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTables[m_currentContextIndex]->GetDesc().Width;
-		dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
-
-		dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
-		dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTables[m_currentContextIndex]->GetDesc().Width;
-
-		dispatchDesc->Width = m_width;
-		dispatchDesc->Height = m_height;
-		dispatchDesc->Depth = 1;
-		commandlist->SetPipelineState1(stateObject);
-		commandlist->DispatchRays(dispatchDesc);
-	};
-
-	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
-	commandlist->SetDescriptorHeaps(1, m_descriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().GetAddressOf());
-
-	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
-	commandlist->SetComputeRootShaderResourceView(1, m_topLevelAccelerationStructure->GetGPUVirtualAddress());
-
-	// parameter0에 바인딩 : render target
-	auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	commandlist->SetComputeRootDescriptorTable(0, handle0.GetGpuHandle());
-
-	// parameter2 에 바인딩 : SceneConstantSlot
-	auto cb = m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), sizeof(m_sceneCB));
-	memcpy(cb->SystemMemAddr, &m_sceneCB, sizeof(m_sceneCB));
-	auto handle2 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	commandlist->SetComputeRootDescriptorTable(2, handle2.GetGpuHandle());
-
-	// Bind the hepas, 가속구조, dispatch rays
-	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
-
-	DispatchRays(commandlist.Get(), m_dxrStateObject.Get(), &dispatchDesc);
-}
-
-void Ideal::D3D12RayTracingRenderer::DoRaytracing3()
-{
-	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
-
-	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
-		{
-			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
-			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTables[m_currentContextIndex]->GetDesc().Width;
-			dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
-
-			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
-			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTables[m_currentContextIndex]->GetDesc().Width;
-			dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
-
-			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTables[m_currentContextIndex]->GetGPUVirtualAddress();
-			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTables[m_currentContextIndex]->GetDesc().Width;
-
-			dispatchDesc->Width = m_width;
-			dispatchDesc->Height = m_height;
-			dispatchDesc->Depth = 1;
-			commandlist->SetPipelineState1(stateObject);
-			commandlist->DispatchRays(dispatchDesc);
-		};
-
-	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
-	commandlist->SetDescriptorHeaps(1, m_descriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().GetAddressOf());
-
-	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
-	commandlist->SetComputeRootShaderResourceView(1, m_renderScene->GetTLASResource()->GetGPUVirtualAddress());
 
 	// parameter0에 바인딩 : render target
 	auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
@@ -1690,15 +1594,15 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 	geo2.VertexBuffer = m_vertexBuffer;
 	geo2.IndexBuffer = m_indexBuffer;
 
-	BLASGeometryDesc desc1;
+	BLASData desc1;
 	desc1.Geometries.push_back(geo1);
 	desc1.Geometries.push_back(geo2);
 
-	BLASGeometryDesc desc2;
+	BLASData desc2;
 	desc2.Geometries.push_back(geo2);
 
-	uint32 index1 = m_raytracingManager->AddBLAS(m_device, desc1, L"BLAS1");
-	uint32 index2 = m_raytracingManager->AddBLAS(m_device, desc2, L"BLAS2");
+	uint32 index1 = m_raytracingManager->AddBLASAndGetInstanceIndex(m_device, desc1.Geometries, L"BLAS1");
+	uint32 index2 = m_raytracingManager->AddBLASAndGetInstanceIndex(m_device, desc2.Geometries, L"BLAS2");
 
 	ResetCommandList();
 
@@ -1717,6 +1621,11 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 {
+	Matrix mat = Matrix::Identity;
+	static float rot = 0.f;
+	rot += 0.005f;
+	mat *= Matrix::CreateRotationY(rot);
+	m_raytracingManager->SetGeometryTransformByIndex(2, mat);
 	m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 }
 

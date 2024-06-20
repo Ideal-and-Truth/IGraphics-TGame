@@ -125,7 +125,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
-		bool isEditor = false;
+		bool isEditor = true;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
@@ -189,7 +189,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
-		//renderScene->AddObject(mesh);
+		renderScene->AddObject(mesh);
 		//renderScene->AddDebugObject(mesh);
 		//renderScene->AddObject(mesh2);
 
@@ -296,7 +296,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 
 				//-----ImGui Test-----//
-				//gRenderer->ClearImGui();
+				gRenderer->ClearImGui();
 				if (isEditor)
 				{
 					//ImGuiTest();
@@ -409,7 +409,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	float aspectRatio = float(WIDTH) / HEIGHT;
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
 

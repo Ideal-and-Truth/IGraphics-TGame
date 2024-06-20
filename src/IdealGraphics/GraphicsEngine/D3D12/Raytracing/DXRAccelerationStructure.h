@@ -19,9 +19,11 @@ namespace Ideal
 		std::wstring Name;
 		std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;
+		D3D12_GPU_DESCRIPTOR_HANDLE DiffuseTexture;
+		//D3D12_GPU_DESCRIPTOR_HANDLE NormalTexture;
 	};
 
-	struct BLASGeometryDesc
+	struct BLASData
 	{
 		std::vector<Ideal::BLASGeometry> Geometries;
 	};
@@ -52,7 +54,7 @@ namespace Ideal
 
 	class DXRBottomLevelAccelerationStructure : public DXRAccelerationStructure
 	{
-		static const uint32 MAX_PENDING_COUNT = SWAP_CHAIN_NUM - 1;
+		static const uint32 MAX_PENDING_COUNT = G_SWAP_CHAIN_NUM - 1;
 
 	public:
 		DXRBottomLevelAccelerationStructure(const std::wstring& Name);
@@ -60,7 +62,7 @@ namespace Ideal
 
 	public:
 		void Create(ComPtr<ID3D12Device5> Device,
-			BLASGeometryDesc& GeometryDescs,
+			std::vector<BLASGeometry>& Geometries,
 			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
 			bool AllowUpdate
 		);
@@ -69,16 +71,18 @@ namespace Ideal
 		uint32 GetInstanceContributionToHitGroupIndex() { return m_instanceContributionToHitGroupIndex; }
 		void SetInstanceContributionToHitGroupIndex(uint32 Index) { m_instanceContributionToHitGroupIndex = Index; }
 
+		uint64 GetGeometrySize() { return m_geometries.size(); }
+		const std::vector<BLASGeometry>& GetGeometries() { return m_geometries; }
+
 		bool IsDirty() { return m_isDirty; }
 	private:
-		void BuildGeometries(BLASGeometryDesc& geometryDescs);
+		void BuildGeometries(std::vector<BLASGeometry>& Geometries);
 
 	private:
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffer;
 		std::vector<BLASGeometry> m_geometries;
 		// geometry Info 로 만든 _geometry_desc을 저장 // 후에 BLAS 빌드할때 쓰임
 		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> m_geometryDescs;
-
 		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> m_cacheGeometryDescs[MAX_PENDING_COUNT];
 		uint32 m_currentID = 0;	// cache Geomeetry Desc에 사용할 ID. 이전 프레임의 geometry Desc을 겹쳐쓰지 않기 위한 용도?
 

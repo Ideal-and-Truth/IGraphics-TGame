@@ -417,7 +417,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12Renderer::CreateCamera()
 {
 	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
-
+	newCamera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
 	return newCamera;
 }
 

@@ -24,6 +24,18 @@ IdealCamera::IdealCamera()
 
 }
 
+void IdealCamera::SetLensWithoutAspect(float FovY, float NearZ, float FarZ)
+{
+	m_fovY = FovY;
+	m_nearZ = NearZ;
+	m_farZ = FarZ;
+
+	m_nearWindowHeight = 2.f * m_nearZ * std::tanf(0.5f * m_fovY);
+	m_farWindowHeight = 2.f * m_farZ * std::tanf(0.5f * m_fovY);
+
+	m_proj = XMMatrixPerspectiveFovLH(m_fovY, m_aspect, m_nearZ, m_farZ);
+}
+
 void Ideal::IdealCamera::Walk(float d)
 {
 	Vector3 s = Vector3(d);

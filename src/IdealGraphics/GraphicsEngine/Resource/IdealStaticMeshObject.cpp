@@ -68,7 +68,7 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 
 	uint64 numMesh = geometries.size();
 
-	Ideal::BLASGeometryDesc blasGeometryDesc;
+	Ideal::BLASData blasGeometryDesc;
 	for (uint32 i = 0; i < numMesh; ++i)
 	{
 		Ideal::BLASGeometry blasGeometry;
@@ -79,7 +79,7 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 		blasGeometryDesc.Geometries.push_back(blasGeometry);
 	}
 
-	m_instanceID = RaytracingManager->AddBLAS(Device, blasGeometryDesc, L"BLAS3");
+	m_instanceID = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, L"BLAS3");
 }
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)

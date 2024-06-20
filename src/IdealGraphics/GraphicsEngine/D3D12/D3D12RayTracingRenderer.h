@@ -25,23 +25,6 @@ struct ID3D12CommandAllocator;
 struct ID3D12GraphicsCommandList;
 struct ID3D12Fence;
 
-namespace GlobalRootSignatureParams {
-	enum Value {
-		OutputViewSlot = 0,
-		AccelerationStructureSlot,
-		SceneConstantSlot,
-		VertexBufferSlot,
-		Count
-	};
-}
-
-namespace LocalRootSignatureParams {
-	enum Value {
-		CubeConstantSlot = 0,
-		Count
-	};
-}
-
 struct cbViewport
 {
 	float left;
@@ -71,7 +54,7 @@ struct CubeConstantBuffer
 	Color albedo;
 };
 
-struct RootArgument
+struct RootArgumentTest
 {
 	// Test ConstantBuffer
 	CubeConstantBuffer CB_Cube;
@@ -133,7 +116,7 @@ namespace Ideal
 	class D3D12RayTracingRenderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12RayTracingRenderer>
 	{
 	public:
-		static const uint32 SWAP_CHAIN_FRAME_COUNT = SWAP_CHAIN_NUM;
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = G_SWAP_CHAIN_NUM;
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
@@ -271,6 +254,7 @@ namespace Ideal
 
 		void BuildGeometry();
 		void BuildAccelerationStructures();
+
 		// AS
 		void BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer);
 		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
@@ -287,7 +271,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_raytacingOutputResourceUAVGpuDescriptorHandle;
 
 		//geometry
-		RootArgument m_rootArguments;
+		RootArgumentTest m_rootArguments;
 
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
 		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_vertexBufferSRV;
@@ -313,10 +297,6 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_indexBufferShaderTableHandle;
 		Ideal::D3D12DescriptorHandle m_vertexBufferShaderTableHandle;
 		Ideal::D3D12DescriptorHandle m_textureShaderTableHandle;
-
-		ComPtr<ID3D12Resource> m_hitGroupShaderTables[MAX_PENDING_FRAME_COUNT];
-		ComPtr<ID3D12Resource> m_rayGenShaderTables[MAX_PENDING_FRAME_COUNT];
-		ComPtr<ID3D12Resource> m_missShaderTables[MAX_PENDING_FRAME_COUNT];
 
 		// Render
 		void DoRaytracing();

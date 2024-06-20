@@ -28,7 +28,7 @@ Ideal::DXRBottomLevelAccelerationStructure::~DXRBottomLevelAccelerationStructure
 
 }
 
-void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, BLASGeometryDesc& GeometryDescs, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate)
+void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate)
 {
 	m_allowUpdate = AllowUpdate;
 
@@ -37,7 +37,7 @@ void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> De
 		m_buildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 
 	// build geometry desc
-	BuildGeometries(GeometryDescs);
+	BuildGeometries(Geometries);
 
 	// Prebuild
 	{
@@ -107,17 +107,15 @@ void Ideal::DXRBottomLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsComm
 	m_isBuilt = true;	// 이미 만들어졌다고 저장
 }
 
-void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries(BLASGeometryDesc& geometryDesc)
+void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries(std::vector<BLASGeometry>& Geometries)
 {
-	std::vector<Ideal::BLASGeometry>& geometries = geometryDesc.Geometries;
-
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDescTemplate = {};
 	geometryDescTemplate.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	geometryDescTemplate.Triangles.IndexFormat = INDEX_FORMAT;
 	geometryDescTemplate.Triangles.VertexFormat = VERTEX_FORMAT;
-	m_geometryDescs.reserve(geometries.size());
+	m_geometryDescs.reserve(Geometries.size());
 
-	for (BLASGeometry& geometry : geometries)
+	for (BLASGeometry& geometry : Geometries)
 	{
 		D3D12_GPU_VIRTUAL_ADDRESS ibAddress = geometry.IndexBuffer->GetResource()->GetGPUVirtualAddress();
 		uint32 indexCount = geometry.IndexBuffer->GetElementCount();
@@ -137,6 +135,8 @@ void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries(BLASGeometryDes
 		// 최종으로 만든 desc을 저장
 		m_geometryDescs.push_back(geometryDesc);
 	}
+
+	m_geometries = Geometries;
 }
 
 //------------------------TLAS------------------------//

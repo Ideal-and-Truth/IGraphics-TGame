@@ -11,18 +11,18 @@ Ideal::DXRAccelerationStructureManager::~DXRAccelerationStructureManager()
 
 }
 
-void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, BLASGeometryDesc& GeometryInfo, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, const wchar_t* Name)
+void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, const wchar_t* Name)
 {
 	// 먼저 같은 이름의 BLAS가 있는지를 검사한다. 만약 있을 경우 이미 추가한 BLAS인 것
 	if (m_bottomLevelAS[Name] != nullptr)
 	{
-		__debugbreak(); // 아마 여기 걸렸으면 다음 코드에서 이름으로 제대로 찾아오면 문제는 없을 것이다. 
+		//__debugbreak(); // 아마 여기 걸렸으면 다음 코드에서 이름으로 제대로 찾아오면 문제는 없을 것이다. 
 		return;
 	}
 
 	// 처음 추가할 경우 만들어서 넣어준다.
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(Name);
-	blas->Create(Device, GeometryInfo, BuildFlags, false);
+	blas->Create(Device, Geometries, BuildFlags, false);
 	m_bottomLevelAS[Name] = blas;
 
 	if (blas->RequiredScratchSize() > m_scratchResourceSize)
