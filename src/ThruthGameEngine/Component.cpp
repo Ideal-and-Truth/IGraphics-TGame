@@ -69,3 +69,13 @@ void Truth::Component::SetWorldTM(const Matrix& _tm)
 {
 	m_owner.lock()->m_transform->SetWorldTM(_tm);
 }
+
+void Truth::Component::AddEmptyEntity()
+{
+	m_managers.lock()->Scene()->m_currentScene->AddEntity(std::make_shared<Entity>());
+}
+
+void Truth::Component::AddEntity(std::shared_ptr<Entity> _entity)
+{
+	m_managers.lock()->Scene()->m_currentScene->AddEntity(_entity);
+}

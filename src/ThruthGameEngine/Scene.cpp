@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "Managers.h"
 #include "EventManager.h"
+#include "GraphicsManager.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -191,6 +192,7 @@ void Truth::Scene::Enter()
 void Truth::Scene::Exit()
 {
 	ClearEntity();
+	m_managers.lock()->Graphics()->ResetRenderScene();
 }
 
 /// <summary>

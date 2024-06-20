@@ -73,6 +73,11 @@ bool show_point_light_window = true;
 
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+DWORD g_FrameCount = 0;
+ULONGLONG g_PrvFrameCheckTick = 0;
+ULONGLONG g_PrvUpdateTick = 0;
+
+
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
@@ -120,9 +125,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
-		bool isEditor = false;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		bool isEditor = true;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
 		{
 			type = EGraphicsInterfaceType::D3D12_EDITOR;
@@ -167,8 +172,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Create Mesh Object-------------------//
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		//std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		//std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		//std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		//std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		//
@@ -184,8 +189,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		//renderScene->AddObject(ka);
 		//renderScene->AddObject(cat);
-		//renderScene->AddObject(mesh);
-		renderScene->AddDebugObject(mesh);
+		renderScene->AddObject(mesh);
+		//renderScene->AddDebugObject(mesh);
 		//renderScene->AddObject(mesh2);
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
@@ -204,7 +209,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
-		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		//std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
@@ -218,7 +223,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
-		renderScene->AddLight(dirLight);
+		//renderScene->AddLight(dirLight);
 		//renderScene->AddLight(spotLight);
 		//renderScene->AddLight(pointLight);
 		//renderScene->AddLight(pointLight2);
@@ -242,6 +247,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			else
 			{
+				g_FrameCount++;
+				ULONGLONG curTick = GetTickCount64();
+				if (curTick - g_PrvUpdateTick > 16)
+				{
+					g_PrvUpdateTick = curTick;
+				}
+				if (curTick - g_PrvFrameCheckTick > 1000)
+				{
+					g_PrvFrameCheckTick = curTick;
+					WCHAR wchTxt[64];
+					swprintf_s(wchTxt, L"FPS:%u", g_FrameCount);
+					SetWindowText(g_hWnd, wchTxt);
+					g_FrameCount = 0;
+				}
+
 				CameraTick(camera);
 				//pointLight->SetPosition(camera->GetPosition());
 				//auto cp = camera->GetPosition();
@@ -276,7 +296,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 
 				//-----ImGui Test-----//
-				//gRenderer->ClearImGui();
+				gRenderer->ClearImGui();
 				if (isEditor)
 				{
 					//ImGuiTest();
@@ -389,16 +409,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	float aspectRatio = float(WIDTH) / HEIGHT;
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	//Camera->SetPosition(Vector3(0.f, 100.f, -200.f));
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
+	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
 
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 {
-	float speed = 2.f;
+	float speed = 0.2f;
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 	{
-		speed = 0.2f;
+		speed *= 0.1f;
 	}
 	if (GetAsyncKeyState('W') & 0x8000)
 	{
@@ -416,7 +437,18 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 	{
 		Camera->Strafe(speed);
 	}
-	return;
+	if (GetAsyncKeyState('Q') & 0x8000)
+	{
+		auto p = Camera->GetPosition();
+		p.y += speed;
+		Camera->SetPosition(p);
+	}
+	if (GetAsyncKeyState('E') & 0x8000)
+	{
+		auto p = Camera->GetPosition();
+		p.y -= speed;
+		Camera->SetPosition(p);
+	}
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
 		Camera->SetLook(Vector3(0.f, 1.f, 1.f));

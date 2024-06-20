@@ -12,6 +12,7 @@ namespace Ideal
 
 	public:
 		virtual void SetLens(float FovY, float Aspect, float NearZ, float FarZ) abstract;
+		virtual void SetLensWithoutAspect(float FovY, float NearZ, float FarZ) abstract;
 
 		virtual void Walk(float Distance) abstract;
 		virtual void Strafe(float Distance) abstract;

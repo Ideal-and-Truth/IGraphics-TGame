@@ -10,6 +10,9 @@ namespace Ideal
 	class IdealRenderer;
 	class IdealStaticMesh;
 	class D3D12Renderer;
+	
+	//--raytracing--//
+	class RaytracingManager;
 }
 
 
@@ -17,12 +20,11 @@ namespace Ideal
 {
 	class IdealStaticMeshObject : public IMeshObject
 	{
-		static const uint32 DESCRIPTOR_COUNT_FOR_DRAW = 2;	// [CBV] [SRV]
 	public:
 		IdealStaticMeshObject();
 		virtual ~IdealStaticMeshObject();
 
-		void Init(std::shared_ptr<IdealRenderer> Renderer);
+		void Init(ComPtr<ID3D12Device> Device);
 		// 2024.05.07 Ver2
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
@@ -37,5 +39,13 @@ namespace Ideal
 		std::shared_ptr<IdealStaticMesh> m_staticMesh;
 		Matrix m_transform;
 		bool m_isDraw = true;
+
+		//------Raytracing Info------//
+	public:
+		void AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
+		void UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
+
+	private:
+		uint32 m_instanceID = 0;
 	};
 }

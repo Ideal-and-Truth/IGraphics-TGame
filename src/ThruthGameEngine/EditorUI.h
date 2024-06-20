@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <string>
+#include <windows.h>
 #include "Types.h"
 
 namespace Truth
@@ -20,12 +22,21 @@ private:
 
 	std::vector<const char*>& m_componentList;
 
-public:
-	EditorUI(std::shared_ptr<Truth::Managers> Manager);
-	~EditorUI() {}
+	char inputTextBuffer[128];
+
+	OPENFILENAME m_openFileName;
+	TCHAR m_filePathBuffer[128] = L"";
+	TCHAR m_fileBuffer[128] = L"";
+	const TCHAR* m_fileFilter = L"Scene ÆÄÀÏ\0*.scene";
+
+	HWND m_hwnd;
 
 public:
+	EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd);
+	~EditorUI() {}
 	void RenderUI(bool* p_open);
+
+private:
 	void ShowInspectorWindow(bool* p_open);
 	void ShowHierarchyWindow(bool* p_open);
 	void ShowMenuBar(bool* p_open);

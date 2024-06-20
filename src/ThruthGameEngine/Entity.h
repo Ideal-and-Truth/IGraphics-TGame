@@ -26,6 +26,7 @@ namespace Truth
 
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int file_version);
+		typedef std::vector<std::pair<std::weak_ptr<Component>, const Method*>> ComponentMethod;
 
 	protected:
 		static uint32 m_entityCount;
@@ -51,25 +52,27 @@ namespace Truth
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
+
 		bool m_isDead = false;
 
-		std::vector<std::pair<Component*, const Method*>> m_onCollisionEnter;
-		std::vector<std::pair<Component*, const Method*>> m_onCollisionStay;
-		std::vector<std::pair<Component*, const Method*>> m_onCollisionExit;
 
-		std::vector<std::pair<Component*, const Method*>> m_onTriggerEnter;
-		std::vector<std::pair<Component*, const Method*>> m_onTriggerStay;
-		std::vector<std::pair<Component*, const Method*>> m_onTriggerExit;
-
-		std::vector<std::pair<Component*, const Method*>> m_update;
-		std::vector<std::pair<Component*, const Method*>> m_fixedUpdate;
-		std::vector<std::pair<Component*, const Method*>> m_latedUpdate;
-
-		std::vector<std::pair<Component*, const Method*>> m_onBecomeVisible;
-		std::vector<std::pair<Component*, const Method*>> m_onBecomeInvisible;
-
-		std::vector<std::pair<Component*, const Method*>> m_destroy;
-		std::vector<std::pair<Component*, const Method*>> m_applyTransform;
+		ComponentMethod m_onCollisionEnter;
+		ComponentMethod m_onCollisionStay;
+		ComponentMethod m_onCollisionExit;
+		
+		ComponentMethod m_onTriggerEnter;
+		ComponentMethod m_onTriggerStay;
+		ComponentMethod m_onTriggerExit;
+		
+		ComponentMethod m_update;
+		ComponentMethod m_fixedUpdate;
+		ComponentMethod m_latedUpdate;
+		
+		ComponentMethod m_onBecomeVisible;
+		ComponentMethod m_onBecomeInvisible;
+		
+		ComponentMethod m_destroy;
+		ComponentMethod m_applyTransform;
 
 		std::shared_ptr<Transform> m_transform;
 		 
@@ -90,7 +93,7 @@ namespace Truth
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm) const;
 
-		void ApplyTransform() const;
+		void ApplyTransform();
 
 		void Awake();
 		void Destroy();
@@ -105,6 +108,8 @@ namespace Truth
 		void OnTriggerEnter(Collider* _other);
 		void OnTriggerStay(Collider* _other);
 		void OnTriggerExit(Collider* _other);
+
+		void DeleteComponent(int32 _index);
 
 		template<typename C, typename std::enable_if<std::is_base_of_v<Component, C>, C>::type* = nullptr>
 		std::shared_ptr<C> AddComponent();
@@ -125,9 +130,10 @@ namespace Truth
 
 
 	private:
-
 		void ApplyComponent(std::shared_ptr<Component> _c);
 
+		void IterateComponentMethod(ComponentMethod& _cm);
+		void IterateComponentMethod(ComponentMethod& _cm, Collider* _param);
 	};
 
 	/// template로 작성된 함수 목록
@@ -154,6 +160,7 @@ namespace Truth
 			component = std::make_shared<C>();
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
+			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);
@@ -175,6 +182,7 @@ namespace Truth
 			component = std::make_shared<C>(_args...);
 			component->SetManager(m_manager);
 			component->SetOwner(shared_from_this());
+			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
 			component->Initalize();
 			ApplyComponent(component);

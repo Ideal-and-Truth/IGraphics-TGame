@@ -50,6 +50,8 @@ namespace Truth
 		float GetAspect() const { return m_aspect; }
 
 		std::shared_ptr<Ideal::IdealRenderer> GetRenderer() const {return m_renderer;}
+
+		void ResetRenderScene();
 	};
 }
 

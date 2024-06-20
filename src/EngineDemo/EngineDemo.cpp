@@ -75,12 +75,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	triggerWall->SetScale(Vector3(40.0f, 40.0f, 4.0f));
 // 	testScene->AddEntity(triggerWall);
 // 
-// 	processor->AddScene(testScene);
-// 
 // 	processor->SaveScene(testScene);
- 	processor->LoadScene("../Scene/test.scene");
+ 	processor->LoadScene(L"../Scene/test.scene");
 
-	processor->SetStartScene("test");
 	///...///
 
 	processor->Loop();

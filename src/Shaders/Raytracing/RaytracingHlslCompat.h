@@ -18,7 +18,7 @@
 using namespace DirectX;
 
 // Shader will use byte encoding to access indices.
-typedef UINT16 Index;
+typedef UINT32 Index;
 #endif
 
 struct SceneConstantBuffer
@@ -41,4 +41,10 @@ struct Vertex
     XMFLOAT3 normal;
 };
 
+struct PositionNormalUVVertex
+{
+    XMFLOAT3 position;
+    XMFLOAT3 normal;
+    float uv[2];
+};
 #endif // RAYTRACINGHLSLCOMPAT_H

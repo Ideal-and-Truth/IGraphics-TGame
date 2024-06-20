@@ -217,7 +217,7 @@ finishAdapter:
 	clearValue.Color[2] = c[2];
 	clearValue.Color[3] = c[3];
 
-	// descriptor heap ø°º≠ rtv Descriptor¿« ≈©±‚
+	// descriptor heap ÏóêÏÑú rtv DescriptorÏùò ÌÅ¨Í∏∞
 	m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	{
 		// Create RenderTarget Texture
@@ -238,7 +238,7 @@ finishAdapter:
 	}
 
 	//---------------------DSV-------------------------//
-	// 2024.04.14 : dsv∏¶ ∏∏µÈ∞⁄¥Ÿ. ∏’¿˙ descriptor heap¿ª ∏∏µÁ¥Ÿ.
+	// 2024.04.14 : dsvÎ•º ÎßåÎì§Í≤†Îã§. Î®ºÏ†Ä descriptor heapÏùÑ ÎßåÎì†Îã§.
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
 	dsvHeapDesc.NumDescriptors = 1;
 	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
@@ -296,9 +296,9 @@ void Ideal::D3D12Renderer::Tick()
 void Ideal::D3D12Renderer::Render()
 {
 	ResetCommandList();
+
 	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateMatrix2();
-
 	//2024.05.16 Draw GBuffer
 	m_currentRenderScene.lock()->DrawGBuffer(shared_from_this());
 
@@ -309,6 +309,8 @@ void Ideal::D3D12Renderer::Render()
 		m_currentRenderScene.lock()->DrawScreen(shared_from_this());
 		DrawImGuiMainCamera();
 	}
+
+
 #endif
 	//-------------Begin Render------------//
 	BeginRender();
@@ -417,7 +419,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12Renderer::CreateCamera()
 {
 	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
-
+	newCamera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
 	return newCamera;
 }
 
@@ -429,9 +431,9 @@ void Ideal::D3D12Renderer::SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera)
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(shared_from_this(), newStaticMesh, FileName);
+	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
 
-	newStaticMesh->Init(shared_from_this());
+	//newStaticMesh->Init(shared_from_this());
 
 	//m_staticMeshObjects.push_back(newStaticMesh);
 
@@ -496,7 +498,7 @@ void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool is
 
 	assimpConverter->ReadAssetFile(FileName, isSkinnedData);
 
-	// Temp : ".fbx" ªË¡¶
+	// Temp : ".fbx" ÏÇ≠Ï†ú
 	FileName.pop_back();
 	FileName.pop_back();
 	FileName.pop_back();
@@ -519,7 +521,7 @@ void Ideal::D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName
 
 	assimpConverter->ReadAssetFile(FileName, false);
 
-	// Temp : ".fbx" ªË¡¶
+	// Temp : ".fbx" ÏÇ≠Ï†ú
 	FileName.pop_back();
 	FileName.pop_back();
 	FileName.pop_back();
@@ -650,7 +652,7 @@ std::shared_ptr<Ideal::D3D12DescriptorHeap> Ideal::D3D12Renderer::GetMainDescrip
 std::shared_ptr<Ideal::ConstantBufferContainer> Ideal::D3D12Renderer::ConstantBufferAllocate(uint32 SizePerCB)
 {
 	// TEMP : Index = 0 
-	// TODO : ¡ﬂ√∏ ∑ª¥ı∏µ »ƒ «ˆ¿Á ¿Œµ¶Ω∫∏¶ πﬁæ∆ø¿µµ∑œ ºˆ¡§
+	// TODO : Ï§ëÏ≤© Î†åÎçîÎßÅ ÌõÑ ÌòÑÏû¨ Ïù∏Îç±Ïä§Î•º Î∞õÏïÑÏò§ÎèÑÎ°ù ÏàòÏ†ï
 	//return m_cbAllocator[0]->Allocate(m_device.Get(), SizePerCB);
 	return m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), SizePerCB);
 }
@@ -730,7 +732,7 @@ void Ideal::D3D12Renderer::OffWarningRenderTargetClearValue()
 
 	infoQueue->PushStorageFilter(&filter);
 
-	// æ∆∑°¿« ƒ⁄µÂ¥¬ ∞Ê∞Ì∞° ∂ﬂ∏È πŸ∑Œ µπˆ±◊ ∫Í∑π¿Ã≈© «ÿπˆ∏≤.
+	// ÏïÑÎûòÏùò ÏΩîÎìúÎäî Í≤ΩÍ≥†Í∞Ä Îú®Î©¥ Î∞îÎ°ú ÎîîÎ≤ÑÍ∑∏ Î∏åÎ†àÏù¥ÌÅ¨ Ìï¥Î≤ÑÎ¶º.
 	//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
 	//https://blog.techlab-xe.net/dx12-debug-id3d12infoqueue/
 }
@@ -743,9 +745,9 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 	ImVec2 size(windowSize.x, windowSize.y);
 	//ImVec2 size(m_width/4, m_height/4);
 
-	m_width = windowSize.x;
-	m_height = windowSize.y;
-	m_aspectRatio = float(m_width) / m_height;
+	//m_width = windowSize.x;
+	//m_height = windowSize.y;
+	m_aspectRatio = float(windowSize.x) / windowSize.y;
 	m_mainCamera->SetAspectRatio(m_aspectRatio);
 
 
@@ -756,7 +758,7 @@ void Ideal::D3D12Renderer::DrawImGuiMainCamera()
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
-
+	
 	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
 	// to present
 	/*barrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -944,7 +946,12 @@ void Ideal::D3D12Renderer::Present()
 	Fence();
 
 	HRESULT hr;
-	hr = m_swapChain->Present(0, 0);
+
+	uint32 SyncInterval = 0;
+	uint32 PresentFlags = 0;
+	PresentFlags = DXGI_PRESENT_ALLOW_TEARING;
+
+	hr = m_swapChain->Present(0, PresentFlags);
 	Check(hr);
 
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();

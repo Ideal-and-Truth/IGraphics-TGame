@@ -24,7 +24,7 @@ namespace Ideal
 class Processor
 {
 private:
-	EditorUI* m_editor;
+	std::unique_ptr<EditorUI> m_editor;
 	std::shared_ptr<Truth::Managers> m_manager;
 
 	std::shared_ptr<Ideal::IMeshObject> mesh;
@@ -55,13 +55,9 @@ public:
 	void Process();
 	void Loop();
 
-	void AddScene(std::shared_ptr<Truth::Scene> _scene);
-
 	void SaveCurrentScene();
 	void SaveScene(std::shared_ptr<Truth::Scene> _scene);
-	void LoadScene(std::string _path);
-
-	void SetStartScene(std::string _name);
+	void LoadScene(std::wstring _path);
 
 	// 윈도우 함수
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

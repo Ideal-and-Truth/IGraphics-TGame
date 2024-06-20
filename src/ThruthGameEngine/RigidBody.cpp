@@ -38,7 +38,10 @@ Truth::RigidBody::RigidBody()
 /// </summary>
 Truth::RigidBody::~RigidBody()
 {
-	m_body->release();
+	if (m_body)
+	{
+		m_body->release();
+	}
 }
 
 /// <summary>
@@ -57,13 +60,13 @@ void Truth::RigidBody::Initalize()
 /// </summary>
 void Truth::RigidBody::ApplyTransform()
 {
-// 	Vector3 pos = m_owner.lock()->GetPosition();
-// 	Quaternion rot = m_owner.lock()->GetRotation();
-// 
-// 	m_body->setGlobalPose(physx::PxTransform(
-// 		MathConverter::Convert(pos),
-// 		MathConverter::Convert(rot)
-// 	), false);
+	// 	Vector3 pos = m_owner.lock()->GetPosition();
+	// 	Quaternion rot = m_owner.lock()->GetRotation();
+	// 
+	// 	m_body->setGlobalPose(physx::PxTransform(
+	// 		MathConverter::Convert(pos),
+	// 		MathConverter::Convert(rot)
+	// 	), false);
 }
 
 void Truth::RigidBody::Start()
@@ -96,9 +99,9 @@ void Truth::RigidBody::CalculateMassCenter()
 
 void Truth::RigidBody::InitalizeMassAndInertia()
 {
-	auto mcenter =  m_body->getCMassLocalPose();
+	auto mcenter = m_body->getCMassLocalPose();
 	physx::PxRigidBodyExt::setMassAndUpdateInertia(
-		*m_body, 
+		*m_body,
 		physx::PxReal(m_mass),
 		&(mcenter.p)
 	);

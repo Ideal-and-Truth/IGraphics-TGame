@@ -66,3 +66,4 @@ using namespace DirectX::SimpleMath;
 #include <codecvt>
 #include <string>
 
+#include <atlconv.h>

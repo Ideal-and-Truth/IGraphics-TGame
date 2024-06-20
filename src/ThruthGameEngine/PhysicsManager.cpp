@@ -31,6 +31,7 @@ Truth::PhysicsManager::PhysicsManager()
 
 Truth::PhysicsManager::~PhysicsManager()
 {
+	DEBUG_PRINT("Finalize PhysicsManager\n");
 }
 
 void Truth::PhysicsManager::Initalize()

@@ -81,8 +81,6 @@ void Truth::Collider::Destroy()
 /// </summary>
 void Truth::Collider::Awake()
 {
-
-
 	Vector3 onwerSize = m_owner.lock()->GetScale();
 	m_collider = CreateCollider(m_shape, (m_size * onwerSize) / 2);
 

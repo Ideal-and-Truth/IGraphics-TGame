@@ -19,7 +19,7 @@ Truth::GraphicsManager::GraphicsManager()
 /// </summary>
 Truth::GraphicsManager::~GraphicsManager()
 {
-
+	DEBUG_PRINT("Finalize GraphicsManager\n");
 }
 
 /// <summary>
@@ -155,5 +155,12 @@ std::shared_ptr<Ideal::ICamera> Truth::GraphicsManager::CreateCamera()
 void Truth::GraphicsManager::SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera)
 {
 	m_renderer->SetMainCamera(_camera);
+}
+
+void Truth::GraphicsManager::ResetRenderScene()
+{
+	m_renderScene.reset();
+	m_renderScene = m_renderer->CreateRenderScene();
+	m_renderer->SetRenderScene(m_renderScene);
 }
 

@@ -14,15 +14,27 @@
 #include "SphereCollider.h"
 #include "InputManager.h"
 #include "Managers.h"
+#include <commdlg.h>
+#include "StringConverter.h"
 
 int32 EditorUI::m_selectedEntity = -1;
 
-EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager)
+EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
 	: m_manager(Manager)
 	, m_notUsedID(0)
 	, m_componentList(TypeInfo::g_factory->m_componentList)
+	, inputTextBuffer{}
+	, m_hwnd(_hwnd)
 {
 	m_selectedEntity = -1;
+	memset(&m_openFileName, 0, sizeof(OPENFILENAME));
+	m_openFileName.lStructSize = sizeof(OPENFILENAME);
+	m_openFileName.hwndOwner = m_hwnd;
+	m_openFileName.lpstrFilter = m_fileFilter;
+	m_openFileName.lpstrFile = m_fileBuffer;
+	m_openFileName.nMaxFile = 100;
+	m_openFileName.lpstrInitialDir = L".";
+	m_openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
 }
 
 void EditorUI::RenderUI(bool* p_open)
@@ -90,23 +102,13 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 
 
 	/// 여기부터 UI 만들기
-
-	auto currentSceneEntities = m_manager->Scene()->m_currentScene.lock()->GetTypeInfo().GetProperty("entities");
-	auto getEntities = currentSceneEntities->Get<std::vector<std::shared_ptr<Truth::Entity>>>(m_manager->Scene()->m_currentScene.lock().get());
-	const auto& entities = getEntities.Get();
-
-	/// TEST : 비어있는 엔티티 씬에 추가 할 수 있는지 해봄
-	/// 나중에 방법 알아내기
-	if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
-	{
-		//m_manager->Scene()->m_currentScene.lock()->CreateEntity(std::make_shared<Truth::Entity>());
-	}
+	const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
 
 	if (m_selectedEntity >= 0)
 	{
 		// Set Entity Name
 		{
-			std::string sEntityName = entities[m_selectedEntity]->GetTypeInfo().GetProperty("name")->Get<std::string>(entities[m_selectedEntity].get());
+			std::string sEntityName = entities[m_selectedEntity]->m_name;
 			char* cEntityName = (char*)sEntityName.c_str();
 			bool isShown = true;
 			ImGui::Checkbox("##1", &isShown);
@@ -115,7 +117,7 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 			if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
 			{
 				sEntityName = std::string(cEntityName, cEntityName + strlen(cEntityName));
-				entities[m_selectedEntity]->GetTypeInfo().GetProperty("name")->Set(entities[m_selectedEntity].get(), sEntityName);
+				entities[m_selectedEntity]->m_name = sEntityName;
 			}
 		}
 
@@ -203,7 +205,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 
 	/// Hierarchy UI
 	{
-		std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene.lock();
+		std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
 		const auto& currentSceneName = currentScene->m_name;
 		const auto& currentSceneEntities = currentScene->m_entities;
 
@@ -229,7 +231,6 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 				// Select Entity
 				if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == selectCount))
 				{
-
 					m_selectedEntity = selectCount;
 				}
 
@@ -238,8 +239,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 				{
 					if (ImGui::Selectable("Delete"))
 					{
-						/// TODO : 엔티티 삭제방법을 모르겠음
-						m_manager->Scene()->m_currentScene.lock()->DeleteEntity(e);
+						m_manager->Scene()->m_currentScene->DeleteEntity(e);
 						m_selectedEntity = -1;
 					}
 
@@ -265,10 +265,42 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	// Verify ABI compatibility between caller code and compiled version of Dear ImGui. This helps detects some build issues.
 	IMGUI_CHECKVERSION();
 
-	ImGui::BeginMainMenuBar();
+	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
+	const auto& currentSceneName = currentScene->m_name;
+	const auto& currentSceneEntities = currentScene->m_entities;
 
-	float4 dt = m_manager->Time()->GetADT();
-	ImGui::Text("frame : %.2f\t", 1 / dt);
+	ImGui::BeginMainMenuBar();
+	ImGui::Button("Menu");
+
+	static bool newScene = false;
+	static bool saveAsScene = false;
+	static bool loadScene = false;
+	static bool	saveScene = false;
+
+	if (ImGui::BeginPopupContextItem("menu", 0))
+	{
+		if (ImGui::Selectable("New Scene"))
+		{
+			newScene = true;
+		}
+		if (ImGui::Selectable("Save Scene"))
+		{
+			saveScene = true;
+		}
+		if (ImGui::Selectable("Save as Scene"))
+		{
+			saveAsScene = true;
+		}
+		if (ImGui::Selectable("Load Scene"))
+		{
+			loadScene = true;
+		}
+		if (ImGui::Selectable("Create Empty"))
+		{
+			currentScene->AddEntity(std::make_shared<Truth::Entity>(m_manager));
+		}
+		ImGui::EndPopup();
+	}
 
 	if (ImGui::Button("Play"))
 	{
@@ -277,6 +309,77 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	if (ImGui::Button("Stop"))
 	{
 		m_manager->GameToEdit();
+	}
+
+	float4 dt = m_manager->Time()->GetADT();
+	ImGui::Text("frame : %.2f\t", 1 / dt);
+
+	if (newScene)
+	{
+		ImGui::OpenPopup("Input String");
+		if (ImGui::BeginPopupModal("Input String", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Enter your text below:");
+			ImGui::InputText("##input", inputTextBuffer, IM_ARRAYSIZE(inputTextBuffer));
+
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
+				USES_CONVERSION;
+				std::shared_ptr<Truth::Scene> ns = std::make_shared<Truth::Scene>(m_manager);
+				ns->m_name = inputTextBuffer;
+				m_manager->Scene()->SaveScene(ns);
+				std::string path = "../Scene/" + ns->m_name + ".scene";
+				m_manager->Scene()->LoadSceneData(A2W(path.c_str()));
+				newScene = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				newScene = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+	else if (saveScene)
+	{
+		saveScene = false;
+		m_manager->Scene()->SaveCurrentScene();
+
+	}
+	else if (saveAsScene)
+	{
+		m_openFileName.lpstrDefExt = L"scene";
+		saveAsScene = false;
+		if (GetSaveFileName(&m_openFileName) != 0)
+		{
+			std::wstring filepath = m_openFileName.lpstrFile;
+			std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
+
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+			f.back().pop_back();
+
+			m_manager->Scene()->SaveAsScene(filepath);
+			USES_CONVERSION;
+			m_manager->Scene()->m_currentScene->m_name = W2A(f.back().c_str());
+		}
+	}
+	else if (loadScene)
+	{
+		loadScene = false;
+		if (GetOpenFileName(&m_openFileName) != 0)
+		{
+			std::wstring filepath = m_openFileName.lpstrFile;
+			m_manager->Scene()->LoadSceneData(filepath);
+		}
 	}
 
 	ImGui::EndMainMenuBar();
@@ -307,11 +410,23 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 	// 컴포넌트 이름
 	const char* componentName = typeinfo.GetName();
 
-	auto& properise = typeinfo.GetProperties();
+	auto& properties = typeinfo.GetProperties();
 	bool isSelect = false;
+
+	const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
+
 	if (ImGui::CollapsingHeader(componentName, ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		for (auto* p : properise)
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::Selectable("Remove Component"))
+			{
+				entities[m_selectedEntity]->DeleteComponent(_component->m_index);
+			}
+
+			ImGui::EndPopup();
+		}
+		for (auto* p : properties)
 		{
 			isSelect |= p->DisplayUI(_component.get());
 		}

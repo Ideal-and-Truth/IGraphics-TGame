@@ -8,6 +8,8 @@
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
+#include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
+
 #include "GraphicsEngine/VertexInfo.h"
 
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
@@ -19,6 +21,7 @@
 #include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/ModelAnimation.h"
+
 
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "Misc/Utils/FileUtils.h"
@@ -39,7 +42,7 @@ ResourceManager::~ResourceManager()
 	WaitForFenceValue();
 }
 
-void ResourceManager::Init(ComPtr<ID3D12Device> Device)
+void ResourceManager::Init(ComPtr<ID3D12Device5> Device)
 {
 	m_device = Device;
 
@@ -66,6 +69,7 @@ void ResourceManager::Init(ComPtr<ID3D12Device> Device)
 	//------------SRV Heap-----------//
 	m_srvHeap = std::make_shared<D3D12DynamicDescriptorHeap>();
 	m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
+	//m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, m_srvHeapCount);
 
 	//------------RTV Heap-----------//
 	m_rtvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
@@ -221,6 +225,39 @@ void ResourceManager::CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer>
 	WaitForFenceValue();
 }
 
+void ResourceManager::CreateIndexBufferUint16(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer, std::vector<uint16>& Indices)
+{
+	m_commandAllocator->Reset();
+	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+
+	const uint32 elementSize = sizeof(uint16);
+	const uint32 elementCount = (uint32)Indices.size();
+	const uint32 bufferSize = elementSize * elementCount;
+
+	Ideal::D3D12UploadBuffer uploadBuffer;
+	uploadBuffer.Create(m_device.Get(), bufferSize);
+	{
+		void* mappedData = uploadBuffer.Map();
+		memcpy(mappedData, Indices.data(), bufferSize);
+		uploadBuffer.UnMap();
+	}
+	OutIndexBuffer->Create(m_device.Get(),
+		m_commandList.Get(),
+		elementSize,
+		elementCount,
+		uploadBuffer
+	);
+
+	//-----------Execute-----------//
+	m_commandList->Close();
+
+	ID3D12CommandList* commandLists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+	Fence();
+	WaitForFenceValue();
+}
+
 void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
 {
 	if (!OutTexture)
@@ -265,6 +302,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		0, 0, 1, &subResource
 	);
 
+	uploadBuffer.UnMap();
 	//----------------------Resource Barrier--------------------------//
 
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -395,7 +433,7 @@ std::shared_ptr<Ideal::D3D12ShaderResourceView> ResourceManager::CreateSRV(std::
 	return ret;
 }
 
-void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
+void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);

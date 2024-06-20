@@ -12,8 +12,6 @@
 //#include "../IdealGraphics/Misc/Utils/FileUtils.h"
 #include "EditorUI.h"
 
-
-
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -70,7 +68,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 
 // 	int a = 3;
 
-	m_editor = new EditorUI(m_manager);
+	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }
 
 void Processor::Finalize()
@@ -106,12 +104,7 @@ void Processor::Loop()
 	}
 }
 
-void Processor::AddScene(std::shared_ptr<Truth::Scene> _scene)
-{
-	m_manager->Scene()->AddScene(_scene);
-}
-
-void Processor::LoadScene(std::string _path)
+void Processor::LoadScene(std::wstring _path)
 {
 	m_manager->Scene()->LoadSceneData(_path);
 }
@@ -138,7 +131,19 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-
+	case WM_SIZE:
+	{
+		if (g_Renderer)
+		{
+			RECT rect;
+			GetClientRect(hWnd, &rect);
+			//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+			DWORD width = rect.right - rect.left;
+			DWORD height = rect.bottom - rect.top;
+			g_Renderer->Resize(width, height);
+		}
+		break;
+	}
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN:
 	case WM_LBUTTONUP:
@@ -159,14 +164,12 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 void Processor::SaveCurrentScene()
 {
-	m_manager->Scene()->SaveSceneData();
+	m_manager->Scene()->SaveCurrentScene();
 }
 
 void Processor::SaveScene(std::shared_ptr<Truth::Scene> _scene)
 {
-	std::ofstream outputstream(m_savedFilePath + _scene->m_name + ".scene");
-	boost::archive::text_oarchive outputArchive(outputstream);
-	outputArchive << _scene;
+	m_manager->Scene()->SaveScene(_scene);
 }
 
 void Processor::Update()
@@ -264,7 +267,3 @@ void Processor::InitializeManager()
 	// g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
 }
 
-void Processor::SetStartScene(std::string _name)
-{
-	m_manager->Scene()->SetCurrnetScene(_name);
-}
