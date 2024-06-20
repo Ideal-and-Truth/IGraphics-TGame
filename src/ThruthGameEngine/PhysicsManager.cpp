@@ -194,6 +194,15 @@ void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, boo
 	}
 }
 
+physx::PxController* Truth::PhysicsManager::CreatePlayerController()
+{
+	physx::PxCapsuleControllerDesc desc;
+
+	physx::PxController* c = m_CCTManager->createController(desc);
+
+	return c;
+}
+
 void Truth::PhysicsManager::CreatePhysxScene()
 {
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
@@ -224,6 +233,8 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
+
+	m_CCTManager = PxCreateControllerManager(*m_scene);
 }
 
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
