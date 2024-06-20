@@ -33,7 +33,7 @@ namespace Ideal
 		void AddToArgumentsIncludeDirectories(std::vector<LPCWSTR>& Args);
 
 		void ErrorCheck(ComPtr<IDxcResult> Result);
-
+		void OutPDB(ComPtr<IDxcResult> Result, const std::wstring& Path);
 		std::vector<std::wstring> m_includeDirectories;
 
 	private:

@@ -17,6 +17,7 @@ namespace Ideal
 	class IdealStaticMesh;
 	class IdealSkinnedMesh;
 	class IdealAnimation;
+	class RaytracingManager;
 }
 
 namespace Ideal
@@ -53,7 +54,7 @@ namespace Ideal
 		void SetTexturePath(const std::wstring& TexturePath) { m_texturePath = TexturePath; }
 
 	public:
-		void Init(ComPtr<ID3D12Device> Device);
+		void Init(ComPtr<ID3D12Device5> Device);
 		void Fence();
 		void WaitForFenceValue();
 
@@ -101,6 +102,8 @@ namespace Ideal
 		void CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer,
 			std::vector<uint32>& Indices
 		);
+		void CreateIndexBufferUint16(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer,
+			std::vector<uint16>& Indices);
 
 		// 파일 로드하여 srv로 만든다.
 		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
@@ -112,17 +115,17 @@ namespace Ideal
 		//void CreateSRV(std::shared_ptr<Ideal::D3D12ShaderResourceView> OutSRV, uint32);
 		std::shared_ptr<Ideal::D3D12ShaderResourceView> CreateSRV(std::shared_ptr<Ideal::D3D12Resource> Resource, uint32 NumElements, uint32 ElementSize);
 
-		void CreateStaticMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
+		void CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
 		void CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHeap() { return m_rtvHeap->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(); };
 
 	private:
-		ComPtr<ID3D12Device> m_device = nullptr;
+		ComPtr<ID3D12Device5> m_device = nullptr;
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;
 		ComPtr<ID3D12CommandQueue> m_commandQueue = nullptr;
-		ComPtr<ID3D12GraphicsCommandList> m_commandList = nullptr;
+		ComPtr<ID3D12GraphicsCommandList4> m_commandList = nullptr;
 
 		ComPtr<ID3D12Fence> m_fence = nullptr;
 		uint64 m_fenceValue = 0;

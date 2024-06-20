@@ -35,6 +35,9 @@ namespace Ideal
 
 		void FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
+	public:
+		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>>& GetMeshes() { return m_meshes; }
+
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>> m_meshes;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;

@@ -31,6 +31,22 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 	ReadShaderFile(FilePath, &sourceBuffer, sourceData);
 
 	std::vector<LPCWSTR> args;
+	std::wstring pdbPath;
+	// Debug pdb
+	{
+		args.push_back(L"-Zi");
+
+		std::wstring path = FilePath;
+		path.pop_back();
+		path.pop_back();
+		path.pop_back();
+		path.pop_back();
+		path.pop_back();
+		// PDB 파일 경로 설정
+		pdbPath = path + L".pdb";
+		args.push_back(L"-Fd");
+		args.push_back(pdbPath.c_str());
+	}
 	// Shader Model
 	{
 		args.push_back(L"-T");
@@ -45,7 +61,7 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 
 	// ERROR CHECK
 	ErrorCheck(result);
-
+	OutPDB(result, pdbPath);
 	// Get Blob
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
 }
@@ -58,6 +74,22 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 	ReadShaderFile(FilePath, &sourceBuffer, sourceData);
 
 	std::vector<LPCWSTR> args;
+	std::wstring pdbPath;
+	// Debug pdb
+	{
+
+		std::wstring path = FilePath;
+		path.pop_back();
+		path.pop_back();
+		path.pop_back();
+		path.pop_back();
+		path.pop_back();
+		// PDB 파일 경로 설정
+		pdbPath = path + L".pdb";
+		args.push_back(L"-Zi");
+		args.push_back(L"-Fd");
+		args.push_back(pdbPath.c_str());
+	}
 	// Entry Point
 	{
 		args.push_back(L"-E");
@@ -77,7 +109,7 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 
 	// ERROR CHECK
 	ErrorCheck(result);
-
+	OutPDB(result, pdbPath);
 	// Get Blob
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
 }
@@ -131,6 +163,22 @@ void Ideal::ShaderManager::ReadShaderFile(const std::wstring& FilePath, DxcBuffe
 	OutSourceBuffer->Ptr = SourceData.data();
 	OutSourceBuffer->Size = SourceData.size();
 	OutSourceBuffer->Encoding = DXC_CP_UTF8;
+}
+
+void Ideal::ShaderManager::OutPDB(ComPtr<IDxcResult> Result, const std::wstring& Path)
+{
+	ComPtr<IDxcBlob> pdbBlob;
+	HRESULT hr = Result->GetOutput(DXC_OUT_PDB, IID_PPV_ARGS(&pdbBlob), nullptr);
+	if (FAILED(hr) || pdbBlob == nullptr)
+	{
+		// Handle the error
+		return;
+	}
+
+	// PDB 파일을 디스크에 저장
+	std::ofstream pdbFile(Path, std::ios::binary);
+	pdbFile.write(reinterpret_cast<const char*>(pdbBlob->GetBufferPointer()), pdbBlob->GetBufferSize());
+	pdbFile.close();
 }
 
 void ShaderManager::AddToArgumentsIncludeDirectories(std::vector<LPCWSTR>& Args)

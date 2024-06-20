@@ -25,23 +25,6 @@ struct ID3D12CommandAllocator;
 struct ID3D12GraphicsCommandList;
 struct ID3D12Fence;
 
-namespace GlobalRootSignatureParams {
-	enum Value {
-		OutputViewSlot = 0,
-		AccelerationStructureSlot,
-		SceneConstantSlot,
-		VertexBufferSlot,
-		Count
-	};
-}
-
-namespace LocalRootSignatureParams {
-	enum Value {
-		CubeConstantSlot = 0,
-		Count
-	};
-}
-
 struct cbViewport
 {
 	float left;
@@ -53,10 +36,10 @@ struct cbViewport
 struct SceneConstantBuffer
 {
 	Matrix ProjToWorld;
-	Vector4 CameraPos;
-	Vector4 lightPos;
-	Vector4 lightAmbient;
-	Vector4 lightDiffuse;
+	DirectX::XMVECTOR CameraPos;
+	DirectX::XMVECTOR lightPos;
+	DirectX::XMVECTOR lightAmbient;
+	DirectX::XMVECTOR lightDiffuse;
 
 };
 
@@ -69,6 +52,18 @@ struct RayGenConstantBuffer
 struct CubeConstantBuffer
 {
 	Color albedo;
+};
+
+struct RootArgumentTest
+{
+	// Test ConstantBuffer
+	CubeConstantBuffer CB_Cube;
+	// Index
+	D3D12_GPU_DESCRIPTOR_HANDLE SRV_Indices;
+	// Vertex
+	D3D12_GPU_DESCRIPTOR_HANDLE SRV_Vertices;
+	// Diffuse Texture
+	D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
 };
 
 namespace Ideal
@@ -84,6 +79,7 @@ namespace Ideal
 
 	class IdealCamera;
 	class IdealRenderScene;
+	class IdealRaytracingRenderScene;
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
 	class IdealScreenQuad;
@@ -92,6 +88,7 @@ namespace Ideal
 	// Manager
 	class D3D12ConstantBufferPool;
 	class D3D12DynamicConstantBufferAllocator;
+	class D3D12UploadBufferPool;
 
 	// Interface
 	class ICamera;
@@ -99,7 +96,6 @@ namespace Ideal
 	class IMeshObject;
 	class ISkinnedMeshObject;
 	class IRenderScene;
-
 
 	// TEST : DELETE
 	template<typename>
@@ -109,6 +105,9 @@ namespace Ideal
 	class D3D12Shader;
 	class D3D12UAVBuffer;
 	class D3D12ShaderResourceView;
+
+	class DXRAccelerationStructureManager;
+	class RaytracingManager;
 }
 struct TestVertex;
 
@@ -117,7 +116,7 @@ namespace Ideal
 	class D3D12RayTracingRenderer : public Ideal::IdealRenderer, public std::enable_shared_from_this<D3D12RayTracingRenderer>
 	{
 	public:
-		static const uint32 SWAP_CHAIN_FRAME_COUNT = SWAP_CHAIN_NUM;
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = G_SWAP_CHAIN_NUM;
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
@@ -186,6 +185,13 @@ namespace Ideal
 		ComPtr<ID3D12CommandAllocator> m_commandAllocators[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
+		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_BLASInstancePool[MAX_PENDING_FRAME_COUNT] = {};
+		// allocate for save shader table data
+		//std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableDescriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
+		//std::vector<Ideal::D3D12DescriptorHandle> m_shaderTableDescriptorHandle
+
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
+
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
 
@@ -202,6 +208,11 @@ namespace Ideal
 		ComPtr<ID3D12Fence> m_fence = nullptr;
 		uint64 m_fenceValue = 0;
 		HANDLE m_fenceEvent = NULL;
+
+	private:
+		std::wstring m_assetPath;
+		std::wstring m_modelPath;
+		std::wstring m_texturePath;
 
 	private:
 		// Main Camera
@@ -243,44 +254,71 @@ namespace Ideal
 
 		void BuildGeometry();
 		void BuildAccelerationStructures();
+
 		// AS
 		void BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer);
-		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer);
+		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
 
 		void BuildShaderTables();
-		
+
 		// 레이트레이싱을 위한 2d output texture를 만든다.
 		void CreateRayTracingOutputResources();
 		ComPtr<ID3D12Resource> m_raytracingOutput;
 		uint32 m_raytracingOutputResourceUAVDescriptorHeapIndex;
+
 		void CreateDescriptorHeap();
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_uavDescriptorHeap;
 		Ideal::D3D12DescriptorHandle m_raytacingOutputResourceUAVGpuDescriptorHandle;
 
 		//geometry
+		RootArgumentTest m_rootArguments;
+
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
 		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_vertexBufferSRV;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> m_indexBuffer;
+
 		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_indexBufferSRV;
-		ComPtr<ID3D12Resource> m_vb2;
-		ComPtr<ID3D12Resource> m_ib2;
+		std::shared_ptr<Ideal::D3D12Texture> m_texture;
+		std::shared_ptr<Ideal::D3D12Texture> m_texture2;
 
 		// AS
-		ComPtr<ID3D12Resource> m_accelerationStructure;
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure;
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
+		ComPtr<ID3D12Resource> m_scratch;
 
 		RayGenConstantBuffer m_cbRayGen;
 		SceneConstantBuffer m_sceneCB;
 		CubeConstantBuffer m_cubeCB;
 
 		ComPtr<ID3D12Resource> m_missShaderTable;
-		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
+		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
+
+		Ideal::D3D12DescriptorHandle m_indexBufferShaderTableHandle;
+		Ideal::D3D12DescriptorHandle m_vertexBufferShaderTableHandle;
+		Ideal::D3D12DescriptorHandle m_textureShaderTableHandle;
 
 		// Render
 		void DoRaytracing();
+		void DoRaytracing2();
+		void DoRaytracing3();	// scene 버전
+		void DoRaytracing4();	// manager 버전
 		void CopyRaytracingOutputToBackBuffer();
 		void UpdateForSizeChange(uint32 Width, uint32 Height);
+
+		// Test
+		void UpdateAccelerationStructure();
+
+		// Scene Test
+		std::shared_ptr<Ideal::IdealRaytracingRenderScene> m_renderScene;
+		void InitRenderScene();
+		void TestDrawRenderScene();
+
+		// asmanager test
+		void RaytracingManagerInit();
+		void RaytracingManagerUpdate();
+		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
+		std::shared_ptr<Ideal::IdealStaticMeshObject> m_staticMeshObject;
 	};
 }

@@ -55,8 +55,9 @@ namespace Ideal
 		}
 
 		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return m_vertexBuffer->GetView(); }
+		std::shared_ptr<D3D12VertexBuffer> GetVertexBuffer() { return m_vertexBuffer; }
 		D3D12_INDEX_BUFFER_VIEW	GetIndexBufferView() { return m_indexBuffer->GetView(); }
-
+		std::shared_ptr<D3D12IndexBuffer> GetIndexBuffer() { return m_indexBuffer; }
 		const uint32& GetElementCount() const { return m_indexBuffer->GetElementCount(); }
 
 		void AddVertices(const std::vector<TVertexType>& vertices)
@@ -80,7 +81,6 @@ namespace Ideal
 		
 		std::vector<TVertexType>			m_vertices;
 		std::vector<uint32>					m_indices;
-
 
 		std::shared_ptr<Ideal::IdealMaterial> m_material;
 		std::string m_materialName;
