@@ -17,8 +17,14 @@ namespace Truth
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	public:
-		PROPERTY(testInt);
-		int m_testInt;
+		PROPERTY(testF);
+		float m_testF;
+
+		PROPERTY(testV3);
+		Vector3 m_testV3;
+
+		PROPERTY(testS)
+		std::string m_testS;
 
 	public:
 		TestComponent();
@@ -30,15 +36,14 @@ namespace Truth
 	public:
 		METHOD(Update);
 		void Update();
-
-		void QUP(std::any _p);
-		void QDOWN(std::any _p);
 	};
 
 	template<class Archive>
 	void Truth::TestComponent::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_testF;
 	}
 
 }
+BOOST_CLASS_EXPORT_KEY(Truth::TestComponent)

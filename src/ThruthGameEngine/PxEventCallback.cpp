@@ -18,7 +18,7 @@ void Truth::PxEventCallback::onContact(const physx::PxContactPairHeader& _pairHe
 
 		Collider* a = static_cast<Collider*>(contactPair.shapes[0]->userData);
 		Collider* b = static_cast<Collider*>(contactPair.shapes[1]->userData);
-		
+
 		if (contactPair.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND))
 		{
 			if (a && b)
@@ -52,9 +52,16 @@ void Truth::PxEventCallback::onTrigger(physx::PxTriggerPair* _pairs, physx::PxU3
 	for (uint32 i = 0; i < _count; i++)
 	{
 		const physx::PxTriggerPair& triggerPair = _pairs[i];
-
-		Collider* a = static_cast<Collider*>(triggerPair.triggerShape->userData);
-		Collider* b = static_cast<Collider*>(triggerPair.otherShape->userData);
+		Collider* a = nullptr;
+		Collider* b = nullptr;
+		if (triggerPair.triggerShape)
+		{
+   			a = static_cast<Collider*>(triggerPair.triggerShape->userData);
+		}
+		if (triggerPair.otherShape)
+		{
+			b = static_cast<Collider*>(triggerPair.otherShape->userData);
+		}
 
 		if (triggerPair.status & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND))
 		{
@@ -68,7 +75,7 @@ void Truth::PxEventCallback::onTrigger(physx::PxTriggerPair* _pairs, physx::PxU3
 		{
 			if (a && b)
 			{
-				a->GetOwner().lock()->OnTriggerExit(b);
+  				a->GetOwner().lock()->OnTriggerExit(b);
 				b->GetOwner().lock()->OnTriggerExit(a);
 			}
 		}

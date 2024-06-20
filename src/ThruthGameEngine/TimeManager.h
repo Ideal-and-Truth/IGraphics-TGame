@@ -7,6 +7,7 @@
 namespace Truth
 {
 	class EventManager;
+	class Managers;
 
 	class TimeManager
 	{
@@ -21,23 +22,27 @@ namespace Truth
 		float4 m_fixedDeltaTime;
 		// 고정 프레임 단위 시간
 		float4 m_fixedTime = 1.0f / 60.0f;
+		// 절대 프레임 시간
+		float4 m_absDeltaTime;
 
 		LARGE_INTEGER m_currentCount;
 		LARGE_INTEGER m_prevCount;
 		LARGE_INTEGER m_frequency;
 
 		std::weak_ptr<EventManager> m_eventManager;
+		std::weak_ptr<Managers> m_managers;
 
 	public:
 		TimeManager();
 		~TimeManager();
 
-		void Initalize(std::shared_ptr<EventManager> _eventManager);
+		void Initalize(std::shared_ptr<Managers> _managers);
 		void Update();
 		void Finalize();
 
 		float4 GetDT() const { return m_deltaTime; }
 		float4 GetFDT() const { return m_fixedDeltaTime; }
+		float4 GetADT() const { return m_absDeltaTime; }
 	};
 
 }

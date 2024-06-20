@@ -14,10 +14,10 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::IMeshObject> m_mesh;
 
-		PROPERTY(path)
+		PROPERTY(path);
 		std::wstring m_path;
 
-		PROPERTY(isRendering)
+		PROPERTY(isRendering);
 		bool m_isRendering;
 
 	public:
@@ -31,12 +31,13 @@ namespace Truth
 		METHOD(Initalize);
 		void Initalize();
 
-		METHOD(Update);
-		void Update();
+		METHOD(ApplyTransform);
+		void ApplyTransform();
 
-	private:
-		METHOD(Awake);
-		void Awake();
+#ifdef _DEBUG
+		virtual void EditorSetValue();
+#endif // _DEBUG
+
 	};
 
 	template<class Archive>
@@ -48,3 +49,4 @@ namespace Truth
 
 }
 
+BOOST_CLASS_EXPORT_KEY(Truth::Mesh)

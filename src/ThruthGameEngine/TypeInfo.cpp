@@ -2,6 +2,8 @@
 #include "Method.h"
 #include "Property.h"
 
+std::unique_ptr<Truth::ComponentFactory> TypeInfo::g_factory;
+
 const TypeInfo* TypeInfo::GetSuper() const
 {
 	return m_super;

@@ -3,6 +3,8 @@
 #include "Entity.h"
 #include "RigidBody.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(BulletMove)
+
 BulletMove::BulletMove()
 {
 	m_name = "BulletMove";

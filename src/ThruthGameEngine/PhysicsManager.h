@@ -110,11 +110,13 @@ namespace Truth
 		physx::PxRigidDynamic* CreateDefaultRigidDynamic();
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
 		 
-		physx::PxShape* CreateCollider(ColliderShape _shape, const std::vector<float>& _args);
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
 
 		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
 	private:
+		void CreatePhysxScene();
+
 		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);
 		physx::PxRigidDynamic* createDynamic(const physx::PxTransform& _t, const physx::PxGeometry& _geometry, const physx::PxVec3& _velocity = physx::PxVec3(0));
 	};

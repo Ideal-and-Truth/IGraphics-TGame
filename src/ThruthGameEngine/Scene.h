@@ -16,6 +16,7 @@ namespace Truth
 
 	private:
 		friend class boost::serialization::access;
+		friend class EditorUI;
 
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
@@ -24,15 +25,18 @@ namespace Truth
 		PROPERTY(name);
 		std::string m_name;
 
-	protected:
+	private:
+		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
-		std::vector<std::shared_ptr<Entity>> m_entities;
+		EntityVector m_entities;
 
 		std::weak_ptr<Managers> m_managers;
 
 	private:
-		std::queue<std::shared_ptr<Entity>> m_deletedEntity;
-		std::queue<std::shared_ptr<Entity>> m_createdEntity;
+		std::queue<std::shared_ptr<Entity>> m_beginDestroy;
+		std::queue<std::shared_ptr<Entity>> m_finishDestroy;
+
+		std::queue<std::shared_ptr<Entity>> m_awakedEntity;
 		std::queue<std::shared_ptr<Entity>> m_startedEntity;
 
 	public:
@@ -41,15 +45,19 @@ namespace Truth
 		virtual ~Scene();
 
 		// 후에 씬에 오브젝트가 추가되어 다음 프레임부터 Update 시작
+		void AddEntity(std::shared_ptr<Entity> _p);
 		void CreateEntity(std::shared_ptr<Entity> _p);
-		void DeleteEntity(std::any _p);
+
+		void DeleteEntity(uint32 _index);
+		void DeleteEntity(std::shared_ptr<Entity> _p);
 
 		void Initalize(std::weak_ptr<Managers> _manager);
 
 		void Update();
 		void ApplyTransform();
 
-		void Awake();
+		void Start();
+
 		void Enter();
 		void Exit();
 
@@ -59,7 +67,7 @@ namespace Truth
 	template<class Archive>
 	void Truth::Scene::serialize(Archive& _ar, const unsigned int _file_version)
 	{
-		_ar& m_name;
-		_ar& m_entities;
+		_ar& (m_name);
+		_ar& (m_entities);
 	}
 }

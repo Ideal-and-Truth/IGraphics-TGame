@@ -42,7 +42,7 @@ private:
 
 	bool show_demo_window = true;
 
-	const std::string m_savedFilePath = "../data";
+	const std::string m_savedFilePath = "../Scene/";
 
 public:
 	// 특수 멤버함수
@@ -57,6 +57,8 @@ public:
 
 	void AddScene(std::shared_ptr<Truth::Scene> _scene);
 
+	void SaveCurrentScene();
+	void SaveScene(std::shared_ptr<Truth::Scene> _scene);
 	void LoadScene(std::string _path);
 
 	void SetStartScene(std::string _name);
@@ -65,7 +67,6 @@ public:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	// LRESULT CALLBACK WndProcInClass(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-	void SaveSceneData();
 
 	std::shared_ptr<Truth::Managers> GetManagers() const { return m_manager; };
 

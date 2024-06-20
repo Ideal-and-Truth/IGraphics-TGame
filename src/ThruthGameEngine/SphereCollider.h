@@ -20,18 +20,12 @@ namespace Truth
 		SphereCollider(bool _isTrigger = true);
 		SphereCollider(float _radius, bool _isTrigger = true);
 		SphereCollider(Vector3 _pos, float _radius, bool _isTrigger = true);
-		virtual ~SphereCollider();
 
 		METHOD(SetRadius);
 		void SetRadius(float _radius);
 
 		METHOD(Initalize);
 		void Initalize();
-
-	private:
-		METHOD(Awake);
-		void Awake();
-
 	};
 
 	template<class Archive>
@@ -42,3 +36,4 @@ namespace Truth
 	}
 }
 
+BOOST_CLASS_EXPORT_KEY(Truth::SphereCollider)
