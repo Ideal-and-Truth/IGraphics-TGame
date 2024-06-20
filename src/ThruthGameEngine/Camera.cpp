@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Transform.h"
 #include "Managers.h"
 #include "ICamera.h"
 #include "InputManager.h"
@@ -28,9 +29,10 @@ void Truth::Camera::Update()
 	float dt = GetDeltaTime();
 	float speed = 300;
 
-	m_camera->SetPosition(m_position);
+	m_camera->SetPosition(m_owner.lock()->m_transform->m_position);
 	
 	m_camera->SetLook(m_look);
+
 // 	if (GetKey(KEY::W))
 // 	{
 // 		m_camera->Walk(dt * speed);
@@ -96,7 +98,7 @@ void Truth::Camera::Initalize()
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
 	//m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
-	m_position = { 0.f, 0.f, -150.f };
+	m_position = { 0.f, 0.f, 0.f };
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
 }
 

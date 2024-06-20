@@ -25,6 +25,9 @@
 #include "SphereCollider.h"
 #include "TestComponent.h"
 #include "BulletMove.h"
+#include "SkinnedMesh.h"
+#include "Light.h"
+
 #pragma endregion test Scene
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

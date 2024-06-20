@@ -15,10 +15,14 @@ private:
 private:
 	std::shared_ptr<Truth::Camera> m_camera;
 
+	std::shared_ptr<Truth::Transform> m_target;
+
 	float4 m_cameraDistance;
 	float4 m_elevation;
 	float4 m_azimuth;
 	float4 m_cameraSpeed;
+
+	bool m_isLockOn;
 
 public:
 	PlayerCamera();
@@ -32,6 +36,10 @@ public:
 
 	METHOD(Update);
 	void Update();
+
+private:
+	void FreeCamera();
+	void LockOnCamera();
 };
 
 template<class Archive>

@@ -105,6 +105,12 @@
     <ClInclude Include="PlayerCamera.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerStateMachine.h">
+      <Filter>Component\Player\PlayerState</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAnimator.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -144,6 +150,12 @@
       <Filter>Component\Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerCamera.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStateMachine.cpp">
+      <Filter>Component\Player\PlayerState</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAnimator.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
   </ItemGroup>
