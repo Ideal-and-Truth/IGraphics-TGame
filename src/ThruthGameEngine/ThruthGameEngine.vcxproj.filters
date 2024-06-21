@@ -195,7 +195,7 @@
     <ClCompile Include="MathConverter.cpp">
       <Filter>Utils\Math</Filter>
     </ClCompile>
-    <ClCompile Include="ControllerTest.cpp" />
+    <ClCompile Include="Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -311,7 +311,7 @@
     <ClInclude Include="MathConverter.h">
       <Filter>Utils\Math</Filter>
     </ClInclude>
-    <ClInclude Include="ControllerTest.h" />
+    <ClInclude Include="Controller.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

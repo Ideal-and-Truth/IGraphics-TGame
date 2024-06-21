@@ -8,10 +8,15 @@ namespace physx
 
 namespace Truth
 {
-	class ControllerTest
+	class RigidBody;
+}
+
+namespace Truth
+{
+	class Controller
 		: public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(ControllerTest);
+		GENERATE_CLASS_TYPE_INFO(Controller);
 
 	private:
 		friend class boost::serialization::access;
@@ -21,6 +26,8 @@ namespace Truth
 
 	private:
 		physx::PxController* m_contorller;
+
+		std::shared_ptr<RigidBody> m_rigidbody;
 
 		bool m_isJumping;
 
@@ -33,9 +40,13 @@ namespace Truth
 
 		float m_gravity;
 
+		const float m_minmumDistance;
+
+		uint32 m_flag;
+
 	public:
-		ControllerTest();
-		~ControllerTest();
+		Controller();
+		~Controller();
 
 		METHOD(Initalize);
 		virtual void Initalize() override;
@@ -46,6 +57,11 @@ namespace Truth
 		METHOD(Update);
 		virtual void Update() override;
 
+		uint32 Move(Vector3& _disp);
+		bool SetPosition(Vector3& _disp);
+
+		bool IsCollisionDown();
+
 	private:
 		void UpdateVelocity();
 		void UpdateMovement(Vector3& _disp);
@@ -54,10 +70,9 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::ControllerTest::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Controller::serialize(Archive& _ar, const unsigned int _file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-
 	}
 }
-BOOST_CLASS_EXPORT_KEY(Truth::ControllerTest)
+BOOST_CLASS_EXPORT_KEY(Truth::Controller)

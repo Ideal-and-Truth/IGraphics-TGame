@@ -28,7 +28,7 @@
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentFactory.h" />
-    <ClInclude Include="ControllerTest.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Entity.h" />
@@ -69,7 +69,7 @@
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentFactory.cpp" />
-    <ClCompile Include="ControllerTest.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorUI.cpp" />
     <ClCompile Include="Entity.cpp" />
