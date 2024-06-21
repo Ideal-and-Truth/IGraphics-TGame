@@ -26,7 +26,6 @@ namespace Truth
 
 	private:
 		physx::PxController* m_contorller;
-
 		std::shared_ptr<RigidBody> m_rigidbody;
 
 		bool m_isJumping;
@@ -54,12 +53,16 @@ namespace Truth
 		METHOD(Start);
 		virtual void Start() override;
 
-// 		METHOD(Update);
-// 		virtual void Update() override;
+		METHOD(Update);
+		virtual void Update() override;
 
-		uint32 Move(Vector3& _disp);
+		void Move(Vector3& _disp);
 		bool SetPosition(Vector3& _disp);
+		void SetRotation(Quaternion& _val);
 		bool IsCollisionDown();
+		bool IsCollisionUp();
+		bool IsCollisionSide();
+
 
 	private:
 		void UpdateVelocity();
