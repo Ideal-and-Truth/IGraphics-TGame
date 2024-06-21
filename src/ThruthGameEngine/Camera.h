@@ -38,9 +38,6 @@ namespace Truth
 		Camera();
 		virtual ~Camera();
 
-		METHOD(Start);
-		virtual void Start();
-
 		METHOD(Update);
 		virtual void Update();
 
@@ -64,6 +61,9 @@ namespace Truth
 #ifdef _DEBUG
 		virtual void EditorSetValue();
 #endif // _DEBUG
+
+		METHOD(Start);
+		virtual void Start();
 
 	};
 

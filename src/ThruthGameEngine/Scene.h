@@ -54,6 +54,9 @@ namespace Truth
 		void Initalize(std::weak_ptr<Managers> _manager);
 
 		void Update();
+		void FixedUpdate();
+		void LateUpdate();
+
 		void ApplyTransform();
 
 		void Start();

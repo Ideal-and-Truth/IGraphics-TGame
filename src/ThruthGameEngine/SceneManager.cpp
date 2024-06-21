@@ -59,6 +59,16 @@ void Truth::SceneManager::Update() const
 	m_currentScene->Update();
 }
 
+void Truth::SceneManager::FixedUpdate() const
+{
+	m_currentScene->FixedUpdate();
+}
+
+void Truth::SceneManager::LateUpdate() const
+{
+	m_currentScene->LateUpdate();
+}
+
 /// <summary>
 /// Transform 일시 적용
 /// </summary>

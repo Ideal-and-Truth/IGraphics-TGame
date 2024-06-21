@@ -17,6 +17,7 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_pvd(nullptr)
 	, m_trasport(nullptr)
 	, collisionCallback(nullptr)
+	, m_CCTManager(nullptr)
 {
 	for (uint8 i = 0; i < 8; i++)
 	{
@@ -194,6 +195,23 @@ void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, boo
 	}
 }
 
+physx::PxController* Truth::PhysicsManager::CreatePlayerController()
+{
+	physx::PxCapsuleControllerDesc desc;
+
+	desc.height = 1.8f;
+	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
+	desc.contactOffset = 0.05f;
+	desc.stepOffset = 0.1f;
+	desc.radius = 0.5f;
+	desc.position = physx::PxExtendedVec3(0.0f, 0.0f, 0.0f);
+	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
+	desc.material = m_physics->createMaterial(1.0f, 1.0f, 0.05f);
+
+	physx::PxController* c = m_CCTManager->createController(desc);
+	return c;
+}
+
 void Truth::PhysicsManager::CreatePhysxScene()
 {
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
@@ -224,6 +242,8 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
+
+	m_CCTManager = PxCreateControllerManager(*m_scene);
 }
 
 void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)

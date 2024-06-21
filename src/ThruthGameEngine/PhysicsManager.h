@@ -83,10 +83,10 @@ namespace Truth
 
 		physx::PxReal m_stackZ = 20.0f;
 
+		physx::PxControllerManager* m_CCTManager;
 		// physx::PxOmniPvd* m_oPvd;
 
 		bool m_isInteractive = false;
-
 	public:
 
 	public:
@@ -113,6 +113,8 @@ namespace Truth
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
 
 		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
+
+		physx::PxController* CreatePlayerController();
 
 	private:
 		void CreatePhysxScene();

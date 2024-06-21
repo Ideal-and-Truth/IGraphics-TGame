@@ -100,6 +100,8 @@ namespace Truth
 		void Start();
 
 		void Update();
+		void FixedUpdate();
+		void LateUpdate();
 
 		void OnCollisionEnter(Collider* _other);
 		void OnCollisionStay(Collider* _other);

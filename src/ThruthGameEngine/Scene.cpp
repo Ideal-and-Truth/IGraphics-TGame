@@ -143,6 +143,36 @@ void Truth::Scene::Update()
 	}
 }
 
+void Truth::Scene::FixedUpdate()
+{
+	for (auto& e : m_entities)
+	{
+		if (!e->m_isDead)
+		{
+			e->FixedUpdate();
+		}
+		else
+		{
+			m_beginDestroy.push(e);
+		}
+	}
+}
+
+void Truth::Scene::LateUpdate()
+{
+	for (auto& e : m_entities)
+	{
+		if (!e->m_isDead)
+		{
+			e->LateUpdate();
+		}
+		else
+		{
+			m_beginDestroy.push(e);
+		}
+	}
+}
+
 /// <summary>
 /// 모든 씬의 Transform 정보 갱신
 /// </summary>

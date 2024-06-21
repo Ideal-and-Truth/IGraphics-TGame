@@ -405,6 +405,10 @@ void EditorUI::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 
 void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 {
+	if (_component == nullptr)
+	{
+		return;
+	}
 	const TypeInfo& typeinfo = _component->GetTypeInfo();
 
 	// 컴포넌트 이름

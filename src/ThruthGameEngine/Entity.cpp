@@ -129,6 +129,16 @@ void Truth::Entity::Update()
 	IterateComponentMethod(m_update);
 }
 
+void Truth::Entity::FixedUpdate()
+{
+	IterateComponentMethod(m_fixedUpdate);
+}
+
+void Truth::Entity::LateUpdate()
+{
+	IterateComponentMethod(m_latedUpdate);
+}
+
 void Truth::Entity::OnCollisionEnter(Collider* _other)
 {
 	IterateComponentMethod(m_onCollisionEnter, _other);
