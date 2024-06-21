@@ -22,6 +22,17 @@ namespace Truth
 	private:
 		physx::PxController* m_contorller;
 
+		bool m_isJumping;
+
+		float m_jumpStrength;
+		float m_jumpVelocity;
+
+		float m_velocity;
+
+		float m_moveSpeed;
+
+		float m_gravity;
+
 	public:
 		ControllerTest();
 		~ControllerTest();
@@ -34,6 +45,12 @@ namespace Truth
 
 		METHOD(Update);
 		virtual void Update() override;
+
+	private:
+		void UpdateVelocity();
+		void UpdateMovement(Vector3& _disp);
+		void UpdateGravity(Vector3& _disp);
+		void UpdateJump(Vector3& _disp);
 	};
 
 	template<class Archive>
