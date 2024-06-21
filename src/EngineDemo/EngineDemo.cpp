@@ -32,6 +32,7 @@
 
 #include "ControllerTest.h"
 
+#include "Controller.h"
 #pragma endregion test Scene
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

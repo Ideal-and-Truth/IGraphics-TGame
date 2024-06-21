@@ -203,12 +203,13 @@ physx::PxController* Truth::PhysicsManager::CreatePlayerController()
 	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
 	desc.contactOffset = 0.05f;
 	desc.stepOffset = 0.1f;
-	desc.radius = 0.5f;
-	desc.position = physx::PxExtendedVec3(0.0f, 0.0f, 0.0f);
+	desc.radius = 0.8f;
+	desc.position = physx::PxExtendedVec3(0.0f, 10.0f, 0.0f);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
 	desc.material = m_physics->createMaterial(1.0f, 1.0f, 0.05f);
-
+	
 	physx::PxController* c = m_CCTManager->createController(desc);
+	
 	return c;
 }
 

@@ -6,6 +6,10 @@ namespace physx
 {
 	class PxRigidDynamic;
 }
+namespace Truth
+{
+	class Controller;
+}
 
 namespace Truth
 {
@@ -14,6 +18,7 @@ namespace Truth
 	{
 		GENERATE_CLASS_TYPE_INFO(RigidBody);
 	private:
+		friend class Controller;
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& _ar, const unsigned int _file_version);
