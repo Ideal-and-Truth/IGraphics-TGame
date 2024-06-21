@@ -11,6 +11,8 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	, m_path(_path)
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
+	, m_currentFrame(0)
+	, m_isAnimationEnd(false)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -80,6 +82,19 @@ void Truth::SkinnedMesh::SetRenderable(bool _isRenderable)
 void Truth::SkinnedMesh::Initalize()
 {
 	SetSkinnedMesh(m_path);
+}
+
+void Truth::SkinnedMesh::FixedUpdate()
+{
+	m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
+	if (m_currentFrame == 0)
+	{
+		m_isAnimationEnd = true;
+	}
+	else
+	{
+		m_isAnimationEnd = false;
+	}
 }
 
 void Truth::SkinnedMesh::ApplyTransform()

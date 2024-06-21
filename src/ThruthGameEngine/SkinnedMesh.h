@@ -22,6 +22,12 @@ namespace Truth
 		PROPERTY(isRendering);
 		bool m_isRendering;
 
+		PROPERTY(currentFrame);
+		uint32 m_currentFrame;
+
+		PROPERTY(isAnimationEnd);
+		bool m_isAnimationEnd;
+
 	public:
 		SkinnedMesh();
 		SkinnedMesh(std::wstring _path);
@@ -34,6 +40,9 @@ namespace Truth
 
 		METHOD(Initalize);
 		void Initalize();
+
+		METHOD(FixedUpdate);
+		void FixedUpdate();
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();

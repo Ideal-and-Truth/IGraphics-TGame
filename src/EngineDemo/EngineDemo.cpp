@@ -41,7 +41,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::unique_ptr<Processor> processor = std::make_unique<Processor>();
 
 	processor->Initialize(hInstance);
-
+	///...///
 // 	std::shared_ptr<Truth::Scene> testScene = std::make_shared<Truth::Scene>(processor->GetManagers());
 // 	testScene->m_name = "test";
 // 
@@ -76,6 +76,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	testScene->AddEntity(triggerWall);
 // 
 // 	processor->SaveScene(testScene);
+	///...///
  	processor->LoadScene(L"../Scene/test.scene");
 
 	///...///
