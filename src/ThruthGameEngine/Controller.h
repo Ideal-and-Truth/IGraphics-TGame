@@ -54,12 +54,11 @@ namespace Truth
 		METHOD(Start);
 		virtual void Start() override;
 
-		METHOD(Update);
-		virtual void Update() override;
+// 		METHOD(Update);
+// 		virtual void Update() override;
 
 		uint32 Move(Vector3& _disp);
 		bool SetPosition(Vector3& _disp);
-
 		bool IsCollisionDown();
 
 	private:

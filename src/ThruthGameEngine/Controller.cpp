@@ -44,21 +44,21 @@ void Truth::Controller::Start()
 	m_managers.lock()->Physics()->AddScene(m_contorller->getActor());
 }
 
-void Truth::Controller::Update()
-{
-	Vector3 disp = Vector3(0.0f, 0.0f, 0.0f);
-
-	UpdateVelocity();
-	UpdateMovement(disp);
-	UpdateJump(disp);
-
-	auto flag = m_contorller->move(MathConverter::Convert(disp), m_minmumDistance, m_velocity, physx::PxControllerFilters());
-
-	if (flag & physx::PxControllerCollisionFlag::eCOLLISION_DOWN) 
-	{
-		m_isJumping = false;
-	}
-}
+// void Truth::Controller::Update()
+// {
+// 	Vector3 disp = Vector3(0.0f, 0.0f, 0.0f);
+// 
+// 	UpdateVelocity();
+// 	UpdateMovement(disp);
+// 	UpdateJump(disp);
+// 
+// 	auto flag = m_contorller->move(MathConverter::Convert(disp), m_minmumDistance, m_velocity, physx::PxControllerFilters());
+// 
+// 	if (flag & physx::PxControllerCollisionFlag::eCOLLISION_DOWN) 
+// 	{
+// 		m_isJumping = false;
+// 	}
+// }
 
 uint32 Truth::Controller::Move(Vector3& _disp)
 {
