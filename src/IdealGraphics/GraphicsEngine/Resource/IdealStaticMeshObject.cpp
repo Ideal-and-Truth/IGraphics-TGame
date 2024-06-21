@@ -5,7 +5,7 @@
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
-
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "Misc/Utils/StringUtils.h"
 
@@ -75,6 +75,16 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 		blasGeometry.Name = L"";	// temp
 		blasGeometry.VertexBuffer = geometries[i]->GetVertexBuffer();
 		blasGeometry.IndexBuffer = geometries[i]->GetIndexBuffer();
+
+		std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
+		if (material)
+		{
+			std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
+			if (diffuseTexture)
+			{
+				blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+			}
+		}
 
 		blasGeometryDesc.Geometries.push_back(blasGeometry);
 	}

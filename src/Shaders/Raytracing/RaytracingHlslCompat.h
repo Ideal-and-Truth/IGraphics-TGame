@@ -47,4 +47,14 @@ struct PositionNormalUVVertex
     XMFLOAT3 normal;
     float uv[2];
 };
+
+struct PositionNormalUVTangentColor
+{
+    XMFLOAT3 position;
+    XMFLOAT3 normal;
+    float uv[2];
+    XMFLOAT3 tangent;
+    XMFLOAT4 color;
+
+};
 #endif // RAYTRACINGHLSLCOMPAT_H

@@ -3,6 +3,9 @@
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
 
+// test
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
+
 struct ID3D12Device5;
 struct ID3D12GraphicsCommandList4;
 
@@ -77,7 +80,7 @@ namespace Ideal
 
 	public:
 		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader);
-		void DoRaytracing(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height);
+		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height, SceneConstantBuffer SceneCB);
 
 		//---AS---//
 		uint32 AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name);
@@ -97,6 +100,10 @@ namespace Ideal
 		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
 		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
+		//TEMP
+		ComPtr<ID3D12Resource> GetRayGenShaderTable() { return m_rayGenShaderTable; }
+		const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> GetBLASes() { return m_ASManager->GetBLASes(); }
+
 	private:
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
 
@@ -110,10 +117,8 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_missShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
-
-
-		// temp cb
-		SceneConstantBuffer m_sceneCB;
+		uint64 m_hitGroupShaderTableStrideInBytes;
+		uint64 m_missShaderTableStrideInBytes;
 		// temp : 임시로 핸들을 다받아두겟음
 		std::vector<Ideal::D3D12DescriptorHandle> handles;
 		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;

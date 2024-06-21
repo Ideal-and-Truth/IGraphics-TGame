@@ -17,6 +17,7 @@ namespace Ideal
 {
 	struct BLASGeometry
 	{
+		BLASGeometry() : Name(L""), VertexBuffer(nullptr), IndexBuffer(nullptr), DiffuseTexture() {}
 		std::wstring Name;
 		std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
 		std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;

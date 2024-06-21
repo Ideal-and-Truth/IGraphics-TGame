@@ -8,7 +8,7 @@
 #include <d3dx12.h>
 
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
-//Test
+// Test
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
 #include <dxgi.h>
@@ -296,6 +296,7 @@ namespace Ideal
 		void DoRaytracing2();
 		void DoRaytracing3();	// scene 버전
 		void DoRaytracing4();	// manager 버전
+		void DoRaytracing5();	// manager 버전
 		void CopyRaytracingOutputToBackBuffer();
 		void UpdateForSizeChange(uint32 Width, uint32 Height);
 
@@ -313,5 +314,12 @@ namespace Ideal
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::shared_ptr<Ideal::IdealStaticMeshObject> m_staticMeshObject;
+
+		void BuildShader2();
+		uint32 m_contributionToHitGroupIndexCount = 0;
+		std::vector<Ideal::D3D12DescriptorHandle> handles;
+		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;
+		uint64 m_hitGroupShaderTableStrideInBytes = 0;
+		uint64 m_missShaderTableStrideInBytes = 0;
 	};
 }

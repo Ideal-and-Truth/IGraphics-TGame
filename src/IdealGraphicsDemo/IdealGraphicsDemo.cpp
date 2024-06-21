@@ -409,8 +409,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	float aspectRatio = float(WIDTH) / HEIGHT;
-	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
 

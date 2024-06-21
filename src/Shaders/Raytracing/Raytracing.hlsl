@@ -23,7 +23,7 @@ SamplerState LinearWrapSampler : register(s0);
 
 //-----------LOCAL-----------//
 StructuredBuffer<uint> Indices : register(t0, space1);
-StructuredBuffer<PositionNormalUVVertex> Vertices : register(t1, space1);
+StructuredBuffer<PositionNormalUVTangentColor> Vertices : register(t1, space1);
 Texture2D<float4> g_texDiffuse : register(t2, space1);
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
@@ -129,7 +129,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         Vertices[indices[2]].normal 
     };
 
-    PositionNormalUVVertex vertexInfo[3] = {
+    PositionNormalUVTangentColor vertexInfo[3] = {
         Vertices[indices[0]],
         Vertices[indices[1]],
         Vertices[indices[2]]
