@@ -72,7 +72,7 @@ namespace TypeUI
 	{
 		if constexpr (std::is_same_v<T, int>)
 		{
-			return ImGui::DragInt(_name, &_val, 1.0f, _min, _max);
+			return ImGui::DragInt(_name, &_val, 1.0f, (int)_min, (int)_max);
 		}
 		else if constexpr (std::is_same_v<T, bool>)
 		{

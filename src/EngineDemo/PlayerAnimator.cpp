@@ -20,6 +20,9 @@ void PlayerAnimator::Awake()
 
 void PlayerAnimator::Start()
 {
+	m_currentAnimation = "PlayerIdle";
+	m_nextAnimation = "PlayerIdle";
+
 	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
 
 	m_skinnedMesh->AddAnimation("Idle", L"Kachujin/Idle");
@@ -34,7 +37,29 @@ void PlayerAnimator::Start()
 
 void PlayerAnimator::Update()
 {
+	bool isAnimationStart = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationStart")->Get<bool>(m_skinnedMesh.get()).Get();
+	bool isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
+	bool isAnimationChanged = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationChanged")->Get<bool>(m_skinnedMesh.get()).Get();
 
+	if (GetKey(KEY::W) || GetKey(KEY::A) || GetKey(KEY::S) || GetKey(KEY::D))
+	{
+		m_nextAnimation = "PlayerWalk";
+	}
+	else if (GetKey(KEY::LBTN))
+	{
+		m_nextAnimation = "PlayerAttack";
+	}
+	else
+	{
+		m_nextAnimation = "PlayerIdle";
+	}
+
+	if (isAnimationEnd)
+	{
+		m_currentAnimation = m_nextAnimation;
+	}
+
+	EventPublish(m_currentAnimation, nullptr);
 }
 
 void PlayerAnimator::PlayerIdle(const void*)

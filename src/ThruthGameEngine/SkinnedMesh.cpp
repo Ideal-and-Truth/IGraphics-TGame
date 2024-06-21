@@ -12,7 +12,9 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
 	, m_currentFrame(0)
+	, m_isAnimationStart(false)
 	, m_isAnimationEnd(false)
+	, m_isAnimationChanged(false)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -23,6 +25,10 @@ Truth::SkinnedMesh::SkinnedMesh()
 	, m_path(L"Kachujin/Mesh")
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
+	, m_currentFrame(0)
+	, m_isAnimationStart(false)
+	, m_isAnimationEnd(false)
+	, m_isAnimationChanged(false)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -68,6 +74,7 @@ void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrent
 	if (m_animation != nullptr)
 	{
 		m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
+		m_isAnimationChanged = true;
 	}
 }
 
@@ -86,15 +93,29 @@ void Truth::SkinnedMesh::Initalize()
 
 void Truth::SkinnedMesh::FixedUpdate()
 {
+	// 원래는 프레임 단위여야되지만 지금 애니메이션의 마지막 프레임을 몰라서
+	// 업데이트에 넣는게 유연한듯
 	m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
 	if (m_currentFrame == 0)
 	{
 		m_isAnimationEnd = true;
 	}
+	else if (m_currentFrame == 1)
+	{
+		m_isAnimationStart = true;
+		m_isAnimationChanged = false;
+	}
 	else
 	{
+		m_isAnimationStart = false;
 		m_isAnimationEnd = false;
 	}
+	
+}
+
+void Truth::SkinnedMesh::Update()
+{
+
 }
 
 void Truth::SkinnedMesh::ApplyTransform()

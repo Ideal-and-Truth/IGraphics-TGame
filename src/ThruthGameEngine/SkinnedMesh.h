@@ -23,10 +23,16 @@ namespace Truth
 		bool m_isRendering;
 
 		PROPERTY(currentFrame);
-		uint32 m_currentFrame;
+		int m_currentFrame;
+
+		PROPERTY(isAnimationStart);
+		bool m_isAnimationStart;
 
 		PROPERTY(isAnimationEnd);
 		bool m_isAnimationEnd;
+
+		PROPERTY(isAnimationChanged);
+		bool m_isAnimationChanged;
 
 	public:
 		SkinnedMesh();
@@ -43,6 +49,9 @@ namespace Truth
 
 		METHOD(FixedUpdate);
 		void FixedUpdate();
+
+		METHOD(Update);
+		void Update();
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();

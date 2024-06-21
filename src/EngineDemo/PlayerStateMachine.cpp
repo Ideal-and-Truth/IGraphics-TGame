@@ -33,8 +33,6 @@ void PlayerStateMachine::FixedUpdate()
 
 void PlayerStateMachine::Update()
 {
-	EventPublish(m_currentState, nullptr);
-
 	if (GetKey(KEY::W) || GetKey(KEY::A) || GetKey(KEY::S) || GetKey(KEY::D))
 	{
 		m_currentState = "PlayerWalk";
@@ -47,6 +45,8 @@ void PlayerStateMachine::Update()
 	{
 		m_currentState = "PlayerIdle";
 	}
+
+	EventPublish(m_currentState, nullptr);
 }
 
 void PlayerStateMachine::LateUpdate()

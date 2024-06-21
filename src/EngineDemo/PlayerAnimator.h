@@ -14,9 +14,13 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	bool m_isWalking;
-	bool m_isRunning;
 	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
+
+	PROPERTY(currentAnimation);
+	std::string m_currentAnimation;
+
+	PROPERTY(nextAnimation);
+	std::string m_nextAnimation;
 
 public:
 	PlayerAnimator();
