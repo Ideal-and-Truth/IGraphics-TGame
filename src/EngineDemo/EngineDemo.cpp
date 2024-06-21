@@ -25,6 +25,8 @@
 #include "SphereCollider.h"
 #include "TestComponent.h"
 #include "BulletMove.h"
+
+#include "ControllerTest.h"
 #pragma endregion test Scene
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -73,7 +75,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	testScene->AddEntity(triggerWall);
 // 
 // 	processor->SaveScene(testScene);
- 	processor->LoadScene(L"../Scene/test.scene");
+ 	processor->LoadScene(L"../Scene/ControllerTest.scene");
 
 	///...///
 

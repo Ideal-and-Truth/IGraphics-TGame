@@ -28,6 +28,8 @@ namespace Truth
 		void Initalize(std::shared_ptr<Managers> _mangers);
 
 		void Update() const;
+		void FixedUpdate() const;
+		void LateUpdate() const;
 
 		void ApplyTransform() const;
 

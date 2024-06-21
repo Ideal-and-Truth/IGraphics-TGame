@@ -97,6 +97,9 @@
     <Filter Include="Utils\ComponentFactory">
       <UniqueIdentifier>{ea702d86-b2cb-426b-a344-423f6facc789}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\testComponent">
+      <UniqueIdentifier>{199f432d-59a0-4369-89a9-fa6a1ee3f47a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -192,6 +195,7 @@
     <ClCompile Include="MathConverter.cpp">
       <Filter>Utils\Math</Filter>
     </ClCompile>
+    <ClCompile Include="ControllerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -307,6 +311,7 @@
     <ClInclude Include="MathConverter.h">
       <Filter>Utils\Math</Filter>
     </ClInclude>
+    <ClInclude Include="ControllerTest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

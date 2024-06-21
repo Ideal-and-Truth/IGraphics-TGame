@@ -79,7 +79,6 @@ void Processor::Finalize()
 void Processor::Process()
 {
 	Update();
-	FixedUpdate();
 	LateUpdate();
 	Render();
 }

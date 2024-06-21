@@ -17,6 +17,7 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_pvd(nullptr)
 	, m_trasport(nullptr)
 	, collisionCallback(nullptr)
+	, m_CCTManager(nullptr)
 {
 	for (uint8 i = 0; i < 8; i++)
 	{
@@ -198,8 +199,16 @@ physx::PxController* Truth::PhysicsManager::CreatePlayerController()
 {
 	physx::PxCapsuleControllerDesc desc;
 
-	physx::PxController* c = m_CCTManager->createController(desc);
+	desc.height = 1.8f;
+	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
+	desc.contactOffset = 0.05f;
+	desc.stepOffset = 0.1f;
+	desc.radius = 0.5f;
+	desc.position = physx::PxExtendedVec3(0.0f, 0.0f, 0.0f);
+	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
+	desc.material = m_physics->createMaterial(1.0f, 1.0f, 0.05f);
 
+	physx::PxController* c = m_CCTManager->createController(desc);
 	return c;
 }
 
