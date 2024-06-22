@@ -179,11 +179,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_BLASInstancePool[MAX_PENDING_FRAME_COUNT] = {};
-		// allocate for save shader table data
-		//std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableDescriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
-		//std::vector<Ideal::D3D12DescriptorHandle> m_shaderTableDescriptorHandle
-
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
 
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
@@ -280,9 +275,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
 		ComPtr<ID3D12Resource> m_scratch;
 
-		RayGenConstantBuffer m_cbRayGen;
 		SceneConstantBuffer m_sceneCB;
-		CubeConstantBuffer m_cubeCB;
 
 		ComPtr<ID3D12Resource> m_missShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
@@ -293,13 +286,8 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_textureShaderTableHandle;
 
 		// Render
-		void DoRaytracing();
-		void DoRaytracing2();
-		void DoRaytracing3();	// scene 버전
-		void DoRaytracing4();	// manager 버전
 		void DoRaytracing5();	// manager 버전
 		void CopyRaytracingOutputToBackBuffer();
-		void UpdateForSizeChange(uint32 Width, uint32 Height);
 
 		// Test
 		void UpdateAccelerationStructure();
@@ -322,7 +310,6 @@ namespace Ideal
 		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;
 		uint64 m_hitGroupShaderTableStrideInBytes = 0;
 		uint64 m_missShaderTableStrideInBytes = 0;
-		void CopyShaderTableToMainDescriptor();
 
 		// 2024.06.23 대격변
 		std::shared_ptr<Ideal::D3D12DescriptorManager> m_descriptorManager;

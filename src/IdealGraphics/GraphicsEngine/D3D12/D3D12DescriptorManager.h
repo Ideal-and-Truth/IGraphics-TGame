@@ -42,9 +42,9 @@ namespace Ideal
 		std::vector<uint32> m_countDescriptorPool;
 		uint32 m_numDescriptorPool;
 
-		uint32 m_maxCountFixedDescriptorHeap;
-		std::vector<uint32> m_countFixedDescriptorHeap;
-		uint32 m_numFixedDescriptorHeap;
+		uint32 m_maxCountFixedDescriptorPool;
+		std::vector<uint32> m_countFixedDescriptorPool;
+		uint32 m_numFixedDescriptorPool;
 
 		uint32 m_descriptorSize;
 	};

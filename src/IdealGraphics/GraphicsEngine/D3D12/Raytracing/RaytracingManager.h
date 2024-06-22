@@ -18,6 +18,7 @@ namespace Ideal
 	class D3D12ShaderResourceView;
 	class D3D12DynamicDescriptorHeap;
 	class D3D12DynamicConstantBufferAllocator;
+	class D3D12DescriptorManager;
 }
 
 namespace Ideal
@@ -79,8 +80,8 @@ namespace Ideal
 		~RaytracingManager();
 
 	public:
-		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader);
-		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height, SceneConstantBuffer SceneCB);
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager);
+		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height, SceneConstantBuffer SceneCB);
 
 		//---AS---//
 		uint32 AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name);
@@ -98,15 +99,13 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12Shader> Shader
 		);
 		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
-		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
+		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager);
 
 		//TEMP
 		ComPtr<ID3D12Resource> GetRayGenShaderTable() { return m_rayGenShaderTable; }
 		const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> GetBLASes() { return m_ASManager->GetBLASes(); }
 
 	private:
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_shaderTableHeap;
-
 		std::unique_ptr<DXRAccelerationStructureManager> m_ASManager;
 
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
@@ -119,9 +118,6 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 		uint64 m_hitGroupShaderTableStrideInBytes;
 		uint64 m_missShaderTableStrideInBytes;
-		// temp : 임시로 핸들을 다받아두겟음
-		std::vector<Ideal::D3D12DescriptorHandle> handles;
-		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;
 
 		// Shader Table Record의 인덱스
 		// 각 BLAS마다 Geometry의 개수가 다를테니 Add Instance 할 때마다 

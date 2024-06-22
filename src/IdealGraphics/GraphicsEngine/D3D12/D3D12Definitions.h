@@ -14,6 +14,9 @@
 #define INDEX_FORMAT DXGI_FORMAT_R32_UINT
 #define VERTEX_FORMAT DXGI_FORMAT_R32G32B32_FLOAT
 
+// Descriptor Heap Management
+#define NUM_FIXED_DESCRIPTOR_HEAP 1	// shader table에 사용되는 고정된 Fixed Descriptor Heap의 개수
+#define FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV 0	// 고정된 Descriptor Heap의 Index
 
 /// Static Mesh Macro
 // 2024.05.08
