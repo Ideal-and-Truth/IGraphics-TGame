@@ -8,7 +8,6 @@
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "Misc/Utils/StringUtils.h"
-
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
 
@@ -88,8 +87,8 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 
 		blasGeometryDesc.Geometries.push_back(blasGeometry);
 	}
-
-	m_instanceID = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, L"BLAS3");
+	const std::wstring& name = GetName();
+	m_instanceID = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, name.c_str());
 }
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)

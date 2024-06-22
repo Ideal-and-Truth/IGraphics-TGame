@@ -165,6 +165,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorManager.h" />
+    <ClInclude Include="GraphicsEngine\public\IRendererResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">

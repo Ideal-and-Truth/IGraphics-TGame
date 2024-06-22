@@ -228,29 +228,8 @@ namespace Ideal
 		const wchar_t* m_missShaderName = L"MyMissShader";
 		const wchar_t* m_hitGroupName = L"MyHitGroup";
 
-		void CreateDeviceDependentResources();
 		void CreateRayTracingInterfaces();
-		void CreateRootSignatures();
 
-		void SerializeAndCreateRayTracingRootSignature(D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>* rootsig);
-		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
-		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
-		RayGenConstantBuffer m_rayGenCB;
-
-		void CreateRaytracingPipelineStateObject();
-		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
-		ComPtr<ID3D12StateObject> m_dxrStateObject;
-
-		void BuildGeometry();
-		void BuildAccelerationStructures();
-
-		// AS
-		void BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer);
-		void BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform = Matrix::Identity);
-
-		void BuildShaderTables();
-
-		// 레이트레이싱을 위한 2d output texture를 만든다.
 		void CreateRayTracingOutputResources();
 		ComPtr<ID3D12Resource> m_raytracingOutput;
 		uint32 m_raytracingOutputResourceUAVDescriptorHeapIndex;
@@ -262,35 +241,15 @@ namespace Ideal
 		//geometry
 		RootArgumentTest m_rootArguments;
 
-		std::shared_ptr<Ideal::D3D12VertexBuffer> m_vertexBuffer;
-		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_vertexBufferSRV;
-		std::shared_ptr<Ideal::D3D12IndexBuffer> m_indexBuffer;
-
-		std::shared_ptr<Ideal::D3D12ShaderResourceView> m_indexBufferSRV;
-		std::shared_ptr<Ideal::D3D12Texture> m_texture;
-		std::shared_ptr<Ideal::D3D12Texture> m_texture2;
-
 		// AS
-		std::shared_ptr<Ideal::D3D12UAVBuffer> m_bottomLevelAccelerationStructure;
-		std::shared_ptr<Ideal::D3D12UAVBuffer> m_topLevelAccelerationStructure;
-		ComPtr<ID3D12Resource> m_scratch;
-
 		SceneConstantBuffer m_sceneCB;
 
 		ComPtr<ID3D12Resource> m_missShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 
-		Ideal::D3D12DescriptorHandle m_indexBufferShaderTableHandle;
-		Ideal::D3D12DescriptorHandle m_vertexBufferShaderTableHandle;
-		Ideal::D3D12DescriptorHandle m_textureShaderTableHandle;
-
 		// Render
-		void DoRaytracing5();	// manager 버전
 		void CopyRaytracingOutputToBackBuffer();
-
-		// Test
-		void UpdateAccelerationStructure();
 
 		// Scene Test
 		std::shared_ptr<Ideal::IdealRaytracingRenderScene> m_renderScene;
@@ -302,9 +261,8 @@ namespace Ideal
 		void RaytracingManagerUpdate();
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
-		std::shared_ptr<Ideal::IdealStaticMeshObject> m_staticMeshObject;
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 
-		void BuildShaders2();
 		uint32 m_contributionToHitGroupIndexCount = 0;
 		std::vector<Ideal::D3D12DescriptorHandle> m_shaderhandles;
 		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;

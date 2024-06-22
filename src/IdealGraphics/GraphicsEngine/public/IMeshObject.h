@@ -1,10 +1,10 @@
 #pragma once
-//#include "GraphicsEngine/SimpleMath.h"
+#include "IRendererResource.h"
 #include "../Utils/SimpleMath.h"
 
 namespace Ideal
 {
-	class IMeshObject
+	class IMeshObject : public IRendererResource
 	{
 	public:
 		IMeshObject() {}

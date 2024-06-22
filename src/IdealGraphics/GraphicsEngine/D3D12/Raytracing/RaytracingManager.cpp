@@ -285,14 +285,13 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 		Ideal::DXRShaderTable hitGroupShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
 
 		const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BlASes = m_ASManager->GetBLASes();
-
-		for (auto& blasPair : BlASes)
+		const std::vector<Ideal::BLASInstanceDesc> BlasInstances = m_ASManager->GetBLASInstanceDescs();
+		for(auto& blasInstance : BlasInstances)
 		{
-			auto& blas = blasPair.second;
+			auto& blas = blasInstance.BLAS;
 			const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
 			for (const BLASGeometry& blasGeometry : blasGeometries)
 			{
-				// TEMP : 아래에서 핸들같은 것들 따로 프리 안해주고 있긴한데 사라지면서 프리가 될 것
 				Ideal::LocalRootSignature::RootArgument rootArguments;
 
 				std::shared_ptr<Ideal::D3D12IndexBuffer> indexBuffer = blasGeometry.IndexBuffer;

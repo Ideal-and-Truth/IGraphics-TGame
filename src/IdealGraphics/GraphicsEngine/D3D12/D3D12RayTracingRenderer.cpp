@@ -218,20 +218,8 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 	}
-	//m_vertexBufferShaderTableHandle.Free();
-	//m_indexBufferShaderTableHandle.Free();
-	//m_textureShaderTableHandle.Free();
-
 	m_raytacingOutputResourceUAVGpuDescriptorHandle.Free();
 
-	m_indexBufferShaderTableHandle.Free();
-	m_vertexBufferShaderTableHandle.Free();
-	m_textureShaderTableHandle.Free();
-
-	m_texture = nullptr;
-	m_texture2 = nullptr;
-	m_vertexBufferSRV = nullptr;
-	m_indexBufferSRV = nullptr;
 	m_resourceManager = nullptr;
 }
 
@@ -356,11 +344,10 @@ finishAdapter:
 	m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
 
 	// load image
-	m_resourceManager->CreateTexture(m_texture, L"../Resources/Textures/Any/anyImage.jpg");
-	m_resourceManager->CreateTexture(m_texture2, L"../Resources/Textures/Any/anyImage2.png");
 
 	// create resource
-	CreateDeviceDependentResources();
+	//CreateDeviceDependentResources();
+	CreateRayTracingOutputResources();
 	RaytracingManagerInit();
 }
 
@@ -422,12 +409,13 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStatic
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
 	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
-
+	newStaticMesh->SetName(FileName);
 	//newStaticMesh->Init(m_device);
 
 	// temp
-	m_staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newStaticMesh);
-	RaytracingManagerAddObject(m_staticMeshObject);
+	auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newStaticMesh);
+	RaytracingManagerAddObject(mesh);
+	m_staticMeshObject.push_back(mesh);
 	return newStaticMesh;
 	//return nullptr;
 }
@@ -795,18 +783,6 @@ void Ideal::D3D12RayTracingRenderer::WaitForFenceValue(uint64 ExpectedFenceValue
 	}
 }
 
-void Ideal::D3D12RayTracingRenderer::CreateDeviceDependentResources()
-{
-	//CreateRootSignatures();
-	//CreateRaytracingPipelineStateObject();
-	//BuildGeometry();
-	//BuildAccelerationStructures();
-	//BuildAccelerationStructures2();
-	//BuildShaderTables();
-	//BuildShaders2();
-	CreateRayTracingOutputResources();
-}
-
 void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob)
 {
 	ComPtr<IDxcCompiler3> compiler;
@@ -861,404 +837,6 @@ void Ideal::D3D12RayTracingRenderer::CreateRayTracingInterfaces()
 	//}
 }
 
-void Ideal::D3D12RayTracingRenderer::CreateRootSignatures()
-{
-	// 수정 지금 뭐 바뀌는 슬롯은 없으니 그냥 하나의 range로 모두 처리해버리겠다
-	{
-		CD3DX12_DESCRIPTOR_RANGE rangeRenderTarget[2];
-		rangeRenderTarget[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
-		CD3DX12_DESCRIPTOR_RANGE rangeGlobalCB[1];
-		rangeGlobalCB[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-
-		CD3DX12_ROOT_PARAMETER rootParameters[3];
-		rootParameters[0].InitAsDescriptorTable(1, rangeRenderTarget);
-		rootParameters[1].InitAsShaderResourceView(0);
-		rootParameters[2].InitAsDescriptorTable(1, rangeGlobalCB);
-
-		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(_countof(rootParameters), rootParameters);
-
-		// TEMP : 임시 Sampler
-		CD3DX12_STATIC_SAMPLER_DESC sampler(
-			0,
-			D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-			D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-			D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-			D3D12_TEXTURE_ADDRESS_MODE_WRAP
-		);
-		globalRootSignatureDesc.NumStaticSamplers = 1;
-		globalRootSignatureDesc.pStaticSamplers = &sampler;
-
-		SerializeAndCreateRayTracingRootSignature(globalRootSignatureDesc, &m_raytracingGlobalRootSignature);
-	}
-
-	// Local Root Signature
-	// 이 루트 시그니쳐는 쉐이더 테이블에서 나온 유니크 인자들을 쉐이더가 가질 수 있게 한다.
-	{
-		//---space1---//
-		CD3DX12_DESCRIPTOR_RANGE ranges[3];
-		//ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 1);	// cube b0
-		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 1);	// t0 : indices 
-		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 1);	// t1 : vertices
-		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, 1); // t2 : diffuse
-
-		CD3DX12_ROOT_PARAMETER rootParameters[3];
-		rootParameters[0].InitAsDescriptorTable(1, &ranges[0]);	// indices
-		rootParameters[1].InitAsDescriptorTable(1, &ranges[1]);	// vertices
-		rootParameters[2].InitAsDescriptorTable(1, &ranges[2]);	// diffuse
-
-		CD3DX12_ROOT_SIGNATURE_DESC localRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
-		localRootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE;
-		SerializeAndCreateRayTracingRootSignature(localRootSignatureDesc, &m_raytracingLocalRootSignature);
-	}
-}
-
-void Ideal::D3D12RayTracingRenderer::SerializeAndCreateRayTracingRootSignature(D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>* rootsig)
-{
-	ComPtr<ID3DBlob> blob;
-	ComPtr<ID3DBlob> error;
-
-	// 루트 시그니쳐 직렬화
-	Check(
-		D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error),
-		error ? static_cast<wchar_t*>(error->GetBufferPointer()) : nullptr
-	);
-	/*if (error)
-	{
-		auto a = static_cast<wchar_t*>(error->GetBufferPointer());
-		int b = 3;
-	}*/
-	// 루트 시그니쳐 생성
-	Check(
-		m_device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&(*rootsig))),
-		L"Failed to Create RootSignature!"
-	);
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateRaytracingPipelineStateObject()
-{
-	// 7개의 subobject를 만들어 RTPSO와 결합한다. (ray tracing pipe line state sobject)
-	// subobject들은 default 연결 또는 명시적 연결을 통해 DXIL 익스포트(즉, 셰이더)와 연결해야 한다.
-	// default 연결은 익스포트된 모든 셰이더 엔트리 포인트에 동일한 유형의 서브오브젝트가 연결되지 않은 모든 셰이더 엔트리포인트에 적용이 된다.
-	// 이 샘플은 데모용으로 명시적으로 지정된 로컬 루트 서명 서브 오브젝트를 제외한 기본 셰이더 연결을 활용
-	// 1 - DXIL library
-	// 1 - Triangle hit group
-	// 1 - shader config
-	// 2 - local root signature and association
-	// 1 - Global root signature
-	// 1 - pipeline config
-	CD3DX12_STATE_OBJECT_DESC raytracingPipeline{ D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE };
-
-	//-------------------DXIL library-------------------//
-	// 이것은 스테이트 오브젝트를 위해 쉐이더들과 쉐이더들의 엔트리 포인트들을 포함한다.
-	// 셰이더는 서브오브젝트로 간주되지 않으므로 DXIL 라이브러리 서브오브젝트를 통해 전달해야 한다.
-	CD3DX12_DXIL_LIBRARY_SUBOBJECT* lib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
-	//D3D12_SHADER_BYTECODE libdxil2 = CD3DX12_SHADER_BYTECODE(m_testBlob->GetBufferPointer(), m_testBlob->GetBufferSize());
-	D3D12_SHADER_BYTECODE libdxil2 = CD3DX12_SHADER_BYTECODE(m_myShader->GetBufferPointer(), m_myShader->GetSize());
-	//D3D12_SHADER_BYTECODE libdxil2 = CD3DX12_SHADER_BYTECODE((void*)g_pRaytracing2, ARRAYSIZE(g_pRaytracing2));
-	lib->SetDXILLibrary(&libdxil2);
-	lib->DefineExport(m_raygenShaderName);
-	lib->DefineExport(m_closestHitShaderName);
-	lib->DefineExport(m_missShaderName);
-
-
-	//-------------------Triangle hit group-------------------//
-	// 히트 그룹은 광선이 지오메트리의 삼각형 / AABB와 교차할 때 실행할 가장 가까운 hit, any hit 및 intersection 쉐이더를 지정
-	// 이 샘플에서는 closest shader가 있는 삼각형 지오메트리만 사용하므로 다른 쉐이더는 설정하지 않았다.
-	CD3DX12_HIT_GROUP_SUBOBJECT* hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
-	hitGroup->SetClosestHitShaderImport(m_closestHitShaderName);
-	hitGroup->SetHitGroupExport(m_hitGroupName);
-	hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
-
-	// Shader Config
-	// ray payload 와 attribute structure의 최대 크기를 바이트 단위로 정의한다.
-	CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT* shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
-	uint32 payloadSize = sizeof(Color); // float4 color
-	uint32 attributeSize = 2 * sizeof(float); //float 2 barycentrics (질량 중심 좌표?)
-	shaderConfig->Config(payloadSize, attributeSize);
-
-	// Local root signature and shader association
-	CreateLocalRootSignatureSubobjects(&raytracingPipeline);
-
-	// Global root signature
-	CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT* globalRootSignature = raytracingPipeline.CreateSubobject<CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT>();
-	globalRootSignature->SetRootSignature(m_raytracingGlobalRootSignature.Get());
-
-	// Pipeline config
-	// TraceRay() 재귀 depths의 최대를 정의한다
-	CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT* pipelineConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT>();
-	// 퍼포먼스 팁 : 드라이버가 낮은 재귀 깊이에 대한 최적화 전략을 적용할 수 있으므로 최대 재귀 깊이를 필요한 만큼 낮게 설정해라
-	uint32 maxRecursionDepth = 1; // 재귀 한번만
-	pipelineConfig->Config(maxRecursionDepth);
-
-	PrintStateObjectDesc(raytracingPipeline);
-	//raytracingPipeline;
-	Check(
-		m_device->CreateStateObject(
-			raytracingPipeline,
-			IID_PPV_ARGS(m_dxrStateObject.GetAddressOf())),
-		L"Failed to create DirectX Raytracing state object"
-	);
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline)
-{
-	CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT* localRootSignature = raytracingPipeline->CreateSubobject<CD3DX12_LOCAL_ROOT_SIGNATURE_SUBOBJECT>();
-	localRootSignature->SetRootSignature(m_raytracingLocalRootSignature.Get());
-
-	// Shader association  연관성?
-	CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT* rootSignatureAssociation = raytracingPipeline->CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
-	rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
-	rootSignatureAssociation->AddExport(m_hitGroupName);
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildGeometry()
-{
-	std::vector<uint32> indices = {
-		3,1,0,
-		2,1,3,
-
-		6,4,5,
-		7,4,6,
-
-		11,9,8,
-		10,9,11,
-
-		14,12,13,
-		15,12,14,
-
-		19,17,16,
-		18,17,19,
-
-		22,20,21,
-		23,20,22 };
-
-	std::vector<PositionNormalUVVertex> vertices;
-	{
-		using namespace DirectX;
-		vertices =
-		{
-			//// Top face
-			{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-			// Bottom face
-			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-			// Left face
-			{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-			// Right face
-			{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
-
-			// Front face
-			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
-
-			// Back face
-			{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) }
-		};
-	}
-	m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
-	m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
-
-	m_resourceManager->CreateVertexBuffer(m_vertexBuffer, vertices);
-	m_resourceManager->CreateIndexBuffer(m_indexBuffer, indices);
-	//m_resourceManager->CreateIndexBufferUint16(m_indexBuffer, indices);
-
-	//m_indexBufferSRV = m_resourceManager->CreateSRV(m_indexBuffer, m_indexBuffer->GetElementCount(), 0);
-	m_indexBufferSRV = m_resourceManager->CreateSRV(m_indexBuffer, m_indexBuffer->GetElementCount(), m_indexBuffer->GetElementSize());
-	m_vertexBufferSRV = m_resourceManager->CreateSRV(m_vertexBuffer, m_vertexBuffer->GetElementCount(), m_vertexBuffer->GetElementSize());
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildAccelerationStructures()
-{
-	ResetCommandList();
-
-	//-------BLAS-------//
-	ComPtr<ID3D12Resource> BottomScratch;	// UAV
-	BuildBottomLevelAccelerationStructure(BottomScratch);
-
-	//-------BLAS-------//
-	ComPtr<ID3D12Resource> TopScratch;	// UAV
-	ComPtr<ID3D12Resource> instanceBuffer;	//Upload
-	BuildTopLevelAccelerationStructure(m_scratch, instanceBuffer);
-
-	m_commandLists[m_currentContextIndex]->Close();
-	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	Fence();
-	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildBottomLevelAccelerationStructure(ComPtr<ID3D12Resource>& ScratchBuffer)
-{
-	//---------BLAS-----------//
-	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
-	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-	geometryDesc.Triangles.IndexBuffer = m_indexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometryDesc.Triangles.IndexCount = m_indexBuffer->GetElementCount();
-	geometryDesc.Triangles.IndexFormat = INDEX_FORMAT;
-	geometryDesc.Triangles.Transform3x4 = 0;
-	geometryDesc.Triangles.VertexFormat = VERTEX_FORMAT;
-	geometryDesc.Triangles.VertexCount = m_vertexBuffer->GetElementCount();
-	geometryDesc.Triangles.VertexBuffer.StartAddress = m_vertexBuffer->GetResource()->GetGPUVirtualAddress();
-	geometryDesc.Triangles.VertexBuffer.StrideInBytes = m_vertexBuffer->GetElementSize();
-
-	// 가속구조에 필요한 사이즈를 가져온다
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO bottomLevelPrebuildInfo = {};
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS bottomLevelInputs = {};
-	bottomLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
-	bottomLevelInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
-	bottomLevelInputs.NumDescs = 1;
-	bottomLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
-	bottomLevelInputs.pGeometryDescs = &geometryDesc;
-
-	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&bottomLevelInputs, &bottomLevelPrebuildInfo);
-	Check(bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes > 0);
-
-	// 임시 스크래치 데이터
-	AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ScratchDataSizeInBytes, ScratchBuffer.GetAddressOf(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ScratchResource");
-
-	// BLAS 버퍼를 저장할 UAV를 할당
-	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-	//AllocateUAVBuffer(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, &m_bottomLevelAccelerationStructure, initialResourceState, L"BottomLevelAccelerationStructure");
-	m_bottomLevelAccelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
-	m_bottomLevelAccelerationStructure->Create(m_device.Get(), bottomLevelPrebuildInfo.ResultDataMaxSizeInBytes, initialResourceState, L"BottomLevelAccelerationStructure");
-	// 최종 빌드
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC bottomLevelBuildDesc = {};
-	{
-		bottomLevelBuildDesc.Inputs = bottomLevelInputs;
-		bottomLevelBuildDesc.ScratchAccelerationStructureData = ScratchBuffer->GetGPUVirtualAddress();
-		bottomLevelBuildDesc.DestAccelerationStructureData = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
-	}
-
-	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&bottomLevelBuildDesc, 0, nullptr);
-	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_bottomLevelAccelerationStructure->GetResource());
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &uavBarrier);
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildTopLevelAccelerationStructure(ComPtr<ID3D12Resource>& Scratch, ComPtr<ID3D12Resource>& instanceBuffer, const Matrix& Transform /*= Matrix::Identity*/)
-{
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS tlasFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
-	tlasFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
-
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS topLevelInputs = {};
-	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
-	topLevelInputs.Flags = tlasFlags;
-	topLevelInputs.NumDescs = 1;
-	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
-
-	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO topLevelPreBuildInfo = {};
-	m_device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &topLevelPreBuildInfo);
-	Check(topLevelPreBuildInfo.ResultDataMaxSizeInBytes > 0);
-
-	//---------Create Scratch Buffer----------//
-	AllocateUAVBuffer(m_device.Get(), topLevelPreBuildInfo.ScratchDataSizeInBytes, Scratch.GetAddressOf(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ScratchResource");
-
-	//---------Create TLAS BUFFER----------//
-	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-	m_topLevelAccelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
-	m_topLevelAccelerationStructure->Create(m_device.Get(), topLevelPreBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, L"TopLevelAccelerationStructure");
-
-	//----------Instance Desc---------//
-	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
-	instanceDesc.Transform[0][0] = instanceDesc.Transform[1][1] = instanceDesc.Transform[2][2] = 1;
-	XMStoreFloat3x4(reinterpret_cast<DirectX::XMFLOAT3X4*>(instanceDesc.Transform), Transform); // identity
-	instanceDesc.InstanceMask = 1;
-	instanceDesc.AccelerationStructure = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
-	AllocateUploadBuffer(m_device.Get(), &instanceDesc, sizeof(instanceDesc), &instanceBuffer, L"InstanceDescs");
-
-	//---------TLAS DESC----------//
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC topLevelBuildDesc = {};
-	{
-		topLevelInputs.InstanceDescs = instanceBuffer->GetGPUVirtualAddress();
-		topLevelBuildDesc.Inputs = topLevelInputs;
-		topLevelBuildDesc.DestAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
-		topLevelBuildDesc.ScratchAccelerationStructureData = Scratch->GetGPUVirtualAddress();
-	}
-
-	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
-	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAccelerationStructure->GetResource());
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &uavBarrier);
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildShaderTables()
-{
-	void* rayGenShaderIdentifier;
-	void* missShaderIdentifier;
-	void* hitGroupShaderIdentifier;
-
-	uint32 shaderIdentifierSize;
-
-	// Get shader identifiers
-	{
-		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
-		Check(m_dxrStateObject.As(&stateObjectProperties));
-		shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
-
-		rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
-		missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
-		hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
-	}
-	// Ray gen shader table
-	{
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize;
-		Ideal::DXRShaderTable rayGenShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"RayGenShaderTable");
-		rayGenShaderTable.push_back(Ideal::DXRShaderRecord(rayGenShaderIdentifier, shaderIdentifierSize));
-		m_rayGenShaderTable = rayGenShaderTable.GetResource();
-	}
-
-	// Miss shader table
-	{
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize;
-		Ideal::DXRShaderTable missShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"MissShaderTable");
-		missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier, shaderIdentifierSize));
-		m_missShaderTable = missShaderTable.GetResource();
-	}
-
-	// Hit group shader table
-	{
-		RootArgumentTest rootArguments;
-
-		// indices
-		m_device->CopyDescriptorsSimple(1, m_indexBufferShaderTableHandle.GetCpuHandle(), m_indexBufferSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		rootArguments.SRV_Indices = m_indexBufferShaderTableHandle.GetGpuHandle();
-
-		// vertices
-		m_device->CopyDescriptorsSimple(1, m_vertexBufferShaderTableHandle.GetCpuHandle(), m_vertexBufferSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		rootArguments.SRV_Vertices = m_vertexBufferShaderTableHandle.GetGpuHandle();
-
-		// diffuse
-		m_device->CopyDescriptorsSimple(1, m_textureShaderTableHandle.GetCpuHandle(), m_texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		rootArguments.SRV_DiffuseTexture = m_textureShaderTableHandle.GetGpuHandle();
-
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(rootArguments);
-		Ideal::DXRShaderTable hitGroupShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
-		hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
-		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
-	}
-}
-
 void Ideal::D3D12RayTracingRenderer::CreateRayTracingOutputResources()
 {
 	DXGI_FORMAT format = m_renderTargets[0]->GetResource()->GetDesc().Format;
@@ -1302,56 +880,6 @@ void Ideal::D3D12RayTracingRenderer::CreateDescriptorHeap()
 	//m_shaderTableHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DRAW_COUNT_PER_FRAME);	// temp
 }
 
-void Ideal::D3D12RayTracingRenderer::DoRaytracing5()
-{
-	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
-
-	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
-		{
-			//commandlist->SetDescriptorHeaps(1, m_shaderTableHeap->GetDescriptorHeap().GetAddressOf());
-			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
-			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
-			dispatchDesc->HitGroupTable.StrideInBytes = m_hitGroupShaderTableStrideInBytes;
-
-			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
-			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
-			dispatchDesc->MissShaderTable.StrideInBytes = m_missShaderTableStrideInBytes;
-
-			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
-			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
-
-			dispatchDesc->Width = m_width;
-			dispatchDesc->Height = m_height;
-			dispatchDesc->Depth = 1;
-			commandlist->SetPipelineState1(stateObject);
-			commandlist->DispatchRays(dispatchDesc);
-		};
-	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
-	//commandlist->SetDescriptorHeaps(1, m_descriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().GetAddressOf());
-	commandlist->SetDescriptorHeaps(1, m_descriptorManager->GetDescriptorHeap().GetAddressOf());
-	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
-	commandlist->SetComputeRootShaderResourceView(1, m_raytracingManager->GetTLASResource()->GetGPUVirtualAddress());
-
-	// parameter0에 바인딩 : render target
-	//auto handle0 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-	auto handle0 = m_descriptorManager->Allocate(m_currentContextIndex);
-	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	commandlist->SetComputeRootDescriptorTable(0, handle0.GetGpuHandle());
-
-	// parameter2 에 바인딩 : SceneConstantSlot
-	auto cb = m_cbAllocator[m_currentContextIndex]->Allocate(m_device.Get(), sizeof(m_sceneCB));
-	memcpy(cb->SystemMemAddr, &m_sceneCB, sizeof(m_sceneCB));
-	//auto handle2 = m_descriptorHeaps[m_currentContextIndex]->Allocate(1);
-	auto handle2 = m_descriptorManager->Allocate(m_currentContextIndex);
-	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	commandlist->SetComputeRootDescriptorTable(2, handle2.GetGpuHandle());
-
-	// Bind the hepas, 가속구조, dispatch rays
-	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
-
-	DispatchRays(commandlist.Get(), m_dxrStateObject.Get(), &dispatchDesc);
-}
-
 void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 {
 	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
@@ -1386,51 +914,6 @@ void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 	commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
 }
 
-void Ideal::D3D12RayTracingRenderer::UpdateAccelerationStructure()
-{
-
-	static float rad = 0.f;
-	if (rad > 360.f) rad = 0.f;
-	rad += 0.01f;
-	Matrix mat = Matrix::Identity * Matrix::CreateRotationY(rad);
-	// Matrix mat = Matrix::Identity;
-	// instance를 다시 올릴 upload buffer의 핸들
-	std::shared_ptr<Ideal::UploadBufferContainer> handle = m_BLASInstancePool[m_currentContextIndex]->Allocate();
-
-	// upload 할 주소를 받고
-	DXRInstanceDesc* ptr = (DXRInstanceDesc*)handle->SystemMemoryAddress;
-	// 주소에 데이터 복사 하고
-	ptr->SetTransform(mat);
-	ptr->InstanceMask = 1;
-	ptr->AccelerationStructure = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
-
-	/// 리빌드
-	// BLAS
-
-	// TLAS
-	D3D12_GPU_VIRTUAL_ADDRESS instanceDescs = handle->GpuVirtualAddress;
-	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC topLevelBuildDesc = {};
-	{
-		topLevelBuildDesc.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
-		topLevelBuildDesc.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
-		topLevelBuildDesc.Inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
-		topLevelBuildDesc.Inputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
-		topLevelBuildDesc.Inputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
-
-		topLevelBuildDesc.Inputs.NumDescs = 1;	// 일단 한 개
-		topLevelBuildDesc.Inputs.InstanceDescs = instanceDescs;
-
-		// 업데이트일 경우 처음 만드는게 아닐면 desc.sourceAS를 채워줘야한다.
-		topLevelBuildDesc.SourceAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
-		topLevelBuildDesc.ScratchAccelerationStructureData = m_scratch->GetGPUVirtualAddress();
-		topLevelBuildDesc.DestAccelerationStructureData = m_topLevelAccelerationStructure->GetGPUVirtualAddress();
-	}
-	m_commandLists[m_currentContextIndex]->BuildRaytracingAccelerationStructure(&topLevelBuildDesc, 0, nullptr);
-
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAccelerationStructure->GetResource());
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
-}
-
 void Ideal::D3D12RayTracingRenderer::InitRenderScene()
 {
 	//m_renderScene->Init(m_device, TODO, TODO);
@@ -1446,27 +929,6 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
 	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_descriptorManager);
 
-	// geometry
-	//BLASGeometry geo1;
-	//geo1.Name = L"g1";
-	//geo1.VertexBuffer = m_vertexBuffer;
-	//geo1.IndexBuffer = m_indexBuffer;
-	//
-	//BLASGeometry geo2;
-	//geo2.Name = L"g2";
-	//geo2.VertexBuffer = m_vertexBuffer;
-	//geo2.IndexBuffer = m_indexBuffer;
-	//
-	//BLASData desc1;
-	//desc1.Geometries.push_back(geo1);
-	//desc1.Geometries.push_back(geo2);
-	//
-	//BLASData desc2;
-	//desc2.Geometries.push_back(geo2);
-	//
-	//uint32 index1 = m_raytracingManager->AddBLASAndGetInstanceIndex(m_device, desc1.Geometries, L"BLAS1");
-	//uint32 index2 = m_raytracingManager->AddBLASAndGetInstanceIndex(m_device, desc2.Geometries, L"BLAS2");
-
 	ResetCommandList();
 
 	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
@@ -1477,9 +939,6 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 
 	Fence();
 	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
-
-	//Matrix trs = Matrix::Identity * Matrix::CreateTranslation(Vector3(5, 0, 0));
-	//m_raytracingManager->SetGeometryTransformByIndex(index2, trs);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
@@ -1490,8 +949,8 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
 {
 	ResetCommandList();
+	obj->AllocateBLASInstanceID(m_device, m_raytracingManager);
 
-	m_staticMeshObject->AllocateBLASInstanceID(m_device, m_raytracingManager);
 	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 
 	m_commandLists[m_currentContextIndex]->Close();
@@ -1499,119 +958,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager);
-	//BuildShaders2();
+
 	Fence();
 	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
-}
-
-void Ideal::D3D12RayTracingRenderer::BuildShaders2()
-{
-	m_descriptorManager->ResetFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-
-	void* rayGenShaderIdentifier;
-	void* missShaderIdentifier;
-	void* hitGroupShaderIdentifier;
-
-	uint32 shaderIdentifierSize;
-
-	// Get shader identifiers
-	{
-		ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
-		Check(m_dxrStateObject.As(&stateObjectProperties));
-		shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
-
-		rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_raygenShaderName);
-		missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_missShaderName);
-		hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(m_hitGroupName);
-	}
-	// Ray gen shader table
-	{
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize;
-		Ideal::DXRShaderTable rayGenShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"RayGenShaderTable");
-		rayGenShaderTable.push_back(Ideal::DXRShaderRecord(rayGenShaderIdentifier, shaderIdentifierSize));
-		m_rayGenShaderTable = rayGenShaderTable.GetResource();
-	}
-
-	// Miss shader table
-	{
-		uint32 numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize;
-		Ideal::DXRShaderTable missShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"MissShaderTable");
-		missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier, shaderIdentifierSize));
-		m_missShaderTable = missShaderTable.GetResource();
-		m_missShaderTableStrideInBytes = missShaderTable.GetShaderRecordSize();
-	}
-
-	// Hit group shader table
-	{
-		struct RootArgument
-		{
-			// Index
-			D3D12_GPU_DESCRIPTOR_HANDLE SRV_Indices;
-			// Vertex
-			D3D12_GPU_DESCRIPTOR_HANDLE SRV_Vertices;
-			// Diffuse Texture
-			D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
-		} rootArguments;
-
-		//uint32 numShaderRecords = m_contributionToHitGroupIndexCount;
-		uint32 numShaderRecords = 3;
-		if (numShaderRecords == 0) numShaderRecords = 1;
-		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(RootArgument);
-		Ideal::DXRShaderTable hitGroupShaderTable(m_device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
-
-		if (m_raytracingManager)
-		{
-			const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BlASes = m_raytracingManager->GetBLASes();
-
-			for (auto& blasPair : BlASes)
-			{
-				auto& blas = blasPair.second;
-				const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
-				for (const BLASGeometry& blasGeometry : blasGeometries)
-				{
-					// TEMP : 아래에서 핸들같은 것들 따로 프리 안해주고 있긴한데 사라지면서 프리가 될 것
-					Ideal::LocalRootSignature::RootArgument rootArguments;
-
-					std::shared_ptr<Ideal::D3D12IndexBuffer> indexBuffer = blasGeometry.IndexBuffer;
-					std::shared_ptr<Ideal::D3D12VertexBuffer> vertexBuffer = blasGeometry.VertexBuffer;
-
-					auto h1 = m_resourceManager->CreateSRV(indexBuffer, indexBuffer->GetElementCount(), indexBuffer->GetElementSize());
-					auto h2 = m_resourceManager->CreateSRV(vertexBuffer, vertexBuffer->GetElementCount(), vertexBuffer->GetElementSize());
-
-					// Indices
-					auto indicesLocation = m_descriptorManager->AllocateFixed(0);
-					m_device->CopyDescriptorsSimple(1, indicesLocation.GetCpuHandle(), h1->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-					// vertices
-					auto verticesLocation = m_descriptorManager->AllocateFixed(0);
-					m_device->CopyDescriptorsSimple(1, verticesLocation.GetCpuHandle(), h2->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-					// diffuse
-					auto textureLocation = m_descriptorManager->AllocateFixed(0);
-
-					uint64 notExist = (uint64)D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
-					if (blasGeometry.DiffuseTexture.GetCpuHandle().ptr != notExist)
-					{
-						m_device->CopyDescriptorsSimple(1, textureLocation.GetCpuHandle(), blasGeometry.DiffuseTexture.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-					}
-					rootArguments.SRV_Indices = indicesLocation.GetGpuHandle();
-					rootArguments.SRV_Vertices = verticesLocation.GetGpuHandle();
-					rootArguments.SRV_DiffuseTexture = textureLocation.GetGpuHandle();
-
-					hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
-
-					// temp:
-					m_shaderhandles.push_back(indicesLocation);
-					m_shaderhandles.push_back(verticesLocation);
-					m_shaderhandles.push_back(textureLocation);
-					srvs.push_back(h1);
-					srvs.push_back(h2);
-				}
-			}
-		}
-		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
-		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();
-	}
 }

@@ -211,6 +211,7 @@
     <ClInclude Include="GraphicsEngine\public\IdealRendererDefinitions.h" />
     <ClInclude Include="GraphicsEngine\public\ILight.h" />
     <ClInclude Include="GraphicsEngine\public\IPointLight.h" />
+    <ClInclude Include="GraphicsEngine\public\IRendererResource.h" />
     <ClInclude Include="GraphicsEngine\public\ISkinnedMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />

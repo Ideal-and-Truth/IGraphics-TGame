@@ -14,7 +14,7 @@ Ideal::DXRAccelerationStructureManager::~DXRAccelerationStructureManager()
 void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, const wchar_t* Name)
 {
 	// 먼저 같은 이름의 BLAS가 있는지를 검사한다. 만약 있을 경우 이미 추가한 BLAS인 것
-	if (m_bottomLevelAS[Name] != nullptr)
+	if (m_blasMap[Name] != nullptr)
 	{
 		//__debugbreak(); // 아마 여기 걸렸으면 다음 코드에서 이름으로 제대로 찾아오면 문제는 없을 것이다. 
 		return;
@@ -23,7 +23,7 @@ void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Devic
 	// 처음 추가할 경우 만들어서 넣어준다.
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(Name);
 	blas->Create(Device, Geometries, BuildFlags, false);
-	m_bottomLevelAS[Name] = blas;
+	m_blasMap[Name] = blas;
 
 	if (blas->RequiredScratchSize() > m_scratchResourceSize)
 	{
@@ -34,15 +34,16 @@ void Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Devic
 		}
 		m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
 	}
-
-	//m_scratchResourceSize = max(blas->RequiredScratchSize(), m_scratchResourceSize);
-
 }
 
 uint32 Ideal::DXRAccelerationStructureManager::AddInstance(const std::wstring& BLASName, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
 {
+	BLASInstanceDesc BLASInstance;
+
 	// 이름으로 BLAS를 꺼내오고
-	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = m_bottomLevelAS[BLASName];
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = m_blasMap[BLASName];
+	BLASInstance.BLAS = blas;
+
 	// 만들 인스턴스의 인덱스를 생성하고
 	uint32 instanceIndex = m_currentBlasIndex;
 	m_currentBlasIndex++;
@@ -52,7 +53,11 @@ uint32 Ideal::DXRAccelerationStructureManager::AddInstance(const std::wstring& B
 	instanceDesc.InstanceContributionToHitGroupIndex = InstanceContributionToHitGroupIndex;
 	instanceDesc.AccelerationStructure = blas->GetGPUAddress();
 	instanceDesc.SetTransform(transform);
-	m_instanceDescs.push_back(instanceDesc);
+
+	BLASInstance.InstanceDesc = instanceDesc;
+
+	//m_instanceDescs.push_back(instanceDesc);
+	m_instanceDescs.push_back(BLASInstance);
 
 	return instanceIndex;
 }
@@ -86,11 +91,11 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandL
 		 }
 
 		 DXRInstanceDesc* ptr = (DXRInstanceDesc*)container->SystemMemoryAddress;
-		 *ptr = m_instanceDescs[i];
+		 *ptr = m_instanceDescs[i].InstanceDesc;
 	}
 
 	// Build BLAS
-	for (auto& blasPair : m_bottomLevelAS)
+	for (auto& blasPair : m_blasMap)
 	{
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = blasPair.second;
 
