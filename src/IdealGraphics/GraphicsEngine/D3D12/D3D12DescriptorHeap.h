@@ -113,6 +113,9 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle Allocate(uint32 Count = 1);
 		void Free(uint32 Index);
 
+		D3D12_CPU_DESCRIPTOR_HANDLE GetFirstCPUDescriptorHandle() { return m_descriptorHeap->GetCPUDescriptorHandleForHeapStart(); }
+		uint32 GetDescriptorSize() { return m_descriptorSize * m_maxCount; }
+		uint32 GetDescriptorMaxCount() { return m_maxCount; }
 	public:
 		void SetName(const std::wstring& Name) { m_descriptorHeap->SetName(Name.c_str()); }
 

@@ -308,18 +308,19 @@ namespace Ideal
 		void InitRenderScene();
 		void TestDrawRenderScene();
 
-		// asmanager test
+		// as manager test
 		void RaytracingManagerInit();
 		void RaytracingManagerUpdate();
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::shared_ptr<Ideal::IdealStaticMeshObject> m_staticMeshObject;
 
-		void BuildShader2();
+		void BuildShaders2();
 		uint32 m_contributionToHitGroupIndexCount = 0;
 		std::vector<Ideal::D3D12DescriptorHandle> handles;
 		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;
 		uint64 m_hitGroupShaderTableStrideInBytes = 0;
 		uint64 m_missShaderTableStrideInBytes = 0;
+		void CopyShaderTableToMainDescriptor();
 	};
 }

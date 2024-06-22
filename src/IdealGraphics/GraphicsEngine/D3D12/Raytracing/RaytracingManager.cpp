@@ -50,7 +50,8 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	m_ASManager = std::make_unique<DXRAccelerationStructureManager>();
 
 	m_shaderTableHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	m_shaderTableHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 215);	// temp
+	//m_shaderTableHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 215);	// temp
+	m_shaderTableHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 20);	// temp
 
 	CreateRootSignature(Device);	//device
 	CreateRaytracingPipelineStateObject(Device, Shader); // device, shader

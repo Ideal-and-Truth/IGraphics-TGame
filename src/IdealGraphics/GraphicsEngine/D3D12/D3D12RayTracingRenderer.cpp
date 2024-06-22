@@ -60,21 +60,21 @@ inline void PrintStateObjectDesc(const D3D12_STATE_OBJECT_DESC* desc)
 	if (desc->Type == D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE) wstr << L"Raytracing Pipeline\n";
 
 	auto ExportTree = [](UINT depth, UINT numExports, const D3D12_EXPORT_DESC* exports)
-	{
-		std::wostringstream woss;
-		for (UINT i = 0; i < numExports; i++)
 		{
-			woss << L"|";
-			if (depth > 0)
+			std::wostringstream woss;
+			for (UINT i = 0; i < numExports; i++)
 			{
-				for (UINT j = 0; j < 2 * depth - 1; j++) woss << L" ";
+				woss << L"|";
+				if (depth > 0)
+				{
+					for (UINT j = 0; j < 2 * depth - 1; j++) woss << L" ";
+				}
+				woss << L" [" << i << L"]: ";
+				if (exports[i].ExportToRename) woss << exports[i].ExportToRename << L" --> ";
+				woss << exports[i].Name << L"\n";
 			}
-			woss << L" [" << i << L"]: ";
-			if (exports[i].ExportToRename) woss << exports[i].ExportToRename << L" --> ";
-			woss << exports[i].Name << L"\n";
-		}
-		return woss.str();
-	};
+			return woss.str();
+		};
 
 	for (UINT i = 0; i < desc->NumSubobjects; i++)
 	{
@@ -335,7 +335,7 @@ finishAdapter:
 
 	CreateDescriptorHeap();
 	// --- Test --- //
-	//CreateShaderCompiler();
+	//`Compiler();
 	m_rayGenCB.viewport = { -1.f,-1.f,1.f,1.f };
 	UpdateForSizeChange(m_width, m_height);
 
@@ -1374,7 +1374,8 @@ void Ideal::D3D12RayTracingRenderer::CreateDescriptorHeap()
 	//m_uavDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
 	m_uavDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
 	m_shaderTableHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	m_shaderTableHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DRAW_COUNT_PER_FRAME);	// temp : 20
+	//m_shaderTableHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_DRAW_COUNT_PER_FRAME);	// temp
+	m_shaderTableHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DRAW_COUNT_PER_FRAME);	// temp
 }
 
 void Ideal::D3D12RayTracingRenderer::DoRaytracing()
@@ -1382,24 +1383,24 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing()
 	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
 
 	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
-	{
-		dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
-		dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
-		dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
+		{
+			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
+			dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
 
-		dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
-		dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
-		dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
+			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
+			dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
 
-		dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
-		dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
+			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
 
-		dispatchDesc->Width = m_width;
-		dispatchDesc->Height = m_height;
-		dispatchDesc->Depth = 1;
-		commandlist->SetPipelineState1(stateObject);
-		commandlist->DispatchRays(dispatchDesc);
-	};
+			dispatchDesc->Width = m_width;
+			dispatchDesc->Height = m_height;
+			dispatchDesc->Depth = 1;
+			commandlist->SetPipelineState1(stateObject);
+			commandlist->DispatchRays(dispatchDesc);
+		};
 
 	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
 	commandlist->SetDescriptorHeaps(1, m_descriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().GetAddressOf());
@@ -1431,6 +1432,7 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing4()
 
 	auto DispatchRays = [&](auto* commandlist, auto* stateObject, D3D12_DISPATCH_RAYS_DESC* dispatchDesc)
 		{
+			
 			dispatchDesc->HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
 			dispatchDesc->HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
 			dispatchDesc->HitGroupTable.StrideInBytes = dispatchDesc->HitGroupTable.SizeInBytes;
@@ -1498,10 +1500,9 @@ void Ideal::D3D12RayTracingRenderer::DoRaytracing5()
 			commandlist->SetPipelineState1(stateObject);
 			commandlist->DispatchRays(dispatchDesc);
 		};
-
 	commandlist->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
 	commandlist->SetDescriptorHeaps(1, m_descriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().GetAddressOf());
-
+	//commandlist->SetDescriptorHeaps(1, m_shaderTableHeap->GetDescriptorHeap().GetAddressOf());
 	// 1번 parameter를 (parameter은 register를 t0으로 초기화 해줬음)
 	commandlist->SetComputeRootShaderResourceView(1, m_raytracingManager->GetTLASResource()->GetGPUVirtualAddress());
 
@@ -1702,12 +1703,12 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	//m_raytracingManager->BuildShaderTables(m_device, m_resourceManager);
-	BuildShader2();
+	BuildShaders2();
 	Fence();
 	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
 }
 
-void Ideal::D3D12RayTracingRenderer::BuildShader2()
+void Ideal::D3D12RayTracingRenderer::BuildShaders2()
 {
 	void* rayGenShaderIdentifier;
 	void* missShaderIdentifier;
@@ -1780,6 +1781,7 @@ void Ideal::D3D12RayTracingRenderer::BuildShader2()
 				auto h2 = m_resourceManager->CreateSRV(vertexBuffer, vertexBuffer->GetElementCount(), vertexBuffer->GetElementSize());
 
 				// Indices
+				//auto indicesLocation = m_shaderTableHeap->Allocate(1);
 				auto indicesLocation = m_shaderTableHeap->Allocate(1);
 				m_device->CopyDescriptorsSimple(1, indicesLocation.GetCpuHandle(), h1->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
@@ -1811,4 +1813,9 @@ void Ideal::D3D12RayTracingRenderer::BuildShader2()
 		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();
 	}
+}
+
+void Ideal::D3D12RayTracingRenderer::CopyShaderTableToMainDescriptor()
+{
+
 }
