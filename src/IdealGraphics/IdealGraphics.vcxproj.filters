@@ -164,6 +164,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -252,6 +253,7 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

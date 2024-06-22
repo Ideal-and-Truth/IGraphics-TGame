@@ -100,6 +100,7 @@ namespace Ideal
 
 	class DXRAccelerationStructureManager;
 	class RaytracingManager;
+	class D3D12DescriptorManager;
 }
 struct TestVertex;
 
@@ -317,10 +318,13 @@ namespace Ideal
 
 		void BuildShaders2();
 		uint32 m_contributionToHitGroupIndexCount = 0;
-		std::vector<Ideal::D3D12DescriptorHandle> handles;
+		std::vector<Ideal::D3D12DescriptorHandle> m_shaderhandles;
 		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;
 		uint64 m_hitGroupShaderTableStrideInBytes = 0;
 		uint64 m_missShaderTableStrideInBytes = 0;
 		void CopyShaderTableToMainDescriptor();
+
+		// 2024.06.23 ´ë°Ýº¯
+		std::shared_ptr<Ideal::D3D12DescriptorManager> m_descriptorManager;
 	};
 }
