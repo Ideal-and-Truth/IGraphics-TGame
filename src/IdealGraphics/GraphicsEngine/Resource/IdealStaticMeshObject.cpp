@@ -93,5 +93,9 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)
 {
-	RaytracingManager->SetGeometryTransformByIndex(m_instanceID, m_transform);
+	if (m_isDirty)
+	{
+		RaytracingManager->SetGeometryTransformByIndex(m_instanceID, m_transform);
+		m_isDirty = false;
+	}
 }

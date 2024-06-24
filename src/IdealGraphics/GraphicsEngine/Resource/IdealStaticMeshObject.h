@@ -29,7 +29,7 @@ namespace Ideal
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 	public:
-		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; }
+		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }
@@ -46,6 +46,7 @@ namespace Ideal
 		void UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
 
 	private:
+		bool m_isDirty = false;
 		uint32 m_instanceID = 0;
 	};
 }

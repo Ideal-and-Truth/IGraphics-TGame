@@ -17,6 +17,7 @@ namespace Ideal
 	class ResourceManager;
 	class D3D12ShaderResourceView;
 	class D3D12DynamicDescriptorHeap;
+	class D3D12DescriptorHeap;
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12DescriptorManager;
 }
@@ -80,8 +81,13 @@ namespace Ideal
 		~RaytracingManager();
 
 	public:
-		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager);
-		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height, SceneConstantBuffer SceneCB);
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
+		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB);
+		void Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
+
+		//---UAV Render Target---//
+		void CreateUAVRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height);
+		ComPtr<ID3D12Resource> GetRaytracingOutputResource();
 
 		//---AS---//
 		uint32 AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name);
@@ -108,11 +114,21 @@ namespace Ideal
 	private:
 		std::unique_ptr<DXRAccelerationStructureManager> m_ASManager;
 
+		//---Device---//
+		uint32 m_width;
+		uint32 m_height;
+
+		//---UAV Render Target---//
+		ComPtr<ID3D12Resource> m_raytracingOutput;
+		D3D12_CPU_DESCRIPTOR_HANDLE m_raytacingOutputResourceUAVCpuDescriptorHandle;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uavSingleDescriptorHeap;
+
+		//---Root Signature---//
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
 		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
 		ComPtr<ID3D12StateObject> m_dxrStateObject;
 
-		// Shader Table
+		//---Shader Table---//
 		ComPtr<ID3D12Resource> m_missShaderTable;
 		ComPtr<ID3D12Resource> m_rayGenShaderTable;
 		ComPtr<ID3D12Resource> m_hitGroupShaderTable;

@@ -218,7 +218,6 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 	}
-	m_raytacingOutputResourceUAVGpuDescriptorHandle.Free();
 
 	m_resourceManager = nullptr;
 }
@@ -322,8 +321,6 @@ finishAdapter:
 	m_shaderManager->Init();
 	m_shaderManager->AddIncludeDirectories(L"../Shaders/Raytracing/");
 
-	CreateDescriptorHeap();
-
 	// shader test
 	//InitShader();
 	//CompileShader2(L"../Shaders/Raytracing/Raytracing.hlsl", m_raygenShaderName, m_testBlob);
@@ -347,7 +344,6 @@ finishAdapter:
 
 	// create resource
 	//CreateDeviceDependentResources();
-	CreateRayTracingOutputResources();
 	RaytracingManagerInit();
 }
 
@@ -376,12 +372,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_commandLists[m_currentContextIndex],
 		m_descriptorManager,
 		m_currentContextIndex,
-		m_raytacingOutputResourceUAVGpuDescriptorHandle,
 		m_cbAllocator[m_currentContextIndex],
-		m_width,
-		m_height,
-		m_sceneCB
-	);
+		m_sceneCB);
 
 	CopyRaytracingOutputToBackBuffer();
 	EndRender();
@@ -828,62 +820,11 @@ void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
 }
 
-void Ideal::D3D12RayTracingRenderer::CreateRayTracingInterfaces()
-{
-	//Check(m_device->QueryInterface(IID_PPV_ARGS(&m_device)), L"F");
-	//for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
-	//{
-	//	Check(m_commandLists[i]->QueryInterface(IID_PPV_ARGS(m_commandLists[i].GetAddressOf())), L"F");
-	//}
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateRayTracingOutputResources()
-{
-	DXGI_FORMAT format = m_renderTargets[0]->GetResource()->GetDesc().Format;
-
-	CD3DX12_RESOURCE_DESC uavDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		format,
-		m_width,
-		m_height,
-		1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
-	);
-
-	CD3DX12_HEAP_PROPERTIES heapProp(D3D12_HEAP_TYPE_DEFAULT);
-	Check(m_device->CreateCommittedResource(
-		&heapProp,
-		D3D12_HEAP_FLAG_NONE,
-		&uavDesc,
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		nullptr,
-		IID_PPV_ARGS(m_raytracingOutput.GetAddressOf())),
-		L"Failed to Create RayTracing Output!"
-	);
-	m_raytracingOutput->SetName(L"RayTracing_OutPut");
-	//m_descriptorHeaps[m_currentContextIndex]->GetC
-
-	m_raytacingOutputResourceUAVGpuDescriptorHandle = m_uavDescriptorHeap->Allocate();
-	D3D12_CPU_DESCRIPTOR_HANDLE uavDescriptorHandle;
-	//m_raytracingOutputResourceUAVDescriptorHeapIndex = CD3DX12_GPU_DESCRIPTOR_HANDLE()
-	D3D12_UNORDERED_ACCESS_VIEW_DESC UAVDesc = {};
-	UAVDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-	m_device->CreateUnorderedAccessView(m_raytracingOutput.Get(), nullptr, &UAVDesc, m_raytacingOutputResourceUAVGpuDescriptorHandle.GetCpuHandle());
-	//m_raytacingOutputResourceUAVGpuDescriptorHandle = m_raytacingOutputResourceUAVGpuDescriptorHandle.GetGpuHandle();
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateDescriptorHeap()
-{
-	m_uavDescriptorHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	//m_uavDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
-	m_uavDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
-	//m_shaderTableHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	//m_shaderTableHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_DRAW_COUNT_PER_FRAME);	// temp
-	//m_shaderTableHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DRAW_COUNT_PER_FRAME);	// temp
-}
-
 void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 {
 	ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
 	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
+	ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
 
 	CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
 	preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -892,12 +833,12 @@ void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 		D3D12_RESOURCE_STATE_COPY_DEST
 	);
 	preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_raytracingOutput.Get(),
+		raytracingOutput.Get(),
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
 		D3D12_RESOURCE_STATE_COPY_SOURCE
 	);
 	commandlist->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
-	commandlist->CopyResource(renderTarget->GetResource(), m_raytracingOutput.Get());
+	commandlist->CopyResource(renderTarget->GetResource(), raytracingOutput.Get());
 
 	CD3DX12_RESOURCE_BARRIER postCopyBarriers[2];
 	postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -906,7 +847,7 @@ void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
 	postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_raytracingOutput.Get(),
+		raytracingOutput.Get(),
 		D3D12_RESOURCE_STATE_COPY_SOURCE,
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
 	);
@@ -927,7 +868,7 @@ void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_descriptorManager);
+	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_descriptorManager, m_width, m_height);
 
 	ResetCommandList();
 

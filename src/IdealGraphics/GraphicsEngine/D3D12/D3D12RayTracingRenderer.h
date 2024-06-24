@@ -34,30 +34,6 @@ struct cbViewport
 	float bottom;
 };
 
-
-struct RayGenConstantBuffer
-{
-	cbViewport viewport;
-	cbViewport stencil;
-};
-
-struct CubeConstantBuffer
-{
-	Color albedo;
-};
-
-struct RootArgumentTest
-{
-	// Test ConstantBuffer
-	CubeConstantBuffer CB_Cube;
-	// Index
-	D3D12_GPU_DESCRIPTOR_HANDLE SRV_Indices;
-	// Vertex
-	D3D12_GPU_DESCRIPTOR_HANDLE SRV_Vertices;
-	// Diffuse Texture
-	D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
-};
-
 namespace Ideal
 {
 	class ResourceManager;
@@ -227,19 +203,6 @@ namespace Ideal
 		const wchar_t* m_closestHitShaderName = L"MyClosestHitShader";
 		const wchar_t* m_missShaderName = L"MyMissShader";
 		const wchar_t* m_hitGroupName = L"MyHitGroup";
-
-		void CreateRayTracingInterfaces();
-
-		void CreateRayTracingOutputResources();
-		ComPtr<ID3D12Resource> m_raytracingOutput;
-		uint32 m_raytracingOutputResourceUAVDescriptorHeapIndex;
-
-		void CreateDescriptorHeap();
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_uavDescriptorHeap;
-		Ideal::D3D12DescriptorHandle m_raytacingOutputResourceUAVGpuDescriptorHandle;
-
-		//geometry
-		RootArgumentTest m_rootArguments;
 
 		// AS
 		SceneConstantBuffer m_sceneCB;

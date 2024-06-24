@@ -8,6 +8,7 @@
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -46,16 +47,21 @@ Ideal::RaytracingManager::~RaytracingManager()
 
 }
 
-void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager)
+void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
 {
+	m_width = Width;
+	m_height = Height;
 	m_ASManager = std::make_unique<DXRAccelerationStructureManager>();
-
+	m_uavSingleDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_uavSingleDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
+	
+	CreateUAVRenderTarget(Device, Width, Height);	//device, width, height
 	CreateRootSignature(Device);	//device
 	CreateRaytracingPipelineStateObject(Device, Shader); // device, shader
 	BuildShaderTables(Device, ResourceManager, DescriptorManager); // Device, ResourceManager
 }
 
-void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, Ideal::D3D12DescriptorHandle OutputUAVHandle, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const uint32& Width, const uint32& Height, SceneConstantBuffer SceneCB)
+void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB)
 {
 	CommandList->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
 	CommandList->SetDescriptorHeaps(1, DescriptorManager->GetDescriptorHeap().GetAddressOf());
@@ -64,7 +70,8 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	
 	// Parameter 0
 	auto handle0 = DescriptorManager->Allocate(CurrentFrameIndex);
-	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), OutputUAVHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), OutputUAVHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVCpuDescriptorHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_Output, handle0.GetGpuHandle());
 
 	// Parameter 1
@@ -93,12 +100,50 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	dispatchRayDesc.RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
 	dispatchRayDesc.RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
 	
-	dispatchRayDesc.Width = Width;
-	dispatchRayDesc.Height = Height;
+	dispatchRayDesc.Width = m_width;
+	dispatchRayDesc.Height = m_height;
 	dispatchRayDesc.Depth = 1;
 
 	CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->DispatchRays(&dispatchRayDesc);
+}
+
+void Ideal::RaytracingManager::Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height)
+{
+	m_width = Width;
+	m_height = Height;
+	m_uavSingleDescriptorHeap->Reset();
+	CreateUAVRenderTarget(Device, Width, Height);
+}
+
+void Ideal::RaytracingManager::CreateUAVRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height)
+{
+	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, Width, Height, 1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	Check(
+		Device->CreateCommittedResource(
+			&heapProp,
+			D3D12_HEAP_FLAG_NONE,
+			&desc,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			nullptr,
+			IID_PPV_ARGS(&m_raytracingOutput)
+		),
+		L"Failed to create Raytracing Output Resource"
+	);
+	m_raytracingOutput->SetName(L"RaytracingOutput");
+
+	auto handle = m_uavSingleDescriptorHeap->Allocate();
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	Device->CreateUnorderedAccessView(m_raytracingOutput.Get(), nullptr, &uavDesc, handle.GetCpuHandle());
+	m_raytacingOutputResourceUAVCpuDescriptorHandle = handle.GetCpuHandle();
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOutputResource()
+{
+	return m_raytracingOutput;
 }
 
 uint32 Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name)
@@ -279,7 +324,7 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 	// Hit Shader Table
 	{
-		uint32 numShaderRecords = m_contributionToHitGroupIndexCount;
+		uint32 numShaderRecords = (uint32)m_contributionToHitGroupIndexCount;
 		if (numShaderRecords == 0) numShaderRecords = 1;
 		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(Ideal::LocalRootSignature::RootArgument);
 		Ideal::DXRShaderTable hitGroupShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
