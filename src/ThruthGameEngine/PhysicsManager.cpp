@@ -85,23 +85,29 @@ void Truth::PhysicsManager::FixedUpdate()
 			RigidBody* rigidbody = static_cast<RigidBody*>(rigidActor->userData);
 			if (rigidbody)
 			{
-				auto physxTM = rigidActor->getGlobalPose();
-				Vector3 pos = MathConverter::Convert(physxTM.p);
-				Quaternion rot = MathConverter::Convert(physxTM.q);
-				Vector3 scale = rigidbody->GetScale();
+				Vector3 pos;
+				Quaternion rot;
+				Vector3 scale;
 
-				Matrix TM = Matrix::CreateScale(scale);
-				if (!rigidbody->IsController())
+				if (rigidbody->IsController())
 				{
-					TM *= Matrix::CreateFromQuaternion(rot);
+					auto p = rigidbody->GetController()->getPosition();
+					pos = MathConverter::Convert(rigidbody->GetController()->getPosition());
+					rot = rigidbody->GetRotation();
 				}
 				else
 				{
-					TM *= Matrix::CreateFromQuaternion(rigidbody->GetRotation());
+					 physx::PxTransform physxTM = rigidActor->getGlobalPose();
+					pos = MathConverter::Convert(physxTM.p);
+					rot = MathConverter::Convert(physxTM.q);
 				}
+				scale = rigidbody->GetScale();
+
+				Matrix TM = Matrix::CreateScale(scale);
+				TM *= Matrix::CreateFromQuaternion(rot);
 				TM *= Matrix::CreateTranslation(pos);
 
-				rigidbody->SetWorldTM(rigidbody->m_localTM.Invert() * TM);
+				rigidbody->SetWorldTM(rigidbody->m_invertLocalTM * TM);
 			}
 		}
 	}

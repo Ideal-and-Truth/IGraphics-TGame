@@ -5,6 +5,7 @@
 namespace physx
 {
 	class PxRigidDynamic;
+	class PxController;
 }
 namespace Truth
 {
@@ -45,6 +46,7 @@ namespace Truth
 		physx::PxRigidDynamic* m_body;
 
 		Matrix m_localTM;
+		Matrix m_invertLocalTM;
 		Matrix m_globalTM;
 
 	private:
@@ -62,6 +64,8 @@ namespace Truth
 		bool m_isChanged;
 
 		bool m_isController;
+		physx::PxController* m_controller;
+
 
 	public:
 		RigidBody();
@@ -85,6 +89,8 @@ namespace Truth
 		bool IsController() const { return m_isController; }
 
 		Quaternion GetRotation();
+
+		physx::PxController* GetController() { return m_controller; }
 
 	private:
 		METHOD(Awake);

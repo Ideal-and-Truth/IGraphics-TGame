@@ -25,7 +25,7 @@ namespace Truth
 		void serialize(Archive& _ar, const unsigned int _file_version);
 
 	private:
-		physx::PxController* m_contorller;
+		physx::PxController* m_controller;
 		std::shared_ptr<RigidBody> m_rigidbody;
 
 		bool m_isJumping;
@@ -53,22 +53,12 @@ namespace Truth
 		METHOD(Start);
 		virtual void Start() override;
 
-// 		METHOD(Update);
-// 		virtual void Update() override;
-
 		void Move(Vector3& _disp);
 		bool SetPosition(Vector3& _disp);
 		void SetRotation(Quaternion& _val);
 		bool IsCollisionDown();
 		bool IsCollisionUp();
 		bool IsCollisionSide();
-
-
-	private:
-		void UpdateVelocity();
-		void UpdateMovement(Vector3& _disp);
-		void UpdateGravity(Vector3& _disp);
-		void UpdateJump(Vector3& _disp);
 	};
 
 	template<class Archive>

@@ -59,10 +59,13 @@ void Truth::TimeManager::Update()
 	// 고정 프레임 시간
 	m_fixedDeltaTime += delta * m_timeScale;
 
+#ifdef _DEBUG
 	if (m_managers.lock()->m_isEdit)
 	{
 		m_fixedDeltaTime = 0.0f;
 	}
+#endif // _DEBUG
+
 
 	// 만일 고정 프레임 시간이 단위를 넘기게 되면 이벤트를 발행한다.
 	while (m_fixedDeltaTime >= m_fixedTime)

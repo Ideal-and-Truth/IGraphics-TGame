@@ -4,15 +4,16 @@
 
 namespace MathConverter
 {
-	physx::PxVec3 Convert(Vector3 _val);
-	physx::PxVec2 Convert(Vector2 _val);
+	physx::PxVec3 Convert(const Vector3& _val);
+	physx::PxVec2 Convert(const Vector2& _val);
 
-	Vector3 Convert(physx::PxVec3 _val);
+	Vector3 Convert(const physx::PxVec3& _val);
+	Vector3 Convert(const physx::PxExtendedVec3& _val);
 
-	Quaternion Convert(physx::PxQuat& _val);
-	physx::PxQuat Convert(Quaternion _val);
+	Quaternion Convert(const physx::PxQuat& _val);
+	physx::PxQuat Convert(const Quaternion& _val);
 
-	Matrix Convert(physx::PxTransform&& _val);
+	Matrix Convert(const physx::PxTransform& _val);
 	physx::PxTransform Convert(Matrix _val);
 };
 

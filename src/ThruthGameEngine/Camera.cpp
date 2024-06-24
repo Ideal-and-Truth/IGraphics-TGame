@@ -24,7 +24,7 @@ Truth::Camera::~Camera()
 }
 
 
-void Truth::Camera::Update()
+void Truth::Camera::LateUpdate()
 {
 	float dt = GetDeltaTime();
 	float speed = 300;

@@ -47,7 +47,7 @@ void PlayerCamera::Start()
 
 }
 
-void PlayerCamera::Update()
+void PlayerCamera::LateUpdate()
 {
 	if (!m_isLockOn == GetKeyDown(KEY::Q))
 	{
@@ -105,7 +105,7 @@ void PlayerCamera::FreeCamera()
 	m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);*/
 
 	// 자유시점 카메라2
-	Vector3 cameraPos =m_owner.lock()->m_transform->m_position;
+	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
 	Vector3 targetPos = m_target->m_position;
 
 	m_elevation += MouseDy() * m_cameraSpeed;

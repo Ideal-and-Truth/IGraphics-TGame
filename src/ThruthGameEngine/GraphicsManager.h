@@ -4,6 +4,7 @@
 namespace Truth
 {
 	class Mesh;
+	class Camera;
 }
 
 namespace Truth
@@ -13,6 +14,7 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::IdealRenderer> m_renderer;
 		std::shared_ptr<Ideal::IRenderScene> m_renderScene;
+		std::shared_ptr<Camera> m_mainCamera;
 		float m_aspect;
 
 		const wchar_t* m_assetPath[3] =

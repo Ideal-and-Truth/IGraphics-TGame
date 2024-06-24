@@ -37,8 +37,8 @@ public:
 	METHOD(Start);
 	void Start();
 
-	METHOD(Update);
-	void Update();
+	METHOD(LateUpdate);
+	void LateUpdate();
 
 private:
 	void FreeCamera();
