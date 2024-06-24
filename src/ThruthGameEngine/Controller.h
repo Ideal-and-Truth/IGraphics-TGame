@@ -28,17 +28,6 @@ namespace Truth
 		physx::PxController* m_controller;
 		std::shared_ptr<RigidBody> m_rigidbody;
 
-		bool m_isJumping;
-
-		float m_jumpStrength;
-		float m_jumpVelocity;
-
-		float m_velocity;
-
-		float m_moveSpeed;
-
-		float m_gravity;
-
 		const float m_minmumDistance;
 
 		uint32 m_flag;

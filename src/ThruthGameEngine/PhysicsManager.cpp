@@ -217,13 +217,15 @@ physx::PxController* Truth::PhysicsManager::CreatePlayerController()
 	desc.height = 1.8f;
 	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
 	desc.contactOffset = 0.05f;
-	desc.stepOffset = 0.1f;
+	desc.stepOffset = 1.0f;
 	desc.radius = 0.8f;
 	desc.position = physx::PxExtendedVec3(0.0f, 10.0f, 0.0f);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
 	desc.material = m_physics->createMaterial(1.0f, 1.0f, 0.05f);
 
 	physx::PxController* c = m_CCTManager->createController(desc);
+
+	assert(c && "cannot create Controller\n");
 
 	return c;
 }

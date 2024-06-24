@@ -9,12 +9,6 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Controller)
 
 Truth::Controller::Controller()
 	: m_controller(nullptr)
-	, m_isJumping(true)
-	, m_jumpStrength(30.0f)
-	, m_moveSpeed(10.0f)
-	, m_gravity(-100.0f)
-	, m_velocity(0.0f)
-	, m_jumpVelocity(0.0f)
 	, m_minmumDistance(0.0001f)
 	, m_flag(0)
 	, m_rigidbody(nullptr)
@@ -64,7 +58,7 @@ void Truth::Controller::Move(Vector3& _disp)
 		(
 			MathConverter::Convert(_disp),
 			m_minmumDistance,
-			m_velocity, 
+			1.0f / 60.0f, 
 			physx::PxControllerFilters()
 		));
 }
