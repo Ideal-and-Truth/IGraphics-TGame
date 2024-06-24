@@ -69,6 +69,8 @@ void Truth::PhysicsManager::Update()
 
 void Truth::PhysicsManager::FixedUpdate()
 {
+
+
 	m_scene->simulate(1.0f / 60.0f);
 	m_scene->fetchResults(true);
 
@@ -89,7 +91,14 @@ void Truth::PhysicsManager::FixedUpdate()
 				Vector3 scale = rigidbody->GetScale();
 
 				Matrix TM = Matrix::CreateScale(scale);
-				TM *= Matrix::CreateFromQuaternion(rot);
+				if (!rigidbody->IsController())
+				{
+					TM *= Matrix::CreateFromQuaternion(rot);
+				}
+				else
+				{
+					TM *= Matrix::CreateFromQuaternion(rigidbody->GetRotation());
+				}
 				TM *= Matrix::CreateTranslation(pos);
 
 				rigidbody->SetWorldTM(rigidbody->m_localTM.Invert() * TM);
@@ -207,9 +216,9 @@ physx::PxController* Truth::PhysicsManager::CreatePlayerController()
 	desc.position = physx::PxExtendedVec3(0.0f, 10.0f, 0.0f);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
 	desc.material = m_physics->createMaterial(1.0f, 1.0f, 0.05f);
-	
+
 	physx::PxController* c = m_CCTManager->createController(desc);
-	
+
 	return c;
 }
 

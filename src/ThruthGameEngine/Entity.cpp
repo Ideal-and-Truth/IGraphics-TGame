@@ -190,7 +190,7 @@ void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
 {
 	_component->SetManager(m_manager);
 	_component->SetOwner(shared_from_this());
-	_component->m_index = m_components.size();
+	_component->m_index = static_cast<int32>(m_components.size());
 	m_components.push_back(_component);
 	_component->Initalize();
 	ApplyComponent(_component);

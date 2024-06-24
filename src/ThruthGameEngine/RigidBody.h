@@ -61,6 +61,8 @@ namespace Truth
 
 		bool m_isChanged;
 
+		bool m_isController;
+
 	public:
 		RigidBody();
 		virtual ~RigidBody();
@@ -79,6 +81,10 @@ namespace Truth
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();
+
+		bool IsController() const { return m_isController; }
+
+		Quaternion GetRotation();
 
 	private:
 		METHOD(Awake);

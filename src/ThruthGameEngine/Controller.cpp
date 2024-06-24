@@ -37,6 +37,7 @@ void Truth::Controller::Initalize()
 
 	m_rigidbody->m_transform = m_owner.lock()->GetComponent<Transform>();
 	m_rigidbody->m_owner = m_owner.lock();
+	m_rigidbody->m_isController = true;
 
 	m_rigidbody->m_body = m_contorller->getActor();
 	m_contorller->getActor()->userData = m_rigidbody.get();

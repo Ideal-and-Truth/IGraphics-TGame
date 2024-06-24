@@ -111,20 +111,32 @@ void PlayerController::PlayerMove(const void*)
 	}
 
 	/// TODO : 피직스 컨트롤러에 적용하고 트랜스폼을 리기드 바디로 사용해야함
+
 // 	Vector3 disp = direction * m_forwardInput * playerSpeed + right * m_sideInput * playerSpeed;
 // 	m_controller->Move(disp);
 
-	Vector3 cameraForward = m_camera->m_transform->m_rotation * Vector3::Forward;
-	Vector3 cameraRight = m_camera->m_transform->m_rotation * Vector3::Right;
-	cameraForward.y = 0;
-	cameraRight.y = 0;
-	cameraForward.Normalize();
-	cameraRight.Normalize();
-	Vector3 disp2 = cameraForward * m_forwardInput * playerSpeed + cameraRight * m_sideInput * playerSpeed;
-	//m_controller->Move(disp2);
+	Vector3 disp = direction * m_forwardInput * playerSpeed;
+	// m_controller->Move(disp);
+	Vector3 disp2 = right * m_sideInput * playerSpeed;
+	// m_controller->Move(disp2);
+	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f) * GetDeltaTime();
 
-	m_owner.lock()->m_transform->m_position += direction * m_forwardInput * playerSpeed;
-	m_owner.lock()->m_transform->m_position += right * m_sideInput * playerSpeed;
+	Vector3 finalMovement = disp + disp2 + gravity;
+
+	m_controller->Move(finalMovement);
+
+
+// 	Vector3 cameraForward = m_camera->m_transform->m_rotation * Vector3::Forward;
+// 	Vector3 cameraRight = m_camera->m_transform->m_rotation * Vector3::Right;
+// 	cameraForward.y = 0;
+// 	cameraRight.y = 0;
+// 	cameraForward.Normalize();
+// 	cameraRight.Normalize();
+// 	Vector3 disp2 = cameraForward * m_forwardInput * playerSpeed + cameraRight * m_sideInput * playerSpeed;
+// 	//m_controller->Move(disp2);
+// 
+// 	m_owner.lock()->m_transform->m_position += direction * m_forwardInput * playerSpeed;
+// 	m_owner.lock()->m_transform->m_position += right * m_sideInput * playerSpeed;
 
 	// 플레이어 회전
 	Vector3 upVec = { 0,1,0 };
