@@ -12,6 +12,7 @@ Truth::Component::Component()
 	: m_canMultiple(false)
 	, m_managers()
 	, m_owner()
+	, m_index(-1)
 {
 	m_name = typeid(*this).name();
 }

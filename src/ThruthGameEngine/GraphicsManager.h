@@ -5,6 +5,10 @@ namespace Truth
 {
 	class Mesh;
 	class Camera;
+#ifdef _DEBUG
+	class EditorCamera;
+#endif // _DEBUG
+
 }
 
 namespace Truth
@@ -14,7 +18,7 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::IdealRenderer> m_renderer;
 		std::shared_ptr<Ideal::IRenderScene> m_renderScene;
-		std::shared_ptr<Camera> m_mainCamera;
+		Camera* m_mainCamera;
 		float m_aspect;
 
 		const wchar_t* m_assetPath[3] =
@@ -47,13 +51,19 @@ namespace Truth
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight();
 
 		std::shared_ptr<Ideal::ICamera> CreateCamera();
-		void SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera);
+		void SetMainCamera(Camera* _camera);
+#ifdef _DEBUG
+		void SetMainCamera(EditorCamera* _camera);
+#endif // _DEBUG
+
 
 		float GetAspect() const { return m_aspect; }
 
 		std::shared_ptr<Ideal::IdealRenderer> GetRenderer() const {return m_renderer;}
 
 		void ResetRenderScene();
+
+		void CompleteCamera();
 	};
 }
 

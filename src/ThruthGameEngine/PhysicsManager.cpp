@@ -97,7 +97,7 @@ void Truth::PhysicsManager::FixedUpdate()
 				}
 				else
 				{
-					 physx::PxTransform physxTM = rigidActor->getGlobalPose();
+					physx::PxTransform physxTM = rigidActor->getGlobalPose();
 					pos = MathConverter::Convert(physxTM.p);
 					rot = MathConverter::Convert(physxTM.q);
 				}

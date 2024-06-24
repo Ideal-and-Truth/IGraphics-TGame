@@ -14,6 +14,8 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Camera)
 
 	private:
+		friend class GraphicsManager;
+
 		std::shared_ptr<Ideal::ICamera> m_camera;
 
 		friend class boost::serialization::access;
@@ -57,6 +59,8 @@ namespace Truth
 
 		METHOD(Initalize);
 		virtual void Initalize();
+
+		void CompleteCamera();
 
 #ifdef _DEBUG
 		virtual void EditorSetValue();

@@ -79,9 +79,19 @@ void Truth::Managers::Render() const
 {
 	m_sceneManager->ApplyTransform();
 
-
-
+#ifdef _DEBUG
+	if (m_isEdit)
+	{
+		m_graphicsManager->Render();
+	}
+	else
+	{
+		m_graphicsManager->CompleteCamera();
+		m_graphicsManager->Render();
+	}
+#else
 	m_graphicsManager->Render();
+#endif // DEBUG
 }
 
 void Truth::Managers::Finalize()
