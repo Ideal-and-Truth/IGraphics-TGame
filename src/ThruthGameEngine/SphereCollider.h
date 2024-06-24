@@ -10,8 +10,11 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(SphereCollider);
 	private:
 		friend class boost::serialization::access;
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 	public:
 		PROPERTY(radius);
 		float m_radius;
@@ -29,7 +32,14 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::SphereCollider::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::SphereCollider::load(Archive& _ar, const unsigned int file_version)
+	{
+		_ar& boost::serialization::base_object<Collider>(*this);
+		_ar& m_radius;
+	}
+
+	template<class Archive>
+	void Truth::SphereCollider::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Collider>(*this);
 		_ar& m_radius;
@@ -37,3 +47,4 @@ namespace Truth
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::SphereCollider)
+BOOST_CLASS_VERSION(Truth::SphereCollider, 0)

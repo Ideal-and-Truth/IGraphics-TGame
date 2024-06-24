@@ -11,6 +11,8 @@ namespace Truth
 	class RigidBody;
 }
 
+
+
 namespace Truth
 {
 	class Controller
@@ -20,15 +22,39 @@ namespace Truth
 
 	private:
 		friend class boost::serialization::access;
-
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	private:
 		physx::PxController* m_controller;
 		std::shared_ptr<RigidBody> m_rigidbody;
 
 		const float m_minmumDistance;
+
+		PROPERTY(height)
+			float m_height;
+
+		PROPERTY(contactOffset)
+			float m_contactOffset;
+
+		PROPERTY(stepOffset)
+			float m_stepOffset;
+
+		PROPERTY(radius)
+			float m_radius;
+
+		PROPERTY(upDirection)
+			Vector3 m_upDirection;
+
+		PROPERTY(material)
+			Vector3 m_material;
+
+		PROPERTY(climbingmode)
+			uint32 m_climbingmode;
+
 
 		uint32 m_flag;
 
@@ -38,6 +64,9 @@ namespace Truth
 
 		METHOD(Initalize);
 		virtual void Initalize() override;
+
+		METHOD(Awake);
+		virtual void Awake() override;
 
 		METHOD(Start);
 		virtual void Start() override;
@@ -51,9 +80,34 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Controller::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Controller::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+
+		_ar& m_height;
+		_ar& m_contactOffset;
+		_ar& m_stepOffset;
+		_ar& m_radius;
+		_ar& m_upDirection;
+		_ar& m_material;
+		_ar& m_climbingmode;
+	}
+
+	template<class Archive>
+	void Truth::Controller::load(Archive& _ar, const unsigned int file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		if (file_version > 0)
+		{
+			_ar& m_height;
+			_ar& m_contactOffset;
+			_ar& m_stepOffset;
+			_ar& m_radius;
+			_ar& m_upDirection;
+			_ar& m_material;
+			_ar& m_climbingmode;
+		}
 	}
 }
 BOOST_CLASS_EXPORT_KEY(Truth::Controller)
+BOOST_CLASS_VERSION(Truth::Controller, 1)

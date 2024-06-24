@@ -18,6 +18,8 @@ namespace Truth
 	class RigidBody;
 }
 
+
+
 namespace Truth
 {
 	class Collider abstract 
@@ -26,9 +28,11 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Collider);
 	private:
 		friend class boost::serialization::access;
-
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 		ColliderShape m_shape;
 
@@ -94,7 +98,16 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Collider::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Collider::save(Archive& _ar, const unsigned int file_version) const
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_isTrigger;
+		_ar& m_center;
+		_ar& m_size;
+	}
+
+	template<class Archive>
+	void Truth::Collider::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_isTrigger;
@@ -110,3 +123,4 @@ namespace Truth
 }
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Truth::Collider)
 BOOST_CLASS_EXPORT_KEY(Truth::Collider)
+BOOST_CLASS_VERSION(Truth::Collider, 0)

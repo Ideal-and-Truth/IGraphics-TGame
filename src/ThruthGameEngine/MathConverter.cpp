@@ -5,6 +5,11 @@ physx::PxVec3 MathConverter::Convert(const Vector3& _val)
 	return physx::PxVec3(_val.x, _val.y, _val.z);
 }
 
+physx::PxExtendedVec3 MathConverter::ConvertEx(const Vector3& _val)
+{
+	return physx::PxExtendedVec3(_val.x, _val.y, _val.z);
+}
+
 DirectX::SimpleMath::Vector3 MathConverter::Convert(const physx::PxExtendedVec3& _val)
 {
 	return Vector3

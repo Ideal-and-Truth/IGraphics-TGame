@@ -114,7 +114,9 @@ namespace Truth
 
 		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
-		physx::PxController* CreatePlayerController();
+		physx::PxController* CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc);
+
+		physx::PxMaterial* CreateMaterial(Vector3 _val);
 
 	private:
 		void CreatePhysxScene();

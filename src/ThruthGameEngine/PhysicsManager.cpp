@@ -210,24 +210,18 @@ void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, boo
 	}
 }
 
-physx::PxController* Truth::PhysicsManager::CreatePlayerController()
+physx::PxController* Truth::PhysicsManager::CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc)
 {
-	physx::PxCapsuleControllerDesc desc;
-
-	desc.height = 1.8f;
-	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
-	desc.contactOffset = 0.05f;
-	desc.stepOffset = 1.0f;
-	desc.radius = 0.8f;
-	desc.position = physx::PxExtendedVec3(0.0f, 10.0f, 0.0f);
-	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
-	desc.material = m_physics->createMaterial(1.0f, 1.0f, 0.05f);
-
-	physx::PxController* c = m_CCTManager->createController(desc);
+	physx::PxController* c = m_CCTManager->createController(_desc);
 
 	assert(c && "cannot create Controller\n");
 
 	return c;
+}
+
+physx::PxMaterial* Truth::PhysicsManager::CreateMaterial(Vector3 _val)
+{
+	return m_physics->createMaterial(_val.x, _val.y, _val.z);
 }
 
 void Truth::PhysicsManager::CreatePhysxScene()

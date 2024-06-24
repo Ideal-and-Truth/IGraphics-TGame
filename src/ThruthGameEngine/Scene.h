@@ -18,8 +18,11 @@ namespace Truth
 		friend class boost::serialization::access;
 		friend class EditorUI;
 
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	public:
 		PROPERTY(name);
@@ -68,9 +71,16 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Scene::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Scene::save(Archive& _ar, const unsigned int file_version) const
 	{
-		_ar& (m_name);
-		_ar& (m_entities);
+		_ar& m_name;
+		_ar& m_entities;
+	}
+
+	template<class Archive>
+	void Truth::Scene::load(Archive& _ar, const unsigned int file_version)
+	{
+		_ar& m_name;
+		_ar& m_entities;
 	}
 }

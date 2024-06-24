@@ -15,8 +15,11 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Light);
 	private:
 		friend class boost::serialization::access;
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	private:
 		LightType m_lightType;
@@ -53,11 +56,17 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Light::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Light::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 	}
 
+	template<class Archive>
+	void Truth::Light::save(Archive& _ar, const unsigned int file_version) const
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::Light)
+BOOST_CLASS_VERSION(Truth::Light, 0)

@@ -5,6 +5,7 @@
 namespace MathConverter
 {
 	physx::PxVec3 Convert(const Vector3& _val);
+	physx::PxExtendedVec3 ConvertEx(const Vector3& _val);
 	physx::PxVec2 Convert(const Vector2& _val);
 
 	Vector3 Convert(const physx::PxVec3& _val);

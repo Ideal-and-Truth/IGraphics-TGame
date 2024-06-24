@@ -12,6 +12,13 @@ Truth::Controller::Controller()
 	, m_minmumDistance(0.0001f)
 	, m_flag(0)
 	, m_rigidbody(nullptr)
+	, m_height(2.0f)
+	, m_contactOffset(0.05f)
+	, m_climbingmode(1)
+	, m_stepOffset(1.0f)
+	, m_radius(1.0f)
+	, m_upDirection(0.0f, 1.0f, 0.0f)
+	, m_material(1.0f, 1.0f, 0.05f)
 {
 	m_name = "TestController";
 }
@@ -26,7 +33,22 @@ Truth::Controller::~Controller()
 /// </summary>
 void Truth::Controller::Initalize()
 {
-	m_controller = m_managers.lock()->Physics()->CreatePlayerController();
+
+}
+
+void Truth::Controller::Awake()
+{
+	physx::PxCapsuleControllerDesc decs;
+	decs.height = m_height;
+	decs.contactOffset = m_contactOffset;
+	decs.stepOffset = m_stepOffset;
+	decs.radius = m_radius;
+	decs.upDirection = MathConverter::Convert(m_upDirection);
+	decs.material = m_managers.lock()->Physics()->CreateMaterial(m_material);
+	decs.climbingMode = static_cast<physx::PxCapsuleClimbingMode::Enum>(m_climbingmode);
+	decs.position = MathConverter::ConvertEx(m_owner.lock()->GetPosition());
+
+	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
 	m_rigidbody = std::make_shared<RigidBody>();
 
 	m_rigidbody->m_transform = m_owner.lock()->GetComponent<Transform>();
