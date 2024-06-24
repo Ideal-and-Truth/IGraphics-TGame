@@ -55,6 +55,9 @@
     <Filter Include="Component\Player\PlayerState">
       <UniqueIdentifier>{05865445-d2b9-4210-848d-4a67bab7bfd6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\BattleSystem\Weapon">
+      <UniqueIdentifier>{9444ff9b-e7ce-4eb5-a751-7b11655795bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -111,6 +114,9 @@
     <ClInclude Include="PlayerAnimator.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
+    <ClInclude Include="MeleeWeapon.h">
+      <Filter>Component\BattleSystem\Weapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -157,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="PlayerAnimator.cpp">
       <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeWeapon.cpp">
+      <Filter>Component\BattleSystem\Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

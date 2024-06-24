@@ -53,21 +53,21 @@ void Truth::Controller::Start()
 /// <summary>
 /// 삭제될 함수
 /// </summary>
-void Truth::Controller::Update()
-{
-	Vector3 disp = Vector3(0.0f, 0.0f, 0.0f);
-
-	UpdateVelocity();
-	UpdateMovement(disp);
-	UpdateJump(disp);
-
-	auto flag = m_contorller->move(MathConverter::Convert(disp), m_minmumDistance, m_velocity, physx::PxControllerFilters());
-
-	if (flag & physx::PxControllerCollisionFlag::eCOLLISION_DOWN) 
-	{
-		m_isJumping = false;
-	}
-}
+// void Truth::Controller::Update()
+// {
+// 	Vector3 disp = Vector3(0.0f, 0.0f, 0.0f);
+// 
+// 	UpdateVelocity();
+// 	UpdateMovement(disp);
+// 	UpdateJump(disp);
+// 
+// 	auto flag = m_contorller->move(MathConverter::Convert(disp), m_minmumDistance, m_velocity, physx::PxControllerFilters());
+// 
+// 	if (flag & physx::PxControllerCollisionFlag::eCOLLISION_DOWN) 
+// 	{
+// 		m_isJumping = false;
+// 	}
+// }
 
 /// <summary>
 /// 움직임 함수

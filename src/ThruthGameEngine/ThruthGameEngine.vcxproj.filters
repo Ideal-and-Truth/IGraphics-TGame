@@ -103,6 +103,9 @@
     <Filter Include="Component\Animator">
       <UniqueIdentifier>{4ba11faf-34ca-4872-8cee-cf7fbee5017e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\PlayerController">
+      <UniqueIdentifier>{30e9c4d0-e55a-4477-a2dd-4d7751940ad4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -198,9 +201,11 @@
     <ClCompile Include="Light.cpp">
       <Filter>Component\Light</Filter>
     </ClCompile>
-    <ClCompile Include="ControllerTest.cpp" />
     <ClCompile Include="Animator.cpp">
       <Filter>Component\Animator</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Component\PlayerController</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -317,9 +322,11 @@
     <ClInclude Include="Light.h">
       <Filter>Component\Light</Filter>
     </ClInclude>
-    <ClInclude Include="ControllerTest.h" />
     <ClInclude Include="Animator.h">
       <Filter>Component\Animator</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Component\PlayerController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

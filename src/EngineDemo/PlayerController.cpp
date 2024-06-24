@@ -1,11 +1,14 @@
 #include "PlayerController.h"
 #include "Transform.h"
+#include "Camera.h"
+#include "Controller.h"
 #include "Player.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 
 PlayerController::PlayerController()
 	: m_camera(nullptr)
+	, m_controller(nullptr)
 	, m_forwardInput(0.f)
 	, m_sideInput(0.f)
 	, m_attackInput(0.f)
@@ -35,7 +38,7 @@ void PlayerController::Start()
 		}
 	}
 
-	//m_camera = m_owner.lock().get()->GetComponent<Truth::Camera>().lock();
+	m_controller= m_owner.lock().get()->GetComponent<Truth::Controller>().lock();
 	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 
 	// 플레이어 이동 이벤트 (이벤트함수 베이스)
@@ -107,8 +110,19 @@ void PlayerController::PlayerMove(const void*)
 		m_sideInput = 0.f;
 	}
 
-	m_owner.lock()->m_transform->m_position += direction * m_forwardInput * playerSpeed;
-	m_owner.lock()->m_transform->m_position += right * m_sideInput * playerSpeed;
+	/// TODO : 피직스 컨트롤러에 적용하고 트랜스폼을 리기드 바디로 사용해야함
+	Vector3 disp = direction * m_forwardInput * playerSpeed;
+	// m_controller->Move(disp);
+	Vector3 disp2 = right * m_sideInput * playerSpeed;
+	// m_controller->Move(disp2);
+	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f) * GetDeltaTime();
+
+	Vector3 finalMovement = disp + disp2 + gravity;
+
+	m_controller->Move(finalMovement);
+
+// 	m_owner.lock()->m_transform->m_position += direction * m_forwardInput * playerSpeed;
+// 	m_owner.lock()->m_transform->m_position += right * m_sideInput * playerSpeed;
 
 	// 플레이어 회전
 	Vector3 upVec = { 0,1,0 };
