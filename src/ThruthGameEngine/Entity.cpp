@@ -75,10 +75,15 @@ void Truth::Entity::ApplyTransform()
 	{
 		if (p->first.expired())
 		{
+			if (p == m_applyTransform.end() - 1)
+			{
+				m_applyTransform.pop_back();
+				return;
+			}
 			auto temp = m_applyTransform.end() - 1;
 			std::iter_swap(p, temp);
 			m_applyTransform.pop_back();
-			p = temp;
+
 			if (m_applyTransform.empty())
 			{
 				return;
@@ -185,6 +190,7 @@ void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
 {
 	_component->SetManager(m_manager);
 	_component->SetOwner(shared_from_this());
+	_component->m_index = m_components.size();
 	m_components.push_back(_component);
 	_component->Initalize();
 	ApplyComponent(_component);

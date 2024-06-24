@@ -4,6 +4,7 @@
 #include <string>
 #include <windows.h>
 #include "Types.h"
+#include <queue>
 
 namespace Truth
 {
@@ -30,6 +31,8 @@ private:
 	const TCHAR* m_fileFilter = L"Scene ÆÄÀÏ\0*.scene";
 
 	HWND m_hwnd;
+
+	std::queue<std::pair<int, int>> m_deletedComponent;
 
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd);
