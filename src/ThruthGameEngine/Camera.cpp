@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Transform.h"
 #include "Managers.h"
 #include "ICamera.h"
 #include "InputManager.h"
@@ -9,7 +10,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Camera)
 Truth::Camera::Camera()
 	: Component()
 	, m_fov(0.25f * 3.141592f)
-	, m_aspect(1.7f)
+	, m_aspect(1)
 	, m_nearZ(1)
 	, m_farZ(1000)
 	, m_look(0.f,0.f,1.f)
@@ -28,9 +29,10 @@ void Truth::Camera::Update()
 	float dt = GetDeltaTime();
 	float speed = 300;
 
-	m_camera->SetPosition(m_position);
+	m_camera->SetPosition(m_owner.lock()->m_transform->m_position);
 	
 	m_camera->SetLook(m_look);
+
 // 	if (GetKey(KEY::W))
 // 	{
 // 		m_camera->Walk(dt * speed);
@@ -59,7 +61,7 @@ void Truth::Camera::Update()
 
 void Truth::Camera::SetLens(float _fovY, float _aspect, float _nearZ, float _farZ)
 {
-	m_camera->SetLensWithoutAspect(_fovY, _nearZ, _farZ);
+	m_camera->SetLens(_fovY, _aspect, _nearZ, _farZ);
 	m_fov = _fovY;
 	m_aspect = _aspect;
 	m_nearZ = _nearZ;
@@ -96,13 +98,13 @@ void Truth::Camera::Initalize()
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
 	//m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
-	m_position = { 0.f, 0.f, -150.f };
-	SetLens(m_fov, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
+	m_position = { 0.f, 0.f, 0.f };
+	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
 }
 
 #ifdef _DEBUG
 void Truth::Camera::EditorSetValue()
 {
-	m_camera->SetLensWithoutAspect(m_fov, m_nearZ, m_farZ);
+	m_camera->SetLens(m_fov, m_aspect, m_nearZ, m_farZ);
 }
 #endif // _DEBUG

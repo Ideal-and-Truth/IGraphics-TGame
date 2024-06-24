@@ -83,6 +83,12 @@ void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh
 	m_renderScene->AddObject(_mesh);
 }
 
+
+void Truth::GraphicsManager::AddLight(std::shared_ptr<Ideal::ILight> _light)
+{
+	m_renderScene->AddLight(_light);
+}
+
 /// <summary>
 /// 디버깅용 오브젝트 렌더
 /// </summary>
@@ -91,6 +97,7 @@ void Truth::GraphicsManager::AddDebugobject(std::shared_ptr<Ideal::IMeshObject> 
 {
 	m_renderScene->AddDebugObject(_mesh);
 }
+
 
 /// <summary>
 /// Bone이 있는 스키닝 매쉬
@@ -110,6 +117,26 @@ std::shared_ptr<Ideal::ISkinnedMeshObject> Truth::GraphicsManager::CreateSkinned
 std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateMesh(std::wstring _path)
 {
 	return m_renderer->CreateStaticMeshObject(_path);
+}
+
+std::shared_ptr<Ideal::IAnimation> Truth::GraphicsManager::CreateAnimation(std::wstring _path)
+{
+	return m_renderer->CreateAnimation(_path);
+}
+
+std::shared_ptr<Ideal::IDirectionalLight> Truth::GraphicsManager::CreateDirectionalLight()
+{
+	return m_renderer->CreateDirectionalLight();
+}
+
+std::shared_ptr<Ideal::ISpotLight> Truth::GraphicsManager::CreateSpotLight()
+{
+	return m_renderer->CreateSpotLight();
+}
+
+std::shared_ptr<Ideal::IPointLight> Truth::GraphicsManager::CreatePointLight()
+{
+	return m_renderer->CreatePointLight();
 }
 
 /// <summary>

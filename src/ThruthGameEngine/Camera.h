@@ -29,7 +29,6 @@ namespace Truth
 		PROPERTY(farZ);
 		float m_farZ;
 
-		PROPERTY(position)
 		Vector3 m_position;
 
 		PROPERTY(look)
@@ -62,8 +61,10 @@ namespace Truth
 #ifdef _DEBUG
 		virtual void EditorSetValue();
 #endif // _DEBUG
+
 		METHOD(Start);
 		virtual void Start();
+
 	};
 
 	template<class Archive>

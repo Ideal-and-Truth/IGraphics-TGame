@@ -159,11 +159,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
@@ -183,7 +183,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
 		//ka->AddAnimation("Run", runAnim);
-		//ka->SetAnimation("Run", true);
+		ka->SetAnimation("Run", true);
 		//cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//

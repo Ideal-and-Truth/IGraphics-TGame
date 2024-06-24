@@ -31,14 +31,18 @@ namespace Truth
 		void Render();
 
 		void AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh);
+		void AddLight(std::shared_ptr<Ideal::ILight> _light);
 		void AddDebugobject(std::shared_ptr<Ideal::IMeshObject> _mesh);
-		void AddAnimation();
 
 		void ConvertAsset(std::wstring _path, bool _isSkind);
 
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMesh(std::wstring _path);
 		std::shared_ptr<Ideal::IMeshObject> CreateMesh(std::wstring _path);
-		void CreateAnimation(std::wstring _path);
+		std::shared_ptr<Ideal::IAnimation> CreateAnimation(std::wstring _path);
+
+		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight();
+		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight();
+		std::shared_ptr<Ideal::IPointLight> CreatePointLight();
 
 		std::shared_ptr<Ideal::ICamera> CreateCamera();
 		void SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera);

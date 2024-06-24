@@ -45,6 +45,9 @@ using namespace DirectX::SimpleMath;
 #include "IdealRendererFactory.h"
 #include "IdealRenderer.h"
 #include "IMeshObject.h"
+#include "IDirectionalLight.h"
+#include "ISpotLight.h"
+#include "IPointLight.h"
 
 // 직렬화 관련
 #include <boost/archive/text_oarchive.hpp>

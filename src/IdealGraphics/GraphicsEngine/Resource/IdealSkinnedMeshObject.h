@@ -36,7 +36,7 @@ namespace Ideal
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
 
 		//--TODO: 나중에 인터페이스로 뽑을 것--//
-		uint32 GetCurrentAnimationIndex() { return m_currentFrame; };
+		virtual uint32 GetCurrentAnimationIndex() override { return m_currentFrame; };
 		//----------------------------------//
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }

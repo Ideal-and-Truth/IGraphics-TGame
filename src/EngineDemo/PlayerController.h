@@ -15,11 +15,15 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	std::shared_ptr<Truth::Camera> m_camera;
+	std::shared_ptr<Truth::Entity> m_camera;
 	std::shared_ptr<Player> m_player;
 
 	float4 m_forwardInput;
 	float4 m_sideInput;
+
+	float4 m_attackInput;
+
+	Vector3 m_faceDirection;
 
 public:
 	PlayerController();
@@ -35,7 +39,9 @@ public:
 	void Update();
 
 private:
-	void PlayerMove();
+	void PlayerMove(const void*);
+	void PlayerBattle();
+
 };
 
 template<class Archive>
