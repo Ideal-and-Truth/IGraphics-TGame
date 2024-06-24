@@ -183,7 +183,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Add Animation to Skinned Mesh Object-------------------//
 		//ka->AddAnimation("Run", runAnim);
-		ka->SetAnimation("Run", true);
+		//ka->SetAnimation("Run", true);
 		//cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
