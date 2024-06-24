@@ -1,7 +1,10 @@
 #pragma once
 #include "Component.h"
-#include "SkinnedMesh.h"
 
+namespace Truth
+{
+	class SkinnedMesh;
+}
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class PlayerAnimator :

@@ -1,7 +1,11 @@
 #pragma once
 #include "Component.h"
-#include "Camera.h"
 
+namespace Truth
+{
+	class Camera;
+	class Controller;
+}
 
 class Player;
 
@@ -16,6 +20,7 @@ private:
 
 private:
 	std::shared_ptr<Truth::Entity> m_camera;
+	std::shared_ptr<Truth::Controller> m_controller;
 	std::shared_ptr<Player> m_player;
 
 	float4 m_forwardInput;

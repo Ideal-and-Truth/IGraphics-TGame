@@ -30,7 +30,6 @@
 #include "Light.h"
 
 
-#include "ControllerTest.h"
 
 #include "Controller.h"
 #pragma endregion test Scene

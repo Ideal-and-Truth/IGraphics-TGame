@@ -151,6 +151,7 @@
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MeleeTriggerEnterDamager.h" />
+    <ClInclude Include="MeleeWeapon.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAnimator.h" />
     <ClInclude Include="PlayerCamera.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
     <ClCompile Include="MeleeTriggerEnterDamager.cpp" />
+    <ClCompile Include="MeleeWeapon.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAnimator.cpp" />
     <ClCompile Include="PlayerCamera.cpp" />

@@ -1,7 +1,6 @@
 #pragma once
 #include "Component.h"
 
-class Truth::Collider;
 
 class Player :
 	public Truth::Component
