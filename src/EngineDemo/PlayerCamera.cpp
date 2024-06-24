@@ -71,40 +71,6 @@ void PlayerCamera::Update()
 void PlayerCamera::FreeCamera()
 {
 	// 자유시점 카메라
-	/*Vector3 cameraPos = m_camera.get()->GetTypeInfo().GetProperty("position")->Get<DirectX::SimpleMath::Vector3>(m_camera.get()).Get();
-	Vector3 cameraLook = m_camera.get()->GetTypeInfo().GetProperty("look")->Get<DirectX::SimpleMath::Vector3>(m_camera.get()).Get();
-
-
-	m_elevation += MouseDy() * m_cameraSpeed;
-	m_azimuth -= MouseDx() * m_cameraSpeed;
-
-	if (m_elevation > 3.13f)
-	{
-		m_elevation = 3.13f;
-	}
-	if (m_elevation < 0.01f)
-	{
-		m_elevation = 0.01f;
-	}
-
-
-	cameraPos.x = m_cameraDistance * sin(m_elevation) * cos(m_azimuth);
-	cameraPos.y = m_cameraDistance * cos(m_elevation);
-	cameraPos.z = m_cameraDistance * sin(m_elevation) * sin(m_azimuth);
-
-	auto ownerPos = m_owner.lock()->m_transform->m_position;
-	cameraPos.x += ownerPos.x;
-	cameraPos.y += ownerPos.y;
-	cameraPos.z += ownerPos.z;
-
-
-	auto look = ownerPos - cameraPos;
-
-
-	m_camera.get()->GetTypeInfo().GetProperty("position")->Set(m_camera.get(), cameraPos);
-	m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);*/
-
-	// 자유시점 카메라2
 	Vector3 cameraPos =m_owner.lock()->m_transform->m_position;
 	Vector3 targetPos = m_target->m_position;
 
@@ -118,7 +84,7 @@ void PlayerCamera::FreeCamera()
 	if (m_elevation < 0.01f)
 	{
 		m_elevation = 0.01f;
-	}
+	}	
 
 
 	cameraPos.x = m_cameraDistance * sin(m_elevation) * cos(m_azimuth);
@@ -130,7 +96,9 @@ void PlayerCamera::FreeCamera()
 	cameraPos.z += targetPos.z;
 
 	m_owner.lock()->m_transform->m_position = cameraPos;
-
+	
+	m_owner.lock()->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(m_elevation, m_azimuth, 0.f);
+	//Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
 	auto look = targetPos - cameraPos;
 
 	m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);

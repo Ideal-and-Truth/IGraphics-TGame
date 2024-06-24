@@ -21,7 +21,9 @@ private:
 	std::shared_ptr<Truth::Transform> m_target;
 
 	float4 m_cameraDistance;
+	PROPERTY(elevation);
 	float4 m_elevation;
+	PROPERTY(azimuth);
 	float4 m_azimuth;
 	float4 m_cameraSpeed;
 
