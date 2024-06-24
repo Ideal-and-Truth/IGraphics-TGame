@@ -111,12 +111,12 @@ void Truth::RigidBody::Update()
 {
 }
 
-void Truth::RigidBody::AddImpulse(Vector3 _force)
+void Truth::RigidBody::AddImpulse(Vector3& _force)
 {
-	m_body->addForce(MathConverter::Convert(_force * m_mass), physx::PxForceMode::eIMPULSE);
+	m_body->addForce(MathConverter::Convert(_force), physx::PxForceMode::eIMPULSE);
 }
 
-void Truth::RigidBody::SetLinearVelocity(Vector3 _val)
+void Truth::RigidBody::SetLinearVelocity(Vector3& _val)
 {
 	m_body->setLinearVelocity(MathConverter::Convert(_val));
 }

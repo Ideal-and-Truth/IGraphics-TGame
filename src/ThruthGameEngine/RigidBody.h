@@ -68,8 +68,8 @@ namespace Truth
 		METHOD(Update);
 		void Update();
 
-		void AddImpulse(Vector3 _force);
-		void SetLinearVelocity(Vector3 _val);
+		void AddImpulse(Vector3& _force);
+		void SetLinearVelocity(Vector3& _val);
 		Vector3 GetLinearVelocity() const;
 
 		void InitalizeMassAndInertia();

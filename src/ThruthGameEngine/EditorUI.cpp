@@ -128,6 +128,14 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 			TranslateComponent(e);
 		}
 
+		while (!m_deletedComponent.empty())
+		{
+			auto t = m_deletedComponent.front();
+			entities[t.first]->DeleteComponent(t.second);
+			m_deletedComponent.pop();
+		}
+
+
 		// Add Component
 		{
 			// Show Components List
@@ -417,7 +425,7 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 	auto& properties = typeinfo.GetProperties();
 	bool isSelect = false;
 
-	const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
+	// const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
 
 	if (ImGui::CollapsingHeader(componentName, ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -425,7 +433,7 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 		{
 			if (ImGui::Selectable("Remove Component"))
 			{
-				entities[m_selectedEntity]->DeleteComponent(_component->m_index);
+				m_deletedComponent.push(std::make_pair(m_selectedEntity, _component->m_index));
 			}
 
 			ImGui::EndPopup();
