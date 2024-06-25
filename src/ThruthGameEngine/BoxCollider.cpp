@@ -14,6 +14,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Truth::BoxCollider)
 Truth::BoxCollider::BoxCollider(bool _isTrigger)
 	: Collider(_isTrigger)
 {
+	m_shape = ColliderShape::BOX;
 	m_name = "Box Collider";
 	m_size = { 1.0f, 1.0f, 1.0f };
 }
@@ -27,6 +28,7 @@ Truth::BoxCollider::BoxCollider(bool _isTrigger)
 Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
+	m_shape = ColliderShape::BOX;
 	m_name = "Box Collider";
 	m_size = _size;
 }
@@ -39,6 +41,7 @@ Truth::BoxCollider::BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger)
 Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)
 	: Collider(_isTrigger)
 {
+	m_shape = ColliderShape::BOX;
 	m_name = "Box Collider";
 	m_size = _size;
 }
@@ -48,6 +51,6 @@ Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)
 /// </summary>
 void Truth::BoxCollider::Initalize()
 {
-	Collider::Initalize(ColliderShape::BOX, m_size);
+	Collider::Initalize();
 }
 

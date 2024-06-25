@@ -24,8 +24,12 @@ namespace Truth
 	private:
 		friend class boost::serialization::access;
 
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& ar, const unsigned int file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
+
 		typedef std::vector<std::pair<std::weak_ptr<Component>, const Method*>> ComponentMethod;
 
 	protected:
@@ -59,23 +63,23 @@ namespace Truth
 		ComponentMethod m_onCollisionEnter;
 		ComponentMethod m_onCollisionStay;
 		ComponentMethod m_onCollisionExit;
-		
+
 		ComponentMethod m_onTriggerEnter;
 		ComponentMethod m_onTriggerStay;
 		ComponentMethod m_onTriggerExit;
-		
+
 		ComponentMethod m_update;
 		ComponentMethod m_fixedUpdate;
 		ComponentMethod m_latedUpdate;
-		
+
 		ComponentMethod m_onBecomeVisible;
 		ComponentMethod m_onBecomeInvisible;
-		
+
 		ComponentMethod m_destroy;
 		ComponentMethod m_applyTransform;
 
 		std::shared_ptr<Transform> m_transform;
-		 
+
 	public:
 		Entity(std::shared_ptr<Managers> _mangers);
 		Entity();
@@ -139,12 +143,26 @@ namespace Truth
 	};
 
 	/// template로 작성된 함수 목록
-
 	template<class Archive>
-	void Entity::serialize(Archive& _ar, const unsigned int _file_version)
+	void Entity::save(Archive& _ar, const unsigned int _file_version) const
 	{
 		_ar& m_name;
-		_ar& m_ID;
+		if (_file_version == 0)
+		{
+			_ar& m_ID;
+		}
+		_ar& m_layer;
+		_ar& m_components;
+	}
+
+	template<class Archive>
+	void Entity::load(Archive& _ar, const unsigned int _file_version)
+	{
+		_ar& m_name;
+		if (_file_version == 0)
+		{
+			_ar& m_ID;
+		}
 		_ar& m_layer;
 		_ar& m_components;
 	}
@@ -238,3 +256,4 @@ namespace Truth
 		return result;
 	}
 }
+BOOST_CLASS_VERSION(Truth::Entity, 1)

@@ -10,8 +10,11 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Transform);
 	private:
 		friend class boost::serialization::access;
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	public:
 		PROPERTY(position);
@@ -110,7 +113,7 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Transform::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Transform::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_position;
@@ -120,6 +123,17 @@ namespace Truth
 		_ar& m_look;
 	}
 
+	template<class Archive>
+	void Truth::Transform::save(Archive& _ar, const unsigned int file_version) const
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_position;
+		_ar& m_scale;
+		_ar& m_rotation;
+		_ar& m_transformMatrix;
+		_ar& m_look;
+	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::Transform)
+BOOST_CLASS_VERSION(Truth::Transform, 0)

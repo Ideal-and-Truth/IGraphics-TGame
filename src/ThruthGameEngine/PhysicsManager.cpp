@@ -6,6 +6,9 @@
 
 // static uint8 physx::m_collsionTable[8] = {};
 
+/// <summary>
+/// 생성자
+/// </summary>
 Truth::PhysicsManager::PhysicsManager()
 	: m_allocator{}
 	, m_errorCallback{}
@@ -18,6 +21,7 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_trasport(nullptr)
 	, collisionCallback(nullptr)
 	, m_CCTManager(nullptr)
+	, m_cooking(nullptr)
 {
 	for (uint8 i = 0; i < 8; i++)
 	{
@@ -30,47 +34,77 @@ Truth::PhysicsManager::PhysicsManager()
 	// SetCollisionFilter(1, 2, false);
 }
 
+/// <summary>
+/// 소멸자
+/// </summary>
 Truth::PhysicsManager::~PhysicsManager()
 {
-	DEBUG_PRINT("Finalize PhysicsManager\n");
+	Finalize();
 }
 
+/// <summary>
+/// 초기화
+/// physx 데이터를 초기화 하고 새 Scene을 생성한다.
+/// </summary>
 void Truth::PhysicsManager::Initalize()
 {
+	// physx 의 기본 요소를 생성하는 foundation
 	m_foundation = ::PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
 
-	// m_oPvd = PxCreateOmniPvd(*m_foundation);
-
+	// visual debugger 생성 
+#ifdef _DEBUG
 	m_pvd = physx::PxCreatePvd(*m_foundation);
 	m_trasport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
+#endif // _DEBUG
 
+	// physx에서 실제 물리 연산을 할 객체를 생성하는 physics 클래스
 	m_physics = ::PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
+#ifdef _DEBUG
 	::PxInitExtensions(*m_physics, m_pvd);
+#endif // _DEBUG
+
+	// 이벤트 콜백 함수
 	collisionCallback = new Truth::PxEventCallback();
 
 	assert(m_physics && "PxCreatePhysics failed!");
 
+	// Cpu 코어 사용 갯수
 	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 
+	// 씬 생성
 	CreatePhysxScene();
+
+	m_cooking = ::PxCreateCooking(
+		PX_PHYSICS_VERSION, 
+		*m_foundation,
+		physx::PxCookingParams(physx::PxTolerancesScale())
+	);
 }
 
+/// <summary>
+/// 소멸 시 physx 데이터 초기화
+/// </summary>
 void Truth::PhysicsManager::Finalize()
 {
-	m_physics->release();
-	m_pvd->release();
-	m_trasport->release();
+// 	m_physics->release();
+// 	m_pvd->release();
+// 	m_trasport->release();
 }
 
+/// <summary>
+/// 업데이트 (필요시 사용)
+/// </summary>
 void Truth::PhysicsManager::Update()
 {
 }
 
+/// <summary>
+/// 고정 업데이트
+/// 60프레임 속도로 업데이트
+/// </summary>
 void Truth::PhysicsManager::FixedUpdate()
 {
-
-
 	m_scene->simulate(1.0f / 60.0f);
 	m_scene->fetchResults(true);
 
@@ -85,43 +119,65 @@ void Truth::PhysicsManager::FixedUpdate()
 			RigidBody* rigidbody = static_cast<RigidBody*>(rigidActor->userData);
 			if (rigidbody)
 			{
-				auto physxTM = rigidActor->getGlobalPose();
-				Vector3 pos = MathConverter::Convert(physxTM.p);
-				Quaternion rot = MathConverter::Convert(physxTM.q);
-				Vector3 scale = rigidbody->GetScale();
+				Vector3 pos;
+				Quaternion rot;
+				Vector3 scale;
 
-				Matrix TM = Matrix::CreateScale(scale);
-				if (!rigidbody->IsController())
+				if (rigidbody->IsController())
 				{
-					TM *= Matrix::CreateFromQuaternion(rot);
+					auto& p = rigidbody->GetController()->getPosition();
+					pos = MathConverter::Convert(rigidbody->GetController()->getPosition());
+					rot = rigidbody->GetRotation();
 				}
 				else
 				{
-					TM *= Matrix::CreateFromQuaternion(rigidbody->GetRotation());
+					physx::PxTransform physxTM = rigidActor->getGlobalPose();
+					pos = MathConverter::Convert(physxTM.p);
+					rot = MathConverter::Convert(physxTM.q);
 				}
+				scale = rigidbody->GetScale();
+
+				Matrix TM = Matrix::CreateScale(scale);
+				TM *= Matrix::CreateFromQuaternion(rot);
 				TM *= Matrix::CreateTranslation(pos);
 
-				rigidbody->SetWorldTM(rigidbody->m_localTM.Invert() * TM);
+				rigidbody->SetWorldTM(rigidbody->m_invertLocalTM * TM);
 			}
 		}
 	}
 }
 
+/// <summary>
+/// physx reset
+/// Scene을 재생성하고, 필요시 PVD와 재 연결한다.
+/// </summary>
 void Truth::PhysicsManager::ResetPhysX()
 {
 	m_scene->release();
 
 	CreatePhysxScene();
 
+#ifdef _DEBUG
 	m_pvd->disconnect();
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
+#endif // _DEBUG
 }
 
+/// <summary>
+/// Scene에 Actor를 추가한다
+/// </summary>
+/// <param name="_actor">추가할 엑터</param>
 void Truth::PhysicsManager::AddScene(physx::PxActor* _actor)
 {
 	m_scene->addActor(*_actor);
 }
 
+/// <summary>
+/// 동적 바디 생성
+/// </summary>
+/// <param name="_pos">위치</param>
+/// <param name="_rot">회전</param>
+/// <returns>동적 바디</returns>
 physx::PxRigidDynamic* Truth::PhysicsManager::CreateRigidDynamic(Vector3 _pos, Quaternion _rot)
 {
 	auto body = m_physics->createRigidDynamic(
@@ -132,6 +188,12 @@ physx::PxRigidDynamic* Truth::PhysicsManager::CreateRigidDynamic(Vector3 _pos, Q
 	return body;
 }
 
+/// <summary>
+/// 고정 바디 생성
+/// </summary>
+/// <param name="_pos">위치</param>
+/// <param name="_rot">회전</param>
+/// <returns>동적 바디</returns>
 physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic(Vector3 _pos, Quaternion _rot)
 {
 	auto body = m_physics->createRigidStatic(
@@ -142,6 +204,10 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateRigidStatic(Vector3 _pos, Qua
 	return body;
 }
 
+/// <summary>
+/// 원점에 회전하지 않은 동적 바디 생성
+/// </summary>
+/// <returns>동적 바디</returns>
 physx::PxRigidDynamic* Truth::PhysicsManager::CreateDefaultRigidDynamic()
 {
 	physx::PxRigidDynamic* body = CreateRigidDynamic(Vector3::Zero, Quaternion::Identity);
@@ -150,15 +216,26 @@ physx::PxRigidDynamic* Truth::PhysicsManager::CreateDefaultRigidDynamic()
 	// 	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
 	return body;
 }
-
+/// <summary>
+/// 원점에 회전하지 않은 정적 바디 생성
+/// </summary>
+/// <returns>정적 바디</returns>
 physx::PxRigidStatic* Truth::PhysicsManager::CreateDefaultRigidStatic()
 {
 	physx::PxRigidStatic* body = CreateRigidStatic(Vector3::Zero, Quaternion::Identity);
 	return body;
 }
 
-physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const Vector3& _args)
+/// <summary>
+/// 콜라이더 생성
+/// </summary>
+/// <param name="_shape">모양</param>
+/// <param name="_args">파라미터</param>
+/// <param name="_points">점 정보</param>
+/// <returns>콜라이다</returns>
+physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points)
 {
+
 	physx::PxShape* shape = nullptr;
 	switch (_shape)
 	{
@@ -176,10 +253,28 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	{
 		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material);
 		break;
-	}
+	}	
 	case Truth::ColliderShape::MESH:
 	{
-		// shape = m_physics->createShape(physx::PxConvexMeshGeometry(_args[0]), *m_material);
+		std::vector<physx::PxVec3> convexVerts;
+		convexVerts = ConvertPointToVertex(_args, _points);
+
+		physx::PxConvexMeshDesc convexDesc;
+		convexDesc.points.count = static_cast<physx::PxU32>(convexVerts.size());
+		convexDesc.points.stride = sizeof(physx::PxVec3);
+		convexDesc.points.data = convexVerts.data();
+		convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+		physx::PxDefaultMemoryOutputStream buf;
+		physx::PxConvexMeshCookingResult::Enum result;
+		if (!m_cooking->cookConvexMesh(convexDesc, buf, &result))
+			return NULL;
+		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+
+		physx::PxConvexMesh* convexMesh = m_physics->createConvexMesh(input);
+
+		shape = m_physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_material);
+
 		break;
 	}
 	default:
@@ -190,6 +285,12 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	return shape;
 }
 
+/// <summary>
+/// 필터 세팅
+/// </summary>
+/// <param name="_layerA">A 레이어</param>
+/// <param name="_layerB">B 레이어</param>
+/// <param name="_isCollisoin">설정할 충돌 여부</param>
 void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin)
 {
 	if (_isCollisoin)
@@ -204,95 +305,111 @@ void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, boo
 	}
 }
 
-physx::PxController* Truth::PhysicsManager::CreatePlayerController()
+/// <summary>
+/// 컨트롤러 생성
+/// </summary>
+/// <param name="_desc">생성 구조체</param>
+/// <returns>컨트롤러</returns>
+physx::PxController* Truth::PhysicsManager::CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc)
 {
-	physx::PxCapsuleControllerDesc desc;
+	physx::PxController* c = m_CCTManager->createController(_desc);
 
-	desc.height = 1.8f;
-	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
-	desc.contactOffset = 0.05f;
-	desc.stepOffset = 0.1f;
-	desc.radius = 0.8f;
-	desc.position = physx::PxExtendedVec3(0.0f, 10.0f, 0.0f);
-	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
-	desc.material = m_physics->createMaterial(1.0f, 1.0f, 0.05f);
-
-	physx::PxController* c = m_CCTManager->createController(desc);
+	assert(c && "cannot create Controller\n");
 
 	return c;
 }
 
+/// <summary>
+/// 물리 머테리얼 생성
+/// </summary>
+/// <param name="_val">매질 정보 (정적 마찰, 동적 마찰, 탄성)</param>
+/// <returns>물리 머테리얼</returns>
+physx::PxMaterial* Truth::PhysicsManager::CreateMaterial(Vector3 _val)
+{
+	return m_physics->createMaterial(_val.x, _val.y, _val.z);
+}
+
+/// <summary>
+/// physx의 Scene을 생성하는 함수
+/// </summary>
 void Truth::PhysicsManager::CreatePhysxScene()
 {
+	// 씬 구조체
 	physx::PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.0f, -98.1f, 0.0f);
+	// 기본적으로 적용되는 중력
+	sceneDesc.gravity = physx::PxVec3(0.0f, -100.0f, 0.0f);
 	sceneDesc.cpuDispatcher = m_dispatcher;
+	// 씬에 사용될 필터
 	sceneDesc.filterShader = FilterShaderExample;
 	sceneDesc.simulationEventCallback = collisionCallback;
 
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS;
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;
 
+	// 씬 생성
 	m_scene = m_physics->createScene(sceneDesc);
+	
+#ifdef _DEBUG
+	// 출력 할 디버깅 정보
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_MASS_AXES, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 4.0f);
+	physx::PxPvdSceneClient* pvdClient = m_scene->getScenePvdClient();
+#endif // _DEBUG
+
 	auto s = m_scene->getBounceThresholdVelocity();
 	m_scene->setBounceThresholdVelocity(100.0f);
-	physx::PxPvdSceneClient* pvdClient = m_scene->getScenePvdClient();
 
+#ifdef _DEBUG
+	// 디버거 플래그
 	if (pvdClient)
 	{
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
+#endif // _DEBUG
 
+	// 기본 바닥 만들기 (필요없는 경우 없애면 된다)
+	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 
+	// 컨트롤러 매니저 만들기
 	m_CCTManager = PxCreateControllerManager(*m_scene);
 }
 
-void Truth::PhysicsManager::CreateStack(const physx::PxTransform& t, physx::PxU32 size, physx::PxReal halfExtent)
+/// <summary>
+/// 점 데이터를 Convex Mesh 사용할 정점 데이터로 변환 
+/// </summary>
+/// <param name="_points">점 데이터</param>
+/// <returns>정점 데이터</returns>
+std::vector<physx::PxVec3> Truth::PhysicsManager::ConvertPointToVertex(const Vector3& _args, const std::vector<Vector3>& _points)
 {
-	physx::PxShape* shape = m_physics->createShape(physx::PxBoxGeometry(halfExtent * 10, halfExtent * 10, halfExtent), *m_material);
-	// 	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-	// 	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
-
-	for (physx::PxU32 i = 0; i < size; i++)
+	std::vector<physx::PxVec3> result;
+	result.resize(_points.size());
+	for (int i = 0; i < _points.size(); i++)
 	{
-		for (physx::PxU32 j = 0; j < size - i; j++)
-		{
-		}
+		result[i].x = _points[i].x * _args.x;
+		result[i].y = _points[i].y * _args.y;
+		result[i].z = _points[i].z * _args.z;
 	}
-	int i = 1;
-	int j = 1;
-	physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1) + 10, 0) * halfExtent);
-	physx::PxRigidDynamic* body = m_physics->createRigidDynamic(t.transform(localTm));
-	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
-	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
-	body->attachShape(*shape);
-	// body->setLinearVelocity(physx::PxVec3(0, -50, -100));
-	physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 
-	m_scene->addActor(*body);
-	// body->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
-	shape->release();
+	return result;
 }
 
-physx::PxRigidDynamic* Truth::PhysicsManager::createDynamic(const physx::PxTransform& t, const physx::PxGeometry& geometry, const physx::PxVec3& velocity /*= physx::PxVec3(0)*/)
-{
-	physx::PxRigidDynamic* dynamic = PxCreateDynamic(*m_physics, t, geometry, *m_material, 10.0f);
-	dynamic->setAngularDamping(0.5f);
-	dynamic->setLinearVelocity(velocity);
-	m_scene->addActor(*dynamic);
-	return dynamic;
-}
-
+/// <summary>
+/// 필터 셰이더
+/// </summary>
+/// <param name="attributes0">0번 오브젝트의 트리거 여부</param>
+/// <param name="filterData0">0번 오브젝트의 필터 정보</param>
+/// <param name="attributes1">1번 오브젝트의 트리거 여부</param>
+/// <param name="filterData1">1번 오브젝트의 필터 정보</param>
+/// <param name="pairFlags">충돌 플래그</param>
+/// <param name="constantBlock">unused</param>
+/// <param name="constantBlockSize">unused</param>
+/// <returns>콜백 함수에 반환 할 플래그</returns>
 physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0, physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1, physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
 {
 	PX_UNUSED(constantBlockSize);

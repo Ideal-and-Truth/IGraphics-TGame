@@ -60,5 +60,5 @@ float Truth::EditorCamera::MouseDx()
 
 void Truth::EditorCamera::SetMainCamera()
 {
-	m_managers->Graphics()->SetMainCamera(m_camera);
+	m_managers->Graphics()->SetMainCamera(this);
 }

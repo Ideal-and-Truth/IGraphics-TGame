@@ -174,7 +174,7 @@ void Truth::RigidBody::Awake()
 	{
 		m_localTM *= c.lock()->m_localTM;
 	}
-
+	m_invertLocalTM = m_localTM.Invert();
 	m_body->setMass(m_mass);
 	m_body->setLinearDamping(m_drag);
 	m_body->setAngularDamping(m_angularDrag);

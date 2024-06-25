@@ -42,7 +42,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"PhysxSampleObject/SampleStair.fbx", false, true);
 // 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 
 // 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
@@ -66,7 +66,6 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 		}
 // 	}
 // 
-// 	int a = 3;
 
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }

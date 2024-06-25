@@ -30,6 +30,7 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 {
 	_p->m_index = static_cast<int32>(m_entities.size());
 	m_entities.push_back(_p);
+	_p->Initailize();
 	m_awakedEntity.push(_p);
 }
 

@@ -57,6 +57,8 @@ using namespace DirectX::SimpleMath;
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/weak_ptr.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/version.hpp>
+#include <boost/serialization/split_member.hpp>
 
 #include <stdio.h>
 #include <sstream>

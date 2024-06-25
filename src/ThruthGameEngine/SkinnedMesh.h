@@ -9,8 +9,11 @@ namespace Truth
 
 	private:
 		friend class boost::serialization::access;
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	private:
 		std::shared_ptr<Ideal::ISkinnedMeshObject> m_skinnedMesh;
@@ -63,12 +66,19 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::SkinnedMesh::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::SkinnedMesh::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_path;
 	}
 
+	template<class Archive>
+	void Truth::SkinnedMesh::save(Archive& _ar, const unsigned int file_version) const
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_path;
+	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::SkinnedMesh)
+BOOST_CLASS_VERSION(Truth::SkinnedMesh, 0)

@@ -56,12 +56,21 @@ void Truth::Managers::Update() const
 
 void Truth::Managers::LateUpdate() const
 {
+#ifdef _DEBUG
+	if (!m_isEdit)
+	{
+		m_sceneManager->LateUpdate();
+		m_eventManager->LateUpdate();
+	}
+#else
 	m_sceneManager->LateUpdate();
 	m_eventManager->LateUpdate();
+#endif // _DEBUG
 }
 
 void Truth::Managers::FixedUpdate() const
 {
+	m_physXManager->FixedUpdate();
 	m_sceneManager->FixedUpdate();
 	m_eventManager->FixedUpdate();
 }
@@ -69,7 +78,20 @@ void Truth::Managers::FixedUpdate() const
 void Truth::Managers::Render() const
 {
 	m_sceneManager->ApplyTransform();
+
+#ifdef _DEBUG
+	if (m_isEdit)
+	{
+		m_graphicsManager->Render();
+	}
+	else
+	{
+		m_graphicsManager->CompleteCamera();
+		m_graphicsManager->Render();
+	}
+#else
 	m_graphicsManager->Render();
+#endif // DEBUG
 }
 
 void Truth::Managers::Finalize()

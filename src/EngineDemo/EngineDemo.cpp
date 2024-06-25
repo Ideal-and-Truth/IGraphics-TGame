@@ -16,13 +16,14 @@
 #include "Entity.h"
 #include "RigidBody.h"
 #include "BoxCollider.h"
+#include "CapsuleCollider.h"
+#include "SphereCollider.h"
+#include "MeshCollider.h"
 #include "Mesh.h"
 #include "Shooter.h"
 #include "Camera.h"
 
 #include "Transform.h"
-#include "CapsuleCollider.h"
-#include "SphereCollider.h"
 #include "TestComponent.h"
 #include "BulletMove.h"
 
@@ -80,7 +81,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	processor->SaveScene(testScene);
 
 	///...///
- 	processor->LoadScene(L"../Scene/test.scene");
+ 	processor->LoadScene(L"../Scene/physxTest.scene");
 
  	//processor->LoadScene(L"../Scene/ControllerTest.scene");
 

@@ -18,6 +18,8 @@ namespace Truth
 	class RigidBody;
 }
 
+
+
 namespace Truth
 {
 	class Collider abstract 
@@ -26,11 +28,16 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Collider);
 	private:
 		friend class boost::serialization::access;
-
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
+	protected:
 		ColliderShape m_shape;
+		std::vector<Vector3> m_points;
+		std::wstring m_path;
 
 	public:
 		bool m_isTrigger;
@@ -85,16 +92,29 @@ namespace Truth
 
 	protected:
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points);
 		physx::PxRigidDynamic* GetDefaultDynamic();
 		physx::PxRigidStatic* GetDefaultStatic();
 
-		void Initalize(ColliderShape _shape, const Vector3& _param);
+		void Initalize(const std::wstring& _path = L"");
 
 		void SetUpFiltering(uint32 _filterGroup);
+
+	private:
+		void GetPoints();
 	};
 
 	template<class Archive>
-	void Truth::Collider::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Collider::save(Archive& _ar, const unsigned int file_version) const
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_isTrigger;
+		_ar& m_center;
+		_ar& m_size;
+	}
+
+	template<class Archive>
+	void Truth::Collider::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_isTrigger;
@@ -110,3 +130,4 @@ namespace Truth
 }
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Truth::Collider)
 BOOST_CLASS_EXPORT_KEY(Truth::Collider)
+BOOST_CLASS_VERSION(Truth::Collider, 0)

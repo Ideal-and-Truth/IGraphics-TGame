@@ -23,7 +23,6 @@ namespace Truth
 
 		void SetMainCamera();
 
-	private:
 		std::shared_ptr<Ideal::ICamera> m_camera;
 	public:
 

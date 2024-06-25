@@ -14,11 +14,16 @@ namespace Truth
 		GENERATE_CLASS_TYPE_INFO(Camera)
 
 	private:
+		friend class GraphicsManager;
+
 		std::shared_ptr<Ideal::ICamera> m_camera;
 
 		friend class boost::serialization::access;
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 		PROPERTYM(fov, 0.02f, 1.0f);
 		float m_fov;
@@ -32,14 +37,14 @@ namespace Truth
 		Vector3 m_position;
 
 		PROPERTY(look)
-		Vector3 m_look;
+			Vector3 m_look;
 
 	public:
 		Camera();
 		virtual ~Camera();
 
-		METHOD(Update);
-		virtual void Update();
+		METHOD(LateUpdate);
+		virtual void LateUpdate();
 
 		METHOD(SetLens);
 		void SetLens(float _fovY, float _aspect, float _nearZ, float _farZ);
@@ -58,6 +63,8 @@ namespace Truth
 		METHOD(Initalize);
 		virtual void Initalize();
 
+		void CompleteCamera();
+
 #ifdef _DEBUG
 		virtual void EditorSetValue();
 #endif // _DEBUG
@@ -68,7 +75,17 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Camera::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Camera::load(Archive& _ar, const unsigned int file_version)
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_fov;
+		_ar& m_aspect;
+		_ar& m_nearZ;
+		_ar& m_farZ;
+	}
+
+	template<class Archive>
+	void Truth::Camera::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_fov;
@@ -78,3 +95,4 @@ namespace Truth
 	}
 }
 BOOST_CLASS_EXPORT_KEY(Truth::Camera)
+BOOST_CLASS_VERSION(Truth::Camera, 0)

@@ -8,10 +8,14 @@
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Component)
 
+uint32 Truth::Component::m_IDGenerater = 0;
+
 Truth::Component::Component()
 	: m_canMultiple(false)
 	, m_managers()
 	, m_owner()
+	, m_index(-1)
+	, m_ID(++m_IDGenerater)
 {
 	m_name = typeid(*this).name();
 }

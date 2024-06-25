@@ -2,6 +2,12 @@
 #include "IRenderScene.h"
 #include "ISkinnedMeshObject.h"
 #include "imgui.h"
+#include "Camera.h"
+
+#ifdef _DEBUG
+#include "EditorCamera.h"
+#endif // _DEBUG
+
 
 /// <summary>
 /// 그래픽 엔진과 소통하는 매니저
@@ -71,7 +77,12 @@ void Truth::GraphicsManager::Finalize()
 /// </summary>
 void Truth::GraphicsManager::Render()
 {
+#ifdef _DEBUG
 	m_renderer->Render();
+#else
+	CompleteCamera();
+	m_renderer->Render();
+#endif // _DEBUG
 }
 
 /// <summary>
@@ -98,6 +109,11 @@ void Truth::GraphicsManager::AddDebugobject(std::shared_ptr<Ideal::IMeshObject> 
 	m_renderScene->AddDebugObject(_mesh);
 }
 
+
+void Truth::GraphicsManager::ConvertAsset(std::wstring _path, bool _isSkind /*= false*/, bool _isData /*= false*/)
+{
+	m_renderer->ConvertAssetToMyFormat(_path, _isSkind, _isData);
+}
 
 /// <summary>
 /// Bone이 있는 스키닝 매쉬
@@ -152,15 +168,29 @@ std::shared_ptr<Ideal::ICamera> Truth::GraphicsManager::CreateCamera()
 /// 메인 카메라 지정
 /// </summary>
 /// <param name="_camera">카메라 오브젝트</param>
-void Truth::GraphicsManager::SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera)
+void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 {
-	m_renderer->SetMainCamera(_camera);
+	m_renderer->SetMainCamera(_camera->m_camera);
+	m_mainCamera = _camera;
 }
+
+#ifdef _DEBUG
+void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
+{
+	m_renderer->SetMainCamera(_camera->m_camera);
+	// m_mainCamera = _camera;
+}
+#endif // _DEBUG
 
 void Truth::GraphicsManager::ResetRenderScene()
 {
 	m_renderScene.reset();
 	m_renderScene = m_renderer->CreateRenderScene();
 	m_renderer->SetRenderScene(m_renderScene);
+}
+
+void Truth::GraphicsManager::CompleteCamera()
+{
+	m_mainCamera->CompleteCamera();
 }
 

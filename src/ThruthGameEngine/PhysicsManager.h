@@ -86,6 +86,8 @@ namespace Truth
 		physx::PxControllerManager* m_CCTManager;
 		// physx::PxOmniPvd* m_oPvd;
 
+		physx::PxCooking* m_cooking;
+
 		bool m_isInteractive = false;
 	public:
 
@@ -110,17 +112,17 @@ namespace Truth
 		physx::PxRigidDynamic* CreateDefaultRigidDynamic();
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
 		 
-		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points = std::vector<Vector3>());
 
 		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
-		physx::PxController* CreatePlayerController();
+		physx::PxController* CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc);
+
+		physx::PxMaterial* CreateMaterial(Vector3 _val);
 
 	private:
 		void CreatePhysxScene();
-
-		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);
-		physx::PxRigidDynamic* createDynamic(const physx::PxTransform& _t, const physx::PxGeometry& _geometry, const physx::PxVec3& _velocity = physx::PxVec3(0));
+		std::vector<physx::PxVec3> ConvertPointToVertex(const Vector3& _args, const std::vector<Vector3>& _points);
 	};
 
 	physx::PxFilterFlags FilterShaderExample(

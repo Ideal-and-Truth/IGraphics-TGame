@@ -263,9 +263,11 @@ public:
 		return result;
 	}
 
-	bool DisplayUI(void* _object) const
+	bool DisplayUI(void* _object, const std::string& _ID) const
 	{
-		return m_handler.DisplayUI(_object, m_name, m_min, m_max);
+		std::string name = m_name;
+		name += _ID;
+		return m_handler.DisplayUI(_object, name.c_str(), m_min, m_max);
 	}
 
 	// 값 반환 구조체

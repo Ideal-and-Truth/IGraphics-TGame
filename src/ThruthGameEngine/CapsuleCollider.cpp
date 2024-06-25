@@ -15,6 +15,7 @@ Truth::CapsuleCollider::CapsuleCollider(bool _isTrigger)
 	, m_radius(0.5f)
 	, m_height(1.0f)
 {
+	m_shape = ColliderShape::CAPSULE;
 	m_name = "Capsule Collider";
 
 }
@@ -28,6 +29,8 @@ Truth::CapsuleCollider::CapsuleCollider(bool _isTrigger)
 Truth::CapsuleCollider::CapsuleCollider(float _radius, float _height, bool _isTrigger)
 	: Collider(_isTrigger)
 {
+	m_shape = ColliderShape::CAPSULE;
+
 	m_name = "Capsule Collider";
 
 	SetRadius(_radius);
@@ -44,6 +47,8 @@ Truth::CapsuleCollider::CapsuleCollider(float _radius, float _height, bool _isTr
 Truth::CapsuleCollider::CapsuleCollider(Vector3 _pos, float _radius, float _height, bool _isTrigger)
 	: Collider(_pos, _isTrigger)
 {
+	m_shape = ColliderShape::CAPSULE;
+
 	m_name = "Capsule Collider";
 
 	SetRadius(_radius);
@@ -95,5 +100,5 @@ void Truth::CapsuleCollider::SetHeight(float _height)
 /// </summary>
 void Truth::CapsuleCollider::Initalize()
 {
-	Collider::Initalize(ColliderShape::CAPSULE, Vector3{m_radius, m_height, m_radius});
+	Collider::Initalize();
 }
