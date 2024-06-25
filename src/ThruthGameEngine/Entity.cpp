@@ -30,6 +30,8 @@ Truth::Entity::~Entity()
 
 void Truth::Entity::Initailize()
 {
+
+
 	m_transform = GetComponent<Transform>().lock();
 	int32 index = 0;
 	for (auto& c : m_components)

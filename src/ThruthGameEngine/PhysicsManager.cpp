@@ -87,9 +87,9 @@ void Truth::PhysicsManager::Initalize()
 /// </summary>
 void Truth::PhysicsManager::Finalize()
 {
-	m_physics->release();
-	m_pvd->release();
-	m_trasport->release();
+// 	m_physics->release();
+// 	m_pvd->release();
+// 	m_trasport->release();
 }
 
 /// <summary>
@@ -125,7 +125,7 @@ void Truth::PhysicsManager::FixedUpdate()
 
 				if (rigidbody->IsController())
 				{
-					auto p = rigidbody->GetController()->getPosition();
+					auto& p = rigidbody->GetController()->getPosition();
 					pos = MathConverter::Convert(rigidbody->GetController()->getPosition());
 					rot = rigidbody->GetRotation();
 				}

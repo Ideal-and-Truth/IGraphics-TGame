@@ -23,12 +23,13 @@ private:
 
 	std::vector<const char*>& m_componentList;
 
-	char inputTextBuffer[128];
+	char inputTextBuffer[256];
 
 	OPENFILENAME m_openFileName;
-	TCHAR m_filePathBuffer[128] = L"";
-	TCHAR m_fileBuffer[128] = L"";
-	const TCHAR* m_fileFilter = L"Scene 파일\0*.scene";
+	TCHAR m_filePathBuffer[256] = L"";
+	TCHAR m_fileBuffer[256] = L"";
+	const TCHAR* m_sceneFileFilter = L"Scene 파일\0*.scene";
+	const TCHAR* m_entityFileFilter = L"Entity 파일\0*.entity";
 
 	HWND m_hwnd;
 

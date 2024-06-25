@@ -146,19 +146,25 @@ namespace Truth
 	template<class Archive>
 	void Entity::save(Archive& _ar, const unsigned int _file_version) const
 	{
-		_ar & m_name;
-		_ar & m_ID;
-		_ar & m_layer;
-		_ar & m_components;
+		_ar& m_name;
+		if (_file_version == 0)
+		{
+			_ar& m_ID;
+		}
+		_ar& m_layer;
+		_ar& m_components;
 	}
 
 	template<class Archive>
 	void Entity::load(Archive& _ar, const unsigned int _file_version)
 	{
-		_ar & m_name;
-		_ar & m_ID;
-		_ar & m_layer;
-		_ar & m_components;
+		_ar& m_name;
+		if (_file_version == 0)
+		{
+			_ar& m_ID;
+		}
+		_ar& m_layer;
+		_ar& m_components;
 	}
 
 	/// <summary>
@@ -250,4 +256,4 @@ namespace Truth
 		return result;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Entity, 0)
+BOOST_CLASS_VERSION(Truth::Entity, 1)

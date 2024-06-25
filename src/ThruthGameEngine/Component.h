@@ -33,14 +33,17 @@ namespace Truth
 	public:
 		std::string m_name;
 		int32 m_index;
+		const uint32 m_ID;
 
 	private:
 		friend class boost::serialization::access;
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void save(Archive& ar, const unsigned int file_version) const;
+		void save(Archive& _ar, const unsigned int _file_version) const;
 		template<class Archive>
-		void load(Archive& ar, const unsigned int file_version);
+		void load(Archive& _ar, const unsigned int _file_version);
+
+		static uint32 m_IDGenerater;
 
 	protected:
 		bool m_canMultiple;

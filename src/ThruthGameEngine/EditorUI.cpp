@@ -30,7 +30,7 @@ EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
 	memset(&m_openFileName, 0, sizeof(OPENFILENAME));
 	m_openFileName.lStructSize = sizeof(OPENFILENAME);
 	m_openFileName.hwndOwner = m_hwnd;
-	m_openFileName.lpstrFilter = m_fileFilter;
+	m_openFileName.lpstrFilter = m_sceneFileFilter;
 	m_openFileName.lpstrFile = m_fileBuffer;
 	m_openFileName.nMaxFile = 100;
 	m_openFileName.lpstrInitialDir = L".";
@@ -250,12 +250,26 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 						m_manager->Scene()->m_currentScene->DeleteEntity(e);
 						m_selectedEntity = -1;
 					}
+					if (ImGui::Selectable("SaveEntity"))
+					{
+						m_openFileName.lpstrDefExt = L"entity";
+						m_openFileName.lpstrFilter = m_entityFileFilter;
+						if (GetSaveFileName(&m_openFileName) != 0)
+						{
+							std::wstring filepath = m_openFileName.lpstrFile;
+							std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
+
+							std::ofstream outputstream(f.back());
+							boost::archive::text_oarchive outputArchive(outputstream);
+							outputArchive << e;
+						}
+					}
 
 					ImGui::EndPopup();
 				}
 				selectCount++;
 			}
-
+			
 		}
 	}
 
@@ -306,6 +320,25 @@ void EditorUI::ShowMenuBar(bool* p_open)
 		if (ImGui::Selectable("Create Empty"))
 		{
 			currentScene->AddEntity(std::make_shared<Truth::Entity>(m_manager));
+		}
+		if (ImGui::Selectable("Load Entity"))
+		{
+			m_openFileName.lpstrDefExt = L"entity";
+			m_openFileName.lpstrFilter = m_entityFileFilter;
+			if (GetOpenFileName(&m_openFileName) != 0)
+			{
+				std::wstring filepath = m_openFileName.lpstrFile;
+				std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
+
+				std::shared_ptr<Truth::Entity> e;
+
+				std::ifstream inputstream(f.back());
+				boost::archive::text_iarchive inputArchive(inputstream);
+				inputArchive >> e;
+				e->SetManager(m_manager);
+				
+				currentScene->AddEntity(e);
+			}
 		}
 		ImGui::EndPopup();
 	}
@@ -382,6 +415,7 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	}
 	else if (loadScene)
 	{
+		m_openFileName.lpstrFilter = m_sceneFileFilter;
 		loadScene = false;
 		if (GetOpenFileName(&m_openFileName) != 0)
 		{
@@ -440,7 +474,7 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 		}
 		for (auto* p : properties)
 		{
-			isSelect |= p->DisplayUI(_component.get());
+			isSelect |= p->DisplayUI(_component.get(),"##" + std::to_string(_component->m_ID));
 		}
 	}
 #ifdef _DEBUG
@@ -450,4 +484,3 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 	}
 #endif // _DEBUG
 }
-
