@@ -28,7 +28,7 @@ private:
 	float4 m_cameraSpeed;
 
 	bool m_isLockOn;
-
+	
 public:
 	PlayerCamera();
 	virtual ~PlayerCamera();

@@ -37,13 +37,10 @@ void PlayerCamera::Start()
 			m_target = e.get()->m_transform;
 		}
 	}
-	auto ownerPos = m_target->m_position;
 	Vector3 targetPos = m_target->m_position;
 	targetPos.z -= m_cameraDistance;
 
 	m_owner.lock()->m_transform->m_position = targetPos;
-
-	//m_camera.get()->GetTypeInfo().GetProperty("position")->Set(m_camera.get(), ownerPos);
 
 }
 
@@ -71,20 +68,20 @@ void PlayerCamera::Update()
 void PlayerCamera::FreeCamera()
 {
 	// 자유시점 카메라
-	Vector3 cameraPos =m_owner.lock()->m_transform->m_position;
+	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
 	Vector3 targetPos = m_target->m_position;
 
 	m_elevation += MouseDy() * m_cameraSpeed;
 	m_azimuth -= MouseDx() * m_cameraSpeed;
 
-	if (m_elevation > 3.13f)
+	if (m_elevation > 3.0f)
 	{
-		m_elevation = 3.13f;
+		m_elevation = 3.0f;
 	}
-	if (m_elevation < 0.01f)
+	if (m_elevation < 0.5f)
 	{
-		m_elevation = 0.01f;
-	}	
+		m_elevation = 0.5f;
+	}
 
 
 	cameraPos.x = m_cameraDistance * sin(m_elevation) * cos(m_azimuth);
@@ -96,16 +93,15 @@ void PlayerCamera::FreeCamera()
 	cameraPos.z += targetPos.z;
 
 	m_owner.lock()->m_transform->m_position = cameraPos;
-	
-	m_owner.lock()->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(m_elevation, m_azimuth, 0.f);
-	//Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
 	auto look = targetPos - cameraPos;
-
 	m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);
+	look.Normalize();
+	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
+	m_owner.lock()->m_transform->m_rotation.z = 0;
 }
 
 void PlayerCamera::LockOnCamera()
 {
 	// 락온 카메라
-	
+
 }

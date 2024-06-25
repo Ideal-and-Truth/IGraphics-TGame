@@ -30,6 +30,8 @@ private:
 
 	Vector3 m_faceDirection;
 
+	PROPERTY(angle);
+	Vector3 m_angle;
 public:
 	PlayerController();
 	virtual ~PlayerController();

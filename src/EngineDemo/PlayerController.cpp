@@ -112,34 +112,31 @@ void PlayerController::PlayerMove(const void*)
 
 	/// TODO : 피직스 컨트롤러에 적용하고 트랜스폼을 리기드 바디로 사용해야함
 
-// 	Vector3 disp = direction * m_forwardInput * playerSpeed + right * m_sideInput * playerSpeed;
-// 	m_controller->Move(disp);
+// 	Vector3 disp = direction * m_forwardInput * playerSpeed;
+// 	Vector3 disp2 = right * m_sideInput * playerSpeed;
+// 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f) * GetDeltaTime();
+// 	Vector3 finalMovement = disp + disp2 + gravity;
+// 	m_controller->Move(finalMovement);
 
-	Vector3 disp = direction * m_forwardInput * playerSpeed;
-	// m_controller->Move(disp);
-	Vector3 disp2 = right * m_sideInput * playerSpeed;
-	// m_controller->Move(disp2);
+	m_angle = m_camera->m_transform->m_rotation.ToEuler()*(180.f/3.14f);
+
+	Vector3 cameraForward = m_angle;
+	Vector3 cameraRight = m_angle * right;
 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f) * GetDeltaTime();
+	cameraForward.y = 0;
+	cameraRight.y = 0;
+	cameraForward.Normalize();
+	cameraRight.Normalize();
+	Vector3 disp3 = cameraForward * m_forwardInput * playerSpeed + cameraRight * m_sideInput * playerSpeed;
+	Vector3 finalMovement2 = disp3 + gravity;
+	m_controller->Move(finalMovement2);
+// 	//m_owner.lock()->m_transform->m_position += disp3;
 
-	Vector3 finalMovement = disp + disp2 + gravity;
 
-	m_controller->Move(finalMovement);
-
-
-// 	Vector3 cameraForward = m_camera->m_transform->m_rotation * Vector3::Forward;
-// 	Vector3 cameraRight = m_camera->m_transform->m_rotation * Vector3::Right;
-// 	cameraForward.y = 0;
-// 	cameraRight.y = 0;
-// 	cameraForward.Normalize();
-// 	cameraRight.Normalize();
-// 	Vector3 disp2 = cameraForward * m_forwardInput * playerSpeed + cameraRight * m_sideInput * playerSpeed;
-// 	//m_controller->Move(disp2);
-// 
 // 	m_owner.lock()->m_transform->m_position += direction * m_forwardInput * playerSpeed;
 // 	m_owner.lock()->m_transform->m_position += right * m_sideInput * playerSpeed;
 
 	// 플레이어 회전
-	Vector3 upVec = { 0,1,0 };
 	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
 	m_faceDirection = { playerDir.x ,0, playerDir.z };
 	if (m_faceDirection == Vector3::Zero)
@@ -147,7 +144,7 @@ void PlayerController::PlayerMove(const void*)
 		return;
 	}
 	Quaternion lookRot;
-	Quaternion::LookRotation(m_faceDirection, upVec, lookRot);
+	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
 	auto lookRotationDampFactor = m_player.get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float4>(m_player.get()).Get();
 	m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
 }
