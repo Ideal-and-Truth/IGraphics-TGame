@@ -87,6 +87,9 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 		// PDB 파일 경로 설정
 		pdbPath = path + L".pdb";
 		args.push_back(L"-Zi");
+#ifdef _DEBUG
+		args.push_back(L"-Od");	// 최적화 끄기
+#endif
 		args.push_back(L"-Fd");
 		args.push_back(pdbPath.c_str());
 	}
@@ -114,9 +117,13 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
 }
 
-void Ideal::ShaderManager::CompileShaderAndSave(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob)
+void Ideal::ShaderManager::CompileShaderAndSave(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob, const std::wstring& EntryPoint /*= L""*/, bool HasEntry /*= false*/)
 {
-	CompileShader(FilePath, ShaderModel, OutBlob);
+
+	if (HasEntry)
+		CompileShader(FilePath, ShaderModel, EntryPoint, OutBlob);
+	else
+		CompileShader(FilePath, ShaderModel, OutBlob);
 
 	//
 	uint32 Size = OutBlob->GetBufferSize();

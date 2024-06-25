@@ -189,7 +189,7 @@ namespace Ideal
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
-		std::shared_ptr<Ideal::ShaderManager> m_shaderManager;
+		//std::shared_ptr<Ideal::ShaderManager> m_shaderManager;
 		void CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob);
 		ComPtr<IDxcCompiler3> m_compiler3;
 		ComPtr<IDxcUtils> m_dxcUtils;
@@ -197,6 +197,7 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::D3D12Shader> m_myShader;
 		std::shared_ptr<Ideal::D3D12Shader> m_myShader2;
+		std::shared_ptr<Ideal::D3D12Shader> m_animationShader;
 
 	private:
 		const wchar_t* m_raygenShaderName = L"MyRaygenShader";
@@ -223,8 +224,10 @@ namespace Ideal
 		void RaytracingManagerInit();
 		void RaytracingManagerUpdate();
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
+		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
 
 		uint32 m_contributionToHitGroupIndexCount = 0;
 		std::vector<Ideal::D3D12DescriptorHandle> m_shaderhandles;

@@ -5,7 +5,7 @@
 
 // SWAP CHAIN & MAX PENDING
 
-#define G_SWAP_CHAIN_NUM 5
+#define G_SWAP_CHAIN_NUM 4
 
 // Raytracing Ray Recursion Depth
 #define G_MAX_RAY_RECURSION_DEPTH 1

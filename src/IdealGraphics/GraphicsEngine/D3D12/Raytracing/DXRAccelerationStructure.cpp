@@ -115,22 +115,23 @@ void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries(std::vector<BLA
 	geometryDescTemplate.Triangles.VertexFormat = VERTEX_FORMAT;
 	m_geometryDescs.reserve(Geometries.size());
 
+	m_geometryDescs.clear();
 	for (BLASGeometry& geometry : Geometries)
 	{
-		D3D12_GPU_VIRTUAL_ADDRESS ibAddress = geometry.IndexBuffer->GetResource()->GetGPUVirtualAddress();
-		uint32 indexCount = geometry.IndexBuffer->GetElementCount();
-		D3D12_GPU_VIRTUAL_ADDRESS vbAddress = geometry.VertexBuffer->GetResource()->GetGPUVirtualAddress();
-		uint32 vertexCount = geometry.VertexBuffer->GetElementCount();
-		uint64 vertexStride = geometry.VertexBuffer->GetElementSize();
+		//D3D12_GPU_VIRTUAL_ADDRESS ibAddress = geometry.IndexBuffer->GetResource()->GetGPUVirtualAddress();
+		//uint32 indexCount = geometry.IndexBuffer->GetElementCount();
+		//D3D12_GPU_VIRTUAL_ADDRESS vbAddress = geometry.VertexBuffer->GetResource()->GetGPUVirtualAddress();
+		//uint32 vertexCount = geometry.VertexBuffer->GetElementCount();
+		//uint64 vertexStride = geometry.VertexBuffer->GetElementSize();
 
 		D3D12_RAYTRACING_GEOMETRY_DESC& geometryDesc = geometryDescTemplate;
 		// TEMP : 임시 모두 불투명
 		geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
-		geometryDesc.Triangles.IndexBuffer = ibAddress;
-		geometryDesc.Triangles.IndexCount = indexCount;
-		geometryDesc.Triangles.VertexBuffer.StartAddress = vbAddress;
-		geometryDesc.Triangles.VertexBuffer.StrideInBytes = vertexStride;
-		geometryDesc.Triangles.VertexCount = vertexCount;
+		geometryDesc.Triangles.IndexBuffer = geometry.IndexBufferGPUAddress;
+		geometryDesc.Triangles.IndexCount = geometry.IndexCount;
+		geometryDesc.Triangles.VertexBuffer.StartAddress = geometry.VertexBufferGPUAddress;
+		geometryDesc.Triangles.VertexBuffer.StrideInBytes = geometry.VertexStrideInBytes;
+		geometryDesc.Triangles.VertexCount = geometry.VertexCount;
 
 		// 최종으로 만든 desc을 저장
 		m_geometryDescs.push_back(geometryDesc);

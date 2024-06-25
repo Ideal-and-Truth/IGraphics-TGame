@@ -20,6 +20,7 @@ namespace Ideal
 	class D3D12DescriptorHeap;
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12DescriptorManager;
+	class D3D12UnorderedAccessView;
 }
 
 namespace Ideal
@@ -61,6 +62,28 @@ namespace Ideal
 		};
 	}
 
+	namespace AnimationRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Vertices = 0,
+				CBV_BoneData,
+				CBV_VertexCount,
+				UAV_OutputVertices,
+				Count
+			};
+		}
+
+	}
+
+	struct InstanceInfo
+	{
+		uint32 InstanceIndex;
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS;
+	};
+
 	/// <summary>
 	/// 해야 할 기능 정리
 	/// Mesh Object를 만들때마다 BLAS를 생성해야 한다.
@@ -81,7 +104,7 @@ namespace Ideal
 		~RaytracingManager();
 
 	public:
-		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
 		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB);
 		void Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
 
@@ -90,7 +113,7 @@ namespace Ideal
 		ComPtr<ID3D12Resource> GetRaytracingOutputResource();
 
 		//---AS---//
-		uint32 AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name);
+		Ideal::InstanceInfo AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name, bool IsSkinnedData = false);
 		void SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform);
 		void FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool);
 		void UpdateAccelerationStructures(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool);
@@ -142,5 +165,26 @@ namespace Ideal
 		// 늘려주고 끝낸다.
 		// 이로인해 다음 Instance는 다시 자기만의 instance를 가질 수 있게 된다.
 		uint64 m_contributionToHitGroupIndexCount = 0;
+
+		//---Animation Compute Shader---//
+	public:
+		void CreateAnimationRootSignature(ComPtr<ID3D12Device5> Device);
+		void CreateAnimationCSPipelineState(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12Shader> AnimationShader);
+		
+		void DispatchAnimationComputeShader(
+			ComPtr<ID3D12Device5> Device,
+			ComPtr<ID3D12GraphicsCommandList4> CommandList,
+			std::shared_ptr<Ideal::ResourceManager> ResourceManager,
+			std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager,
+			uint32 CurrentContextIndex,
+			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+			std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer,
+			CB_Bone* BoneData,
+			std::shared_ptr<Ideal::D3D12UnorderedAccessView> UAV_OutVertex
+		);
+
+	private:
+		ComPtr<ID3D12RootSignature> m_animationRootSignature;
+		ComPtr<ID3D12PipelineState> m_animationPipelineState;
 	};
 }

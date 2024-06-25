@@ -1,5 +1,7 @@
 #include "Core/Core.h"
 #include "IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/IdealMesh.h"
+#include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMesh.h"
@@ -7,8 +9,16 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
-//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-#include <d3d12.h>
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
+#include "GraphicsEngine/D3D12/D3D12UAV.h"
+
 #include <d3dx12.h>
 //#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
@@ -63,7 +73,6 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 		CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), SKINNED_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM, incrementSize);
 		device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
-
 
 	// Bind Bone
 	{
@@ -207,5 +216,129 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 				m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
 			}
 		}
+	}
+}
+
+void Ideal::IdealSkinnedMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager)
+{
+
+	auto& geometries = m_skinnedMesh->GetMeshes();
+
+	uint64 numMesh = geometries.size();
+
+	Ideal::BLASData blasGeometryDesc;
+	blasGeometryDesc.Geometries.resize(numMesh);
+	for (uint32 i = 0; i < numMesh; ++i)
+	{
+		Ideal::BLASGeometry blasGeometry;
+		blasGeometry.Name = L"";	// temp
+
+		m_uavBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+		uint32 count = geometries[i]->GetVertexBuffer()->GetElementCount();
+		uint32 size = count * sizeof(BasicVertex);
+		m_uavBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UAV_SkinnedVertex");
+		m_uavView = ResourceManager->CreateUAV(m_uavBuffer, count, sizeof(BasicVertex));
+
+		//blasGeometry.VertexBufferGPUAddress = geometries[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
+		//blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
+		//blasGeometry.VertexStrideInBytes = geometries[i]->GetVertexBuffer()->GetElementSize();
+		blasGeometry.VertexBufferGPUAddress = m_uavBuffer->GetGPUVirtualAddress();
+		blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
+		blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
+		blasGeometry.IndexBufferGPUAddress = geometries[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+		blasGeometry.IndexCount = geometries[i]->GetIndexBuffer()->GetElementCount();
+
+		std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
+		if (material)
+		{
+			std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
+			if (diffuseTexture)
+			{
+				blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+			}
+		}
+		blasGeometryDesc.Geometries[i] = blasGeometry;
+	}
+	const std::wstring& name = GetName();
+	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, name.c_str(), true);
+
+	m_instanceID = instanceInfo.InstanceIndex;
+	m_BLAS = instanceInfo.BLAS;
+}
+
+void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
+	ComPtr<ID3D12Device5> Device,
+	ComPtr<ID3D12GraphicsCommandList4> CommandList,
+	std::shared_ptr<Ideal::ResourceManager> ResourceManager,
+	std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager,
+	uint32 CurrentContextIndex,
+	std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+	std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
+)
+{
+	AnimationPlay();
+
+	//if (m_isDirty)
+	{
+		auto& geometries = m_skinnedMesh->GetMeshes();
+
+		uint64 numMesh = geometries.size();
+
+		Ideal::BLASData blasGeometryDesc;
+		blasGeometryDesc.Geometries.resize(numMesh);
+		for (uint32 i = 0; i < numMesh; ++i)
+		{
+			// Create Unordered Access View
+			//uint32 size = geometries[i]->GetVertexBuffer()->GetElementCount() * geometries[i]->GetVertexBuffer()->GetElementSize();
+			/*if (!uav)
+			{
+				uav = std::make_shared<Ideal::D3D12UAVBuffer>();
+				uint32 size = geometries[i]->GetVertexBuffer()->GetElementCount() * sizeof(BasicVertex);
+				uav->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UAV_SkinnedVertex");
+			}*/
+
+			// Calculate Bone Transform CS
+			{
+				RaytracingManager->DispatchAnimationComputeShader(
+					Device,
+					CommandList,
+					ResourceManager,
+					DescriptorManager,
+					CurrentContextIndex,
+					CBPool,
+					geometries[i]->GetVertexBuffer(),
+					&m_cbBoneData,
+					m_uavView
+				);
+			}
+
+			Ideal::BLASGeometry blasGeometry;
+			blasGeometry.VertexBufferResource = m_uavBuffer->GetResource();
+			blasGeometry.VertexBufferGPUAddress = m_uavBuffer->GetGPUVirtualAddress();
+			blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
+			//blasGeometry.VertexStrideInBytes = geometries[i]->GetVertexBuffer()->GetElementSize();
+			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
+			blasGeometry.IndexBufferResource = geometries[i]->GetIndexBuffer()->GetResource();
+			blasGeometry.IndexBufferGPUAddress = geometries[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+			blasGeometry.IndexCount = geometries[i]->GetIndexBuffer()->GetElementCount();
+
+			std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
+			if (material)
+			{
+				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
+				if (diffuseTexture)
+				{
+					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+				}
+			}
+			blasGeometryDesc.Geometries[i] = blasGeometry;
+		}
+
+		m_BLAS->BuildGeometries(blasGeometryDesc.Geometries);
+		m_BLAS->SetDirty(true);
+
+		//RaytracingManager->SetGeometryTransformByIndex(m_instanceID, m_transform);
+
+		m_isDirty = false;
 	}
 }

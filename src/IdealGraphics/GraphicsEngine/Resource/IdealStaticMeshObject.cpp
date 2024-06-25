@@ -72,8 +72,14 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 	{
 		Ideal::BLASGeometry blasGeometry;
 		blasGeometry.Name = L"";	// temp
-		blasGeometry.VertexBuffer = geometries[i]->GetVertexBuffer();
-		blasGeometry.IndexBuffer = geometries[i]->GetIndexBuffer();
+		blasGeometry.VertexBufferResource = geometries[i]->GetVertexBuffer()->GetResource();
+		blasGeometry.VertexBufferGPUAddress = geometries[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
+		blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
+		blasGeometry.VertexStrideInBytes = geometries[i]->GetVertexBuffer()->GetElementSize();
+
+		blasGeometry.IndexBufferResource = geometries[i]->GetIndexBuffer()->GetResource();
+		blasGeometry.IndexBufferGPUAddress = geometries[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+		blasGeometry.IndexCount = geometries[i]->GetIndexBuffer()->GetElementCount();
 
 		std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
 		if (material)
@@ -84,11 +90,11 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 				blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
 			}
 		}
-
 		blasGeometryDesc.Geometries.push_back(blasGeometry);
 	}
 	const std::wstring& name = GetName();
-	m_instanceID = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, name.c_str());
+	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, name.c_str(), false);
+	m_instanceID = instanceInfo.InstanceIndex;
 }
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)

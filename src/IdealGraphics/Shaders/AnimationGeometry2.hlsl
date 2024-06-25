@@ -91,7 +91,6 @@ VSOutput VS(VSInput input)
     
     SkinVertex(position, input.Normal, skinTransform);
 
-
     //float4 localPos = float4(input.Pos, 1.f);
     float4 localPos = position;
     float4 worldPos = mul(localPos, World);

@@ -4,11 +4,13 @@
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
+#include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/VertexInfo.h"
 
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -47,29 +49,35 @@ Ideal::RaytracingManager::~RaytracingManager()
 
 }
 
-void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
+void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
 {
 	m_width = Width;
 	m_height = Height;
 	m_ASManager = std::make_unique<DXRAccelerationStructureManager>();
 	m_uavSingleDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	m_uavSingleDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 1);
+	m_uavSingleDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
 	
 	CreateUAVRenderTarget(Device, Width, Height);	//device, width, height
 	CreateRootSignature(Device);	//device
-	CreateRaytracingPipelineStateObject(Device, Shader); // device, shader
+	CreateRaytracingPipelineStateObject(Device, RaytracingShader); // device, shader
 	BuildShaderTables(Device, ResourceManager, DescriptorManager); // Device, ResourceManager
+
+	//return;
+	//-----Animation Pipeline-----//
+	CreateAnimationRootSignature(Device);
+	CreateAnimationCSPipelineState(Device, AnimationShader);
 }
 
-void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB)
+void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentContextIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB)
 {
+	CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
 	CommandList->SetDescriptorHeaps(1, DescriptorManager->GetDescriptorHeap().GetAddressOf());
 
 	// TODO : Global Root 연결해주는 부분 나중에 뺄 것
 	
 	// Parameter 0
-	auto handle0 = DescriptorManager->Allocate(CurrentFrameIndex);
+	auto handle0 = DescriptorManager->Allocate(CurrentContextIndex);
 	//Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), OutputUAVHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVCpuDescriptorHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_Output, handle0.GetGpuHandle());
@@ -80,9 +88,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	// Parameter 2
 	auto cb = CBPool->Allocate(Device.Get(), sizeof(SceneConstantBuffer));
 	memcpy(cb->SystemMemAddr, &SceneCB, sizeof(SceneCB));
-	SceneConstantBuffer s;
-	s.CameraPos = Vector4(0.f);
-	auto handle2 = DescriptorManager->Allocate(CurrentFrameIndex);
+	auto handle2 = DescriptorManager->Allocate(CurrentContextIndex);
 	Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::CBV_Global, handle2.GetGpuHandle());
 
@@ -104,7 +110,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	dispatchRayDesc.Height = m_height;
 	dispatchRayDesc.Depth = 1;
 
-	CommandList->SetPipelineState1(m_dxrStateObject.Get());
+	//CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->DispatchRays(&dispatchRayDesc);
 }
 
@@ -146,18 +152,23 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOu
 	return m_raytracingOutput;
 }
 
-uint32 Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name)
+Ideal::InstanceInfo Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	// 예상으로는 중간에 만들어줘도 BLAS 자체에 IsDirty 초기값이 True 이기 때문에 Update할때 빌드가 될 것이다...
 	// 일단 BLAS를 추가하고 만약 있으면 그것에 대한 인덱스만 가져온다.
-	m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name);
-	uint32 instanceIndex = m_ASManager->AddInstance(Name, m_contributionToHitGroupIndexCount);
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
+	//uint32 instanceIndex = m_ASManager->AddInstance(Name, m_contributionToHitGroupIndexCount);
+	uint32 instanceIndex = m_ASManager->AddInstanceByBLAS(blas, m_contributionToHitGroupIndexCount);
 
 	// 현재 BLAS안에 들어있는 Geometry의 개수만큼 contributionToHitGroupIndex를 늘려준다.
 	uint64 geometrySizeInBLAS = Geometries.size();
 	m_contributionToHitGroupIndexCount += geometrySizeInBLAS;
 
-	return instanceIndex;
+	InstanceInfo ret;
+	ret.BLAS = blas;
+	ret.InstanceIndex = instanceIndex;
+
+	return ret;
 }
 
 void Ideal::RaytracingManager::SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform)
@@ -339,12 +350,11 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 			{
 				Ideal::LocalRootSignature::RootArgument rootArguments;
 
-				std::shared_ptr<Ideal::D3D12IndexBuffer> indexBuffer = blasGeometry.IndexBuffer;
-				std::shared_ptr<Ideal::D3D12VertexBuffer> vertexBuffer = blasGeometry.VertexBuffer;
+				ComPtr<ID3D12Resource> vertexResource = blasGeometry.VertexBufferResource;
+				ComPtr<ID3D12Resource> indexResource = blasGeometry.IndexBufferResource;
+				auto h1 = ResourceManager->CreateSRV(indexResource, blasGeometry.IndexCount, sizeof(uint32));
+				auto h2 = ResourceManager->CreateSRV(vertexResource, blasGeometry.VertexCount, blasGeometry.VertexStrideInBytes);
 
-				auto h1 = ResourceManager->CreateSRV(indexBuffer, indexBuffer->GetElementCount(), indexBuffer->GetElementSize());
-				auto h2 = ResourceManager->CreateSRV(vertexBuffer, vertexBuffer->GetElementCount(), vertexBuffer->GetElementSize());
-				
 				// Indices
 				auto indicesLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 				Device->CopyDescriptorsSimple(1, indicesLocation.GetCpuHandle(), h1->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -370,4 +380,92 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();
 	}
+}
+
+void Ideal::RaytracingManager::CreateAnimationRootSignature(ComPtr<ID3D12Device5> Device)
+{
+	CD3DX12_DESCRIPTOR_RANGE ranges[AnimationRootSignature::Slot::Count];
+	ranges[AnimationRootSignature::Slot::SRV_Vertices].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);	// t0 : Vertices
+	ranges[AnimationRootSignature::Slot::CBV_BoneData].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : Animation
+	ranges[AnimationRootSignature::Slot::CBV_VertexCount].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);	// b1 : CBV_VertexCount
+	ranges[AnimationRootSignature::Slot::UAV_OutputVertices].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : Output
+
+	// binding
+	CD3DX12_ROOT_PARAMETER rootParameters[AnimationRootSignature::Slot::Count];
+	rootParameters[AnimationRootSignature::Slot::SRV_Vertices].InitAsDescriptorTable(1, &ranges[AnimationRootSignature::Slot::SRV_Vertices]);
+	rootParameters[AnimationRootSignature::Slot::CBV_BoneData].InitAsDescriptorTable(1, &ranges[AnimationRootSignature::Slot::CBV_BoneData]);
+	rootParameters[AnimationRootSignature::Slot::CBV_VertexCount].InitAsDescriptorTable(1, &ranges[AnimationRootSignature::Slot::CBV_VertexCount]);
+	rootParameters[AnimationRootSignature::Slot::UAV_OutputVertices].InitAsDescriptorTable(1, &ranges[AnimationRootSignature::Slot::UAV_OutputVertices]);
+
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(
+		ARRAYSIZE(rootParameters), rootParameters, 0, nullptr
+	);
+	SerializeAndCreateRootSignature(Device, rootSignatureDesc, &m_animationRootSignature, L"Animation Root Signature");
+}
+
+void Ideal::RaytracingManager::CreateAnimationCSPipelineState(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12Shader> AnimationShader)
+{
+	// TODO : 쉐이더 정보를 넘겨주어야 한다.
+
+	D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc = {};
+	computePipelineStateDesc.pRootSignature = m_animationRootSignature.Get();
+	CD3DX12_SHADER_BYTECODE shader(AnimationShader->GetBufferPointer(), AnimationShader->GetSize());
+	computePipelineStateDesc.CS = shader;
+	//computePipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+	Check(
+		Device->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_animationPipelineState)),
+		L"Failed to create Animation Compute Pipeline State"
+	);
+}
+
+void Ideal::RaytracingManager::DispatchAnimationComputeShader(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentContextIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer, CB_Bone* BoneData, std::shared_ptr<Ideal::D3D12UnorderedAccessView> UAV_OutVertex)
+{
+	CommandList->SetComputeRootSignature(m_animationRootSignature.Get());
+	CommandList->SetPipelineState(m_animationPipelineState.Get());
+
+	CommandList->SetDescriptorHeaps(1, DescriptorManager->GetDescriptorHeap().GetAddressOf());
+	// Parameter0 : SRV_Vertices
+	auto handle0 = DescriptorManager->Allocate(CurrentContextIndex);
+	auto vertesSRV = ResourceManager->CreateSRV(VertexBuffer, VertexBuffer->GetElementCount(), VertexBuffer->GetElementSize());
+	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), vertesSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(AnimationRootSignature::Slot::SRV_Vertices, handle0.GetGpuHandle());
+
+	// Parameter1 : CBV_BoneData
+	auto handle1 = DescriptorManager->Allocate(CurrentContextIndex);
+	auto cb = CBPool->Allocate(Device.Get(), sizeof(CB_Bone));
+	memcpy(cb->SystemMemAddr, BoneData, sizeof(CB_Bone));
+	Device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(AnimationRootSignature::Slot::CBV_BoneData, handle1.GetGpuHandle());
+
+	// Parameter2 : CBV_VertexCount
+	auto handle2 = DescriptorManager->Allocate(CurrentContextIndex);
+	auto cb2 = CBPool->Allocate(Device.Get(), sizeof(uint32));
+	uint32 vertexCount = VertexBuffer->GetElementCount();
+	memcpy(cb2->SystemMemAddr, &vertexCount, sizeof(uint32));
+	Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(AnimationRootSignature::Slot::CBV_VertexCount, handle2.GetGpuHandle());
+
+	// Parameter3 : UAV_OutputVertices
+	// TEMP : 여기서 임시로 UAV까지 만든다.
+	auto handle3 = DescriptorManager->Allocate(CurrentContextIndex);
+	Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), UAV_OutVertex->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(AnimationRootSignature::Slot::UAV_OutputVertices, handle3.GetGpuHandle());
+
+	// DISPATCH
+	uint32 elementCount = VertexBuffer->GetElementCount();
+	uint32 threadsPreGroup = 1024;
+	uint32 dispatchX = (elementCount + threadsPreGroup - 1) / threadsPreGroup;
+	CommandList->Dispatch(dispatchX, 1, 1);
+
+	// Barrier
+	CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(UAV_OutVertex->GetResource().Get());
+	CommandList->ResourceBarrier(1, &uavBarrier);
+
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		UAV_OutVertex->GetResource().Get(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
+	);
+	CommandList->ResourceBarrier(1, &barrier);
 }

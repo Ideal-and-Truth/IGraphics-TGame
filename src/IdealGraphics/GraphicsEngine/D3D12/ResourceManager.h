@@ -8,6 +8,7 @@ namespace Ideal
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12ShaderResourceView;
+	class D3D12UnorderedAccessView;
 	class D3D12Texture;
 	class D3D12DescriptorHeap;
 	class IdealStaticMeshObject;
@@ -58,8 +59,8 @@ namespace Ideal
 		void Fence();
 		void WaitForFenceValue();
 
-		ComPtr<ID3D12DescriptorHeap> GetSRVHeap() { return m_srvHeap->GetDescriptorHeap(); }
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetSRVPool() { return m_srvHeap; }
+		ComPtr<ID3D12DescriptorHeap> GetSRVHeap() { return m_cbv_srv_uavHeap->GetDescriptorHeap(); }
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetSRVPool() { return m_cbv_srv_uavHeap; }
 
 		void CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBuffer>& VertexBuffer);
 		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer>& IndexBuffer);
@@ -114,9 +115,11 @@ namespace Ideal
 		// 2024.06.10 : Create Texture2D by already Committed Resource
 		//void CreateSRV(std::shared_ptr<Ideal::D3D12ShaderResourceView> OutSRV, uint32);
 		std::shared_ptr<Ideal::D3D12ShaderResourceView> CreateSRV(std::shared_ptr<Ideal::D3D12Resource> Resource, uint32 NumElements, uint32 ElementSize);
+		std::shared_ptr<Ideal::D3D12ShaderResourceView> CreateSRV(ComPtr<ID3D12Resource> Resource, uint32 NumElements, uint32 ElementSize);
+		std::shared_ptr<Ideal::D3D12UnorderedAccessView> CreateUAV(std::shared_ptr<Ideal::D3D12Resource> Resource, uint32 NumElements, uint32 ElementSize);
 
 		void CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
-		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
+		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
 		void CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHeap() { return m_rtvHeap->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(); };
@@ -133,7 +136,7 @@ namespace Ideal
 
 	private:
 		// Descriptor heaps
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_srvHeap;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_cbv_srv_uavHeap;
 		const uint32 m_srvHeapCount = 256U;
 
 		// 2024.05.14 Multi Render Target

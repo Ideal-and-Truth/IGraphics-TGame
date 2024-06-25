@@ -21,7 +21,7 @@ namespace Ideal
 		void CompileShader(const std::wstring& FilePath, const std::wstring& ShaderModel, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob);
 
 		void CompileShaderAndSave(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName,
-			const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob
+			const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob, const std::wstring& EntryPoint = L"", bool HasEntry = false
 		);
 		
 		void LoadShaderFile(const std::wstring& FilePath, std::shared_ptr<Ideal::D3D12Shader>& OutShader);

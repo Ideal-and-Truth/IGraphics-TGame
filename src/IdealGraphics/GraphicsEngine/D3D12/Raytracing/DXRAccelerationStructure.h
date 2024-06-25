@@ -17,12 +17,32 @@ namespace Ideal
 {
 	struct BLASGeometry
 	{
-		BLASGeometry() : Name(L""), VertexBuffer(nullptr), IndexBuffer(nullptr), DiffuseTexture() {}
+		//BLASGeometry() : Name(L""), VertexBuffer(nullptr), IndexBuffer(nullptr), DiffuseTexture() {}
+		BLASGeometry() : Name(L""), DiffuseTexture() {}
+		BLASGeometry(
+			std::wstring InName, 
+			D3D12_GPU_VIRTUAL_ADDRESS VertexBufferGPUAddress,
+			uint32 InVertexCount,
+			uint32 InVertexStrideInBytes,
+			D3D12_GPU_VIRTUAL_ADDRESS IndexBufferGPUAddress,
+			uint32 InIndexCount,
+			Ideal::D3D12DescriptorHandle InDiffuseTexture
+		) : Name(InName), VertexBufferGPUAddress(VertexBufferGPUAddress), VertexCount(InVertexCount), VertexStrideInBytes(InVertexStrideInBytes),
+			IndexBufferGPUAddress(IndexBufferGPUAddress), IndexCount(InIndexCount), DiffuseTexture(InDiffuseTexture) {}
+
 		std::wstring Name;
-		std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
-		std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;
 		Ideal::D3D12DescriptorHandle DiffuseTexture;
+		//std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
+		//std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;
 		//D3D12_GPU_DESCRIPTOR_HANDLE NormalTexture;
+
+		ComPtr<ID3D12Resource> VertexBufferResource;
+		D3D12_GPU_VIRTUAL_ADDRESS VertexBufferGPUAddress;
+		uint32 VertexCount;
+		uint32 VertexStrideInBytes;
+		ComPtr<ID3D12Resource> IndexBufferResource;
+		D3D12_GPU_VIRTUAL_ADDRESS IndexBufferGPUAddress;
+		uint32 IndexCount;
 	};
 
 	struct BLASData
@@ -77,7 +97,9 @@ namespace Ideal
 		const std::vector<BLASGeometry>& GetGeometries() { return m_geometries; }
 
 		bool IsDirty() { return m_isDirty; }
-	private:
+		void SetDirty(bool Dirty) { m_isDirty = Dirty; }
+
+	public:
 		void BuildGeometries(std::vector<BLASGeometry>& Geometries);
 
 	private:
@@ -111,9 +133,5 @@ namespace Ideal
 			D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress,
 			ComPtr<ID3D12Resource> ScratchBuffer
 		);
-
 	};
-
-
 }
-

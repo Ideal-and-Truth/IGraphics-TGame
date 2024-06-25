@@ -166,6 +166,7 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorManager.h" />
     <ClInclude Include="GraphicsEngine\public\IRendererResource.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\D3D12UAV.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -255,6 +256,7 @@
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorManager.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\D3D12UAV.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -289,6 +291,8 @@
     <FxCompile Include="Shaders\AnimationGeometry2.hlsl" />
     <FxCompile Include="Shaders\Raytracing\Raytracing.hlsl" />
     <FxCompile Include="..\Shaders\Raytracing\Raytracing.hlsl" />
+    <FxCompile Include="Shaders\Raytracing\CS_ComputeAnimationVertexBuffer.hlsl" />
+    <FxCompile Include="..\Shaders\Raytracing\CS_ComputeAnimationVertexBuffer.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

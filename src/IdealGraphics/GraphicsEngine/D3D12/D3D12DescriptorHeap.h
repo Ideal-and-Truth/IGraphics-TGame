@@ -39,7 +39,9 @@ namespace Ideal
 		// operators
 		void operator=(const D3D12DescriptorHandle& Other)
 		{
-			Free();
+			//if (m_ownerHeap.expired() == false)
+			//	Free();
+
 			m_cpuHandle = Other.m_cpuHandle;
 			m_gpuHandle = Other.m_gpuHandle;
 			m_ownerHeap = Other.m_ownerHeap;

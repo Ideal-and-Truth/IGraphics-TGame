@@ -316,23 +316,42 @@ finishAdapter:
 	m_resourceManager->SetAssetPath(m_assetPath);
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
+	{
+		std::shared_ptr<Ideal::ShaderManager> m_shaderManager = std::make_shared<Ideal::ShaderManager>();
+		m_shaderManager->Init();
+		m_shaderManager->AddIncludeDirectories(L"../Shaders/Raytracing/");
 
-	m_shaderManager = std::make_shared<Ideal::ShaderManager>();
-	m_shaderManager->Init();
-	m_shaderManager->AddIncludeDirectories(L"../Shaders/Raytracing/");
+		// shader test
+		//InitShader();
+		//CompileShader2(L"../Shaders/Raytracing/Raytracing.hlsl", m_raygenShaderName, m_testBlob);
+		//m_shaderManager->CompileShader(L"../Shaders/Raytracing/Raytracing.hlsl", L"lib_6_3", m_testBlob);
+		m_shaderManager->CompileShaderAndSave(
+			L"../Shaders/Raytracing/Raytracing.hlsl",
+			L"../Shaders/Raytracing/",
+			L"SimpleRaytracingShader3",
+			L"lib_6_3",
+			m_testBlob
+		);
+		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/SimpleRaytracingShader3.shader", m_myShader);
+	}
 
-	// shader test
-	//InitShader();
-	//CompileShader2(L"../Shaders/Raytracing/Raytracing.hlsl", m_raygenShaderName, m_testBlob);
-	//m_shaderManager->CompileShader(L"../Shaders/Raytracing/Raytracing.hlsl", L"lib_6_3", m_testBlob);
-	m_shaderManager->CompileShaderAndSave(
-		L"../Shaders/Raytracing/Raytracing.hlsl",
-		L"../Shaders/Raytracing/",
-		L"SimpleRaytracingShader3",
-		L"lib_6_3",
-		m_testBlob
-	);
-	m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/SimpleRaytracingShader3.shader", m_myShader);
+	{
+		std::shared_ptr<Ideal::ShaderManager> m_shaderManager = std::make_shared<Ideal::ShaderManager>();
+		m_shaderManager->Init();
+		m_shaderManager->AddIncludeDirectories(L"../Shaders/Raytracing/");
+
+		m_shaderManager->CompileShaderAndSave(
+			L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.hlsl",
+			L"../Shaders/Raytracing/",
+			L"CS_ComputeAnimationVertexBuffer",
+			L"cs_6_3",
+			m_testBlob,
+			L"ComputeSkinnedVertex",
+			true
+		);
+		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.shader", m_animationShader);
+	}
+
 
 	m_sceneCB.CameraPos = Vector4(0.f);
 
@@ -363,6 +382,19 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 	ResetCommandList();
 	BeginRender();
+
+	// temp
+	for (auto& mesh : m_skinnedMeshObject)
+	{
+		mesh->UpdateBLASInstance(m_device,
+			m_commandLists[m_currentContextIndex],
+			m_resourceManager,
+			m_descriptorManager,
+			m_currentContextIndex,
+			m_cbAllocator[m_currentContextIndex],
+			m_raytracingManager
+		);
+	}
 
 	//---------------------Raytracing-------------------------//
 	RaytracingManagerUpdate();
@@ -414,14 +446,23 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStatic
 
 std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12RayTracingRenderer::CreateSkinnedMeshObject(const std::wstring& FileName)
 {
+	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newSkinnedMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
+	m_resourceManager->CreateSkinnedMeshObject(newSkinnedMesh, FileName);
+	newSkinnedMesh->SetName(FileName);
+
+	auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(newSkinnedMesh);
+	RaytracingManagerAddObject(mesh);
+	m_skinnedMeshObject.push_back(mesh);
 	// 인터페이스로 따로 뽑아야 할 듯
-	return nullptr;
+	return newSkinnedMesh;
 }
 
 std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimation(const std::wstring& FileName)
 {
-	// 인터페이스로 따로 뽑아야 할 듯
-	return nullptr;
+	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
+	m_resourceManager->CreateAnimation(newAnimation, FileName);
+
+	return newAnimation;
 }
 
 std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12RayTracingRenderer::CreateRenderScene()
@@ -868,7 +909,7 @@ void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_descriptorManager, m_width, m_height);
+	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height);
 
 	ResetCommandList();
 
@@ -893,6 +934,25 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	obj->AllocateBLASInstanceID(m_device, m_raytracingManager);
 
 	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+	//m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+
+	m_commandLists[m_currentContextIndex]->Close();
+	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager);
+
+	Fence();
+	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
+{
+	ResetCommandList();
+	obj->AllocateBLASInstanceID(m_device, m_raytracingManager, m_resourceManager);
+
+	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+	//m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 
 	m_commandLists[m_currentContextIndex]->Close();
 	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };

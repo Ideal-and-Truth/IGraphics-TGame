@@ -2,6 +2,9 @@
 #include "GraphicsEngine/public/ISkinnedMeshObject.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/Resource/IdealBone.h"
+#include "GraphicsEngine/VertexInfo.h"
+
+#include <d3d12.h>
 
 namespace Ideal
 {
@@ -11,6 +14,13 @@ namespace Ideal
 	class IdealRenderer;
 	class IdealAnimation;
 	class IdealSkinnedMesh;
+	class RaytracingManager;
+	class DXRBottomLevelAccelerationStructure;
+	class ResourceManager;
+	class D3D12DynamicConstantBufferAllocator;
+	class D3D12UAVBuffer;
+	class D3D12DescriptorManager;
+	class D3D12UnorderedAccessView;
 }
 struct AnimTransform
 {
@@ -30,7 +40,7 @@ namespace Ideal
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 	public:
-		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; }
+		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
@@ -54,6 +64,29 @@ namespace Ideal
 		CB_Transform m_cbTransformData;
 
 		Matrix m_transform;
+
+		//------Raytracing Info------//
+	public:
+		void AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
+		void UpdateBLASInstance(
+			ComPtr<ID3D12Device5> Device,
+			ComPtr<ID3D12GraphicsCommandList4> CommandList,
+			std::shared_ptr<Ideal::ResourceManager> ResourceManager,
+			std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager,
+			uint32 CurrentContextIndex,
+			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+			std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
+		);
+	
+	private:
+		uint32 m_instanceID = 0;
+		bool m_isDirty = false;
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_BLAS;
+
+		/*const uint32 MAX_PENDING_COUNT = G_SWAP_CHAIN_NUM - 1;
+		uint32 m_currentID = 0;*/
+		std::shared_ptr<Ideal::D3D12UAVBuffer> m_uavBuffer;
+		std::shared_ptr<Ideal::D3D12UnorderedAccessView> m_uavView;
 
 		// Animation
 	private:

@@ -47,7 +47,8 @@ void IndexCreator::Free(uint32 Index)
 	if (!m_allocatedCount)
 	{
 		// 더 이상 해제할게 없음
-		__debugbreak();
+		//__debugbreak();
+		return;
 	}
 	m_allocatedCount--;
 	m_table[m_allocatedCount] = Index;

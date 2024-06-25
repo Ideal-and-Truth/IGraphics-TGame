@@ -441,7 +441,7 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateStaticMeshObject
 std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12Renderer::CreateSkinnedMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
-	m_resourceManager->CreateSkinnedMeshObject(shared_from_this(), newDynamicMesh, FileName);
+	m_resourceManager->CreateSkinnedMeshObject(newDynamicMesh, FileName);
 
 	newDynamicMesh->Init(shared_from_this());
 	//m_dynamicMeshObjects.push_back(newDynamicMesh);
