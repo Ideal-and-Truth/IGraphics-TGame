@@ -112,7 +112,7 @@ namespace Truth
 		physx::PxRigidDynamic* CreateDefaultRigidDynamic();
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
 		 
-		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<float>& _points = std::vector<float>());
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points = std::vector<Vector3>());
 
 		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
@@ -122,7 +122,7 @@ namespace Truth
 
 	private:
 		void CreatePhysxScene();
-		std::vector<physx::PxVec3> ConvertPointToVertex(const std::vector<float>& _points);
+		std::vector<physx::PxVec3> ConvertPointToVertex(const Vector3& _args, const std::vector<Vector3>& _points);
 	};
 
 	physx::PxFilterFlags FilterShaderExample(

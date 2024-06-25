@@ -15,7 +15,6 @@ namespace Truth
 		void load(Archive& _ar, const unsigned int file_version);
 
 	private:
-		std::wstring _path;
 
 	public:
 		MeshCollider();

@@ -2,10 +2,11 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::MeshCollider)
 
 Truth::MeshCollider::MeshCollider()
-	: Collider()
+	: Collider(false)
 {
-	m_size = Vector3{ 1.0f, 1.0f, 1.0f };
-	_path = L"PhysxSampleObject/SampleStair";
+	m_size = Vector3{ 0.1f, 0.1f, 0.1f };
+	m_path = L"PhysxSampleObject/SampleStair";
+	m_shape = ColliderShape::MESH;
 }
 
 Truth::MeshCollider::~MeshCollider()
@@ -15,5 +16,5 @@ Truth::MeshCollider::~MeshCollider()
 
 void Truth::MeshCollider::Initalize()
 {
-	Collider::Initalize(_path);
+	Collider::Initalize(m_path);
 }

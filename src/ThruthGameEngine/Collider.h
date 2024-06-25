@@ -36,7 +36,9 @@ namespace Truth
 
 	protected:
 		ColliderShape m_shape;
-		std::vector<float> m_points;
+		std::vector<Vector3> m_points;
+		std::wstring m_path;
+
 	public:
 		bool m_isTrigger;
 
@@ -90,13 +92,16 @@ namespace Truth
 
 	protected:
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
-		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<float>& _points);
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points);
 		physx::PxRigidDynamic* GetDefaultDynamic();
 		physx::PxRigidStatic* GetDefaultStatic();
 
 		void Initalize(const std::wstring& _path = L"");
 
 		void SetUpFiltering(uint32 _filterGroup);
+
+	private:
+		void GetPoints();
 	};
 
 	template<class Archive>

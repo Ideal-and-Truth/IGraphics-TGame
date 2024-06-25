@@ -21,6 +21,7 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_trasport(nullptr)
 	, collisionCallback(nullptr)
 	, m_CCTManager(nullptr)
+	, m_cooking(nullptr)
 {
 	for (uint8 i = 0; i < 8; i++)
 	{
@@ -232,7 +233,7 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateDefaultRigidStatic()
 /// <param name="_args">파라미터</param>
 /// <param name="_points">점 정보</param>
 /// <returns>콜라이다</returns>
-physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<float>& _points)
+physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points)
 {
 
 	physx::PxShape* shape = nullptr;
@@ -256,10 +257,10 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	case Truth::ColliderShape::MESH:
 	{
 		std::vector<physx::PxVec3> convexVerts;
-		convexVerts = ConvertPointToVertex(_points);
+		convexVerts = ConvertPointToVertex(_args, _points);
 
 		physx::PxConvexMeshDesc convexDesc;
-		convexDesc.points.count = convexVerts.size();
+		convexDesc.points.count = static_cast<physx::PxU32>(convexVerts.size());
 		convexDesc.points.stride = sizeof(physx::PxVec3);
 		convexDesc.points.data = convexVerts.data();
 		convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
@@ -384,18 +385,15 @@ void Truth::PhysicsManager::CreatePhysxScene()
 /// </summary>
 /// <param name="_points">점 데이터</param>
 /// <returns>정점 데이터</returns>
-std::vector<physx::PxVec3> Truth::PhysicsManager::ConvertPointToVertex(const std::vector<float>& _points)
+std::vector<physx::PxVec3> Truth::PhysicsManager::ConvertPointToVertex(const Vector3& _args, const std::vector<Vector3>& _points)
 {
-	assert((_points.size() % 3) != 0 && "cannot convert points to vertex");
-
 	std::vector<physx::PxVec3> result;
-	result.resize(_points.size() / 3);
-
-	for (int i = 0; i < _points.size(); i += 3)
+	result.resize(_points.size());
+	for (int i = 0; i < _points.size(); i++)
 	{
-		result[i].x = _points[i];
-		result[i].y = _points[i + 1];
-		result[i].z = _points[i + 2];
+		result[i].x = _points[i].x * _args.x;
+		result[i].y = _points[i].y * _args.y;
+		result[i].z = _points[i].z * _args.z;
 	}
 
 	return result;
