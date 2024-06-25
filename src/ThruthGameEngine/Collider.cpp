@@ -82,7 +82,14 @@ void Truth::Collider::Destroy()
 void Truth::Collider::Awake()
 {
 	Vector3 onwerSize = m_owner.lock()->GetScale();
-	m_collider = CreateCollider(m_shape, (m_size * onwerSize) / 2);
+	if (m_shape == ColliderShape::MESH)
+	{
+		m_collider = CreateCollider(m_shape, (m_size * onwerSize) / 2, m_points);
+	}
+	else
+	{
+		m_collider = CreateCollider(m_shape, (m_size * onwerSize) / 2);
+	}
 
 	m_collider->userData = this;
 
@@ -158,6 +165,11 @@ physx::PxShape* Truth::Collider::CreateCollider(ColliderShape _shape, const Vect
 	return m_managers.lock()->Physics()->CreateCollider(_shape, _args);
 }
 
+physx::PxShape* Truth::Collider::CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<float>& _points)
+{
+	return m_managers.lock()->Physics()->CreateCollider(_shape, _args, _points);
+}
+
 /// <summary>
 /// 디폴트 다이나믹 바디 생성
 /// Rigidbody가 없는 콜라이더의 경우 해당 바디 사용
@@ -178,11 +190,10 @@ physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
 	return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 }
 
-void Truth::Collider::Initalize(ColliderShape _shape, const Vector3& _param)
+void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 {
-	m_shape = _shape;
 #ifdef _DEBUG
-	switch (_shape)
+	switch (m_shape)
 	{
 	case Truth::ColliderShape::BOX:
 	{
@@ -200,6 +211,7 @@ void Truth::Collider::Initalize(ColliderShape _shape, const Vector3& _param)
 	}
 	case Truth::ColliderShape::MESH:
 	{
+		m_debugMesh = m_managers.lock()->Graphics()->CreateMesh(_path);
 		break;
 	}
 	default:
@@ -207,11 +219,10 @@ void Truth::Collider::Initalize(ColliderShape _shape, const Vector3& _param)
 	}
 
 	m_managers.lock()->Graphics()->AddDebugobject(m_debugMesh);
+#endif // _DEBUG
 
 	m_localTM = Matrix::CreateScale(m_size);
 	m_localTM *= Matrix::CreateTranslation(m_center);
-
-#endif // _DEBUG
 }
 
 /// <summary>

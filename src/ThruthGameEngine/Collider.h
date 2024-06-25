@@ -34,8 +34,9 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
+	protected:
 		ColliderShape m_shape;
-
+		std::vector<float> m_points;
 	public:
 		bool m_isTrigger;
 
@@ -89,10 +90,11 @@ namespace Truth
 
 	protected:
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<float>& _points);
 		physx::PxRigidDynamic* GetDefaultDynamic();
 		physx::PxRigidStatic* GetDefaultStatic();
 
-		void Initalize(ColliderShape _shape, const Vector3& _param);
+		void Initalize(const std::wstring& _path = L"");
 
 		void SetUpFiltering(uint32 _filterGroup);
 	};

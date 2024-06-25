@@ -106,6 +106,12 @@
     <Filter Include="Component\PlayerController">
       <UniqueIdentifier>{30e9c4d0-e55a-4477-a2dd-4d7751940ad4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\ConvertAssets">
+      <UniqueIdentifier>{3f0e4e25-d4c3-4c98-8aab-569ad3a61a5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Collider\Mesh">
+      <UniqueIdentifier>{a3d62599-8c3f-4505-8320-aaf4bcf2cc83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -183,18 +189,15 @@
     <ClCompile Include="StringConverter.cpp">
       <Filter>Utils\String</Filter>
     </ClCompile>
-    <ClCompile Include="MathConverter.cpp" />
     <ClCompile Include="PxEventCallback.cpp">
       <Filter>Manager\PhysX</Filter>
     </ClCompile>
     <ClCompile Include="EditorUI.cpp">
       <Filter>EditorUI</Filter>
     </ClCompile>
-    <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="TypeUI.cpp">
       <Filter>Utils\ImguiTypeUI</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentFactory.cpp" />
     <ClCompile Include="SkinnedMesh.cpp">
       <Filter>Component\Mesh</Filter>
     </ClCompile>
@@ -207,6 +210,16 @@
     <ClCompile Include="Controller.cpp">
       <Filter>Component\PlayerController</Filter>
     </ClCompile>
+    <ClCompile Include="ComponentFactory.cpp">
+      <Filter>Utils\ComponentFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorCamera.cpp">
+      <Filter>EditorUI\EditorCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="MathConverter.cpp">
+      <Filter>Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -304,18 +317,15 @@
     <ClInclude Include="StringConverter.h">
       <Filter>Utils\String</Filter>
     </ClInclude>
-    <ClInclude Include="MathConverter.h" />
     <ClInclude Include="PxEventCallback.h">
       <Filter>Manager\PhysX</Filter>
     </ClInclude>
     <ClInclude Include="EditorUI.h">
       <Filter>EditorUI</Filter>
     </ClInclude>
-    <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="TypeUI.h">
       <Filter>Utils\ImguiTypeUI</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentFactory.h" />
     <ClInclude Include="SkinnedMesh.h">
       <Filter>Component\Mesh</Filter>
     </ClInclude>
@@ -328,6 +338,16 @@
     <ClInclude Include="Controller.h">
       <Filter>Component\PlayerController</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentFactory.h">
+      <Filter>Utils\ComponentFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorCamera.h">
+      <Filter>EditorUI\EditorCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="MathConverter.h">
+      <Filter>Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

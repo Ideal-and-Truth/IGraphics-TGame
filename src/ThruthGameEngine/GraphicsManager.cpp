@@ -110,6 +110,11 @@ void Truth::GraphicsManager::AddDebugobject(std::shared_ptr<Ideal::IMeshObject> 
 }
 
 
+void Truth::GraphicsManager::ConvertAsset(std::wstring _path, bool _isSkind /*= false*/, bool _isData /*= false*/)
+{
+	m_renderer->ConvertAssetToMyFormat(_path, _isSkind, _isData);
+}
+
 /// <summary>
 /// Bone이 있는 스키닝 매쉬
 /// </summary>
