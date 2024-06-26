@@ -45,11 +45,11 @@ void PlayerAnimator::Update()
 	{
 		m_nextAnimation = "PlayerWalk";
 	}
-	else if (GetKey(KEY::LBTN))
+	else if (GetKeyDown(KEY::LBTN))
 	{
 		m_nextAnimation = "PlayerAttack";
 	}
-	else
+	else if (m_currentAnimation != "PlayerIdle")
 	{
 		m_nextAnimation = "PlayerIdle";
 	}

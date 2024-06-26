@@ -90,17 +90,11 @@
     <ClInclude Include="ComponentBase.h">
       <Filter>Component\DebugComponent</Filter>
     </ClInclude>
-    <ClInclude Include="Damageable.h">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
-    </ClInclude>
     <ClInclude Include="StateMachine.h">
       <Filter>Component\StateMachine</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Component\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="MeleeTriggerEnterDamager.h">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
     <ClInclude Include="PlayerController.h">
       <Filter>Component\Player</Filter>
@@ -116,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="MeleeWeapon.h">
       <Filter>Component\BattleSystem\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageSystem.h">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -140,17 +137,11 @@
     <ClCompile Include="ComponentBase.cpp">
       <Filter>Component\DebugComponent</Filter>
     </ClCompile>
-    <ClCompile Include="Damageable.cpp">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
-    </ClCompile>
     <ClCompile Include="StateMachine.cpp">
       <Filter>Component\StateMachine</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Component\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="MeleeTriggerEnterDamager.cpp">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
       <Filter>Component\Player</Filter>
@@ -166,6 +157,9 @@
     </ClCompile>
     <ClCompile Include="MeleeWeapon.cpp">
       <Filter>Component\BattleSystem\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageSystem.cpp">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

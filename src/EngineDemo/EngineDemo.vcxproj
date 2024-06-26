@@ -146,11 +146,10 @@
     </ClInclude>
     <ClInclude Include="BulletMove.h" />
     <ClInclude Include="ComponentBase.h" />
-    <ClInclude Include="Damageable.h" />
+    <ClInclude Include="DamageSystem.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="MeleeTriggerEnterDamager.h" />
     <ClInclude Include="MeleeWeapon.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAnimator.h" />
@@ -172,10 +171,9 @@
     </ClCompile>
     <ClCompile Include="BulletMove.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
-    <ClCompile Include="Damageable.cpp" />
+    <ClCompile Include="DamageSystem.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
-    <ClCompile Include="MeleeTriggerEnterDamager.cpp" />
     <ClCompile Include="MeleeWeapon.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAnimator.cpp" />
