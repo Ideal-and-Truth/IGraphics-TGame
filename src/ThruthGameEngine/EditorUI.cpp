@@ -458,9 +458,13 @@ bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
 
 	// Select Entity
-	if (entityName != "DefaultCamera" && ImGui::TreeNode(entityName.c_str()))
+	if (ImGui::TreeNodeEx((entityName).c_str()))
 	{
-		m_selectedEntity = _entity;
+		//ImGui::SameLine();
+		if (ImGui::IsItemClicked())
+		{
+			m_selectedEntity = _entity;
+		}
 
 
 		if (ImGui::BeginDragDropSource())
@@ -514,11 +518,17 @@ bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 
 			ImGui::EndPopup();
 		}
+
 		for (auto& child : _entity.lock()->m_children)
 		{
 			DisplayEntity(child);
 		}
 		ImGui::TreePop();
 	}
+// 	ImGui::SameLine();
+// 	if (ImGui::Selectable(entityName.c_str()))
+// 	{
+// 		m_selectedEntity = _entity;
+// 	}
 	return true;
 }

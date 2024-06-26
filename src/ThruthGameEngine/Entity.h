@@ -166,12 +166,9 @@ namespace Truth
 	void Entity::save(Archive& _ar, const unsigned int _file_version) const
 	{
 		_ar& m_name;
-		if (_file_version == 0)
-		{
-			_ar& m_ID;
-		}
 		_ar& m_layer;
 		_ar& m_components;
+		_ar& m_children;
 	}
 
 	template<class Archive>
@@ -184,6 +181,10 @@ namespace Truth
 		}
 		_ar& m_layer;
 		_ar& m_components;
+		if (_file_version >= 2)
+		{
+			_ar& m_children;
+		}
 	}
 
 	/// <summary>
@@ -275,4 +276,4 @@ namespace Truth
 		return result;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Entity, 1)
+BOOST_CLASS_VERSION(Truth::Entity, 2)

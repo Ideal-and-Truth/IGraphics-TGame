@@ -34,9 +34,7 @@ namespace Truth
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
 		EntityVector m_entities;
-#ifdef _DEBUG
 		EntityVector m_rootEntities;
-#endif // _DEBUG
 
 		std::weak_ptr<Managers> m_managers;
 
@@ -61,6 +59,8 @@ namespace Truth
 
 		void Initalize(std::weak_ptr<Managers> _manager);
 
+		void LoadEntity(std::shared_ptr<Entity> _entity);
+
 #ifdef _DEBUG
 		void EditorUpdate();
 #endif // _DEBUG
@@ -83,13 +83,14 @@ namespace Truth
 	void Truth::Scene::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& m_name;
-		_ar& m_entities;
+		_ar& m_rootEntities;
 	}
 
 	template<class Archive>
 	void Truth::Scene::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& m_name;
-		_ar& m_entities;
+		_ar& m_rootEntities;
 	}
 }
+BOOST_CLASS_VERSION(Truth::Scene, 1)
