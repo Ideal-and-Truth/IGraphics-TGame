@@ -32,6 +32,9 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 	m_entities.push_back(_p);
 	_p->Initailize();
 	m_awakedEntity.push(_p);
+#ifdef _DEBUG
+	m_rootEntities.push_back(_p);
+#endif // _DEBUG
 }
 
 /// <summary>
@@ -91,8 +94,28 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		e->SetManager(m_managers);
 		m_awakedEntity.push(e);
 		e->Initailize();
+#ifdef _DEBUG
+		m_rootEntities.push_back(e);
+#endif // _DEBUG
 	}
 }
+
+#ifdef _DEBUG
+void Truth::Scene::EditorUpdate()
+{
+	for (auto i = m_rootEntities.begin(); i != m_rootEntities.end(); )
+	{
+		if (!(*i)->m_parent.expired())
+		{
+			i = m_rootEntities.erase(i);
+		}
+		else
+		{
+			i++;
+		}
+	}
+}
+#endif // _DEBUG
 
 /// <summary>
 /// ¾À ¾÷µ¥ÀÌÆ®
@@ -121,6 +144,9 @@ void Truth::Scene::Update()
 		auto& e = m_awakedEntity.front();
 		e->m_index = static_cast<int32>(m_entities.size());
 		m_entities.push_back(e);
+#ifdef _DEBUG
+		m_rootEntities.push_back(e);
+#endif // _DEBUG
 		m_startedEntity.push(e);
 		e->Awake();
 		m_awakedEntity.pop();

@@ -28,10 +28,15 @@ namespace Truth
 		PROPERTY(name);
 		std::string m_name;
 
+
+
 	private:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
 		EntityVector m_entities;
+#ifdef _DEBUG
+		EntityVector m_rootEntities;
+#endif // _DEBUG
 
 		std::weak_ptr<Managers> m_managers;
 
@@ -55,6 +60,10 @@ namespace Truth
 		void DeleteEntity(std::shared_ptr<Entity> _p);
 
 		void Initalize(std::weak_ptr<Managers> _manager);
+
+#ifdef _DEBUG
+		void EditorUpdate();
+#endif // _DEBUG
 
 		void Update();
 		void FixedUpdate();

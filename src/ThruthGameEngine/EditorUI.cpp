@@ -16,16 +16,14 @@
 #include "StringConverter.h"
 #include <commdlg.h>
 
-int32 EditorUI::m_selectedEntity = -1;
-
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
 	: m_manager(Manager)
 	, m_notUsedID(0)
 	, m_componentList(TypeInfo::g_factory->m_componentList)
 	, inputTextBuffer{}
 	, m_hwnd(_hwnd)
+	, m_selectedEntity()
 {
-	m_selectedEntity = -1;
 	memset(&m_openFileName, 0, sizeof(OPENFILENAME));
 	m_openFileName.lStructSize = sizeof(OPENFILENAME);
 	m_openFileName.hwndOwner = m_hwnd;
@@ -103,11 +101,11 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 	/// 여기부터 UI 만들기
 	const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
 
-	if (m_selectedEntity >= 0)
+	if (!m_selectedEntity.expired())
 	{
 		// Set Entity Name
 		{
-			std::string sEntityName = entities[m_selectedEntity]->m_name;
+			std::string sEntityName = m_selectedEntity.lock()->m_name;
 			char* cEntityName = (char*)sEntityName.c_str();
 			bool isShown = true;
 			ImGui::Checkbox("##1", &isShown);
@@ -116,12 +114,12 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 			if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
 			{
 				sEntityName = std::string(cEntityName, cEntityName + strlen(cEntityName));
-				entities[m_selectedEntity]->m_name = sEntityName;
+				m_selectedEntity.lock()->m_name = sEntityName;
 			}
 		}
 
 		// Show Components
-		for (auto& e : entities[m_selectedEntity]->m_components)
+		for (auto& e : m_selectedEntity.lock()->m_components)
 		{
 			// Checking Component
 			TranslateComponent(e);
@@ -130,15 +128,14 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 		while (!m_deletedComponent.empty())
 		{
 			auto t = m_deletedComponent.front();
-			entities[t.first]->DeleteComponent(t.second);
+			t.first.lock()->DeleteComponent(t.second);
 			m_deletedComponent.pop();
 		}
-
 
 		// Add Component
 		{
 			// Show Components List
-			AddComponentList(entities[m_selectedEntity]);
+			AddComponentList(m_selectedEntity.lock());
 		}
 	}
 
@@ -194,6 +191,7 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
 	const auto& currentSceneName = currentScene->m_name;
 	const auto& currentSceneEntities = currentScene->m_entities;
+	const auto& currentSceneRootEntities = currentScene->m_rootEntities;
 
 	// Main body of the Demo window starts here.
 	if (!ImGui::Begin("Hierarchy", p_open, window_flags))
@@ -231,57 +229,13 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 		// Current Scene Name
 		if (ImGui::CollapsingHeader(currentSceneName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			for (auto& e : currentSceneEntities)
+			for (auto& e : currentSceneRootEntities)
 			{
-				const std::string entityName = e->m_name + "##" + std::to_string(e->m_ID);
-
-				// Select Entity
-				if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == selectCount))
+				if (!DisplayEntity(e))
 				{
-					m_selectedEntity = selectCount;
+					break;
 				}
-
-				if (ImGui::BeginDragDropSource())
-				{
-					ImGui::EndDragDropSource();
-				}
-
-				// Entity's Popup Menu
-				if (ImGui::BeginPopupContextItem())
-				{
-					if (ImGui::Selectable("Delete"))
-					{
-						m_manager->Scene()->m_currentScene->DeleteEntity(e);
-						m_selectedEntity = -1;
-					}
-					if (ImGui::Selectable("SaveEntity"))
-					{
-						m_openFileName.lpstrDefExt = L"entity";
-						m_openFileName.lpstrFilter = m_entityFileFilter;
-						if (GetSaveFileName(&m_openFileName) != 0)
-						{
-							std::wstring filepath = m_openFileName.lpstrFile;
-							std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
-
-							std::ofstream outputstream(f.back());
-							boost::archive::text_oarchive outputArchive(outputstream);
-							outputArchive << e;
-						}
-					}
-					if (ImGui::Selectable("Create Child"))
-					{
-						auto child = std::make_shared<Truth::Entity>(m_manager);
-						e->AddChild(child);
-						currentScene->AddEntity(child);
-						ImGui::EndPopup();
-						break;
-					}
-
-					ImGui::EndPopup();
-				}
-				selectCount++;
 			}
-
 		}
 	}
 
@@ -495,4 +449,76 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 		_component->EditorSetValue();
 	}
 #endif // _DEBUG
+}
+
+bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
+{
+	const std::string entityName = _entity.lock()->m_name + "##" + std::to_string(_entity.lock()->m_ID);
+
+	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
+
+	// Select Entity
+	if (entityName != "DefaultCamera" && ImGui::TreeNode(entityName.c_str()))
+	{
+		m_selectedEntity = _entity;
+
+
+		if (ImGui::BeginDragDropSource())
+		{
+			ImGui::SetDragDropPayload("Entity", &_entity, sizeof(_entity));
+			ImGui::Text("%s", entityName.c_str());
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(_entity));
+				std::weak_ptr<Truth::Entity> payload_n = *(const std::weak_ptr<Truth::Entity>*)payload->Data;
+
+				_entity.lock()->AddChild(payload_n.lock());
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		// Entity's Popup Menu
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::Selectable("Delete"))
+			{
+				m_manager->Scene()->m_currentScene->DeleteEntity(_entity.lock());
+			}
+			if (ImGui::Selectable("SaveEntity"))
+			{
+				m_openFileName.lpstrDefExt = L"entity";
+				m_openFileName.lpstrFilter = m_entityFileFilter;
+				if (GetSaveFileName(&m_openFileName) != 0)
+				{
+					std::wstring filepath = m_openFileName.lpstrFile;
+					std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
+
+					std::ofstream outputstream(f.back());
+					boost::archive::text_oarchive outputArchive(outputstream);
+					outputArchive << _entity;
+				}
+			}
+			if (ImGui::Selectable("Create Child"))
+			{
+				auto child = std::make_shared<Truth::Entity>(m_manager);
+				_entity.lock()->AddChild(child);
+				currentScene->AddEntity(child);
+				ImGui::EndPopup();
+				return false;
+			}
+
+			ImGui::EndPopup();
+		}
+		for (auto& child : _entity.lock()->m_children)
+		{
+			DisplayEntity(child);
+		}
+		ImGui::TreePop();
+	}
+	return true;
 }

@@ -101,6 +101,7 @@ namespace Truth
 		void SetWorldTM(const Matrix& _tm) const;
 
 		bool HasParent() { return !m_parent.expired(); };
+		bool HasChildren() { return !m_children.empty(); }
 
 		const Matrix& GetParentMatrix() 
 		{
