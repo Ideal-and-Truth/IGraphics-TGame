@@ -56,6 +56,9 @@ namespace Truth
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
+		std::vector<std::shared_ptr<Entity>> m_children;
+
+		std::weak_ptr<Entity> m_parent;
 
 		bool m_isDead = false;
 
@@ -97,6 +100,20 @@ namespace Truth
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm) const;
 
+		bool HasParent() { return !m_parent.expired(); };
+
+		const Matrix& GetParentMatrix() 
+		{
+			if (!m_parent.expired())
+			{
+				return m_parent.lock()->GetWorldTM();
+			}
+			else
+			{
+				return Matrix::Identity;
+			}
+		}
+
 		void ApplyTransform();
 
 		void Awake();
@@ -134,6 +151,7 @@ namespace Truth
 
 		std::string& GetName() { return m_name; };
 
+		void AddChild(std::shared_ptr<Entity> _entity);
 
 	private:
 		void ApplyComponent(std::shared_ptr<Component> _c);

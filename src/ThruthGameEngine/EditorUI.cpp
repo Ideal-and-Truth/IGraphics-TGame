@@ -4,7 +4,6 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Entity.h"
-// #include "EmptyEntity.h"
 #include "Transform.h"
 #include "BoxCollider.h"
 #include "Mesh.h"
@@ -14,8 +13,8 @@
 #include "SphereCollider.h"
 #include "InputManager.h"
 #include "Managers.h"
-#include <commdlg.h>
 #include "StringConverter.h"
+#include <commdlg.h>
 
 int32 EditorUI::m_selectedEntity = -1;
 
@@ -192,10 +191,15 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
 
+	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
+	const auto& currentSceneName = currentScene->m_name;
+	const auto& currentSceneEntities = currentScene->m_entities;
+
 	// Main body of the Demo window starts here.
 	if (!ImGui::Begin("Hierarchy", p_open, window_flags))
 	{
 		// Early out if the window is collapsed, as an optimization.
+
 
 		ImGui::End();
 		return;
@@ -213,25 +217,20 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 
 	/// Hierarchy UI
 	{
-		std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
-		const auto& currentSceneName = currentScene->m_name;
-		const auto& currentSceneEntities = currentScene->m_entities;
-
 		uint32 selectCount = 0;
+
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::Selectable("Create Empty"))
+			{
+				currentScene->AddEntity(std::make_shared<Truth::Entity>(m_manager));
+			}
+			ImGui::EndPopup();
+		}
 
 		// Current Scene Name
 		if (ImGui::CollapsingHeader(currentSceneName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::BeginPopupContextItem())
-			{
-				if (ImGui::Selectable("Create Empty"))
-				{
-					currentScene->AddEntity(std::make_shared<Truth::Entity>(m_manager));
-				}
-
-				ImGui::EndPopup();
-			}
-
 			for (auto& e : currentSceneEntities)
 			{
 				const std::string entityName = e->m_name + "##" + std::to_string(e->m_ID);
@@ -240,6 +239,11 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 				if (entityName != "DefaultCamera" && ImGui::Selectable(entityName.c_str(), m_selectedEntity == selectCount))
 				{
 					m_selectedEntity = selectCount;
+				}
+
+				if (ImGui::BeginDragDropSource())
+				{
+					ImGui::EndDragDropSource();
 				}
 
 				// Entity's Popup Menu
@@ -264,12 +268,20 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 							outputArchive << e;
 						}
 					}
+					if (ImGui::Selectable("Create Child"))
+					{
+						auto child = std::make_shared<Truth::Entity>(m_manager);
+						e->AddChild(child);
+						currentScene->AddEntity(child);
+						ImGui::EndPopup();
+						break;
+					}
 
 					ImGui::EndPopup();
 				}
 				selectCount++;
 			}
-			
+
 		}
 	}
 
@@ -336,7 +348,7 @@ void EditorUI::ShowMenuBar(bool* p_open)
 				boost::archive::text_iarchive inputArchive(inputstream);
 				inputArchive >> e;
 				e->SetManager(m_manager);
-				
+
 				currentScene->AddEntity(e);
 			}
 		}
@@ -474,7 +486,7 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 		}
 		for (auto* p : properties)
 		{
-			isSelect |= p->DisplayUI(_component.get(),"##" + std::to_string(_component->m_ID));
+			isSelect |= p->DisplayUI(_component.get(), "##" + std::to_string(_component->m_ID));
 		}
 	}
 #ifdef _DEBUG
