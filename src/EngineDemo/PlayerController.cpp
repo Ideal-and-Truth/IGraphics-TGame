@@ -69,8 +69,8 @@ void PlayerController::PlayerMove(const void*)
 
 	Vector3 direction = playerPos - cameraPos;
 
-	direction.Normalize();
 	direction.y = 0;
+	direction.Normalize();
 
 
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
