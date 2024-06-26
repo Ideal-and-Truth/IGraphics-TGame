@@ -12,6 +12,16 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/VertexInfo.h"
 
+
+#include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
+#include "GraphicsEngine/Resource/IdealMaterial.h"
+
+#include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/IdealSkinnedMesh.h"
+#include "GraphicsEngine/Resource/IdealMesh.h"
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
+
 #include <d3d12.h>
 #include <d3dx12.h>
 
@@ -150,6 +160,100 @@ void Ideal::RaytracingManager::CreateUAVRenderTarget(ComPtr<ID3D12Device5> Devic
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOutputResource()
 {
 	return m_raytracingOutput;
+}
+
+void Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData /*= false*/)
+{
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = nullptr;
+	blas = m_ASManager->GetBLAS(Name);
+	// 이미 있다!
+	if (blas != nullptr)
+	{
+		return;
+	}
+	std::vector<Ideal::BLASGeometry> Geometries;
+	if (IsSkinnedData)
+	{
+		std::shared_ptr<Ideal::IdealSkinnedMeshObject> skinnedMeshObject = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject);
+		std::shared_ptr<Ideal::IdealSkinnedMesh> skinnedMesh = skinnedMeshObject->GetSkinnedMesh();
+		
+		uint32 numMesh = skinnedMesh->GetMeshes().size();
+		Geometries.resize(numMesh);
+		for (uint32 i = 0; i < numMesh; ++i)
+		{
+			Ideal::BLASGeometry blasGeometry;
+			blasGeometry.Name = L"TEMP_SKINNED_BLAS_GEOMETRY";
+			blasGeometry.VertexBufferResource = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource();
+			blasGeometry.VertexBufferGPUAddress = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource()->GetGPUVirtualAddress();
+			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
+
+			blasGeometry.IndexBufferResource = skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource();
+			blasGeometry.IndexBufferGPUAddress = skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+			blasGeometry.IndexCount = skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount();
+
+			std::shared_ptr<Ideal::IdealMaterial> material = skinnedMesh->GetMeshes()[i]->GetMaterial();
+			if (material)
+			{
+				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
+				if (diffuseTexture)
+				{
+					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+					// TODO : 아래로 바꿀 예정
+					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+				}
+			}
+			ResourceManager->CreateSRV(skinnedMeshObject->GetUAV_VertexBuffer(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
+			ResourceManager->CreateSRV(skinnedMesh->GetMeshes()[i]->GetIndexBuffer(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
+
+			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+
+			Geometries[i] = blasGeometry;
+		}
+		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
+		skinnedMeshObject->SetBLAS(blas);
+	}
+	else
+	{
+		std::shared_ptr<Ideal::IdealStaticMeshObject> meshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+		std::shared_ptr<Ideal::IdealStaticMesh> mesh = meshObject->GetStaticMesh();
+		uint32 numMesh = mesh->GetMeshes().size();
+		Geometries.resize(numMesh);
+		for (uint32 i = 0; i < numMesh; ++i)
+		{
+			Ideal::BLASGeometry blasGeometry;
+			blasGeometry.Name = L"TEMP_BLAS_GEOMETRY";
+			blasGeometry.VertexBufferResource = mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource();
+			blasGeometry.VertexBufferGPUAddress = mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
+			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
+
+			blasGeometry.IndexBufferResource = mesh->GetMeshes()[i]->GetIndexBuffer()->GetResource();
+			blasGeometry.IndexBufferGPUAddress = mesh->GetMeshes()[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+			blasGeometry.IndexCount = mesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount();
+
+			std::shared_ptr<Ideal::IdealMaterial> material = mesh->GetMeshes()[i]->GetMaterial();
+			if (material)
+			{
+				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
+				if (diffuseTexture)
+				{
+					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+				}
+			}
+
+			ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetVertexBuffer(), mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
+			ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetIndexBuffer(), mesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
+
+			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+
+
+			Geometries[i] = blasGeometry;
+		}
+		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
+		meshObject->SetBLAS(blas);
+	}
 }
 
 Ideal::InstanceInfo Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name, bool IsSkinnedData /*= false*/)
@@ -335,16 +439,21 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 	// Hit Shader Table
 	{
+		// instance 개수
 		uint32 numShaderRecords = (uint32)m_contributionToHitGroupIndexCount;
 		if (numShaderRecords == 0) numShaderRecords = 1;
 		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(Ideal::LocalRootSignature::RootArgument);
 		Ideal::DXRShaderTable hitGroupShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
 
-		const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BlASes = m_ASManager->GetBLASes();
+		//const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BlASes = m_ASManager->GetBLASes();
+
+		// instance들을 가져온다.
 		const std::vector<Ideal::BLASInstanceDesc> BlasInstances = m_ASManager->GetBLASInstanceDescs();
 		for(auto& blasInstance : BlasInstances)
 		{
+			// instance가 가지고 있는 BLAS를 가져온다.
 			auto& blas = blasInstance.BLAS;
+			// blas가 가지고 있는 geometry들을 가져온다.
 			const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
 			for (const BLASGeometry& blasGeometry : blasGeometries)
 			{
@@ -352,6 +461,7 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 				ComPtr<ID3D12Resource> vertexResource = blasGeometry.VertexBufferResource;
 				ComPtr<ID3D12Resource> indexResource = blasGeometry.IndexBufferResource;
+				
 				auto h1 = ResourceManager->CreateSRV(indexResource, blasGeometry.IndexCount, sizeof(uint32));
 				auto h2 = ResourceManager->CreateSRV(vertexResource, blasGeometry.VertexCount, blasGeometry.VertexStrideInBytes);
 
@@ -426,8 +536,8 @@ void Ideal::RaytracingManager::DispatchAnimationComputeShader(ComPtr<ID3D12Devic
 	CommandList->SetDescriptorHeaps(1, DescriptorManager->GetDescriptorHeap().GetAddressOf());
 	// Parameter0 : SRV_Vertices
 	auto handle0 = DescriptorManager->Allocate(CurrentContextIndex);
-	auto vertesSRV = ResourceManager->CreateSRV(VertexBuffer, VertexBuffer->GetElementCount(), VertexBuffer->GetElementSize());
-	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), vertesSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	auto vertexSRV = ResourceManager->CreateSRV(VertexBuffer, VertexBuffer->GetElementCount(), VertexBuffer->GetElementSize());
+	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), vertexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(AnimationRootSignature::Slot::SRV_Vertices, handle0.GetGpuHandle());
 
 	// Parameter1 : CBV_BoneData

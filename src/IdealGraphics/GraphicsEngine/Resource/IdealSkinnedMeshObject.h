@@ -3,6 +3,7 @@
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/VertexInfo.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
 
 #include <d3d12.h>
 
@@ -67,6 +68,7 @@ namespace Ideal
 
 		//------Raytracing Info------//
 	public:
+		std::shared_ptr<Ideal::IdealSkinnedMesh> GetSkinnedMesh() { return m_skinnedMesh; }
 		void AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		void UpdateBLASInstance(
 			ComPtr<ID3D12Device5> Device,
@@ -77,14 +79,20 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
 			std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
 		);
-	
+		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);
+		//std::vector<BLASGeometry> GetBLASGeometries(ComPtr<ID3D12Device> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager);
+		
+		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_VertexBuffer() { return m_uavBuffer; }
+
 	private:
 		uint32 m_instanceID = 0;
 		bool m_isDirty = false;
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_BLAS;
 
-		/*const uint32 MAX_PENDING_COUNT = G_SWAP_CHAIN_NUM - 1;
-		uint32 m_currentID = 0;*/
+		//static const uint32 MAX_PENDING_COUNT = G_SWAP_CHAIN_NUM - 1;
+		//uint32 m_currentID = 0;
+		//std::shared_ptr<Ideal::D3D12UAVBuffer> m_uavBuffer[MAX_PENDING_COUNT];
+		//std::shared_ptr<Ideal::D3D12UnorderedAccessView> m_uavView[MAX_PENDING_COUNT];
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_uavBuffer;
 		std::shared_ptr<Ideal::D3D12UnorderedAccessView> m_uavView;
 
@@ -107,4 +115,3 @@ namespace Ideal
 		float m_ratio = 0.f;
 	};
 }
-

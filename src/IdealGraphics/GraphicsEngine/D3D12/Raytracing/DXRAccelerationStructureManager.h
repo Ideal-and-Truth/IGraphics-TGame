@@ -42,7 +42,7 @@ namespace Ideal
 		const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> GetBLASes() { return m_blasMap; }
 
 		const std::vector<Ideal::BLASInstanceDesc>& GetBLASInstanceDescs() { return m_instanceDescs; }
-
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLAS(const std::wstring& Name) { return m_blasMap[Name]; }
 	private:
 		std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> m_topLevelAS;
 		std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasMap;

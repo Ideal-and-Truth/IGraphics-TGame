@@ -19,17 +19,7 @@ namespace Ideal
 	{
 		//BLASGeometry() : Name(L""), VertexBuffer(nullptr), IndexBuffer(nullptr), DiffuseTexture() {}
 		BLASGeometry() : Name(L""), DiffuseTexture() {}
-		BLASGeometry(
-			std::wstring InName, 
-			D3D12_GPU_VIRTUAL_ADDRESS VertexBufferGPUAddress,
-			uint32 InVertexCount,
-			uint32 InVertexStrideInBytes,
-			D3D12_GPU_VIRTUAL_ADDRESS IndexBufferGPUAddress,
-			uint32 InIndexCount,
-			Ideal::D3D12DescriptorHandle InDiffuseTexture
-		) : Name(InName), VertexBufferGPUAddress(VertexBufferGPUAddress), VertexCount(InVertexCount), VertexStrideInBytes(InVertexStrideInBytes),
-			IndexBufferGPUAddress(IndexBufferGPUAddress), IndexCount(InIndexCount), DiffuseTexture(InDiffuseTexture) {}
-
+		
 		std::wstring Name;
 		Ideal::D3D12DescriptorHandle DiffuseTexture;
 		//std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
@@ -43,6 +33,11 @@ namespace Ideal
 		ComPtr<ID3D12Resource> IndexBufferResource;
 		D3D12_GPU_VIRTUAL_ADDRESS IndexBufferGPUAddress;
 		uint32 IndexCount;
+
+		// refactor
+		Ideal::D3D12DescriptorHandle SRV_VertexBuffer;
+		Ideal::D3D12DescriptorHandle SRV_IndexBuffer;
+		Ideal::D3D12DescriptorHandle SRV_Diffuse;
 	};
 
 	struct BLASData

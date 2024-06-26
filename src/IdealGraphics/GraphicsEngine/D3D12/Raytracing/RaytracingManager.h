@@ -5,6 +5,7 @@
 
 // test
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
+#include "IMeshObject.h"
 
 struct ID3D12Device5;
 struct ID3D12GraphicsCommandList4;
@@ -113,6 +114,9 @@ namespace Ideal
 		ComPtr<ID3D12Resource> GetRaytracingOutputResource();
 
 		//---AS---//
+		void AddBLAS(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
+
+		// 기존 static 또는 skinned mesh안에서 BLAS를 생성했음 -> 뭔가 잘못됨을 느껴버림
 		Ideal::InstanceInfo AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name, bool IsSkinnedData = false);
 		void SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform);
 		void FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool);

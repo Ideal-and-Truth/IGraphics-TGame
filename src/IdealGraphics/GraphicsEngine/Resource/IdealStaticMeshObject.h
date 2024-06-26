@@ -13,6 +13,7 @@ namespace Ideal
 	
 	//--raytracing--//
 	class RaytracingManager;
+	class DXRBottomLevelAccelerationStructure;
 }
 
 
@@ -34,7 +35,7 @@ namespace Ideal
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetStaticMesh(std::shared_ptr<Ideal::IdealStaticMesh> Mesh) { m_staticMesh = Mesh; }
-
+		std::shared_ptr<Ideal::IdealStaticMesh> GetStaticMesh() { return m_staticMesh; }
 	private:
 		std::shared_ptr<IdealStaticMesh> m_staticMesh;
 		Matrix m_transform;
@@ -44,9 +45,11 @@ namespace Ideal
 	public:
 		void AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
 		void UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
+		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);
 
 	private:
 		bool m_isDirty = false;
 		uint32 m_instanceID = 0;
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_blas;
 	};
 }

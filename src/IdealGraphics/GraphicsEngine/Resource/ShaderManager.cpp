@@ -88,7 +88,7 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 		pdbPath = path + L".pdb";
 		args.push_back(L"-Zi");
 #ifdef _DEBUG
-		args.push_back(L"-Od");	// 최적화 끄기
+		//args.push_back(L"-Od");	// 최적화 끄기
 #endif
 		args.push_back(L"-Fd");
 		args.push_back(pdbPath.c_str());

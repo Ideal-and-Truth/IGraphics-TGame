@@ -8,6 +8,8 @@
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "Misc/Utils/StringUtils.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
+
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
 
@@ -63,25 +65,25 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)
 {
 	// 일단 geometry들을 받아온다.
-	auto& geometries = m_staticMesh->GetMeshes();
+	auto& meshes = m_staticMesh->GetMeshes();
 
-	uint64 numMesh = geometries.size();
+	uint64 numMesh = meshes.size();
 
 	Ideal::BLASData blasGeometryDesc;
 	for (uint32 i = 0; i < numMesh; ++i)
 	{
 		Ideal::BLASGeometry blasGeometry;
 		blasGeometry.Name = L"";	// temp
-		blasGeometry.VertexBufferResource = geometries[i]->GetVertexBuffer()->GetResource();
-		blasGeometry.VertexBufferGPUAddress = geometries[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
-		blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
-		blasGeometry.VertexStrideInBytes = geometries[i]->GetVertexBuffer()->GetElementSize();
+		blasGeometry.VertexBufferResource = meshes[i]->GetVertexBuffer()->GetResource();
+		blasGeometry.VertexBufferGPUAddress = meshes[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
+		blasGeometry.VertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
+		blasGeometry.VertexStrideInBytes = meshes[i]->GetVertexBuffer()->GetElementSize();
 
-		blasGeometry.IndexBufferResource = geometries[i]->GetIndexBuffer()->GetResource();
-		blasGeometry.IndexBufferGPUAddress = geometries[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
-		blasGeometry.IndexCount = geometries[i]->GetIndexBuffer()->GetElementCount();
+		blasGeometry.IndexBufferResource = meshes[i]->GetIndexBuffer()->GetResource();
+		blasGeometry.IndexBufferGPUAddress = meshes[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+		blasGeometry.IndexCount = meshes[i]->GetIndexBuffer()->GetElementCount();
 
-		std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
+		std::shared_ptr<Ideal::IdealMaterial> material = meshes[i]->GetMaterial();
 		if (material)
 		{
 			std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
@@ -104,4 +106,9 @@ void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::Ray
 		RaytracingManager->SetGeometryTransformByIndex(m_instanceID, m_transform);
 		m_isDirty = false;
 	}
+}
+
+void Ideal::IdealStaticMeshObject::SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS)
+{
+	m_blas = InBLAS;
 }
