@@ -45,6 +45,7 @@ public:
 private:
 	void ShowInspectorWindow(bool* p_open);
 	void ShowHierarchyWindow(bool* p_open);
+	void ShowContentsDrawerWindow(bool* p_open);
 	void ShowMenuBar(bool* p_open);
 
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
