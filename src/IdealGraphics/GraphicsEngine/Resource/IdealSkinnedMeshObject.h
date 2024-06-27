@@ -68,6 +68,7 @@ namespace Ideal
 
 		//------Raytracing Info------//
 	public:
+		void CreateUAVVertexBuffer(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		std::shared_ptr<Ideal::IdealSkinnedMesh> GetSkinnedMesh() { return m_skinnedMesh; }
 		void AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		void UpdateBLASInstance(
@@ -81,11 +82,11 @@ namespace Ideal
 		);
 		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);
 		//std::vector<BLASGeometry> GetBLASGeometries(ComPtr<ID3D12Device> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager);
-		
+		void SetBLASInstanceIndex(uint32 InstanceIndex);
 		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_VertexBuffer() { return m_uavBuffer; }
 
 	private:
-		uint32 m_instanceID = 0;
+		uint32 m_instanceIndex = 0;
 		bool m_isDirty = false;
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_BLAS;
 

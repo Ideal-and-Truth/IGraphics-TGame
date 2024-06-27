@@ -931,7 +931,9 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
 {
 	ResetCommandList();
-	obj->AllocateBLASInstanceID(m_device, m_raytracingManager);
+	auto blas = m_raytracingManager->AddBLAS(m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
+	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
+	obj->SetBLASInstanceIndex(instanceIndex);
 
 	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 	//m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
@@ -949,7 +951,12 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
 {
 	ResetCommandList();
-	obj->AllocateBLASInstanceID(m_device, m_raytracingManager, m_resourceManager);
+	auto blas = m_raytracingManager->AddBLAS(m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
+	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
+	obj->SetBLASInstanceIndex(instanceIndex);
+
+	// add blas
+	// set instance
 
 	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 	//m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);

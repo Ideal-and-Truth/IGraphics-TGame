@@ -219,11 +219,23 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 	}
 }
 
+void Ideal::IdealSkinnedMeshObject::CreateUAVVertexBuffer(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager)
+{
+	auto& meshes = m_skinnedMesh->GetMeshes();
+	uint64 numMesh = meshes.size();
+	// 그냥 하나라고 가정하고 씀
+	uint32 numVertexCount = meshes[0]->GetVertexBuffer()->GetElementCount();
+	uint32 size = numVertexCount * sizeof(BasicVertex);
+	m_uavBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+	m_uavBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UAV_SkinnedVertex");
+	m_uavView = ResourceManager->CreateUAV(m_uavBuffer, numVertexCount, sizeof(BasicVertex));
+}
+
 void Ideal::IdealSkinnedMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
-	auto& geometries = m_skinnedMesh->GetMeshes();
+	auto& meshes = m_skinnedMesh->GetMeshes();
 
-	uint64 numMesh = geometries.size();
+	uint64 numMesh = meshes.size();
 
 	Ideal::BLASData blasGeometryDesc;
 	blasGeometryDesc.Geometries.resize(numMesh);
@@ -233,7 +245,7 @@ void Ideal::IdealSkinnedMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5>
 		blasGeometry.Name = L"";	// temp
 
 		m_uavBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
-		uint32 count = geometries[i]->GetVertexBuffer()->GetElementCount();
+		uint32 count = meshes[i]->GetVertexBuffer()->GetElementCount();
 		uint32 size = count * sizeof(BasicVertex);
 		m_uavBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UAV_SkinnedVertex");
 		m_uavView = ResourceManager->CreateUAV(m_uavBuffer, count, sizeof(BasicVertex));
@@ -242,12 +254,12 @@ void Ideal::IdealSkinnedMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5>
 		//blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
 		//blasGeometry.VertexStrideInBytes = geometries[i]->GetVertexBuffer()->GetElementSize();
 		blasGeometry.VertexBufferGPUAddress = m_uavBuffer->GetGPUVirtualAddress();
-		blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
+		blasGeometry.VertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
 		blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
-		blasGeometry.IndexBufferGPUAddress = geometries[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
-		blasGeometry.IndexCount = geometries[i]->GetIndexBuffer()->GetElementCount();
+		blasGeometry.IndexBufferGPUAddress = meshes[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+		blasGeometry.IndexCount = meshes[i]->GetIndexBuffer()->GetElementCount();
 
-		std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
+		std::shared_ptr<Ideal::IdealMaterial> material = meshes[i]->GetMaterial();
 		if (material)
 		{
 			std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
@@ -261,7 +273,7 @@ void Ideal::IdealSkinnedMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5>
 	const std::wstring& name = GetName();
 	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, name.c_str(), true);
 
-	m_instanceID = instanceInfo.InstanceIndex;
+	m_instanceIndex = instanceInfo.InstanceIndex;
 	m_BLAS = instanceInfo.BLAS;
 }
 
@@ -311,6 +323,8 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 			blasGeometry.IndexBufferGPUAddress = geometries[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
 			blasGeometry.IndexCount = geometries[i]->GetIndexBuffer()->GetElementCount();
 
+			
+
 			std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
 			if (material)
 			{
@@ -335,6 +349,11 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 void Ideal::IdealSkinnedMeshObject::SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS)
 {
 	m_BLAS = InBLAS;
+}
+
+void Ideal::IdealSkinnedMeshObject::SetBLASInstanceIndex(uint32 InstanceIndex)
+{
+	m_instanceIndex = InstanceIndex;
 }
 
 //std::vector<Ideal::BLASGeometry> Ideal::IdealSkinnedMeshObject::GetBLASGeometries(ComPtr<ID3D12Device> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager)

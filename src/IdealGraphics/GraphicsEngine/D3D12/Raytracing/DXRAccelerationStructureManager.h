@@ -39,13 +39,14 @@ namespace Ideal
 		void Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild = false);
 
 		ComPtr<ID3D12Resource> GetTLASResource() { return m_topLevelAS->GetResource(); }
-		const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> GetBLASes() { return m_blasMap; }
+		const std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> GetBLASs() { return m_blasVector; }
 
 		const std::vector<Ideal::BLASInstanceDesc>& GetBLASInstanceDescs() { return m_instanceDescs; }
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLAS(const std::wstring& Name) { return m_blasMap[Name]; }
 	private:
 		std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> m_topLevelAS;
 		std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasMap;
+	 	std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasVector;
 
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffer;
 		uint64 m_scratchResourceSize = 0;

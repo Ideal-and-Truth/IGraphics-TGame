@@ -39,6 +39,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 		m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
 	}
 
+	m_blasVector.push_back(blas);
 	return blas;
 }
 
@@ -63,6 +64,10 @@ uint32 Ideal::DXRAccelerationStructureManager::AddInstanceByBLAS(std::shared_ptr
 
 	Ideal::DXRInstanceDesc instanceDesc = {};
 	instanceDesc.InstanceMask = InstanceMask;
+
+	if (InstanceContributionToHitGroupIndex == UINT_MAX)
+		InstanceContributionToHitGroupIndex = BLAS->GetInstanceContributionToHitGroupIndex();
+
 	instanceDesc.InstanceContributionToHitGroupIndex = InstanceContributionToHitGroupIndex;
 	instanceDesc.AccelerationStructure = BLAS->GetGPUAddress();
 	instanceDesc.SetTransform(transform);

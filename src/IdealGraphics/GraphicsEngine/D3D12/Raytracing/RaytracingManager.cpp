@@ -25,6 +25,20 @@
 #include <d3d12.h>
 #include <d3dx12.h>
 
+inline void CreateSRV(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12Resource> Resource, D3D12_CPU_DESCRIPTOR_HANDLE Handle, uint32 NumElements, uint32 ElementSize)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	//srvDesc.Format = Resource->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Buffer.NumElements = NumElements;
+	srvDesc.Buffer.StructureByteStride = ElementSize;
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+
+	Device->CreateShaderResourceView(Resource.Get(), &srvDesc, Handle);
+}
+
 inline void SerializeAndCreateRootSignature(ComPtr<ID3D12Device5> Device, D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>* rootSignature, LPCWSTR ResourceName = nullptr)
 {
 	ComPtr<ID3DBlob> blob;
@@ -162,14 +176,14 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOu
 	return m_raytracingOutput;
 }
 
-void Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData /*= false*/)
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = nullptr;
 	blas = m_ASManager->GetBLAS(Name);
 	// 이미 있다!
 	if (blas != nullptr)
 	{
-		return;
+		return blas;
 	}
 	std::vector<Ideal::BLASGeometry> Geometries;
 	if (IsSkinnedData)
@@ -177,6 +191,7 @@ void Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared
 		std::shared_ptr<Ideal::IdealSkinnedMeshObject> skinnedMeshObject = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject);
 		std::shared_ptr<Ideal::IdealSkinnedMesh> skinnedMesh = skinnedMeshObject->GetSkinnedMesh();
 		
+		skinnedMeshObject->CreateUAVVertexBuffer(Device, ResourceManager);
 		uint32 numMesh = skinnedMesh->GetMeshes().size();
 		Geometries.resize(numMesh);
 		for (uint32 i = 0; i < numMesh; ++i)
@@ -200,18 +215,28 @@ void Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared
 					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
 					// TODO : 아래로 바꿀 예정
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
-			ResourceManager->CreateSRV(skinnedMeshObject->GetUAV_VertexBuffer(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
-			ResourceManager->CreateSRV(skinnedMesh->GetMeshes()[i]->GetIndexBuffer(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
-
-			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			//auto vertexSRV = ResourceManager->CreateSRV(skinnedMeshObject->GetUAV_VertexBuffer(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
+			//auto indexSRV = ResourceManager->CreateSRV(skinnedMesh->GetMeshes()[i]->GetIndexBuffer(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
+			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_VertexBuffer.GetCpuHandle(), vertexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_IndexBuffer.GetCpuHandle(), indexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			CreateSRV(Device, skinnedMeshObject->GetUAV_VertexBuffer()->GetResource(), blasGeometry.SRV_VertexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
+			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			CreateSRV(Device,skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource(), blasGeometry.SRV_IndexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
+
 
 			Geometries[i] = blasGeometry;
 		}
 		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
 		skinnedMeshObject->SetBLAS(blas);
+
+		// 현재 BLAS안에 들어있는 Geometry의 개수만큼 contributionToHitGroupIndex를 늘려준다.
+
+		//skinnedMeshObject->SetBLASInstanceIndex(instanceIndex);
 	}
 	else
 	{
@@ -239,14 +264,22 @@ void Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared
 				{
 					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
 
-			ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetVertexBuffer(), mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
-			ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetIndexBuffer(), mesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
+			//auto vertexSRV = ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetVertexBuffer(), mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
+			//auto indexSRV = ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetIndexBuffer(), mesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
+			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_VertexBuffer.GetCpuHandle(), vertexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_IndexBuffer.GetCpuHandle(), indexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			//blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			//blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			CreateSRV(Device, mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource(), blasGeometry.SRV_VertexBuffer.GetCpuHandle(), mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
+			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+			CreateSRV(Device, mesh->GetMeshes()[i]->GetIndexBuffer()->GetResource(), blasGeometry.SRV_IndexBuffer.GetCpuHandle(), mesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
 
 
 			Geometries[i] = blasGeometry;
@@ -254,6 +287,18 @@ void Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared
 		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
 		meshObject->SetBLAS(blas);
 	}
+
+	uint64 geometrySizeInBLAS = Geometries.size();
+	blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
+	m_contributionToHitGroupIndexCount += geometrySizeInBLAS;
+
+	return blas;
+}
+
+uint32 Ideal::RaytracingManager::AllocateInstanceIndexByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
+{
+	uint32 instanceIndex = m_ASManager->AddInstanceByBLAS(BLAS, InstanceContributionToHitGroupIndex, transform, InstanceMask);
+	return instanceIndex;
 }
 
 Ideal::InstanceInfo Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name, bool IsSkinnedData /*= false*/)
@@ -402,7 +447,7 @@ void Ideal::RaytracingManager::CreateLocalRootSignatureSubobjects(CD3DX12_STATE_
 void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager)
 {
 	// Reset
-	DescriptorManager->ResetFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+	//DescriptorManager->ResetFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 
 	void* rayGenShaderIdentifier;
 	void* missShaderIdentifier;
@@ -445,48 +490,67 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(Ideal::LocalRootSignature::RootArgument);
 		Ideal::DXRShaderTable hitGroupShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
 
-		//const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BlASes = m_ASManager->GetBLASes();
-
-		// instance들을 가져온다.
-		const std::vector<Ideal::BLASInstanceDesc> BlasInstances = m_ASManager->GetBLASInstanceDescs();
-		for(auto& blasInstance : BlasInstances)
+		const std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BLASs = m_ASManager->GetBLASs();
+		for (auto& blas : BLASs)
 		{
-			// instance가 가지고 있는 BLAS를 가져온다.
-			auto& blas = blasInstance.BLAS;
 			// blas가 가지고 있는 geometry들을 가져온다.
 			const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
 			for (const BLASGeometry& blasGeometry : blasGeometries)
 			{
 				Ideal::LocalRootSignature::RootArgument rootArguments;
-
-				ComPtr<ID3D12Resource> vertexResource = blasGeometry.VertexBufferResource;
-				ComPtr<ID3D12Resource> indexResource = blasGeometry.IndexBufferResource;
-				
-				auto h1 = ResourceManager->CreateSRV(indexResource, blasGeometry.IndexCount, sizeof(uint32));
-				auto h2 = ResourceManager->CreateSRV(vertexResource, blasGeometry.VertexCount, blasGeometry.VertexStrideInBytes);
-
-				// Indices
-				auto indicesLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-				Device->CopyDescriptorsSimple(1, indicesLocation.GetCpuHandle(), h1->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				
-				// vertices
-				auto verticesLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-				Device->CopyDescriptorsSimple(1, verticesLocation.GetCpuHandle(), h2->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-				// diffuse
-				auto textureLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-				uint64 notExist = (uint64)D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
-				if (blasGeometry.DiffuseTexture.GetCpuHandle().ptr != notExist)
-				{
-					Device->CopyDescriptorsSimple(1, textureLocation.GetCpuHandle(), blasGeometry.DiffuseTexture.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				}
-				rootArguments.SRV_Indices = indicesLocation.GetGpuHandle();
-				rootArguments.SRV_Vertices = verticesLocation.GetGpuHandle();
-				rootArguments.SRV_DiffuseTexture = textureLocation.GetGpuHandle();
+				rootArguments.SRV_Vertices = blasGeometry.SRV_VertexBuffer.GetGpuHandle();
+				rootArguments.SRV_Indices = blasGeometry.SRV_IndexBuffer.GetGpuHandle();
+				rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
 
 				hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
+
 			}
 		}
+
+		// instance들을 가져온다.
+		//const std::vector<Ideal::BLASInstanceDesc> BlasInstances = m_ASManager->GetBLASInstanceDescs();
+		//for(auto& blasInstance : BlasInstances)
+		//{
+		//	// instance가 가지고 있는 BLAS를 가져온다.
+		//	auto& blas = blasInstance.BLAS;
+		//	// blas가 가지고 있는 geometry들을 가져온다.
+		//	const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
+		//	for (const BLASGeometry& blasGeometry : blasGeometries)
+		//	{
+		//		Ideal::LocalRootSignature::RootArgument rootArguments;
+		//
+		//		ComPtr<ID3D12Resource> vertexResource = blasGeometry.VertexBufferResource;
+		//		ComPtr<ID3D12Resource> indexResource = blasGeometry.IndexBufferResource;
+		//		
+		//		//auto h1 = ResourceManager->CreateSRV(indexResource, blasGeometry.IndexCount, sizeof(uint32));
+		//		//auto h2 = ResourceManager->CreateSRV(vertexResource, blasGeometry.VertexCount, blasGeometry.VertexStrideInBytes);
+		//
+		//		// Indices
+		//		//auto indicesLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+		//		//Device->CopyDescriptorsSimple(1, indicesLocation.GetCpuHandle(), h1->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//		
+		//		// vertices
+		//		//auto verticesLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+		//		//Device->CopyDescriptorsSimple(1, verticesLocation.GetCpuHandle(), h2->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//		//
+		//		//// diffuse
+		//		//auto textureLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+		//		//uint64 notExist = (uint64)D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
+		//		//if (blasGeometry.DiffuseTexture.GetCpuHandle().ptr != notExist)
+		//		//{
+		//		//	Device->CopyDescriptorsSimple(1, textureLocation.GetCpuHandle(), blasGeometry.DiffuseTexture.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//		//}
+		//		//rootArguments.SRV_Indices = indicesLocation.GetGpuHandle();
+		//		//rootArguments.SRV_Vertices = verticesLocation.GetGpuHandle();
+		//		//rootArguments.SRV_DiffuseTexture = textureLocation.GetGpuHandle();
+		//
+		//		rootArguments.SRV_Vertices = blasGeometry.SRV_VertexBuffer.GetGpuHandle();
+		//		rootArguments.SRV_Indices = blasGeometry.SRV_IndexBuffer.GetGpuHandle();
+		//		rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
+		//
+		//		hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
+		//	}
+		//}
 		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();
 	}
