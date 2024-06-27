@@ -29,6 +29,7 @@
 
 #include "SkinnedMesh.h"
 #include "Light.h"
+#include "Animator.h"
 
 #include "Controller.h"
 #pragma endregion test Scene

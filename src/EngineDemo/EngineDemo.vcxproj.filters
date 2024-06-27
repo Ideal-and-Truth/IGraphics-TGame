@@ -49,9 +49,6 @@
     <Filter Include="Component\Enemy">
       <UniqueIdentifier>{e864a2a5-287c-447b-8b00-aa05e9901fee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\StateMachine">
-      <UniqueIdentifier>{cacbf6e2-7b44-4cb6-9461-0d41859c7a3c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\Player\PlayerState">
       <UniqueIdentifier>{05865445-d2b9-4210-848d-4a67bab7bfd6}</UniqueIdentifier>
     </Filter>
@@ -90,9 +87,6 @@
     <ClInclude Include="ComponentBase.h">
       <Filter>Component\DebugComponent</Filter>
     </ClInclude>
-    <ClInclude Include="StateMachine.h">
-      <Filter>Component\StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Component\Enemy</Filter>
     </ClInclude>
@@ -102,9 +96,6 @@
     <ClInclude Include="PlayerCamera.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerStateMachine.h">
-      <Filter>Component\Player\PlayerState</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerAnimator.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
@@ -113,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="DamageSystem.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStateMachine.h">
+      <Filter>Component\Player\PlayerState</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,9 +131,6 @@
     <ClCompile Include="ComponentBase.cpp">
       <Filter>Component\DebugComponent</Filter>
     </ClCompile>
-    <ClCompile Include="StateMachine.cpp">
-      <Filter>Component\StateMachine</Filter>
-    </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Component\Enemy</Filter>
     </ClCompile>
@@ -149,9 +140,6 @@
     <ClCompile Include="PlayerCamera.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerStateMachine.cpp">
-      <Filter>Component\Player\PlayerState</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerAnimator.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
@@ -160,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="DamageSystem.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStateMachine.cpp">
+      <Filter>Component\Player\PlayerState</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

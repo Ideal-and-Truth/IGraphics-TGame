@@ -23,6 +23,7 @@
     <ClInclude Include="..\Utils\SimpleMath.h" />
     <ClInclude Include="AdvanceReflection.h" />
     <ClInclude Include="Animator.h" />
+    <ClInclude Include="AnimatorController.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
@@ -68,6 +69,7 @@
   <ItemGroup>
     <ClCompile Include="..\Utils\SimpleMath.cpp" />
     <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="AnimatorController.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />

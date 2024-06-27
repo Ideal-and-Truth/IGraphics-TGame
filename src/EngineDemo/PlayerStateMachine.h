@@ -1,26 +1,22 @@
 #pragma once
-#include "Component.h"
-
+#include "AnimatorController.h"
 
 class PlayerStateMachine :
-	public Truth::Component
+	public Truth::AnimatorController
 {
-	GENERATE_CLASS_TYPE_INFO(PlayerStateMachine);
 private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& _ar, const unsigned int _file_version);
+	Truth::AnimatorState m_idle;
+	Truth::AnimatorState m_run;
+	Truth::AnimatorState m_attack;
 
-private:
-	PROPERTY(currentState);
-	std::string m_currentState;
-
-	PROPERTY(nextState);
-	std::string m_nextState;
+	bool m_isRunning;
 
 public:
 	PlayerStateMachine();
 	virtual ~PlayerStateMachine();
+
+	METHOD(Initalize);
+	void Initalize();
 
 	METHOD(Awake);
 	void Awake();
@@ -28,23 +24,7 @@ public:
 	METHOD(Start);
 	void Start();
 
-	METHOD(FixedUpdate);
-	void FixedUpdate();
-
 	METHOD(Update);
 	void Update();
-
-	METHOD(LateUpdate);
-	void LateUpdate();
-
-	METHOD(SwitchState);
-	void SwitchState(std::string InNextState);
 };
 
-template<class Archive>
-void PlayerStateMachine::serialize(Archive& _ar, const unsigned int _file_version)
-{
-	_ar& boost::serialization::base_object<Component>(*this);
-}
-
-BOOST_CLASS_EXPORT_KEY(PlayerStateMachine)

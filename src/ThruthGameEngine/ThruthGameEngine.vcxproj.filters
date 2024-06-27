@@ -220,6 +220,9 @@
       <Filter>Utils\Math</Filter>
     </ClCompile>
     <ClCompile Include="MeshCollider.cpp" />
+    <ClCompile Include="AnimatorController.cpp">
+      <Filter>Component\Animator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -348,6 +351,9 @@
       <Filter>Utils\Math</Filter>
     </ClInclude>
     <ClInclude Include="MeshCollider.h" />
+    <ClInclude Include="AnimatorController.h">
+      <Filter>Component\Animator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

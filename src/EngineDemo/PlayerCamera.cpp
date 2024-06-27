@@ -44,7 +44,7 @@ void PlayerCamera::Start()
 
 }
 
-void PlayerCamera::Update()
+void PlayerCamera::LateUpdate()
 {
 	if (!m_isLockOn == GetKeyDown(KEY::Q))
 	{

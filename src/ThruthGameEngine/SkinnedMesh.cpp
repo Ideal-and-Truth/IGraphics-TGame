@@ -12,7 +12,7 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
 	, m_currentFrame(0)
-	, m_isAnimationStart(false)
+	, m_isAnimationPlaying(false)
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
 {
@@ -26,7 +26,7 @@ Truth::SkinnedMesh::SkinnedMesh()
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
 	, m_currentFrame(0)
-	, m_isAnimationStart(false)
+	, m_isAnimationPlaying(false)
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
 {
@@ -74,7 +74,6 @@ void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrent
 	if (m_animation != nullptr)
 	{
 		m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
-		m_isAnimationChanged = true;
 	}
 }
 
@@ -98,16 +97,15 @@ void Truth::SkinnedMesh::FixedUpdate()
 	m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
 	if (m_currentFrame == 0)
 	{
+		m_isAnimationPlaying = false;
 		m_isAnimationEnd = true;
 	}
 	else if (m_currentFrame == 1)
 	{
-		m_isAnimationStart = true;
-		m_isAnimationChanged = false;
+		m_isAnimationPlaying = true;
 	}
 	else
 	{
-		m_isAnimationStart = false;
 		m_isAnimationEnd = false;
 	}
 	

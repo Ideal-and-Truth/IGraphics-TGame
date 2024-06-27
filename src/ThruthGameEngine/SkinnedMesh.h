@@ -28,8 +28,8 @@ namespace Truth
 		PROPERTY(currentFrame);
 		int m_currentFrame;
 
-		PROPERTY(isAnimationStart);
-		bool m_isAnimationStart;
+		PROPERTY(isAnimationPlaying);
+		bool m_isAnimationPlaying;
 
 		PROPERTY(isAnimationEnd);
 		bool m_isAnimationEnd;

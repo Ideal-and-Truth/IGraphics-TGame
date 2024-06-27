@@ -37,7 +37,7 @@ void PlayerAnimator::Start()
 
 void PlayerAnimator::Update()
 {
-	bool isAnimationStart = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationStart")->Get<bool>(m_skinnedMesh.get()).Get();
+	bool isAnimationStart = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationPlaying")->Get<bool>(m_skinnedMesh.get()).Get();
 	bool isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 	bool isAnimationChanged = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationChanged")->Get<bool>(m_skinnedMesh.get()).Get();
 
@@ -59,7 +59,11 @@ void PlayerAnimator::Update()
 		m_currentAnimation = m_nextAnimation;
 	}
 
-	EventPublish(m_currentAnimation, nullptr);
+	//m_currentAnimation = "PlayerWalk";
+	if (isAnimationEnd)
+	{
+		EventPublish(m_currentAnimation, nullptr);
+	}
 }
 
 void PlayerAnimator::PlayerIdle(const void*)
