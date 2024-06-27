@@ -35,7 +35,6 @@ namespace Truth
 	protected:
 		static uint32 m_entityCount;
 
-
 		std::weak_ptr<Managers> m_manager;
 
 	public:
@@ -153,6 +152,7 @@ namespace Truth
 		std::string& GetName() { return m_name; };
 
 		void AddChild(std::shared_ptr<Entity> _entity);
+		void DeleteChild(std::shared_ptr<Entity> _entity);
 
 	private:
 		void ApplyComponent(std::shared_ptr<Component> _c);

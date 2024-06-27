@@ -33,7 +33,7 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 	_p->Initailize();
 	m_awakedEntity.push(_p);
 
-	if (!_p->m_parent.expired())
+	if (_p->m_parent.expired())
 	{
 		m_rootEntities.push_back(_p);
 	}
@@ -67,6 +67,10 @@ void Truth::Scene::DeleteEntity(uint32 _index)
 /// <param name="_p">삭제될 엔티티</param>
 void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 {
+	for (auto& child : _p->m_children)
+	{
+		DeleteEntity(child);
+	}
 #ifdef _DEBUG
 	if (m_managers.lock()->m_isEdit)
 	{
@@ -114,15 +118,12 @@ void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 #ifdef _DEBUG
 void Truth::Scene::EditorUpdate()
 {
-	for (auto i = m_rootEntities.begin(); i != m_rootEntities.end(); )
+	m_rootEntities.clear();
+	for (auto& e : m_entities)
 	{
-		if (!(*i)->m_parent.expired())
+		if (e->m_parent.expired())
 		{
-			i = m_rootEntities.erase(i);
-		}
-		else
-		{
-			i++;
+			m_rootEntities.push_back(e);
 		}
 	}
 }

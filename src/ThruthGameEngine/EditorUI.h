@@ -34,6 +34,7 @@ private:
 	HWND m_hwnd;
 
 	std::queue<std::pair<std::weak_ptr<Truth::Entity>, int>> m_deletedComponent;
+	std::queue<std::weak_ptr<Truth::Entity>> m_createdEntity;
 
 	std::weak_ptr<Truth::Entity> m_selectedEntity;
 
@@ -54,7 +55,7 @@ private:
 
 	void DisplayComponent(std::shared_ptr<Truth::Component> _component);
 
-	bool DisplayEntity(std::weak_ptr<Truth::Entity> _entity);
+	void DisplayEntity(std::weak_ptr<Truth::Entity> _entity);
 };
 
 

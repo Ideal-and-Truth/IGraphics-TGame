@@ -204,6 +204,18 @@ void Truth::Entity::AddChild(std::shared_ptr<Entity> _entity)
 	_entity->m_parent = shared_from_this();
 }
 
+void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
+{
+	for (auto c = m_children.begin(); c != m_children.end() ; c++)
+	{
+		if ((*c) == _entity)
+		{
+			m_children.erase(c);
+			return;
+		}
+	}
+}
+
 const DirectX::SimpleMath::Matrix& Truth::Entity::GetWorldTM() const
 {
 	return m_transform->m_globalTM;

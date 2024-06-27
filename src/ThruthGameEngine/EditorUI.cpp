@@ -232,11 +232,12 @@ void EditorUI::ShowHierarchyWindow(bool* p_open)
 		{
 			for (auto& e : currentSceneRootEntities)
 			{
-
-				if (!DisplayEntity(e))
-				{
-					break;
-				}
+				DisplayEntity(e);
+			}
+			while (!m_createdEntity.empty())
+			{
+				currentScene->AddEntity(m_createdEntity.front().lock());
+				m_createdEntity.pop();
 			}
 		}
 	}
@@ -505,7 +506,7 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 #endif // _DEBUG
 }
 
-bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
+void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 {
 	const std::string entityName = _entity.lock()->m_name + "##" + std::to_string(_entity.lock()->m_ID);
 
@@ -524,59 +525,68 @@ bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 	if (ImGui::Selectable(entityName.c_str()))
 	{
 		m_selectedEntity = _entity;
-
-		if (ImGui::BeginDragDropSource())
-		{
-			ImGui::SetDragDropPayload("Entity", &_entity, sizeof(_entity));
-			ImGui::Text("%s", entityName.c_str());
-			ImGui::EndDragDropSource();
-		}
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
-			{
-				IM_ASSERT(payload->DataSize == sizeof(_entity));
-				std::weak_ptr<Truth::Entity> payload_n = *(const std::weak_ptr<Truth::Entity>*)payload->Data;
-
-				_entity.lock()->AddChild(payload_n.lock());
-			}
-			ImGui::EndDragDropTarget();
-		}
-
-		// Entity's Popup Menu
-		if (ImGui::BeginPopupContextItem())
-		{
-			if (ImGui::Selectable("Delete"))
-			{
-				m_manager->Scene()->m_currentScene->DeleteEntity(_entity.lock());
-			}
-			if (ImGui::Selectable("SaveEntity"))
-			{
-				m_openFileName.lpstrDefExt = L"entity";
-				m_openFileName.lpstrFilter = m_entityFileFilter;
-				if (GetSaveFileName(&m_openFileName) != 0)
-				{
-					std::wstring filepath = m_openFileName.lpstrFile;
-					std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
-
-					std::ofstream outputstream(f.back());
-					boost::archive::text_oarchive outputArchive(outputstream);
-					outputArchive << _entity;
-				}
-			}
-			if (ImGui::Selectable("Create Child"))
-			{
-				auto child = std::make_shared<Truth::Entity>(m_manager);
-				_entity.lock()->AddChild(child);
-				currentScene->AddEntity(child);
-				ImGui::EndPopup();
-				return false;
-			}
-
-			ImGui::EndPopup();
-		}
 	}
+
+	if (ImGui::BeginDragDropSource())
+	{
+		ImGui::SetDragDropPayload("Entity", &_entity, sizeof(_entity));
+		ImGui::Text("%s", entityName.c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
+		{
+			IM_ASSERT(payload->DataSize == sizeof(_entity));
+			std::weak_ptr<Truth::Entity> payload_n = *(const std::weak_ptr<Truth::Entity>*)payload->Data;
+
+			if (!payload_n.lock()->m_parent.expired())
+			{
+				payload_n.lock()->m_parent.lock()->DeleteChild(payload_n.lock());
+			}
+			_entity.lock()->AddChild(payload_n.lock());
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	// Entity's Popup Menu
+	if (ImGui::BeginPopupContextItem())
+	{
+		if (ImGui::Selectable("Delete"))
+		{
+			m_manager->Scene()->m_currentScene->DeleteEntity(_entity.lock());
+		}
+		if (ImGui::Selectable("SaveEntity"))
+		{
+			m_openFileName.lpstrDefExt = L"entity";
+			m_openFileName.lpstrFilter = m_entityFileFilter;
+			if (GetSaveFileName(&m_openFileName) != 0)
+			{
+				std::wstring filepath = m_openFileName.lpstrFile;
+				std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
+
+				std::ofstream outputstream(f.back());
+				boost::archive::text_oarchive outputArchive(outputstream);
+				outputArchive << _entity;
+			}
+		}
+		if (ImGui::Selectable("Create Child"))
+		{
+			auto child = std::make_shared<Truth::Entity>(m_manager);
+			_entity.lock()->AddChild(child);
+			m_createdEntity.push(child);
+		}
+
+		if (ImGui::Selectable("Set Root"))
+		{
+			_entity.lock()->m_parent.lock()->DeleteChild(_entity.lock());
+			_entity.lock()->m_parent.reset();
+		}
+
+		ImGui::EndPopup();
+	}
+
 	if (isOpen)
 	{
 		for (auto& child : _entity.lock()->m_children)
@@ -585,7 +595,5 @@ bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 		}
 		ImGui::TreePop();
 	}
-
-	return true;
 }
 
