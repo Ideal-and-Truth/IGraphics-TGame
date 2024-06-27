@@ -457,16 +457,16 @@ bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 
 	std::shared_ptr<Truth::Scene> currentScene = m_manager->Scene()->m_currentScene;
 
-	// Select Entity
-	if (ImGui::TreeNodeEx((entityName).c_str()))
+	ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_AllowItemOverlap;
+
+	if (!_entity.lock()->HasChildren())
 	{
-		//ImGui::SameLine();
-		if (ImGui::IsItemClicked())
-		{
-			m_selectedEntity = _entity;
-		}
+		flag |= ImGuiTreeNodeFlags_Leaf;
+	}
 
-
+	bool isOpen = ImGui::TreeNodeEx(("##" + entityName).c_str(), flag);
+	if (isOpen)
+	{
 		if (ImGui::BeginDragDropSource())
 		{
 			ImGui::SetDragDropPayload("Entity", &_entity, sizeof(_entity));
@@ -519,16 +519,20 @@ bool EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 			ImGui::EndPopup();
 		}
 
+	}
+	ImGui::SameLine();
+	if (ImGui::Selectable(entityName.c_str()))
+	{
+		m_selectedEntity = _entity;
+	}
+	if (isOpen)
+	{
 		for (auto& child : _entity.lock()->m_children)
 		{
 			DisplayEntity(child);
 		}
 		ImGui::TreePop();
 	}
-// 	ImGui::SameLine();
-// 	if (ImGui::Selectable(entityName.c_str()))
-// 	{
-// 		m_selectedEntity = _entity;
-// 	}
+
 	return true;
 }
