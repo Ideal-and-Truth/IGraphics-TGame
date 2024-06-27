@@ -10,6 +10,7 @@ Truth::Entity::Entity(std::shared_ptr<Managers> _mangers)
 	, m_layer(0)
 	, m_tag("None")
 	, m_index(-1)
+	, m_parent()
 {
 	m_transform = std::make_shared<Transform>();
 	m_components.push_back(m_transform);
@@ -19,19 +20,18 @@ Truth::Entity::Entity()
 	: m_layer()
 	, m_index()
 	, m_ID(m_entityCount++)
+	, m_parent()
 {
-
 }
 
 Truth::Entity::~Entity()
 {
 	m_components.clear();
+	m_children.clear();
 }
 
 void Truth::Entity::Initailize()
 {
-
-
 	m_transform = GetComponent<Transform>().lock();
 	int32 index = 0;
 	for (auto& c : m_components)
@@ -198,14 +198,32 @@ void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
 	ApplyComponent(_component);
 }
 
+void Truth::Entity::AddChild(std::shared_ptr<Entity> _entity)
+{
+	m_children.push_back(_entity);
+	_entity->m_parent = shared_from_this();
+}
+
+void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
+{
+	for (auto c = m_children.begin(); c != m_children.end() ; c++)
+	{
+		if ((*c) == _entity)
+		{
+			m_children.erase(c);
+			return;
+		}
+	}
+}
+
 const DirectX::SimpleMath::Matrix& Truth::Entity::GetWorldTM() const
 {
-	return m_transform->m_transformMatrix;
+	return m_transform->m_globalTM;
 }
 
 void Truth::Entity::SetWorldTM(const Matrix& _tm) const
 {
-	m_transform->m_transformMatrix = _tm;
+	m_transform->m_globalTM = _tm;
 }
 
 void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)

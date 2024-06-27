@@ -35,7 +35,6 @@ namespace Truth
 	protected:
 		static uint32 m_entityCount;
 
-
 		std::weak_ptr<Managers> m_manager;
 
 	public:
@@ -56,6 +55,9 @@ namespace Truth
 		PROPERTY(components);
 		std::vector<std::shared_ptr<Component>> m_components;
 
+		std::vector<std::shared_ptr<Entity>> m_children;
+
+		std::weak_ptr<Entity> m_parent;
 
 		bool m_isDead = false;
 
@@ -97,6 +99,21 @@ namespace Truth
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm) const;
 
+		bool HasParent() { return !m_parent.expired(); };
+		bool HasChildren() { return !m_children.empty(); }
+
+		const Matrix& GetParentMatrix() 
+		{
+			if (!m_parent.expired())
+			{
+				return m_parent.lock()->GetWorldTM();
+			}
+			else
+			{
+				return Matrix::Identity;
+			}
+		}
+
 		void ApplyTransform();
 
 		void Awake();
@@ -134,6 +151,8 @@ namespace Truth
 
 		std::string& GetName() { return m_name; };
 
+		void AddChild(std::shared_ptr<Entity> _entity);
+		void DeleteChild(std::shared_ptr<Entity> _entity);
 
 	private:
 		void ApplyComponent(std::shared_ptr<Component> _c);
@@ -147,12 +166,9 @@ namespace Truth
 	void Entity::save(Archive& _ar, const unsigned int _file_version) const
 	{
 		_ar& m_name;
-		if (_file_version == 0)
-		{
-			_ar& m_ID;
-		}
 		_ar& m_layer;
 		_ar& m_components;
+		_ar& m_children;
 	}
 
 	template<class Archive>
@@ -165,6 +181,10 @@ namespace Truth
 		}
 		_ar& m_layer;
 		_ar& m_components;
+		if (_file_version >= 2)
+		{
+			_ar& m_children;
+		}
 	}
 
 	/// <summary>
@@ -256,4 +276,4 @@ namespace Truth
 		return result;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Entity, 1)
+BOOST_CLASS_VERSION(Truth::Entity, 2)

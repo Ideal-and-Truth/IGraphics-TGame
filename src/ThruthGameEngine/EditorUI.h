@@ -18,7 +18,7 @@ class EditorUI
 {
 private:
 	std::shared_ptr<Truth::Managers> m_manager;
-	static int32 m_selectedEntity;
+	// static int32 m_selectedEntity;
 	int m_notUsedID;
 
 	std::vector<const char*>& m_componentList;
@@ -33,7 +33,10 @@ private:
 
 	HWND m_hwnd;
 
-	std::queue<std::pair<int, int>> m_deletedComponent;
+	std::queue<std::pair<std::weak_ptr<Truth::Entity>, int>> m_deletedComponent;
+	std::queue<std::weak_ptr<Truth::Entity>> m_createdEntity;
+
+	std::weak_ptr<Truth::Entity> m_selectedEntity;
 
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd);
@@ -43,6 +46,7 @@ public:
 private:
 	void ShowInspectorWindow(bool* p_open);
 	void ShowHierarchyWindow(bool* p_open);
+	void ShowContentsDrawerWindow(bool* p_open);
 	void ShowMenuBar(bool* p_open);
 
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
@@ -50,6 +54,8 @@ private:
 	void AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity);
 
 	void DisplayComponent(std::shared_ptr<Truth::Component> _component);
+
+	void DisplayEntity(std::weak_ptr<Truth::Entity> _entity);
 };
 
 

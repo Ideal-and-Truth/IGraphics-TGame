@@ -32,6 +32,11 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 	m_entities.push_back(_p);
 	_p->Initailize();
 	m_awakedEntity.push(_p);
+
+	if (_p->m_parent.expired())
+	{
+		m_rootEntities.push_back(_p);
+	}
 }
 
 /// <summary>
@@ -62,6 +67,10 @@ void Truth::Scene::DeleteEntity(uint32 _index)
 /// <param name="_p">삭제될 엔티티</param>
 void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 {
+	for (auto& child : _p->m_children)
+	{
+		DeleteEntity(child);
+	}
 #ifdef _DEBUG
 	if (m_managers.lock()->m_isEdit)
 	{
@@ -86,13 +95,39 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 {
 	m_managers = _manager;
-	for (auto& e : m_entities)
+	for (auto& e : m_rootEntities)
 	{
-		e->SetManager(m_managers);
-		m_awakedEntity.push(e);
-		e->Initailize();
+		LoadEntity(e);
 	}
 }
+
+void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
+{
+	m_entities.push_back(_entity);
+	_entity->SetManager(m_managers);
+	m_awakedEntity.push(_entity);
+	_entity->Initailize();
+
+	for (auto& child : _entity->m_children)
+	{
+		child->m_parent = _entity;
+		LoadEntity(child);
+	}
+}
+
+#ifdef _DEBUG
+void Truth::Scene::EditorUpdate()
+{
+	m_rootEntities.clear();
+	for (auto& e : m_entities)
+	{
+		if (e->m_parent.expired())
+		{
+			m_rootEntities.push_back(e);
+		}
+	}
+}
+#endif // _DEBUG
 
 /// <summary>
 /// 씬 업데이트
@@ -121,6 +156,9 @@ void Truth::Scene::Update()
 		auto& e = m_awakedEntity.front();
 		e->m_index = static_cast<int32>(m_entities.size());
 		m_entities.push_back(e);
+#ifdef _DEBUG
+		m_rootEntities.push_back(e);
+#endif // _DEBUG
 		m_startedEntity.push(e);
 		e->Awake();
 		m_awakedEntity.pop();

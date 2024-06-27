@@ -144,6 +144,10 @@ namespace Truth
 		void AddEmptyEntity();
 		void AddEntity(std::shared_ptr<Entity> _entity);
 
+		bool HasParent();
+
+		const Matrix& GetParentMatrix();
+
 #pragma endregion inline
 	};
 }

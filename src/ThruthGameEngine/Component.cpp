@@ -66,7 +66,7 @@ const DirectX::SimpleMath::Vector3& Truth::Component::GetScale() const
 
 const DirectX::SimpleMath::Matrix& Truth::Component::GetWorldTM() const
 {
-	return m_owner.lock()->m_transform->m_transformMatrix;
+	return m_owner.lock()->m_transform->m_globalTM;
 }
 
 void Truth::Component::SetWorldTM(const Matrix& _tm)
@@ -82,4 +82,14 @@ void Truth::Component::AddEmptyEntity()
 void Truth::Component::AddEntity(std::shared_ptr<Entity> _entity)
 {
 	m_managers.lock()->Scene()->m_currentScene->AddEntity(_entity);
+}
+
+bool Truth::Component::HasParent()
+{
+	return m_owner.lock()->HasParent();
+}
+
+const DirectX::SimpleMath::Matrix& Truth::Component::GetParentMatrix()
+{
+	return m_owner.lock()->GetParentMatrix();
 }

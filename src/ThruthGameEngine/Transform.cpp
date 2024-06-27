@@ -8,7 +8,7 @@ Truth::Transform::Transform()
 	, m_position(0.0f, 0.0f, 0.0f)
 	, m_scale(1.0f, 1.0f, 1.0f)
 	, m_rotation{}
-	, m_transformMatrix{Matrix::Identity}
+	, m_localTM{Matrix::Identity}
 	, m_look(0.0f, 0.0f, 1.0f)
 {
 	m_canMultiple = false;
@@ -29,5 +29,14 @@ void Truth::Transform::ApplyTransform()
 	Matrix rotationMT = Matrix::CreateFromQuaternion(m_rotation);
 	Matrix traslationMT = Matrix::CreateTranslation(m_position);
 
-	m_transformMatrix = scaleMT * rotationMT * traslationMT;
+	m_localTM = scaleMT * rotationMT * traslationMT;
+
+	if (HasParent())
+	{
+		m_globalTM = m_localTM * GetParentMatrix();
+	}
+	else
+	{
+		m_globalTM = m_localTM;
+	}
 }
