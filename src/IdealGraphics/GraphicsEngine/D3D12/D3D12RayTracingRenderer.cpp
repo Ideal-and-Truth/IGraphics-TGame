@@ -384,6 +384,11 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	BeginRender();
 
 	// temp
+
+	for (auto& mesh : m_staticMeshObject)
+	{
+		mesh->UpdateBLASInstance(m_raytracingManager);
+	}
 	for (auto& mesh : m_skinnedMeshObject)
 	{
 		mesh->UpdateBLASInstance(m_device,
@@ -523,10 +528,43 @@ void Ideal::D3D12RayTracingRenderer::SetTexturePath(const std::wstring& TextureP
 
 void Ideal::D3D12RayTracingRenderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
 {
+	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
+	assimpConverter->SetAssetPath(m_assetPath);
+	assimpConverter->SetModelPath(m_modelPath);
+	assimpConverter->SetTexturePath(m_texturePath);
+
+	assimpConverter->ReadAssetFile(FileName, isSkinnedData);
+
+	// Temp : ".fbx" 삭제
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+
+	assimpConverter->ExportModelData(FileName, isSkinnedData);
+	if (NeedVertexInfo)
+	{
+		assimpConverter->ExportVertexPositionData(FileName);
+	}
+	assimpConverter->ExportMaterialData(FileName);
 }
 
 void Ideal::D3D12RayTracingRenderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
 {
+	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
+	assimpConverter->SetAssetPath(m_assetPath);
+	assimpConverter->SetModelPath(m_modelPath);
+	assimpConverter->SetTexturePath(m_texturePath);
+
+	assimpConverter->ReadAssetFile(FileName, false);
+
+	// Temp : ".fbx" 삭제
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+
+	assimpConverter->ExportAnimationData(FileName);
 }
 
 bool Ideal::D3D12RayTracingRenderer::SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -706,11 +744,8 @@ void Ideal::D3D12RayTracingRenderer::CreatePools()
 
 		// Upload Pool
 		m_BLASInstancePool[i] = std::make_shared<Ideal::D3D12UploadBufferPool>();
+		//m_BLASInstancePool[i]->Init(m_device.Get(), sizeof(Ideal::DXRInstanceDesc), MAX_DRAW_COUNT_PER_FRAME);
 		m_BLASInstancePool[i]->Init(m_device.Get(), sizeof(Ideal::DXRInstanceDesc), MAX_DRAW_COUNT_PER_FRAME);
-
-		// shader table Descriptor Heap
-		//m_shaderTableDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-		//m_shaderTableDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 	}
 
 	m_descriptorManager = std::make_shared<Ideal::D3D12DescriptorManager>();
@@ -792,7 +827,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 
 	m_descriptorHeaps[nextContextIndex]->Reset();
 	m_cbAllocator[nextContextIndex]->Reset();
-	m_BLASInstancePool[nextContextIndex]->Reset();
+	//m_BLASInstancePool[nextContextIndex]->Reset();
 	m_descriptorManager->ResetPool(nextContextIndex);
 
 	m_currentContextIndex = nextContextIndex;

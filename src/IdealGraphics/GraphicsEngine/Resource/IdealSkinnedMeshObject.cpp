@@ -271,7 +271,7 @@ void Ideal::IdealSkinnedMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5>
 		blasGeometryDesc.Geometries[i] = blasGeometry;
 	}
 	const std::wstring& name = GetName();
-	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, name.c_str(), true);
+	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, true, name.c_str(), true);
 
 	m_instanceIndex = instanceInfo.InstanceIndex;
 	m_BLAS = instanceInfo.BLAS;
@@ -340,7 +340,7 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 		m_BLAS->BuildGeometries(blasGeometryDesc.Geometries);
 		m_BLAS->SetDirty(true);
 
-		//RaytracingManager->SetGeometryTransformByIndex(m_instanceID, m_transform);
+		RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
 
 		m_isDirty = false;
 	}

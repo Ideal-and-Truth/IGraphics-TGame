@@ -11,7 +11,7 @@ Ideal::DXRAccelerationStructureManager::~DXRAccelerationStructureManager()
 
 }
 
-std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, const wchar_t* Name, bool IsSkinnedData /*= false*/)
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerationStructureManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	// 스키닝 데이터일 경우 그냥 BLAS는 새로 만든다.
 	if (!IsSkinnedData)
@@ -26,7 +26,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 
 	// 처음 추가할 경우 만들어서 넣어준다.
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(Name);
-	blas->Create(Device, Geometries, BuildFlags, false);
+	blas->Create(Device, Geometries, BuildFlags, AllowUpdate);
 	m_blasMap[Name] = blas;
 
 	if (blas->RequiredScratchSize() > m_scratchResourceSize)
@@ -87,10 +87,13 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Devi
 	m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
 	m_scratchResourceSize = max(m_topLevelAS->RequiredScratchSize(), m_scratchResourceSize);
 	m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+
+	//CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_scratchBuffer->GetResource());
 }
 
 void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild /*= false*/)
 {
+	UploadBufferPool->Reset();
 	// instanceDescs의 첫 주소를 받아온다.
 	D3D12_GPU_VIRTUAL_ADDRESS instanceDescs = 0;
 	bool isFirst = true;
@@ -100,21 +103,22 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandL
 
 	for (uint32 i = 0; i < numInstance; ++i)
 	{
-		 std::shared_ptr<Ideal::UploadBufferContainer> container = UploadBufferPool->Allocate();
-		 if (isFirst)
-		 {
-			 instanceDescs = container->GpuVirtualAddress;
-			 isFirst = false;
-		 }
+		std::shared_ptr<Ideal::UploadBufferContainer> container = UploadBufferPool->Allocate();
+		if (isFirst)
+		{
+			instanceDescs = container->GpuVirtualAddress;
+			isFirst = false;
+		}
 
-		 DXRInstanceDesc* ptr = (DXRInstanceDesc*)container->SystemMemoryAddress;
-		 *ptr = m_instanceDescs[i].InstanceDesc;
+		DXRInstanceDesc* ptr = (DXRInstanceDesc*)container->SystemMemoryAddress;
+		*ptr = m_instanceDescs[i].InstanceDesc;
 	}
 
 	// Build BLAS
-	for (auto& blasPair : m_blasMap)
+	//for (auto& blasPair : m_blasMap)
+	for(auto& blas : m_blasVector)
 	{
-		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = blasPair.second;
+		//std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = blasPair.second;
 
 		// 처음에 빌드해야하거나 blas 정보가 수정되어 다시 빌드해야 할 경우
 		if (ForceBuild || blas->IsDirty())

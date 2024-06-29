@@ -95,7 +95,7 @@ void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> 
 		blasGeometryDesc.Geometries.push_back(blasGeometry);
 	}
 	const std::wstring& name = GetName();
-	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, name.c_str(), false);
+	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, false, name.c_str(), false);
 	m_instanceIndex = instanceInfo.InstanceIndex;
 }
 
@@ -104,6 +104,7 @@ void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::Ray
 	if (m_isDirty)
 	{
 		RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
+		m_blas->SetDirty(true);
 		m_isDirty = false;
 	}
 }

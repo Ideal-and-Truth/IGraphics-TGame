@@ -179,12 +179,18 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOu
 std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::AddBLAS(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = nullptr;
-	blas = m_ASManager->GetBLAS(Name);
-	// 이미 있다!
-	if (blas != nullptr)
+	if (!IsSkinnedData)
 	{
-		return blas;
+		blas = m_ASManager->GetBLAS(Name);
+		// 이미 있다!
+		if (blas != nullptr)
+		{
+			std::shared_ptr<Ideal::IdealStaticMeshObject> staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+			staticMeshObject->SetBLAS(blas);
+			return blas;
+		}
 	}
+	// 스키닝 데이터일 경우에는 그냥 BLAS를 새로 만든다.
 	std::vector<Ideal::BLASGeometry> Geometries;
 	if (IsSkinnedData)
 	{
@@ -201,6 +207,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 			blasGeometry.VertexBufferResource = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource();
 			blasGeometry.VertexBufferGPUAddress = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource()->GetGPUVirtualAddress();
 			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
+			blasGeometry.VertexCount = skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount();
 
 			blasGeometry.IndexBufferResource = skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource();
 			blasGeometry.IndexBufferGPUAddress = skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
@@ -218,20 +225,14 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
-			//auto vertexSRV = ResourceManager->CreateSRV(skinnedMeshObject->GetUAV_VertexBuffer(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
-			//auto indexSRV = ResourceManager->CreateSRV(skinnedMesh->GetMeshes()[i]->GetIndexBuffer(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
-			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_VertexBuffer.GetCpuHandle(), vertexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_IndexBuffer.GetCpuHandle(), indexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 			CreateSRV(Device, skinnedMeshObject->GetUAV_VertexBuffer()->GetResource(), blasGeometry.SRV_VertexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
 			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 			CreateSRV(Device,skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource(), blasGeometry.SRV_IndexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
 
-
 			Geometries[i] = blasGeometry;
 		}
-		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
+		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, true, Name, IsSkinnedData);
 		skinnedMeshObject->SetBLAS(blas);
 
 		// 현재 BLAS안에 들어있는 Geometry의 개수만큼 contributionToHitGroupIndex를 늘려준다.
@@ -251,6 +252,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 			blasGeometry.VertexBufferResource = mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource();
 			blasGeometry.VertexBufferGPUAddress = mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
 			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
+			blasGeometry.VertexCount = mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount();
 
 			blasGeometry.IndexBufferResource = mesh->GetMeshes()[i]->GetIndexBuffer()->GetResource();
 			blasGeometry.IndexBufferGPUAddress = mesh->GetMeshes()[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
@@ -267,24 +269,14 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
-
-			//auto vertexSRV = ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetVertexBuffer(), mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
-			//auto indexSRV = ResourceManager->CreateSRV(mesh->GetMeshes()[i]->GetIndexBuffer(), mesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
-			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_VertexBuffer.GetCpuHandle(), vertexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			//Device->CopyDescriptorsSimple(1, blasGeometry.SRV_IndexBuffer.GetCpuHandle(), indexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-			//blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-			//blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 			CreateSRV(Device, mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource(), blasGeometry.SRV_VertexBuffer.GetCpuHandle(), mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
 			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 			CreateSRV(Device, mesh->GetMeshes()[i]->GetIndexBuffer()->GetResource(), blasGeometry.SRV_IndexBuffer.GetCpuHandle(), mesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
 
-
 			Geometries[i] = blasGeometry;
 		}
-		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
+		blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, false, Name, IsSkinnedData);
 		meshObject->SetBLAS(blas);
 	}
 
@@ -301,11 +293,11 @@ uint32 Ideal::RaytracingManager::AllocateInstanceIndexByBLAS(std::shared_ptr<Ide
 	return instanceIndex;
 }
 
-Ideal::InstanceInfo Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, const wchar_t* Name, bool IsSkinnedData /*= false*/)
+Ideal::InstanceInfo Ideal::RaytracingManager::AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	// 예상으로는 중간에 만들어줘도 BLAS 자체에 IsDirty 초기값이 True 이기 때문에 Update할때 빌드가 될 것이다...
 	// 일단 BLAS를 추가하고 만약 있으면 그것에 대한 인덱스만 가져온다.
-	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, Name, IsSkinnedData);
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = m_ASManager->AddBLAS(Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, AllowUpdate, Name, IsSkinnedData);
 	//uint32 instanceIndex = m_ASManager->AddInstance(Name, m_contributionToHitGroupIndexCount);
 	uint32 instanceIndex = m_ASManager->AddInstanceByBLAS(blas, m_contributionToHitGroupIndexCount);
 
@@ -330,7 +322,8 @@ void Ideal::RaytracingManager::FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<
 {
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
 	buildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
-	m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");
+	//m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");
+	m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");	// Off AllowUpdate
 	m_ASManager->Build(CommandList, UploadBufferPool, true);
 }
 

@@ -64,6 +64,7 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 
 	if (!isSkinnedData)
 	{
+		// TODO : FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk
 		flag |= aiProcess_OptimizeMeshes;
 		flag |= aiProcess_PreTransformVertices;
 	}

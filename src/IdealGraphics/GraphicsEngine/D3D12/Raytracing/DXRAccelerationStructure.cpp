@@ -65,7 +65,7 @@ void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> De
 
 void Ideal::DXRBottomLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer)
 {
-	// sratch 버퍼
+	// scratch 버퍼
 	// 
 	uint64 scratchBufferSizeInBytes = ScratchBuffer->GetDesc().Width;
 	if (m_preBuildInfo.ScratchDataSizeInBytes > scratchBufferSizeInBytes)

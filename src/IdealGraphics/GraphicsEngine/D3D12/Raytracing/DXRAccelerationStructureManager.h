@@ -31,7 +31,7 @@ namespace Ideal
 
 	public:
 		// BLAS는 내부에서 만들어주니 정보를 넘긴다.
-		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, const wchar_t* Name, bool IsSkinnedData = false);
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData = false);
 		uint32 AddInstance(const std::wstring& BLASName, uint32 InstanceContributionToHitGroupIndex = UINT_MAX, Matrix transform = Matrix::Identity, BYTE InstanceMask = 1);
 		uint32 AddInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex = UINT_MAX, Matrix transform = Matrix::Identity, BYTE InstanceMask = 1);
 		DXRInstanceDesc* GetInstanceByIndex(uint32 InstanceIndex) { return &m_instanceDescs[InstanceIndex].InstanceDesc; }
