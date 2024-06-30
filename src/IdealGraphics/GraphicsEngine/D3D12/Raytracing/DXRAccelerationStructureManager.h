@@ -25,6 +25,7 @@ namespace Ideal
 	// 아마 mesh들을 들고 있는 최상위 MeshObject가 이 매니저를 하나씩 가지면 될 것 같다.
 	class DXRAccelerationStructureManager
 	{
+		const static uint32 MAX_PENDING_FRAME = G_SWAP_CHAIN_NUM - 1;
 	public:
 		DXRAccelerationStructureManager();
 		~DXRAccelerationStructureManager();
@@ -49,6 +50,9 @@ namespace Ideal
 	 	std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasVector;
 
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffer;
+		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffers[MAX_PENDING_FRAME];
+		uint32 m_currentIndex = 0;
+
 		uint64 m_scratchResourceSize = 0;
 		uint32 m_currentBlasIndex = 0;
 		//std::vector<Ideal::DXRInstanceDesc> m_instanceDescs;

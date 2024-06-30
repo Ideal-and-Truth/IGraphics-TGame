@@ -176,12 +176,14 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	}
 
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+	//D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON;
 	m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
 	m_accelerationStructure->Create(Device.Get(), m_preBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, m_name.c_str());
 }
 
 void Ideal::DXRTopLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, uint32 NumInstanceDesc, D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress, ComPtr<ID3D12Resource> ScratchBuffer)
 {
+	
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC tlasBuildDesc = {};
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& tlasInputs = tlasBuildDesc.Inputs;
 	{

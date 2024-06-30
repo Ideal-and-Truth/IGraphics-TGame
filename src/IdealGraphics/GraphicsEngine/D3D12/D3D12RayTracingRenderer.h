@@ -237,5 +237,10 @@ namespace Ideal
 
 		// 2024.06.23 대격변
 		std::shared_ptr<Ideal::D3D12DescriptorManager> m_descriptorManager;
+
+		// 임시 변수. 중간에 오브젝트를 추가하면 빌드를 
+		// 바로 하는데 같은 프레임에 다시 빌드를 하면 
+		// 오류가 나는 것 같아서 임시로 추가하겠따.
+		bool m_isBuilt = false;
 	};
 }

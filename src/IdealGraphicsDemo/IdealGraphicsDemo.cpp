@@ -337,7 +337,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//cat->SetDrawObject(false);
 					//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 					//cat->AddAnimation("Walk", walkAnim);
-					std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+					std::shared_ptr<Ideal::IMeshObject> mesh;
+					if (tX % 2 == 0)
+						mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+					else
+						mesh = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
+
 					Matrix mat2 = Matrix::Identity;
 					mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
 

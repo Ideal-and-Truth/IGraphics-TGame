@@ -37,6 +37,13 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 			m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
 		}
 		m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+
+		// ver2
+		for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
+		{
+			m_scratchBuffers[i] = std::make_shared<Ideal::D3D12UAVBuffer>();
+			m_scratchBuffers[i]->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASStructures2");
+		}
 	}
 
 	m_blasVector.push_back(blas);
@@ -84,16 +91,25 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Devi
 	m_topLevelAS = std::make_shared<Ideal::DXRTopLevelAccelerationStructure>(TLASName);
 	m_topLevelAS->Create(Device, m_currentBlasIndex, BuildFlags, allowUpdate);
 
-	m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
 	m_scratchResourceSize = max(m_topLevelAS->RequiredScratchSize(), m_scratchResourceSize);
+
+	m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
 	m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
 
+	// 6.30 
+	for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
+	{
+		m_scratchBuffers[i] = std::make_shared<Ideal::D3D12UAVBuffer>();
+		m_scratchBuffers[i]->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASStructures2");
+	}
 	//CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_scratchBuffer->GetResource());
 }
 
 void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild /*= false*/)
 {
 	UploadBufferPool->Reset();
+	m_currentIndex = (m_currentIndex + 1) % MAX_PENDING_FRAME;
+
 	// instanceDescs의 첫 주소를 받아온다.
 	D3D12_GPU_VIRTUAL_ADDRESS instanceDescs = 0;
 	bool isFirst = true;
@@ -123,7 +139,10 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandL
 		// 처음에 빌드해야하거나 blas 정보가 수정되어 다시 빌드해야 할 경우
 		if (ForceBuild || blas->IsDirty())
 		{
-			blas->Build(CommandList, m_scratchBuffer->GetResource());
+			//blas->Build(CommandList, m_scratchBuffer->GetResource());
+			
+			// ver2
+			blas->Build(CommandList, m_scratchBuffers[m_currentIndex]->GetResource());
 
 			CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(blas->GetResource().Get());
 			CommandList->ResourceBarrier(1, &uavBarrier);
@@ -134,7 +153,10 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandL
 	{
 		// TLAS는 항상 리빌드한다..
 		// 위에서 받아온 첫 주소를 가져옴
-		m_topLevelAS->Build(CommandList, numInstance, instanceDescs, m_scratchBuffer->GetResource());
+		//m_topLevelAS->Build(CommandList, numInstance, instanceDescs, m_scratchBuffer->GetResource());
+
+		// ver2
+		m_topLevelAS->Build(CommandList, numInstance, instanceDescs, m_scratchBuffers[m_currentIndex]->GetResource());
 
 		CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAS->GetResource().Get());
 		CommandList->ResourceBarrier(1, &uavBarrier);

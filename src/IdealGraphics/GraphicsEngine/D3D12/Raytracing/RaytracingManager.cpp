@@ -73,7 +73,7 @@ Ideal::RaytracingManager::~RaytracingManager()
 
 }
 
-void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
+void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
 {
 	m_width = Width;
 	m_height = Height;
@@ -323,7 +323,7 @@ void Ideal::RaytracingManager::FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
 	buildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 	//m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");
-	m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");	// Off AllowUpdate
+	m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");	// AllowUpdate
 	m_ASManager->Build(CommandList, UploadBufferPool, true);
 }
 
@@ -499,51 +499,6 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 			}
 		}
-
-		// instance들을 가져온다.
-		//const std::vector<Ideal::BLASInstanceDesc> BlasInstances = m_ASManager->GetBLASInstanceDescs();
-		//for(auto& blasInstance : BlasInstances)
-		//{
-		//	// instance가 가지고 있는 BLAS를 가져온다.
-		//	auto& blas = blasInstance.BLAS;
-		//	// blas가 가지고 있는 geometry들을 가져온다.
-		//	const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
-		//	for (const BLASGeometry& blasGeometry : blasGeometries)
-		//	{
-		//		Ideal::LocalRootSignature::RootArgument rootArguments;
-		//
-		//		ComPtr<ID3D12Resource> vertexResource = blasGeometry.VertexBufferResource;
-		//		ComPtr<ID3D12Resource> indexResource = blasGeometry.IndexBufferResource;
-		//		
-		//		//auto h1 = ResourceManager->CreateSRV(indexResource, blasGeometry.IndexCount, sizeof(uint32));
-		//		//auto h2 = ResourceManager->CreateSRV(vertexResource, blasGeometry.VertexCount, blasGeometry.VertexStrideInBytes);
-		//
-		//		// Indices
-		//		//auto indicesLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-		//		//Device->CopyDescriptorsSimple(1, indicesLocation.GetCpuHandle(), h1->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		//		
-		//		// vertices
-		//		//auto verticesLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-		//		//Device->CopyDescriptorsSimple(1, verticesLocation.GetCpuHandle(), h2->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		//		//
-		//		//// diffuse
-		//		//auto textureLocation = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-		//		//uint64 notExist = (uint64)D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
-		//		//if (blasGeometry.DiffuseTexture.GetCpuHandle().ptr != notExist)
-		//		//{
-		//		//	Device->CopyDescriptorsSimple(1, textureLocation.GetCpuHandle(), blasGeometry.DiffuseTexture.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		//		//}
-		//		//rootArguments.SRV_Indices = indicesLocation.GetGpuHandle();
-		//		//rootArguments.SRV_Vertices = verticesLocation.GetGpuHandle();
-		//		//rootArguments.SRV_DiffuseTexture = textureLocation.GetGpuHandle();
-		//
-		//		rootArguments.SRV_Vertices = blasGeometry.SRV_VertexBuffer.GetGpuHandle();
-		//		rootArguments.SRV_Indices = blasGeometry.SRV_IndexBuffer.GetGpuHandle();
-		//		rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
-		//
-		//		hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
-		//	}
-		//}
 		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();
 	}

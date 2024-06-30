@@ -104,7 +104,7 @@ void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::Ray
 	if (m_isDirty)
 	{
 		RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
-		m_blas->SetDirty(true);
+		//m_blas->SetDirty(true);
 		m_isDirty = false;
 	}
 }
