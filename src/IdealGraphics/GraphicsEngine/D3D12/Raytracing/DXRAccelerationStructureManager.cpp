@@ -32,11 +32,11 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 	if (blas->RequiredScratchSize() > m_scratchResourceSize)
 	{
 		m_scratchResourceSize = blas->RequiredScratchSize();
-		if (!m_scratchBuffer)
+		/*if (!m_scratchBuffer)
 		{
 			m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
-		}
-		m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+		}*/
+		//m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
 
 		// ver2
 		for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
@@ -93,22 +93,38 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Devi
 
 	m_scratchResourceSize = max(m_topLevelAS->RequiredScratchSize(), m_scratchResourceSize);
 
-	m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
-	m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+	//m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+	//m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
 
+
+	static uint32 once = 0;
+	if (once > 0)return;
+	once++;
 	// 6.30 
 	for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
 	{
+		/*if (m_scratchBuffers[i] != nullptr)
+		{
+			auto desc = m_scratchBuffers[i]->GetResource()->GetDesc();
+			int a = 3;
+		}*/
+		/*if(m_scratchBuffers[i] != nullptr)
+			continue;*/
+
 		m_scratchBuffers[i] = std::make_shared<Ideal::D3D12UAVBuffer>();
 		m_scratchBuffers[i]->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASStructures2");
+		auto desc = m_scratchBuffers[i]->GetResource()->GetDesc();
+		int a = 3;
 	}
-	//CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(m_scratchBuffer->GetResource());
 }
 
-void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild /*= false*/)
+void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild /*= false*/)
 {
 	UploadBufferPool->Reset();
 	m_currentIndex = (m_currentIndex + 1) % MAX_PENDING_FRAME;
+
+	//CD3DX12_RESOURCE_BARRIER instanceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(UploadBufferPool->GetResource().Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
+	//CommandList->ResourceBarrier(1, &instanceBarrier);
 
 	// instanceDescs의 첫 주소를 받아온다.
 	D3D12_GPU_VIRTUAL_ADDRESS instanceDescs = 0;
@@ -143,6 +159,9 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12GraphicsCommandL
 			
 			// ver2
 			blas->Build(CommandList, m_scratchBuffers[m_currentIndex]->GetResource());
+
+			/*	CD3DX12_RESOURCE_BARRIER scratchBufferBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_scratchBuffers[m_currentIndex]->GetResource());
+				CommandList->ResourceBarrier(1, &scratchBufferBarrier);*/
 
 			CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(blas->GetResource().Get());
 			CommandList->ResourceBarrier(1, &uavBarrier);

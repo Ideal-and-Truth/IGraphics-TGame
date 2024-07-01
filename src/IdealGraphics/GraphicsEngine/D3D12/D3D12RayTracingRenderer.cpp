@@ -533,7 +533,7 @@ void Ideal::D3D12RayTracingRenderer::ConvertAssetToMyFormat(std::wstring FileNam
 	assimpConverter->SetModelPath(m_modelPath);
 	assimpConverter->SetTexturePath(m_texturePath);
 
-	assimpConverter->ReadAssetFile(FileName, isSkinnedData);
+	assimpConverter->ReadAssetFile(FileName, isSkinnedData, NeedVertexInfo);
 
 	// Temp : ".fbx" 삭제
 	FileName.pop_back();
@@ -556,7 +556,7 @@ void Ideal::D3D12RayTracingRenderer::ConvertAnimationAssetToMyFormat(std::wstrin
 	assimpConverter->SetModelPath(m_modelPath);
 	assimpConverter->SetTexturePath(m_texturePath);
 
-	assimpConverter->ReadAssetFile(FileName, false);
+	assimpConverter->ReadAssetFile(FileName, false, false);
 
 	// Temp : ".fbx" 삭제
 	FileName.pop_back();
@@ -819,6 +819,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	PresentFlags = DXGI_PRESENT_ALLOW_TEARING;
 
 	hr = m_swapChain->Present(0, PresentFlags);
+	//hr = m_swapChain->Present(0, 0);
 	Check(hr);
 
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
@@ -948,7 +949,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 
 	ResetCommandList();
 
-	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], true);
 
 	m_commandLists[m_currentContextIndex]->Close();
 	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
@@ -960,36 +961,49 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 {
-	if (m_isBuilt)
-	{
-		m_isBuilt = false;
-		return;
-	}
-	m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+	//if (m_isBuilt)
+	//{
+	//	m_isBuilt = false;
+	//	return;
+	//}
+	m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
 {
+	Fence();
+	for (DWORD i = 0; i < MAX_PENDING_FRAME_COUNT; i++)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+
 	ResetCommandList();
 	auto blas = m_raytracingManager->AddBLAS(m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
 	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
 	obj->SetBLASInstanceIndex(instanceIndex);
 
-	 m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+	 m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], false);
 	//m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 
 	m_commandLists[m_currentContextIndex]->Close();
 	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-
 	Fence();
-	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+	for (DWORD i = 0; i < MAX_PENDING_FRAME_COUNT; i++)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+
 	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
 {
+	Fence();
+	for (DWORD i = 0; i < MAX_PENDING_FRAME_COUNT; i++)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
 	ResetCommandList();
 	auto blas = m_raytracingManager->AddBLAS(m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
 	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
@@ -998,18 +1012,20 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	// add blas
 	// set instance
 
-	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], false);
 	//m_raytracingManager->UpdateAccelerationStructures(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 
 	m_commandLists[m_currentContextIndex]->Close();
 	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-
 	Fence();
-	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+	for (DWORD i = 0; i < MAX_PENDING_FRAME_COUNT; i++)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
 
 	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager);
 
-	m_isBuilt = true;
+	//m_isBuilt = true;
 }

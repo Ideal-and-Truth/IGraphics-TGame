@@ -42,7 +42,7 @@ void Ideal::IdealRaytracingRenderScene::Draw(ComPtr<ID3D12GraphicsCommandList4> 
 
 void Ideal::IdealRaytracingRenderScene::UpdateAccelerationStructures(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
 {
-	m_raytracingManager->UpdateAccelerationStructures(CommandList, UploadBufferPool);
+	m_raytracingManager->UpdateAccelerationStructures(m_device, CommandList, UploadBufferPool);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::IdealRaytracingRenderScene::GetTLASResource()

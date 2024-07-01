@@ -89,7 +89,7 @@ namespace Ideal
 		void SetInstanceContributionToHitGroupIndex(uint32 Index) { m_instanceContributionToHitGroupIndex = Index; }
 
 		uint64 GetGeometrySize() { return m_geometries.size(); }
-		const std::vector<BLASGeometry>& GetGeometries() { return m_geometries; }
+		std::vector<BLASGeometry>& GetGeometries() { return m_geometries; }
 
 		bool IsDirty() { return m_isDirty; }
 		void SetDirty(bool Dirty) { m_isDirty = Dirty; }

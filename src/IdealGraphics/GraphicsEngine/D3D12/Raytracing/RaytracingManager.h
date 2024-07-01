@@ -120,8 +120,8 @@ namespace Ideal
 		// 기존 static 또는 skinned mesh안에서 BLAS를 생성했음 -> 뭔가 잘못됨을 느껴버림
 		Ideal::InstanceInfo AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData = false);
 		void SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform);
-		void FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool);
-		void UpdateAccelerationStructures(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool);
+		void FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild = false);
+		void UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool);
 		ComPtr<ID3D12Resource> GetTLASResource();
 
 		//---Root Singnature---//

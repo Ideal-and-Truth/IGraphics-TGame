@@ -219,7 +219,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
 				if (diffuseTexture)
 				{
-					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+					//blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
 					// TODO : 아래로 바꿀 예정
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -264,7 +264,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
 				if (diffuseTexture)
 				{
-					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+					//blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
@@ -318,18 +318,18 @@ void Ideal::RaytracingManager::SetGeometryTransformByIndex(uint32 InstanceIndex,
 	instance->SetTransform(Transform);
 }
 
-void Ideal::RaytracingManager::FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
+void Ideal::RaytracingManager::FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild /*= false*/)
 {
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
 	buildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 	//m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");
 	m_ASManager->InitTLAS(Device.Get(), buildFlags, true, L"RaytracingManager TLAS");	// AllowUpdate
-	m_ASManager->Build(CommandList, UploadBufferPool, true);
+	m_ASManager->Build(Device, CommandList, UploadBufferPool, ForceBuild);
 }
 
-void Ideal::RaytracingManager::UpdateAccelerationStructures(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
+void Ideal::RaytracingManager::UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
 {
-	m_ASManager->Build(CommandList, UploadBufferPool);
+	m_ASManager->Build(Device, CommandList, UploadBufferPool);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetTLASResource()
@@ -572,6 +572,14 @@ void Ideal::RaytracingManager::DispatchAnimationComputeShader(ComPtr<ID3D12Devic
 	auto handle3 = DescriptorManager->Allocate(CurrentContextIndex);
 	Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), UAV_OutVertex->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(AnimationRootSignature::Slot::UAV_OutputVertices, handle3.GetGpuHandle());
+
+	// Barrier
+	CD3DX12_RESOURCE_BARRIER barrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
+		UAV_OutVertex->GetResource().Get(),
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+	CommandList->ResourceBarrier(1, &barrier0);
 
 	// DISPATCH
 	uint32 elementCount = VertexBuffer->GetElementCount();

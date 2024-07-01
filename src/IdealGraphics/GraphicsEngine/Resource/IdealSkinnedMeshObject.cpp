@@ -287,17 +287,27 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 	std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
 )
 {
+	//return;
+	//return;
+	/*static uint32 i = 0;
+	if (i == 1)
+	{
+		return;
+	}
+	i++;*/
 	AnimationPlay();
 
 	{
-		auto& geometries = m_skinnedMesh->GetMeshes();
+		auto& meshes = m_skinnedMesh->GetMeshes();
+		auto& geometries = m_BLAS->GetGeometries();
 
-		uint64 numMesh = geometries.size();
+		uint64 numMesh = meshes.size();
 
 		Ideal::BLASData blasGeometryDesc;
 		blasGeometryDesc.Geometries.resize(numMesh);
 		for (uint32 i = 0; i < numMesh; ++i)
 		{
+
 			// Calculate Bone Transform CS
 			{
 				RaytracingManager->DispatchAnimationComputeShader(
@@ -307,37 +317,36 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 					DescriptorManager,
 					CurrentContextIndex,
 					CBPool,
-					geometries[i]->GetVertexBuffer(),
+					meshes[i]->GetVertexBuffer(),
 					&m_cbBoneData,
 					m_uavView
 				);
 			}
 
-			Ideal::BLASGeometry blasGeometry;
-			blasGeometry.VertexBufferResource = m_uavBuffer->GetResource();
-			blasGeometry.VertexBufferGPUAddress = m_uavBuffer->GetGPUVirtualAddress();
-			blasGeometry.VertexCount = geometries[i]->GetVertexBuffer()->GetElementCount();
-			//blasGeometry.VertexStrideInBytes = geometries[i]->GetVertexBuffer()->GetElementSize();
-			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
-			blasGeometry.IndexBufferResource = geometries[i]->GetIndexBuffer()->GetResource();
-			blasGeometry.IndexBufferGPUAddress = geometries[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
-			blasGeometry.IndexCount = geometries[i]->GetIndexBuffer()->GetElementCount();
-
-			
-
-			std::shared_ptr<Ideal::IdealMaterial> material = geometries[i]->GetMaterial();
-			if (material)
-			{
-				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
-				if (diffuseTexture)
-				{
-					blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
-				}
-			}
-			blasGeometryDesc.Geometries[i] = blasGeometry;
+			//Ideal::BLASGeometry blasGeometry;
+			//blasGeometry.VertexBufferResource = m_uavBuffer->GetResource();
+			//blasGeometry.VertexBufferGPUAddress = m_uavBuffer->GetGPUVirtualAddress();
+			//blasGeometry.VertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
+			//blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
+			//blasGeometry.IndexBufferResource = meshes[i]->GetIndexBuffer()->GetResource();
+			//blasGeometry.IndexBufferGPUAddress = meshes[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
+			//blasGeometry.IndexCount = meshes[i]->GetIndexBuffer()->GetElementCount();
+			//
+			//
+			//
+			//std::shared_ptr<Ideal::IdealMaterial> material = meshes[i]->GetMaterial();
+			//if (material)
+			//{
+			//	std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
+			//	if (diffuseTexture)
+			//	{
+			//		blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+			//	}
+			//}
+			//blasGeometryDesc.Geometries[i] = blasGeometry;
 		}
 
-		m_BLAS->BuildGeometries(blasGeometryDesc.Geometries);
+		//m_BLAS->BuildGeometries(blasGeometryDesc.Geometries);
 		m_BLAS->SetDirty(true);
 
 		RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);

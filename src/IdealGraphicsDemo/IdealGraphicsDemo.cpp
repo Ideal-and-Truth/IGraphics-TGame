@@ -160,7 +160,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
+		//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, false);
+		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
@@ -314,15 +315,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//mesh2->SetTransformMatrix(world);
 
 				//----- Set Draw -----//
+				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-					static int tX = 0;
-					//cat->SetDrawObject(false);
-					std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-					if (tX % 2 == 0)
+					tX++;
+					//if (tX == 1)
+					{
+						//cat->SetDrawObject(false);
+						std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+						ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 						ka->AddAnimation("Run", runAnim);
-					else
-						ka->AddAnimation("Slash", slashAnim);
+
+						Matrix mat2 = Matrix::Identity;
+						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
+						ka->SetTransformMatrix(mat2);
+
+						meshes.push_back(ka);
+						tX++;
+					}
+				}
+
+				if (GetAsyncKeyState('C') & 0x8000)
+				{
+					std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+					ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+					ka->AddAnimation("Walk", walkAnim);
 
 					Matrix mat2 = Matrix::Identity;
 					mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
@@ -331,12 +348,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					ka->SetTransformMatrix(mat2);
 					tX++;
 				}
+
+
 				if (GetAsyncKeyState('X') & 0x8000)
 				{
-					static int tX = 0;
-					//cat->SetDrawObject(false);
-					//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-					//cat->AddAnimation("Walk", walkAnim);
 					std::shared_ptr<Ideal::IMeshObject> mesh;
 					if (tX % 2 == 0)
 						mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");

@@ -49,7 +49,7 @@ void AssimpConverter::Replace(std::wstring& OutStr, std::wstring Comp, std::wstr
 	OutStr = temp;
 }
 
-void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData)
+void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData, bool onlyPosition)
 {
 	std::wstring fileStr;
 	fileStr = m_assetPath + path;
