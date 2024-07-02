@@ -1,6 +1,9 @@
 #include "DXRAccelerationStructureManager.h"
 #include "GraphicsEngine/D3D12/D3D12UploadBufferPool.h"
 
+
+//#define OneScratchBuffer
+
 Ideal::DXRAccelerationStructureManager::DXRAccelerationStructureManager()
 {
 
@@ -34,16 +37,18 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 		m_scratchResourceSize = blas->RequiredScratchSize();
 		/*if (!m_scratchBuffer)
 		{
-			m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
 		}*/
-		//m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
-
+#ifdef OneScratchBuffer
+		m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+		m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+#else
 		// ver2
 		for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
 		{
 			m_scratchBuffers[i] = std::make_shared<Ideal::D3D12UAVBuffer>();
 			m_scratchBuffers[i]->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASStructures2");
 		}
+#endif
 	}
 
 	m_blasVector.push_back(blas);
@@ -93,13 +98,14 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Devi
 
 	m_scratchResourceSize = max(m_topLevelAS->RequiredScratchSize(), m_scratchResourceSize);
 
-	//m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
-	//m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+#ifdef OneScratchBuffer
+	m_scratchBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+	m_scratchBuffer->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASScratchResource");
+#endif
 
-
-	static uint32 once = 0;
+	/*static uint32 once = 0;
 	if (once > 0)return;
-	once++;
+	once++;*/
 	// 6.30 
 	for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
 	{
@@ -110,11 +116,10 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Devi
 		}*/
 		/*if(m_scratchBuffers[i] != nullptr)
 			continue;*/
-
+#ifndef OneScratchBuffer
 		m_scratchBuffers[i] = std::make_shared<Ideal::D3D12UAVBuffer>();
 		m_scratchBuffers[i]->Create(Device.Get(), m_scratchResourceSize, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"ASStructures2");
-		auto desc = m_scratchBuffers[i]->GetResource()->GetDesc();
-		int a = 3;
+#endif	
 	}
 }
 
@@ -155,13 +160,14 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 		// 처음에 빌드해야하거나 blas 정보가 수정되어 다시 빌드해야 할 경우
 		if (ForceBuild || blas->IsDirty())
 		{
-			//blas->Build(CommandList, m_scratchBuffer->GetResource());
-			
+#ifdef OneScratchBuffer
+			blas->Build(CommandList, m_scratchBuffer->GetResource());
+#endif
+
+#ifndef OneScratchBuffer
 			// ver2
 			blas->Build(CommandList, m_scratchBuffers[m_currentIndex]->GetResource());
-
-			/*	CD3DX12_RESOURCE_BARRIER scratchBufferBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_scratchBuffers[m_currentIndex]->GetResource());
-				CommandList->ResourceBarrier(1, &scratchBufferBarrier);*/
+#endif
 
 			CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(blas->GetResource().Get());
 			CommandList->ResourceBarrier(1, &uavBarrier);
@@ -172,11 +178,12 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 	{
 		// TLAS는 항상 리빌드한다..
 		// 위에서 받아온 첫 주소를 가져옴
-		//m_topLevelAS->Build(CommandList, numInstance, instanceDescs, m_scratchBuffer->GetResource());
-
+#ifdef OneScratchBuffer
+		m_topLevelAS->Build(CommandList, numInstance, instanceDescs, m_scratchBuffer->GetResource());
+#else
 		// ver2
 		m_topLevelAS->Build(CommandList, numInstance, instanceDescs, m_scratchBuffers[m_currentIndex]->GetResource());
-
+#endif
 		CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelAS->GetResource().Get());
 		CommandList->ResourceBarrier(1, &uavBarrier);
 	}

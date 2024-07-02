@@ -324,14 +324,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//cat->SetDrawObject(false);
 						std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
 						ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-						ka->AddAnimation("Run", runAnim);
+						if (tX % 2 == 0)
+							ka->AddAnimation("Run", runAnim);
+						else
+							ka->AddAnimation("Slash", slashAnim);
+						//ka->AddAnimation("Run", runAnim);
 
 						Matrix mat2 = Matrix::Identity;
 						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
 						ka->SetTransformMatrix(mat2);
 
 						meshes.push_back(ka);
-						tX++;
+					}
+					{
+						//cat->SetDrawObject(false);
+						std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+						ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+						if (tX % 2 == 0)
+							ka->AddAnimation("Run", runAnim);
+						else
+							ka->AddAnimation("Slash", slashAnim);
+						//ka->AddAnimation("Run", runAnim);
+
+						Matrix mat2 = Matrix::Identity;
+						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
+						ka->SetTransformMatrix(mat2);
+
+						meshes.push_back(ka);
 					}
 				}
 
