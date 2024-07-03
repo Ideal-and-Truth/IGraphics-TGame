@@ -118,8 +118,7 @@ namespace Ideal
 
 		//---AS---//
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLASByName(const std::wstring& Name);
-		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
-		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS2(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
 		uint32 AllocateInstanceIndexByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex = UINT_MAX, Matrix transform = Matrix::Identity, BYTE InstanceMask = 1);
 
 		void SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform);
@@ -144,28 +143,28 @@ namespace Ideal
 		//const std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> GetBLASes() { return m_ASManager->GetBLASes(); }
 
 	private:
-		std::unique_ptr<DXRAccelerationStructureManager> m_ASManager;
+		std::unique_ptr<DXRAccelerationStructureManager> m_ASManager = nullptr;
 
 		//---Device---//
-		uint32 m_width;
-		uint32 m_height;
+		uint32 m_width = 0;
+		uint32 m_height = 0;
 
 		//---UAV Render Target---//
-		ComPtr<ID3D12Resource> m_raytracingOutput;
+		ComPtr<ID3D12Resource> m_raytracingOutput = nullptr;
 		D3D12_CPU_DESCRIPTOR_HANDLE m_raytacingOutputResourceUAVCpuDescriptorHandle;
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uavSingleDescriptorHeap;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uavSingleDescriptorHeap = nullptr;
 
 		//---Root Signature---//
-		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature;
-		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature;
-		ComPtr<ID3D12StateObject> m_dxrStateObject;
+		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature = nullptr;
+		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature = nullptr;
+		ComPtr<ID3D12StateObject> m_dxrStateObject = nullptr;
 
 		//---Shader Table---//
-		ComPtr<ID3D12Resource> m_missShaderTable;
-		ComPtr<ID3D12Resource> m_rayGenShaderTable;
-		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
-		uint64 m_hitGroupShaderTableStrideInBytes;
-		uint64 m_missShaderTableStrideInBytes;
+		ComPtr<ID3D12Resource> m_missShaderTable = nullptr;
+		ComPtr<ID3D12Resource> m_rayGenShaderTable = nullptr;
+		ComPtr<ID3D12Resource> m_hitGroupShaderTable = nullptr;
+		uint64 m_hitGroupShaderTableStrideInBytes = 0;
+		uint64 m_missShaderTableStrideInBytes = 0;
 
 		// Shader Table Record의 인덱스
 		// 각 BLAS마다 Geometry의 개수가 다를테니 Add Instance 할 때마다 

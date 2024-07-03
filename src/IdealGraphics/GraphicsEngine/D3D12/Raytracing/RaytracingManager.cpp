@@ -111,7 +111,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_Output, handle0.GetGpuHandle());
 
 	// Parameter 1
-	CommandList->SetComputeRootShaderResourceView(Ideal::GlobalRootSignature::Slot::SRV_AccelerationStructure, m_ASManager->GetTLASResource2()->GetGPUVirtualAddress());
+	CommandList->SetComputeRootShaderResourceView(Ideal::GlobalRootSignature::Slot::SRV_AccelerationStructure, m_ASManager->GetTLASResource()->GetGPUVirtualAddress());
 
 	// Parameter 2
 	auto cb = CBPool->Allocate(Device.Get(), sizeof(SceneConstantBuffer));
@@ -185,7 +185,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 	return m_ASManager->GetBLAS(Name);
 }
 
-std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::AddBLAS2(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData /*= false*/)
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = nullptr;
 	if (!IsSkinnedData)
@@ -241,7 +241,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 
 			Geometries[i] = blasGeometry;
 		}
-		blas = m_ASManager->AddBLAS2(Renderer, Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, true, Name, IsSkinnedData);
+		blas = m_ASManager->AddBLAS(Renderer, Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, true, Name, IsSkinnedData);
 		skinnedMeshObject->SetBLAS(blas);
 
 		// 현재 BLAS안에 들어있는 Geometry의 개수만큼 contributionToHitGroupIndex를 늘려준다.
@@ -285,7 +285,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 
 			Geometries[i] = blasGeometry;
 		}
-		blas = m_ASManager->AddBLAS2(Renderer, Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, false, Name, IsSkinnedData);
+		blas = m_ASManager->AddBLAS(Renderer, Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, false, Name, IsSkinnedData);
 		meshObject->SetBLAS(blas);
 	}
 
@@ -313,13 +313,13 @@ void Ideal::RaytracingManager::FinalCreate2(ComPtr<ID3D12Device5> Device, ComPtr
 {
 	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
 	//buildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
-	m_ASManager->InitTLAS2(Device.Get(), buildFlags, false, L"RaytracingManager TLAS");	// AllowUpdate false
+	m_ASManager->InitTLAS(Device.Get(), buildFlags, false, L"RaytracingManager TLAS");	// AllowUpdate false
 	//m_ASManager->Build2(Device, CommandList, UploadBufferPool, nullptr, ForceBuild);
 }
 
 void Ideal::RaytracingManager::UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
 {
-	m_ASManager->Build2(Device, CommandList, UploadBufferPool, DeferredDeleteManager);
+	m_ASManager->Build(Device, CommandList, UploadBufferPool, DeferredDeleteManager);
 }
 
 void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)

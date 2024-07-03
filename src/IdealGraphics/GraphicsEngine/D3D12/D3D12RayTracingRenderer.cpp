@@ -368,7 +368,7 @@ finishAdapter:
 	// create resource
 	//CreateDeviceDependentResources();
 	
-	RaytracingManagerInit2();
+	RaytracingManagerInit();
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -405,7 +405,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		);
 	}
 
-	RaytracingManagerUpdate2();
+	RaytracingManagerUpdate();
 
 	m_raytracingManager->DispatchRays(
 		m_device,
@@ -449,7 +449,7 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStatic
 	// temp
 	auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newStaticMesh);
 
-	RaytracingManagerAddObject2(mesh);
+	RaytracingManagerAddObject(mesh);
 
 	m_staticMeshObject.push_back(mesh);
 	return newStaticMesh;
@@ -463,7 +463,7 @@ std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12RayTracingRenderer::Creat
 	newSkinnedMesh->SetName(FileName);
 
 	auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(newSkinnedMesh);
-	RaytracingManagerAddObject2(mesh);
+	RaytracingManagerAddObject(mesh);
 	m_skinnedMeshObject.push_back(mesh);
 	// 인터페이스로 따로 뽑아야 할 듯
 	return newSkinnedMesh;
@@ -952,7 +952,7 @@ void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
 	m_renderScene->Draw(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 }
 
-void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit2()
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
 	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height);
@@ -969,12 +969,12 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit2()
 	//WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
 }
 
-void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate2()
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 {
 	m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
 }
 
-void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
 {
 	//ResetCommandList();
 	auto blas = m_raytracingManager->GetBLASByName(obj->GetName().c_str());
@@ -986,7 +986,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject2(std::shared_ptr
 	}
 	else
 	{
-		blas = m_raytracingManager->AddBLAS2(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
+		blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
 	}
 	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
 	obj->SetBLASInstanceIndex(instanceIndex);
@@ -997,10 +997,10 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject2(std::shared_ptr
 	}
 }
 
-void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
 {
 	//ResetCommandList();
-	auto blas = m_raytracingManager->AddBLAS2(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
+	auto blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
 	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
 	obj->SetBLASInstanceIndex(instanceIndex);
 

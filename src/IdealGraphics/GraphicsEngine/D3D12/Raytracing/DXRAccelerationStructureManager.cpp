@@ -16,7 +16,7 @@ Ideal::DXRAccelerationStructureManager::~DXRAccelerationStructureManager()
 
 }
 
-std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerationStructureManager::AddBLAS2(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData /*= false*/)
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerationStructureManager::AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	// 스키닝 데이터일 경우 그냥 BLAS는 새로 만든다.
 	if (!IsSkinnedData)
@@ -82,7 +82,7 @@ uint32 Ideal::DXRAccelerationStructureManager::AddInstanceByBLAS(std::shared_ptr
 	return instanceIndex;
 }
 
-void Ideal::DXRAccelerationStructureManager::InitTLAS2(ComPtr<ID3D12Device5> Device, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool allowUpdate /*= false*/, const wchar_t* TLASName /*= nullptr*/)
+void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Device, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool allowUpdate /*= false*/, const wchar_t* TLASName /*= nullptr*/)
 {
 	for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
 	{
@@ -99,7 +99,7 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS2(ComPtr<ID3D12Device5> Dev
 	}
 }
 
-void Ideal::DXRAccelerationStructureManager::Build2(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager, bool ForceBuild /*= false*/)
+void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager, bool ForceBuild /*= false*/)
 {
 	UploadBufferPool->Reset();
 	m_currentIndex = (m_currentIndex + 1) % MAX_PENDING_FRAME;

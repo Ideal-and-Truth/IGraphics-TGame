@@ -217,21 +217,18 @@ namespace Ideal
 		void InitRenderScene();
 		void TestDrawRenderScene();
 
-		// as manager test
+		// AS Manager
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
 
-		// 2024.06.23 대격변
+		// 여러 Descriptor Pool과 고정적으로 사용될 srv_cbv_uav heap을 합쳤다.
 		std::shared_ptr<Ideal::D3D12DescriptorManager> m_descriptorManager;
 
 		// 2024.07.02 Wait 뺀 버전의 BLAS , TLAS 빌드 만들기
-		void RaytracingManagerInit2();
-		void RaytracingManagerUpdate2();
-		void RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
-		void RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
-
-		bool m_isBuilt = false;
-
+		void RaytracingManagerInit();
+		void RaytracingManagerUpdate();
+		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
 	};
 }

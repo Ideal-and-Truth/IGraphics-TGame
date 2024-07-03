@@ -122,23 +122,11 @@ namespace Ideal
 			ComPtr<ID3D12Device5> Device,
 			uint32 NumBLASInstanceDescs,
 			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
-			std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager
-		,
+			std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager,
 			bool AllowUpdate = false
 		);
-		void Create2(
-			ComPtr<ID3D12Device5> Device,
-			uint32 NumBLASInstanceDescs,
-			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
-			bool AllowUpdate = false
-		);
+
 		void Build(
-			ComPtr<ID3D12GraphicsCommandList4> CommandList,
-			uint32 NumInstanceDesc,
-			D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress,
-			ComPtr<ID3D12Resource> ScratchBuffer
-		);
-		void Build2(
 			ComPtr<ID3D12GraphicsCommandList4> CommandList,
 			uint32 NumInstanceDesc,
 			D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress,
