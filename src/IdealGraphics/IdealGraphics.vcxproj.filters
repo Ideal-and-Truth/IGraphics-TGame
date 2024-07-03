@@ -163,11 +163,11 @@
     <ClInclude Include="D3D12StructuredBuffer.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
-    <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorManager.h" />
     <ClInclude Include="GraphicsEngine\public\IRendererResource.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UAV.h" />
     <ClInclude Include="GraphicsEngine\D3D12\DeferredDeleteManager.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -255,10 +255,10 @@
     <ClCompile Include="D3D12StructuredBuffer.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UAV.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\DeferredDeleteManager.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

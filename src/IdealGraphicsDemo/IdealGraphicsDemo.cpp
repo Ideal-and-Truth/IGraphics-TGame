@@ -204,7 +204,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		static int transformX = 0.f;
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 		{
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 0; i++)
 			{
 				//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 				//Matrix mat = Matrix::Identity;

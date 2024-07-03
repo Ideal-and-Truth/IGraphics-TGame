@@ -206,17 +206,8 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_animationShader;
 
 	private:
-		const wchar_t* m_raygenShaderName = L"MyRaygenShader";
-		const wchar_t* m_closestHitShaderName = L"MyClosestHitShader";
-		const wchar_t* m_missShaderName = L"MyMissShader";
-		const wchar_t* m_hitGroupName = L"MyHitGroup";
-
 		// AS
 		SceneConstantBuffer m_sceneCB;
-
-		ComPtr<ID3D12Resource> m_missShaderTable;
-		ComPtr<ID3D12Resource> m_rayGenShaderTable;
-		ComPtr<ID3D12Resource> m_hitGroupShaderTable;
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();
@@ -227,27 +218,12 @@ namespace Ideal
 		void TestDrawRenderScene();
 
 		// as manager test
-		void RaytracingManagerInit();
-		void RaytracingManagerUpdate();
-		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
-		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
 
-		uint32 m_contributionToHitGroupIndexCount = 0;
-		std::vector<Ideal::D3D12DescriptorHandle> m_shaderhandles;
-		std::vector<std::shared_ptr<Ideal::D3D12ShaderResourceView>> srvs;
-		uint64 m_hitGroupShaderTableStrideInBytes = 0;
-		uint64 m_missShaderTableStrideInBytes = 0;
-
 		// 2024.06.23 대격변
 		std::shared_ptr<Ideal::D3D12DescriptorManager> m_descriptorManager;
-
-		// 임시 변수. 중간에 오브젝트를 추가하면 빌드를 
-		// 바로 하는데 같은 프레임에 다시 빌드를 하면 
-		// 오류가 나는 것 같아서 임시로 추가하겠따.
-
 
 		// 2024.07.02 Wait 뺀 버전의 BLAS , TLAS 빌드 만들기
 		void RaytracingManagerInit2();

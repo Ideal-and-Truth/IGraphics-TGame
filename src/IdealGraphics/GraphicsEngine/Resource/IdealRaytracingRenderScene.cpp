@@ -27,7 +27,7 @@ void Ideal::IdealRaytracingRenderScene::Init(ComPtr<ID3D12Device5> InDevice, Com
 	m_device = InDevice;
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
 	//m_raytracingManager->Init(TODO, TODO, TODO);
-	m_raytracingManager->FinalCreate(m_device, CommandList, UploadBufferPool);
+	//m_raytracingManager->FinalCreate2(m_device, CommandList, UploadBufferPool);
 }
 
 void Ideal::IdealRaytracingRenderScene::Draw(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
@@ -47,7 +47,8 @@ void Ideal::IdealRaytracingRenderScene::UpdateAccelerationStructures(ComPtr<ID3D
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::IdealRaytracingRenderScene::GetTLASResource()
 {
-	return m_raytracingManager->GetTLASResource();
+	//return m_raytracingManager->GetTLASResource();
+	return nullptr;
 }
 
 void Ideal::IdealRaytracingRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)

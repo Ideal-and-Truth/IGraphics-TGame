@@ -226,6 +226,7 @@
     <ClInclude Include="GraphicsEngine\public\IdealRendererFactory.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealMesh.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealBone.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealSkinnedMeshObject.h" />
@@ -237,7 +238,6 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
     <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
-    <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
     <ClInclude Include="Misc\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
@@ -309,6 +309,7 @@
     <ClCompile Include="GraphicsEngine\private\IdealRendererFactory.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealBone.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealStaticMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealMaterial.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealSkinnedMeshObject.cpp" />
@@ -319,7 +320,6 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
     <ClCompile Include="Misc\Utils\IndexCreator.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\Utils\FileUtils.cpp" />
