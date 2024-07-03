@@ -22,6 +22,9 @@ namespace Ideal
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12DescriptorManager;
 	class D3D12UnorderedAccessView;
+
+	class D3D12RayTracingRenderer;
+	class DeferredDeleteManager;
 }
 
 namespace Ideal
@@ -105,7 +108,7 @@ namespace Ideal
 		~RaytracingManager();
 
 	public:
-		void Init(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
 		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB);
 		void Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
 
@@ -115,13 +118,18 @@ namespace Ideal
 
 		//---AS---//
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS2(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
 		uint32 AllocateInstanceIndexByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex = UINT_MAX, Matrix transform = Matrix::Identity, BYTE InstanceMask = 1);
 
 		// 기존 static 또는 skinned mesh안에서 BLAS를 생성했음 -> 뭔가 잘못됨을 느껴버림
 		Ideal::InstanceInfo AddBLASAndGetInstanceIndex(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData = false);
 		void SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform);
 		void FinalCreate(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild = false);
-		void UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool);
+		void FinalCreate2(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild = false);
+
+
+
+		void UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		ComPtr<ID3D12Resource> GetTLASResource();
 
 		//---Root Singnature---//
@@ -133,7 +141,7 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12Shader> Shader
 		);
 		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
-		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager);
+		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 
 		//TEMP
 		ComPtr<ID3D12Resource> GetRayGenShaderTable() { return m_rayGenShaderTable; }

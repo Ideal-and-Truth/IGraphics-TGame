@@ -3,6 +3,10 @@
 
 #define D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN   ((D3D12_GPU_VIRTUAL_ADDRESS)-1)
 
+// Test
+//#define BeforeRefactor
+
+
 // SWAP CHAIN & MAX PENDING
 
 #define G_SWAP_CHAIN_NUM 4

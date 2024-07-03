@@ -22,6 +22,7 @@
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
 #include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/Resource/IdealCamera.h"
@@ -311,6 +312,9 @@ finishAdapter:
 	CreateFence();
 	CreatePools();
 
+	//---------------Create Managers---------------//
+	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
+
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
 	m_resourceManager->Init(m_device);
 	m_resourceManager->SetAssetPath(m_assetPath);
@@ -363,7 +367,12 @@ finishAdapter:
 
 	// create resource
 	//CreateDeviceDependentResources();
+	
+#ifdef BeforeRefactor
 	RaytracingManagerInit();
+#else
+	RaytracingManagerInit2();
+#endif
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -402,7 +411,12 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	}
 
 	//---------------------Raytracing-------------------------//
+#ifdef BeforeRefactor
 	RaytracingManagerUpdate();
+#else
+	RaytracingManagerUpdate2();
+#endif
+
 	//DoRaytracing5();
 	m_raytracingManager->DispatchRays(
 		m_device,
@@ -443,7 +457,13 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStatic
 
 	// temp
 	auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newStaticMesh);
+
+#ifdef BeforeRefactor
 	RaytracingManagerAddObject(mesh);
+#else
+	RaytracingManagerAddObject2(mesh);
+#endif
+
 	m_staticMeshObject.push_back(mesh);
 	return newStaticMesh;
 	//return nullptr;
@@ -456,7 +476,11 @@ std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12RayTracingRenderer::Creat
 	newSkinnedMesh->SetName(FileName);
 
 	auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(newSkinnedMesh);
+#ifdef BeforeRefactor
 	RaytracingManagerAddObject(mesh);
+#else
+	RaytracingManagerAddObject2(mesh);
+#endif
 	m_skinnedMeshObject.push_back(mesh);
 	// 인터페이스로 따로 뽑아야 할 듯
 	return newSkinnedMesh;
@@ -832,6 +856,9 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	m_descriptorManager->ResetPool(nextContextIndex);
 
 	m_currentContextIndex = nextContextIndex;
+
+	// deferred resource Delete And Set Next Context Index
+	m_deferredDeleteManager->DeleteDeferredResources(m_currentContextIndex);
 }
 
 uint64 Ideal::D3D12RayTracingRenderer::Fence()
@@ -944,9 +971,9 @@ void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
-	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init(m_device, m_commandLists[m_currentContextIndex], m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height);
 
+	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
+	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height);
 	ResetCommandList();
 
 	m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], true);
@@ -961,7 +988,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 {
-	m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
+	m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
@@ -983,13 +1010,13 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	m_commandLists[m_currentContextIndex]->Close();
 	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-	Fence();
+	/*Fence();
 	for (DWORD i = 0; i < MAX_PENDING_FRAME_COUNT; i++)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
-	}
+	}*/
 
-	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager);
+	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
@@ -1014,13 +1041,76 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
 	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-	Fence();
+	/*Fence();
 	for (DWORD i = 0; i < MAX_PENDING_FRAME_COUNT; i++)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
+	}*/
+
+	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+
+	//m_isBuilt = true;
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit2()
+{
+	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
+	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height);
+
+	ResetCommandList();
+
+	m_raytracingManager->FinalCreate2(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], true);
+
+	m_commandLists[m_currentContextIndex]->Close();
+	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	Fence();
+	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate2()
+{
+	if (m_isBuilt)
+	{
+		m_isBuilt = false;
+		return;
 	}
+	m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
+}
 
-	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager);
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
+{
+	//ResetCommandList();
+	auto blas = m_raytracingManager->AddBLAS2(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
+	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
+	obj->SetBLASInstanceIndex(instanceIndex);
 
+	//m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], false);
+	//m_raytracingManager->FinalCreate2(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], false);
+	//m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
+	//
+	//m_commandLists[m_currentContextIndex]->Close();
+	//ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	//m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
+{
+	//ResetCommandList();
+	auto blas = m_raytracingManager->AddBLAS2(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
+	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
+	obj->SetBLASInstanceIndex(instanceIndex);
+
+	//m_raytracingManager->FinalCreate(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], false);
+	//m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
+	//
+	//m_commandLists[m_currentContextIndex]->Close();
+	//ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
+	//m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+	//
+	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 	//m_isBuilt = true;
 }

@@ -11,6 +11,8 @@ namespace Ideal
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12UAVBuffer;
+
+	class DeferredDeleteManager;
 }
 
 namespace Ideal
@@ -83,6 +85,7 @@ namespace Ideal
 			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
 			bool AllowUpdate
 		);
+
 		void Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer);
 
 		uint32 GetInstanceContributionToHitGroupIndex() { return m_instanceContributionToHitGroupIndex; }
@@ -119,10 +122,23 @@ namespace Ideal
 			ComPtr<ID3D12Device5> Device,
 			uint32 NumBLASInstanceDescs,
 			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
+			std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager
+		,
 			bool AllowUpdate = false
 		);
-
+		void Create2(
+			ComPtr<ID3D12Device5> Device,
+			uint32 NumBLASInstanceDescs,
+			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
+			bool AllowUpdate = false
+		);
 		void Build(
+			ComPtr<ID3D12GraphicsCommandList4> CommandList,
+			uint32 NumInstanceDesc,
+			D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress,
+			ComPtr<ID3D12Resource> ScratchBuffer
+		);
+		void Build2(
 			ComPtr<ID3D12GraphicsCommandList4> CommandList,
 			uint32 NumInstanceDesc,
 			D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress,

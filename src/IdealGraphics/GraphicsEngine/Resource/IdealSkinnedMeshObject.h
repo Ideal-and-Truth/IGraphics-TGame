@@ -70,7 +70,6 @@ namespace Ideal
 	public:
 		void CreateUAVVertexBuffer(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		std::shared_ptr<Ideal::IdealSkinnedMesh> GetSkinnedMesh() { return m_skinnedMesh; }
-		void AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		void UpdateBLASInstance(
 			ComPtr<ID3D12Device5> Device,
 			ComPtr<ID3D12GraphicsCommandList4> CommandList,

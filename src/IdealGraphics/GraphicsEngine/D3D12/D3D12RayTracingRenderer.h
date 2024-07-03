@@ -57,6 +57,7 @@ namespace Ideal
 	class D3D12ConstantBufferPool;
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12UploadBufferPool;
+	class DeferredDeleteManager;
 
 	// Interface
 	class ICamera;
@@ -89,7 +90,7 @@ namespace Ideal
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
-		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 1028;
+		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 1024;
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
 
 	public:
@@ -138,8 +139,10 @@ namespace Ideal
 		void EndRender();
 		void Present();
 
+	public:
 		uint64 Fence();
 		void WaitForFenceValue(uint64 ExpectedFenceValue);
+
 	private:
 		uint32 m_width = 0;
 		uint32 m_height = 0;
@@ -156,8 +159,10 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_BLASInstancePool[MAX_PENDING_FRAME_COUNT] = {};
 
+	public:
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
+	private:
 
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
 		UINT m_swapChainFlags;
@@ -183,8 +188,9 @@ namespace Ideal
 		std::shared_ptr<Ideal::IdealCamera> m_mainCamera = nullptr;
 		float m_aspectRatio = 0.f;
 
-		// resource Manager
+		// Manager
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
+		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager = nullptr;
 
 		// RAY TRACING FRAMEWORK
 	private:
@@ -241,6 +247,15 @@ namespace Ideal
 		// 임시 변수. 중간에 오브젝트를 추가하면 빌드를 
 		// 바로 하는데 같은 프레임에 다시 빌드를 하면 
 		// 오류가 나는 것 같아서 임시로 추가하겠따.
+
+
+		// 2024.07.02 Wait 뺀 버전의 BLAS , TLAS 빌드 만들기
+		void RaytracingManagerInit2();
+		void RaytracingManagerUpdate2();
+		void RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		void RaytracingManagerAddObject2(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
+
 		bool m_isBuilt = false;
+
 	};
 }

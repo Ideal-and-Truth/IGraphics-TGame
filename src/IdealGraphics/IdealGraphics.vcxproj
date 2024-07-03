@@ -172,6 +172,7 @@
     <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="GraphicsEngine\D3D12\DeferredDeleteManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UAV.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorManager.h" />
     <ClInclude Include="D3D12StructuredBuffer.h" />
@@ -269,6 +270,7 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\D3D12\DeferredDeleteManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UAV.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorManager.cpp" />
     <ClCompile Include="D3D12StructuredBuffer.cpp" />

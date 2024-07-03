@@ -22,8 +22,7 @@ Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
 
 void Ideal::IdealStaticMeshObject::Init(ComPtr<ID3D12Device> Device)
 {
-	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Device);
-	//ID3D12Device* device = d3d12Renderer->GetDevice().Get();
+
 }
 
 void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
@@ -60,43 +59,6 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ, handle.GetGpuHandle());
 
 	m_staticMesh->Draw(Renderer);
-}
-
-void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)
-{
-	// 일단 geometry들을 받아온다.
-	auto& meshes = m_staticMesh->GetMeshes();
-
-	uint64 numMesh = meshes.size();
-
-	Ideal::BLASData blasGeometryDesc;
-	for (uint32 i = 0; i < numMesh; ++i)
-	{
-		Ideal::BLASGeometry blasGeometry;
-		blasGeometry.Name = L"";	// temp
-		blasGeometry.VertexBufferResource = meshes[i]->GetVertexBuffer()->GetResource();
-		blasGeometry.VertexBufferGPUAddress = meshes[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
-		blasGeometry.VertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
-		blasGeometry.VertexStrideInBytes = meshes[i]->GetVertexBuffer()->GetElementSize();
-
-		blasGeometry.IndexBufferResource = meshes[i]->GetIndexBuffer()->GetResource();
-		blasGeometry.IndexBufferGPUAddress = meshes[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
-		blasGeometry.IndexCount = meshes[i]->GetIndexBuffer()->GetElementCount();
-
-		std::shared_ptr<Ideal::IdealMaterial> material = meshes[i]->GetMaterial();
-		if (material)
-		{
-			std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
-			if (diffuseTexture)
-			{
-				blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
-			}
-		}
-		blasGeometryDesc.Geometries.push_back(blasGeometry);
-	}
-	const std::wstring& name = GetName();
-	Ideal::InstanceInfo instanceInfo = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, false, name.c_str(), false);
-	m_instanceIndex = instanceInfo.InstanceIndex;
 }
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)

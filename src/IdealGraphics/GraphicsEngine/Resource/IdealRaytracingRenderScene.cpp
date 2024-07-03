@@ -42,7 +42,7 @@ void Ideal::IdealRaytracingRenderScene::Draw(ComPtr<ID3D12GraphicsCommandList4> 
 
 void Ideal::IdealRaytracingRenderScene::UpdateAccelerationStructures(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
 {
-	m_raytracingManager->UpdateAccelerationStructures(m_device, CommandList, UploadBufferPool);
+	//m_raytracingManager->UpdateAccelerationStructures(m_device, CommandList, UploadBufferPool, TODO);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::IdealRaytracingRenderScene::GetTLASResource()
@@ -52,18 +52,18 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::IdealRaytracingRenderScene::GetTLA
 
 void Ideal::IdealRaytracingRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
 {
-	if (std::dynamic_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject) != nullptr)
-	{
-		std::shared_ptr<Ideal::IdealStaticMeshObject> staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
-		m_staticMeshObjects.push_back(staticMeshObject);
-
-		// add blas
-		staticMeshObject->AllocateBLASInstanceID(m_device, m_raytracingManager);
-	}
-	else if (std::dynamic_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject) != nullptr)
-	{
-		m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
-	}
+	//if (std::dynamic_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject) != nullptr)
+	//{
+	//	std::shared_ptr<Ideal::IdealStaticMeshObject> staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+	//	m_staticMeshObjects.push_back(staticMeshObject);
+	//
+	//	// add blas
+	//	staticMeshObject->AllocateBLASInstanceID(m_device, m_raytracingManager);
+	//}
+	//else if (std::dynamic_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject) != nullptr)
+	//{
+	//	m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
+	//}
 }
 
 void Ideal::IdealRaytracingRenderScene::AddDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)

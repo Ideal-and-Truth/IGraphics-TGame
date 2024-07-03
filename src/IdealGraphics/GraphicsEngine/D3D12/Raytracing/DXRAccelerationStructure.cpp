@@ -1,5 +1,6 @@
 #include "DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
 inline void AllocateUAVBuffer(ID3D12Device* pDevice, UINT64 bufferSize, ID3D12Resource** ppResource, D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON, const wchar_t* resourceName = nullptr)
 {
@@ -152,7 +153,7 @@ Ideal::DXRTopLevelAccelerationStructure::~DXRTopLevelAccelerationStructure()
 
 }
 
-void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, uint32 NumInstanceDescs, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate /*= false */)
+void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, uint32 NumBLASInstanceDescs, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager, bool AllowUpdate /*= false */)
 {
 	m_allowUpdate = AllowUpdate;
 	m_buildFlags = BuildFlags;
@@ -167,7 +168,8 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 	topLevelInputs.Flags = m_buildFlags;
-	topLevelInputs.NumDescs = NumInstanceDescs;
+	topLevelInputs.NumDescs = NumBLASInstanceDescs;
+	//topLevelInputs.NumDescs = 1024;
 
 	Device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &m_preBuildInfo);
 	if (m_preBuildInfo.ResultDataMaxSizeInBytes <= 0)
@@ -177,13 +179,51 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
 	//D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON;
-	m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
+
+	if (m_accelerationStructure == nullptr)
+	{
+		m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
+	}
+	if (DeferredDeleteManager)
+	{
+		DeferredDeleteManager->AddResourceToDelete(m_accelerationStructure->GetResource());
+	}
+	m_accelerationStructure->Create(Device.Get(), m_preBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, m_name.c_str());
+}
+
+void Ideal::DXRTopLevelAccelerationStructure::Create2(ComPtr<ID3D12Device5> Device, uint32 NumBLASInstanceDescs, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate /*= false */)
+{
+	m_allowUpdate = AllowUpdate;
+	m_buildFlags = BuildFlags;
+	if (AllowUpdate)
+	{
+		m_buildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+	}
+
+	// prebuild
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC topLevelBuildDesc = {};
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& topLevelInputs = topLevelBuildDesc.Inputs;
+	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+	topLevelInputs.Flags = m_buildFlags;
+	topLevelInputs.NumDescs = 0;
+
+	Device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &m_preBuildInfo);
+	if (m_preBuildInfo.ResultDataMaxSizeInBytes <= 0)
+	{
+		MyMessageBoxW(L"Failed to prebuild AS");
+	}
+
+	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
+	//D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON;
+
+	
 	m_accelerationStructure->Create(Device.Get(), m_preBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, m_name.c_str());
 }
 
 void Ideal::DXRTopLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, uint32 NumInstanceDesc, D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress, ComPtr<ID3D12Resource> ScratchBuffer)
 {
-	
+
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC tlasBuildDesc = {};
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& tlasInputs = tlasBuildDesc.Inputs;
 	{
@@ -198,6 +238,35 @@ void Ideal::DXRTopLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommand
 			tlasBuildDesc.SourceAccelerationStructureData = m_accelerationStructure->GetGPUVirtualAddress();
 		}
 		tlasInputs.NumDescs = NumInstanceDesc;
+		//tlasInputs.NumDescs = 1024;
+		tlasInputs.InstanceDescs = InstanceDescsGPUAddress;
+
+		tlasBuildDesc.ScratchAccelerationStructureData = ScratchBuffer->GetGPUVirtualAddress();
+		tlasBuildDesc.DestAccelerationStructureData = m_accelerationStructure->GetGPUVirtualAddress();
+	}
+
+	CommandList->BuildRaytracingAccelerationStructure(&tlasBuildDesc, 0, nullptr);
+	m_isDirty = false;
+	m_isBuilt = true;
+}
+
+void Ideal::DXRTopLevelAccelerationStructure::Build2(ComPtr<ID3D12GraphicsCommandList4> CommandList, uint32 NumInstanceDesc, D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress, ComPtr<ID3D12Resource> ScratchBuffer)
+{
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC tlasBuildDesc = {};
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& tlasInputs = tlasBuildDesc.Inputs;
+	{
+		tlasInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+		tlasInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+		tlasInputs.Flags = m_buildFlags;
+		if (m_isBuilt && m_allowUpdate)
+		{
+			tlasInputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
+
+			// 샘플에서는 이 코드가 없지만 이거 안해주면 ERROR 남
+			tlasBuildDesc.SourceAccelerationStructureData = m_accelerationStructure->GetGPUVirtualAddress();
+		}
+		//tlasInputs.NumDescs = NumInstanceDesc;
+		tlasInputs.NumDescs = 0;
 		tlasInputs.InstanceDescs = InstanceDescsGPUAddress;
 
 		tlasBuildDesc.ScratchAccelerationStructureData = ScratchBuffer->GetGPUVirtualAddress();

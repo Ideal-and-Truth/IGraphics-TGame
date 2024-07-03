@@ -43,10 +43,10 @@ namespace Ideal
 
 		//------Raytracing Info------//
 	public:
-		void AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
 		void UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
 		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);
 		void SetBLASInstanceIndex(uint32 InstanceID) { m_instanceIndex = InstanceID; }
+
 	private:
 		bool m_isDirty = false;
 		uint32 m_instanceIndex = 0;
