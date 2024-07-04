@@ -36,12 +36,18 @@ private:
 
 	std::shared_ptr<Truth::Entity> m_target;
 
+	PROPERTY(isTargetIn);
+	bool m_isTargetIn;
+
 public:
 	Enemy();
 	virtual ~Enemy();
 
 	METHOD(Awake);
 	void Awake();
+
+	METHOD(Start);
+	void Start();
 
 	METHOD(Update);
 	void Update();

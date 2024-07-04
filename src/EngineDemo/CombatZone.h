@@ -6,7 +6,6 @@ class CombatZone :
 {
 	GENERATE_CLASS_TYPE_INFO(CombatZone);
 private:
-private:
 	friend class boost::serialization::access;
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 	template<class Archive>
@@ -14,9 +13,6 @@ private:
 	template<class Archive>
 	void load(Archive& ar, const unsigned int file_version);
 
-private:
-	bool m_isTargetIn;
-	std::shared_ptr<Truth::Entity> m_target;
 	
 public:
 	CombatZone();
@@ -37,8 +33,6 @@ public:
 	METHOD(OnTriggerExit);
 	void OnTriggerExit(Truth::Collider* _other);
 
-private:
-	std::shared_ptr<Truth::Entity> Detect();
 };
 
 template<class Archive>

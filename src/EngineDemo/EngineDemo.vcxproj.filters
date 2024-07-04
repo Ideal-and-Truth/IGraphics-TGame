@@ -111,6 +111,9 @@
     <ClInclude Include="CombatZone.h">
       <Filter>Component\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyController.h">
+      <Filter>Component\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -156,6 +159,9 @@
       <Filter>Component\Player\PlayerState</Filter>
     </ClCompile>
     <ClCompile Include="CombatZone.cpp">
+      <Filter>Component\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyController.cpp">
       <Filter>Component\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
