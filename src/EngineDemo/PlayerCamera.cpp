@@ -46,15 +46,6 @@ void PlayerCamera::Start()
 
 void PlayerCamera::LateUpdate()
 {
-	if (GetKey(KEY::UPBUTTON))
-	{
-		m_cameraDistance += 0.1f;
-	}
-	if (GetKey(KEY::DOWNBUTTON))
-	{
-		m_cameraDistance -= 0.1f;
-	}
-
 	if (!m_isLockOn == GetKeyDown(KEY::Q))
 	{
 		m_isLockOn = true;
