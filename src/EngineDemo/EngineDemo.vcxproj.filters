@@ -114,6 +114,9 @@
     <ClInclude Include="EnemyController.h">
       <Filter>Component\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="TestFollwer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="EnemyController.cpp">
       <Filter>Component\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFollwer.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
