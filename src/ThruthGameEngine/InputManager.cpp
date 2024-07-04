@@ -14,6 +14,7 @@ Truth::InputManager::InputManager()
 	, m_mouseDy(0)
 {
 	DEBUG_PRINT("Create InputManager\n");
+	m_mousePoint = new POINT;
 }
 
 Truth::InputManager::~InputManager()
@@ -97,6 +98,26 @@ void Truth::InputManager::Update()
 			m_keyInfomation[i].prevPush = false;
 		}
 	}
+	GetCursorPos(m_mousePoint);
+
+	OnMouseMove(0, m_mousePoint->x, m_mousePoint->y);
+
+	if (m_fpsMode)
+	{
+		SetCursorPos(1920 / 2, 1080 / 2);
+
+		if (GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
+		{
+			m_fpsMode = false;
+		}
+	}
+	else
+	{
+		if (GetKeyState(KEY::F_1) == KEY_STATE::DOWN)
+		{
+			m_fpsMode = true;
+		}
+	}
 }
 
 /// <summary>
@@ -120,12 +141,16 @@ void Truth::InputManager::Finalize()
 
 void Truth::InputManager::OnMouseMove(int _btnState, int _x, int _y)
 {
-	if (GetKeyState(KEY::D) == KEY_STATE::DOWN)
+	if (m_fpsMode)
 	{
-		int a = -1;
+		m_oldMousePosX = 1920 / 2;
+		m_oldMousePosY = 1080 / 2;
 	}
-	m_oldMousePosX = m_nowMousePosX;
-	m_oldMousePosY = m_nowMousePosY;
+	else
+	{
+		m_oldMousePosX = m_nowMousePosX;
+		m_oldMousePosY = m_nowMousePosY;
+	}
 
 	m_nowMousePosX = _x;
 	m_nowMousePosY = _y;
@@ -138,6 +163,7 @@ void Truth::InputManager::ResetMouseMovement(int _x /*= 0*/, int _y /*= 0*/)
 {
 	m_mouseDx = 0;
 	m_mouseDy = 0;
+
 }
 
 KEY_STATE Truth::InputManager::GetKeyState(KEY _eKey) const

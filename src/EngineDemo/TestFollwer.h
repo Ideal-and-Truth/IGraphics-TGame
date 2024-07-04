@@ -21,8 +21,6 @@ private:
 	std::weak_ptr<Truth::Controller> m_controller;
 	std::weak_ptr<Truth::Entity> m_player;
 
-	int test;
-
 public:
 	TestFollwer();
 	~TestFollwer();

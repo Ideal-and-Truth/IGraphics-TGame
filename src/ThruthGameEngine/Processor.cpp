@@ -42,30 +42,30 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
-// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
+	// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
+	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 
-// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
-// 
-// 	// 저장할 배열
-// 	std::vector<Vector3> pos;
-// 
-// 	unsigned int meshNum = file->Read<unsigned int>();
-// 
-// 	for (int i = 0; i < meshNum; i++)
-// 	{
-// 		unsigned int verticesNum = file->Read<unsigned int>();
-// 		for (int j = 0; j < verticesNum; j++)
-// 		{
-// 			Vector3 p;
-// 			p.x = file->Read<float>();
-// 			p.y = file->Read<float>();
-// 			p.z = file->Read<float>();
-// 			pos.push_back(p);
-// 		}
-// 	}
-// 
+	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
+	// 
+	// 	// 저장할 배열
+	// 	std::vector<Vector3> pos;
+	// 
+	// 	unsigned int meshNum = file->Read<unsigned int>();
+	// 
+	// 	for (int i = 0; i < meshNum; i++)
+	// 	{
+	// 		unsigned int verticesNum = file->Read<unsigned int>();
+	// 		for (int j = 0; j < verticesNum; j++)
+	// 		{
+	// 			Vector3 p;
+	// 			p.x = file->Read<float>();
+	// 			p.y = file->Read<float>();
+	// 			p.z = file->Read<float>();
+	// 			pos.push_back(p);
+	// 		}
+	// 	}
+	// 
 
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }
@@ -146,12 +146,25 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WM_RBUTTONDOWN:
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
-		g_inputmanager->ResetMouseMovement(LOWORD(lParam), HIWORD(lParam));
-		break;
+	{
+		if (g_inputmanager == nullptr)
+		{
+			break;
+		}
+		// g_inputmanager->ResetMouseMovement(LOWORD(lParam), HIWORD(lParam));
+	}
+	break;
 
 	case WM_MOUSEMOVE:
-		g_inputmanager->OnMouseMove(static_cast<int>(wParam), LOWORD(lParam), HIWORD(lParam));
-		break;
+	{
+		if (g_inputmanager == nullptr)
+		{
+			break;
+		}
+		// g_inputmanager->OnMouseMove(static_cast<int>(wParam), LOWORD(lParam), HIWORD(lParam));
+
+	}
+	break;
 
 	default:
 
