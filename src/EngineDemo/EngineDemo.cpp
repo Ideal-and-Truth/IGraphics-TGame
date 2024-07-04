@@ -87,9 +87,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	///...///
  	//processor->LoadScene(L"../Scene/localTest.scene");
- 	processor->LoadScene(L"../Scene/test.scene");
+ 	// processor->LoadScene(L"../Scene/test.scene");
 
- 	//processor->LoadScene(L"../Scene/navMeshTest.scene");
+ 	processor->LoadScene(L"../Scene/navMeshTest.scene");
 
 
  	//processor->LoadScene(L"../Scene/ControllerTest.scene");

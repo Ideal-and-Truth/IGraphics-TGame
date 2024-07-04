@@ -223,6 +223,8 @@
     <ClCompile Include="AnimatorController.cpp">
       <Filter>Component\Animator</Filter>
     </ClCompile>
+    <ClCompile Include="NavGeom.cpp" />
+    <ClCompile Include="NavMeshGenerater.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -354,6 +356,8 @@
     <ClInclude Include="AnimatorController.h">
       <Filter>Component\Animator</Filter>
     </ClInclude>
+    <ClInclude Include="NavGeom.h" />
+    <ClInclude Include="NavMeshGenerater.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
