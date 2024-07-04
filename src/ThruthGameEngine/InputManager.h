@@ -208,8 +208,12 @@ namespace Truth
 		std::weak_ptr<EventManager> m_eventManager;
 		LPPOINT m_mousePoint;
 
+
 	public:
+		int m_deltaWheel;
 		bool m_fpsMode = false;
+
+		int GetDeltaWheel() const { return m_deltaWheel; }
 
 	public:
 		InputManager();

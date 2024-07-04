@@ -142,32 +142,18 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		}
 		break;
 	}
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-	{
-		if (g_inputmanager == nullptr)
-		{
-			break;
-		}
-		// g_inputmanager->ResetMouseMovement(LOWORD(lParam), HIWORD(lParam));
-	}
-	break;
 
-	case WM_MOUSEMOVE:
+	case WM_MOUSEWHEEL:
 	{
-		if (g_inputmanager == nullptr)
-		{
-			break;
-		}
-		// g_inputmanager->OnMouseMove(static_cast<int>(wParam), LOWORD(lParam), HIWORD(lParam));
-
+		g_inputmanager->m_deltaWheel = GET_WHEEL_DELTA_WPARAM(wParam);
+		break;
 	}
-	break;
 
 	default:
-
+		if (g_inputmanager)
+		{
+			g_inputmanager->m_deltaWheel = 0;
+		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
