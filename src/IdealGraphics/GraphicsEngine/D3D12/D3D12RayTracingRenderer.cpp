@@ -479,11 +479,25 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 	{
 		auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
 		RaytracingManagerDeleteObject(mesh);
+
+		auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), mesh);
+		{
+			*it = std::move(m_staticMeshObject.back());
+			m_deferredDeleteManager->AddMeshObjectToDelete(MeshObject);
+			m_staticMeshObject.pop_back();
+		}
 	}
 	else if (MeshObject->GetMeshType() == Ideal::Skinned)
 	{
 		auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject);
 		RaytracingManagerDeleteObject(mesh);
+
+		auto it = std::find(m_skinnedMeshObject.begin(), m_skinnedMeshObject.end(), mesh);
+		{
+			*it = std::move(m_skinnedMeshObject.back());
+			m_deferredDeleteManager->AddMeshObjectToDelete(MeshObject);
+			m_skinnedMeshObject.pop_back();
+		}
 	}
 }
 
