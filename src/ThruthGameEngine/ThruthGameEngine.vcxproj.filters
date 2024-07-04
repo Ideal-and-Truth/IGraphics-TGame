@@ -112,6 +112,12 @@
     <Filter Include="Component\Collider\Mesh">
       <UniqueIdentifier>{a3d62599-8c3f-4505-8320-aaf4bcf2cc83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\NavMesh">
+      <UniqueIdentifier>{e62e00d4-2521-49d4-b2f2-649be3eab1c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\NavMesh\Geom">
+      <UniqueIdentifier>{e5ae6624-5d48-4676-a482-d1992ec5b13a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -220,6 +226,12 @@
       <Filter>Utils\Math</Filter>
     </ClCompile>
     <ClCompile Include="MeshCollider.cpp" />
+    <ClCompile Include="NavMeshGenerater.cpp">
+      <Filter>Component\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NavGeom.cpp">
+      <Filter>Component\NavMesh\Geom</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -348,6 +360,12 @@
       <Filter>Utils\Math</Filter>
     </ClInclude>
     <ClInclude Include="MeshCollider.h" />
+    <ClInclude Include="NavMeshGenerater.h">
+      <Filter>Component\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NavGeom.h">
+      <Filter>Component\NavMesh\Geom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

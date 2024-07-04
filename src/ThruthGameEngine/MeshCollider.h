@@ -15,6 +15,9 @@ namespace Truth
 		void load(Archive& _ar, const unsigned int file_version);
 
 	private:
+		std::vector<std::vector<Vector3>> m_points;
+		std::wstring m_path;
+		std::vector<physx::PxShape*> m_meshCollider;
 
 	public:
 		MeshCollider();
@@ -22,6 +25,13 @@ namespace Truth
 
 		METHOD(Initalize);
 		void Initalize();
+
+		METHOD(Awake);
+		virtual void Awake() override;
+
+	private:
+		void GetPoints();
+
 	};
 
 	template<class Archive>

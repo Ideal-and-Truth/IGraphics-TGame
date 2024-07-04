@@ -3,6 +3,7 @@
 #include "Managers.h"
 #include "EventManager.h"
 #include "GraphicsManager.h"
+#include "NavMeshGenerater.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -99,6 +100,8 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
+	m_navMesh = std::make_shared<NavMeshGenerater>();
+	m_navMesh->Initalize(L"TestMap/navTestMap");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -113,6 +116,23 @@ void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 		child->m_parent = _entity;
 		LoadEntity(child);
 	}
+}
+
+DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
+{
+	return m_navMesh->FindPath(_start, _end, _size);
+}
+
+std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
+{
+	for (auto& e : m_entities)
+	{
+		if (e->m_name == _name)
+		{
+			return e;
+		}
+	}
+	return std::weak_ptr<Entity>();
 }
 
 #ifdef _DEBUG

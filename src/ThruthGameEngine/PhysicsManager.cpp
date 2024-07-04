@@ -76,7 +76,7 @@ void Truth::PhysicsManager::Initalize()
 	CreatePhysxScene();
 
 	m_cooking = ::PxCreateCooking(
-		PX_PHYSICS_VERSION, 
+		PX_PHYSICS_VERSION,
 		*m_foundation,
 		physx::PxCookingParams(physx::PxTolerancesScale())
 	);
@@ -87,9 +87,9 @@ void Truth::PhysicsManager::Initalize()
 /// </summary>
 void Truth::PhysicsManager::Finalize()
 {
-// 	m_physics->release();
-// 	m_pvd->release();
-// 	m_trasport->release();
+	// 	m_physics->release();
+	// 	m_pvd->release();
+	// 	m_trasport->release();
 }
 
 /// <summary>
@@ -233,7 +233,7 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateDefaultRigidStatic()
 /// <param name="_args">파라미터</param>
 /// <param name="_points">점 정보</param>
 /// <returns>콜라이다</returns>
-physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points)
+physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const Vector3& _args)
 {
 
 	physx::PxShape* shape = nullptr;
@@ -253,35 +253,48 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	{
 		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material);
 		break;
-	}	
-	case Truth::ColliderShape::MESH:
-	{
-		std::vector<physx::PxVec3> convexVerts;
-		convexVerts = ConvertPointToVertex(_args, _points);
-
-		physx::PxConvexMeshDesc convexDesc;
-		convexDesc.points.count = static_cast<physx::PxU32>(convexVerts.size());
-		convexDesc.points.stride = sizeof(physx::PxVec3);
-		convexDesc.points.data = convexVerts.data();
-		convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
-
-		physx::PxDefaultMemoryOutputStream buf;
-		physx::PxConvexMeshCookingResult::Enum result;
-		if (!m_cooking->cookConvexMesh(convexDesc, buf, &result))
-			return NULL;
-		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
-
-		physx::PxConvexMesh* convexMesh = m_physics->createConvexMesh(input);
-
-		shape = m_physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_material);
-
-		break;
 	}
 	default:
 		shape = nullptr;
 		break;
 	}
 
+	return shape;
+}
+
+std::vector<physx::PxShape*> Truth::PhysicsManager::CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points /*= std::vector<std::vector<Vector3>>()*/)
+{
+	if (_points.empty())
+	{
+		return std::vector<physx::PxShape*>();
+	}
+	std::vector<physx::PxShape*> shape;
+
+	shape.resize(_points.size());
+
+	std::vector<std::vector<physx::PxVec3>> convexVerts;
+	convexVerts = ConvertPointToVertex(_args, _points);
+
+	for (int i = 0; i < _points.size(); i++)
+	{
+		physx::PxConvexMeshDesc convexDesc;
+		convexDesc.points.count = static_cast<physx::PxU32>(convexVerts[i].size());
+		convexDesc.points.stride = sizeof(physx::PxVec3);
+		convexDesc.points.data = convexVerts[i].data();
+		convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+		physx::PxDefaultMemoryOutputStream buf;
+		physx::PxConvexMeshCookingResult::Enum result;
+
+		if (!m_cooking->cookConvexMesh(convexDesc, buf, &result))
+			return std::vector<physx::PxShape*>();
+
+		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+
+		physx::PxConvexMesh* convexMesh = m_physics->createConvexMesh(input);
+
+		shape[i] = m_physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_material);
+	}
 	return shape;
 }
 
@@ -348,7 +361,7 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 	// 씬 생성
 	m_scene = m_physics->createScene(sceneDesc);
-	
+
 #ifdef _DEBUG
 	// 출력 할 디버깅 정보
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
@@ -385,15 +398,20 @@ void Truth::PhysicsManager::CreatePhysxScene()
 /// </summary>
 /// <param name="_points">점 데이터</param>
 /// <returns>정점 데이터</returns>
-std::vector<physx::PxVec3> Truth::PhysicsManager::ConvertPointToVertex(const Vector3& _args, const std::vector<Vector3>& _points)
+std::vector<std::vector<physx::PxVec3>> Truth::PhysicsManager::ConvertPointToVertex(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points)
 {
-	std::vector<physx::PxVec3> result;
+	std::vector<std::vector<physx::PxVec3>> result;
 	result.resize(_points.size());
+
 	for (int i = 0; i < _points.size(); i++)
 	{
-		result[i].x = _points[i].x * _args.x;
-		result[i].y = _points[i].y * _args.y;
-		result[i].z = _points[i].z * _args.z;
+		result[i].resize(_points[i].size());
+		for (int j = 0; j < _points[i].size(); j++)
+		{
+			result[i][j].x = _points[i][j].x * _args.x;
+			result[i][j].y = _points[i][j].y * _args.y;
+			result[i][j].z = _points[i][j].z * _args.z;
+		}
 	}
 
 	return result;

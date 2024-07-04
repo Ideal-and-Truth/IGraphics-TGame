@@ -31,9 +31,6 @@
     <Filter Include="Component\Bullet">
       <UniqueIdentifier>{8a6966f1-adc0-47d9-8eaa-1a998d8e63ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity\BulletSpowner">
-      <UniqueIdentifier>{7bdae6a6-f93c-4e5d-9fef-b4e72e114ab3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\DebugComponent">
       <UniqueIdentifier>{efe874c3-c70a-4af3-ad04-09ed6df054f7}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,9 @@
     </Filter>
     <Filter Include="Component\BattleSystem\Weapon">
       <UniqueIdentifier>{9444ff9b-e7ce-4eb5-a751-7b11655795bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Folloer">
+      <UniqueIdentifier>{7bdae6a6-f93c-4e5d-9fef-b4e72e114ab3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +117,9 @@
     <ClInclude Include="MeleeWeapon.h">
       <Filter>Component\BattleSystem\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="TestFollwer.h">
+      <Filter>Entity\Folloer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -166,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="MeleeWeapon.cpp">
       <Filter>Component\BattleSystem\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFollwer.cpp">
+      <Filter>Entity\Folloer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

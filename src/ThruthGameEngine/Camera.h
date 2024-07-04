@@ -34,10 +34,11 @@ namespace Truth
 		PROPERTY(farZ);
 		float m_farZ;
 
+	public:
 		Vector3 m_position;
 
-		PROPERTY(look)
-			Vector3 m_look;
+		PROPERTY(look);
+		Vector3 m_look;
 
 	public:
 		Camera();
@@ -72,6 +73,7 @@ namespace Truth
 		METHOD(Start);
 		virtual void Start();
 
+		void DefaultUpdate();
 	};
 
 	template<class Archive>

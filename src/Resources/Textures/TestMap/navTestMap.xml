@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>Material.003</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.004</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.006</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.007</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.002</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.001</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.010</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.011</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Material.009</Name>
+        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <SpecularFile>default_Texture.png</SpecularFile>
+        <NormalFile>default_Texture.png</NormalFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

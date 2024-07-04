@@ -8,6 +8,7 @@
 namespace Truth
 {
 	class Managers;
+	class NavMeshGenerater;
 
 	class Scene final
 		: public EventHandler
@@ -28,7 +29,7 @@ namespace Truth
 		PROPERTY(name);
 		std::string m_name;
 
-
+		std::shared_ptr<NavMeshGenerater> m_navMesh;
 
 	private:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
@@ -60,6 +61,12 @@ namespace Truth
 		void Initalize(std::weak_ptr<Managers> _manager);
 
 		void LoadEntity(std::shared_ptr<Entity> _entity);
+
+
+		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size);
+
+		std::weak_ptr<Entity> FindEntity(std::string _name);
+
 
 #ifdef _DEBUG
 		void EditorUpdate();

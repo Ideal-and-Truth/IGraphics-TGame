@@ -63,6 +63,33 @@ void Truth::Camera::Start()
 	SetMainCamera();
 }
 
+void Truth::Camera::DefaultUpdate()
+{
+	float m_speed = 1.0f;
+	if (GetKey(KEY::UP))
+	{
+		m_camera->Walk(m_speed);
+	}
+	if (GetKey(KEY::DOWN))
+	{
+		m_camera->Walk(-m_speed);
+	}
+	if (GetKey(KEY::LEFT))
+	{
+		m_camera->Strafe(-m_speed);
+	}
+	if (GetKey(KEY::RIGHT))
+	{
+		m_camera->Strafe(m_speed);
+	}
+
+	if (GetKey(KEY::LMOUSE))
+	{
+		m_camera->Pitch(MouseDy() * 0.3f);
+		m_camera->RotateY(MouseDx() * 0.3f);
+	}
+}
+
 void Truth::Camera::Initalize()
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();

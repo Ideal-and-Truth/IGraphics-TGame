@@ -5,7 +5,6 @@
 #include "Component.h"
 #include "GraphicsManager.h"
 #include "RigidBody.h"
-#include "FileUtils.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Collider)
 
@@ -83,17 +82,13 @@ void Truth::Collider::Destroy()
 /// </summary>
 void Truth::Collider::Awake()
 {
-	Vector3 onwerSize = m_owner.lock()->GetScale();
 	if (m_shape == ColliderShape::MESH)
 	{
-		GetPoints();
-		m_collider = CreateCollider(m_shape, (m_size * onwerSize), m_points);
-		m_isTrigger = false;
+		return;
 	}
-	else
-	{
-		m_collider = CreateCollider(m_shape, (m_size * onwerSize) / 2);
-	}
+
+	Vector3 onwerSize = m_owner.lock()->GetScale();
+	m_collider = CreateCollider(m_shape, (m_size * onwerSize) / 2);
 
 	m_collider->userData = this;
 
@@ -169,11 +164,6 @@ physx::PxShape* Truth::Collider::CreateCollider(ColliderShape _shape, const Vect
 	return m_managers.lock()->Physics()->CreateCollider(_shape, _args);
 }
 
-physx::PxShape* Truth::Collider::CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points)
-{
-	return m_managers.lock()->Physics()->CreateCollider(_shape, _args, _points);
-}
-
 /// <summary>
 /// 디폴트 다이나믹 바디 생성
 /// Rigidbody가 없는 콜라이더의 경우 해당 바디 사용
@@ -241,27 +231,4 @@ void Truth::Collider::SetUpFiltering(uint32 _filterGroup)
 	m_collider->setSimulationFilterData(filterData);
 }
 
-/// <summary>
-/// 경로에서 정점 데이터를 가져온다
-/// </summary>
-void Truth::Collider::GetPoints()
-{
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	std::wstring prefix = L"../Resources/Models/";
-	file->Open(prefix + m_path + L".pos", FileMode::Read);
 
-	unsigned int meshNum = file->Read<unsigned int>();
-
-	for (unsigned int i = 0; i < meshNum; i++)
-	{
-		unsigned int verticesNum = file->Read<unsigned int>();
-		for (unsigned int j = 0; j < verticesNum; j++)
-		{
-			Vector3 p;
-			p.x = file->Read<float>();
-			p.y = file->Read<float>();
-			p.z = file->Read<float>();
-			m_points.push_back(p);
-		}
-	}
-}
