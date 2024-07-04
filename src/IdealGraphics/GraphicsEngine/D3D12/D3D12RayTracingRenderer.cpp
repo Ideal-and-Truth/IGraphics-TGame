@@ -470,6 +470,23 @@ std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12RayTracingRenderer::Creat
 	return newSkinnedMesh;
 }
 
+void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
+{
+	if (MeshObject == nullptr)
+		return;
+
+	if (MeshObject->GetMeshType() == Ideal::Static)
+	{
+		auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+		RaytracingManagerDeleteObject(mesh);
+	}
+	else if (MeshObject->GetMeshType() == Ideal::Skinned)
+	{
+		auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject);
+		RaytracingManagerDeleteObject(mesh);
+	}
+}
+
 std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimation(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
@@ -990,14 +1007,17 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 
 	if (blas != nullptr)
 	{
+		obj->SetBLAS(blas);
+		blas->AddRefCount();
 		ShouldBuildShaderTable = false;
 	}
 	else
 	{
+		// 안에서 add ref count를 실행시키긴 함. ....
 		blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
 	}
-	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
-	obj->SetBLASInstanceIndex(instanceIndex);
+	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
+	obj->SetBLASInstanceDesc(instanceDesc);
 
 	if (ShouldBuildShaderTable)
 	{
@@ -1009,9 +1029,48 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 {
 	//ResetCommandList();
 	auto blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
-	uint32 instanceIndex = m_raytracingManager->AllocateInstanceIndexByBLAS(blas);
-	obj->SetBLASInstanceIndex(instanceIndex);
+	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
+	obj->SetBLASInstanceDesc(instanceDesc);
 
 	// Skinning 데이터는 쉐이더 테이블을 그냥 만든다.
+	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
+{
+	const std::wstring& name = obj->GetName();
+	auto blas = obj->GetBLAS();
+	//auto blas = m_raytracingManager->GetBLASByName(name);
+	auto blasInstance = obj->GetBLASInstanceDesc();
+	m_raytracingManager->DeleteBLASInstance(blasInstance);
+	if (blas != nullptr)
+	{
+ 		bool ShouldDeleteBLAS = blas->SubRefCount();
+		if (ShouldDeleteBLAS)
+		{
+			m_deferredDeleteManager->AddResourceToDelete(blas->GetResource());
+			m_raytracingManager->DeleteBLAS(blas, name, false);
+		}
+	}
+	obj.reset();
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
+{
+	const std::wstring& name = obj->GetName();
+	auto blas = obj->GetBLAS();
+	//auto blas = m_raytracingManager->GetBLASByName(name);
+	auto blasInstance = obj->GetBLASInstanceDesc();
+	m_raytracingManager->DeleteBLASInstance(blasInstance);
+	if (blas != nullptr)
+	{
+		bool ShouldDeleteBLAS = blas->SubRefCount();
+		if (ShouldDeleteBLAS)
+		{
+			m_deferredDeleteManager->AddResourceToDelete(blas->GetResource());
+			m_raytracingManager->DeleteBLAS(blas, name, true);
+		}
+	}
+	obj.reset();
 	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 }

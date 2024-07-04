@@ -9,10 +9,10 @@
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "Misc/Utils/StringUtils.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
 
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
-
 }
 
 Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
@@ -65,7 +65,8 @@ void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::Ray
 {
 	if (m_isDirty)
 	{
-		RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
+		//RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
+		m_BLASInstanceDesc->InstanceDesc.SetTransform(m_transform);
 		//m_blas->SetDirty(true);
 		m_isDirty = false;
 	}
@@ -74,4 +75,9 @@ void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::Ray
 void Ideal::IdealStaticMeshObject::SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS)
 {
 	m_blas = InBLAS;
+}
+
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::IdealStaticMeshObject::GetBLAS()
+{
+	return m_blas;
 }

@@ -36,6 +36,8 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISkinnedMeshObject>	CreateSkinnedMeshObject(const std::wstring& FileName) abstract;
 		virtual std::shared_ptr<Ideal::IAnimation>			CreateAnimation(const std::wstring& FileName) abstract;
 
+		virtual void										DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) abstract;
+
 		virtual std::shared_ptr<Ideal::IRenderScene>		CreateRenderScene() abstract;
 		virtual void										SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) abstract;
 

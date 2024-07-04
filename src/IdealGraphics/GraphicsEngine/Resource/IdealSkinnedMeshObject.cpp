@@ -18,6 +18,7 @@
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
 #include "GraphicsEngine/D3D12/D3D12UAV.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
 
 #include <d3dx12.h>
 //#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
@@ -267,34 +268,10 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 					m_uavView
 				);
 			}
-
-			//Ideal::BLASGeometry blasGeometry;
-			//blasGeometry.VertexBufferResource = m_uavBuffer->GetResource();
-			//blasGeometry.VertexBufferGPUAddress = m_uavBuffer->GetGPUVirtualAddress();
-			//blasGeometry.VertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
-			//blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
-			//blasGeometry.IndexBufferResource = meshes[i]->GetIndexBuffer()->GetResource();
-			//blasGeometry.IndexBufferGPUAddress = meshes[i]->GetIndexBuffer()->GetResource()->GetGPUVirtualAddress();
-			//blasGeometry.IndexCount = meshes[i]->GetIndexBuffer()->GetElementCount();
-			//
-			//
-			//
-			//std::shared_ptr<Ideal::IdealMaterial> material = meshes[i]->GetMaterial();
-			//if (material)
-			//{
-			//	std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
-			//	if (diffuseTexture)
-			//	{
-			//		blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
-			//	}
-			//}
-			//blasGeometryDesc.Geometries[i] = blasGeometry;
 		}
-
-		//m_BLAS->BuildGeometries(blasGeometryDesc.Geometries);
 		m_BLAS->SetDirty(true);
-
-		RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
+		m_BLASInstanceDesc->InstanceDesc.SetTransform(m_transform);
+		//RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
 
 		m_isDirty = false;
 	}
@@ -303,6 +280,11 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 void Ideal::IdealSkinnedMeshObject::SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS)
 {
 	m_BLAS = InBLAS;
+}
+
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::IdealSkinnedMeshObject::GetBLAS()
+{
+	return m_BLAS;
 }
 
 void Ideal::IdealSkinnedMeshObject::SetBLASInstanceIndex(uint32 InstanceIndex)

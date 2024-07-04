@@ -14,6 +14,7 @@ namespace Ideal
 	//--raytracing--//
 	class RaytracingManager;
 	class DXRBottomLevelAccelerationStructure;
+	class BLASInstanceDesc;
 }
 
 
@@ -33,6 +34,8 @@ namespace Ideal
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 
+		virtual Ideal::EMeshType GetMeshType() const override { return EMeshType::Static; }
+
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetStaticMesh(std::shared_ptr<Ideal::IdealStaticMesh> Mesh) { m_staticMesh = Mesh; }
 		std::shared_ptr<Ideal::IdealStaticMesh> GetStaticMesh() { return m_staticMesh; }
@@ -46,10 +49,14 @@ namespace Ideal
 		void UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
 		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);
 		void SetBLASInstanceIndex(uint32 InstanceID) { m_instanceIndex = InstanceID; }
+		void SetBLASInstanceDesc(std::shared_ptr<Ideal::BLASInstanceDesc> InstanceDesc) { m_BLASInstanceDesc = InstanceDesc; }
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLAS();
+		std::shared_ptr<Ideal::BLASInstanceDesc> GetBLASInstanceDesc() { return m_BLASInstanceDesc; }
 
 	private:
 		bool m_isDirty = false;
 		uint32 m_instanceIndex = 0;
+		std::shared_ptr<Ideal::BLASInstanceDesc> m_BLASInstanceDesc;
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_blas;
 	};
 }

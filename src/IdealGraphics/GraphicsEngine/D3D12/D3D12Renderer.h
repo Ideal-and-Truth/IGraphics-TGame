@@ -82,6 +82,8 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
 		virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
 
+		virtual void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
+
 		virtual std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
 		virtual void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
 

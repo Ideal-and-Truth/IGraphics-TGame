@@ -22,6 +22,7 @@ namespace Ideal
 	class D3D12UAVBuffer;
 	class D3D12DescriptorManager;
 	class D3D12UnorderedAccessView;
+	class BLASInstanceDesc;
 }
 struct AnimTransform
 {
@@ -45,6 +46,7 @@ namespace Ideal
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
+		virtual Ideal::EMeshType GetMeshType() const override { return Ideal::EMeshType::Skinned; }
 
 		//--TODO: 나중에 인터페이스로 뽑을 것--//
 		uint32 GetCurrentAnimationIndex() { return m_currentFrame; };
@@ -80,12 +82,17 @@ namespace Ideal
 			std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
 		);
 		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLAS();
 		//std::vector<BLASGeometry> GetBLASGeometries(ComPtr<ID3D12Device> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager);
 		void SetBLASInstanceIndex(uint32 InstanceIndex);
+		void SetBLASInstanceDesc(std::shared_ptr<Ideal::BLASInstanceDesc> InstanceDesc) { m_BLASInstanceDesc = InstanceDesc; }
+		std::shared_ptr<Ideal::BLASInstanceDesc> GetBLASInstanceDesc() { return m_BLASInstanceDesc; }
+
 		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_VertexBuffer() { return m_uavBuffer; }
 
 	private:
 		uint32 m_instanceIndex = 0;
+		std::shared_ptr<Ideal::BLASInstanceDesc> m_BLASInstanceDesc;
 		bool m_isDirty = false;
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_BLAS;
 

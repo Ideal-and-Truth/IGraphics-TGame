@@ -191,23 +191,25 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOu
 
 std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::GetBLASByName(const std::wstring& Name)
 {
-	return m_ASManager->GetBLAS(Name);
+	auto ret = m_ASManager->GetBLAS(Name);
+
+	return ret;
 }
 
 std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = nullptr;
-	if (!IsSkinnedData)
-	{
-		blas = m_ASManager->GetBLAS(Name);
-		// 이미 있다!
-		if (blas != nullptr)
-		{
-			std::shared_ptr<Ideal::IdealStaticMeshObject> staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
-			staticMeshObject->SetBLAS(blas);
-			return blas;
-		}
-	}
+	//if (!IsSkinnedData)
+	//{
+	//	blas = m_ASManager->GetBLAS(Name);
+	//	// 이미 있다!
+	//	if (blas != nullptr)
+	//	{
+	//		std::shared_ptr<Ideal::IdealStaticMeshObject> staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+	//		staticMeshObject->SetBLAS(blas);
+	//		return blas;
+	//	}
+	//}
 	// 스키닝 데이터일 경우에는 그냥 BLAS를 새로 만든다.
 	std::vector<Ideal::BLASGeometry> Geometries;
 	if (IsSkinnedData)
@@ -252,9 +254,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 		}
 		blas = m_ASManager->AddBLAS(Renderer, Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, true, Name, IsSkinnedData);
 		skinnedMeshObject->SetBLAS(blas);
-
 		// 현재 BLAS안에 들어있는 Geometry의 개수만큼 contributionToHitGroupIndex를 늘려준다.
-
 		//skinnedMeshObject->SetBLASInstanceIndex(instanceIndex);
 	}
 	else
@@ -301,16 +301,31 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 	uint64 geometrySizeInBLAS = Geometries.size();
 	blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
 	m_contributionToHitGroupIndexCount += geometrySizeInBLAS;
+	
+	// blas ref count 를 증가시킨다.
+	blas->AddRefCount();
 
 	return blas;
 }
 
-uint32 Ideal::RaytracingManager::AllocateInstanceIndexByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
+std::shared_ptr<Ideal::BLASInstanceDesc> Ideal::RaytracingManager::AllocateInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
 {
-	uint32 instanceIndex = m_ASManager->AddInstanceByBLAS(BLAS, InstanceContributionToHitGroupIndex, transform, InstanceMask);
-	return instanceIndex;
+	auto blasInstanceDesc = m_ASManager->AddInstanceByBLAS(BLAS, InstanceContributionToHitGroupIndex, transform, InstanceMask);
+	return blasInstanceDesc;
 }
 
+
+void Ideal::RaytracingManager::DeleteBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, const std::wstring& Name, bool IsSkinnedData)
+{
+	uint64 geometrySizeInBLAS = BLAS->GetGeometries().size();
+	m_contributionToHitGroupIndexCount -= geometrySizeInBLAS;
+	m_ASManager->DeleteBLAS(BLAS, Name, IsSkinnedData);
+}
+
+void Ideal::RaytracingManager::DeleteBLASInstance(std::shared_ptr<Ideal::BLASInstanceDesc> Instance)
+{
+	m_ASManager->DeleteBLASInstance(Instance);
+}
 
 void Ideal::RaytracingManager::SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform)
 {

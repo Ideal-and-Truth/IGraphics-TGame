@@ -32,7 +32,11 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 	// 처음 추가할 경우 만들어서 넣어준다.
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(Name);
 	blas->Create(Device, Geometries, BuildFlags, AllowUpdate);
-	m_blasMap[Name] = blas;
+
+	//if (IsSkinnedData)
+	{
+		m_blasMap[Name] = blas;
+	}
 
 	if (blas->RequiredScratchSize() > m_scratchResourceSize)
 	{
@@ -56,14 +60,14 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 	return blas;
 }
 
-uint32 Ideal::DXRAccelerationStructureManager::AddInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
+std::shared_ptr<Ideal::BLASInstanceDesc> Ideal::DXRAccelerationStructureManager::AddInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
 {
-	BLASInstanceDesc BLASInstance;
-	BLASInstance.BLAS = BLAS;
+	//BLASInstanceDesc BLASInstance;
+	std::shared_ptr<Ideal::BLASInstanceDesc> BLASInstance = std::make_shared<Ideal::BLASInstanceDesc>();
+	BLASInstance->BLAS = BLAS;
 
 	// 만들 인스턴스의 인덱스를 생성하고
-	uint32 instanceIndex = m_currentBlasInstanceIndex;
-	m_currentBlasInstanceIndex++;
+	//uint32 instanceIndex = m_currentBlasInstanceIndex;
 
 	Ideal::DXRInstanceDesc instanceDesc = {};
 	instanceDesc.InstanceMask = InstanceMask;
@@ -75,11 +79,40 @@ uint32 Ideal::DXRAccelerationStructureManager::AddInstanceByBLAS(std::shared_ptr
 	instanceDesc.AccelerationStructure = BLAS->GetGPUAddress();
 	instanceDesc.SetTransform(transform);
 
-	BLASInstance.InstanceDesc = instanceDesc;
+	BLASInstance->InstanceDesc = instanceDesc;
 
-	m_instanceDescs.push_back(BLASInstance);
+	m_blasInstanceDescs.push_back(BLASInstance);
 
-	return instanceIndex;
+	return BLASInstance;
+}
+
+void Ideal::DXRAccelerationStructureManager::DeleteBLASInstance(std::shared_ptr<Ideal::BLASInstanceDesc> Instance)
+{
+	auto it = std::find(m_blasInstanceDescs.begin(), m_blasInstanceDescs.end(), Instance);
+	//if (it != m_blasInstanceDescs.end())
+	{
+		*it = std::move(m_blasInstanceDescs.back());
+		m_blasInstanceDescs.pop_back();
+	}
+}
+
+void Ideal::DXRAccelerationStructureManager::DeleteBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, const std::wstring& Name, bool IsSkinnedData)
+{
+	if (!IsSkinnedData)
+	{
+		auto it = m_blasMap.find(Name);
+		if (it != m_blasMap.end())
+		{
+			m_blasMap.erase(it);
+		}
+
+	}
+	auto it = std::find(m_blasVector.begin(), m_blasVector.end(), BLAS);
+	if (it != m_blasVector.end())
+	{
+		*it = std::move(m_blasVector.back());
+		m_blasVector.pop_back();
+	}
 }
 
 void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Device, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool allowUpdate /*= false*/, const wchar_t* TLASName /*= nullptr*/)
@@ -87,7 +120,7 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Devi
 	for (uint32 i = 0; i < MAX_PENDING_FRAME; ++i)
 	{
 		m_topLevelASs[i] = std::make_shared<Ideal::DXRTopLevelAccelerationStructure>(TLASName);
-		m_topLevelASs[i]->Create(Device, m_currentBlasInstanceIndex, BuildFlags, nullptr, allowUpdate);
+		m_topLevelASs[i]->Create(Device, m_blasInstanceDescs.size(), BuildFlags, nullptr, allowUpdate);
 	}
 
 	m_scratchResourceSize = max(m_topLevelASs[0]->RequiredScratchSize(), m_scratchResourceSize);
@@ -109,7 +142,7 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 	bool isFirst = true;
 
 	// instance 정보를 UpdateBuffer에 올린다.
-	uint32 numInstance = m_instanceDescs.size();
+	uint32 numInstance = m_blasInstanceDescs.size();
 
 	for (uint32 i = 0; i < numInstance; ++i)
 	{
@@ -121,7 +154,7 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 		}
 
 		DXRInstanceDesc* ptr = (DXRInstanceDesc*)container->SystemMemoryAddress;
-		*ptr = m_instanceDescs[i].InstanceDesc;
+		*ptr = m_blasInstanceDescs[i]->InstanceDesc;
 	}
 
 	// Build BLAS
@@ -139,7 +172,7 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 
 	// Build TLAS
 	{
-			m_topLevelASs[m_currentIndex]->Create(Device, m_currentBlasInstanceIndex, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, nullptr, false);
+			m_topLevelASs[m_currentIndex]->Create(Device, m_blasInstanceDescs.size(), D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, nullptr, false);
 		m_topLevelASs[m_currentIndex]->Build(CommandList, numInstance, instanceDescs, m_scratchBuffers[m_currentIndex]->GetResource());
 
 		CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelASs[m_currentIndex]->GetResource().Get());

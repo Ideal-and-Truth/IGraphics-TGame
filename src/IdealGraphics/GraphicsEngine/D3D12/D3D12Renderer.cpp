@@ -457,6 +457,12 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const s
 	return newAnimation;
 }
 
+void Ideal::D3D12Renderer::DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
+{
+	//2024.07.04 TEMP
+	MeshObject.reset();
+}
+
 std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12Renderer::CreateRenderScene()
 {
 	std::shared_ptr<Ideal::IdealRenderScene> newScene = std::make_shared<Ideal::IdealRenderScene>();

@@ -38,13 +38,22 @@ namespace Ideal
 
 		// BLAS는 내부에서 만들어주니 정보를 넘긴다.
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData = false);
-		uint32 AddInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex = UINT_MAX, Matrix transform = Matrix::Identity, BYTE InstanceMask = 1);
-		DXRInstanceDesc* GetInstanceByIndex(uint32 InstanceIndex) { return &m_instanceDescs[InstanceIndex].InstanceDesc; }
+		std::shared_ptr<BLASInstanceDesc> AddInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex = UINT_MAX, Matrix transform = Matrix::Identity, BYTE InstanceMask = 1);
+
+
+		DXRInstanceDesc* GetInstanceByIndex(uint32 InstanceIndex) { return &m_blasInstanceDescs[InstanceIndex]->InstanceDesc; }
 		ComPtr<ID3D12Resource> GetTLASResource() { return m_topLevelASs[m_currentIndex]->GetResource(); }
 		const std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> GetBLASs() { return m_blasVector; }
 
-		const std::vector<Ideal::BLASInstanceDesc>& GetBLASInstanceDescs() { return m_instanceDescs; }
-		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLAS(const std::wstring& Name) { return m_blasMap[Name]; }
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLAS(const std::wstring& Name) {
+
+			auto ret = m_blasMap[Name];
+
+			return m_blasMap[Name];
+		}
+
+		void DeleteBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, const std::wstring& Name, bool IsSkinnedData);
+		void DeleteBLASInstance(std::shared_ptr<Ideal::BLASInstanceDesc> Instance);
 
 	private:
 		std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> m_topLevelAS = nullptr;
@@ -57,8 +66,11 @@ namespace Ideal
 		uint64 m_scratchResourceSize = 0;
 
 		// Instance에 사용되는 인덱스
-		uint32 m_currentBlasInstanceIndex = 0;
-		std::vector<Ideal::BLASInstanceDesc> m_instanceDescs = {};
+		std::vector<std::shared_ptr<Ideal::BLASInstanceDesc>> m_blasInstanceDescs = {};
+		
+		
+		//std::set<std::shared_ptr<Ideal::BLASInstanceDesc>> m_instanceDescs = {};
+		//std::vector<Ideal::BLASInstanceDesc> m_instanceDescs = {};
 
 	private:
 		std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> m_topLevelASs[MAX_PENDING_FRAME] = {};

@@ -4,6 +4,12 @@
 
 namespace Ideal
 {
+	enum EMeshType
+	{
+		Static,
+		Skinned
+	};
+
 	class IMeshObject : public IRendererResource
 	{
 	public:
@@ -13,5 +19,7 @@ namespace Ideal
 	public:
 		virtual void SetTransformMatrix(const DirectX::SimpleMath::Matrix& Matrix) abstract;
 		virtual void SetDrawObject(bool IsDraw) abstract;
+
+		virtual Ideal::EMeshType GetMeshType() const abstract;
 	};
 }

@@ -107,6 +107,8 @@ namespace Ideal
 		void SetMainCamera(std::shared_ptr<ICamera> Camera) override;
 		std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
+		void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
+
 		std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
 		std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
 		void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
@@ -235,5 +237,8 @@ namespace Ideal
 		void RaytracingManagerUpdate();
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
+
+		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
 	};
 }

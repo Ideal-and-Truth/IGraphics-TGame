@@ -21,7 +21,7 @@ namespace Ideal
 	{
 		//BLASGeometry() : Name(L""), VertexBuffer(nullptr), IndexBuffer(nullptr), DiffuseTexture() {}
 		BLASGeometry() : Name(L""), DiffuseTexture() {}
-		
+
 		std::wstring Name;
 		Ideal::D3D12DescriptorHandle DiffuseTexture;
 		//std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
@@ -109,6 +109,19 @@ namespace Ideal
 		uint32 m_currentID = 0;	// cache Geomeetry Desc에 사용할 ID. 이전 프레임의 geometry Desc을 겹쳐쓰지 않기 위한 용도?
 
 		uint32 m_instanceContributionToHitGroupIndex = 0;
+
+
+	public:
+		void AddRefCount() { m_refCount++; }
+		bool SubRefCount()
+		{
+			m_refCount--;
+			if (m_refCount == 0)
+				return true;
+			return false;
+		}
+	private:
+		uint32 m_refCount = 0;
 	};
 
 	class DXRTopLevelAccelerationStructure : public DXRAccelerationStructure
