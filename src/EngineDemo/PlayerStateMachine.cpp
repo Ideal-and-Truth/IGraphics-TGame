@@ -1,9 +1,14 @@
 #include "PlayerStateMachine.h"
+#include "SkinnedMesh.h"
+
+BOOST_CLASS_EXPORT_IMPLEMENT(PlayerStateMachine)
+
 
 PlayerStateMachine::PlayerStateMachine()
 	: m_isRunning(false)
+	, m_isAttacking(false)
 {
-	
+	m_name = "States";
 }
 
 PlayerStateMachine::~PlayerStateMachine()
@@ -17,11 +22,6 @@ void PlayerStateMachine::Initalize()
 }
 
 void PlayerStateMachine::Awake()
-{
-
-}
-
-void PlayerStateMachine::Start()
 {
 	m_idle.nodeName = "Idle";
 	m_idle.animationName = "Idle";
@@ -44,10 +44,41 @@ void PlayerStateMachine::Start()
 	m_attack.isActivated = false;
 	m_attack.isLoopTime = false;
 
-	m_currentState = m_entry;
+}
+
+void PlayerStateMachine::Start()
+{
+	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
+	m_skinnedMesh->AddAnimation("Idle", L"Kachujin/Idle");
+	m_skinnedMesh->AddAnimation("Run", L"Kachujin/Run");
+	m_skinnedMesh->AddAnimation("Attack", L"Kachujin/Slash");
+
 }
 
 void PlayerStateMachine::Update()
 {
-	//m_isRunning = (m_currentState.nodeName == "Run") ? true : false;
+	if (GetKey(KEY::W) || GetKey(KEY::A) || GetKey(KEY::S) || GetKey(KEY::D))
+	{
+		m_isRunning = true;
+	}
+	else
+	{
+		m_isRunning = false;
+	}
+
+	if (GetKeyDown(KEY::LBTN))
+	{
+		m_isAttacking = true;
+	}
+
+	if (BoolCondition("true", m_isRunning))
+	{
+		m_currentState = m_run;
+	}
+
+	if (TriggerCondition(m_isAttacking))
+	{
+		m_currentState = m_attack;
+	}
 }
+

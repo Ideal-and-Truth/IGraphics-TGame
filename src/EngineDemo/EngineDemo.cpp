@@ -30,6 +30,8 @@
 #include "SkinnedMesh.h"
 #include "Light.h"
 #include "Animator.h"
+#include "AnimatorController.h"
+#include "PlayerStateMachine.h"
 
 #include "Controller.h"
 #pragma endregion test Scene
@@ -82,7 +84,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	processor->SaveScene(testScene);
 
 	///...///
- 	processor->LoadScene(L"../Scene/localTest.scene");
+ 	//processor->LoadScene(L"../Scene/localTest.scene");
+ 	processor->LoadScene(L"../Scene/test.scene");
 
  	//processor->LoadScene(L"../Scene/ControllerTest.scene");
 

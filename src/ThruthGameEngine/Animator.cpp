@@ -25,13 +25,12 @@ void Truth::Animator::Awake()
 
 void Truth::Animator::Start()
 {
-	m_animatorController = m_owner.lock().get()->GetComponent<Truth::AnimatorController>().lock();
-	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
+	
 }
 
 void Truth::Animator::Update()
 {
-	m_animatorController->Update();
+	
 
 }
 

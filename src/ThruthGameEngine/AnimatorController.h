@@ -3,7 +3,12 @@
 
 namespace Truth
 {
-	struct AnimatorTransition;
+	class SkinnedMesh;
+}
+
+namespace Truth
+{
+
 	struct AnimatorState
 	{
 		std::string nodeName = "";
@@ -12,15 +17,8 @@ namespace Truth
 		bool isDefaultState = false;
 		bool isActivated = false;
 		bool isLoopTime = false;
-		std::vector<Truth::AnimatorTransition> nextAnimatorState;
-
 	};
 
-	struct AnimatorTransition
-	{
-		Truth::AnimatorState nextAnimatorState;
-		bool condition = false;
-	};
 
 	class AnimatorController :
 		public Component
@@ -35,28 +33,22 @@ namespace Truth
 		void load(Archive& ar, const unsigned int file_version);
 
 	protected:
-		AnimatorState m_entry
-		{
-			m_entry.nodeName = "Entry",
-			m_entry.animationName = "",
-			m_entry.animationSpeed = 0.f,
-			m_entry.isDefaultState = false,
-			m_entry.isActivated = false,
-			m_entry.isLoopTime = false
-		};
+		AnimatorState m_entry;
+		AnimatorState m_exit;
 
-		AnimatorState m_exit
-		{
-			m_exit.nodeName = "Exit",
-			m_exit.animationName = "",
-			m_exit.animationSpeed = 0.f,
-			m_exit.isDefaultState = false,
-			m_exit.isActivated = false,
-			m_exit.isLoopTime = false
-		};
 
+	private:
+		PROPERTY(currentStateName);
+		std::string m_currentStateName;
+
+
+	protected:
+		PROPERTY(currentState);
 		AnimatorState m_currentState;
+		PROPERTY(states);
 		std::vector<AnimatorState> m_states;
+
+		std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
 
 	public:
 		AnimatorController();
@@ -73,6 +65,13 @@ namespace Truth
 
 		METHOD(Update);
 		void Update();
+
+	protected:
+		bool IntCondition(std::string comp, int val_1, int val_2);
+		bool FloatCondition(std::string comp, float val_1, float val_2);
+		bool TriggerCondition(bool val);
+		bool BoolCondition(std::string comp, bool val);
+
 	};
 	template<class Archive>
 	void Truth::AnimatorController::load(Archive& _ar, const unsigned int file_version)

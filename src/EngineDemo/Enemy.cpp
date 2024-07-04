@@ -9,6 +9,7 @@ Enemy::Enemy()
 	, m_currentDamage(0.f)
 	, m_currentTP(0.f)
 	, m_currentCP(0.f)
+	
 {
 	m_name = "Enemy";
 }
