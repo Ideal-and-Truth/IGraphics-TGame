@@ -104,6 +104,7 @@ void Truth::InputManager::Update()
 
 	if (m_fpsMode)
 	{
+		ShowCursor(false);
 		SetCursorPos(1920 / 2, 1080 / 2);
 
 		if (GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
@@ -113,6 +114,7 @@ void Truth::InputManager::Update()
 	}
 	else
 	{
+		ShowCursor(true);
 		if (GetKeyState(KEY::F_1) == KEY_STATE::DOWN)
 		{
 			m_fpsMode = true;
