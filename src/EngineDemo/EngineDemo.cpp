@@ -34,6 +34,8 @@
 #include "PlayerStateMachine.h"
 
 #include "Controller.h"
+
+#include "NavMeshGenerater.h"
 #pragma endregion test Scene
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -86,6 +88,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	///...///
  	//processor->LoadScene(L"../Scene/localTest.scene");
  	processor->LoadScene(L"../Scene/test.scene");
+
+ 	//processor->LoadScene(L"../Scene/navMeshTest.scene");
+
 
  	//processor->LoadScene(L"../Scene/ControllerTest.scene");
 

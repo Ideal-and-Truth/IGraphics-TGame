@@ -92,6 +92,22 @@ void PlayerCamera::FreeCamera()
 		m_elevation = 0.5f;
 	}
 
+	if (GetKey(KEY::UP))
+	{
+		m_cameraDistance += 0.1f;
+	}
+	if (GetKey(KEY::DOWN))
+	{
+		m_cameraDistance -= 0.1f;
+	}
+// 	if (GetKey(KEY::LEFT))
+// 	{
+// 		m_elevation += m_cameraSpeed;
+// 	}
+// 	if (GetKey(KEY::RIGHT))
+// 	{
+// 		m_azimuth -= m_cameraSpeed;
+// 	}
 
 	cameraPos.x = m_cameraDistance * sin(m_elevation) * cos(m_azimuth);
 	cameraPos.y = m_cameraDistance * cos(m_elevation);
@@ -107,6 +123,9 @@ void PlayerCamera::FreeCamera()
 	look.Normalize();
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0;
+
+	// m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);
+	m_camera->m_look = look;
 }
 
 void PlayerCamera::LockOnCamera()

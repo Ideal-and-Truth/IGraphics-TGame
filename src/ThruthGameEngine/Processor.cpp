@@ -42,7 +42,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-// 	g_Renderer->ConvertAssetToMyFormat(L"PhysxSampleObject/SampleStair.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
 // 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 
 // 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();

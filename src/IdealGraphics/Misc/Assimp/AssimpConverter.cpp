@@ -862,5 +862,11 @@ void AssimpConverter::WriteVertexPositionFile(const std::wstring& filePath)
 			file->Write<float>(mesh->vertices[i].Position.y);
 			file->Write<float>(mesh->vertices[i].Position.z);
 		}
+
+		file->Write<uint32>((uint32)mesh->indices.size());
+		for (uint32 i = 0; i < (uint32)mesh->indices.size(); ++i)
+		{
+			file->Write<uint32>(mesh->indices[i]);
+		}
 	}
 }

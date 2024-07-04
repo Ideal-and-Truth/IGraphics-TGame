@@ -48,6 +48,7 @@ namespace Truth
 
 		void Finalize();
 
+
 #ifdef _DEBUG
 		void EditToGame();
 		void GameToEdit();

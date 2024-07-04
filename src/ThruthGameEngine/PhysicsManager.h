@@ -9,8 +9,8 @@
 #pragma warning(disable: 26495)
 #pragma warning(disable: 33010)
 #pragma warning(disable: 6297)
-#include <PxConfig.h>
-#include <PxPhysicsAPI.h>
+#include "../packages/NVIDIA.PhysX.4.1.229882250/installed/x64-windows/include/PxConfig.h"
+#include "../packages/NVIDIA.PhysX.4.1.229882250/installed/x64-windows/include/PxPhysicsAPI.h"
 #pragma warning(pop)
 
 #ifdef _DEBUG
@@ -112,7 +112,8 @@ namespace Truth
 		physx::PxRigidDynamic* CreateDefaultRigidDynamic();
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
 		 
-		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args, const std::vector<Vector3>& _points = std::vector<Vector3>());
+		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
+		std::vector<physx::PxShape*> CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points = std::vector<std::vector<Vector3>>());
 
 		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
@@ -122,7 +123,7 @@ namespace Truth
 
 	private:
 		void CreatePhysxScene();
-		std::vector<physx::PxVec3> ConvertPointToVertex(const Vector3& _args, const std::vector<Vector3>& _points);
+		std::vector<std::vector<physx::PxVec3>> ConvertPointToVertex(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points);
 	};
 
 	physx::PxFilterFlags FilterShaderExample(
