@@ -487,6 +487,11 @@ std::shared_ptr<Ideal::IPointLight> Ideal::D3D12Renderer::CreatePointLight()
 	return newLight;
 }
 
+void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
+{
+	// TODO
+}
+
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();

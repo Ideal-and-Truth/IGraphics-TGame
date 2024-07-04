@@ -43,6 +43,8 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() abstract;
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() abstract;
 
+		virtual void SetSkyBox(const std::wstring& FileName) abstract;
+
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;

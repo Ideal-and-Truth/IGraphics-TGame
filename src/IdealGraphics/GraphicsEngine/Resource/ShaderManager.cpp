@@ -31,10 +31,10 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 	ReadShaderFile(FilePath, &sourceBuffer, sourceData);
 
 	std::vector<LPCWSTR> args;
+	std::wstring outputPath;
 	std::wstring pdbPath;
 	// Debug pdb
 	{
-		args.push_back(L"-Zi");
 
 		std::wstring path = FilePath;
 		path.pop_back();
@@ -42,8 +42,18 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 		path.pop_back();
 		path.pop_back();
 		path.pop_back();
+
+		// 출력 파일 경로 설정
+		outputPath = path + L".cso";
 		// PDB 파일 경로 설정
 		pdbPath = path + L".pdb";
+		args.push_back(L"-Zi");
+#ifdef _DEBUG
+		args.push_back(L"-Od");	// 최적화 끄기
+#endif
+		/*args.push_back(L"-Fo");
+		args.push_back(outputPath.c_str());*/
+
 		args.push_back(L"-Fd");
 		args.push_back(pdbPath.c_str());
 	}
@@ -88,7 +98,7 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 		pdbPath = path + L".pdb";
 		args.push_back(L"-Zi");
 #ifdef _DEBUG
-		//args.push_back(L"-Od");	// 최적화 끄기
+		args.push_back(L"-Od");	// 최적화 끄기
 #endif
 		args.push_back(L"-Fd");
 		args.push_back(pdbPath.c_str());
@@ -124,6 +134,8 @@ void Ideal::ShaderManager::CompileShaderAndSave(const std::wstring& FilePath, co
 		CompileShader(FilePath, ShaderModel, EntryPoint, OutBlob);
 	else
 		CompileShader(FilePath, ShaderModel, OutBlob);
+
+	OutShader(OutBlob, SavePath + SaveName + L".cso");
 
 	//
 	uint32 Size = OutBlob->GetBufferSize();
@@ -161,6 +173,25 @@ void Ideal::ShaderManager::LoadShaderFile(const std::wstring& FilePath, std::sha
 	OutShader->AddShaderData(shader);
 }
 
+void ShaderManager::LoadShaderFile2(const std::wstring& FilePath, std::shared_ptr<Ideal::D3D12Shader>& OutShader)
+{
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(FilePath, FileMode::Read);
+
+	const uint32 size = file->Read<uint32>();
+
+	std::vector<unsigned char> shader;
+	shader.resize(size);
+	void* data = shader.data();
+	file->Read(&data, sizeof(unsigned char) * size);
+
+	if (!OutShader)
+	{
+		OutShader = std::make_shared<Ideal::D3D12Shader>();
+	}
+	OutShader->AddShaderData(shader);
+}
+
 void Ideal::ShaderManager::ReadShaderFile(const std::wstring& FilePath, DxcBuffer* OutSourceBuffer, std::vector<char>& SourceData)
 {
 	std::ifstream shaderFile(FilePath, std::ios::binary);
@@ -170,6 +201,13 @@ void Ideal::ShaderManager::ReadShaderFile(const std::wstring& FilePath, DxcBuffe
 	OutSourceBuffer->Ptr = SourceData.data();
 	OutSourceBuffer->Size = SourceData.size();
 	OutSourceBuffer->Encoding = DXC_CP_UTF8;
+}
+
+void ShaderManager::OutShader(ComPtr<IDxcBlob> Blob, const std::wstring& Path)
+{
+	std::ofstream shaderFile(Path, std::ios::binary);
+	shaderFile.write(reinterpret_cast<const char*>(Blob->GetBufferPointer()), Blob->GetBufferSize());
+	shaderFile.close();
 }
 
 void Ideal::ShaderManager::OutPDB(ComPtr<IDxcResult> Result, const std::wstring& Path)

@@ -12,6 +12,7 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/VertexInfo.h"
 
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
 
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
 #include "GraphicsEngine/Resource/IdealMaterial.h"
@@ -96,7 +97,7 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	CreateAnimationCSPipelineState(Device, AnimationShader);
 }
 
-void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentContextIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB)
+void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture)
 {
 	CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
@@ -105,7 +106,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	// TODO : Global Root 연결해주는 부분 나중에 뺄 것
 	
 	// Parameter 0
-	auto handle0 = DescriptorManager->Allocate(CurrentContextIndex);
+	auto handle0 = DescriptorManager->Allocate(CurrentFrameIndex);
 	//Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), OutputUAVHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVCpuDescriptorHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_Output, handle0.GetGpuHandle());
@@ -116,9 +117,17 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	// Parameter 2
 	auto cb = CBPool->Allocate(Device.Get(), sizeof(SceneConstantBuffer));
 	memcpy(cb->SystemMemAddr, &SceneCB, sizeof(SceneCB));
-	auto handle2 = DescriptorManager->Allocate(CurrentContextIndex);
+	auto handle2 = DescriptorManager->Allocate(CurrentFrameIndex);
 	Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::CBV_Global, handle2.GetGpuHandle());
+
+	// Parameter 3
+	if (SkyBoxTexture)
+	{
+		auto handle3 = DescriptorManager->Allocate(CurrentFrameIndex);
+		Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), SkyBoxTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::SRV_SkyBox, handle3.GetGpuHandle());
+	}
 
 	//-----------------Dispatch Rays----------------//
 
@@ -330,11 +339,13 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		CD3DX12_DESCRIPTOR_RANGE ranges[GlobalRootSignature::Slot::Count];
 		ranges[GlobalRootSignature::Slot::UAV_Output].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : Output
 		ranges[GlobalRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : Global
+		ranges[GlobalRootSignature::Slot::SRV_SkyBox].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1 : SkyBox
 
 		// binding
 		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignature::Slot::Count];
 		rootParameters[GlobalRootSignature::Slot::UAV_Output].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_Output]);
 		rootParameters[GlobalRootSignature::Slot::CBV_Global].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::CBV_Global]);
+		rootParameters[GlobalRootSignature::Slot::SRV_SkyBox].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::SRV_SkyBox]);
 
 		// init as
 		rootParameters[GlobalRootSignature::Slot::SRV_AccelerationStructure].InitAsShaderResourceView(0);	// t0

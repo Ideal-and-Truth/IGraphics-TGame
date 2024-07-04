@@ -145,6 +145,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		gRenderer->Init();
 
+		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
+
 		Vector3 pointLightPosition = Vector3(0.f);
 
 		//-------------------Create Camera-------------------//
@@ -204,7 +207,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		static int transformX = 0.f;
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 		{
-			for (int i = 0; i < 0; i++)
+			for (int i = 0; i < 20; i++)
 			{
 				//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 				//Matrix mat = Matrix::Identity;
@@ -540,6 +543,25 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 		p.y -= speed;
 		Camera->SetPosition(p);
 	}
+
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+	{
+		Camera->RotateY(-speed);
+	}
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+	{
+		Camera->RotateY(speed);
+	}
+	if (GetAsyncKeyState(VK_UP) & 0x8000)
+	{
+		Camera->Pitch(-speed);
+	}
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+	{
+		Camera->Pitch(speed);
+	}
+
+
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
 		Camera->SetLook(Vector3(0.f, 1.f, 1.f));

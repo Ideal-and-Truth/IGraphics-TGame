@@ -121,6 +121,8 @@ namespace Ideal
 		bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 		void ClearImGui() override;
 
+		virtual void SetSkyBox(const std::wstring& FileName) override;
+
 	private:
 		void CreateCommandlists();
 		void CreatePools();
@@ -187,6 +189,9 @@ namespace Ideal
 		// Main Camera
 		std::shared_ptr<Ideal::IdealCamera> m_mainCamera = nullptr;
 		float m_aspectRatio = 0.f;
+
+		// sky box
+		std::shared_ptr<Ideal::D3D12Texture> m_skyBoxTexture = nullptr;
 
 		// Manager
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;

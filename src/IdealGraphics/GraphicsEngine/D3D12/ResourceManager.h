@@ -109,6 +109,8 @@ namespace Ideal
 		// 파일 로드하여 srv로 만든다.
 		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
+		void CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
+
 		// 2024.06.03 : Refactor : Create Texture with flag
 		void CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name);
 

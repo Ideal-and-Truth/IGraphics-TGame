@@ -332,11 +332,11 @@ finishAdapter:
 		m_shaderManager->CompileShaderAndSave(
 			L"../Shaders/Raytracing/Raytracing.hlsl",
 			L"../Shaders/Raytracing/",
-			L"SimpleRaytracingShader3",
+			L"Raytracing",
 			L"lib_6_3",
 			m_testBlob
 		);
-		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/SimpleRaytracingShader3.shader", m_myShader);
+		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/Raytracing.shader", m_myShader);
 	}
 
 	{
@@ -367,7 +367,7 @@ finishAdapter:
 
 	// create resource
 	//CreateDeviceDependentResources();
-	
+
 	RaytracingManagerInit();
 }
 
@@ -381,6 +381,7 @@ void Ideal::D3D12RayTracingRenderer::Tick()
 void Ideal::D3D12RayTracingRenderer::Render()
 {
 	m_mainCamera->UpdateMatrix2();
+	//m_mainCamera->UpdateViewMatrix();
 
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
@@ -413,7 +414,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_descriptorManager,
 		m_currentContextIndex,
 		m_cbAllocator[m_currentContextIndex],
-		m_sceneCB);
+		m_sceneCB, m_skyBoxTexture);
 
 	CopyRaytracingOutputToBackBuffer();
 
@@ -581,6 +582,13 @@ bool Ideal::D3D12RayTracingRenderer::SetImGuiWin32WndProcHandler(HWND hWnd, UINT
 
 void Ideal::D3D12RayTracingRenderer::ClearImGui()
 {
+}
+
+void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
+{
+	std::shared_ptr <Ideal::D3D12Texture> skyBox = std::make_shared<Ideal::D3D12Texture>();
+	m_resourceManager->CreateTextureDDS(skyBox, FileName);
+	m_skyBoxTexture = skyBox;
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)

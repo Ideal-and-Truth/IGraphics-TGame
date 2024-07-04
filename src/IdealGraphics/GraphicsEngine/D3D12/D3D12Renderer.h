@@ -89,6 +89,8 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() override;
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() override;
 
+		virtual void SetSkyBox(const std::wstring& FileName) override;
+
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }
