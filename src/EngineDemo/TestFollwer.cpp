@@ -39,3 +39,4 @@ void TestFollwer::Awake()
 	m_controller = m_owner.lock()->GetComponent<Truth::Controller>();
 	m_player = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player");
 }
+
