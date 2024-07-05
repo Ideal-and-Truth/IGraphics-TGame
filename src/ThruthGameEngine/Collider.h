@@ -46,6 +46,9 @@ namespace Truth
 		PROPERTY(size);
 		Vector3 m_size;
 
+		PROPERTY(enable);
+		bool m_enable;
+
 		Matrix m_localTM;
 		Matrix m_globalTM;
 
@@ -75,14 +78,14 @@ namespace Truth
 		METHOD(Awake);
 		void Awake();
 
-		METHOD(Start);
-		void Start();
-
 		METHOD(SetCenter);
 		void SetCenter(Vector3 _pos);
 
 		METHOD(SetSize);
 		void SetSize(Vector3 _size);
+
+		void OnDisable();
+		void OnEnable();
 
 #ifdef _DEBUG
 		METHOD(ApplyTransform);
