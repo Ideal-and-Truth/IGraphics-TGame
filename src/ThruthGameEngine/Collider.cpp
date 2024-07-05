@@ -25,6 +25,7 @@ Truth::Collider::Collider(bool _isTrigger /*= true*/)
 	, m_debugMesh(nullptr)
 #endif // _DEBUG
 	, m_shape()
+	, m_enable(true)
 
 {
 	m_center = { 0.0f, 0.0f, 0.0f };
@@ -44,6 +45,7 @@ Truth::Collider::Collider(Vector3 _pos, bool _isTrigger /*= true*/)
 	, m_colliderID(m_colliderIDGenerator++)
 	, m_rigidbody()
 	, m_shape()
+	, m_enable(true)
 #ifdef _DEBUG
 	, m_debugMesh(nullptr)
 #endif // _DEBUG
@@ -101,7 +103,7 @@ void Truth::Collider::Awake()
 
 	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-
+	
 	m_rigidbody = m_owner.lock()->GetComponent<RigidBody>();
 	auto con = m_owner.lock()->GetComponent<Controller>();
 
@@ -110,6 +112,7 @@ void Truth::Collider::Awake()
 		m_rigidbody = con.lock()->GetRigidbody();
 		m_body = m_rigidbody.lock()->m_body;
 		m_body->attachShape(*m_collider);
+		return;
 	}
 
 	if (m_rigidbody.expired())
@@ -122,6 +125,7 @@ void Truth::Collider::Awake()
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
+		return;
 	}
 }
 

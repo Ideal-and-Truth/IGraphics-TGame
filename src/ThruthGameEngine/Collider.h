@@ -57,8 +57,6 @@ namespace Truth
 		uint32 m_colliderID;
 		physx::PxShape* m_collider;
 
-		uint32 m_shapeCount;
-
 		physx::PxRigidActor* m_body;
 		std::weak_ptr<RigidBody> m_rigidbody;
 

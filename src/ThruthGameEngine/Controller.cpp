@@ -57,6 +57,7 @@ void Truth::Controller::Awake()
 	GetRigidbody()->m_controller = m_controller;
 
 	GetRigidbody()->m_body = m_controller->getActor();
+	GetRigidbody()->m_body;
 	m_controller->getActor()->userData = GetRigidbody().get();
 }
 
