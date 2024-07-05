@@ -83,14 +83,9 @@ void PlayerCamera::FreeCamera()
 		m_elevation = 0.5f;
 	}
 
-	if (GetKey(KEY::UP))
-	{
-		m_cameraDistance += 0.1f;
-	}
-	if (GetKey(KEY::DOWN))
-	{
-		m_cameraDistance -= 0.1f;
-	}
+
+	m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01;
+	
 // 	if (GetKey(KEY::LEFT))
 // 	{
 // 		m_elevation += m_cameraSpeed;

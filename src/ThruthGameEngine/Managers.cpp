@@ -124,6 +124,7 @@ void Truth::Managers::EditToGame()
 	m_sceneManager->SaveCurrentScene();
 	m_sceneManager->m_currentScene->Start();
 	m_isEdit = false;
+	m_inputManager->m_fpsMode = true;
 }
 
 void Truth::Managers::GameToEdit()
@@ -135,6 +136,7 @@ void Truth::Managers::GameToEdit()
 	m_physXManager->ResetPhysX();
 	m_sceneManager->ReloadSceneData();
 	m_isEdit = true;
+	m_inputManager->m_fpsMode = false;
 }
 #endif // _DEBUG
 

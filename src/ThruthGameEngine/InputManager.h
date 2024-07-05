@@ -206,6 +206,14 @@ namespace Truth
 		// 이벤트 발행을 위한 이벤트 매니저
 		// 그때 그때 생성하는거 보다 미리 받아놓는다.
 		std::weak_ptr<EventManager> m_eventManager;
+		LPPOINT m_mousePoint;
+
+
+	public:
+		int m_deltaWheel;
+		bool m_fpsMode = false;
+
+		int GetDeltaWheel() const { return m_deltaWheel; }
 
 	public:
 		InputManager();
