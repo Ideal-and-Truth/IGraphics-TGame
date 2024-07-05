@@ -152,7 +152,12 @@ void Truth::Collider::SetSize(Vector3 _size)
 /// </summary>
 void Truth::Collider::OnDisable()
 {
+	if (m_enable == true)
+	{
+		return;
+	}
 	m_enable = false;
+	m_body->detachShape(*m_collider);
 }
 
 /// <summary>
@@ -160,7 +165,12 @@ void Truth::Collider::OnDisable()
 /// </summary>
 void Truth::Collider::OnEnable()
 {
+	if (m_enable == false)
+	{
+		return;
+	}
 	m_enable = true;
+	m_body->attachShape(*m_collider);
 }
 
 #ifdef _DEBUG

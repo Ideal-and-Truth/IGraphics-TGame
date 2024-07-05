@@ -43,6 +43,7 @@ namespace Truth
 
 		PROPERTY(center);
 		Vector3 m_center;
+
 		PROPERTY(size);
 		Vector3 m_size;
 
