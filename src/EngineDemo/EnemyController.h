@@ -1,5 +1,13 @@
 #pragma once
 #include "Component.h"
+
+namespace Truth
+{
+	class Controller;
+}
+
+class Enemy;
+
 class EnemyController :
 	public Truth::Component
 {
@@ -13,7 +21,9 @@ private:
 	void load(Archive& ar, const unsigned int file_version);
 
 private:
-
+	std::weak_ptr<Truth::Controller> m_controller;
+	std::weak_ptr<Enemy> m_enemy;
+	std::weak_ptr<Truth::Entity> m_target;
 
 public:
 	EnemyController();
@@ -24,6 +34,9 @@ public:
 
 	METHOD(Update);
 	void Update();
+
+private:
+	void FollowTarget();
 };
 
 template<class Archive>

@@ -19,9 +19,9 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	std::shared_ptr<Truth::Entity> m_camera;
-	std::shared_ptr<Truth::Controller> m_controller;
-	std::shared_ptr<Player> m_player;
+	std::weak_ptr<Truth::Entity> m_camera;
+	std::weak_ptr<Truth::Controller> m_controller;
+	std::weak_ptr<Player> m_player;
 
 	float4 m_forwardInput;
 	float4 m_sideInput;

@@ -70,15 +70,15 @@ void PlayerStateMachine::Update()
 	{
 		m_isAttacking = true;
 	}
-
-	if (BoolCondition("true", m_isRunning))
-	{
-		m_currentState = m_run;
-	}
-
-	if (TriggerCondition(m_isAttacking))
-	{
-		m_currentState = m_attack;
-	}
+// 
+// 	if (BoolCondition("true", m_isRunning))
+// 	{
+// 		m_currentState = m_run;
+// 	}
+// 
+// 	if (TriggerCondition(m_isAttacking))
+// 	{
+// 		m_currentState = m_attack;
+// 	}
 }
 

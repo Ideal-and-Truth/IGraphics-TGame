@@ -66,11 +66,10 @@ namespace Truth
 		METHOD(Update);
 		void Update();
 
-	protected:
-		bool IntCondition(std::string comp, int val_1, int val_2);
-		bool FloatCondition(std::string comp, float val_1, float val_2);
-		bool TriggerCondition(bool val);
-		bool BoolCondition(std::string comp, bool val);
+	private:
+		bool m_isAnimationEnd;
+		void CheckTransition();
+		void NextState();
 
 	};
 	template<class Archive>

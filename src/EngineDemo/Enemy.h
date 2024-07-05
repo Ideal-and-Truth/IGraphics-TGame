@@ -37,7 +37,8 @@ private:
 	PROPERTY(currentCP);
 	float4 m_currentCP;
 
-	std::shared_ptr<Truth::Entity> m_target;
+	PROPERTY(target);
+	std::weak_ptr<Truth::Entity> m_target;
 
 	PROPERTY(isTargetIn);
 	bool m_isTargetIn;
