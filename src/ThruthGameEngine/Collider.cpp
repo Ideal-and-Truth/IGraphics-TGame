@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "GraphicsManager.h"
 #include "RigidBody.h"
+#include "Controller.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Collider)
 
@@ -102,6 +103,14 @@ void Truth::Collider::Awake()
 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 
 	m_rigidbody = m_owner.lock()->GetComponent<RigidBody>();
+	auto con = m_owner.lock()->GetComponent<Controller>();
+
+	if (!con.expired())
+	{
+		m_rigidbody = con.lock()->GetRigidbody();
+		m_body = m_rigidbody.lock()->m_body;
+		m_body->attachShape(*m_collider);
+	}
 
 	if (m_rigidbody.expired())
 	{
@@ -116,11 +125,10 @@ void Truth::Collider::Awake()
 	}
 }
 
-void Truth::Collider::Start()
-{
-
-}
-
+/// <summary>
+/// Collider의 중심을 정한다
+/// </summary>
+/// <param name="_pos">중심점</param>
 void Truth::Collider::SetCenter(Vector3 _pos)
 {
 	m_center = _pos;
@@ -128,6 +136,10 @@ void Truth::Collider::SetCenter(Vector3 _pos)
 	m_localTM *= Matrix::CreateTranslation(m_center);
 }
 
+/// <summary>
+/// Collider의 크기를 정한다 (상대크기)
+/// </summary>
+/// <param name="_size">크기</param>
 void Truth::Collider::SetSize(Vector3 _size)
 {
 	m_size = _size;
@@ -135,7 +147,26 @@ void Truth::Collider::SetSize(Vector3 _size)
 	m_localTM *= Matrix::CreateTranslation(m_center);
 }
 
+/// <summary>
+/// 충돌 처리를 하지 않는다
+/// </summary>
+void Truth::Collider::OnDisable()
+{
+	m_enable = false;
+}
+
+/// <summary>
+/// 충돌 처리를 재개한다
+/// </summary>
+void Truth::Collider::OnEnable()
+{
+	m_enable = true;
+}
+
 #ifdef _DEBUG
+/// <summary>
+/// 디버깅 매쉬를 그리기 위한 함수
+/// </summary>
 void Truth::Collider::ApplyTransform()
 {
 	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
@@ -144,12 +175,23 @@ void Truth::Collider::ApplyTransform()
 
 }
 
+/// <summary>
+/// 에디터에서 지정한 값을 설정한다 
+/// </summary>
 void Truth::Collider::EditorSetValue()
 {
 	SetCenter(m_center);
 	SetSize(m_size);
-}
 
+	if (m_enable)
+	{
+		OnDisable();
+	}
+	else
+	{
+		OnEnable();
+	}
+}
 #endif // _DEBUG
 
 /// <summary>
@@ -184,6 +226,10 @@ physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
 	return m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 }
 
+/// <summary>
+/// 초기화
+/// </summary>
+/// <param name="_path">디버깅 매쉬경로</param>
 void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 {
 #ifdef _DEBUG

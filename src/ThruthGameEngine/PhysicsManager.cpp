@@ -30,8 +30,6 @@ Truth::PhysicsManager::PhysicsManager()
 			physx::m_collsionTable[i] += 1 << j;
 		}
 	}
-
-	// SetCollisionFilter(1, 2, false);
 }
 
 /// <summary>

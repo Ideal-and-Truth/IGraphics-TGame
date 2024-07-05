@@ -51,13 +51,13 @@ void Truth::Controller::Awake()
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
 	m_rigidbody = std::make_shared<RigidBody>();
 
-	m_rigidbody->m_transform = m_owner.lock()->GetComponent<Transform>();
-	m_rigidbody->m_owner = m_owner.lock();
-	m_rigidbody->m_isController = true;
-	m_rigidbody->m_controller = m_controller;
+	GetRigidbody()->m_transform = m_owner.lock()->GetComponent<Transform>();
+	GetRigidbody()->m_owner = m_owner.lock();
+	GetRigidbody()->m_isController = true;
+	GetRigidbody()->m_controller = m_controller;
 
-	m_rigidbody->m_body = m_controller->getActor();
-	m_controller->getActor()->userData = m_rigidbody.get();
+	GetRigidbody()->m_body = m_controller->getActor();
+	m_controller->getActor()->userData = GetRigidbody().get();
 }
 
 /// <summary>
@@ -100,7 +100,7 @@ bool Truth::Controller::SetPosition(Vector3& _disp)
 /// </summary>
 void Truth::Controller::SetRotation(Quaternion& _val)
 {
-	m_rigidbody->SetRotation(_val);
+	GetRigidbody()->SetRotation(_val);
 }
 
 /// <summary>

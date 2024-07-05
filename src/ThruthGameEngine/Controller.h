@@ -34,26 +34,26 @@ namespace Truth
 
 		const float m_minmumDistance;
 
-		PROPERTY(height)
-			float m_height;
+		PROPERTY(height);
+		float m_height;
 
-		PROPERTY(contactOffset)
-			float m_contactOffset;
+		PROPERTY(contactOffset);
+		float m_contactOffset;
 
-		PROPERTY(stepOffset)
-			float m_stepOffset;
+		PROPERTY(stepOffset);
+		float m_stepOffset;
 
-		PROPERTY(radius)
-			float m_radius;
+		PROPERTY(radius);
+		float m_radius;
 
-		PROPERTY(upDirection)
-			Vector3 m_upDirection;
+		PROPERTY(upDirection);
+		Vector3 m_upDirection;
 
-		PROPERTY(material)
-			Vector3 m_material;
+		PROPERTY(material);
+		Vector3 m_material;
 
-		PROPERTY(climbingmode)
-			uint32 m_climbingmode;
+		PROPERTY(climbingmode);
+		uint32 m_climbingmode;
 
 
 		uint32 m_flag;
@@ -77,6 +77,7 @@ namespace Truth
 		bool IsCollisionDown();
 		bool IsCollisionUp();
 		bool IsCollisionSide();
+		std::shared_ptr<Truth::RigidBody> GetRigidbody() const { return m_rigidbody; }
 	};
 
 	template<class Archive>
