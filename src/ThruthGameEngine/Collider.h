@@ -38,6 +38,7 @@ namespace Truth
 		ColliderShape m_shape;
 
 	public:
+		PROPERTY(isTrigger);
 		bool m_isTrigger;
 
 		PROPERTY(center);
