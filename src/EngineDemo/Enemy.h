@@ -6,8 +6,11 @@ class Enemy :
 	GENERATE_CLASS_TYPE_INFO(Enemy);
 private:
 	friend class boost::serialization::access;
+	BOOST_SERIALIZATION_SPLIT_MEMBER();
 	template<class Archive>
-	void serialize(Archive& _ar, const unsigned int _file_version);
+	void save(Archive& ar, const unsigned int file_version) const;
+	template<class Archive>
+	void load(Archive& ar, const unsigned int file_version);
 
 private:
 	PROPERTY(speed);
@@ -54,8 +57,19 @@ public:
 };
 
 template<class Archive>
-void Enemy::serialize(Archive& _ar, const unsigned int _file_version)
+void Enemy::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
+
 }
 
+template<class Archive>
+void Enemy::save(Archive& _ar, const unsigned int file_version) const
+{
+	_ar& boost::serialization::base_object<Component>(*this);
+
+}
+
+
+BOOST_CLASS_EXPORT_KEY(Enemy)
+BOOST_CLASS_VERSION(Enemy, 0)

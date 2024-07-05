@@ -1,5 +1,7 @@
 #include "Enemy.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Enemy)
+
 Enemy::Enemy()
 	: m_speed(0.f)
 	, m_attackCoefficient(0.f)
