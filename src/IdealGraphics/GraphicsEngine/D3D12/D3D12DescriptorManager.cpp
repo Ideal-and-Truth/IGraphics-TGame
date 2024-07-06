@@ -92,8 +92,10 @@ Ideal::D3D12DescriptorHandle Ideal::D3D12DescriptorManager::AllocateFixed(uint32
 		FixedDescriptorHeapIndex	// fixed heap의 index값 
 	);
 
+	// 2024.07.06 아래에서 index가 아닌 count를 넘겨주어서 GPU메모리를 잘못 접근해서 터졌던 것을 고쳤다....
+
 	ret += m_numDescriptorPool * m_maxCountDescriptorPool * m_descriptorSize;
-	ret += FixedDescriptorHeapIndex * m_maxCountFixedDescriptorPool * m_descriptorSize + count * m_descriptorSize;
+	ret += FixedDescriptorHeapIndex * m_maxCountFixedDescriptorPool * m_descriptorSize + index * m_descriptorSize;
 	m_countFixedDescriptorPool[FixedDescriptorHeapIndex]++;
 
 	

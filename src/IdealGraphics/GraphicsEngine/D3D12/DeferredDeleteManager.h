@@ -12,11 +12,18 @@ namespace Ideal
 }
 namespace Ideal
 {
+	template<typename T>
 	struct DeferredDeleteResource
+	{
+		T Resource;
+		uint32 ContextIndex;
+	};
+	
+	/*struct DeferredDeleteResource
 	{
 		ComPtr<ID3D12Resource> Resource;
 		uint32 ContextIndex;
-	};
+	};*/
 
 	class DeferredDeleteManager
 	{
@@ -29,7 +36,7 @@ namespace Ideal
 	public:
 		void DeleteDeferredResources(uint32 CurrentContextIndex);
 
-		void AddD3D12ResourceToDelete(ComPtr<ID3D12Resource> Resource);
+		void AddD3D12ResourceToDelete(ComPtr<ID3D12Resource> D3D12Resource);
 		void DeleteD3D12Resource(uint32 DeleteContextIndex);
 
 		void AddMeshObjectToDeferredDelete(std::shared_ptr<Ideal::IMeshObject>MeshObject);
@@ -48,5 +55,12 @@ namespace Ideal
 		std::vector<std::shared_ptr<IMeshObject>> m_meshObjectsToDelete[MAX_PENDING_FRAMES];
 		std::vector<std::shared_ptr<DXRBottomLevelAccelerationStructure>> m_blasToDelete[MAX_PENDING_FRAMES];
 		std::vector<std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure>> m_tlasToDelete[MAX_PENDING_FRAMES];
+
+		// ver3
+		uint64 m_frameCount = 0;
+		std::queue<DeferredDeleteResource<ComPtr<ID3D12Resource>>> m_resourcesToDelete2;
+		std::queue<DeferredDeleteResource<std::shared_ptr<IMeshObject>>> m_meshObjectsToDelete2;
+		std::queue<DeferredDeleteResource<std::shared_ptr<DXRBottomLevelAccelerationStructure>>> m_blasToDelete2;
+		std::queue<DeferredDeleteResource<std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure>>> m_tlasToDelete2;
 	};
 }

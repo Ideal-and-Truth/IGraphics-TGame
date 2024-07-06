@@ -196,11 +196,11 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	{
 		m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
 	}
-	if (DeferredDeleteManager)
+	/*if (DeferredDeleteManager)
 	{
 		DeferredDeleteManager->AddD3D12ResourceToDelete(m_accelerationStructure->GetResource());
 		m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
-	}
+	}*/
 	m_accelerationStructure->Create(Device.Get(), m_preBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, m_name.c_str());
 }
 

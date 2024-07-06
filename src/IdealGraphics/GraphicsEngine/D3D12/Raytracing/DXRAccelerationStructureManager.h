@@ -57,7 +57,8 @@ namespace Ideal
 
 	private:
 		std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> m_topLevelAS = nullptr;
-		std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasMap = {};
+		//std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasMap = {};
+		std::unordered_map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasMap = {};
 		std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasVector = {};
 
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffers[MAX_PENDING_FRAME] = {};

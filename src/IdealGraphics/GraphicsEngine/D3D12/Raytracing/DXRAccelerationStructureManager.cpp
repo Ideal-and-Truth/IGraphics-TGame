@@ -20,15 +20,15 @@ Ideal::DXRAccelerationStructureManager::~DXRAccelerationStructureManager()
 std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerationStructureManager::AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate, const wchar_t* Name, bool IsSkinnedData /*= false*/)
 {
 	// 스키닝 데이터일 경우 그냥 BLAS는 새로 만든다.
-	if (!IsSkinnedData)
-	{
-		// 먼저 같은 이름의 BLAS가 있는지를 검사한다. 만약 있을 경우 이미 추가한 BLAS인 것
-		if (m_blasMap[Name] != nullptr)
-		{
-			//__debugbreak(); // 아마 여기 걸렸으면 다음 코드에서 이름으로 제대로 찾아오면 문제는 없을 것이다. 
-			return m_blasMap[Name];
-		}
-	}
+	//if (!IsSkinnedData)
+	//{
+	//	// 먼저 같은 이름의 BLAS가 있는지를 검사한다. 만약 있을 경우 이미 추가한 BLAS인 것
+	//	if (m_blasMap[Name] != nullptr)
+	//	{
+	//		//__debugbreak(); // 아마 여기 걸렸으면 다음 코드에서 이름으로 제대로 찾아오면 문제는 없을 것이다. 
+	//		return m_blasMap[Name];
+	//	}
+	//}
 
 	// 처음 추가할 경우 만들어서 넣어준다.
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(Name);
@@ -99,7 +99,7 @@ void Ideal::DXRAccelerationStructureManager::DeleteBLASInstance(std::shared_ptr<
 }
 
 void Ideal::DXRAccelerationStructureManager::DeleteBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, const std::wstring& Name, bool IsSkinnedData)
-{
+{ 
 	if (!IsSkinnedData)
 	{
 		auto it = m_blasMap.find(Name);
@@ -107,7 +107,6 @@ void Ideal::DXRAccelerationStructureManager::DeleteBLAS(std::shared_ptr<Ideal::D
 		{
 			m_blasMap.erase(it);
 		}
-
 	}
 	auto it = std::find(m_blasVector.begin(), m_blasVector.end(), BLAS);
 	if (it != m_blasVector.end())
