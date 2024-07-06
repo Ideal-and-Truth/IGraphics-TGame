@@ -7,6 +7,8 @@
 namespace Ideal
 {
 	class IMeshObject;
+	class DXRBottomLevelAccelerationStructure;
+	class DXRTopLevelAccelerationStructure;
 }
 namespace Ideal
 {
@@ -26,15 +28,25 @@ namespace Ideal
 
 	public:
 		void DeleteDeferredResources(uint32 CurrentContextIndex);
-		void AddResourceToDelete(ComPtr<ID3D12Resource> Resource);
 
-		void DeleteDeferredMeshObject(std::shared_ptr<Ideal::IMeshObject>MeshObject);
-		void AddMeshObjectToDelete(std::shared_ptr<Ideal::IMeshObject>MeshObject);
+		void AddD3D12ResourceToDelete(ComPtr<ID3D12Resource> Resource);
+		void DeleteD3D12Resource(uint32 DeleteContextIndex);
+
+		void AddMeshObjectToDeferredDelete(std::shared_ptr<Ideal::IMeshObject>MeshObject);
+		void DeleteMeshObject(uint32 DeleteContextIndex);
+
+		void AddBLASToDeferredDelete(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS);
+		void DeleteBLAS(uint32 DeleteContextIndex);
+
+		void AddTLASToDeferredDelete(std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> TLAS);
+		void DeleteTLAS(uint32 DeleteContextIndex);
 
 	private:
-		std::vector<ComPtr<ID3D12Resource>> m_resourcesToDelete[MAX_PENDING_FRAMES];
 		uint32 m_currentContextIndex = 0;
 
+		std::vector<ComPtr<ID3D12Resource>> m_resourcesToDelete[MAX_PENDING_FRAMES];
 		std::vector<std::shared_ptr<IMeshObject>> m_meshObjectsToDelete[MAX_PENDING_FRAMES];
+		std::vector<std::shared_ptr<DXRBottomLevelAccelerationStructure>> m_blasToDelete[MAX_PENDING_FRAMES];
+		std::vector<std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure>> m_tlasToDelete[MAX_PENDING_FRAMES];
 	};
 }

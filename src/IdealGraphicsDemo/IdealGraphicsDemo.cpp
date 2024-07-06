@@ -207,33 +207,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		static int transformX = 0.f;
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 		{
-			for (int i = 0; i < 0; i++)
-			{
-				//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-				//Matrix mat = Matrix::Identity;
-				//mat.Translation(Vector3(i * 1.f, 0.f, 5.f));
-				//mesh->SetTransformMatrix(mat);
-				////renderScene->AddObject(mesh);
-				//meshes.push_back(mesh);
-				//
-				std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-				if (i % 2 == 0)
-					ka->AddAnimation("Run", runAnim);
-				else
-					ka->AddAnimation("Slash", slashAnim);
-				
-				Matrix mat2 = Matrix::Identity;
-				mat2.Translation(Vector3(i * 1.f, 0.f, 0.f));
-				//
-				//meshes.push_back(mesh);
-				ka->SetTransformMatrix(mat2);
-				//
-				//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-				//Matrix mat3 = Matrix::Identity;
-				//mat3.Translation(Vector3(i * 1.f, 0.f, 15.f));
-				//mesh2->SetTransformMatrix(mat3);
-				//transformX += 1;
-			}
+			//for (int i = 0; i < 0; i++)
+			//{
+			//	//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+			//	//Matrix mat = Matrix::Identity;
+			//	//mat.Translation(Vector3(i * 1.f, 0.f, 5.f));
+			//	//mesh->SetTransformMatrix(mat);
+			//	////renderScene->AddObject(mesh);
+			//	//meshes.push_back(mesh);
+			//	//
+			//	std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+			//	if (i % 2 == 0)
+			//		ka->AddAnimation("Run", runAnim);
+			//	else
+			//		ka->AddAnimation("Slash", slashAnim);
+			//	
+			//	Matrix mat2 = Matrix::Identity;
+			//	mat2.Translation(Vector3(i * 1.f, 0.f, 0.f));
+			//	//
+			//	//meshes.push_back(mesh);
+			//	ka->SetTransformMatrix(mat2);
+			//	//
+			//	//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
+			//	//Matrix mat3 = Matrix::Identity;
+			//	//mat3.Translation(Vector3(i * 1.f, 0.f, 15.f));
+			//	//mesh2->SetTransformMatrix(mat3);
+			//	//transformX += 1;
+			//}
 		}
 		//renderScene->AddObject(mesh2);
 		//renderScene->AddObject(mesh3);
@@ -322,9 +322,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-					tX++;
-					//if (tX == 1)
+					//if (tX == 0)
+					//for(int i = 0; i < 10; i++)
 					{
+						tX+=3;
 						//cat->SetDrawObject(false);
 						std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
 						ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
@@ -333,13 +334,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						else
 							ka->AddAnimation("Slash", slashAnim);
 						//ka->AddAnimation("Run", runAnim);
-
+					
 						Matrix mat2 = Matrix::Identity;
 						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
 						ka->SetTransformMatrix(mat2);
-
+					
 						meshes.push_back(ka);
+
+
+						std::shared_ptr<Ideal::IMeshObject> mesh0 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+						mesh0->SetTransformMatrix(mat2);
+						meshes.push_back(mesh0);
+
+						std::shared_ptr<Ideal::ISkinnedMeshObject> mesh1 = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+						mesh1->AddAnimation("Walk", walkAnim);
+						mesh1->SetTransformMatrix(mat2);
+						meshes.push_back(mesh1);
 					}
+					 
+					
 					//{
 					//	//cat->SetDrawObject(false);
 					//	std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
@@ -360,14 +373,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('M') & 0x8000)
 				{
-					if (meshes.size())
+					for (int i = 0; i < 1; i++)
 					{
-						auto back = meshes.back();
-						meshes.pop_back();
+						if (meshes.size())
+						{
+							auto back = meshes.back();
+							meshes.pop_back();
 
-						gRenderer->DeleteMeshObject(back);
-						if(tX > 0)
-							tX--;
+							gRenderer->DeleteMeshObject(back);
+							if (tX > 0)
+								tX--;
+						}
 					}
 				}
 
@@ -393,10 +409,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 					//else
 					//	mesh = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-
+				
 					Matrix mat2 = Matrix::Identity;
 					mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-
+				
 					meshes.push_back(mesh);
 					mesh->SetTransformMatrix(mat2);
 					tX++;
@@ -415,6 +431,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				gRenderer->Render();
 			}
 		}
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			gRenderer->DeleteMeshObject(meshes[i]);
+			meshes[i].reset();
+		}
+		meshes.clear();
+		gRenderer.reset();
 	}
 
 #ifdef _DEBUG

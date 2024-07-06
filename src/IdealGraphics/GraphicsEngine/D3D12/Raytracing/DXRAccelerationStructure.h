@@ -21,7 +21,6 @@ namespace Ideal
 	{
 		//BLASGeometry() : Name(L""), VertexBuffer(nullptr), IndexBuffer(nullptr), DiffuseTexture() {}
 		BLASGeometry() : Name(L""), DiffuseTexture() {}
-
 		std::wstring Name;
 		Ideal::D3D12DescriptorHandle DiffuseTexture;
 		//std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
@@ -86,6 +85,9 @@ namespace Ideal
 			bool AllowUpdate
 		);
 
+		// Geometry가 들고 있는 Handle 값을 반환한다.
+		void FreeMyHandle();
+
 		void Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer);
 
 		uint32 GetInstanceContributionToHitGroupIndex() { return m_instanceContributionToHitGroupIndex; }
@@ -101,7 +103,6 @@ namespace Ideal
 		void BuildGeometries(std::vector<BLASGeometry>& Geometries);
 
 	private:
-		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffer;
 		std::vector<BLASGeometry> m_geometries;
 		// geometry Info 로 만든 _geometry_desc을 저장 // 후에 BLAS 빌드할때 쓰임
 		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> m_geometryDescs;

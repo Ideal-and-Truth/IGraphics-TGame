@@ -218,8 +218,9 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
+		m_deferredDeleteManager->DeleteDeferredResources(i);
 	}
-
+	m_skyBoxTexture.reset();
 	m_resourceManager = nullptr;
 }
 
@@ -483,7 +484,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 		auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), mesh);
 		{
 			*it = std::move(m_staticMeshObject.back());
-			m_deferredDeleteManager->AddMeshObjectToDelete(MeshObject);
+			m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
 			m_staticMeshObject.pop_back();
 		}
 	}
@@ -495,7 +496,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 		auto it = std::find(m_skinnedMeshObject.begin(), m_skinnedMeshObject.end(), mesh);
 		{
 			*it = std::move(m_skinnedMeshObject.back());
-			m_deferredDeleteManager->AddMeshObjectToDelete(MeshObject);
+			m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
 			m_skinnedMeshObject.pop_back();
 		}
 	}
@@ -795,7 +796,7 @@ void Ideal::D3D12RayTracingRenderer::CreatePools()
 	}
 
 	m_descriptorManager = std::make_shared<Ideal::D3D12DescriptorManager>();
-	m_descriptorManager->Create(m_device, MAX_PENDING_FRAME_COUNT, MAX_DRAW_COUNT_PER_FRAME, 1, MAX_DRAW_COUNT_PER_FRAME);
+	m_descriptorManager->Create(m_device, MAX_PENDING_FRAME_COUNT, MAX_DRAW_COUNT_PER_FRAME, 1, MAX_DRAW_COUNT_PER_FRAME * 4);
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateDefaultCamera()
@@ -864,7 +865,8 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	uint32 PresentFlags = 0;
 	PresentFlags = DXGI_PRESENT_ALLOW_TEARING;
 
-	hr = m_swapChain->Present(0, PresentFlags);
+	//hr = m_swapChain->Present(0, PresentFlags);
+	hr = m_swapChain->Present(1, 0);
 	//hr = m_swapChain->Present(0, 0);
 	Check(hr);
 
@@ -877,10 +879,11 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	//m_BLASInstancePool[nextContextIndex]->Reset();
 	m_descriptorManager->ResetPool(nextContextIndex);
 
-	m_currentContextIndex = nextContextIndex;
-
 	// deferred resource Delete And Set Next Context Index
 	m_deferredDeleteManager->DeleteDeferredResources(m_currentContextIndex);
+
+	m_currentContextIndex = nextContextIndex;
+
 }
 
 uint64 Ideal::D3D12RayTracingRenderer::Fence()
@@ -894,11 +897,14 @@ uint64 Ideal::D3D12RayTracingRenderer::Fence()
 
 void Ideal::D3D12RayTracingRenderer::WaitForFenceValue(uint64 ExpectedFenceValue)
 {
+	uint64 completedValue = m_fence->GetCompletedValue();
 	if (m_fence->GetCompletedValue() < ExpectedFenceValue)
 	{
 		m_fence->SetEventOnCompletion(ExpectedFenceValue, m_fenceEvent);
 		WaitForSingleObject(m_fenceEvent, INFINITE);
 	}
+	uint64 completedValue1 = m_fence->GetCompletedValue();
+	int a = 3;
 }
 
 void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob)
@@ -1062,11 +1068,15 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
  		bool ShouldDeleteBLAS = blas->SubRefCount();
 		if (ShouldDeleteBLAS)
 		{
-			m_deferredDeleteManager->AddResourceToDelete(blas->GetResource());
+			m_deferredDeleteManager->AddD3D12ResourceToDelete(blas->GetResource());
+			m_deferredDeleteManager->AddBLASToDeferredDelete(blas);
 			m_raytracingManager->DeleteBLAS(blas, name, false);
+
+			//m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 		}
 	}
 	obj.reset();
+
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
@@ -1081,10 +1091,11 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 		bool ShouldDeleteBLAS = blas->SubRefCount();
 		if (ShouldDeleteBLAS)
 		{
-			m_deferredDeleteManager->AddResourceToDelete(blas->GetResource());
+			m_deferredDeleteManager->AddD3D12ResourceToDelete(blas->GetResource());
+			m_deferredDeleteManager->AddBLASToDeferredDelete(blas);
 			m_raytracingManager->DeleteBLAS(blas, name, true);
 		}
 	}
 	obj.reset();
-	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+	//m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 }

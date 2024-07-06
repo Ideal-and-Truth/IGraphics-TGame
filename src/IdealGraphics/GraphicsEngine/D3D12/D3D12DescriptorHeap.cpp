@@ -2,6 +2,7 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
 
 using namespace Ideal;
 
@@ -16,11 +17,12 @@ D3D12DescriptorHandle::D3D12DescriptorHandle()
 	m_gpuHandle.ptr = D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN;
 }
 
-D3D12DescriptorHandle::D3D12DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle, std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> OwnerHeap, int32 AllocatedIndex)
+D3D12DescriptorHandle::D3D12DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle, std::shared_ptr<Ideal::D3D12DescriptorHeapBase> OwnerHeap, int32 AllocatedIndex, int32 FixedHeapIndex/* =-1*/)
 	: m_cpuHandle(CpuHandle),
 	m_gpuHandle(GpuHandle),
 	m_ownerHeap(OwnerHeap),
-	m_allocatedIndex(AllocatedIndex)
+	m_allocatedIndex(AllocatedIndex),
+	m_fixedHeapIndex(FixedHeapIndex)
 {
 	//m_ownerHeap = OwnerHeap;
 }
@@ -31,13 +33,15 @@ D3D12DescriptorHandle::D3D12DescriptorHandle(const D3D12DescriptorHandle& Other)
 	m_gpuHandle = Other.m_gpuHandle;
 	m_ownerHeap = Other.m_ownerHeap;
 	m_allocatedIndex = Other.m_allocatedIndex;
+	m_fixedHeapIndex = Other.m_fixedHeapIndex;
 }
 
 D3D12DescriptorHandle::D3D12DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle)
 	: m_cpuHandle(CpuHandle),
 	m_gpuHandle(GpuHandle),
 	m_ownerHeap(),
-	m_allocatedIndex(-1)
+	m_allocatedIndex(-1),
+	m_fixedHeapIndex(-1)
 {
 
 }
@@ -55,8 +59,35 @@ void D3D12DescriptorHandle::Free()
 {
 	if (!m_ownerHeap.expired())
 	{
-		m_ownerHeap.lock()->Free(m_allocatedIndex);
-		m_ownerHeap.reset();
+		Ideal::EDescriptorType type = m_ownerHeap.lock()->GetDescriptorType();
+
+		switch (type)
+		{
+			case Ideal::EDescriptorType::None:
+			{
+
+			}
+				break;
+			case Ideal::EDescriptorType::StaticHeap:
+			{
+
+			}
+				break;
+			case Ideal::EDescriptorType::DynamicHeap:
+			{
+				std::static_pointer_cast<Ideal::D3D12DynamicDescriptorHeap>(m_ownerHeap.lock())->Free(m_allocatedIndex);
+			}
+				break;
+			case Ideal::EDescriptorType::Static_DynamicHeap:
+			{
+				std::static_pointer_cast<Ideal::D3D12DescriptorManager>(m_ownerHeap.lock())->Free(m_fixedHeapIndex, m_allocatedIndex);
+			}
+				break;
+			default:
+				break;
+		}
+		/*m_ownerHeap.lock()->Free(m_allocatedIndex);
+		m_ownerHeap.reset();*/
 	}
 }
 

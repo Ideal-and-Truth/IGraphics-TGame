@@ -18,7 +18,10 @@ Ideal::IdealMaterial::IdealMaterial()
 
 Ideal::IdealMaterial::~IdealMaterial()
 {
-
+	m_diffuseTexture.reset();
+	m_specularTexture.reset();
+	m_emissiveTexture.reset();
+	m_normalTexture.reset();
 }
 
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)

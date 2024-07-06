@@ -251,6 +251,8 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 			CreateSRV(Device, skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource(), blasGeometry.SRV_IndexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
 
 			Geometries[i] = blasGeometry;
+
+			int a = 3;
 		}
 		blas = m_ASManager->AddBLAS(Renderer, Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, true, Name, IsSkinnedData);
 		skinnedMeshObject->SetBLAS(blas);
@@ -476,7 +478,7 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 		if (DeferredDeleteManager)
 		{
-			DeferredDeleteManager->AddResourceToDelete(m_rayGenShaderTable);
+			DeferredDeleteManager->AddD3D12ResourceToDelete(m_rayGenShaderTable);
 		}
 		m_rayGenShaderTable = rayGenShaderTable.GetResource();
 	}
@@ -489,7 +491,7 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 		missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier, shaderIdentifierSize));
 		if (DeferredDeleteManager)
 		{
-			DeferredDeleteManager->AddResourceToDelete(m_missShaderTable);
+			DeferredDeleteManager->AddD3D12ResourceToDelete(m_missShaderTable);
 		}
 		m_missShaderTable = missShaderTable.GetResource();
 		m_missShaderTableStrideInBytes = missShaderTable.GetShaderRecordSize();
@@ -520,7 +522,7 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 		}
 		if (DeferredDeleteManager)
 		{
-			DeferredDeleteManager->AddResourceToDelete(m_hitGroupShaderTable);
+			DeferredDeleteManager->AddD3D12ResourceToDelete(m_hitGroupShaderTable);
 		}
 		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();

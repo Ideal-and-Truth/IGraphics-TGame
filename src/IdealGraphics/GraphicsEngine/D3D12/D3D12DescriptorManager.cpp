@@ -14,11 +14,18 @@ void Ideal::D3D12DescriptorManager::Create(ComPtr<ID3D12Device> Device, uint32 N
 {
 	m_numDescriptorPool = NumDescriptorPool;
 	m_numFixedDescriptorPool = NumFixedDescriptorHeap;
-
+	
 	m_countDescriptorPool.resize(NumDescriptorPool);
 	m_maxCountDescriptorPool = MaxCountDescriptorPool;
+
 	m_countFixedDescriptorPool.resize(NumFixedDescriptorHeap);
-	m_maxCountDescriptorPool = MaxCountFixedDescriptorHeap;
+	m_maxCountFixedDescriptorPool = MaxCountFixedDescriptorHeap;
+
+	m_indexCreator.resize(NumFixedDescriptorHeap);
+	for (auto& indexCreator : m_indexCreator)
+	{
+		indexCreator.Init(MaxCountFixedDescriptorHeap);
+	}
 
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 	uint32 NumDescriptors = MaxCountDescriptorPool * NumDescriptorPool + MaxCountFixedDescriptorHeap * NumFixedDescriptorHeap;
@@ -75,15 +82,41 @@ Ideal::D3D12DescriptorHandle Ideal::D3D12DescriptorManager::AllocateFixed(uint32
 		__debugbreak();
 		return Ideal::D3D12DescriptorHandle();
 	}
+	int32 index = m_indexCreator[FixedDescriptorHeapIndex].Allocate();
 
 	Ideal::D3D12DescriptorHandle ret = Ideal::D3D12DescriptorHandle(
 		m_descriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		m_descriptorHeap->GetGPUDescriptorHandleForHeapStart()
+		m_descriptorHeap->GetGPUDescriptorHandleForHeapStart(),
+		shared_from_this(),
+		index,	// ºó index
+		FixedDescriptorHeapIndex	// fixed heapÀÇ index°ª 
 	);
 
 	ret += m_numDescriptorPool * m_maxCountDescriptorPool * m_descriptorSize;
 	ret += FixedDescriptorHeapIndex * m_maxCountFixedDescriptorPool * m_descriptorSize + count * m_descriptorSize;
 	m_countFixedDescriptorPool[FixedDescriptorHeapIndex]++;
 
+	
+
 	return ret;
+}
+
+void Ideal::D3D12DescriptorManager::Free(int32 FixedDescriptorHeapIndex, int32 AllocatedIndex)
+{
+	if (AllocatedIndex < 0)
+	{
+		MyMessageBoxW(L"Can't Free Descriptor In DescriptorManager");
+		__debugbreak();
+		return;
+	}
+
+	if (FixedDescriptorHeapIndex < 0)
+	{
+		MyMessageBoxW(L"Can't Free Descriptor In DescriptorManager");
+		__debugbreak();
+		return;
+	}
+
+	m_countFixedDescriptorPool[FixedDescriptorHeapIndex]--;
+	m_indexCreator[FixedDescriptorHeapIndex].Free(AllocatedIndex);
 }

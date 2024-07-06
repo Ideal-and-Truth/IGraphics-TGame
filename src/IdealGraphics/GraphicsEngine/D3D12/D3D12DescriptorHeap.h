@@ -10,10 +10,22 @@ namespace Ideal
 	class D3D12Renderer;
 	class D3D12DescriptorHeap;
 	class D3D12DynamicDescriptorHeap;
+	class D3D12DescriptorHeapBase;
 }
 
 namespace Ideal
 {
+	enum class EDescriptorType
+	{
+		None,
+		// descriptor heap
+		StaticHeap,
+		// dynamic heap
+		DynamicHeap,
+		// manager
+		Static_DynamicHeap,
+	};
+
 	//--------------------------Descriptor Handle---------------------------//
 
 	class D3D12DescriptorHandle
@@ -26,7 +38,7 @@ namespace Ideal
 		virtual ~D3D12DescriptorHandle();
 
 		D3D12DescriptorHandle(const D3D12DescriptorHandle& Other);
-		D3D12DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle, std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> OwnerHeap, int32 AllocatedIndex);
+		D3D12DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle, std::shared_ptr<Ideal::D3D12DescriptorHeapBase> OwnerHeap, int32 AllocatedIndex, int32 FixedHeapIndex = -1);
 		D3D12DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle);
 	
 	public:
@@ -46,6 +58,7 @@ namespace Ideal
 			m_gpuHandle = Other.m_gpuHandle;
 			m_ownerHeap = Other.m_ownerHeap;
 			m_allocatedIndex = Other.m_allocatedIndex;
+			m_fixedHeapIndex = Other.m_fixedHeapIndex;
 		}
 	
 		void operator+=(uint32 IncrementSize)
@@ -53,14 +66,19 @@ namespace Ideal
 			m_cpuHandle.ptr += IncrementSize;
 			m_gpuHandle.ptr += IncrementSize;
 		}
+
 	private:
 		//CD3DX12_CPU_DESCRIPTOR_HANDLE m_cpuHandle;
 		D3D12_CPU_DESCRIPTOR_HANDLE m_cpuHandle;
 		D3D12_GPU_DESCRIPTOR_HANDLE m_gpuHandle;
 
 		// allocated index
-		std::weak_ptr<Ideal::D3D12DynamicDescriptorHeap> m_ownerHeap;
+		//std::weak_ptr<Ideal::D3D12DynamicDescriptorHeap> m_ownerHeap;
+		std::weak_ptr<Ideal::D3D12DescriptorHeapBase> m_ownerHeap;
 		int32 m_allocatedIndex = -1;
+
+		// DescriptorMangerÀÏ °æ¿ì 
+		int32 m_fixedHeapIndex = -1;
 	};
 
 
@@ -68,11 +86,22 @@ namespace Ideal
 	//--------------------------Descriptor Heap---------------------------//
 	////////////////////////////////////////////////////////////////////////
 
-	class D3D12DescriptorHeap : public std::enable_shared_from_this<Ideal::D3D12DescriptorHeap>
+
+	class D3D12DescriptorHeapBase
+	{
+	public:
+		virtual EDescriptorType GetDescriptorType() { return EDescriptorType::None; }
+
+	protected:
+	};
+
+	class D3D12DescriptorHeap : public D3D12DescriptorHeapBase, public std::enable_shared_from_this<Ideal::D3D12DescriptorHeap>
 	{
 	public:
 		D3D12DescriptorHeap();
 		virtual ~D3D12DescriptorHeap();
+
+		virtual EDescriptorType GetDescriptorType() override { return EDescriptorType::StaticHeap; }
 
 	public:
 		void Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);
@@ -101,11 +130,13 @@ namespace Ideal
 
 	//--------------Dynamic--------------//
 
-	class D3D12DynamicDescriptorHeap : public std::enable_shared_from_this<Ideal::D3D12DynamicDescriptorHeap>
+	class D3D12DynamicDescriptorHeap : public D3D12DescriptorHeapBase ,public std::enable_shared_from_this<Ideal::D3D12DynamicDescriptorHeap>
 	{
 	public:
 		D3D12DynamicDescriptorHeap();
 		virtual ~D3D12DynamicDescriptorHeap();
+
+		virtual EDescriptorType GetDescriptorType() override { return EDescriptorType::DynamicHeap; }
 
 	public:
 		void Create(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, D3D12_DESCRIPTOR_HEAP_FLAGS Flags, uint32 MaxCount);

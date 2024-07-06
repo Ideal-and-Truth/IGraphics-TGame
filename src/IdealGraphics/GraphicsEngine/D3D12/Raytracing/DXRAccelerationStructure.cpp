@@ -26,7 +26,7 @@ Ideal::DXRBottomLevelAccelerationStructure::DXRBottomLevelAccelerationStructure(
 
 Ideal::DXRBottomLevelAccelerationStructure::~DXRBottomLevelAccelerationStructure()
 {
-
+	
 }
 
 void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate)
@@ -62,6 +62,19 @@ void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> De
 	);
 	m_isDirty = true;
 	m_isBuilt = false;
+}
+
+void Ideal::DXRBottomLevelAccelerationStructure::FreeMyHandle()
+{
+	// Fixed Descriptor 에서 가져다 쓴 리소스들을 반환한다.
+	for (auto geometry : m_geometries)
+	{
+		geometry.SRV_Diffuse.Free();
+		geometry.SRV_IndexBuffer.Free();
+		geometry.SRV_VertexBuffer.Free();
+	}
+
+	m_geometries.clear();
 }
 
 void Ideal::DXRBottomLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer)
@@ -169,7 +182,6 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 	topLevelInputs.Flags = m_buildFlags;
 	topLevelInputs.NumDescs = NumBLASInstanceDescs;
-	//topLevelInputs.NumDescs = 1024;
 
 	Device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &m_preBuildInfo);
 	if (m_preBuildInfo.ResultDataMaxSizeInBytes <= 0)
@@ -186,7 +198,8 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	}
 	if (DeferredDeleteManager)
 	{
-		DeferredDeleteManager->AddResourceToDelete(m_accelerationStructure->GetResource());
+		DeferredDeleteManager->AddD3D12ResourceToDelete(m_accelerationStructure->GetResource());
+		m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
 	}
 	m_accelerationStructure->Create(Device.Get(), m_preBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, m_name.c_str());
 }

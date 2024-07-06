@@ -3,6 +3,7 @@
 
 #include "GraphicsEngine/D3D12/D3D12RayTracingRenderer.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
 //#define OneScratchBuffer
 
@@ -33,7 +34,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::DXRAccelerati
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = std::make_shared<Ideal::DXRBottomLevelAccelerationStructure>(Name);
 	blas->Create(Device, Geometries, BuildFlags, AllowUpdate);
 
-	//if (IsSkinnedData)
+	if (!IsSkinnedData)
 	{
 		m_blasMap[Name] = blas;
 	}
@@ -89,9 +90,10 @@ std::shared_ptr<Ideal::BLASInstanceDesc> Ideal::DXRAccelerationStructureManager:
 void Ideal::DXRAccelerationStructureManager::DeleteBLASInstance(std::shared_ptr<Ideal::BLASInstanceDesc> Instance)
 {
 	auto it = std::find(m_blasInstanceDescs.begin(), m_blasInstanceDescs.end(), Instance);
-	//if (it != m_blasInstanceDescs.end())
+	if (it != m_blasInstanceDescs.end())
 	{
-		*it = std::move(m_blasInstanceDescs.back());
+		//*it = std::move(m_blasInstanceDescs.back());
+		std::swap(*it, m_blasInstanceDescs.back());
 		m_blasInstanceDescs.pop_back();
 	}
 }
@@ -172,7 +174,11 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 
 	// Build TLAS
 	{
-			m_topLevelASs[m_currentIndex]->Create(Device, m_blasInstanceDescs.size(), D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, nullptr, false);
+		DeferredDeleteManager->AddTLASToDeferredDelete(m_topLevelASs[m_currentIndex]);
+
+		//m_topLevelASs[m_currentIndex]->Create(Device, m_blasInstanceDescs.size(), D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, nullptr, false);
+		m_topLevelASs[m_currentIndex] = std::make_shared<Ideal::DXRTopLevelAccelerationStructure>(L"TLAS");
+		m_topLevelASs[m_currentIndex]->Create(Device, m_blasInstanceDescs.size(), D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, DeferredDeleteManager, false);
 		m_topLevelASs[m_currentIndex]->Build(CommandList, numInstance, instanceDescs, m_scratchBuffers[m_currentIndex]->GetResource());
 
 		CD3DX12_RESOURCE_BARRIER uavBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_topLevelASs[m_currentIndex]->GetResource().Get());
