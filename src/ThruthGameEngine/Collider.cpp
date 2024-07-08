@@ -276,7 +276,6 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 		break;
 	}
 
-	m_managers.lock()->Graphics()->AddDebugobject(m_debugMesh);
 #endif // _DEBUG
 
 	m_localTM = Matrix::CreateScale(m_size);

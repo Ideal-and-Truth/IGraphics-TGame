@@ -41,7 +41,6 @@ namespace Truth
 		virtual ~Light();
 
 		void SetLight(LightType InLightType);
-		void AddLight(std::shared_ptr<Ideal::ILight> _light);
 
 		METHOD(Initalize);
 		void Initalize();

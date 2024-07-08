@@ -114,22 +114,22 @@ void Truth::NavMeshGenerater::Initalize(std::wstring _path)
 	const float* bmin = m_geom.m_bmin.data();
 	const float* bmax = m_geom.m_bmax.data();
 	const float* verts = m_geom.m_ver.data();
-	const int nverts = m_geom.m_ver.size() / 3;
-	const int* tris = m_geom.m_inx.data();
-	const int ntris = m_geom.m_inx.size() / 3;
+	const int32 nverts = static_cast<int32>(m_geom.m_ver.size()) / 3;
+	const int32* tris = m_geom.m_inx.data();
+	const int32 ntris = static_cast<int32>(m_geom.m_inx.size()) / 3;
 
 	memset(m_cfg, 0, sizeof(m_cfg));
 	m_cfg->cs = m_cellSize;
 	m_cfg->ch = m_cellHeight;
 	m_cfg->walkableSlopeAngle = m_agentMaxSlope;
-	m_cfg->walkableHeight = (int)ceilf(m_agentHeight / m_cfg->ch);
-	m_cfg->walkableClimb = (int)floorf(m_agentMaxClimb / m_cfg->ch);
-	m_cfg->walkableRadius = (int)ceilf(m_agentRadius / m_cfg->cs);
-	m_cfg->maxEdgeLen = (int)(m_edgeMaxLen / m_cellSize);
+	m_cfg->walkableHeight = static_cast<int32>(ceilf(m_agentHeight / m_cfg->ch));
+	m_cfg->walkableClimb = static_cast<int32>(floorf(m_agentMaxClimb / m_cfg->ch));
+	m_cfg->walkableRadius = static_cast<int32>(ceilf(m_agentRadius / m_cfg->cs));
+	m_cfg->maxEdgeLen = static_cast<int32>(m_edgeMaxLen / m_cellSize);
 	m_cfg->maxSimplificationError = m_edgeMaxError;
-	m_cfg->minRegionArea = (int)rcSqr(m_regionMinSize);		// Note: area = size*size
-	m_cfg->mergeRegionArea = (int)rcSqr(m_regionMergeSize);	// Note: area = size*size
-	m_cfg->maxVertsPerPoly = (int)m_vertsPerPoly;
+	m_cfg->minRegionArea = static_cast<int32>(rcSqr(m_regionMinSize));		// Note: area = size*size
+	m_cfg->mergeRegionArea = static_cast<int32>(rcSqr(m_regionMergeSize));	// Note: area = size*size
+	m_cfg->maxVertsPerPoly = static_cast<int32>(m_vertsPerPoly);
 	m_cfg->detailSampleDist = m_detailSampleDist < 0.9f ? 0 : m_cellSize * m_detailSampleDist;
 	m_cfg->detailSampleMaxError = m_cellHeight * m_detailSampleMaxError;
 

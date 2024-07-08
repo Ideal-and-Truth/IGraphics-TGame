@@ -14,8 +14,8 @@
 /// </summary>
 Truth::GraphicsManager::GraphicsManager()
 	: m_renderer(nullptr)
-	, m_renderScene(nullptr)
 	, m_aspect(1.0f)
+	, m_mainCamera(nullptr)
 {
 
 }
@@ -61,8 +61,6 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 	
 	m_renderer->Init();
-	m_renderScene = m_renderer->CreateRenderScene();
-	m_renderer->SetRenderScene(m_renderScene);
 
 	// 추후에 카메라에 넘겨 줄 시야각
 	m_aspect = static_cast<float>(_wight) / static_cast<float>(_height);
@@ -83,30 +81,6 @@ void Truth::GraphicsManager::Render()
 	CompleteCamera();
 	m_renderer->Render();
 #endif // _DEBUG
-}
-
-/// <summary>
-/// 렌더 할 오브젝트
-/// </summary>
-/// <param name="_mesh">매쉬 인터페이스</param>
-void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh)
-{
-	m_renderScene->AddObject(_mesh);
-}
-
-
-void Truth::GraphicsManager::AddLight(std::shared_ptr<Ideal::ILight> _light)
-{
-	m_renderScene->AddLight(_light);
-}
-
-/// <summary>
-/// 디버깅용 오브젝트 렌더
-/// </summary>
-/// <param name="_mesh">매쉬 인터페이스</param>
-void Truth::GraphicsManager::AddDebugobject(std::shared_ptr<Ideal::IMeshObject> _mesh)
-{
-	m_renderScene->AddDebugObject(_mesh);
 }
 
 
@@ -184,9 +158,7 @@ void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 
 void Truth::GraphicsManager::ResetRenderScene()
 {
-	m_renderScene.reset();
-	m_renderScene = m_renderer->CreateRenderScene();
-	m_renderer->SetRenderScene(m_renderScene);
+	m_renderer.reset();
 }
 
 void Truth::GraphicsManager::CompleteCamera()

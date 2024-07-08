@@ -17,7 +17,6 @@ namespace Truth
 	{
 	private:
 		std::shared_ptr<Ideal::IdealRenderer> m_renderer;
-		std::shared_ptr<Ideal::IRenderScene> m_renderScene;
 		Camera* m_mainCamera;
 		float m_aspect;
 
@@ -35,10 +34,6 @@ namespace Truth
 		void Initalize(HWND _hwnd, uint32 _wight, uint32 _height);
 		void Finalize();
 		void Render();
-
-		void AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh);
-		void AddLight(std::shared_ptr<Ideal::ILight> _light);
-		void AddDebugobject(std::shared_ptr<Ideal::IMeshObject> _mesh);
 
 		void ConvertAsset(std::wstring _path, bool _isSkind = false, bool _isData = false);
 

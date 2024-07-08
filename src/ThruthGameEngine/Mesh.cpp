@@ -39,19 +39,10 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 	}
 
 	m_mesh = m_managers.lock()->Graphics()->CreateMesh(_path);
-
-	if (m_isRendering)
-	{
-		m_managers.lock()->Graphics()->AddObject(m_mesh);
-	}
 }
 
 void Truth::Mesh::SetRenderable(bool _isRenderable)
 {
-	if (_isRenderable)
-	{
-		m_managers.lock()->Graphics()->AddObject(m_mesh);
-	}
 }
 
 void Truth::Mesh::Initalize()
