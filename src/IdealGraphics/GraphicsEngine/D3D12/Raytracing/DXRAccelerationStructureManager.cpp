@@ -135,7 +135,7 @@ void Ideal::DXRAccelerationStructureManager::InitTLAS(ComPtr<ID3D12Device5> Devi
 
 void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager, bool ForceBuild /*= false*/)
 {
-	//UploadBufferPool->Reset();
+	UploadBufferPool->Reset();
 	m_currentIndex = (m_currentIndex + 1) % MAX_PENDING_FRAME;
 
 	// instanceDescs의 첫 주소를 받아온다.

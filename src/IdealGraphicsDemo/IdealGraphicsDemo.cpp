@@ -156,8 +156,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->SetMainCamera(camera);
 
 		//-------------------Create Scene-------------------//
-		std::shared_ptr<Ideal::IRenderScene> renderScene = gRenderer->CreateRenderScene();
-		gRenderer->SetRenderScene(renderScene);
+		//std::shared_ptr<Ideal::IRenderScene> renderScene = gRenderer->CreateRenderScene();
+		//gRenderer->SetRenderScene(renderScene);
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
@@ -239,7 +239,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(mesh3);
 
 		//--------------------Create Light----------------------//
-		//std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();

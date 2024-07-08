@@ -41,6 +41,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
+	Fence();
 	WaitForFenceValue();
 }
 

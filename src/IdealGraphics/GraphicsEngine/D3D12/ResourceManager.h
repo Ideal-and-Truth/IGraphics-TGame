@@ -5,6 +5,7 @@
 
 namespace Ideal
 {
+	class D3D12Resource;
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12ShaderResourceView;

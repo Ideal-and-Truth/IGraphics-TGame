@@ -6,9 +6,11 @@
 
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 
+#include "GraphicsEngine/D3D12/ResourceManager.h"
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
+
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
-#include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12RootSignature.h"
@@ -49,7 +51,11 @@ Ideal::D3D12Renderer::~D3D12Renderer()
 	for (uint64 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
+		m_deferredDeleteManager->DeleteDeferredResources(i);
 	}
+
+	m_currentRenderScene->Free();
+	m_currentRenderScene.reset();
 
 #ifdef _DEBUG
 	if (m_isEditor)
@@ -58,8 +64,6 @@ Ideal::D3D12Renderer::~D3D12Renderer()
 	}
 #endif 
 
-	// Release Resource Manager
-	m_resourceManager = nullptr;
 
 #ifdef _DEBUG
 	if (m_isEditor)
@@ -69,6 +73,9 @@ Ideal::D3D12Renderer::~D3D12Renderer()
 		ImGui::DestroyContext();
 	}
 #endif
+
+	// Release Resource Manager
+	m_resourceManager = nullptr;
 }
 
 void Ideal::D3D12Renderer::Init()
@@ -262,6 +269,8 @@ finishAdapter:
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
 
+	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
+
 	//------------------Create Main Descriptor Heap---------------------//
 	CreateDescriptorHeap();
 
@@ -285,6 +294,10 @@ finishAdapter:
 	//---------------------Warning OFF-----------------------//
 	OffWarningRenderTargetClearValue();
 #endif
+
+
+	// Scene Init
+	m_currentRenderScene = std::static_pointer_cast<IdealRenderScene>(CreateRenderScene());
 }
 
 void Ideal::D3D12Renderer::Tick()
@@ -300,13 +313,13 @@ void Ideal::D3D12Renderer::Render()
 	//---------Update Camera Matrix---------//
 	m_mainCamera->UpdateMatrix2();
 	//2024.05.16 Draw GBuffer
-	m_currentRenderScene.lock()->DrawGBuffer(shared_from_this());
+	m_currentRenderScene->DrawGBuffer(shared_from_this());
 
 #ifdef _DEBUG
 	if (m_isEditor)
 	{
 		SetImGuiCameraRenderTarget();
-		m_currentRenderScene.lock()->DrawScreen(shared_from_this());
+		m_currentRenderScene->DrawScreen(shared_from_this());
 		DrawImGuiMainCamera();
 	}
 
@@ -319,12 +332,12 @@ void Ideal::D3D12Renderer::Render()
 		//-------------Render Command-------------//
 		{
 			//----------Render Scene-----------//
-			if (!m_currentRenderScene.expired())
+			if (m_currentRenderScene != nullptr)
 			{
 #ifdef _DEBUG
 				if (!m_isEditor)
 #endif
-					m_currentRenderScene.lock()->DrawScreen(shared_from_this());
+					m_currentRenderScene->DrawScreen(shared_from_this());
 			}
 		}
 		{
@@ -406,7 +419,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 
 	m_mainCamera->SetAspectRatio(float(Width) / Height);
 
-	m_currentRenderScene.lock()->Resize(shared_from_this());
+	m_currentRenderScene->Resize(shared_from_this());
 
 #ifdef _DEBUG
 	if (m_isEditor)
@@ -434,21 +447,20 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateStaticMeshObject
 	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
 
 	//newStaticMesh->Init(shared_from_this());
-
 	//m_staticMeshObjects.push_back(newStaticMesh);
-
+	m_currentRenderScene->AddObject(newStaticMesh);
 	return newStaticMesh;
 }
 
 std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12Renderer::CreateSkinnedMeshObject(const std::wstring& FileName)
 {
-	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newDynamicMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
-	m_resourceManager->CreateSkinnedMeshObject(newDynamicMesh, FileName);
+	std::shared_ptr<Ideal::IdealSkinnedMeshObject> newSkinnedMesh = std::make_shared<Ideal::IdealSkinnedMeshObject>();
+	m_resourceManager->CreateSkinnedMeshObject(newSkinnedMesh, FileName);
 
-	newDynamicMesh->Init(shared_from_this());
-	//m_dynamicMeshObjects.push_back(newDynamicMesh);
+	//newSkinnedMesh->Init(shared_from_this());
+	m_currentRenderScene->AddObject(newSkinnedMesh);
 
-	return newDynamicMesh;
+	return newSkinnedMesh;
 }
 
 std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const std::wstring& FileName)
@@ -459,16 +471,26 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const s
 	return newAnimation;
 }
 
+std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateDebugMeshObject(const std::wstring& FileName)
+{
+	std::shared_ptr<Ideal::IMeshObject> newDebugMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
+	m_resourceManager->CreateStaticMeshObject(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newDebugMesh), FileName);
+	m_currentRenderScene->AddDebugObject(newDebugMesh);
+
+	return newDebugMesh;
+}
+
 void Ideal::D3D12Renderer::DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
 {
 	//2024.07.04 TEMP
+	m_currentRenderScene->DeleteObject(MeshObject);
 	MeshObject.reset();
 }
 
 std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12Renderer::CreateRenderScene()
 {
 	std::shared_ptr<Ideal::IdealRenderScene> newScene = std::make_shared<Ideal::IdealRenderScene>();
-	newScene->Init(shared_from_this());
+	newScene->Init(shared_from_this(), m_deferredDeleteManager);
 	return newScene;
 }
 
@@ -480,18 +502,21 @@ void Ideal::D3D12Renderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> R
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12Renderer::CreateDirectionalLight()
 {
 	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
+	m_currentRenderScene->AddLight(newLight);
 	return newLight;
 }
 
 std::shared_ptr<Ideal::ISpotLight> Ideal::D3D12Renderer::CreateSpotLight()
 {
 	std::shared_ptr<Ideal::ISpotLight> newLight = std::make_shared<Ideal::IdealSpotLight>();
+	m_currentRenderScene->AddLight(newLight);
 	return newLight;
 }
 
 std::shared_ptr<Ideal::IPointLight> Ideal::D3D12Renderer::CreatePointLight()
 {
 	std::shared_ptr<Ideal::IPointLight> newLight = std::make_shared<Ideal::IdealPointLight>();
+	m_currentRenderScene->AddLight(newLight);
 	return newLight;
 }
 
@@ -971,6 +996,9 @@ void Ideal::D3D12Renderer::Present()
 
 	m_descriptorHeaps[nextContextIndex]->Reset();
 	m_cbAllocator[nextContextIndex]->Reset();
+
+	// deferred resource Delete And Set Next Context Index
+	m_deferredDeleteManager->DeleteDeferredResources(m_currentContextIndex);
 
 	m_currentContextIndex = nextContextIndex;
 }

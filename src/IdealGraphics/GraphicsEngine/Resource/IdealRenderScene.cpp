@@ -24,6 +24,7 @@
 
 #include "GraphicsEngine/ConstantBufferInfo.h"
 
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
 Ideal::IdealRenderScene::IdealRenderScene()
 	: m_width(0),
@@ -34,17 +35,13 @@ Ideal::IdealRenderScene::IdealRenderScene()
 
 Ideal::IdealRenderScene::~IdealRenderScene()
 {
-	int a = 3;
-	/*for (auto& t : m_gBuffers)
-	{
-		t.reset();
-	}
-	m_depthBuffer.reset();
-	m_screenBuffer.reset();*/
+	
 }
 
-void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer)
+void Ideal::IdealRenderScene::Init(std::shared_ptr<IdealRenderer> Renderer, std::shared_ptr<Ideal::DeferredDeleteManager> InDeferredDeleteManager)
 {
+	m_deferredDeleteManager = InDeferredDeleteManager;
+
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 
 	m_width = d3d12Renderer->GetWidth();
@@ -96,9 +93,9 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 
 		for (auto& m : m_staticMeshObjects)
 		{
-			if (m.lock() != nullptr)
+			if (m != nullptr)
 			{
-				m.lock()->Draw(d3d12Renderer);
+				m->Draw(d3d12Renderer);
 			}
 		}
 	}
@@ -112,9 +109,9 @@ void Ideal::IdealRenderScene::Draw(std::shared_ptr<IdealRenderer> Renderer)
 
 		for (auto& m : m_skinnedMeshObjects)
 		{
-			if (m.lock() != nullptr)
+			if (m!= nullptr)
 			{
-				m.lock()->Draw(Renderer);
+				m->Draw(Renderer);
 			}
 		}
 	}
@@ -129,6 +126,16 @@ void Ideal::IdealRenderScene::Resize(std::shared_ptr<IdealRenderer> Renderer)
 
 	CreateGBuffer(Renderer);
 	InitScreenQuad(Renderer);
+}
+
+void Ideal::IdealRenderScene::Free()
+{
+	for (auto& t : m_gBuffers)
+	{
+		t.reset();
+	}
+	m_depthBuffer.reset();
+	m_screenBuffer.reset();
 }
 
 void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Renderer)
@@ -155,9 +162,9 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 
 		for (auto& m : m_staticMeshObjects)
 		{
-			if (m.lock() != nullptr)
+			if (m != nullptr)
 			{
-				m.lock()->Draw(d3d12Renderer);
+				m->Draw(d3d12Renderer);
 			}
 		}
 	}
@@ -171,9 +178,9 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 
 		for (auto& m : m_skinnedMeshObjects)
 		{
-			if (m.lock() != nullptr)
+			if (m != nullptr)
 			{
-				m.lock()->Draw(Renderer);
+				m->Draw(Renderer);
 			}
 		}
 	}
@@ -188,9 +195,9 @@ void Ideal::IdealRenderScene::DrawGBuffer(std::shared_ptr<IdealRenderer> Rendere
 
 		for (auto& m : m_debugMeshObjects)
 		{
-			if (m.lock() != nullptr)
+			if (m != nullptr)
 			{
-				m.lock()->Draw(d3d12Renderer);
+				m->Draw(d3d12Renderer);
 			}
 		}
 	}
@@ -234,13 +241,19 @@ void Ideal::IdealRenderScene::DrawScreenEditor(std::shared_ptr<IdealRenderer> Re
 
 void Ideal::IdealRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
 {
-	if (std::dynamic_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject) != nullptr)
+	auto meshType = MeshObject->GetMeshType();
+
+	switch (meshType)
 	{
-		m_staticMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject));
-	}
-	else if (std::dynamic_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject) != nullptr)
-	{
-		m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
+		case Ideal::Static:
+			m_staticMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject));
+			break;
+		case Ideal::Skinned:
+			m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
+			break;
+		default:
+			break;
+
 	}
 }
 
@@ -284,6 +297,44 @@ void Ideal::IdealRenderScene::AddLight(std::shared_ptr<Ideal::ILight> Light)
 		break;
 
 	}
+}
+
+void Ideal::IdealRenderScene::DeleteObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
+{
+	if (MeshObject == nullptr)
+		return;
+
+	if (MeshObject->GetMeshType() == Ideal::Static)
+	{
+		auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+
+		auto it = std::find(m_staticMeshObjects.begin(), m_staticMeshObjects.end(), mesh);
+		{
+			*it = std::move(m_staticMeshObjects.back());
+			m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
+			m_staticMeshObjects.pop_back();
+		}
+	}
+	else if (MeshObject->GetMeshType() == Ideal::Skinned)
+	{
+		auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject);
+
+		auto it = std::find(m_skinnedMeshObjects.begin(), m_skinnedMeshObjects.end(), mesh);
+		{
+			*it = std::move(m_skinnedMeshObjects.back());
+			m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
+			m_skinnedMeshObjects.pop_back();
+		}
+	}
+}
+void Ideal::IdealRenderScene::DeleteLight(std::shared_ptr<Ideal::ILight> Light)
+{
+
+}
+
+void Ideal::IdealRenderScene::DeleteDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
+{
+
 }
 
 void Ideal::IdealRenderScene::CreateStaticMeshPSO(ID3D12Device* Device)
@@ -580,9 +631,9 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 
 	//----------------Directional Light-----------------//
-	if (!m_directionalLight.expired())
+	if (m_directionalLight)
 	{
-		m_cbLightList->DirLight = m_directionalLight.lock()->GetDirectionalLightDesc();
+		m_cbLightList->DirLight = m_directionalLight->GetDirectionalLightDesc();
 	}
 
 	//----------------Spot Light-----------------//
@@ -595,7 +646,7 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 
 	for (uint32 i = 0; i < spotLightNum; ++i)
 	{
-		m_cbLightList->SpotLights[i] = m_spotLights[i].lock()->GetSpotLightDesc();
+		m_cbLightList->SpotLights[i] = m_spotLights[i]->GetSpotLightDesc();
 	}
 	m_cbLightList->SpotLightNum = spotLightNum;
 
@@ -610,7 +661,7 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 
 	for (uint32 i = 0; i < pointLightNum; ++i)
 	{
-		m_cbLightList->PointLights[i] = m_pointLights[i].lock()->GetPointLightDesc();
+		m_cbLightList->PointLights[i] = m_pointLights[i]->GetPointLightDesc();
 	}
 
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
