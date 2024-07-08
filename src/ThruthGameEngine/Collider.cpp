@@ -26,6 +26,7 @@ Truth::Collider::Collider(bool _isTrigger /*= true*/)
 #endif // _DEBUG
 	, m_shape()
 	, m_enable(true)
+	, m_isController(false)
 
 {
 	m_center = { 0.0f, 0.0f, 0.0f };
@@ -46,6 +47,7 @@ Truth::Collider::Collider(Vector3 _pos, bool _isTrigger /*= true*/)
 	, m_rigidbody()
 	, m_shape()
 	, m_enable(true)
+	, m_isController(false)
 #ifdef _DEBUG
 	, m_debugMesh(nullptr)
 #endif // _DEBUG
@@ -65,6 +67,14 @@ Truth::Collider::~Collider()
 		m_collider->userData = nullptr;
 		m_collider = nullptr;
 	}
+
+#ifdef _DEBUG
+	if (m_debugMesh != nullptr)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
+		m_debugMesh = nullptr;
+	}
+#endif // _DEBUG
 }
 
 /// <summary>
@@ -78,6 +88,14 @@ void Truth::Collider::Destroy()
 		m_collider->userData = nullptr;
 		m_body->detachShape(*m_collider);
 	}
+
+#ifdef _DEBUG
+	if (m_debugMesh != nullptr)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
+		m_debugMesh = nullptr;
+	}
+#endif // _DEBUG
 }
 
 /// <summary>
@@ -255,12 +273,12 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		m_debugMesh = m_managers.lock()->Graphics()->CreateMesh(L"DebugObject/debugCube");
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		m_debugMesh = m_managers.lock()->Graphics()->CreateMesh(L"DebugObject/debugSphere");
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
@@ -269,7 +287,7 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 	}
 	case Truth::ColliderShape::MESH:
 	{
-		m_debugMesh = m_managers.lock()->Graphics()->CreateMesh(_path);
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(_path);
 		break;
 	}
 	default:

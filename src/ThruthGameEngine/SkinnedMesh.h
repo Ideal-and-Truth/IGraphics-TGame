@@ -59,6 +59,8 @@ namespace Truth
 		METHOD(ApplyTransform);
 		void ApplyTransform();
 
+		void DeleteMesh();
+
 #ifdef _DEBUG
 		virtual void EditorSetValue();
 #endif // _DEBUG

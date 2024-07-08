@@ -12,6 +12,8 @@
 //#include "../IdealGraphics/Misc/Utils/FileUtils.h"
 #include "EditorUI.h"
 
+#include "UnityParser.h"
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -41,6 +43,10 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
+
+	Truth::UnityParser up;
+
+	up.Parsing(L"test");
 
 	// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
@@ -145,7 +151,10 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 	case WM_MOUSEWHEEL:
 	{
-		g_inputmanager->m_deltaWheel = GET_WHEEL_DELTA_WPARAM(wParam);
+		if (g_inputmanager)
+		{
+			g_inputmanager->m_deltaWheel = GET_WHEEL_DELTA_WPARAM(wParam);
+		}
 		break;
 	}
 

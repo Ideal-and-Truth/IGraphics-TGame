@@ -281,7 +281,6 @@ void Truth::Scene::Enter()
 void Truth::Scene::Exit()
 {
 	ClearEntity();
-	m_managers.lock()->Graphics()->ResetRenderScene();
 }
 
 /// <summary>

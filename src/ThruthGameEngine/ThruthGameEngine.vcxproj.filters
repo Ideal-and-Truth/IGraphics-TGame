@@ -118,6 +118,9 @@
     <Filter Include="Component\NavMesh\Geom">
       <UniqueIdentifier>{e5ae6624-5d48-4676-a482-d1992ec5b13a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UnityParser">
+      <UniqueIdentifier>{2ca8590a-1363-4e59-8524-264bcd37b065}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -232,6 +235,7 @@
     <ClCompile Include="NavGeom.cpp">
       <Filter>Component\NavMesh\Geom</Filter>
     </ClCompile>
+    <ClCompile Include="UnityParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -366,6 +370,7 @@
     <ClInclude Include="NavGeom.h">
       <Filter>Component\NavMesh\Geom</Filter>
     </ClInclude>
+    <ClInclude Include="UnityParser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

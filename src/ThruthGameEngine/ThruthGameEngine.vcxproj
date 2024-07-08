@@ -66,6 +66,7 @@
     <ClInclude Include="TypeInfo.h" />
     <ClInclude Include="TypeInfoMacros.h" />
     <ClInclude Include="TypeUI.h" />
+    <ClInclude Include="UnityParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Utils\SimpleMath.cpp" />
@@ -108,6 +109,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="TypeUI.cpp" />
+    <ClCompile Include="UnityParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -220,7 +222,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Utils;$(SolutionDir)IdealGraphics\GraphicsEngine\public;$(SolutionDir)recastnavigation\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Utils;$(SolutionDir)IdealGraphics\GraphicsEngine\public;$(SolutionDir)recastnavigation\Include;$(SolutionDir)Libraries\DebugLib\Yaml\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
@@ -233,8 +235,8 @@
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)Libraries\Debuglib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>Debuglib\GraphicsEngine\IdealGraphics.lib;DebugUtils.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;$(SolutionDir)recastnavigation\Build\vs2022\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Debuglib\GraphicsEngine\IdealGraphics.lib;DebugUtils.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;$(SolutionDir)recastnavigation\Build\vs2022\lib\Debug;$(SolutionDir)Libraries\DebugLib\Yaml\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>

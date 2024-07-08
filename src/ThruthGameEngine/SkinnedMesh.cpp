@@ -35,6 +35,7 @@ Truth::SkinnedMesh::SkinnedMesh()
 
 Truth::SkinnedMesh::~SkinnedMesh()
 {
+	DeleteMesh();
 }
 
 void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
@@ -113,6 +114,11 @@ void Truth::SkinnedMesh::ApplyTransform()
 {
 	m_skinnedMesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
 	m_skinnedMesh->SetDrawObject(m_isRendering);
+}
+
+void Truth::SkinnedMesh::DeleteMesh()
+{
+	m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
 }
 
 #ifdef _DEBUG

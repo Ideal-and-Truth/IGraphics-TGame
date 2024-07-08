@@ -109,6 +109,11 @@ std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateMesh(std::wstr
 	return m_renderer->CreateStaticMeshObject(_path);
 }
 
+std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateDebugMeshObject(std::wstring _path)
+{
+	return m_renderer->CreateDebugMeshObject(_path);
+}
+
 std::shared_ptr<Ideal::IAnimation> Truth::GraphicsManager::CreateAnimation(std::wstring _path)
 {
 	return m_renderer->CreateAnimation(_path);
@@ -139,6 +144,15 @@ std::shared_ptr<Ideal::ICamera> Truth::GraphicsManager::CreateCamera()
 }
 
 /// <summary>
+/// 등록된 Mesh
+/// </summary>
+/// <param name="_meshObject"></param>
+void Truth::GraphicsManager::DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> _meshObject)
+{
+	m_renderer->DeleteMeshObject(_meshObject);
+}
+
+/// <summary>
 /// 메인 카메라 지정
 /// </summary>
 /// <param name="_camera">카메라 오브젝트</param>
@@ -155,11 +169,6 @@ void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 	// m_mainCamera = _camera;
 }
 #endif // _DEBUG
-
-void Truth::GraphicsManager::ResetRenderScene()
-{
-	m_renderer.reset();
-}
 
 void Truth::GraphicsManager::CompleteCamera()
 {
