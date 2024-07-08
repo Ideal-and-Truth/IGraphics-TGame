@@ -49,7 +49,7 @@ namespace Ideal
 		virtual Ideal::EMeshType GetMeshType() const override { return Ideal::EMeshType::Skinned; }
 
 		//--TODO: 나중에 인터페이스로 뽑을 것--//
-		uint32 GetCurrentAnimationIndex() { return m_currentFrame; };
+		virtual uint32 GetCurrentAnimationIndex() override { return m_currentFrame; };
 		//----------------------------------//
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }

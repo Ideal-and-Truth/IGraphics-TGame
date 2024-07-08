@@ -15,6 +15,7 @@ Truth::SphereCollider::SphereCollider(bool _isTrigger)
 	, m_radius(0.5f)
 {
 	m_name = "Sphere Collider";
+	m_shape = ColliderShape::SPHERE;
 
 }
 
@@ -26,6 +27,8 @@ Truth::SphereCollider::SphereCollider(bool _isTrigger)
 Truth::SphereCollider::SphereCollider(float _radius, bool _isTrigger /*= true*/)
 	: Collider(_isTrigger)
 {
+	m_shape = ColliderShape::SPHERE;
+
 	m_name = "Sphere Collider";
 
 	SetRadius(_radius);
@@ -40,6 +43,8 @@ Truth::SphereCollider::SphereCollider(float _radius, bool _isTrigger /*= true*/)
 Truth::SphereCollider::SphereCollider(Vector3 _pos, float _radius, bool _isTrigger /*= true*/)
 	: Collider(_pos, _isTrigger)
 {
+	m_shape = ColliderShape::SPHERE;
+
 	m_name = "Sphere Collider";
 
 	SetRadius(_radius);
@@ -74,5 +79,5 @@ void Truth::SphereCollider::SetRadius(float _radius)
 /// </summary>
 void Truth::SphereCollider::Initalize()
 {
-	Collider::Initalize(ColliderShape::SPHERE, Vector3{ m_radius , m_radius , m_radius });
+	Collider::Initalize();
 }

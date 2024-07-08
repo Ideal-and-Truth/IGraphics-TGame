@@ -46,7 +46,8 @@ namespace Truth
 		void FixedUpdate() const;
 		void Render() const;
 
-		void Finalize() const;
+		void Finalize();
+
 
 #ifdef _DEBUG
 		void EditToGame();

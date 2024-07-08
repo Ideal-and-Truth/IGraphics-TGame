@@ -21,6 +21,8 @@ namespace Truth
 	class Managers;
 }
 
+
+
 namespace Truth
 {
 	class Component abstract
@@ -31,12 +33,17 @@ namespace Truth
 	public:
 		std::string m_name;
 		int32 m_index;
+		const uint32 m_ID;
 
 	private:
 		friend class boost::serialization::access;
-
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& _ar, const unsigned int _file_version) const;
+		template<class Archive>
+		void load(Archive& _ar, const unsigned int _file_version);
+
+		static uint32 m_IDGenerater;
 
 	protected:
 		bool m_canMultiple;
@@ -134,24 +141,30 @@ namespace Truth
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm);
 
-		template <typename E>
-		void AddEntity();
+		void AddEmptyEntity();
+		void AddEntity(std::shared_ptr<Entity> _entity);
+
+		bool HasParent();
+
+		const Matrix& GetParentMatrix();
 
 #pragma endregion inline
 	};
 }
-
-template<typename Archive>
-void Truth::Component::serialize(Archive& _ar, const unsigned int _version)
+template<class Archive>
+void Truth::Component::save(Archive& _ar, const unsigned int file_version) const
 {
 	_ar& m_name;
 	_ar& m_canMultiple;
 }
 
-template <typename E>
-void Truth::Component::AddEntity()
+template<class Archive>
+void Truth::Component::load(Archive& _ar, const unsigned int file_version)
 {
-	m_managers.lock()->Scene()->m_currentScene.lock()->AddEntity(std::make_shared<E>());
+	_ar& m_name;
+	_ar& m_canMultiple;
 }
+
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Truth::Component)
 BOOST_CLASS_EXPORT_KEY(Truth::Component)
+BOOST_CLASS_VERSION(Truth::Component, 0)

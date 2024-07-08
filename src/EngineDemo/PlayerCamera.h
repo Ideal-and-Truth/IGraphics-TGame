@@ -1,7 +1,10 @@
 #pragma once
 #include "Component.h"
-#include "Camera.h"
 
+namespace Truth
+{
+	class Camera;
+}
 
 class PlayerCamera :
 	public Truth::Component
@@ -15,10 +18,14 @@ private:
 private:
 	std::shared_ptr<Truth::Camera> m_camera;
 
+	std::shared_ptr<Truth::Transform> m_target;
+
 	float4 m_cameraDistance;
 	float4 m_elevation;
 	float4 m_azimuth;
 	float4 m_cameraSpeed;
+
+	bool m_isLockOn;
 
 public:
 	PlayerCamera();
@@ -30,8 +37,12 @@ public:
 	METHOD(Start);
 	void Start();
 
-	METHOD(Update);
-	void Update();
+	METHOD(LateUpdate);
+	void LateUpdate();
+
+private:
+	void FreeCamera();
+	void LockOnCamera();
 };
 
 template<class Archive>
@@ -40,3 +51,4 @@ void PlayerCamera::serialize(Archive& _ar, const unsigned int _file_version)
 	_ar& boost::serialization::base_object<Component>(*this);
 }
 
+BOOST_CLASS_EXPORT_KEY(PlayerCamera)

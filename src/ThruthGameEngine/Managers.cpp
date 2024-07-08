@@ -15,7 +15,7 @@ Truth::Managers::Managers()
 
 Truth::Managers::~Managers()
 {
-
+	DEBUG_PRINT("Finalize Managers\n");
 }
 
 void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
@@ -43,6 +43,7 @@ void Truth::Managers::Update() const
 	}
 	else
 	{
+		m_sceneManager->m_currentScene->EditorUpdate();
 		m_editorCamera->SetMainCamera();
 		m_editorCamera->Update(m_timeManager->GetDT());
 	}
@@ -56,26 +57,60 @@ void Truth::Managers::Update() const
 
 void Truth::Managers::LateUpdate() const
 {
+#ifdef _DEBUG
+	if (!m_isEdit)
+	{
+		m_sceneManager->LateUpdate();
+		m_eventManager->LateUpdate();
+	}
+#else
+	m_sceneManager->LateUpdate();
 	m_eventManager->LateUpdate();
+#endif // _DEBUG
 }
 
 void Truth::Managers::FixedUpdate() const
 {
+	m_physXManager->FixedUpdate();
+	m_sceneManager->FixedUpdate();
+	m_eventManager->FixedUpdate();
 }
 
 void Truth::Managers::Render() const
 {
 	m_sceneManager->ApplyTransform();
+
+#ifdef _DEBUG
+	if (m_isEdit)
+	{
+		m_graphicsManager->Render();
+	}
+	else
+	{
+		m_graphicsManager->CompleteCamera();
+		m_graphicsManager->Render();
+	}
+#else
 	m_graphicsManager->Render();
+#endif // DEBUG
 }
 
-void Truth::Managers::Finalize() const
+void Truth::Managers::Finalize()
 {
 	m_sceneManager->Finalize();
+	m_sceneManager.reset();
+
 	m_inputManager->Finalize();
+	m_inputManager.reset();
+
 	m_timeManager->Finalize();
+	m_timeManager.reset();
+
 	m_eventManager->Finalize();
+	m_eventManager.reset();
+
 	m_physXManager->Finalize();
+	m_physXManager.reset();
 }
 
 
@@ -87,8 +122,9 @@ void Truth::Managers::EditToGame()
 		return;
 	}
 	m_sceneManager->SaveCurrentScene();
-	m_sceneManager->m_currentScene.lock()->Start();
+	m_sceneManager->m_currentScene->Start();
 	m_isEdit = false;
+	m_inputManager->m_fpsMode = true;
 }
 
 void Truth::Managers::GameToEdit()
@@ -100,6 +136,7 @@ void Truth::Managers::GameToEdit()
 	m_physXManager->ResetPhysX();
 	m_sceneManager->ReloadSceneData();
 	m_isEdit = true;
+	m_inputManager->m_fpsMode = false;
 }
 #endif // _DEBUG
 

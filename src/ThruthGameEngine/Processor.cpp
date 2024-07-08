@@ -12,8 +12,6 @@
 //#include "../IdealGraphics/Misc/Utils/FileUtils.h"
 #include "EditorUI.h"
 
-
-
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -44,33 +42,32 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
-// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
+	// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
+	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 
-// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
-// 
-// 	// 저장할 배열
-// 	std::vector<Vector3> pos;
-// 
-// 	unsigned int meshNum = file->Read<unsigned int>();
-// 
-// 	for (int i = 0; i < meshNum; i++)
-// 	{
-// 		unsigned int verticesNum = file->Read<unsigned int>();
-// 		for (int j = 0; j < verticesNum; j++)
-// 		{
-// 			Vector3 p;
-// 			p.x = file->Read<float>();
-// 			p.y = file->Read<float>();
-// 			p.z = file->Read<float>();
-// 			pos.push_back(p);
-// 		}
-// 	}
-// 
-// 	int a = 3;
+	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
+	// 
+	// 	// 저장할 배열
+	// 	std::vector<Vector3> pos;
+	// 
+	// 	unsigned int meshNum = file->Read<unsigned int>();
+	// 
+	// 	for (int i = 0; i < meshNum; i++)
+	// 	{
+	// 		unsigned int verticesNum = file->Read<unsigned int>();
+	// 		for (int j = 0; j < verticesNum; j++)
+	// 		{
+	// 			Vector3 p;
+	// 			p.x = file->Read<float>();
+	// 			p.y = file->Read<float>();
+	// 			p.z = file->Read<float>();
+	// 			pos.push_back(p);
+	// 		}
+	// 	}
+	// 
 
-	m_editor = new EditorUI(m_manager);
+	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }
 
 void Processor::Finalize()
@@ -81,7 +78,6 @@ void Processor::Finalize()
 void Processor::Process()
 {
 	Update();
-	FixedUpdate();
 	LateUpdate();
 	Render();
 }
@@ -106,12 +102,7 @@ void Processor::Loop()
 	}
 }
 
-void Processor::AddScene(std::shared_ptr<Truth::Scene> _scene)
-{
-	m_manager->Scene()->AddScene(_scene);
-}
-
-void Processor::LoadScene(std::string _path)
+void Processor::LoadScene(std::wstring _path)
 {
 	m_manager->Scene()->LoadSceneData(_path);
 }
@@ -138,20 +129,31 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-		g_inputmanager->ResetMouseMovement(LOWORD(lParam), HIWORD(lParam));
+	case WM_SIZE:
+	{
+		if (g_Renderer)
+		{
+			RECT rect;
+			GetClientRect(hWnd, &rect);
+			//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+			DWORD width = rect.right - rect.left;
+			DWORD height = rect.bottom - rect.top;
+			g_Renderer->Resize(width, height);
+		}
 		break;
+	}
 
-	case WM_MOUSEMOVE:
-		g_inputmanager->OnMouseMove(static_cast<int>(wParam), LOWORD(lParam), HIWORD(lParam));
+	case WM_MOUSEWHEEL:
+	{
+		g_inputmanager->m_deltaWheel = GET_WHEEL_DELTA_WPARAM(wParam);
 		break;
+	}
 
 	default:
-
+		if (g_inputmanager)
+		{
+			g_inputmanager->m_deltaWheel = 0;
+		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
@@ -262,7 +264,3 @@ void Processor::InitializeManager()
 	// g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
 }
 
-void Processor::SetStartScene(std::string _name)
-{
-	m_manager->Scene()->SetCurrnetScene(_name);
-}

@@ -145,5 +145,9 @@ namespace StringConverter
 
 	template<>
 	std::string ToString(std::shared_ptr<Truth::Entity> _val, int _indent);
+
+
+	std::vector<std::string> split(std::string _str, char _delimiter);
+	std::vector<std::wstring> split(std::wstring _str, wchar_t _delimiter);
 }
 

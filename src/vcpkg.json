@@ -1,6 +1,5 @@
 {
   "dependencies": [
-    "physx",
-    "boost-serialization"
+    "recastnavigation"
   ]
 }

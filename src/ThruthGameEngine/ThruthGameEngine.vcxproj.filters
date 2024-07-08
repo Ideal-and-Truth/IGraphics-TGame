@@ -97,6 +97,27 @@
     <Filter Include="Utils\ComponentFactory">
       <UniqueIdentifier>{ea702d86-b2cb-426b-a344-423f6facc789}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Light">
+      <UniqueIdentifier>{a65ba688-b5f5-4941-a366-5a9d0166e587}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Animator">
+      <UniqueIdentifier>{4ba11faf-34ca-4872-8cee-cf7fbee5017e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\PlayerController">
+      <UniqueIdentifier>{30e9c4d0-e55a-4477-a2dd-4d7751940ad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\ConvertAssets">
+      <UniqueIdentifier>{3f0e4e25-d4c3-4c98-8aab-569ad3a61a5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Collider\Mesh">
+      <UniqueIdentifier>{a3d62599-8c3f-4505-8320-aaf4bcf2cc83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\NavMesh">
+      <UniqueIdentifier>{e62e00d4-2521-49d4-b2f2-649be3eab1c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\NavMesh\Geom">
+      <UniqueIdentifier>{e5ae6624-5d48-4676-a482-d1992ec5b13a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -183,14 +204,33 @@
     <ClCompile Include="TypeUI.cpp">
       <Filter>Utils\ImguiTypeUI</Filter>
     </ClCompile>
-    <ClCompile Include="EditorCamera.cpp">
-      <Filter>EditorUI\EditorCamera</Filter>
+    <ClCompile Include="SkinnedMesh.cpp">
+      <Filter>Component\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Component\Animator</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Component\PlayerController</Filter>
     </ClCompile>
     <ClCompile Include="ComponentFactory.cpp">
       <Filter>Utils\ComponentFactory</Filter>
     </ClCompile>
+    <ClCompile Include="EditorCamera.cpp">
+      <Filter>EditorUI\EditorCamera</Filter>
+    </ClCompile>
     <ClCompile Include="MathConverter.cpp">
       <Filter>Utils\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp" />
+    <ClCompile Include="NavMeshGenerater.cpp">
+      <Filter>Component\NavMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NavGeom.cpp">
+      <Filter>Component\NavMesh\Geom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,14 +338,33 @@
     <ClInclude Include="TypeUI.h">
       <Filter>Utils\ImguiTypeUI</Filter>
     </ClInclude>
-    <ClInclude Include="EditorCamera.h">
-      <Filter>EditorUI\EditorCamera</Filter>
+    <ClInclude Include="SkinnedMesh.h">
+      <Filter>Component\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Component\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Component\Animator</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Component\PlayerController</Filter>
     </ClInclude>
     <ClInclude Include="ComponentFactory.h">
       <Filter>Utils\ComponentFactory</Filter>
     </ClInclude>
+    <ClInclude Include="EditorCamera.h">
+      <Filter>EditorUI\EditorCamera</Filter>
+    </ClInclude>
     <ClInclude Include="MathConverter.h">
       <Filter>Utils\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h" />
+    <ClInclude Include="NavMeshGenerater.h">
+      <Filter>Component\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NavGeom.h">
+      <Filter>Component\NavMesh\Geom</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

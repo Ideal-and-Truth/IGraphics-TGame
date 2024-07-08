@@ -2,6 +2,12 @@
 #include "IRenderScene.h"
 #include "ISkinnedMeshObject.h"
 #include "imgui.h"
+#include "Camera.h"
+
+#ifdef _DEBUG
+#include "EditorCamera.h"
+#endif // _DEBUG
+
 
 /// <summary>
 /// 그래픽 엔진과 소통하는 매니저
@@ -19,7 +25,7 @@ Truth::GraphicsManager::GraphicsManager()
 /// </summary>
 Truth::GraphicsManager::~GraphicsManager()
 {
-
+	DEBUG_PRINT("Finalize GraphicsManager\n");
 }
 
 /// <summary>
@@ -71,7 +77,12 @@ void Truth::GraphicsManager::Finalize()
 /// </summary>
 void Truth::GraphicsManager::Render()
 {
+#ifdef _DEBUG
 	m_renderer->Render();
+#else
+	CompleteCamera();
+	m_renderer->Render();
+#endif // _DEBUG
 }
 
 /// <summary>
@@ -83,6 +94,12 @@ void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh
 	m_renderScene->AddObject(_mesh);
 }
 
+
+void Truth::GraphicsManager::AddLight(std::shared_ptr<Ideal::ILight> _light)
+{
+	m_renderScene->AddLight(_light);
+}
+
 /// <summary>
 /// 디버깅용 오브젝트 렌더
 /// </summary>
@@ -90,6 +107,12 @@ void Truth::GraphicsManager::AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh
 void Truth::GraphicsManager::AddDebugobject(std::shared_ptr<Ideal::IMeshObject> _mesh)
 {
 	m_renderScene->AddDebugObject(_mesh);
+}
+
+
+void Truth::GraphicsManager::ConvertAsset(std::wstring _path, bool _isSkind /*= false*/, bool _isData /*= false*/)
+{
+	m_renderer->ConvertAssetToMyFormat(_path, _isSkind, _isData);
 }
 
 /// <summary>
@@ -112,6 +135,26 @@ std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateMesh(std::wstr
 	return m_renderer->CreateStaticMeshObject(_path);
 }
 
+std::shared_ptr<Ideal::IAnimation> Truth::GraphicsManager::CreateAnimation(std::wstring _path)
+{
+	return m_renderer->CreateAnimation(_path);
+}
+
+std::shared_ptr<Ideal::IDirectionalLight> Truth::GraphicsManager::CreateDirectionalLight()
+{
+	return m_renderer->CreateDirectionalLight();
+}
+
+std::shared_ptr<Ideal::ISpotLight> Truth::GraphicsManager::CreateSpotLight()
+{
+	return m_renderer->CreateSpotLight();
+}
+
+std::shared_ptr<Ideal::IPointLight> Truth::GraphicsManager::CreatePointLight()
+{
+	return m_renderer->CreatePointLight();
+}
+
 /// <summary>
 /// 카메라 생성
 /// </summary>
@@ -125,15 +168,29 @@ std::shared_ptr<Ideal::ICamera> Truth::GraphicsManager::CreateCamera()
 /// 메인 카메라 지정
 /// </summary>
 /// <param name="_camera">카메라 오브젝트</param>
-void Truth::GraphicsManager::SetMainCamera(std::shared_ptr<Ideal::ICamera> _camera)
+void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 {
-	m_renderer->SetMainCamera(_camera);
+	m_renderer->SetMainCamera(_camera->m_camera);
+	m_mainCamera = _camera;
 }
+
+#ifdef _DEBUG
+void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
+{
+	m_renderer->SetMainCamera(_camera->m_camera);
+	// m_mainCamera = _camera;
+}
+#endif // _DEBUG
 
 void Truth::GraphicsManager::ResetRenderScene()
 {
 	m_renderScene.reset();
 	m_renderScene = m_renderer->CreateRenderScene();
 	m_renderer->SetRenderScene(m_renderScene);
+}
+
+void Truth::GraphicsManager::CompleteCamera()
+{
+	m_mainCamera->CompleteCamera();
 }
 

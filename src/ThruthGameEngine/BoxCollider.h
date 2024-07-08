@@ -15,8 +15,11 @@ namespace Truth
 
 	private:
 		friend class boost::serialization::access;
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	public:
 		BoxCollider(bool _isTrigger = true);
@@ -28,10 +31,17 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::BoxCollider::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::BoxCollider::save(Archive& _ar, const unsigned int file_version) const
 	{
-		_ar& boost::serialization::base_object<Collider, BoxCollider>(*this);
+		_ar& boost::serialization::base_object<Collider>(*this);
+	}
+
+	template<class Archive>
+	void Truth::BoxCollider::load(Archive& _ar, const unsigned int file_version)
+	{
+		_ar& boost::serialization::base_object<Collider>(*this);
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::BoxCollider)
+BOOST_CLASS_VERSION(Truth::BoxCollider, 0)

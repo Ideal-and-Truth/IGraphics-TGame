@@ -18,7 +18,8 @@ BulletMove::~BulletMove()
 void BulletMove::Start()
 {
 	auto r = m_owner.lock()->GetComponent<Truth::RigidBody>().lock().get();
-	r->AddImpulse(Vector3(0.0f, 0.0f, -100.0f));
+	Vector3 power(0.0f, 0.0f, -100.0f);
+	r->AddImpulse(power);
 }
 
 void BulletMove::Update()

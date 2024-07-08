@@ -3,6 +3,7 @@
 #include "Managers.h"
 #include "EventManager.h"
 #include "GraphicsManager.h"
+#include "NavMeshGenerater.h"
 
 /// <summary>
 /// 생성자
@@ -30,7 +31,13 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 {
 	_p->m_index = static_cast<int32>(m_entities.size());
 	m_entities.push_back(_p);
+	_p->Initailize();
 	m_awakedEntity.push(_p);
+
+	if (_p->m_parent.expired())
+	{
+		m_rootEntities.push_back(_p);
+	}
 }
 
 /// <summary>
@@ -61,6 +68,10 @@ void Truth::Scene::DeleteEntity(uint32 _index)
 /// <param name="_p">삭제될 엔티티</param>
 void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 {
+	for (auto& child : _p->m_children)
+	{
+		DeleteEntity(child);
+	}
 #ifdef _DEBUG
 	if (m_managers.lock()->m_isEdit)
 	{
@@ -85,13 +96,58 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 {
 	m_managers = _manager;
-	for (auto& e : m_entities)
+	for (auto& e : m_rootEntities)
 	{
-		e->SetManager(m_managers);
-		m_awakedEntity.push(e);
-		e->Initailize();
+		LoadEntity(e);
+	}
+	m_navMesh = std::make_shared<NavMeshGenerater>();
+	m_navMesh->Initalize(L"TestMap/navTestMap");
+}
+
+void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
+{
+	m_entities.push_back(_entity);
+	_entity->SetManager(m_managers);
+	m_awakedEntity.push(_entity);
+	_entity->Initailize();
+
+	for (auto& child : _entity->m_children)
+	{
+		child->m_parent = _entity;
+		LoadEntity(child);
 	}
 }
+
+DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
+{
+	return m_navMesh->FindPath(_start, _end, _size);
+}
+
+std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
+{
+	for (auto& e : m_entities)
+	{
+		if (e->m_name == _name)
+		{
+			return e;
+		}
+	}
+	return std::weak_ptr<Entity>();
+}
+
+#ifdef _DEBUG
+void Truth::Scene::EditorUpdate()
+{
+	m_rootEntities.clear();
+	for (auto& e : m_entities)
+	{
+		if (e->m_parent.expired())
+		{
+			m_rootEntities.push_back(e);
+		}
+	}
+}
+#endif // _DEBUG
 
 /// <summary>
 /// 씬 업데이트
@@ -120,6 +176,9 @@ void Truth::Scene::Update()
 		auto& e = m_awakedEntity.front();
 		e->m_index = static_cast<int32>(m_entities.size());
 		m_entities.push_back(e);
+#ifdef _DEBUG
+		m_rootEntities.push_back(e);
+#endif // _DEBUG
 		m_startedEntity.push(e);
 		e->Awake();
 		m_awakedEntity.pop();
@@ -135,6 +194,36 @@ void Truth::Scene::Update()
 		if (!e->m_isDead)
 		{
 			e->Update();
+		}
+		else
+		{
+			m_beginDestroy.push(e);
+		}
+	}
+}
+
+void Truth::Scene::FixedUpdate()
+{
+	for (auto& e : m_entities)
+	{
+		if (!e->m_isDead)
+		{
+			e->FixedUpdate();
+		}
+		else
+		{
+			m_beginDestroy.push(e);
+		}
+	}
+}
+
+void Truth::Scene::LateUpdate()
+{
+	for (auto& e : m_entities)
+	{
+		if (!e->m_isDead)
+		{
+			e->LateUpdate();
 		}
 		else
 		{

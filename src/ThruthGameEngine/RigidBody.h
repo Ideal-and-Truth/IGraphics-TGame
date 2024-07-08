@@ -5,7 +5,13 @@
 namespace physx
 {
 	class PxRigidDynamic;
+	class PxController;
 }
+namespace Truth
+{
+	class Controller;
+}
+
 
 namespace Truth
 {
@@ -14,9 +20,13 @@ namespace Truth
 	{
 		GENERATE_CLASS_TYPE_INFO(RigidBody);
 	private:
+		friend class Controller;
 		friend class boost::serialization::access;
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	public:
 		PROPERTY(mass);
@@ -40,6 +50,7 @@ namespace Truth
 		physx::PxRigidDynamic* m_body;
 
 		Matrix m_localTM;
+		Matrix m_invertLocalTM;
 		Matrix m_globalTM;
 
 	private:
@@ -56,6 +67,10 @@ namespace Truth
 
 		bool m_isChanged;
 
+		bool m_isController;
+		physx::PxController* m_controller;
+
+
 	public:
 		RigidBody();
 		virtual ~RigidBody();
@@ -63,8 +78,8 @@ namespace Truth
 		METHOD(Update);
 		void Update();
 
-		void AddImpulse(Vector3 _force);
-		void SetLinearVelocity(Vector3 _val);
+		void AddImpulse(Vector3& _force);
+		void SetLinearVelocity(Vector3& _val);
 		Vector3 GetLinearVelocity() const;
 
 		void InitalizeMassAndInertia();
@@ -74,6 +89,12 @@ namespace Truth
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();
+
+		bool IsController() const { return m_isController; }
+
+		Quaternion GetRotation();
+
+		physx::PxController* GetController() { return m_controller; }
 
 	private:
 		METHOD(Awake);
@@ -88,8 +109,23 @@ namespace Truth
 		void CalculateMassCenter();
 	};
 
+
 	template<class Archive>
-	void Truth::RigidBody::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::RigidBody::save(Archive& _ar, const unsigned int file_version) const
+	{
+		_ar& boost::serialization::base_object<Component>(*this);
+
+		_ar& m_mass;
+		_ar& m_drag;
+		_ar& m_angularDrag;
+		_ar& m_useGravity;
+		_ar& m_isKinematic;
+		_ar& m_freezePosition;
+		_ar& m_freezeRotation;
+	}
+
+	template<class Archive>
+	void Truth::RigidBody::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 
@@ -103,3 +139,4 @@ namespace Truth
 	}
 }
 BOOST_CLASS_EXPORT_KEY(Truth::RigidBody)
+BOOST_CLASS_VERSION(Truth::RigidBody, 0)

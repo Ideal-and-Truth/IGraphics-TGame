@@ -27,6 +27,7 @@ Truth::RigidBody::RigidBody()
 	, m_freezePosition{ false, false , false }
 	, m_freezeRotation{ false, false , false }
 	, m_body(nullptr)
+	, m_isController(false)
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();
@@ -38,7 +39,10 @@ Truth::RigidBody::RigidBody()
 /// </summary>
 Truth::RigidBody::~RigidBody()
 {
-	m_body->release();
+	if (m_body)
+	{
+		m_body->release();
+	}
 }
 
 /// <summary>
@@ -57,15 +61,23 @@ void Truth::RigidBody::Initalize()
 /// </summary>
 void Truth::RigidBody::ApplyTransform()
 {
-// 	Vector3 pos = m_owner.lock()->GetPosition();
-// 	Quaternion rot = m_owner.lock()->GetRotation();
-// 
-// 	m_body->setGlobalPose(physx::PxTransform(
-// 		MathConverter::Convert(pos),
-// 		MathConverter::Convert(rot)
-// 	), false);
+	// 	Vector3 pos = m_owner.lock()->GetPosition();
+	// 	Quaternion rot = m_owner.lock()->GetRotation();
+	// 
+	// 	m_body->setGlobalPose(physx::PxTransform(
+	// 		MathConverter::Convert(pos),
+	// 		MathConverter::Convert(rot)
+	// 	), false);
 }
 
+DirectX::SimpleMath::Quaternion Truth::RigidBody::GetRotation()
+{
+	return m_owner.lock()->GetRotation();
+}
+
+/// <summary>
+/// Start 함수 
+/// </summary>
 void Truth::RigidBody::Start()
 {
 	for (auto& c : m_colliders)
@@ -80,6 +92,11 @@ void Truth::RigidBody::Destroy()
 
 }
 
+/// <summary>
+/// 질량 중심 구하기
+/// 모든 콜라이더의 중심정의 중간을 구하고
+/// 해당 위치로 질량 중심을 이동
+/// </summary>
 void Truth::RigidBody::CalculateMassCenter()
 {
 	auto massCenter = m_body->getCMassLocalPose();
@@ -94,35 +111,58 @@ void Truth::RigidBody::CalculateMassCenter()
 		physx::PxTransform(MathConverter::Convert(pos)));
 }
 
+/// <summary>
+/// 관성 모먼트 조정
+/// body에 질량과 질량 중심에 의한 관성 모먼트 조정
+/// </summary>
 void Truth::RigidBody::InitalizeMassAndInertia()
 {
-	auto mcenter =  m_body->getCMassLocalPose();
+	auto mcenter = m_body->getCMassLocalPose();
 	physx::PxRigidBodyExt::setMassAndUpdateInertia(
-		*m_body, 
+		*m_body,
 		physx::PxReal(m_mass),
 		&(mcenter.p)
 	);
 }
 
+/// <summary>
+/// Update
+/// </summary>
 void Truth::RigidBody::Update()
 {
+	// m_body->setGlobalPose(MathConverter::Convert(m_localTM * m_owner.lock()->GetWorldTM()));
 }
 
-void Truth::RigidBody::AddImpulse(Vector3 _force)
+/// <summary>
+/// 순간적인 힘 가하기
+/// </summary>
+/// <param name="_force">힘</param>
+void Truth::RigidBody::AddImpulse(Vector3& _force)
 {
-	m_body->addForce(MathConverter::Convert(_force * m_mass), physx::PxForceMode::eIMPULSE);
+	m_body->addForce(MathConverter::Convert(_force), physx::PxForceMode::eIMPULSE);
 }
 
-void Truth::RigidBody::SetLinearVelocity(Vector3 _val)
+/// <summary>
+/// 현재 속도 조정
+/// </summary>
+/// <param name="_val">속도</param>
+void Truth::RigidBody::SetLinearVelocity(Vector3& _val)
 {
 	m_body->setLinearVelocity(MathConverter::Convert(_val));
 }
 
+/// <summary>
+/// 현재 속도 가져오기 
+/// </summary>
+/// <returns></returns>
 DirectX::SimpleMath::Vector3 Truth::RigidBody::GetLinearVelocity() const
 {
 	return MathConverter::Convert(m_body->getLinearVelocity());
 }
 
+/// <summary>
+/// Awake
+/// </summary>
 void Truth::RigidBody::Awake()
 {
 	m_colliders = m_owner.lock()->GetComponents<Truth::Collider>();
@@ -134,7 +174,7 @@ void Truth::RigidBody::Awake()
 	{
 		m_localTM *= c.lock()->m_localTM;
 	}
-
+	m_invertLocalTM = m_localTM.Invert();
 	m_body->setMass(m_mass);
 	m_body->setLinearDamping(m_drag);
 	m_body->setAngularDamping(m_angularDrag);

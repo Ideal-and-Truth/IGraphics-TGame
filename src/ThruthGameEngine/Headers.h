@@ -45,6 +45,9 @@ using namespace DirectX::SimpleMath;
 #include "IdealRendererFactory.h"
 #include "IdealRenderer.h"
 #include "IMeshObject.h"
+#include "IDirectionalLight.h"
+#include "ISpotLight.h"
+#include "IPointLight.h"
 
 // 직렬화 관련
 #include <boost/archive/text_oarchive.hpp>
@@ -54,6 +57,8 @@ using namespace DirectX::SimpleMath;
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/weak_ptr.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/version.hpp>
+#include <boost/serialization/split_member.hpp>
 
 #include <stdio.h>
 #include <sstream>
@@ -63,3 +68,4 @@ using namespace DirectX::SimpleMath;
 #include <codecvt>
 #include <string>
 
+#include <atlconv.h>

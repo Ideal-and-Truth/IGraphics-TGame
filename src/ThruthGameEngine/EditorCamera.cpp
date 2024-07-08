@@ -9,7 +9,7 @@ Truth::EditorCamera::EditorCamera(Managers* _managers)
 {
 	m_camera = m_managers->Graphics()->CreateCamera();
 	m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
-	m_camera->SetLens(0.25f * 3.141592f, m_managers->Graphics()->GetAspect(), 1.f, 100000.f);
+	m_camera->SetLensWithoutAspect(0.25f * 3.141592f, 1.f, 100000.f);
 	SetMainCamera();
 }
 
@@ -51,7 +51,6 @@ bool Truth::EditorCamera::GetKey(KEY _key)
 float Truth::EditorCamera::MouseDy()
 {
 	return m_managers->Input()->GetMouseMoveY();
-
 }
 
 float Truth::EditorCamera::MouseDx()
@@ -61,5 +60,5 @@ float Truth::EditorCamera::MouseDx()
 
 void Truth::EditorCamera::SetMainCamera()
 {
-	m_managers->Graphics()->SetMainCamera(m_camera);
+	m_managers->Graphics()->SetMainCamera(this);
 }

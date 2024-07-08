@@ -8,6 +8,7 @@
 namespace Truth
 {
 	class Managers;
+	class NavMeshGenerater;
 
 	class Scene final
 		: public EventHandler
@@ -18,17 +19,23 @@ namespace Truth
 		friend class boost::serialization::access;
 		friend class EditorUI;
 
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
-		void serialize(Archive& _ar, const unsigned int _file_version);
+		void save(Archive& ar, const unsigned int file_version) const;
+		template<class Archive>
+		void load(Archive& ar, const unsigned int file_version);
 
 	public:
 		PROPERTY(name);
 		std::string m_name;
 
+		std::shared_ptr<NavMeshGenerater> m_navMesh;
+
 	private:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
 		EntityVector m_entities;
+		EntityVector m_rootEntities;
 
 		std::weak_ptr<Managers> m_managers;
 
@@ -53,7 +60,22 @@ namespace Truth
 
 		void Initalize(std::weak_ptr<Managers> _manager);
 
+		void LoadEntity(std::shared_ptr<Entity> _entity);
+
+
+		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size);
+
+		std::weak_ptr<Entity> FindEntity(std::string _name);
+
+
+#ifdef _DEBUG
+		void EditorUpdate();
+#endif // _DEBUG
+
 		void Update();
+		void FixedUpdate();
+		void LateUpdate();
+
 		void ApplyTransform();
 
 		void Start();
@@ -65,9 +87,17 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Scene::serialize(Archive& _ar, const unsigned int _file_version)
+	void Truth::Scene::save(Archive& _ar, const unsigned int file_version) const
 	{
-		_ar& (m_name);
-		_ar& (m_entities);
+		_ar& m_name;
+		_ar& m_rootEntities;
+	}
+
+	template<class Archive>
+	void Truth::Scene::load(Archive& _ar, const unsigned int file_version)
+	{
+		_ar& m_name;
+		_ar& m_rootEntities;
 	}
 }
+BOOST_CLASS_VERSION(Truth::Scene, 1)

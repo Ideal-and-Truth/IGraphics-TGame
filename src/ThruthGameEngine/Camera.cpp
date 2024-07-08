@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Transform.h"
 #include "Managers.h"
 #include "ICamera.h"
 #include "InputManager.h"
@@ -12,6 +13,7 @@ Truth::Camera::Camera()
 	, m_aspect(1)
 	, m_nearZ(1)
 	, m_farZ(1000)
+	, m_look(0.f,0.f,1.f)
 {
 	m_name = "Camera";
 }
@@ -21,38 +23,9 @@ Truth::Camera::~Camera()
 
 }
 
-void Truth::Camera::Update()
+
+void Truth::Camera::LateUpdate()
 {
-	float dt = GetDeltaTime();
-	float speed = 300;
-
-// 	m_camera->SetPosition(m_position);
-// 	
-// 	m_camera->SetLook(m_look);
-	if (GetKey(KEY::W))
-	{
-		m_camera->Walk(dt * speed);
-		// m_camera->SetLook(Vector3(0.0f, 1.0f, 1.0f));
-	}
-	if (GetKey(KEY::S))
-	{
-		m_camera->Walk(-dt * speed);
-	}
-	if (GetKey(KEY::A))
-	{
-		m_camera->Strafe(-dt * speed);
-	}
-	if (GetKey(KEY::D))
-	{
-		m_camera->Strafe(dt * speed);
-	}
-
-	if (GetKey(KEY::LMOUSE))
-	{
-		m_camera->Pitch(MouseDy() * 0.003f);
-		m_camera->RotateY(MouseDx() * 0.003f);
-	}
-
 }
 
 void Truth::Camera::SetLens(float _fovY, float _aspect, float _nearZ, float _farZ)
@@ -66,7 +39,7 @@ void Truth::Camera::SetLens(float _fovY, float _aspect, float _nearZ, float _far
 
 void Truth::Camera::SetMainCamera()
 {
-	m_managers.lock()->Graphics()->SetMainCamera(m_camera);
+	m_managers.lock()->Graphics()->SetMainCamera(this);
 }
 
 void Truth::Camera::SetLook(Vector3 _val)
@@ -85,13 +58,51 @@ void Truth::Camera::RotateY(float angle)
 }
 
 
+void Truth::Camera::Start()
+{
+	SetMainCamera();
+}
+
+void Truth::Camera::DefaultUpdate()
+{
+	float m_speed = 1.0f;
+	if (GetKey(KEY::UP))
+	{
+		m_camera->Walk(m_speed);
+	}
+	if (GetKey(KEY::DOWN))
+	{
+		m_camera->Walk(-m_speed);
+	}
+	if (GetKey(KEY::LEFT))
+	{
+		m_camera->Strafe(-m_speed);
+	}
+	if (GetKey(KEY::RIGHT))
+	{
+		m_camera->Strafe(m_speed);
+	}
+
+	if (GetKey(KEY::LMOUSE))
+	{
+		m_camera->Pitch(MouseDy() * 0.3f);
+		m_camera->RotateY(MouseDx() * 0.3f);
+	}
+}
 
 void Truth::Camera::Initalize()
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
 	//m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
-	m_position = { 0.f, 0.f, -150.f };
+	m_position = { 0.f, 0.f, 0.f };
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
+}
+
+void Truth::Camera::CompleteCamera()
+{
+	m_camera->SetPosition(m_owner.lock()->m_transform->m_position);
+
+	m_camera->SetLook(m_look);
 }
 
 #ifdef _DEBUG
@@ -100,8 +111,3 @@ void Truth::Camera::EditorSetValue()
 	m_camera->SetLens(m_fov, m_aspect, m_nearZ, m_farZ);
 }
 #endif // _DEBUG
-
-void Truth::Camera::Start()
-{
-	SetMainCamera();
-}

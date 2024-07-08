@@ -23,8 +23,8 @@ namespace Truth
 
 		void SetMainCamera();
 
-	public:
 		std::shared_ptr<Ideal::ICamera> m_camera;
+	public:
 
 		float m_speed;
 

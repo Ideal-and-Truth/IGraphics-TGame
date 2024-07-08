@@ -1,7 +1,6 @@
 #pragma once
 #include "Component.h"
 
-class State;
 
 class StateMachine :
 	public Truth::Component
@@ -13,8 +12,6 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	PROPERTY(currentState);
-	State* m_currentState;
 
 public:
 	StateMachine();
@@ -28,9 +25,6 @@ public:
 
 	METHOD(LateUpdate);
 	void LateUpdate();
-
-	METHOD(SwitchState);
-	void SwitchState(State* InState);
 
 };
 

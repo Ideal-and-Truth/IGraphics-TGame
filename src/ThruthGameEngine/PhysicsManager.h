@@ -9,8 +9,8 @@
 #pragma warning(disable: 26495)
 #pragma warning(disable: 33010)
 #pragma warning(disable: 6297)
-#include <PxConfig.h>
-#include <PxPhysicsAPI.h>
+#include "../packages/NVIDIA.PhysX.4.1.229882250/installed/x64-windows/include/PxConfig.h"
+#include "../packages/NVIDIA.PhysX.4.1.229882250/installed/x64-windows/include/PxPhysicsAPI.h"
 #pragma warning(pop)
 
 #ifdef _DEBUG
@@ -83,10 +83,12 @@ namespace Truth
 
 		physx::PxReal m_stackZ = 20.0f;
 
+		physx::PxControllerManager* m_CCTManager;
 		// physx::PxOmniPvd* m_oPvd;
 
-		bool m_isInteractive = false;
+		physx::PxCooking* m_cooking;
 
+		bool m_isInteractive = false;
 	public:
 
 	public:
@@ -111,14 +113,17 @@ namespace Truth
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
 		 
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
+		std::vector<physx::PxShape*> CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points = std::vector<std::vector<Vector3>>());
 
 		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
 
+		physx::PxController* CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc);
+
+		physx::PxMaterial* CreateMaterial(Vector3 _val);
+
 	private:
 		void CreatePhysxScene();
-
-		void CreateStack(const physx::PxTransform& _t, physx::PxU32 _size, physx::PxReal _halfExtent);
-		physx::PxRigidDynamic* createDynamic(const physx::PxTransform& _t, const physx::PxGeometry& _geometry, const physx::PxVec3& _velocity = physx::PxVec3(0));
+		std::vector<std::vector<physx::PxVec3>> ConvertPointToVertex(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points);
 	};
 
 	physx::PxFilterFlags FilterShaderExample(

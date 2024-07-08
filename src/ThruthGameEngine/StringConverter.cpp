@@ -84,3 +84,32 @@ std::string StringConverter::ToString(std::wstring _val, int _indent)
 	return "wstring Data";
 }
 
+std::vector<std::string> StringConverter::split(std::string _str, char _delimiter)
+{
+	std::istringstream iss(_str);            
+	std::string buffer;                
+
+	std::vector<std::string> result;
+
+	while (std::getline(iss, buffer, _delimiter)) 
+	{
+		result.push_back(buffer);               
+	}
+
+	return result;
+}
+
+std::vector<std::wstring> StringConverter::split(std::wstring _str, wchar_t _delimiter)
+{
+	std::wstringstream iss(_str);             
+	std::wstring buffer;                    
+	std::vector<std::wstring> result;
+
+	while (std::getline(iss, buffer, _delimiter)) 
+	{
+		result.push_back(buffer);              
+	}
+
+	return result;
+}
+
