@@ -22,6 +22,9 @@ namespace Ideal
 		IdealAnimation();
 		virtual ~IdealAnimation();
 
+		virtual uint32 GetFrameCount() override { return frameCount; }
+		virtual float GetFrameRate() override { return frameRate; }
+
 	public:
 		std::shared_ptr<ModelKeyframe> GetKeyframe(const std::string& name);
 

@@ -93,14 +93,25 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 	m_skinnedMesh->Draw(Renderer);
 }
 
-void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished /*= true*/)
+void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationName, bool ReserveAnimation /*= true*/)
 {
-	m_whenCurrentAnimationFinishChangeAnimation = WhenCurrentAnimationFinished;
+	m_reservedAnimation = ReserveAnimation;
 	m_nextAnimation = m_animations[AnimationName];
 	if (m_nextAnimation == nullptr)
 	{
 		MessageBoxA(NULL, "NullException - SetAnimation", "SetAnimation", MB_OK);
 		assert(false);
+	}
+
+	if (ReserveAnimation == false)
+	{
+		//m_cacheCurrentAnimation = m_currentAnimation;
+		m_cacheCurrentAnimationFrame = m_cacheCurrentAnimationFrame;
+		m_animationState = EAnimationState::ChangeAnimation;
+	}
+	else
+	{
+		//m_animationState = EAnimationState::ReserveAnimation;
 	}
 }
 
@@ -138,13 +149,98 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 {
 	m_sumTime += 0.001f;
 
+	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
+	//if (m_sumTime >= timePerFrame)
+	//{
+	//	m_sumTime = 0.f;
+	//	// 현재 프레임 + 1이 현재 애니메이션의 최대 프레임 - 1 보다 클 경우 애니메이션은 끝났다고 처리한다.
+	//	if (m_currentFrame + 1 > m_currentAnimation->frameCount - 1)
+	//	{
+	//		m_isAnimationFinished = true;
+	//	}
+	//	m_currentFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
+	//	m_nextFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
+	//}
+
+
+	switch (m_animationState)
+	{
+		case EAnimationState::CurrentAnimation:
+		{
+			if (m_sumTime >= timePerFrame)
+			{
+				m_sumTime = 0.f;
+				// 현재 프레임 + 1이 현재 애니메이션의 최대 프레임 - 1 보다 클 경우 애니메이션은 끝났다고 처리한다.
+				if (m_currentFrame + 1 > m_currentAnimation->frameCount - 1)
+				{
+					m_isAnimationFinished = true;
+				}
+				m_currentFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
+				m_nextFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
+			}
+
+			m_ratio = m_sumTime / timePerFrame;
+
+			// 평소 애니메이션일 경우
+			AnimationInterpolate(m_currentAnimation, m_currentFrame, m_currentAnimation, m_nextFrame);
+
+			if (m_isAnimationFinished && m_reservedAnimation)
+			{
+				m_animationState = EAnimationState::ReserveAnimation;
+			}
+		}
+		break;
+		case EAnimationState::ChangeAnimation:
+		{
+			// 이전 애니메이션과 다음 애니메이션일 경우
+			AnimationInterpolate(m_currentAnimation, m_cacheCurrentAnimationFrame, m_nextAnimation, 0);
+			m_ratio = m_sumTime / timePerFrame;
+			if (m_ratio >= 1.0f)
+			{
+				m_currentAnimation = m_nextAnimation;
+				m_nextAnimation = nullptr;
+				m_currentFrame = 0;
+				m_nextFrame = 0;
+				m_isAnimationFinished = false;
+				m_reservedAnimation = false;
+				m_animationState = EAnimationState::CurrentAnimation;
+			}
+		}
+		break;
+		case EAnimationState::ReserveAnimation:
+		{
+			AnimationInterpolate(m_currentAnimation, m_currentFrame, m_nextAnimation, 0);
+			m_ratio = m_sumTime / timePerFrame;
+			if (m_ratio >= 1.0f)
+			{
+				m_currentAnimation = m_nextAnimation;
+				m_nextAnimation = nullptr;
+				m_currentFrame = 0;
+				m_nextFrame = 0;
+				m_isAnimationFinished = false;
+				m_reservedAnimation = false;
+				m_animationState = EAnimationState::CurrentAnimation;
+			}
+		}
+		break;
+		default:
+			break;
+
+	}
+	return;
+
+
+
+
+
+
 	// 현재 애니메이션이 끝났는데 다음 애니메이션이 있을 경우?
 	bool changeAnimationFlag = false;
 	if (m_isAnimationFinished)
 	{
 		if (m_nextAnimation)
 		{
-			if (m_whenCurrentAnimationFinishChangeAnimation)
+			if (m_reservedAnimation)
 			{
 				float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
 
@@ -166,7 +262,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 					m_currentFrame = 0;
 					m_nextFrame = 0;
 					m_isAnimationFinished = false;
-					m_whenCurrentAnimationFinishChangeAnimation = false;
+					m_reservedAnimation = false;
 				}
 
 				changeAnimationFlag = true;
@@ -216,6 +312,18 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 				m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
 			}
 		}
+	}
+}
+
+void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::IdealAnimation> BeforeAnimation, uint32 BeforeAnimationFrame, std::shared_ptr<Ideal::IdealAnimation> NextAnimation, uint32 NextAnimationFrame)
+{
+	for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
+	{
+		Matrix currentFrame = BeforeAnimation->m_animTransform->transforms[BeforeAnimationFrame][boneIdx];
+		Matrix nextFrame = NextAnimation->m_animTransform->transforms[NextAnimationFrame][boneIdx];
+		Matrix resultFrame = Matrix::Identity;
+		Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
+		m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
 	}
 }
 
