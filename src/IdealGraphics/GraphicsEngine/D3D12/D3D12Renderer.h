@@ -43,6 +43,7 @@ namespace Ideal
 	// Manager
 	class D3D12ConstantBufferPool;
 	class D3D12DynamicConstantBufferAllocator;
+	class DeferredDeleteManager;
 
 	// Interface
 	class ICamera;
@@ -61,7 +62,7 @@ namespace Ideal
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
-		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 256;
+		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 1024;
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
 
 	public:
@@ -82,12 +83,18 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
 		virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
 
-		virtual std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
-		virtual void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
+		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
+
+		virtual void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
+
+		std::shared_ptr<Ideal::IRenderScene> CreateRenderScene();
+		void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene);
 
 		virtual std::shared_ptr<Ideal::IDirectionalLight>	CreateDirectionalLight() override;
 		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() override;
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() override;
+
+		virtual void SetSkyBox(const std::wstring& FileName) override;
 
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
@@ -200,11 +207,14 @@ namespace Ideal
 		HANDLE m_fenceEvent = NULL;
 
 		// RenderScene
-		std::weak_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
+		//std::weak_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
+		std::shared_ptr<Ideal::IdealRenderScene> m_currentRenderScene;
 
 	private:
 		// D3D12 Data Manager
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeap = nullptr;
+
+		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager = nullptr;
 
 	private:
 		float m_aspectRatio = 0.f;
@@ -240,5 +250,10 @@ namespace Ideal
 		// Editor RTV // 2024.06.01
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
+
+
+		// 2024.07.08 : object 관리 수정
+		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
+		//std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
 	};
 }

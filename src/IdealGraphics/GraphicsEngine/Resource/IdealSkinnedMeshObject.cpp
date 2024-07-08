@@ -1,5 +1,7 @@
 #include "Core/Core.h"
 #include "IdealSkinnedMeshObject.h"
+#include "GraphicsEngine/Resource/IdealMesh.h"
+#include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/IdealSkinnedMesh.h"
@@ -7,8 +9,17 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
-//#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
-#include <d3d12.h>
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
+#include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
+#include "GraphicsEngine/D3D12/D3D12UAV.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
+
 #include <d3dx12.h>
 //#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
@@ -24,8 +35,7 @@ Ideal::IdealSkinnedMeshObject::~IdealSkinnedMeshObject()
 
 void Ideal::IdealSkinnedMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)
 {
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
-	ID3D12Device* device = d3d12Renderer->GetDevice().Get();
+
 }
 
 void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
@@ -63,7 +73,6 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 		CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), SKINNED_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM, incrementSize);
 		device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
-
 
 	// Bind Bone
 	{
@@ -208,4 +217,77 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 			}
 		}
 	}
+}
+
+void Ideal::IdealSkinnedMeshObject::CreateUAVVertexBuffer(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager)
+{
+	auto& meshes = m_skinnedMesh->GetMeshes();
+	uint64 numMesh = meshes.size();
+	// 그냥 하나라고 가정하고 씀
+	uint32 numVertexCount = meshes[0]->GetVertexBuffer()->GetElementCount();
+	uint32 size = numVertexCount * sizeof(BasicVertex);
+	m_uavBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+	m_uavBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UAV_SkinnedVertex");
+	m_uavView = ResourceManager->CreateUAV(m_uavBuffer, numVertexCount, sizeof(BasicVertex));
+}
+
+void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
+	ComPtr<ID3D12Device5> Device,
+	ComPtr<ID3D12GraphicsCommandList4> CommandList,
+	std::shared_ptr<Ideal::ResourceManager> ResourceManager,
+	std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager,
+	uint32 CurrentContextIndex,
+	std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+	std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
+)
+{
+	AnimationPlay();
+
+	{
+		auto& meshes = m_skinnedMesh->GetMeshes();
+		auto& geometries = m_BLAS->GetGeometries();
+
+		uint64 numMesh = meshes.size();
+
+		Ideal::BLASData blasGeometryDesc;
+		blasGeometryDesc.Geometries.resize(numMesh);
+		for (uint32 i = 0; i < numMesh; ++i)
+		{
+
+			// Calculate Bone Transform CS
+			{
+				RaytracingManager->DispatchAnimationComputeShader(
+					Device,
+					CommandList,
+					ResourceManager,
+					DescriptorManager,
+					CurrentContextIndex,
+					CBPool,
+					meshes[i]->GetVertexBuffer(),
+					&m_cbBoneData,
+					m_uavView
+				);
+			}
+		}
+		m_BLAS->SetDirty(true);
+		m_BLASInstanceDesc->InstanceDesc.SetTransform(m_transform);
+		//RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
+
+		m_isDirty = false;
+	}
+}
+
+void Ideal::IdealSkinnedMeshObject::SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS)
+{
+	m_BLAS = InBLAS;
+}
+
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::IdealSkinnedMeshObject::GetBLAS()
+{
+	return m_BLAS;
+}
+
+void Ideal::IdealSkinnedMeshObject::SetBLASInstanceIndex(uint32 InstanceIndex)
+{
+	m_instanceIndex = InstanceIndex;
 }

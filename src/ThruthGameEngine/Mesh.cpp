@@ -27,6 +27,7 @@ Truth::Mesh::Mesh()
 
 Truth::Mesh::~Mesh()
 {
+	DeleteMesh();
 }
 
 void Truth::Mesh::SetMesh(std::wstring _path)
@@ -35,23 +36,14 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 
 	if (m_mesh != nullptr)
 	{
-		m_mesh.reset();
+		DeleteMesh();
 	}
 
 	m_mesh = m_managers.lock()->Graphics()->CreateMesh(_path);
-
-	if (m_isRendering)
-	{
-		m_managers.lock()->Graphics()->AddObject(m_mesh);
-	}
 }
 
 void Truth::Mesh::SetRenderable(bool _isRenderable)
 {
-	if (_isRenderable)
-	{
-		m_managers.lock()->Graphics()->AddObject(m_mesh);
-	}
 }
 
 void Truth::Mesh::Initalize()
@@ -63,6 +55,11 @@ void Truth::Mesh::ApplyTransform()
 {
 	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
 	m_mesh->SetDrawObject(m_isRendering);
+}
+
+void Truth::Mesh::DeleteMesh()
+{
+	m_managers.lock()->Graphics()->DeleteMeshObject(m_mesh);
 }
 
 #ifdef _DEBUG

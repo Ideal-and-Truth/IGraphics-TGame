@@ -1,4 +1,5 @@
 #pragma once
+#include "Core/Core.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
 
 namespace Ideal
@@ -30,6 +31,9 @@ namespace Ideal
 		void FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
 		std::vector<std::shared_ptr<Ideal::IdealBone>>& GetBones() { return m_bones; }
+
+	public:
+		std::vector<std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>>>& GetMeshes() { return m_meshes; }
 
 	private:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>>> m_meshes;

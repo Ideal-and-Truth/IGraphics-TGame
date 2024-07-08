@@ -32,7 +32,7 @@ public:
 	void SetTexturePath(const std::wstring& TexturePath) { m_texturePath = TexturePath; }
 
 public:
-	void ReadAssetFile(const std::wstring& path, bool isSkinnedData);
+	void ReadAssetFile(const std::wstring& path, bool isSkinnedData, bool onlyPosition);
 	void ExportModelData(std::wstring savePath, bool IsSkinnedData = false);
 	void ExportMaterialData(const std::wstring& savePath);
 	void ExportAnimationData(std::wstring savePath, uint32 index = 0);

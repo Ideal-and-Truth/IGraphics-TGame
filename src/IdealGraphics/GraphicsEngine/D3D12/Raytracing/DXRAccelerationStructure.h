@@ -4,23 +4,37 @@
 #include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 namespace Ideal
 {
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12UAVBuffer;
+
+	class DeferredDeleteManager;
 }
 
 namespace Ideal
 {
 	struct BLASGeometry
 	{
+		BLASGeometry() : Name(L""), VertexBufferResource(nullptr), VertexBufferGPUAddress(0), VertexCount(0),
+			VertexStrideInBytes(0), IndexBufferResource(nullptr), IndexBufferGPUAddress(0), IndexCount(0)
+		{}
 		std::wstring Name;
-		std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
-		std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;
-		D3D12_GPU_DESCRIPTOR_HANDLE DiffuseTexture;
-		//D3D12_GPU_DESCRIPTOR_HANDLE NormalTexture;
+		ComPtr<ID3D12Resource> VertexBufferResource;
+		D3D12_GPU_VIRTUAL_ADDRESS VertexBufferGPUAddress;
+		uint32 VertexCount;
+		uint32 VertexStrideInBytes;
+		ComPtr<ID3D12Resource> IndexBufferResource;
+		D3D12_GPU_VIRTUAL_ADDRESS IndexBufferGPUAddress;
+		uint32 IndexCount;
+
+		// refactor
+		Ideal::D3D12DescriptorHandle SRV_VertexBuffer;
+		Ideal::D3D12DescriptorHandle SRV_IndexBuffer;
+		Ideal::D3D12DescriptorHandle SRV_Diffuse;
 	};
 
 	struct BLASData
@@ -43,7 +57,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_accelerationStructure;
 
 		std::wstring m_name;
-		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS m_buildFlags;
+		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS m_buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;
 		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO m_preBuildInfo;
 
 		bool m_isBuilt = false;	// 최소 한번이라도 빌드된 경우
@@ -66,20 +80,25 @@ namespace Ideal
 			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
 			bool AllowUpdate
 		);
+
+		// Geometry가 들고 있는 Handle 값을 반환한다.
+		void FreeMyHandle();
+
 		void Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer);
 
 		uint32 GetInstanceContributionToHitGroupIndex() { return m_instanceContributionToHitGroupIndex; }
 		void SetInstanceContributionToHitGroupIndex(uint32 Index) { m_instanceContributionToHitGroupIndex = Index; }
 
 		uint64 GetGeometrySize() { return m_geometries.size(); }
-		const std::vector<BLASGeometry>& GetGeometries() { return m_geometries; }
+		std::vector<BLASGeometry>& GetGeometries() { return m_geometries; }
 
 		bool IsDirty() { return m_isDirty; }
-	private:
+		void SetDirty(bool Dirty) { m_isDirty = Dirty; }
+
+	public:
 		void BuildGeometries(std::vector<BLASGeometry>& Geometries);
 
 	private:
-		std::shared_ptr<Ideal::D3D12UAVBuffer> m_scratchBuffer;
 		std::vector<BLASGeometry> m_geometries;
 		// geometry Info 로 만든 _geometry_desc을 저장 // 후에 BLAS 빌드할때 쓰임
 		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> m_geometryDescs;
@@ -87,6 +106,19 @@ namespace Ideal
 		uint32 m_currentID = 0;	// cache Geomeetry Desc에 사용할 ID. 이전 프레임의 geometry Desc을 겹쳐쓰지 않기 위한 용도?
 
 		uint32 m_instanceContributionToHitGroupIndex = 0;
+
+
+	public:
+		void AddRefCount() { m_refCount++; }
+		bool SubRefCount()
+		{
+			m_refCount--;
+			if (m_refCount == 0)
+				return true;
+			return false;
+		}
+	private:
+		uint32 m_refCount = 0;
 	};
 
 	class DXRTopLevelAccelerationStructure : public DXRAccelerationStructure
@@ -100,6 +132,7 @@ namespace Ideal
 			ComPtr<ID3D12Device5> Device,
 			uint32 NumBLASInstanceDescs,
 			D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags,
+			std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager,
 			bool AllowUpdate = false
 		);
 
@@ -109,9 +142,5 @@ namespace Ideal
 			D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress,
 			ComPtr<ID3D12Resource> ScratchBuffer
 		);
-
 	};
-
-
 }
-

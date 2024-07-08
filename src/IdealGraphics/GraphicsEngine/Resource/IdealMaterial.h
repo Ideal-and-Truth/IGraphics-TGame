@@ -31,6 +31,8 @@ namespace Ideal
 		void SetEmissiveTextureFile(std::wstring& File) { m_emissiveTextureFile = File; }
 		void SetNormalTextureFile(std::wstring& File)	{ m_normalTextureFile = File; }
 
+		std::shared_ptr<Ideal::D3D12Texture> GetDiffuseTexture() { return m_diffuseTexture; }
+
 	private:
 		Color m_ambient;
 		Color m_diffuse;

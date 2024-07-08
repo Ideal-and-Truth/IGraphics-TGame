@@ -40,26 +40,9 @@ void Truth::Light::SetLight(LightType InLightType)
 	}
 }
 
-void Truth::Light::AddLight(std::shared_ptr<Ideal::ILight> _light)
-{
-	m_managers.lock()->Graphics()->AddLight(_light);
-}
-
 void Truth::Light::Initalize()
 {
 	SetLight(m_lightType);
-	if (m_lightType == LightType::Directional)
-	{
-		AddLight(m_directionalLight);
-	}
-	else if (m_lightType == LightType::Spot)
-	{
-		AddLight(m_spotLight);
-	}
-	else if (m_lightType == LightType::Point)
-	{
-		AddLight(m_pointLight);
-	}
 }
 
 void Truth::Light::ApplyTransform()
@@ -82,18 +65,6 @@ void Truth::Light::ApplyTransform()
 void Truth::Light::EditorSetValue()
 {
 	SetLight(m_lightType);
-	if (m_lightType == LightType::Directional)
-	{
-		AddLight(m_directionalLight);
-	}
-	else if (m_lightType == LightType::Spot)
-	{
-		AddLight(m_spotLight);
-	}
-	else if (m_lightType == LightType::Point)
-	{
-		AddLight(m_pointLight);
-	}
 }
 #endif // _DEBUG
 

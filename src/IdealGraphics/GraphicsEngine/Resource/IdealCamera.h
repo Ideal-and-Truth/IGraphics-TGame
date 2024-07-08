@@ -31,6 +31,7 @@ namespace Ideal
 		// ver2
 		void UpdateMatrix2();
 		void SetAspectRatio(float AspectRatio);
+
 	private:
 		DirectX::SimpleMath::Vector3 m_position;
 		DirectX::SimpleMath::Vector3 m_right;

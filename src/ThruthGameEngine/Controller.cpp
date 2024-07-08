@@ -4,6 +4,8 @@
 #include "RigidBody.h"
 #include "Entity.h"
 #include "Transform.h"
+#include "Collider.h"
+#include "CapsuleCollider.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Controller)
 
@@ -49,15 +51,33 @@ void Truth::Controller::Awake()
 	decs.position = MathConverter::ConvertEx(m_owner.lock()->GetPosition());
 
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
+
+	// create rigidbody to access physx body
 	m_rigidbody = std::make_shared<RigidBody>();
 
-	GetRigidbody()->m_transform = m_owner.lock()->GetComponent<Transform>();
-	GetRigidbody()->m_owner = m_owner.lock();
-	GetRigidbody()->m_isController = true;
-	GetRigidbody()->m_controller = m_controller;
+	m_rigidbody->m_transform = m_owner.lock()->GetComponent<Transform>();
+	m_rigidbody->m_owner = m_owner.lock();
+	m_rigidbody->m_isController = true;
+	m_rigidbody->m_controller = m_controller;
 
-	GetRigidbody()->m_body = m_controller->getActor();
-	m_controller->getActor()->userData = GetRigidbody().get();
+	m_rigidbody->m_body = m_controller->getActor();
+	m_controller->getActor()->userData = m_rigidbody.get();
+
+	// create collider to access physx shape
+	m_collider = std::make_shared<CapsuleCollider>();
+	m_collider->m_transform = m_owner.lock()->GetComponent<Transform>();
+	m_collider->m_owner = m_owner.lock();
+
+	m_collider->m_body = m_controller->getActor();
+
+	uint32 nbs = m_controller->getActor()->getNbShapes();
+	physx::PxShape** tempShapes = new physx::PxShape*[nbs];
+	m_controller->getActor()->getShapes(tempShapes, nbs);
+	m_collider->m_collider = tempShapes[0];
+
+	m_collider->m_collider->userData = m_collider.get();
+
+	delete[] tempShapes;
 }
 
 /// <summary>

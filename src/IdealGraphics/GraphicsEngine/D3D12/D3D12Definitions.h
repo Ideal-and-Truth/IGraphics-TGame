@@ -3,6 +3,10 @@
 
 #define D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN   ((D3D12_GPU_VIRTUAL_ADDRESS)-1)
 
+// Test
+#define BeforeRefactor
+
+
 // SWAP CHAIN & MAX PENDING
 
 #define G_SWAP_CHAIN_NUM 4
@@ -14,14 +18,17 @@
 #define INDEX_FORMAT DXGI_FORMAT_R32_UINT
 #define VERTEX_FORMAT DXGI_FORMAT_R32G32B32_FLOAT
 
+// Descriptor Heap Management
+#define NUM_FIXED_DESCRIPTOR_HEAP 1	// shader table에 사용되는 고정된 Fixed Descriptor Heap의 개수
+#define FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV 0	// 고정된 Descriptor Heap의 Index
 
 /// Static Mesh Macro
 // 2024.05.08
 // Root Table Index Macro
-#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ 1		// °ø¿ë root parameter
+#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ 1		// root parameter
 #define	STATIC_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM 0	// b1 : transform
 
-#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH 2		// °³º° ¸Å½¬ root parameter
+#define STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH 2		// root parameter
 #define	STATIC_MESH_DESCRIPTOR_INDEX_CBV_MATERIAL 0		// b2 : material
 #define	STATIC_MESH_DESCRIPTOR_INDEX_SRV_DIFFUSE 1		// t0 : diffuse
 #define	STATIC_MESH_DESCRIPTOR_INDEX_SRV_SPECULAR 2		// t1 : specular

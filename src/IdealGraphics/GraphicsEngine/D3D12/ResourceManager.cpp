@@ -8,6 +8,7 @@
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
+#include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 
 #include "GraphicsEngine/VertexInfo.h"
@@ -24,6 +25,7 @@
 
 
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
+#include "ThirdParty/Include/DirectXTK12/DDSTextureLoader.h"
 #include "Misc/Utils/FileUtils.h"
 #include "Misc/Utils/StringUtils.h"
 #include "Misc/Utils/tinyxml2.h"
@@ -39,6 +41,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
+	Fence();
 	WaitForFenceValue();
 }
 
@@ -67,8 +70,8 @@ void ResourceManager::Init(ComPtr<ID3D12Device5> Device)
 	m_fence->SetName(L"ResourceManager Fence");
 
 	//------------SRV Heap-----------//
-	m_srvHeap = std::make_shared<D3D12DynamicDescriptorHeap>();
-	m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
+	m_cbv_srv_uavHeap = std::make_shared<D3D12DynamicDescriptorHeap>();
+	m_cbv_srv_uavHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, m_srvHeapCount);
 	//m_srvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, m_srvHeapCount);
 
 	//------------RTV Heap-----------//
@@ -331,7 +334,92 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	srvDesc.Texture2D.MipLevels = 1;
 
 	//----------------------Allocate Descriptor-----------------------//
-	srvHandle = m_srvHeap->Allocate();
+	srvHandle = m_cbv_srv_uavHeap->Allocate();
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = srvHandle.GetCpuHandle();
+	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, cpuHandle);
+
+	//----------------------Final Create---------------------//
+	OutTexture->Create(resource);
+	OutTexture->EmplaceSRV(srvHandle);
+}
+
+void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
+{
+	if (!OutTexture)
+	{
+		OutTexture = std::make_shared<Ideal::D3D12Texture>();
+	}
+	// 2024.05.14 : 이 함수 Texture에 있어야 할지도// 
+	// 2024.05.15 : fence때문에 잘 모르겠다. 일단 넘어간다.
+
+	//----------------------Init--------------------------//
+	m_commandAllocator->Reset();
+	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+
+	ComPtr<ID3D12Resource> resource;
+	Ideal::D3D12DescriptorHandle srvHandle;
+
+	//----------------------Load DDS Texture From File--------------------------//
+
+	std::unique_ptr<uint8_t[]> decodeData;
+	std::vector<D3D12_SUBRESOURCE_DATA> subResources;
+
+	Check(DirectX::LoadDDSTextureFromFile(
+		m_device.Get(),
+		Path.c_str(),
+		resource.ReleaseAndGetAddressOf(),
+		decodeData,
+		subResources
+	));
+
+	//----------------------Upload Buffer--------------------------//
+
+	uint64 bufferSize = GetRequiredIntermediateSize(resource.Get(), 0, static_cast<uint32>(subResources.size()));
+
+	Ideal::D3D12UploadBuffer uploadBuffer;
+	uploadBuffer.Create(m_device.Get(), (uint32)bufferSize);
+
+	//----------------------Update Subresources--------------------------//
+
+	UpdateSubresources(
+		m_commandList.Get(),
+		resource.Get(),
+		uploadBuffer.GetResource(),
+		0, 0, subResources.size(), subResources.data()
+	);
+
+	uploadBuffer.UnMap();
+	//----------------------Resource Barrier--------------------------//
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		resource.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
+	);
+	m_commandList->ResourceBarrier(1, &barrier);
+
+	//----------------------Execute--------------------------//
+
+	m_commandList->Close();
+
+	ID3D12CommandList* commandLists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+	Fence();
+	WaitForFenceValue();
+
+	//----------------------Create Shader Resource View--------------------------//
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = resource->GetDesc().Format;
+	srvDesc.Texture2D.MipLevels = resource->GetDesc().MipLevels;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+	//----------------------Allocate Descriptor-----------------------//
+	srvHandle = m_cbv_srv_uavHeap->Allocate();
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = srvHandle.GetCpuHandle();
 	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, cpuHandle);
 
@@ -387,7 +475,7 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 		srvDesc.Format = Format;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = 1;
-		Ideal::D3D12DescriptorHandle srvHandle = m_srvHeap->Allocate();
+		Ideal::D3D12DescriptorHandle srvHandle = m_cbv_srv_uavHeap->Allocate();
 		m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
 
 		OutTexture->EmplaceSRV(srvHandle);
@@ -426,8 +514,51 @@ std::shared_ptr<Ideal::D3D12ShaderResourceView> ResourceManager::CreateSRV(std::
 		srvDesc.Buffer.StructureByteStride = ElementSize;
 	}
 
-	Ideal::D3D12DescriptorHandle allocatedHandle = m_srvHeap->Allocate();
+	Ideal::D3D12DescriptorHandle allocatedHandle = m_cbv_srv_uavHeap->Allocate();
 	m_device->CreateShaderResourceView(Resource->GetResource(), &srvDesc, allocatedHandle.GetCpuHandle());
+	std::shared_ptr<Ideal::D3D12ShaderResourceView> ret = std::make_shared<Ideal::D3D12ShaderResourceView>();
+	ret->SetResourceLocation(allocatedHandle);
+	return ret;
+}
+
+std::shared_ptr<Ideal::D3D12UnorderedAccessView> ResourceManager::CreateUAV(std::shared_ptr<Ideal::D3D12Resource> Resource, uint32 NumElements, uint32 ElementSize)
+{
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.Buffer.NumElements = NumElements;
+	uavDesc.Buffer.StructureByteStride = ElementSize;
+	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+
+	Ideal::D3D12DescriptorHandle allocatedHandle = m_cbv_srv_uavHeap->Allocate();
+	m_device->CreateUnorderedAccessView(Resource->GetResource(), nullptr, &uavDesc, allocatedHandle.GetCpuHandle());
+	std::shared_ptr<Ideal::D3D12UnorderedAccessView> ret = std::make_shared<Ideal::D3D12UnorderedAccessView>();
+	ret->SetResourceLocation(allocatedHandle);
+	ret->SetResource(Resource->GetResource());
+	return ret;
+}
+
+std::shared_ptr<Ideal::D3D12ShaderResourceView> ResourceManager::CreateSRV(ComPtr<ID3D12Resource> Resource, uint32 NumElements, uint32 ElementSize)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Buffer.NumElements = NumElements;
+	if (ElementSize == 0)
+	{
+		srvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
+		srvDesc.Buffer.StructureByteStride = 0;
+	}
+	else
+	{
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		srvDesc.Buffer.StructureByteStride = ElementSize;
+	}
+
+	Ideal::D3D12DescriptorHandle allocatedHandle = m_cbv_srv_uavHeap->Allocate();
+	m_device->CreateShaderResourceView(Resource.Get(), &srvDesc, allocatedHandle.GetCpuHandle());
 	std::shared_ptr<Ideal::D3D12ShaderResourceView> ret = std::make_shared<Ideal::D3D12ShaderResourceView>();
 	ret->SetResourceLocation(allocatedHandle);
 	return ret;
@@ -638,7 +769,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 	m_staticMeshes[key] = staticMesh;
 }
 
-void ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::D3D12Renderer> Renderer, std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
+void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);

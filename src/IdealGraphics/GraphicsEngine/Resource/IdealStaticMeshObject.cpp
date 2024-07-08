@@ -5,13 +5,14 @@
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
-
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "Misc/Utils/StringUtils.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
+#include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
 
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
-
 }
 
 Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
@@ -21,8 +22,7 @@ Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
 
 void Ideal::IdealStaticMeshObject::Init(ComPtr<ID3D12Device> Device)
 {
-	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Device);
-	//ID3D12Device* device = d3d12Renderer->GetDevice().Get();
+
 }
 
 void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
@@ -61,28 +61,23 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 	m_staticMesh->Draw(Renderer);
 }
 
-void Ideal::IdealStaticMeshObject::AllocateBLASInstanceID(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)
-{
-	// 일단 geometry들을 받아온다.
-	auto& geometries = m_staticMesh->GetMeshes();
-
-	uint64 numMesh = geometries.size();
-
-	Ideal::BLASData blasGeometryDesc;
-	for (uint32 i = 0; i < numMesh; ++i)
-	{
-		Ideal::BLASGeometry blasGeometry;
-		blasGeometry.Name = L"";	// temp
-		blasGeometry.VertexBuffer = geometries[i]->GetVertexBuffer();
-		blasGeometry.IndexBuffer = geometries[i]->GetIndexBuffer();
-
-		blasGeometryDesc.Geometries.push_back(blasGeometry);
-	}
-
-	m_instanceID = RaytracingManager->AddBLASAndGetInstanceIndex(Device, blasGeometryDesc.Geometries, L"BLAS3");
-}
-
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)
 {
-	RaytracingManager->SetGeometryTransformByIndex(m_instanceID, m_transform);
+	if (m_isDirty)
+	{
+		//RaytracingManager->SetGeometryTransformByIndex(m_instanceIndex, m_transform);
+		m_BLASInstanceDesc->InstanceDesc.SetTransform(m_transform);
+		//m_blas->SetDirty(true);
+		m_isDirty = false;
+	}
+}
+
+void Ideal::IdealStaticMeshObject::SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS)
+{
+	m_blas = InBLAS;
+}
+
+std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::IdealStaticMeshObject::GetBLAS()
+{
+	return m_blas;
 }

@@ -17,7 +17,6 @@ namespace Truth
 	{
 	private:
 		std::shared_ptr<Ideal::IdealRenderer> m_renderer;
-		std::shared_ptr<Ideal::IRenderScene> m_renderScene;
 		Camera* m_mainCamera;
 		float m_aspect;
 
@@ -36,14 +35,11 @@ namespace Truth
 		void Finalize();
 		void Render();
 
-		void AddObject(std::shared_ptr<Ideal::IMeshObject> _mesh);
-		void AddLight(std::shared_ptr<Ideal::ILight> _light);
-		void AddDebugobject(std::shared_ptr<Ideal::IMeshObject> _mesh);
-
 		void ConvertAsset(std::wstring _path, bool _isSkind = false, bool _isData = false);
 
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMesh(std::wstring _path);
 		std::shared_ptr<Ideal::IMeshObject> CreateMesh(std::wstring _path);
+		std::shared_ptr<Ideal::IMeshObject> CreateDebugMeshObject(std::wstring _path);
 		std::shared_ptr<Ideal::IAnimation> CreateAnimation(std::wstring _path);
 
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight();
@@ -51,6 +47,9 @@ namespace Truth
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight();
 
 		std::shared_ptr<Ideal::ICamera> CreateCamera();
+
+		void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> _meshObject);
+
 		void SetMainCamera(Camera* _camera);
 #ifdef _DEBUG
 		void SetMainCamera(EditorCamera* _camera);
@@ -60,8 +59,6 @@ namespace Truth
 		float GetAspect() const { return m_aspect; }
 
 		std::shared_ptr<Ideal::IdealRenderer> GetRenderer() const {return m_renderer;}
-
-		void ResetRenderScene();
 
 		void CompleteCamera();
 	};

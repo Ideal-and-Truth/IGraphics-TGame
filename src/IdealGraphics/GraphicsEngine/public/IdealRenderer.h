@@ -36,12 +36,19 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISkinnedMeshObject>	CreateSkinnedMeshObject(const std::wstring& FileName) abstract;
 		virtual std::shared_ptr<Ideal::IAnimation>			CreateAnimation(const std::wstring& FileName) abstract;
 
-		virtual std::shared_ptr<Ideal::IRenderScene>		CreateRenderScene() abstract;
-		virtual void										SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) abstract;
+		// CreateDebugMeshObject : 레이트레이싱에서는 그냥 Static Mesh Object 반환 //
+		virtual std::shared_ptr<Ideal::IMeshObject>			CreateDebugMeshObject(const std::wstring& FileName) abstract;
+
+		virtual void										DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) abstract;
+
+		//virtual std::shared_ptr<Ideal::IRenderScene>		CreateRenderScene() abstract;
+		//virtual void										SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) abstract;
 
 		virtual std::shared_ptr<Ideal::IDirectionalLight>	CreateDirectionalLight() abstract;
 		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() abstract;
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() abstract;
+
+		virtual void SetSkyBox(const std::wstring& FileName) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

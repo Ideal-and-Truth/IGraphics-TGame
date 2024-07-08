@@ -1,5 +1,6 @@
 #include "DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
 inline void AllocateUAVBuffer(ID3D12Device* pDevice, UINT64 bufferSize, ID3D12Resource** ppResource, D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON, const wchar_t* resourceName = nullptr)
 {
@@ -25,7 +26,7 @@ Ideal::DXRBottomLevelAccelerationStructure::DXRBottomLevelAccelerationStructure(
 
 Ideal::DXRBottomLevelAccelerationStructure::~DXRBottomLevelAccelerationStructure()
 {
-
+	
 }
 
 void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, std::vector<BLASGeometry>& Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate)
@@ -63,9 +64,22 @@ void Ideal::DXRBottomLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> De
 	m_isBuilt = false;
 }
 
+void Ideal::DXRBottomLevelAccelerationStructure::FreeMyHandle()
+{
+	// Fixed Descriptor 에서 가져다 쓴 리소스들을 반환한다.
+	for (auto geometry : m_geometries)
+	{
+		geometry.SRV_Diffuse.Free();
+		geometry.SRV_IndexBuffer.Free();
+		geometry.SRV_VertexBuffer.Free();
+	}
+
+	m_geometries.clear();
+}
+
 void Ideal::DXRBottomLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, ComPtr<ID3D12Resource> ScratchBuffer)
 {
-	// sratch 버퍼
+	// scratch 버퍼
 	// 
 	uint64 scratchBufferSizeInBytes = ScratchBuffer->GetDesc().Width;
 	if (m_preBuildInfo.ScratchDataSizeInBytes > scratchBufferSizeInBytes)
@@ -115,22 +129,23 @@ void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries(std::vector<BLA
 	geometryDescTemplate.Triangles.VertexFormat = VERTEX_FORMAT;
 	m_geometryDescs.reserve(Geometries.size());
 
+	m_geometryDescs.clear();
 	for (BLASGeometry& geometry : Geometries)
 	{
-		D3D12_GPU_VIRTUAL_ADDRESS ibAddress = geometry.IndexBuffer->GetResource()->GetGPUVirtualAddress();
-		uint32 indexCount = geometry.IndexBuffer->GetElementCount();
-		D3D12_GPU_VIRTUAL_ADDRESS vbAddress = geometry.VertexBuffer->GetResource()->GetGPUVirtualAddress();
-		uint32 vertexCount = geometry.VertexBuffer->GetElementCount();
-		uint64 vertexStride = geometry.VertexBuffer->GetElementSize();
+		//D3D12_GPU_VIRTUAL_ADDRESS ibAddress = geometry.IndexBuffer->GetResource()->GetGPUVirtualAddress();
+		//uint32 indexCount = geometry.IndexBuffer->GetElementCount();
+		//D3D12_GPU_VIRTUAL_ADDRESS vbAddress = geometry.VertexBuffer->GetResource()->GetGPUVirtualAddress();
+		//uint32 vertexCount = geometry.VertexBuffer->GetElementCount();
+		//uint64 vertexStride = geometry.VertexBuffer->GetElementSize();
 
 		D3D12_RAYTRACING_GEOMETRY_DESC& geometryDesc = geometryDescTemplate;
 		// TEMP : 임시 모두 불투명
 		geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
-		geometryDesc.Triangles.IndexBuffer = ibAddress;
-		geometryDesc.Triangles.IndexCount = indexCount;
-		geometryDesc.Triangles.VertexBuffer.StartAddress = vbAddress;
-		geometryDesc.Triangles.VertexBuffer.StrideInBytes = vertexStride;
-		geometryDesc.Triangles.VertexCount = vertexCount;
+		geometryDesc.Triangles.IndexBuffer = geometry.IndexBufferGPUAddress;
+		geometryDesc.Triangles.IndexCount = geometry.IndexCount;
+		geometryDesc.Triangles.VertexBuffer.StartAddress = geometry.VertexBufferGPUAddress;
+		geometryDesc.Triangles.VertexBuffer.StrideInBytes = geometry.VertexStrideInBytes;
+		geometryDesc.Triangles.VertexCount = geometry.VertexCount;
 
 		// 최종으로 만든 desc을 저장
 		m_geometryDescs.push_back(geometryDesc);
@@ -151,7 +166,7 @@ Ideal::DXRTopLevelAccelerationStructure::~DXRTopLevelAccelerationStructure()
 
 }
 
-void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, uint32 NumInstanceDescs, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, bool AllowUpdate /*= false */)
+void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Device, uint32 NumBLASInstanceDescs, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS BuildFlags, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager, bool AllowUpdate /*= false */)
 {
 	m_allowUpdate = AllowUpdate;
 	m_buildFlags = BuildFlags;
@@ -166,7 +181,7 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	topLevelInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
 	topLevelInputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
 	topLevelInputs.Flags = m_buildFlags;
-	topLevelInputs.NumDescs = NumInstanceDescs;
+	topLevelInputs.NumDescs = NumBLASInstanceDescs;
 
 	Device->GetRaytracingAccelerationStructurePrebuildInfo(&topLevelInputs, &m_preBuildInfo);
 	if (m_preBuildInfo.ResultDataMaxSizeInBytes <= 0)
@@ -175,12 +190,23 @@ void Ideal::DXRTopLevelAccelerationStructure::Create(ComPtr<ID3D12Device5> Devic
 	}
 
 	D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
-	m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
+	//D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON;
+
+	if (m_accelerationStructure == nullptr)
+	{
+		m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
+	}
+	/*if (DeferredDeleteManager)
+	{
+		DeferredDeleteManager->AddD3D12ResourceToDelete(m_accelerationStructure->GetResource());
+		m_accelerationStructure = std::make_shared<Ideal::D3D12UAVBuffer>();
+	}*/
 	m_accelerationStructure->Create(Device.Get(), m_preBuildInfo.ResultDataMaxSizeInBytes, initialResourceState, m_name.c_str());
 }
 
 void Ideal::DXRTopLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommandList4> CommandList, uint32 NumInstanceDesc, D3D12_GPU_VIRTUAL_ADDRESS InstanceDescsGPUAddress, ComPtr<ID3D12Resource> ScratchBuffer)
 {
+
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC tlasBuildDesc = {};
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS& tlasInputs = tlasBuildDesc.Inputs;
 	{
@@ -189,6 +215,7 @@ void Ideal::DXRTopLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommand
 		tlasInputs.Flags = m_buildFlags;
 		if (m_isBuilt && m_allowUpdate)
 		{
+			// 2024.07.08 Update Flag일 때 들어오는 곳인데 매 프레임 재빌드를 하니 안들어온다.
 			tlasInputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
 
 			// 샘플에서는 이 코드가 없지만 이거 안해주면 ERROR 남

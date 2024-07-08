@@ -56,9 +56,11 @@ void Ideal::IdealCamera::Pitch(float Angle)
 {
 	// Right º¤ÅÍ´Â ¹Ù²îÁö ¾ÊÀ½.
 
-	Matrix R = Matrix::CreateRotationX(Angle);
-	m_up = m_up.TransformNormal(m_up, R);
+	//Matrix R = Matrix::CreateRotationX(Angle);
+	Matrix R = Matrix::CreateFromAxisAngle(m_right, Angle);
 	m_look = m_look.TransformNormal(m_look, R);
+	m_up = m_up.TransformNormal(m_up, R);
+	//UpdateViewMatrix();
 }
 
 void Ideal::IdealCamera::RotateY(float Angle)
@@ -67,6 +69,8 @@ void Ideal::IdealCamera::RotateY(float Angle)
 	m_right = m_right.TransformNormal(m_right, R);
 	m_up = m_up.TransformNormal(m_up, R);
 	m_look = m_look.TransformNormal(m_look, R);
+	//SetLook(m_look);
+	//UpdateViewMatrix();
 }
 
 void IdealCamera::SetPosition(const Vector3& Position)
@@ -93,7 +97,7 @@ void Ideal::IdealCamera::SetLook(Vector3 Look)
 	m_look = Look;
 	m_up = up;
 	m_right = right;
-	UpdateViewMatrix();
+	//UpdateViewMatrix();
 }
 
 void IdealCamera::SetAspectRatio(float AspectRatio)

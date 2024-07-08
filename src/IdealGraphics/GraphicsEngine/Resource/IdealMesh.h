@@ -73,7 +73,6 @@ namespace Ideal
 		void SetMaterialName(const std::string& MaterialName) { m_materialName = MaterialName; }
 		std::shared_ptr<Ideal::IdealMaterial> GetMaterial() { return m_material; }
 		void SetMaterial(std::shared_ptr<IdealMaterial> Material) { m_material = Material; }
-
 		void SetBoneIndex(const int32& Index) { m_boneIndex = Index; }
 	private:
 		std::shared_ptr<D3D12VertexBuffer>	m_vertexBuffer;

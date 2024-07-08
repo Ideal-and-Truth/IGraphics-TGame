@@ -22,6 +22,8 @@ namespace Ideal
 		std::shared_ptr<UploadBufferContainer> Allocate();
 		void Reset();
 
+		ComPtr<ID3D12Resource> GetResource() { return m_resource; }
+
 	private:
 		ComPtr<ID3D12Resource> m_resource;
 		uint32 m_offset;

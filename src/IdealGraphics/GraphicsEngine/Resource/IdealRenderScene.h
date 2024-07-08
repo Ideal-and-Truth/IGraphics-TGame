@@ -17,6 +17,8 @@ namespace Ideal
 	class IdealPointLight;
 	class IdealScreenQuad;
 
+	class DeferredDeleteManager;
+
 	// D3D12
 	class D3D12PipelineStateObject;
 	class D3D12Shader;
@@ -39,9 +41,11 @@ namespace Ideal
 		virtual ~IdealRenderScene();
 
 	public:
-		void Init(std::shared_ptr<IdealRenderer> Renderer);
+		void Init(std::shared_ptr<IdealRenderer> Renderer, std::shared_ptr<Ideal::DeferredDeleteManager> InDeferredDeleteManager);
 		void Draw(std::shared_ptr<IdealRenderer> Renderer);
 		void Resize(std::shared_ptr<IdealRenderer> Renderer);
+
+		void Free();
 
 		// 2024.05.15 : buffer render
 		void DrawGBuffer(std::shared_ptr<IdealRenderer> Renderer);
@@ -53,6 +57,10 @@ namespace Ideal
 		virtual void AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
 		virtual void AddDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
 		virtual void AddLight(std::shared_ptr<Ideal::ILight> Light) override;
+
+		virtual void DeleteObject(std::shared_ptr<Ideal::IMeshObject> MeshObject);
+		virtual void DeleteLight(std::shared_ptr<Ideal::ILight> Light);
+		virtual void DeleteDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject);
 
 	private:
 		// Ver2 : 2024.05.07 : cb pool, descriptor pool을 사용하는 방식으로 바꾸겠다.
@@ -91,13 +99,13 @@ namespace Ideal
 		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
 		//std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
 
-		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
-		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
-		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_debugMeshObjects;
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObjects;
+		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_debugMeshObjects;
 
-		std::weak_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
-		std::vector<std::weak_ptr<Ideal::IdealSpotLight>> m_spotLights;
-		std::vector<std::weak_ptr<Ideal::IdealPointLight>> m_pointLights;
+		std::shared_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
+		std::vector<std::shared_ptr<Ideal::IdealSpotLight>> m_spotLights;
+		std::vector<std::shared_ptr<Ideal::IdealPointLight>> m_pointLights;
 
 	private:
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_staticMeshPSO;
@@ -130,5 +138,9 @@ namespace Ideal
 		ComPtr<ID3D12RootSignature> m_screenQuadRootSignature;
 		uint32 m_width;
 		uint32 m_height;
+
+
+		// Manager
+		std::shared_ptr<DeferredDeleteManager> m_deferredDeleteManager;
 	};
 }

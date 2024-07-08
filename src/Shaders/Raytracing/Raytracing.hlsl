@@ -20,11 +20,11 @@ RWTexture2D<float4> RenderTarget : register(u0);
 RaytracingAccelerationStructure Scene : register(t0, space0);
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
 SamplerState LinearWrapSampler : register(s0);
+TextureCube<float4> g_texEnvironmentMap : register(t1);
 
 //-----------LOCAL-----------//
-ConstantBuffer<CubeConstantBuffer> g_cubeCB : register(b0, space1);
 StructuredBuffer<uint> Indices : register(t0, space1);
-StructuredBuffer<PositionNormalUVVertex> Vertices : register(t1, space1);
+StructuredBuffer<PositionNormalUVTangentColor> Vertices : register(t1, space1);
 Texture2D<float4> g_texDiffuse : register(t2, space1);
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
@@ -81,7 +81,7 @@ float4 CalculateDiffuseLighting(float3 hitPosition, float3 normal)
     float fNDotL = max(0.0f, dot(pixelToLight, normal));
 
     //return g_cubeCB[1].albedo * g_sceneCB.lightDiffuseColor * fNDotL;
-    return g_cubeCB.albedo * g_sceneCB.lightDiffuseColor * fNDotL;
+    return g_sceneCB.lightDiffuseColor * fNDotL;
     //float4 diffuseTextureColor = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
     //return diffuseTextureColor;
 }
@@ -105,6 +105,7 @@ void MyRaygenShader()
     ray.TMin = 0.001;
     ray.TMax = 10000.0;
     RayPayload payload = { float4(0, 0, 0, 0) };
+    //TraceRay(Scene, RAY_FLAG_CULL_NON_OPAQUE, ~0, 0, 1, 0, ray, payload);
     TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
 
     // Write the raytraced color to the output texture.
@@ -130,7 +131,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         Vertices[indices[2]].normal 
     };
 
-    PositionNormalUVVertex vertexInfo[3] = {
+    PositionNormalUVTangentColor vertexInfo[3] = {
         Vertices[indices[0]],
         Vertices[indices[1]],
         Vertices[indices[2]]
@@ -141,6 +142,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 
 
     float4 albedo = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
+    //float4 albedo = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, uv, 0);
     // Compute the triangle's normal.
     // This is redundant and done for illustration purposes 
     // as all the per-vertex normals are the same and match triangle's normal in this sample. 
@@ -154,8 +156,10 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 [shader("miss")]
 void MyMissShader(inout RayPayload payload)
 {
-    float4 background = float4(0.0f, 0.2f, 0.4f, 1.0f);
-    payload.color = background;
+    //float3 dir = normalize(WorldRayDirection());
+    //float4 color = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, dir, 0);
+    float4 color = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, WorldRayDirection(), 0);
+    payload.color = color;
 }
 
 #endif // RAYTRACING_HLSL

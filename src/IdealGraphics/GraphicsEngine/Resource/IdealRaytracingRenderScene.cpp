@@ -23,10 +23,11 @@ Ideal::IdealRaytracingRenderScene::~IdealRaytracingRenderScene()
 
 void Ideal::IdealRaytracingRenderScene::Init(ComPtr<ID3D12Device5> InDevice, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
 {
+	return;
 	m_device = InDevice;
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init();
-	m_raytracingManager->FinalCreate(m_device, CommandList, UploadBufferPool);
+	//m_raytracingManager->Init(TODO, TODO, TODO);
+	//m_raytracingManager->FinalCreate2(m_device, CommandList, UploadBufferPool);
 }
 
 void Ideal::IdealRaytracingRenderScene::Draw(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
@@ -41,28 +42,29 @@ void Ideal::IdealRaytracingRenderScene::Draw(ComPtr<ID3D12GraphicsCommandList4> 
 
 void Ideal::IdealRaytracingRenderScene::UpdateAccelerationStructures(ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool)
 {
-	m_raytracingManager->UpdateAccelerationStructures(CommandList, UploadBufferPool);
+	//m_raytracingManager->UpdateAccelerationStructures(m_device, CommandList, UploadBufferPool, TODO);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::IdealRaytracingRenderScene::GetTLASResource()
 {
-	return m_raytracingManager->GetTLASResource();
+	//return m_raytracingManager->GetTLASResource();
+	return nullptr;
 }
 
 void Ideal::IdealRaytracingRenderScene::AddObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
 {
-	if (std::dynamic_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject) != nullptr)
-	{
-		std::shared_ptr<Ideal::IdealStaticMeshObject> staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
-		m_staticMeshObjects.push_back(staticMeshObject);
-
-		// add blas
-		staticMeshObject->AllocateBLASInstanceID(m_device, m_raytracingManager);
-	}
-	else if (std::dynamic_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject) != nullptr)
-	{
-		m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
-	}
+	//if (std::dynamic_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject) != nullptr)
+	//{
+	//	std::shared_ptr<Ideal::IdealStaticMeshObject> staticMeshObject = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+	//	m_staticMeshObjects.push_back(staticMeshObject);
+	//
+	//	// add blas
+	//	staticMeshObject->AllocateBLASInstanceID(m_device, m_raytracingManager);
+	//}
+	//else if (std::dynamic_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject) != nullptr)
+	//{
+	//	m_skinnedMeshObjects.push_back(std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject));
+	//}
 }
 
 void Ideal::IdealRaytracingRenderScene::AddDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
