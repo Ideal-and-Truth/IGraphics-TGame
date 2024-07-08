@@ -19,13 +19,10 @@ namespace Ideal
 {
 	struct BLASGeometry
 	{
-		//BLASGeometry() : Name(L""), VertexBuffer(nullptr), IndexBuffer(nullptr), DiffuseTexture() {}
-		BLASGeometry() : Name(L"") {}
+		BLASGeometry() : Name(L""), VertexBufferResource(nullptr), VertexBufferGPUAddress(0), VertexCount(0),
+			VertexStrideInBytes(0), IndexBufferResource(nullptr), IndexBufferGPUAddress(0), IndexCount(0)
+		{}
 		std::wstring Name;
-		//std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer;
-		//std::shared_ptr<Ideal::D3D12IndexBuffer> IndexBuffer;
-		//D3D12_GPU_DESCRIPTOR_HANDLE NormalTexture;
-
 		ComPtr<ID3D12Resource> VertexBufferResource;
 		D3D12_GPU_VIRTUAL_ADDRESS VertexBufferGPUAddress;
 		uint32 VertexCount;
@@ -60,7 +57,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_accelerationStructure;
 
 		std::wstring m_name;
-		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS m_buildFlags;
+		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS m_buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;
 		D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO m_preBuildInfo;
 
 		bool m_isBuilt = false;	// 최소 한번이라도 빌드된 경우

@@ -215,13 +215,13 @@ void Ideal::DXRTopLevelAccelerationStructure::Build(ComPtr<ID3D12GraphicsCommand
 		tlasInputs.Flags = m_buildFlags;
 		if (m_isBuilt && m_allowUpdate)
 		{
+			// 2024.07.08 Update Flag일 때 들어오는 곳인데 매 프레임 재빌드를 하니 안들어온다.
 			tlasInputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
 
 			// 샘플에서는 이 코드가 없지만 이거 안해주면 ERROR 남
 			tlasBuildDesc.SourceAccelerationStructureData = m_accelerationStructure->GetGPUVirtualAddress();
 		}
 		tlasInputs.NumDescs = NumInstanceDesc;
-		//tlasInputs.NumDescs = 1024;
 		tlasInputs.InstanceDescs = InstanceDescsGPUAddress;
 
 		tlasBuildDesc.ScratchAccelerationStructureData = ScratchBuffer->GetGPUVirtualAddress();

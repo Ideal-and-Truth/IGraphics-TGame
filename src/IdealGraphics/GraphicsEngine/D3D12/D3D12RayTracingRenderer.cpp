@@ -865,8 +865,8 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	uint32 PresentFlags = 0;
 	PresentFlags = DXGI_PRESENT_ALLOW_TEARING;
 
-	//hr = m_swapChain->Present(0, PresentFlags);
-	hr = m_swapChain->Present(1, 0);
+	hr = m_swapChain->Present(0, PresentFlags);
+	//hr = m_swapChain->Present(1, 0);
 	//hr = m_swapChain->Present(0, 0);
 	Check(hr);
 
@@ -876,7 +876,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 
 	m_descriptorHeaps[nextContextIndex]->Reset();
 	m_cbAllocator[nextContextIndex]->Reset();
-	//m_BLASInstancePool[nextContextIndex]->Reset();
+	m_BLASInstancePool[nextContextIndex]->Reset();
 	m_descriptorManager->ResetPool(nextContextIndex);
 
 	// deferred resource Delete And Set Next Context Index
