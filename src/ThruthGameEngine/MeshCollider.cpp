@@ -45,7 +45,6 @@ void Truth::MeshCollider::Awake()
 			MathConverter::Convert(m_center)
 		));
 
-
 		mc->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 		mc->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 	}

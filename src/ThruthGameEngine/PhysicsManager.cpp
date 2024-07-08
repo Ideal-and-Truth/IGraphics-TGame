@@ -431,12 +431,9 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 	PX_UNUSED(constantBlockSize);
 	PX_UNUSED(constantBlock);
 
-	// all initial and persisting reports for everything, with per-point data
-	// 한마디로 걍 필터 없는거처럼 행동한다 이거
-
 	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 	{
-		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
 	}
 
 	else if (physx::m_collsionTable[filterData0.word0] & (1 << filterData1.word0))

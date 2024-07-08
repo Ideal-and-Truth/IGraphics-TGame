@@ -27,6 +27,7 @@ namespace Truth
 	{
 		GENERATE_CLASS_TYPE_INFO(Collider);
 	private:
+		friend class Controller;
 		friend class boost::serialization::access;
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>
@@ -43,6 +44,7 @@ namespace Truth
 
 		PROPERTY(center);
 		Vector3 m_center;
+
 		PROPERTY(size);
 		Vector3 m_size;
 
@@ -56,10 +58,10 @@ namespace Truth
 		uint32 m_colliderID;
 		physx::PxShape* m_collider;
 
-		uint32 m_shapeCount;
-
 		physx::PxRigidActor* m_body;
 		std::weak_ptr<RigidBody> m_rigidbody;
+
+		bool m_isController;
 
 #ifdef _DEBUG
 		std::shared_ptr<Ideal::IMeshObject> m_debugMesh;
