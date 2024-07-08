@@ -31,6 +31,7 @@ namespace Truth
 	private:
 		physx::PxController* m_controller;
 		std::shared_ptr<RigidBody> m_rigidbody;
+		std::shared_ptr<Collider> m_collider;
 
 		const float m_minmumDistance;
 

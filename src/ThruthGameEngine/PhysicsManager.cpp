@@ -433,7 +433,7 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 
 	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 	{
-		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
 	}
 
 	else if (physx::m_collsionTable[filterData0.word0] & (1 << filterData1.word0))

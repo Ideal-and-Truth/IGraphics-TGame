@@ -112,6 +112,10 @@ void Truth::Collider::Awake()
 		m_rigidbody = con.lock()->GetRigidbody();
 		m_body = m_rigidbody.lock()->m_body;
 		m_body->attachShape(*m_collider);
+
+		auto af = m_body->getActorFlags();
+		auto rf = m_body->getBaseFlags();
+		auto sf = m_collider->getFlags();
 		return;
 	}
 
