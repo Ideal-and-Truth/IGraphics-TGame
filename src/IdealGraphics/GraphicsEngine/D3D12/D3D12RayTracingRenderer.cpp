@@ -502,6 +502,12 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 	}
 }
 
+std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateDebugMeshObject(const std::wstring& FileName)
+{
+	// 작동안함
+	return CreateStaticMeshObject(FileName);
+}
+
 std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimation(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
@@ -876,7 +882,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 
 	m_descriptorHeaps[nextContextIndex]->Reset();
 	m_cbAllocator[nextContextIndex]->Reset();
-	m_BLASInstancePool[nextContextIndex]->Reset();
+	//m_BLASInstancePool[nextContextIndex]->Reset();
 	m_descriptorManager->ResetPool(nextContextIndex);
 
 	// deferred resource Delete And Set Next Context Index

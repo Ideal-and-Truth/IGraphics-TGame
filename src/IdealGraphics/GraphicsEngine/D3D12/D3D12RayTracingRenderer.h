@@ -109,9 +109,12 @@ namespace Ideal
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
 		void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
 
+		// 작동 안함 // 그냥 mesh object 반환
+		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
+
 		std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
-		std::shared_ptr<Ideal::IRenderScene> CreateRenderScene() override;
-		void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) override;
+		std::shared_ptr<Ideal::IRenderScene> CreateRenderScene();
+		void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene);
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight() override;
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight() override;
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight() override;
