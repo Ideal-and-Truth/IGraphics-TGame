@@ -127,14 +127,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
-		bool isEditor = true;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		if (isEditor)
-		{
-			type = EGraphicsInterfaceType::D3D12_EDITOR;
-		}
-
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,
@@ -439,10 +435,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
-				if (isEditor)
+				//if (isEditor)
+				if (type == EGraphicsInterfaceType::D3D12_EDITOR || type == EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR)
 				{
-					AnimationTest(slashAnim);
-					SkinnedMeshObjectAnimationTest(ka);
+					//static int once = 0;
+					//if (once != 0)
+					{
+						AnimationTest(slashAnim);
+						SkinnedMeshObjectAnimationTest(ka);
+					}
+					//once++;
 					//ImGuiTest();
 					//DirLightAngle(&angleX, &angleY, &angleZ);
 					//PointLightInspecter(pointLight);
