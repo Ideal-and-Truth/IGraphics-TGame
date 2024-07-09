@@ -152,6 +152,10 @@ void Ideal::IdealSkinnedMeshObject::SetSkinnedMesh(std::shared_ptr<Ideal::IdealS
 
 void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 {
+	if (m_currentAnimation == nullptr)
+	{
+		return;
+	}
 	//m_sumTime += 0.001f;
 
 	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
