@@ -485,6 +485,12 @@ void Ideal::D3D12Renderer::DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> 
 	MeshObject.reset();
 }
 
+void Ideal::D3D12Renderer::DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> DebugMeshObject)
+{
+	m_currentRenderScene->DeleteDebugObject(DebugMeshObject);
+	DebugMeshObject.reset();
+}
+
 std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12Renderer::CreateRenderScene()
 {
 	std::shared_ptr<Ideal::IdealRenderScene> newScene = std::make_shared<Ideal::IdealRenderScene>();

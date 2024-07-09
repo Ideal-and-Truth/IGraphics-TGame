@@ -108,7 +108,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
 		void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
-
+		void DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> DebugMeshObject) override;
 		// 작동 안함 // 그냥 mesh object 반환
 		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
 

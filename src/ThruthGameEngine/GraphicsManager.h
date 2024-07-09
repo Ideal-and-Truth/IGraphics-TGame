@@ -49,6 +49,7 @@ namespace Truth
 		std::shared_ptr<Ideal::ICamera> CreateCamera();
 
 		void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> _meshObject);
+		void DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> _meshObject);
 
 		void SetMainCamera(Camera* _camera);
 #ifdef _DEBUG
