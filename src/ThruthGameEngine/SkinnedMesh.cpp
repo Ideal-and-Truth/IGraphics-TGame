@@ -2,6 +2,7 @@
 #include "Managers.h"
 #include "GraphicsManager.h"
 #include "ISkinnedMeshObject.h"
+#include "IAnimation.h"
 #include "Entity.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::SkinnedMesh)
@@ -26,6 +27,7 @@ Truth::SkinnedMesh::SkinnedMesh()
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
 	, m_currentFrame(0)
+	, m_animationMaxFrame(0)
 	, m_isAnimationPlaying(false)
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
@@ -69,12 +71,14 @@ void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrent
 {
 	if (m_animation != nullptr)
 	{
+		m_isAnimationChanged = true;
 		m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
 	}
 }
 
 void Truth::SkinnedMesh::SetRenderable(bool _isRenderable)
 {
+
 }
 
 void Truth::SkinnedMesh::Initalize()
@@ -84,27 +88,28 @@ void Truth::SkinnedMesh::Initalize()
 
 void Truth::SkinnedMesh::FixedUpdate()
 {
-	// 원래는 프레임 단위여야되지만 지금 애니메이션의 마지막 프레임을 몰라서
-	// 업데이트에 넣는게 유연한듯
-	m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
-	if (m_currentFrame == 0)
-	{
-		m_isAnimationPlaying = false;
-		m_isAnimationEnd = true;
-	}
-	else if (m_currentFrame == 1)
-	{
-		m_isAnimationPlaying = true;
-	}
-	else
-	{
-		m_isAnimationEnd = false;
-	}
-	
+
 }
 
 void Truth::SkinnedMesh::Update()
 {
+	m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
+	if (m_animation != nullptr)
+	{
+		m_animationMaxFrame = m_animation->GetFrameCount();
+		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
+
+		if (m_animationMaxFrame == m_currentFrame)
+		{
+			m_isAnimationEnd = true;
+			m_isAnimationPlaying = false;
+		}
+		if (m_currentFrame == 0)
+		{
+			m_isAnimationPlaying = true;
+			m_isAnimationChanged = false;
+		}
+	}
 
 }
 

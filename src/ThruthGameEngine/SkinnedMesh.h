@@ -37,6 +37,9 @@ namespace Truth
 		PROPERTY(isAnimationChanged);
 		bool m_isAnimationChanged;
 
+		PROPERTY(animationMaxFrame);
+		int m_animationMaxFrame;
+
 	public:
 		SkinnedMesh();
 		SkinnedMesh(std::wstring _path);
