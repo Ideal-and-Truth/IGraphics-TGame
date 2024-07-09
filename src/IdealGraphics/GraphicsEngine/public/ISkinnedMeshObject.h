@@ -20,5 +20,7 @@ namespace Ideal
 		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) abstract;
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) abstract;
 		virtual unsigned int GetCurrentAnimationIndex() abstract;
+		virtual void SetAnimationSpeed(float Speed) abstract;
+		virtual void AnimationDeltaTime(const float& DeltaTime) abstract;
 	};
 }

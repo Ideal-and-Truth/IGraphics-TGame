@@ -30,6 +30,16 @@ struct AnimTransform
 	std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
 };
 
+enum class EAnimationState
+{
+	// 현재 애니메이션
+	CurrentAnimation,
+	// 애니메이션 바로 바꾸기
+	ChangeAnimation,
+	// 애니메이션 끝나고 바꾸기
+	ReserveAnimation
+};
+
 namespace Ideal
 {
 	class IdealSkinnedMeshObject : public ISkinnedMeshObject
@@ -44,18 +54,13 @@ namespace Ideal
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
-		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
-		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
+
 		virtual Ideal::EMeshType GetMeshType() const override { return Ideal::EMeshType::Skinned; }
 
-		//--TODO: 나중에 인터페이스로 뽑을 것--//
-		virtual uint32 GetCurrentAnimationIndex() override { return m_currentFrame; };
-		//----------------------------------//
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetSkinnedMesh(std::shared_ptr<Ideal::IdealSkinnedMesh> Mesh);
 		
-		void AnimationPlay();
 
 	private:
 		bool m_isDraw = true;
@@ -96,14 +101,27 @@ namespace Ideal
 		bool m_isDirty = false;
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_BLAS;
 
-		//static const uint32 MAX_PENDING_COUNT = G_SWAP_CHAIN_NUM - 1;
-		//uint32 m_currentID = 0;
-		//std::shared_ptr<Ideal::D3D12UAVBuffer> m_uavBuffer[MAX_PENDING_COUNT];
-		//std::shared_ptr<Ideal::D3D12UnorderedAccessView> m_uavView[MAX_PENDING_COUNT];
 		std::shared_ptr<Ideal::D3D12UAVBuffer> m_uavBuffer;
 		std::shared_ptr<Ideal::D3D12UnorderedAccessView> m_uavView;
 
+
 		// Animation
+	public:
+		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
+		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
+		virtual uint32 GetCurrentAnimationIndex() override { return m_currentFrame; };
+		virtual void SetAnimationSpeed(float Speed) override { m_animSpeed = Speed; }
+		virtual void AnimationDeltaTime(const float& DeltaTime) override;
+
+	private:
+		void AnimationPlay();
+		void AnimationInterpolate(
+			std::shared_ptr<Ideal::IdealAnimation> BeforeAnimation,
+			uint32 BeforeAnimationFrame,
+			std::shared_ptr<Ideal::IdealAnimation> NextAnimation,
+			uint32 NextAnimationFrame
+		);
+
 	private:
 		/// Ver2
 		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
@@ -112,7 +130,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::IdealAnimation> m_nextAnimation;
 
 		// 다음 애니메이션이 있을 경우 추가
-		bool m_whenCurrentAnimationFinishChangeAnimation = false;
+		bool m_reservedAnimation = false;
 		bool m_isAnimationFinished = false;
 
 		float m_sumTime = 0.f;
@@ -120,5 +138,12 @@ namespace Ideal
 		uint32 m_nextFrame = 0;
 		float m_animSpeed = 1.f;
 		float m_ratio = 0.f;
+
+		//std::shared_ptr<Ideal::IdealAnimation> m_cacheCurrentAnimation;
+		uint32 m_cacheCurrentAnimationFrame = 0;
+		//std::shared_ptr<Ideal::IdealAnimation> m_cacheNextAnimation;
+
+
+		EAnimationState m_animationState = EAnimationState::CurrentAnimation;
 	};
 }
