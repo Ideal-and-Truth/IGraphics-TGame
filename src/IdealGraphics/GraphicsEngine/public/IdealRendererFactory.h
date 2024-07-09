@@ -8,7 +8,8 @@ enum class EGraphicsInterfaceType
 {
 	D3D12,
 	D3D12_EDITOR,
-	D3D12_RAYTRACING
+	D3D12_RAYTRACING,
+	D3D12_RAYTRACING_EDITOR,
 };
 
 namespace Ideal
