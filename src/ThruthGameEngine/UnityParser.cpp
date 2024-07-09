@@ -139,22 +139,32 @@ void Truth::UnityParser::ParsingYAMLFile(YAML::Node _node)
 {
 	for (YAML::iterator iter = _node.begin(); iter != _node.end(); ++iter)
 	{
-		DEBUG_PRINT((iter->first.as<std::string>() + "\n").c_str());
+		DEBUG_PRINT((iter->first.as<std::string>() + " : ").c_str());
 		if (iter->second.IsMap())
 		{
+			DEBUG_PRINT("\n");
 			ParsingYAMLFile(iter->second);
 		}
 		else if (iter->second.IsScalar())
 		{
-			int a = 1;
+			DEBUG_PRINT((iter->second.as<std::string>()).c_str());
 		}
 		else if (iter->second.IsSequence())
 		{
 			for (std::size_t idx = 0; idx < iter->second.size(); idx++)
 			{
-				int a = 1;
+				if (iter->second[idx].IsMap())
+				{
+					DEBUG_PRINT("\n");
+					ParsingYAMLFile(iter->second[idx]);
+				}
+				else
+				{
+					DEBUG_PRINT((iter->second[idx].as<std::string>() + ", ").c_str());
+				}
 			}
 		}
+		DEBUG_PRINT("\n");
 	}
 }
 
@@ -186,9 +196,15 @@ void Truth::UnityParser::CreateMapCollision(const std::string& _path)
 	}
 
 	std::string line;
+	bool isStripped = false;
 	while (fin)
 	{
 		getline(fin, line);
+		if (isStripped)
+		{
+			line = "S" + line;
+			isStripped = false;
+		}
 		auto sLine = StringConverter::split(line, ' ');
 		if (!sLine.empty() && sLine.back() == "stripped")
 		{
@@ -199,6 +215,7 @@ void Truth::UnityParser::CreateMapCollision(const std::string& _path)
 				line += s + " ";
 			}
 			line.pop_back();
+			isStripped = true;
 		}
 
 		fout << line;
@@ -211,8 +228,8 @@ void Truth::UnityParser::CreateMapCollision(const std::string& _path)
 	std::ifstream dataFile(cscene);
 
 	auto doc = YAML::LoadAll(dataFile);
-	for (size_t i = 0; i < doc.size() ; i++)
-	{	
-	ParsingYAMLFile(doc[i]);
+	for (size_t i = 0; i < doc.size(); i++)
+	{
+		ParsingYAMLFile(doc[i]);
 	}
 }

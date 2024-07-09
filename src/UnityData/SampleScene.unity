@@ -310,7 +310,7 @@ Transform:
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1875573884
-GameObject:
+SGameObject:
   m_CorrespondingSourceObject: {fileID: 2281996764736804225, guid: 55c457e2ba7decd49933d92af6477677, type: 3}
   m_PrefabInstance: {fileID: 2449126930132261917}
   m_PrefabAsset: {fileID: 0}
