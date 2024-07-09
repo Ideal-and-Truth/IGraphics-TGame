@@ -337,6 +337,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
 						ka->SetTransformMatrix(mat2);
 
+						ka->SetPlayAnimation(false);
+
 						meshes.push_back(ka);
 
 
@@ -347,6 +349,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						std::shared_ptr<Ideal::ISkinnedMeshObject> mesh1 = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 						mesh1->AddAnimation("Walk", walkAnim);
 						mesh1->SetTransformMatrix(mat2);
+
+						mesh1->SetPlayAnimation(false);
+
 						meshes.push_back(mesh1);
 					}
 

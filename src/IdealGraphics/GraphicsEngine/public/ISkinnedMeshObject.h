@@ -22,5 +22,7 @@ namespace Ideal
 		virtual unsigned int GetCurrentAnimationIndex() abstract;
 		virtual void SetAnimationSpeed(float Speed) abstract;
 		virtual void AnimationDeltaTime(const float& DeltaTime) abstract;
+
+		virtual void SetPlayAnimation(bool Play) abstract;
 	};
 }
