@@ -93,6 +93,10 @@ std::vector<std::string> StringConverter::split(std::string _str, char _delimite
 
 	while (std::getline(iss, buffer, _delimiter)) 
 	{
+		if (buffer.empty())
+		{
+			continue;
+		}
 		result.push_back(buffer);               
 	}
 

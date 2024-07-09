@@ -1,7 +1,6 @@
 #include "UnityParser.h"
 #include <fstream>
 
-
 Truth::UnityParser::UnityParser()
 {
 	m_ignore.insert(".vs");
@@ -22,7 +21,7 @@ Truth::UnityParser::~UnityParser()
 /// unity 파일을 파싱해서 필요한 정보만 가져오기
 /// </summary>
 /// <param name="_path">유니티 프로젝트의 루트 디렉토리</param>
-void Truth::UnityParser::Parsing(std::string _path)
+void Truth::UnityParser::Parsing(const std::string& _path)
 {
 	fs::path root(_path);
 
@@ -131,7 +130,89 @@ void Truth::UnityParser::ParsingDir(fs::path& _path)
 	}
 }
 
-void Truth::UnityParser::IntegrateUnityFile()
+bool Truth::UnityParser::IsClass(const std::string& _name, UNITY_CLASS_ID _id)
 {
+	return _name == m_classPrefix + std::to_string(static_cast<int32>(_id));
+}
 
+void Truth::UnityParser::ParsingYAMLFile(YAML::Node _node)
+{
+	for (YAML::iterator iter = _node.begin(); iter != _node.end(); ++iter)
+	{
+		DEBUG_PRINT((iter->first.as<std::string>() + "\n").c_str());
+		if (iter->second.IsMap())
+		{
+			ParsingYAMLFile(iter->second);
+		}
+		else if (iter->second.IsScalar())
+		{
+			int a = 1;
+		}
+		else if (iter->second.IsSequence())
+		{
+			for (std::size_t idx = 0; idx < iter->second.size(); idx++)
+			{
+				int a = 1;
+			}
+		}
+	}
+}
+
+void Truth::UnityParser::CreateMapCollision(const std::string& _path)
+{
+	fs::path uscene(_path);
+
+	if (uscene.extension() != ".unity")
+	{
+		assert(false && "Not Unity Scene");
+		return;
+	}
+
+	fs::path cscene = "../UnityData/" + uscene.filename().generic_string();
+	fs::create_directories(cscene.parent_path());
+
+	std::vector<std::vector<Vector3>> m_points;
+
+	std::ifstream fin(uscene);
+	std::ofstream fout(cscene);
+
+	if (!fin.is_open())
+	{
+		assert(false && "Cannot Open Scene File");
+	}
+	if (!fout.is_open())
+	{
+		assert(false && "Cannot Open Duplicate Scene File");
+	}
+
+	std::string line;
+	while (fin)
+	{
+		getline(fin, line);
+		auto sLine = StringConverter::split(line, ' ');
+		if (!sLine.empty() && sLine.back() == "stripped")
+		{
+			sLine.pop_back();
+			line = "";
+			for (auto& s : sLine)
+			{
+				line += s + " ";
+			}
+			line.pop_back();
+		}
+
+		fout << line;
+		fout << "\n";
+	}
+
+	fin.close();
+	fout.close();
+
+	std::ifstream dataFile(cscene);
+
+	auto doc = YAML::LoadAll(dataFile);
+	for (size_t i = 0; i < doc.size() ; i++)
+	{	
+	ParsingYAMLFile(doc[i]);
+	}
 }
