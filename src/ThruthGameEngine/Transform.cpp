@@ -39,4 +39,6 @@ void Truth::Transform::ApplyTransform()
 	{
 		m_globalTM = m_localTM;
 	}
+
+	m_globalTM.Decompose(m_worldScale, m_worldRotation, m_worldPosition);
 }

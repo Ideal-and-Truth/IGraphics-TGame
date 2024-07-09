@@ -48,7 +48,7 @@ void Truth::Controller::Awake()
 	decs.upDirection = MathConverter::Convert(m_upDirection);
 	decs.material = m_managers.lock()->Physics()->CreateMaterial(m_material);
 	decs.climbingMode = static_cast<physx::PxCapsuleClimbingMode::Enum>(m_climbingmode);
-	decs.position = MathConverter::ConvertEx(m_owner.lock()->GetPosition());
+	decs.position = MathConverter::ConvertEx(m_owner.lock()->GetLocalPosition());
 
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
 

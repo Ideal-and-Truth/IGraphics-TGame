@@ -26,7 +26,7 @@ void Truth::MeshCollider::Initalize()
 
 void Truth::MeshCollider::Awake()
 {
-	Vector3 onwerSize = m_owner.lock()->GetScale();
+	Vector3 onwerSize = m_owner.lock()->GetLocalScale();
 
 	GetPoints();
 	if (m_points.empty())
@@ -60,8 +60,8 @@ void Truth::MeshCollider::Awake()
 			m_body->attachShape(*mc);
 		}
 		physx::PxTransform t(
-			MathConverter::Convert(m_owner.lock()->GetPosition()),
-			MathConverter::Convert(m_owner.lock()->GetRotation())
+			MathConverter::Convert(m_owner.lock()->GetLocalPosition()),
+			MathConverter::Convert(m_owner.lock()->GetLocalRotation())
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);

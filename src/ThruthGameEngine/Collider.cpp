@@ -108,7 +108,7 @@ void Truth::Collider::Awake()
 		return;
 	}
 
-	Vector3 onwerSize = m_owner.lock()->GetScale();
+	Vector3 onwerSize = m_owner.lock()->GetLocalScale();
 	m_collider = CreateCollider(m_shape, (m_size * onwerSize) / 2);
 
 	m_collider->userData = this;
@@ -142,8 +142,8 @@ void Truth::Collider::Awake()
 		m_body = m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 		m_body->attachShape(*m_collider);
 		physx::PxTransform t(
-			MathConverter::Convert(m_owner.lock()->GetPosition()),
-			MathConverter::Convert(m_owner.lock()->GetRotation())
+			MathConverter::Convert(m_owner.lock()->GetLocalPosition()),
+			MathConverter::Convert(m_owner.lock()->GetLocalRotation())
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
