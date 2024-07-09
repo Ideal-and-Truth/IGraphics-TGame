@@ -28,7 +28,7 @@ void Truth::Light::SetLight(LightType InLightType)
 {
 	if (InLightType == LightType::Directional)
 	{
-		// m_directionalLight = m_managers.lock()->Graphics()->CreateDirectionalLight();
+		m_directionalLight = m_managers.lock()->Graphics()->CreateDirectionalLight();
 	}
 	else if (InLightType == LightType::Spot)
 	{
@@ -49,7 +49,7 @@ void Truth::Light::ApplyTransform()
 {
 	if (m_lightType == LightType::Directional)
 	{
-		// m_directionalLight->SetDirection(m_direction);
+		m_directionalLight->SetDirection(m_direction);
 	}
 	else if (m_lightType == LightType::Spot)
 	{

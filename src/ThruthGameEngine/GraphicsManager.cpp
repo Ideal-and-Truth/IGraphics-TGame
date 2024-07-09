@@ -154,6 +154,11 @@ void Truth::GraphicsManager::DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject
 	m_renderer->DeleteMeshObject(_meshObject);
 }
 
+void Truth::GraphicsManager::DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> _meshObject)
+{
+	m_renderer->DeleteDebugMeshObject(_meshObject);
+}
+
 /// <summary>
 /// 메인 카메라 지정
 /// </summary>
