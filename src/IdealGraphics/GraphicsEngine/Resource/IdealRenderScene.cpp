@@ -334,7 +334,20 @@ void Ideal::IdealRenderScene::DeleteLight(std::shared_ptr<Ideal::ILight> Light)
 
 void Ideal::IdealRenderScene::DeleteDebugObject(std::shared_ptr<Ideal::IMeshObject> MeshObject)
 {
+	if (MeshObject == nullptr)
+		return;
 
+	if (MeshObject->GetMeshType() == Ideal::Static)
+	{
+		auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
+
+		auto it = std::find(m_debugMeshObjects.begin(), m_debugMeshObjects.end(), mesh);
+		{
+			*it = std::move(m_debugMeshObjects.back());
+			m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
+			m_debugMeshObjects.pop_back();
+		}
+	}
 }
 
 void Ideal::IdealRenderScene::CreateStaticMeshPSO(ID3D12Device* Device)

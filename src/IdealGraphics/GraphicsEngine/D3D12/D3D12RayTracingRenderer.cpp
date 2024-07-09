@@ -606,6 +606,20 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 	}
 }
 
+void Ideal::D3D12RayTracingRenderer::DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> DebugMeshObject)
+{
+	// 아직 디버그 매쉬를 안만들고 static mesh에서 그냥 만드니 여기서 삭제
+	auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(DebugMeshObject);
+	RaytracingManagerDeleteObject(mesh);
+
+	auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), mesh);
+	{
+		*it = std::move(m_staticMeshObject.back());
+		m_deferredDeleteManager->AddMeshObjectToDeferredDelete(DebugMeshObject);
+		m_staticMeshObject.pop_back();
+	}
+}
+
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateDebugMeshObject(const std::wstring& FileName)
 {
 	// 작동안함
