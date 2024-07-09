@@ -438,13 +438,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//if (isEditor)
 				if (type == EGraphicsInterfaceType::D3D12_EDITOR || type == EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR)
 				{
-					//static int once = 0;
-					//if (once != 0)
+					static int once = 0;
+					if (once != 0)
 					{
 						AnimationTest(slashAnim);
 						SkinnedMeshObjectAnimationTest(ka);
 					}
-					//once++;
+					once++;
 					//ImGuiTest();
 					//DirLightAngle(&angleX, &angleY, &angleZ);
 					//PointLightInspecter(pointLight);

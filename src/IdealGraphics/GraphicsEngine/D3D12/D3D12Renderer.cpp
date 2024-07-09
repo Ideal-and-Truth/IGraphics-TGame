@@ -322,8 +322,6 @@ void Ideal::D3D12Renderer::Render()
 		m_currentRenderScene->DrawScreen(shared_from_this());
 		DrawImGuiMainCamera();
 	}
-
-
 #endif
 	//-------------Begin Render------------//
 	BeginRender();
