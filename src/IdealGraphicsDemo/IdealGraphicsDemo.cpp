@@ -434,6 +434,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 					}
 				}
+				// Animation // 역재생 안됨
+				ka->AnimationDeltaTime(0.001f);
+
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				if (isEditor)
@@ -455,6 +458,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			meshes[i].reset();
 		}
 		meshes.clear();
+
+		gRenderer->DeleteMeshObject(ka);
+		ka.reset();
+
 		gRenderer.reset();
 	}
 
@@ -716,6 +723,8 @@ void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> S
 	static float animationSpeed = 1.f; // 임시 static // 실제 사용 조심
 	ImGui::SliderFloat("Animation Speed", &animationSpeed, 0.0f, 3.0f);
 	SkinnedMeshObject->SetAnimationSpeed(animationSpeed);
+
+	ImGui::Text("Current Animation Index : %d", SkinnedMeshObject->GetCurrentAnimationIndex());
 
 	ImGui::Text("Change Next Animation");
 	if (ImGui::Button("Run"))

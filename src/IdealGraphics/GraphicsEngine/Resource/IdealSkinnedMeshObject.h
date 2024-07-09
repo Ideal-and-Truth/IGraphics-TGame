@@ -111,6 +111,7 @@ namespace Ideal
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
 		virtual uint32 GetCurrentAnimationIndex() override { return m_currentFrame; };
 		virtual void SetAnimationSpeed(float Speed) override { m_animSpeed = Speed; }
+		virtual void AnimationDeltaTime(const float& DeltaTime) override;
 
 	private:
 		void AnimationPlay();

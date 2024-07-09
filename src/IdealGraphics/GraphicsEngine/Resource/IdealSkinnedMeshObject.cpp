@@ -115,6 +115,11 @@ void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationNam
 	}
 }
 
+void Ideal::IdealSkinnedMeshObject::AnimationDeltaTime(const float& DeltaTime)
+{
+	m_sumTime += DeltaTime;
+}
+
 void Ideal::IdealSkinnedMeshObject::AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation)
 {
 	if (m_animations[AnimationName] != nullptr)
@@ -147,22 +152,10 @@ void Ideal::IdealSkinnedMeshObject::SetSkinnedMesh(std::shared_ptr<Ideal::IdealS
 
 void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 {
-	m_sumTime += 0.001f;
+	//m_sumTime += 0.001f;
 
 	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
-	//if (m_sumTime >= timePerFrame)
-	//{
-	//	m_sumTime = 0.f;
-	//	// 현재 프레임 + 1이 현재 애니메이션의 최대 프레임 - 1 보다 클 경우 애니메이션은 끝났다고 처리한다.
-	//	if (m_currentFrame + 1 > m_currentAnimation->frameCount - 1)
-	//	{
-	//		m_isAnimationFinished = true;
-	//	}
-	//	m_currentFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
-	//	m_nextFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
-	//}
-
-
+	
 	switch (m_animationState)
 	{
 		case EAnimationState::CurrentAnimation:
