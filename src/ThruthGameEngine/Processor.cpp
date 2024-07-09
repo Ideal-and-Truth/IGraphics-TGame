@@ -46,7 +46,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 
 	Truth::UnityParser up;
 
-	up.Parsing("E:\Projects\SampleUnity\parsingTest");
+	up.Parsing("E:\\Projects\\SampleUnity\\parsingTest");
 
 	// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);

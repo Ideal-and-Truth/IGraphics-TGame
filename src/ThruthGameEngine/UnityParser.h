@@ -7,14 +7,17 @@ namespace fs = std::filesystem;
 namespace Truth {
 	class UnityParser
 	{
-
 	private:
 		struct UnityFormat
 		{
-			uint64 m_guid;
+			std::string m_guid;
 			fs::path m_metaPath;
 			fs::path m_filePath;
 		};
+
+		std::set<std::string> m_ignore;
+
+		std::map<std::string, UnityFormat> m_fileMap;
 
 	public:
 		UnityParser();

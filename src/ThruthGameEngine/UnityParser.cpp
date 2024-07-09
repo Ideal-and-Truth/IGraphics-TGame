@@ -4,7 +4,13 @@
 
 Truth::UnityParser::UnityParser()
 {
-
+	m_ignore.insert(".vs");
+	m_ignore.insert("Library");
+	m_ignore.insert("Logs");
+	m_ignore.insert("obj");
+	m_ignore.insert("Packages");
+	m_ignore.insert("ProjectSettings");
+	m_ignore.insert("UserSettings");
 }
 
 Truth::UnityParser::~UnityParser()
@@ -37,11 +43,60 @@ void Truth::UnityParser::Parsing(std::string _path)
 
 void Truth::UnityParser::ParsingFile(fs::path& _path)
 {
+	if (!fs::is_regular_file(_path))
+	{
+		assert(false && "Not File Path");
+		return;
+	}
 
+	std::string extnName = _path.extension().generic_string();
+	if (extnName != ".meta")
+	{
+		return;
+	}
+
+	std::ifstream fin(_path);
+	if (!fin.is_open())
+	{
+		assert(false && "Cannot Open Meta File");
+	}
+
+	std::string line;
+	while (fin)
+	{
+		getline(fin, line);
+
+		StringConverter::DeleteAlpha(line, ' ');
+		std::vector<std::string> sLine = StringConverter::split(line, ':');
+		if (!sLine.empty() && sLine[0] == "guid")
+		{
+			UnityFormat uf
+			{
+				sLine[1],
+				_path,
+				_path.replace_extension()
+			};
+
+			m_fileMap[uf.m_guid] = uf;
+
+			break;
+		}
+	}
 }
 
 void Truth::UnityParser::ParsingDir(fs::path& _path)
 {
+	if (!fs::is_directory(_path))
+	{
+		assert(false && "Not Directory Path");
+		return;
+	}
+
+	if (m_ignore.find(_path.filename().generic_string()) != m_ignore.end())
+	{
+		return;
+	}
+
 	std::queue<fs::path> dirQueue;
 	std::queue<fs::path> fileQueue;
 
@@ -63,7 +118,17 @@ void Truth::UnityParser::ParsingDir(fs::path& _path)
 		itr++;
 	}
 
+	while (!fileQueue.empty())
+	{
+		ParsingFile(fileQueue.front());
+		fileQueue.pop();
+	}
 
+	while (!dirQueue.empty())
+	{
+		ParsingDir(dirQueue.front());
+		dirQueue.pop();
+	}
 }
 
 void Truth::UnityParser::IntegrateUnityFile()
