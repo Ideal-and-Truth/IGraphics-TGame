@@ -32,21 +32,21 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
-	protected:
-		AnimatorState m_entry;
-		AnimatorState m_exit;
+	private:
+		std::shared_ptr<AnimatorState> m_entry;
+		std::shared_ptr<AnimatorState> m_exit;
+
+		std::shared_ptr<Truth::Component> m_state;
 
 
 	private:
 		PROPERTY(currentStateName);
 		std::string m_currentStateName;
 
-
-	protected:
 		PROPERTY(currentState);
-		AnimatorState m_currentState;
+		std::shared_ptr<AnimatorState> m_currentState;
 		PROPERTY(states);
-		std::vector<AnimatorState> m_states;
+		std::vector<std::shared_ptr<AnimatorState>> m_states;
 
 		std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
 

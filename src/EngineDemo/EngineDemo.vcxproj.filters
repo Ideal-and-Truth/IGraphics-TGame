@@ -105,7 +105,7 @@
     <ClInclude Include="DamageSystem.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerStateMachine.h">
+    <ClInclude Include="PlayerStates.h">
       <Filter>Component\Player\PlayerState</Filter>
     </ClInclude>
     <ClInclude Include="CombatZone.h">
@@ -158,7 +158,7 @@
     <ClCompile Include="DamageSystem.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerStateMachine.cpp">
+    <ClCompile Include="PlayerStates.cpp">
       <Filter>Component\Player\PlayerState</Filter>
     </ClCompile>
     <ClCompile Include="CombatZone.cpp">

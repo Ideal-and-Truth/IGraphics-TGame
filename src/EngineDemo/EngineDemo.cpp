@@ -31,7 +31,7 @@
 #include "Light.h"
 #include "Animator.h"
 #include "AnimatorController.h"
-#include "PlayerStateMachine.h"
+#include "PlayerStates.h"
 
 #include "Controller.h"
 
