@@ -49,6 +49,8 @@ namespace Truth
 		void AddAnimation(std::string _name, std::wstring _path);
 		void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 		void SetRenderable(bool _isRenderable);
+		void SetAnimationSpeed(float Speed);
+		void SetPlayStop(bool playStop);
 
 		METHOD(Initalize);
 		void Initalize();

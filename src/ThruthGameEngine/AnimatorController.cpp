@@ -45,46 +45,19 @@ void Truth::AnimatorController::Start()
 
 void Truth::AnimatorController::Update()
 {
-// 	AnimatorState currentState;
-// 	auto components = m_owner.lock().get()->GetTypeInfo().GetProperty("components")->Get<std::vector<std::shared_ptr<Component>>>(m_owner.lock().get()).Get();
-// 	for (auto& c : components)
-// 	{
-// 		if (c.get()->m_name == "States")
-// 		{
-// 			currentState = c.get()->GetTypeInfo().GetProperty("currentState")->Get<AnimatorState>(c.get()).Get();
-// 		}
-// 	}
-// 	m_currentStateName = currentState.nodeName;
-// 
-// 	currentState.isActivated = !m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
-// 	if (currentState.isActivated == false)
-// 	{
-// 		m_skinnedMesh->SetAnimation(currentState.nodeName, currentState.isLoopTime);
-// 
-// 	}
-// 	
+	
+
+	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 	if (m_isAnimationEnd)
 	{
 		CheckTransition();
 	}
-	
+
 }
 
 void Truth::AnimatorController::CheckTransition()
 {
-// 	int trueCount = 0;
-// 	for (auto& e : m_currentState.transitions)
-// 	{
-// 		if ()
-// 		{
-// 			trueCount++;
-// 		}
-// 	}
-// 
-// 	if (trueCount == m_currentState.transitions.size())
-// 	{
-// 		NextState();
-// 	}
+	
 }
 
 void Truth::AnimatorController::NextState()

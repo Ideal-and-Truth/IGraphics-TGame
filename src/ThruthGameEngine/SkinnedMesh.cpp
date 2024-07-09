@@ -81,6 +81,16 @@ void Truth::SkinnedMesh::SetRenderable(bool _isRenderable)
 
 }
 
+void Truth::SkinnedMesh::SetAnimationSpeed(float Speed)
+{
+	m_skinnedMesh->SetAnimationSpeed(Speed);
+}
+
+void Truth::SkinnedMesh::SetPlayStop(bool playStop)
+{
+	m_skinnedMesh->SetPlayAnimation(playStop);
+}
+
 void Truth::SkinnedMesh::Initalize()
 {
 	SetSkinnedMesh(m_path);
