@@ -64,6 +64,8 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 	// 추후에 카메라에 넘겨 줄 시야각
 	m_aspect = static_cast<float>(_wight) / static_cast<float>(_height);
+
+	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 }
 
 void Truth::GraphicsManager::Finalize()

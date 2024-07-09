@@ -112,6 +112,7 @@ namespace Ideal
 		virtual uint32 GetCurrentAnimationIndex() override { return m_currentFrame; };
 		virtual void SetAnimationSpeed(float Speed) override { m_animSpeed = Speed; }
 		virtual void AnimationDeltaTime(const float& DeltaTime) override;
+		virtual void SetPlayAnimation(bool Play) override { m_playAnimation = Play; }
 
 	private:
 		void AnimationPlay();
@@ -132,6 +133,8 @@ namespace Ideal
 		// 다음 애니메이션이 있을 경우 추가
 		bool m_reservedAnimation = false;
 		bool m_isAnimationFinished = false;
+
+		bool m_playAnimation = true;
 
 		float m_sumTime = 0.f;
 		uint32 m_currentFrame = 0;

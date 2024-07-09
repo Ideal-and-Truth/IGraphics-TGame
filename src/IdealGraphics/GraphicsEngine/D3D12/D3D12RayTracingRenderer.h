@@ -247,10 +247,14 @@ namespace Ideal
 		// EDITOR 
 	private:
 		void InitImGui();
+		void DrawImGuiMainCamera();
+		void SetImGuiCameraRenderTarget();
+		void CreateEditorRTV(uint32 Width, uint32 Height);
 
+		bool m_isEditor;
 		Ideal::D3D12DescriptorHandle m_imguiSRVHandle;
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
-		bool m_isEditor;
-
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
+		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
 	};
 }

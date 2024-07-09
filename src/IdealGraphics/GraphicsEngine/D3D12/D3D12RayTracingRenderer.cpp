@@ -226,6 +226,20 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		m_deferredDeleteManager->DeleteDeferredResources(i);
 	}
 	m_skyBoxTexture.reset();
+
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		m_imguiSRVHandle.Free();
+		m_editorTexture->Release();
+		m_editorTexture.reset();
+
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+	}
+#endif
+
 	m_resourceManager = nullptr;
 }
 
@@ -367,6 +381,15 @@ finishAdapter:
 #ifdef _DEBUG
 	if (m_isEditor)
 	{
+		//------ImGuiSRVHeap------//
+		m_imguiSRVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+		m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
+
+		//---------------------Editor RTV-------------------------//
+		m_editorRTVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+		m_editorRTVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+
+		CreateEditorRTV(m_width, m_height);
 		InitImGui();
 	}
 #endif
@@ -400,6 +423,15 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
 
 	ResetCommandList();
+
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		/*SetImGuiCameraRenderTarget();
+		DrawImGuiMainCamera();*/
+	}
+#endif
+
 	BeginRender();
 
 	//---------------------Raytracing-------------------------//
@@ -430,6 +462,44 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_sceneCB, m_skyBoxTexture);
 
 	CopyRaytracingOutputToBackBuffer();
+
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
+		//std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
+		ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
+
+		CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
+		preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+			m_editorTexture->GetResource(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_COPY_DEST
+		);
+		preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+			raytracingOutput.Get(),
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_RESOURCE_STATE_COPY_SOURCE
+		);
+		commandlist->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
+		commandlist->CopyResource(m_editorTexture->GetResource(), raytracingOutput.Get());
+
+		CD3DX12_RESOURCE_BARRIER postCopyBarriers[2];
+		postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+			m_editorTexture->GetResource(),
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_RENDER_TARGET
+		);
+		postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+			raytracingOutput.Get(),
+			D3D12_RESOURCE_STATE_COPY_SOURCE,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+		);
+
+		commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
+		DrawImGuiMainCamera();
+	}
+#endif
 
 	//---------------------Editor-------------------------//
 #ifdef _DEBUG
@@ -647,13 +717,26 @@ void Ideal::D3D12RayTracingRenderer::ConvertAnimationAssetToMyFormat(std::wstrin
 	assimpConverter->ExportAnimationData(FileName);
 }
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 bool Ideal::D3D12RayTracingRenderer::SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	return false;
+	if (::ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+	{
+		return true;
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::ClearImGui()
 {
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+		ImGui::DockSpaceOverViewport();
+	}
+#endif
 }
 
 void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
@@ -1105,7 +1188,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 	m_raytracingManager->DeleteBLASInstance(blasInstance);
 	if (blas != nullptr)
 	{
- 		bool ShouldDeleteBLAS = blas->SubRefCount();
+		bool ShouldDeleteBLAS = blas->SubRefCount();
 		if (ShouldDeleteBLAS)
 		{
 			//m_deferredDeleteManager->AddD3D12ResourceToDelete(blas->GetResource());
@@ -1121,10 +1204,6 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()
 {
-	m_imguiSRVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
-
-
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
@@ -1138,17 +1217,127 @@ void Ideal::D3D12RayTracingRenderer::InitImGui()
 	//ImGui::StyleColorsLight();
 
 	//-----Allocate Srv-----//
-	//m_imguiSRVHandle = m_resourceManager->GetImGuiSRVPool()->Allocate();
 	m_imguiSRVHandle = m_imguiSRVHeap->Allocate();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(m_hwnd);
 	ImGui_ImplDX12_Init(m_device.Get(), SWAP_CHAIN_FRAME_COUNT,
 		DXGI_FORMAT_R8G8B8A8_UNORM,
-		//m_resourceManager->GetImguiSRVHeap().Get(),
 		m_imguiSRVHeap->GetDescriptorHeap().Get(),
 		m_imguiSRVHandle.GetCpuHandle(),
 		m_imguiSRVHandle.GetGpuHandle());
+}
+
+void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
+{
+	ImGui::Begin("MAIN SCREEN");                          // Create a window called "Hello, world!" and append into it.
+
+	ImVec2 windowSize = ImGui::GetWindowSize();
+	ImVec2 size(windowSize.x, windowSize.y);
+	//ImVec2 size(m_width/4, m_height/4);
+
+	//m_width = windowSize.x;
+	//m_height = windowSize.y;
+	m_aspectRatio = float(windowSize.x) / windowSize.y;
+	m_mainCamera->SetAspectRatio(m_aspectRatio);
+
+
+	// to srv
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_editorTexture->GetResource(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+
+	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
+	// to present
+	/*barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_editorRenderTarget->GetResource(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);*/
+
+	ImGui::End();
+}
+
+void Ideal::D3D12RayTracingRenderer::SetImGuiCameraRenderTarget()
+{
+	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
+	ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
+
+	CD3DX12_RESOURCE_BARRIER editorBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_editorTexture->GetResource(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	commandList->ResourceBarrier(1, &editorBarrier);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
+	auto rtvHandle = m_editorTexture->GetRTV();
+
+
+	commandList->ClearRenderTargetView(rtvHandle.GetCpuHandle(), DirectX::Colors::Black, 0, nullptr);
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	commandList->RSSetViewports(1, &m_viewport->GetViewport());
+	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height)
+{
+	m_editorTexture = std::make_shared<Ideal::D3D12Texture>();
+	{
+		{
+			ComPtr<ID3D12Resource> resource;
+			CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+			CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+				DXGI_FORMAT_R8G8B8A8_UNORM,
+				Width,
+				Height, 1, 1
+			);
+			resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			//------Create------//
+			Check(m_device->CreateCommittedResource(
+				&heapProp,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				//D3D12_RESOURCE_STATE_COMMON,
+				//nullptr,
+				nullptr,
+				IID_PPV_ARGS(resource.GetAddressOf())
+			));
+			m_editorTexture->Create(resource);
+
+			//-----SRV-----//
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				srvDesc.Format = resource->GetDesc().Format;
+				srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+				srvDesc.Texture2D.MipLevels = 1;
+				Ideal::D3D12DescriptorHandle srvHandle = m_imguiSRVHeap->Allocate();
+				m_device->CreateShaderResourceView(resource.Get(), &srvDesc, srvHandle.GetCpuHandle());
+				m_editorTexture->EmplaceSRV(srvHandle);
+			}
+			//-----RTV-----//
+			{
+				D3D12_RENDER_TARGET_VIEW_DESC RTVDesc{};
+				RTVDesc.Format = resource->GetDesc().Format;
+				RTVDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+				RTVDesc.Texture2D.MipSlice = 0;
+
+				Ideal::D3D12DescriptorHandle rtvHandle = m_editorRTVHeap->Allocate();
+				m_device->CreateRenderTargetView(resource.Get(), &RTVDesc, rtvHandle.GetCpuHandle());
+				m_editorTexture->EmplaceRTV(rtvHandle);
+			}
+			m_editorTexture->GetResource()->SetName(L"Editor Texture");
+		}
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
