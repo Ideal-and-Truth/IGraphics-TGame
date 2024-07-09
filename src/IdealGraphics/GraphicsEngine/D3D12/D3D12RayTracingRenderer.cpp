@@ -233,6 +233,10 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		m_imguiSRVHandle.Free();
 		m_editorTexture->Release();
 		m_editorTexture.reset();
+
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 	}
 #endif
 
@@ -469,7 +473,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
 		preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
 			m_editorTexture->GetResource(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			D3D12_RESOURCE_STATE_COPY_DEST
 		);
 		preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -493,9 +497,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		);
 
 		commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
+		DrawImGuiMainCamera();
 	}
-	//SetImGuiCameraRenderTarget();
-	DrawImGuiMainCamera();
 #endif
 
 	//---------------------Editor-------------------------//
