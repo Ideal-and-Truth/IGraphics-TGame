@@ -4,6 +4,10 @@
 #include "Misc/Utils/PIX.h"
 #include "Misc/Assimp/AssimpConverter.h"
 
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx12.h"
+
 #include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/Raytracing/D3D12RaytracingResources.h"
@@ -207,7 +211,8 @@ Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width,
 	m_height(Height),
 	m_frameIndex(0),
 	m_fenceEvent(NULL),
-	m_fenceValue(0)
+	m_fenceValue(0),
+	m_isEditor(EditorMode)
 {
 	m_aspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
 }
@@ -358,6 +363,13 @@ finishAdapter:
 	}
 
 
+	//---------------Editor---------------//
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		InitImGui();
+	}
+#endif
 	m_sceneCB.CameraPos = Vector4(0.f);
 
 	m_sceneCB.lightPos = Vector4(3.f, 1.8f, -3.f, 0.f);
@@ -418,6 +430,28 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_sceneCB, m_skyBoxTexture);
 
 	CopyRaytracingOutputToBackBuffer();
+
+	//---------------------Editor-------------------------//
+#ifdef _DEBUG
+	if (m_isEditor)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		ComPtr<ID3D12GraphicsCommandList> commandList = m_commandLists[m_currentContextIndex];
+		//------IMGUI RENDER------//
+		//ID3D12DescriptorHeap* descriptorHeap[] = { m_resourceManager->GetImguiSRVHeap().Get() };
+		ID3D12DescriptorHeap* descriptorHeap[] = { m_imguiSRVHeap->GetDescriptorHeap().Get() };
+		commandList->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
+		ImGui::Render();
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList.Get());
+
+		// Update and Render additional Platform Windows
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList.Get());
+		}
+	}
+#endif
 
 	//---------------------Present-------------------------//
 	EndRender();
@@ -1083,6 +1117,38 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 	}
 	//obj.reset();
 
+}
+
+void Ideal::D3D12RayTracingRenderer::InitImGui()
+{
+	m_imguiSRVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
+
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
+
+	//-----Allocate Srv-----//
+	//m_imguiSRVHandle = m_resourceManager->GetImGuiSRVPool()->Allocate();
+	m_imguiSRVHandle = m_imguiSRVHeap->Allocate();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplWin32_Init(m_hwnd);
+	ImGui_ImplDX12_Init(m_device.Get(), SWAP_CHAIN_FRAME_COUNT,
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		//m_resourceManager->GetImguiSRVHeap().Get(),
+		m_imguiSRVHeap->GetDescriptorHeap().Get(),
+		m_imguiSRVHandle.GetCpuHandle(),
+		m_imguiSRVHandle.GetGpuHandle());
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)

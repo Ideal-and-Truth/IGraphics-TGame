@@ -243,5 +243,14 @@ namespace Ideal
 
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
+
+		// EDITOR 
+	private:
+		void InitImGui();
+
+		Ideal::D3D12DescriptorHandle m_imguiSRVHandle;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
+		bool m_isEditor;
+
 	};
 }
