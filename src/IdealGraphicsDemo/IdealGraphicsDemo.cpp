@@ -94,6 +94,8 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera);
 void ImGuiTest();
 void DirLightAngle(float* x, float* y, float* z);
 void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
+void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
+void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -125,9 +127,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
-		bool isEditor = false;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		bool isEditor = true;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		if (isEditor)
 		{
 			type = EGraphicsInterfaceType::D3D12_EDITOR;
@@ -174,7 +176,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 		//-------------------Create Mesh Object-------------------//
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
@@ -191,9 +193,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
-		//ka->AddAnimation("Run", runAnim);
-		//ka->SetAnimation("Run", true);
-		//ka2->AddAnimation("Slash", slashAnim);
+		ka->AddAnimation("Run", runAnim);
+		ka->AddAnimation("Slash", slashAnim);
+		ka->SetAnimation("Run", true);
 		//ka2->SetAnimation("Slash", true);
 		//cat->AddAnimation("Walk", walkAnim);
 
@@ -432,10 +434,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 					}
 				}
+				// Animation // 역재생 안됨
+				ka->AnimationDeltaTime(0.001f);
+
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				if (isEditor)
 				{
+					AnimationTest(slashAnim);
+					SkinnedMeshObjectAnimationTest(ka);
 					//ImGuiTest();
 					//DirLightAngle(&angleX, &angleY, &angleZ);
 					//PointLightInspecter(pointLight);
@@ -451,6 +458,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			meshes[i].reset();
 		}
 		meshes.clear();
+
+		gRenderer->DeleteMeshObject(ka);
+		ka.reset();
+
 		gRenderer.reset();
 	}
 
@@ -703,4 +714,44 @@ void ImGuiTest()
 			ImGui::End();
 		}
 	}
+}
+
+void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject)
+{
+	ImGui::Begin("Skinned Mesh Object Animation Window");
+
+	static float animationSpeed = 1.f; // 임시 static // 실제 사용 조심
+	ImGui::SliderFloat("Animation Speed", &animationSpeed, 0.0f, 3.0f);
+	SkinnedMeshObject->SetAnimationSpeed(animationSpeed);
+
+	ImGui::Text("Current Animation Index : %d", SkinnedMeshObject->GetCurrentAnimationIndex());
+
+	ImGui::Text("Change Next Animation");
+	if (ImGui::Button("Run"))
+	{
+		SkinnedMeshObject->SetAnimation("Run", false);
+	}
+	if (ImGui::Button("Slash"))
+	{
+		SkinnedMeshObject->SetAnimation("Slash", false);
+	}
+
+	ImGui::Text("Reserve Next Animation");
+	if (ImGui::Button("Run2"))
+	{
+		SkinnedMeshObject->SetAnimation("Run", true);
+	}
+	if (ImGui::Button("Slash2"))
+	{
+		SkinnedMeshObject->SetAnimation("Slash", true);
+	}
+
+	ImGui::End();
+}
+
+void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation)
+{
+	ImGui::Begin("Animation Window");
+	ImGui::Text("Animation Max Frame Count : %d", Animation->GetFrameCount());
+	ImGui::End();
 }
