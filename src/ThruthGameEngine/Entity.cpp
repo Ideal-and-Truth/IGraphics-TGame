@@ -55,19 +55,34 @@ void Truth::Entity::SetScale(const Vector3& _scale) const
 	m_transform->SetScale(_scale);
 }
 
-const DirectX::SimpleMath::Vector3& Truth::Entity::GetPosition() const
+const DirectX::SimpleMath::Vector3& Truth::Entity::GetLocalPosition() const
 {
 	return m_transform->m_position;
 }
 
-const DirectX::SimpleMath::Quaternion& Truth::Entity::GetRotation() const
+const DirectX::SimpleMath::Quaternion& Truth::Entity::GetLocalRotation() const
 {
 	return m_transform->m_rotation;
 }
 
-const DirectX::SimpleMath::Vector3& Truth::Entity::GetScale() const
+const DirectX::SimpleMath::Vector3& Truth::Entity::GetLocalScale() const
 {
 	return m_transform->m_scale;
+}
+
+const DirectX::SimpleMath::Vector3& Truth::Entity::GetWorldPosition() const
+{
+	return m_transform->m_worldPosition;
+}
+
+const DirectX::SimpleMath::Quaternion& Truth::Entity::GetWorldRotation() const
+{
+	return m_transform->m_worldRotation;
+}
+
+const DirectX::SimpleMath::Vector3& Truth::Entity::GetWorldScale() const
+{
+	return m_transform->m_worldScale;
 }
 
 void Truth::Entity::ApplyTransform()

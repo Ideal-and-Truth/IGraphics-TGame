@@ -21,7 +21,7 @@ void TestFollwer::Update()
 		Vector3 pos = GetPosition();
 		Vector3 target = m_managers.lock()->Scene()->m_currentScene->FindPath(
 			pos,
-			m_player.lock()->GetPosition(),
+			m_player.lock()->GetWorldPosition(),
 			GetScale()
 		);
 
