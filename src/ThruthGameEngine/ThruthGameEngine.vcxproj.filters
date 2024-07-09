@@ -225,6 +225,7 @@
     </ClCompile>
     <ClCompile Include="NavGeom.cpp" />
     <ClCompile Include="NavMeshGenerater.cpp" />
+    <ClCompile Include="UnityParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -358,6 +359,7 @@
     </ClInclude>
     <ClInclude Include="NavGeom.h" />
     <ClInclude Include="NavMeshGenerater.h" />
+    <ClInclude Include="UnityParser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

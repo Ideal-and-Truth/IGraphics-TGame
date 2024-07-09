@@ -29,8 +29,8 @@ public:
 	EnemyController();
 	virtual ~EnemyController();
 
-	METHOD(Awake);
-	void Awake();
+	METHOD(Start);
+	void Start();
 
 	METHOD(Update);
 	void Update();

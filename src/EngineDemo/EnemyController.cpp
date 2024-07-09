@@ -14,7 +14,7 @@ EnemyController::~EnemyController()
 
 }
 
-void EnemyController::Awake()
+void EnemyController::Start()
 {
 	m_controller = m_owner.lock()->GetComponent<Truth::Controller>();
 	m_enemy = m_owner.lock()->GetComponent<Enemy>();
@@ -24,7 +24,7 @@ void EnemyController::Awake()
 void EnemyController::Update()
 {
 	bool isTargetIn = m_enemy.lock().get()->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.lock().get()).Get();
-	
+
 	if (!isTargetIn)
 	{
 		return;
@@ -37,10 +37,10 @@ void EnemyController::FollowTarget()
 {
 	if (!m_controller.expired() && !m_target.expired())
 	{
-		Vector3 pos = GetPosition();
+		Vector3 pos = m_owner.lock()->GetWorldPosition();
 		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
 			pos,
-			m_target.lock()->GetPosition(),
+			m_target.lock()->GetWorldPosition(),
 			GetScale()
 		);
 

@@ -12,20 +12,11 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	PROPERTY(speed);
-	float4 m_speed;
-
-	PROPERTY(jumpForce);
-	float4 m_jumpForce;
+	PROPERTY(moveSpeed);
+	float4 m_moveSpeed;
 
 	PROPERTY(lookRotationDampFactor);
 	float4 m_lookRotationDampFactor;
-
-	PROPERTY(attackCoefficient);
-	float4 m_attackCoefficient;
-
-	PROPERTY(moveCoefficient);
-	float4 m_moveCoefficient;
 
 	PROPERTY(stopTiming);
 	float4 m_stopTiming;

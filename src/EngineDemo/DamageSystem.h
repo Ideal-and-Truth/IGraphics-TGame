@@ -5,9 +5,13 @@ class DamageSystem :
 {
 	GENERATE_CLASS_TYPE_INFO(DamageSystem);
 private:
+private:
 	friend class boost::serialization::access;
+	BOOST_SERIALIZATION_SPLIT_MEMBER();
 	template<class Archive>
-	void serialize(Archive& _ar, const unsigned int _file_version);
+	void save(Archive& ar, const unsigned int file_version) const;
+	template<class Archive>
+	void load(Archive& ar, const unsigned int file_version);
 
 private:
 
@@ -21,15 +25,22 @@ public:
 
 	METHOD(Update);
 	void Update();
-
-
-
 };
 
 template<class Archive>
-void DamageSystem::serialize(Archive& _ar, const unsigned int _file_version)
+void DamageSystem::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
+
 }
 
+template<class Archive>
+void DamageSystem::save(Archive& _ar, const unsigned int file_version) const
+{
+	_ar& boost::serialization::base_object<Component>(*this);
+
+}
+
+
 BOOST_CLASS_EXPORT_KEY(DamageSystem)
+BOOST_CLASS_VERSION(DamageSystem, 0)

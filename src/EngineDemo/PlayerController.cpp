@@ -48,7 +48,7 @@ void PlayerController::PlayerMove(const void*)
 	// 플레이어 이동
 	Vector3 cameraPos = m_camera.lock()->m_transform->m_position;
 
-	float playerSpeed = m_player.lock().get()->GetTypeInfo().GetProperty("speed")->Get<float4>(m_player.lock().get()).Get();
+	float playerSpeed = m_player.lock().get()->GetTypeInfo().GetProperty("moveSpeed")->Get<float4>(m_player.lock().get()).Get();
 
 	if (GetKey(KEY::LSHIFT))
 	{
