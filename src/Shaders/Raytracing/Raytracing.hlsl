@@ -350,12 +350,14 @@ void MyClosestHitShader(inout RayPayload2 payload, in MyAttributes attr)
 }
 
 [shader("miss")]
-void MyMissShader(inout RayPayload payload)
+void MyMissShader(inout RayPayload2 payload)
 {
     //float3 dir = normalize(WorldRayDirection());
     //float4 color = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, dir, 0);
-    float4 color = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, WorldRayDirection(), 0);
-    payload.color = color;
+    //float4 color = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, WorldRayDirection(), 0);
+    //payload.color = color;
+    float3 radiance = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, WorldRayDirection(), 0).xyz;
+    payload.radiance = radiance;
 }
 
 #endif // RAYTRACING_HLSL
