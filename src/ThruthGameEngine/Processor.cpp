@@ -46,8 +46,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 
 	Truth::UnityParser up;
 
-	up.Parsing("E:\\Projects\\SampleUnity\\parsingTest");
-	up.CreateMapCollision("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
+	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
+	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 	// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 
