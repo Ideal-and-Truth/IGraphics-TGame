@@ -351,7 +351,6 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 		// index
 		file->Write<uint32>((uint32)mesh->indices.size());
 		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
-
 	}
 }
 
@@ -451,10 +450,6 @@ void AssimpConverter::ReadMaterialData()
 
 		//----------------Texture----------------//
 		aiString file;
-		/*if (srcMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), file) == AI_SUCCESS)
-		{
-			int a = 3;
-		}*/
 		// Diffuse Texture
 		if (srcMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), file) == AI_SUCCESS)
 		{
@@ -474,12 +469,16 @@ void AssimpConverter::ReadMaterialData()
 		material->normalTextureFile = file.C_Str();
 
 		// Metalic Texture
-		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &file);
-		material->metalicTextureFile = file.C_Str();
+		aiString metalicFile;
+		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &metalicFile);
+		if (metalicFile.length != 0)
+			material->metalicTextureFile = metalicFile.C_Str();
 
 		// Roughness Texture
-		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &file);
-		material->roughnessTextureFile = file.C_Str();
+		aiString roughnessFile;
+		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &roughnessFile);
+		if (roughnessFile.length != 0)
+			material->roughnessTextureFile = roughnessFile.C_Str();
 
 		m_materials.push_back(material);
 	}
@@ -677,7 +676,7 @@ std::shared_ptr<AssimpConvert::Animation> AssimpConverter::ReadAnimationData(aiA
 	animation->name = srcAnimation->mName.C_Str();
 	animation->frameRate = (float)srcAnimation->mTicksPerSecond;
 	animation->frameCount = (uint32)srcAnimation->mDuration + 1;
-	
+
 	// Animation의 본 개수
 	animation->numBones = srcAnimation->mNumChannels;
 
@@ -861,7 +860,7 @@ void AssimpConverter::WriteVertexPositionFile(const std::wstring& filePath)
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(filePath, FileMode::Write);
-	
+
 	// 매쉬 개수
 	file->Write<uint32>((uint32)m_meshes.size());
 

@@ -463,7 +463,8 @@ void Ideal::RaytracingManager::CreateRaytracingPipelineStateObject(ComPtr<ID3D12
 
 	// ray payload와 attribute structure의 최대 크기를 바이트 단위로 정의
 	CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT* shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
-	uint32 payloadSize = sizeof(Color);
+	//uint32 payloadSize = sizeof(Color);
+	uint32 payloadSize = sizeof(Ideal::RayPayload);
 	uint32 attributesSize = sizeof(Vector2);
 	shaderConfig->Config(payloadSize, attributesSize);
 

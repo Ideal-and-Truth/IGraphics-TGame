@@ -29,8 +29,8 @@
         <DiffuseFile>statue_low_statue_main_BaseColorl.png</DiffuseFile>
         <SpecularFile>statue_low_statue_main_BaseColorl.png</SpecularFile>
         <NormalFile>statue_low_statue_main_Normal.png</NormalFile>
-        <MetalicFile>statue_low_statue_main_Normal.png</MetalicFile>
-        <RoughnessFile>statue_low_statue_main_Normal.png</RoughnessFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.39021397" G="0.80123574" B="0.10021414" A="1"/>
         <Specular R="0.39021397" G="0.80123574" B="0.10021414" A="25"/>

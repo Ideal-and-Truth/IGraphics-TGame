@@ -36,11 +36,6 @@ typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 
 struct RayPayload
 {
-    float4 color;
-};
-
-struct RayPayload2
-{
     unsigned int rayRecursionDepth;
     float3 radiance;
 };
@@ -81,9 +76,26 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     return ret;
 }
 
-RayPayload2 TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float bounceContribution = 1, bool cullNonOpaque = false)
+float3 ComputeNormalMapping(float3 normal, float3 tangent, float2 uv)
 {
-    RayPayload2 payload;
+    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, uv, 0).xyz;
+
+    float3 N = normalize(normal);
+    float3 T = normalize(tangent);
+    float3 B = normalize(cross(N, T));
+    float3x3 TBN = float3x3(T, B, N);
+    
+    float3 tangentSpaceNormal = (texSample.rgb * 2.f - 1.f);
+    float3 worldNormal = mul(tangentSpaceNormal, TBN);
+
+    //normal = worldNormal;
+    return worldNormal;
+}
+
+
+RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float bounceContribution = 1, bool cullNonOpaque = false)
+{
+    RayPayload payload;
     payload.rayRecursionDepth = currentRayRecursionDepth + 1;
     payload.radiance = float3(0, 0, 0);
     
@@ -104,7 +116,7 @@ RayPayload2 TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float
     return payload;
 }
 
-float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload2 rayPayload, in float TMax = 10000)
+float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in float TMax = 10000)
 {
     float tOffset = 0.001f;
     float3 offsetAlongRay = tOffset * wi;
@@ -142,11 +154,20 @@ void CalculateSpecularAndReflectionCoefficients(
     Ks = BxDF::Fresnel(F0, cos_theta);
 
     // For metallic materials, Kr is same as Ks
-    Kr = Ks;
+    if(metallic > 0.f)
+    {
+        Kr = Ks;
+    }
+    else
+    {
+        //float3 diffuseReflection = Albedo * (1.0f - Ks);
+        //Kr = diffuseReflection * (1.f - metallic) + Ks * metallic;
+        Kr = Ks * (1.0 - roughness);
+    }
 }
 
 float3 Shade(
-    inout RayPayload2 rayPayload,
+    inout RayPayload rayPayload,
     float2 uv,
     in float3 N,
     in float3 objectNormal,
@@ -184,11 +205,12 @@ float3 Shade(
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
 
-    if(isReflective)
+    //if(isReflective)
+    if(metallic > 0.f)
     {
         if(isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
         {
-            RayPayload2 reflectedPayLoad = rayPayload;
+            RayPayload reflectedPayLoad = rayPayload;
             float3 wi = reflect(-V, N);
             L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad);
         }
@@ -199,11 +221,18 @@ float3 Shade(
             {
                 // Radiance contribution from reflection.
                 float3 wi;
-                float3 Fr = Kr * BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo);    // Calculates wi
-                
-                RayPayload2 reflectedRayPayLoad = rayPayload;
+                //float3 Fr = Kr * BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo);    // Calculates wi
+                float3 Fr = BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo);    // Calculates wi
+                Fr *= Kr;
+                if (any(isnan(Fr)) || any(isinf(Fr)))
+                {
+                    Fr = float3(0, 0, 0);
+                }
+                RayPayload reflectedRayPayLoad = rayPayload;
                 // Ref: eq 24.4, [Ray-tracing from the Ground Up]
-                L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
+                //L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
+                float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
+                L += result;
             }
         }
     }
@@ -257,31 +286,14 @@ void MyRaygenShader()
     Ray ray = GenerateCameraRay(DispatchRaysIndex().xy, origin, rayDir);
     
     UINT currentRayRecursionDepth = 0;
-    RayPayload2 rayPayload = TraceRadianceRay(ray, currentRayRecursionDepth);
+    RayPayload rayPayload = TraceRadianceRay(ray, currentRayRecursionDepth);
 
     g_renderTarget[DispatchRaysIndex().xy] = float4(rayPayload.radiance, 1);
     return;
-
-
-    // Trace the ray.
-    // Set the ray's extents.
-    //RayDesc ray;
-    //ray.Origin = origin;
-    //ray.Direction = rayDir;
-    //// Set TMin to a non-zero small value to avoid aliasing issues due to floating - point errors.
-    //// TMin should be kept small to prevent missing geometry at close contact areas.
-    //ray.TMin = 0.001;
-    //ray.TMax = 10000.0;
-    //RayPayload payload = { float4(0, 0, 0, 0) };
-    ////TraceRay(Scene, RAY_FLAG_CULL_NON_OPAQUE, ~0, 0, 1, 0, ray, payload);
-    //TraceRay(g_scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
-    //
-    //// Write the raytraced color to the output texture.
-    //g_renderTarget[DispatchRaysIndex().xy] = payload.color;
 }
 
 [shader("closesthit")]
-void MyClosestHitShader(inout RayPayload2 payload, in MyAttributes attr)
+void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 {
     float3 hitPosition = HitWorldPosition();
     uint baseIndex = PrimitiveIndex() * 3;
@@ -298,6 +310,12 @@ void MyClosestHitShader(inout RayPayload2 payload, in MyAttributes attr)
         l_vertices[indices[1]].normal, 
         l_vertices[indices[2]].normal 
     };
+    
+    float3 vertexTangents[3] = {
+        l_vertices[indices[0]].tangent,
+        l_vertices[indices[1]].tangent,
+        l_vertices[indices[2]].tangent
+    };
 
     PositionNormalUVTangentColor vertexInfo[3] = {
         l_vertices[indices[0]],
@@ -311,51 +329,42 @@ void MyClosestHitShader(inout RayPayload2 payload, in MyAttributes attr)
  
     // Normal
     float3 normal;
+    float3 tangent;
     float3 objectNormal;
-    {
-        float3 vertexNormals[3] = {
-            vertexInfo[0].normal,
-            vertexInfo[1].normal,
-            vertexInfo[2].normal
-        };
-        objectNormal = normalize(HitAttribute(vertexNormals, attr));
-        float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
-        objectNormal *= orientation;
-        
-        normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
-    }
-    normal = NormalMap(normal,uv, vertexInfo, attr);
-    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
+    float3 objectTangent;
+    //{
+    //    float3 vertexNormals[3] = {
+    //        vertexInfo[0].normal,
+    //        vertexInfo[1].normal,
+    //        vertexInfo[2].normal
+    //    };
+    //    objectNormal = normalize(HitAttribute(vertexNormals, attr));
+    //    float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
+    //    objectNormal *= orientation;
+    //    
+    //    normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
+    //}
+    //normal = NormalMap(normal, uv, vertexInfo, attr);
 
-    return;
+    objectNormal = normalize(HitAttribute(vertexNormals, attr));
+    objectTangent = normalize(HitAttribute(vertexTangents, attr));
 
+    float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
+    objectNormal *= orientation;
+    objectTangent *= orientation;
+    
+    normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
+    tangent = normalize(mul((float3x3)ObjectToWorld3x4(), objectTangent));    
 
-    ////Return--------------------------------------------------------------------------------
-    //
-    //// Diffuse
-    //float3 diffuse = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).xyz;
-    //
-    ////payload.radiance = Shader
-    //
-    //
-    ////float4 albedo = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, uv, 0);
-    //// Compute the triangle's normal.
-    //// This is redundant and done for illustration purposes 
-    //// as all the per-vertex normals are the same and match triangle's normal in this sample. 
-    //float3 triangleNormal = HitAttribute(vertexNormals, attr);
-    //
-    //float4 diffuseColor = CalculateDiffuseLighting(hitPosition, triangleNormal);
-    //float4 color = diffuse * (g_sceneCB.lightAmbientColor + diffuseColor);
-    //payload.color = color;
+    float3 finalNormal = ComputeNormalMapping(normal, tangent, uv);
+    
+
+    payload.radiance = Shade(payload, uv, finalNormal, objectNormal, hitPosition);
 }
 
 [shader("miss")]
-void MyMissShader(inout RayPayload2 payload)
+void MyMissShader(inout RayPayload payload)
 {
-    //float3 dir = normalize(WorldRayDirection());
-    //float4 color = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, dir, 0);
-    //float4 color = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, WorldRayDirection(), 0);
-    //payload.color = color;
     float3 radiance = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, WorldRayDirection(), 0).xyz;
     payload.radiance = radiance;
 }

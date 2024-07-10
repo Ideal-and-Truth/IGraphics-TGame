@@ -30,6 +30,12 @@ namespace Ideal
 
 namespace Ideal
 {
+	struct RayPayload
+	{
+		uint32 rayRecursionDepth;
+		Vector3 radiance;
+	};
+
 	namespace GlobalRootSignature
 	{
 		namespace Slot

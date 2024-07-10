@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>Mat</Name>
+        <DiffuseFile>formula1_DefaultMaterial_Diffuse.png</DiffuseFile>
+        <SpecularFile>formula1_DefaultMaterial_Specular.png</SpecularFile>
+        <NormalFile>formula1_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile>formula1_DefaultMaterial_Normal.png</MetalicFile>
+        <RoughnessFile>formula1_DefaultMaterial_Normal.png</RoughnessFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
+        <Specular R="0.2" G="0.2" B="0.2" A="32"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Mirrors</Name>
+        <DiffuseFile></DiffuseFile>
+        <SpecularFile></SpecularFile>
+        <NormalFile></NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0" G="0" B="0" A="1"/>
+        <Specular R="0.2" G="0.2" B="0.2" A="1024"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+    <Material>
+        <Name>Fillers</Name>
+        <DiffuseFile></DiffuseFile>
+        <SpecularFile></SpecularFile>
+        <NormalFile></NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0" G="0" B="0" A="1"/>
+        <Specular R="0" G="0" B="0" A="1"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+    </Material>
+</Materials>

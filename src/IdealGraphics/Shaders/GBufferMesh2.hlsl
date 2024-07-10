@@ -92,7 +92,6 @@ void ComputeNormalMapping(inout float3 normal, float3 tangent, float2 uv)
 
 PSOutput PS(VSOutput input)
 {
-
     ComputeNormalMapping(input.Normal, input.Tangent, input.UV);
     PSOutput psOutput;
     float4 color = albedoTexture.Sample(sampler0, input.UV);
