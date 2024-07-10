@@ -236,13 +236,32 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 			std::shared_ptr<Ideal::IdealMaterial> material = skinnedMesh->GetMeshes()[i]->GetMaterial();
 			if (material)
 			{
-				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
-				if (diffuseTexture)
+				std::shared_ptr<Ideal::D3D12Texture> albedoTexture = material->GetDiffuseTexture();
+				if (albedoTexture)
 				{
-					//blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
-					// TODO : 아래로 바꿀 예정
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), albedoTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
+				if (normalTexture)
+				{
+					blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
+				if (metalicTexture)
+				{
+					blasGeometry.SRV_Metalic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metalic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
+				if (roughnessTexture)
+				{
+					blasGeometry.SRV_Roughness= DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
@@ -287,6 +306,26 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 					//blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+				std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
+				if (normalTexture)
+				{
+					blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
+				if (metalicTexture)
+				{
+					blasGeometry.SRV_Metalic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metalic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
+				if (roughnessTexture)
+				{
+					blasGeometry.SRV_Roughness = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
@@ -386,11 +425,18 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		ranges[LocalRootSignature::Slot::SRV_IndexBuffer].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, space);	// t0 : Indices
 		ranges[LocalRootSignature::Slot::SRV_VertexBuffer].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, space);	// t1 : Vertices
 		ranges[LocalRootSignature::Slot::SRV_Diffuse].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, space);	// t2 : Diffuse
+		ranges[LocalRootSignature::Slot::SRV_Normal].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3, space);	// t3 : Normal
+		ranges[LocalRootSignature::Slot::SRV_Metalic].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4, space);	// t4 : Metalic
+		ranges[LocalRootSignature::Slot::SRV_Roughness].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5, space);	// t5 : Roughness
+
 
 		CD3DX12_ROOT_PARAMETER rootParameters[LocalRootSignature::Slot::Count];
 		rootParameters[LocalRootSignature::Slot::SRV_IndexBuffer].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_IndexBuffer]);
 		rootParameters[LocalRootSignature::Slot::SRV_VertexBuffer].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_VertexBuffer]);
 		rootParameters[LocalRootSignature::Slot::SRV_Diffuse].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Diffuse]);
+		rootParameters[LocalRootSignature::Slot::SRV_Normal].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Normal]);
+		rootParameters[LocalRootSignature::Slot::SRV_Metalic].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Metalic]);
+		rootParameters[LocalRootSignature::Slot::SRV_Roughness].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Roughness]);
 
 		CD3DX12_ROOT_SIGNATURE_DESC localRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
 		localRootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE;
@@ -515,6 +561,9 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 				rootArguments.SRV_Vertices = blasGeometry.SRV_VertexBuffer.GetGpuHandle();
 				rootArguments.SRV_Indices = blasGeometry.SRV_IndexBuffer.GetGpuHandle();
 				rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
+				rootArguments.SRV_NormalTexture = blasGeometry.SRV_Normal.GetGpuHandle();
+				rootArguments.SRV_MetalicTexture = blasGeometry.SRV_Metalic.GetGpuHandle();
+				rootArguments.SRV_RoughnessTexture = blasGeometry.SRV_Roughness.GetGpuHandle();
 
 				hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
 

@@ -243,6 +243,12 @@ void AssimpConverter::WriteMaterialData(std::wstring FilePath)
 		element = document->NewElement("NormalFile");
 		element->SetText(WriteTexture(folder, material->normalTextureFile).c_str());
 		node->LinkEndChild(element);
+		element = document->NewElement("MetalicFile");
+		element->SetText(WriteTexture(folder, material->metalicTextureFile).c_str());
+		node->LinkEndChild(element);
+		element = document->NewElement("RoughnessFile");
+		element->SetText(WriteTexture(folder, material->roughnessTextureFile).c_str());
+		node->LinkEndChild(element);
 
 		element = document->NewElement("Ambient");
 		element->SetAttribute("R", material->ambient.x);
@@ -466,6 +472,14 @@ void AssimpConverter::ReadMaterialData()
 		// Normal Texture
 		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
 		material->normalTextureFile = file.C_Str();
+
+		// Metalic Texture
+		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &file);
+		material->metalicTextureFile = file.C_Str();
+
+		// Roughness Texture
+		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &file);
+		material->roughnessTextureFile = file.C_Str();
 
 		m_materials.push_back(material);
 	}
