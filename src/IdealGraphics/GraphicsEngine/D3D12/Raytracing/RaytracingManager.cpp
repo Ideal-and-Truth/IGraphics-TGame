@@ -253,8 +253,8 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
 				if (metalicTexture)
 				{
-					blasGeometry.SRV_Metalic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metalic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 
 				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
@@ -317,8 +317,8 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
 				if (metalicTexture)
 				{
-					blasGeometry.SRV_Metalic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metalic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 
 				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
@@ -562,7 +562,7 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 				rootArguments.SRV_Indices = blasGeometry.SRV_IndexBuffer.GetGpuHandle();
 				rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
 				rootArguments.SRV_NormalTexture = blasGeometry.SRV_Normal.GetGpuHandle();
-				rootArguments.SRV_MetalicTexture = blasGeometry.SRV_Metalic.GetGpuHandle();
+				rootArguments.SRV_MetalicTexture = blasGeometry.SRV_Metallic.GetGpuHandle();
 				rootArguments.SRV_RoughnessTexture = blasGeometry.SRV_Roughness.GetGpuHandle();
 
 				hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));

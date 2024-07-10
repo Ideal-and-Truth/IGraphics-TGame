@@ -36,7 +36,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle SRV_IndexBuffer;
 		Ideal::D3D12DescriptorHandle SRV_Diffuse;
 		Ideal::D3D12DescriptorHandle SRV_Normal;
-		Ideal::D3D12DescriptorHandle SRV_Metalic;
+		Ideal::D3D12DescriptorHandle SRV_Metallic;
 		Ideal::D3D12DescriptorHandle SRV_Roughness;
 	};
 

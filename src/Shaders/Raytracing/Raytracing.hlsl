@@ -224,7 +224,7 @@ inline Ray GenerateCameraRay(uint2 index, out float3 origin, out float3 directio
     
     world.xyz /= world.w;
     origin = g_sceneCB.cameraPosition.xyz;
-    direction = normalize(world.xyz);
+    direction = normalize(world.xyz - origin);
 
     Ray ray;
     ray.origin = origin;
