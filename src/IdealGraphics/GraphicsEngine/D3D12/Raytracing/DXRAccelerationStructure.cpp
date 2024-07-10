@@ -69,12 +69,9 @@ void Ideal::DXRBottomLevelAccelerationStructure::FreeMyHandle()
 	// Fixed Descriptor 에서 가져다 쓴 리소스들을 반환한다.
 	for (auto geometry : m_geometries)
 	{
+		geometry.SRV_Diffuse.Free();
 		geometry.SRV_IndexBuffer.Free();
 		geometry.SRV_VertexBuffer.Free();
-		geometry.SRV_Diffuse.Free();
-		geometry.SRV_Normal.Free();
-		geometry.SRV_Metallic.Free();
-		geometry.SRV_Roughness.Free();
 	}
 
 	m_geometries.clear();
