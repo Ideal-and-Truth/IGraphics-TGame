@@ -396,8 +396,10 @@ finishAdapter:
 	m_sceneCB.CameraPos = Vector4(0.f);
 
 	m_sceneCB.lightPos = Vector4(3.f, 1.8f, -3.f, 0.f);
-	m_sceneCB.lightAmbient = Vector4(0.5f, 0.5f, 0.5f, 1.f);
-	m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
+	//m_sceneCB.lightAmbient = Vector4(0.5f, 0.5f, 0.5f, 1.f);
+	m_sceneCB.lightAmbient = Vector4(0.2f, 0.2f, 0.2f, 1.f);
+	//m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
+	m_sceneCB.lightDiffuse = Vector4(1.f, 1.f, 1.f, 1.f);
 
 	m_sceneCB.maxRadianceRayRecursionDepth = G_MAX_RAY_RECURSION_DEPTH;
 
