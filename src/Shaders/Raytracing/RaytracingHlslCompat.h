@@ -21,6 +21,12 @@ using namespace DirectX;
 typedef UINT32 Index;
 #endif
 
+struct Ray
+{
+	XMFLOAT3 origin;
+	XMFLOAT3 direction;
+};
+
 struct SceneConstantBuffer
 {
     XMMATRIX projectionToWorld;
@@ -28,6 +34,11 @@ struct SceneConstantBuffer
     XMVECTOR lightPosition;
     XMVECTOR lightAmbientColor;
     XMVECTOR lightDiffuseColor;
+
+    unsigned int maxRadianceRayRecursionDepth;
+    unsigned int maxShadowRayRecursionDepth;
+
+    float padding[3];
 };
 
 struct CubeConstantBuffer

@@ -72,6 +72,7 @@ namespace Ideal
 		}
 
 		uint32 GetShaderRecordSize() { return m_shaderRecordSize; }
+		uint32 GetNumShaderRecords() { return static_cast<uint32>(m_shaderRecords.size()); }
 
 	private:
 		uint8_t* m_mappedShaderRecords;

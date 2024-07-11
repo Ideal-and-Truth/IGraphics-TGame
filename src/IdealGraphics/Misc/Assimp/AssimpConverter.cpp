@@ -243,6 +243,12 @@ void AssimpConverter::WriteMaterialData(std::wstring FilePath)
 		element = document->NewElement("NormalFile");
 		element->SetText(WriteTexture(folder, material->normalTextureFile).c_str());
 		node->LinkEndChild(element);
+		element = document->NewElement("MetalicFile");
+		element->SetText(WriteTexture(folder, material->metalicTextureFile).c_str());
+		node->LinkEndChild(element);
+		element = document->NewElement("RoughnessFile");
+		element->SetText(WriteTexture(folder, material->roughnessTextureFile).c_str());
+		node->LinkEndChild(element);
 
 		element = document->NewElement("Ambient");
 		element->SetAttribute("R", material->ambient.x);
@@ -345,7 +351,6 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 		// index
 		file->Write<uint32>((uint32)mesh->indices.size());
 		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
-
 	}
 }
 
@@ -445,10 +450,6 @@ void AssimpConverter::ReadMaterialData()
 
 		//----------------Texture----------------//
 		aiString file;
-		/*if (srcMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), file) == AI_SUCCESS)
-		{
-			int a = 3;
-		}*/
 		// Diffuse Texture
 		if (srcMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), file) == AI_SUCCESS)
 		{
@@ -466,6 +467,18 @@ void AssimpConverter::ReadMaterialData()
 		// Normal Texture
 		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
 		material->normalTextureFile = file.C_Str();
+
+		// Metalic Texture
+		aiString metalicFile;
+		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &metalicFile);
+		if (metalicFile.length != 0)
+			material->metalicTextureFile = metalicFile.C_Str();
+
+		// Roughness Texture
+		aiString roughnessFile;
+		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &roughnessFile);
+		if (roughnessFile.length != 0)
+			material->roughnessTextureFile = roughnessFile.C_Str();
 
 		m_materials.push_back(material);
 	}
@@ -663,7 +676,7 @@ std::shared_ptr<AssimpConvert::Animation> AssimpConverter::ReadAnimationData(aiA
 	animation->name = srcAnimation->mName.C_Str();
 	animation->frameRate = (float)srcAnimation->mTicksPerSecond;
 	animation->frameCount = (uint32)srcAnimation->mDuration + 1;
-	
+
 	// Animation의 본 개수
 	animation->numBones = srcAnimation->mNumChannels;
 
@@ -847,7 +860,7 @@ void AssimpConverter::WriteVertexPositionFile(const std::wstring& filePath)
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(filePath, FileMode::Write);
-	
+
 	// 매쉬 개수
 	file->Write<uint32>((uint32)m_meshes.size());
 

@@ -396,8 +396,13 @@ finishAdapter:
 	m_sceneCB.CameraPos = Vector4(0.f);
 
 	m_sceneCB.lightPos = Vector4(3.f, 1.8f, -3.f, 0.f);
-	m_sceneCB.lightAmbient = Vector4(0.5f, 0.5f, 0.5f, 1.f);
-	m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
+	//m_sceneCB.lightAmbient = Vector4(0.5f, 0.5f, 0.5f, 1.f);
+	m_sceneCB.lightAmbient = Vector4(0.2f, 0.2f, 0.2f, 1.f);
+	//m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
+	m_sceneCB.lightDiffuse = Vector4(1.f, 1.f, 1.f, 1.f);
+
+	m_sceneCB.maxRadianceRayRecursionDepth = G_MAX_RAY_RECURSION_DEPTH;
+	m_sceneCB.maxShadowRayRecursionDepth = G_MAX_RAY_RECURSION_DEPTH;
 
 	// load image
 
@@ -1174,24 +1179,25 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 		// 안에서 add ref count를 실행시키긴 함. ....
 		blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
 	}
-	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
-	obj->SetBLASInstanceDesc(instanceDesc);
 
 	if (ShouldBuildShaderTable)
 	{
 		m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 	}
+
+	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
+	obj->SetBLASInstanceDesc(instanceDesc);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
 {
 	//ResetCommandList();
 	auto blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
-	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
-	obj->SetBLASInstanceDesc(instanceDesc);
-
 	// Skinning 데이터는 쉐이더 테이블을 그냥 만든다.
 	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+
+	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
+	obj->SetBLASInstanceDesc(instanceDesc);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
