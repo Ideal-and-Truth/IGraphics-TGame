@@ -16,6 +16,8 @@
 #include "RaytracingHlslCompat.h"
 #include "RaytracingHelper.hlsli"
 
+#define SHADOW_ON
+
 //-----------GLOBAL-----------//
 RWTexture2D<float4> g_renderTarget : register(u0);
 RaytracingAccelerationStructure g_scene : register(t0, space0);
@@ -38,6 +40,11 @@ struct RayPayload
 {
     unsigned int rayRecursionDepth;
     float3 radiance;
+};
+
+struct ShadowRayPayload
+{
+    float tHit;
 };
 
 // Retrieve hit world position.
@@ -76,23 +83,6 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     return ret;
 }
 
-float3 ComputeNormalMapping(float3 normal, float3 tangent, float2 uv)
-{
-    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, uv, 0).xyz;
-
-    float3 N = normalize(normal);
-    float3 T = normalize(tangent);
-    float3 B = normalize(cross(N, T));
-    float3x3 TBN = float3x3(T, B, N);
-    
-    float3 tangentSpaceNormal = (texSample.rgb * 2.f - 1.f);
-    float3 worldNormal = mul(tangentSpaceNormal, TBN);
-
-    //normal = worldNormal;
-    return worldNormal;
-}
-
-
 RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float bounceContribution = 1, bool cullNonOpaque = false)
 {
     RayPayload payload;
@@ -112,7 +102,15 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     rayDesc.TMax = 10000.0;
     
     UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
-    TraceRay(g_scene, rayFlags, ~0, 0, 1, 0, rayDesc, payload);
+    TraceRay(
+        g_scene,
+        rayFlags, 
+        ~0, // instance mask
+        0, // offset - path tracer radiance
+        2, // Pathtacer ray type count
+        0, // offset - path tracer radiance
+        rayDesc, 
+        payload);
     return payload;
 }
 
@@ -132,6 +130,135 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N
     rayPayload = TraceRadianceRay(ray, rayPayload.rayRecursionDepth, tMin, tMax);
 
     return rayPayload.radiance;
+}
+
+// 그림자 레이를 쏘고 geometry에 맞으면 true 반환
+bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRayRecursionDepth, in bool retrieveTHit = true, in float TMax = 10000)
+{
+    tHit = 0;
+    if (currentRayRecursionDepth >= g_sceneCB.maxShadowRayRecursionDepth)
+    {
+        return false;
+    }
+
+    // Set the ray's extents.
+    RayDesc rayDesc;
+    rayDesc.Origin = ray.origin;
+    rayDesc.Direction = ray.direction;
+    rayDesc.TMin = 0.0;
+	rayDesc.TMax = TMax;
+
+    // Initialize shadow ray payload.
+    // Set the initial value to a hit at TMax. 
+    // Miss shader will set it to HitDistanceOnMiss.
+    // This way closest and any hit shaders can be skipped if true tHit is not needed. 
+    ShadowRayPayload shadowPayload = { TMax };
+
+    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;             // ~skip transparent objects
+    bool acceptFirstHit = !retrieveTHit;
+    if (acceptFirstHit)
+    {
+        // Performance TIP: Accept first hit if true hit is not neeeded,
+        // or has minimal to no impact. The peformance gain can
+        // be substantial.
+        rayFlags |= RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH;
+    }
+
+    // Skip closest hit shaders of tHit time is not needed.
+    if (!retrieveTHit) 
+    {
+        rayFlags |= RAY_FLAG_SKIP_CLOSEST_HIT_SHADER; 
+    }
+
+    TraceRay(
+        g_scene, 
+        rayFlags, 
+        ~0, 
+        1,  // ray type shadow
+        2,  // geometry stride - path tracer count
+        1,  // ray type shadow
+        rayDesc, 
+        shadowPayload);
+
+    // Report a hit if Miss Shader didn't set the value to HitDistanceOnMiss.
+    tHit = shadowPayload.tHit;
+
+    return shadowPayload.tHit > 0;
+
+
+
+
+
+
+
+
+
+
+
+    //// tHit = 0;   // 임시로 0으로 초기화
+    //if(currentRayRecursionDepth >= g_sceneCB.maxShadowRayRecursionDepth)
+    //{
+    //    return false;
+    //}
+    //
+    //// 확장된 레이 세팅
+    //RayDesc rayDesc;
+    //rayDesc.Origin = ray.origin;
+    //rayDesc.Direction = ray.direction;
+    //rayDesc.TMin = 0.0;
+    //rayDesc.TMax = TMax;
+    //
+    //ShadowRayPayload shadowPayload = {TMax};
+    //
+    //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;   // 투명 오브젝트 스킵
+    //bool acceptFirstHit = !retrieveTHit;
+    //if(acceptFirstHit)
+    //{
+    //    // 성능 팁: 실제 적중이 필요하지 않거나 
+    //    // 영향이 미미하거나 전혀 없는 경우 첫 번째 적중을 수락하세요.
+    //    // 성능 향상 효과가 상당할 수 있습니다.
+    //
+    //    rayFlags |= RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH;
+    //}
+    //
+    //// Skip closest hit shaders of tHit time is not needed.
+    //if(!retrieveTHit)
+    //{
+    //    rayFlags |= RAY_FLAG_SKIP_CLOSEST_HIT_SHADER;
+    //}
+    //
+    //TraceRay(
+    //    g_scene, 
+    //    rayFlags, 
+    //    ~0, 
+    //    1,  // ray type shadow
+    //    2,  // geometry stride - path tracer count
+    //    1,  // ray type shadow
+    //    rayDesc, 
+    //    shadowPayload);
+    //tHit = shadowPayload.tHit;
+    //
+    //return shadowPayload.tHit > 0;
+}
+
+bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in float3 N, in UINT currentRayRecursionDepth, in bool retrieveTHit = true, in float TMax = 10000)
+{
+    tHit = 0;
+    //tHit = 0;
+    // Only trace if the surface is facing the target.
+    if (dot(ray.direction, N) > 0)
+    {
+        return TraceShadowRayAndReportIfHit(tHit, ray, currentRayRecursionDepth, retrieveTHit, TMax);
+    }
+    return false;
+}
+
+bool TraceShadowRayAndReportIfHit(in float3 hitPosition, in float3 direction, in float3 N, in RayPayload rayPayload, in float TMax = 10000)
+{
+    float tOffset = 0.001f;
+    Ray visibilityRay = {hitPosition + tOffset * N, direction};
+    float dummyTHit = 0;
+    return TraceShadowRayAndReportIfHit(dummyTHit, visibilityRay, N, rayPayload.rayRecursionDepth, false, TMax);
 }
 
 void CalculateSpecularAndReflectionCoefficients(
@@ -189,10 +316,13 @@ float3 Shade(
     {
         float3 wi = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
 
+#ifdef SHADOW_ON
         // Raytraced shadows
-        //bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
-        // Temp : 그림자 없이
+        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
+        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, isInShadow, roughness, N, V, wi);
+#else
         L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
+#endif
     }
 
     // Temp : 0.4는 임시 값
@@ -205,8 +335,8 @@ float3 Shade(
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
 
-    //if(isReflective)
-    if(metallic > 0.f)
+    if(isReflective)
+    //if(metallic > 0.f)
     {
         if(isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
         {
@@ -346,21 +476,12 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     }
     normal = NormalMap(normal, uv, vertexInfo, attr);
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
+}
 
-    //objectNormal = normalize(HitAttribute(vertexNormals, attr));
-    //objectTangent = normalize(HitAttribute(vertexTangents, attr));
-    //
-    //float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
-    //objectNormal *= orientation;
-    //objectTangent *= orientation;
-    //
-    //normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
-    //tangent = normalize(mul((float3x3)ObjectToWorld3x4(), objectTangent));    
-    //
-    //float3 finalNormal = ComputeNormalMapping(normal, tangent, uv);
-    //payload.radiance = Shade(payload, uv, finalNormal, objectNormal, hitPosition);
-    
-
+[shader("closesthit")]
+void MyClosestHitShader_ShadowRay(inout ShadowRayPayload rayPayload, in MyAttributes attr)
+{
+    rayPayload.tHit = RayTCurrent();
 }
 
 [shader("miss")]
@@ -368,6 +489,12 @@ void MyMissShader(inout RayPayload payload)
 {
     float3 radiance = g_texEnvironmentMap.SampleLevel(LinearWrapSampler, WorldRayDirection(), 0).xyz;
     payload.radiance = radiance;
+}
+
+[shader("miss")]
+void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
+{
+    rayPayload.tHit = 0;
 }
 
 #endif // RAYTRACING_HLSL

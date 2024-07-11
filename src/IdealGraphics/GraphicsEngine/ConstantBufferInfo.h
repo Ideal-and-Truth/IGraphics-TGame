@@ -14,7 +14,8 @@ struct SceneConstantBuffer
 	DirectX::XMVECTOR lightDiffuse;
 
 	uint32 maxRadianceRayRecursionDepth;
-	float padding[3];
+	uint32 maxShadowRayRecursionDepth;
+	float padding[2];
 };
 
 struct CB_Bone

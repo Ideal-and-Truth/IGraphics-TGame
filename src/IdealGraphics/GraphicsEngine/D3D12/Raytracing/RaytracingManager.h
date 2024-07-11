@@ -36,6 +36,21 @@ namespace Ideal
 		Vector3 radiance;
 	};
 
+	struct ShadowRayPayload
+	{
+		float tHit;
+	};
+
+	namespace PathtracerRayType
+	{
+		enum Enum
+		{
+			Radiance = 0,
+			Shadow,
+			Count
+		};
+	}
+
 	namespace GlobalRootSignature
 	{
 		namespace Slot
@@ -118,10 +133,11 @@ namespace Ideal
 	class RaytracingManager
 	{
 		static const uint32 MAX_RAY_RECURSION_DEPTH = G_MAX_RAY_RECURSION_DEPTH;
-		wchar_t* c_raygenShaderName = L"MyRaygenShader";
-		wchar_t* c_closestHitShaderName = L"MyClosestHitShader";
-		wchar_t* c_missShaderName = L"MyMissShader";
-		wchar_t* c_hitGroupName = L"MyHitGroup";
+		const wchar_t* c_raygenShaderName = L"MyRaygenShader";
+		const wchar_t* c_closestHitShaderName[2] = { L"MyClosestHitShader", L"MyClosestHitShader_ShadowRay" };
+		const wchar_t* c_missShaderName[2] = { L"MyMissShader", L"MyMissShader_ShadowRay"};
+		const wchar_t* c_hitGroupName[2] = { L"MyHitGroup", L"MyHitGroup_ShadowRay"};
+
 	public:
 		RaytracingManager();
 		~RaytracingManager();

@@ -340,7 +340,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 	}
 
 	uint64 geometrySizeInBLAS = Geometries.size();
-	blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
+	//blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
 	m_contributionToHitGroupIndexCount += geometrySizeInBLAS;
 	
 	// blas ref count 를 증가시킨다.
@@ -452,19 +452,30 @@ void Ideal::RaytracingManager::CreateRaytracingPipelineStateObject(ComPtr<ID3D12
 	CD3DX12_DXIL_LIBRARY_SUBOBJECT* lib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
 	D3D12_SHADER_BYTECODE libxil = CD3DX12_SHADER_BYTECODE(Shader->GetBufferPointer(), Shader->GetSize());
 	lib->SetDXILLibrary(&libxil);
-	lib->DefineExport(c_raygenShaderName);
-	lib->DefineExport(c_closestHitShaderName);
-	lib->DefineExport(c_missShaderName);
+	//lib->DefineExport(c_raygenShaderName);
+	//lib->DefineExport(c_closestHitShaderName);
+	//lib->DefineExport(c_missShaderName);
 
-	CD3DX12_HIT_GROUP_SUBOBJECT* hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
-	hitGroup->SetClosestHitShaderImport(c_closestHitShaderName);
-	hitGroup->SetHitGroupExport(c_hitGroupName);
-	hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
+	//----------------Create Hit Groups----------------//
+	for (uint32 rayType = 0; rayType < Ideal::PathtracerRayType::Count; ++rayType)
+	{
+		CD3DX12_HIT_GROUP_SUBOBJECT* hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
+		if (c_closestHitShaderName[rayType])
+		{
+			hitGroup->SetClosestHitShaderImport(c_closestHitShaderName[rayType]);
+		}
+		hitGroup->SetHitGroupExport(c_hitGroupName[rayType]);
+		hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
+	}
+
+	//hitGroup->SetClosestHitShaderImport(c_closestHitShaderName);
+	//hitGroup->SetHitGroupExport(c_hitGroupName);
+	//hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
 
 	// ray payload와 attribute structure의 최대 크기를 바이트 단위로 정의
 	CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT* shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
 	//uint32 payloadSize = sizeof(Color);
-	uint32 payloadSize = sizeof(Ideal::RayPayload);
+	uint32 payloadSize = static_cast<uint32>(max(sizeof(Ideal::RayPayload), sizeof(Ideal::ShadowRayPayload)));
 	uint32 attributesSize = sizeof(Vector2);
 	shaderConfig->Config(payloadSize, attributesSize);
 
@@ -494,7 +505,7 @@ void Ideal::RaytracingManager::CreateLocalRootSignatureSubobjects(CD3DX12_STATE_
 	// local root signature로 subobject 설정
 	CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT* rootSignatureAssociation = raytracingPipeline->CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
 	rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
-	rootSignatureAssociation->AddExport(c_hitGroupName);
+	rootSignatureAssociation->AddExports(c_hitGroupName);
 }
 
 void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
@@ -503,8 +514,8 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 	//DescriptorManager->ResetFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 
 	void* rayGenShaderIdentifier;
-	void* missShaderIdentifier;
-	void* hitGroupShaderIdentifier;
+	void* missShaderIdentifier[Ideal::PathtracerRayType::Count];
+	void* hitGroupShaderIdentifier[Ideal::PathtracerRayType::Count];
 
 	uint32 shaderIdentifierSize = 0;
 	ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
@@ -512,9 +523,16 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 	shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
 
 	// Get Shader Identifier
-	rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_raygenShaderName);
-	missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_missShaderName);
-	hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_hitGroupName);
+
+	{
+		rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_raygenShaderName);
+
+		for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
+		{
+			missShaderIdentifier[i] = stateObjectProperties->GetShaderIdentifier(c_missShaderName[i]);
+			hitGroupShaderIdentifier[i] = stateObjectProperties->GetShaderIdentifier(c_hitGroupName[i]);
+		}
+	}
 
 	// RayGen Shader Table
 	{
@@ -532,28 +550,37 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 	// Miss Shader Table
 	{
-		uint32 numShaderRecords = 1;
+		uint32 numShaderRecords = Ideal::PathtracerRayType::Count;
 		uint32 shaderRecordSize = shaderIdentifierSize;
 		Ideal::DXRShaderTable missShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"MissShaderTable");
-		missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier, shaderIdentifierSize));
+		for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
+		{
+			missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier[i], shaderIdentifierSize));
+		}
+
 		if (DeferredDeleteManager)
 		{
 			DeferredDeleteManager->AddD3D12ResourceToDelete(m_missShaderTable);
 		}
-		m_missShaderTable = missShaderTable.GetResource();
 		m_missShaderTableStrideInBytes = missShaderTable.GetShaderRecordSize();
+		m_missShaderTable = missShaderTable.GetResource();
 	}
 
 	// Hit Shader Table
 	{
-		uint32 numShaderRecords = (uint32)m_contributionToHitGroupIndexCount;
-		if (numShaderRecords == 0) numShaderRecords = 1;
+		uint32 numShaderRecords = (uint32)m_contributionToHitGroupIndexCount * PathtracerRayType::Count;
+		if (numShaderRecords == 0) numShaderRecords = 1 * PathtracerRayType::Count;
 		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(Ideal::LocalRootSignature::RootArgument);
 		Ideal::DXRShaderTable hitGroupShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
 
 		const std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BLASs = m_ASManager->GetBLASs();
+
 		for (auto& blas : BLASs)
 		{
+			// hit contribution
+			uint32 shaderRecordOffset = hitGroupShaderTable.GetNumShaderRecords();
+			blas->SetInstanceContributionToHitGroupIndex(shaderRecordOffset);
+
 			// blas가 가지고 있는 geometry들을 가져온다.
 			const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
 			for (const BLASGeometry& blasGeometry : blasGeometries)
@@ -566,16 +593,18 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 				rootArguments.SRV_MetalicTexture = blasGeometry.SRV_Metallic.GetGpuHandle();
 				rootArguments.SRV_RoughnessTexture = blasGeometry.SRV_Roughness.GetGpuHandle();
 
-				hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
-
+				for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
+				{
+					hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier[i], shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
+				}
 			}
 		}
 		if (DeferredDeleteManager)
 		{
 			DeferredDeleteManager->AddD3D12ResourceToDelete(m_hitGroupShaderTable);
 		}
-		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();
+		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 	}
 }
 

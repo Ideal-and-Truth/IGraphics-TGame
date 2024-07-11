@@ -36,6 +36,8 @@ struct SceneConstantBuffer
     XMVECTOR lightDiffuseColor;
 
     unsigned int maxRadianceRayRecursionDepth;
+    unsigned int maxShadowRayRecursionDepth;
+
     float padding[3];
 };
 
