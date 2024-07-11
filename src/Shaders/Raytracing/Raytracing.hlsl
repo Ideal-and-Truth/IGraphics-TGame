@@ -135,41 +135,38 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N
 // 그림자 레이를 쏘고 geometry에 맞으면 true 반환
 bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRayRecursionDepth, in bool retrieveTHit = true, in float TMax = 10000)
 {
-    tHit = 0;
-    if (currentRayRecursionDepth >= g_sceneCB.maxShadowRayRecursionDepth)
+    tHit = 0;   // 임시로 0으로 초기화
+    if(currentRayRecursionDepth >= g_sceneCB.maxShadowRayRecursionDepth)
     {
         return false;
     }
-
-    // Set the ray's extents.
+    
+    // 확장된 레이 세팅
     RayDesc rayDesc;
     rayDesc.Origin = ray.origin;
     rayDesc.Direction = ray.direction;
     rayDesc.TMin = 0.0;
-	rayDesc.TMax = TMax;
-
-    // Initialize shadow ray payload.
-    // Set the initial value to a hit at TMax. 
-    // Miss shader will set it to HitDistanceOnMiss.
-    // This way closest and any hit shaders can be skipped if true tHit is not needed. 
-    ShadowRayPayload shadowPayload = { TMax };
-
-    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;             // ~skip transparent objects
+    rayDesc.TMax = TMax;
+    
+    ShadowRayPayload shadowPayload = {TMax};
+    
+    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;   // 투명 오브젝트 스킵
     bool acceptFirstHit = !retrieveTHit;
-    if (acceptFirstHit)
+    if(acceptFirstHit)
     {
-        // Performance TIP: Accept first hit if true hit is not neeeded,
-        // or has minimal to no impact. The peformance gain can
-        // be substantial.
+        // 성능 팁: 실제 적중이 필요하지 않거나 
+        // 영향이 미미하거나 전혀 없는 경우 첫 번째 적중을 수락하세요.
+        // 성능 향상 효과가 상당할 수 있습니다.
+    
         rayFlags |= RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH;
     }
-
+    
     // Skip closest hit shaders of tHit time is not needed.
-    if (!retrieveTHit) 
+    if(!retrieveTHit)
     {
-        rayFlags |= RAY_FLAG_SKIP_CLOSEST_HIT_SHADER; 
+        rayFlags |= RAY_FLAG_SKIP_CLOSEST_HIT_SHADER;
     }
-
+    
     TraceRay(
         g_scene, 
         rayFlags, 
@@ -179,66 +176,9 @@ bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRay
         1,  // ray type shadow
         rayDesc, 
         shadowPayload);
-
-    // Report a hit if Miss Shader didn't set the value to HitDistanceOnMiss.
     tHit = shadowPayload.tHit;
-
+    
     return shadowPayload.tHit > 0;
-
-
-
-
-
-
-
-
-
-
-
-    //// tHit = 0;   // 임시로 0으로 초기화
-    //if(currentRayRecursionDepth >= g_sceneCB.maxShadowRayRecursionDepth)
-    //{
-    //    return false;
-    //}
-    //
-    //// 확장된 레이 세팅
-    //RayDesc rayDesc;
-    //rayDesc.Origin = ray.origin;
-    //rayDesc.Direction = ray.direction;
-    //rayDesc.TMin = 0.0;
-    //rayDesc.TMax = TMax;
-    //
-    //ShadowRayPayload shadowPayload = {TMax};
-    //
-    //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;   // 투명 오브젝트 스킵
-    //bool acceptFirstHit = !retrieveTHit;
-    //if(acceptFirstHit)
-    //{
-    //    // 성능 팁: 실제 적중이 필요하지 않거나 
-    //    // 영향이 미미하거나 전혀 없는 경우 첫 번째 적중을 수락하세요.
-    //    // 성능 향상 효과가 상당할 수 있습니다.
-    //
-    //    rayFlags |= RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH;
-    //}
-    //
-    //// Skip closest hit shaders of tHit time is not needed.
-    //if(!retrieveTHit)
-    //{
-    //    rayFlags |= RAY_FLAG_SKIP_CLOSEST_HIT_SHADER;
-    //}
-    //
-    //TraceRay(
-    //    g_scene, 
-    //    rayFlags, 
-    //    ~0, 
-    //    1,  // ray type shadow
-    //    2,  // geometry stride - path tracer count
-    //    1,  // ray type shadow
-    //    rayDesc, 
-    //    shadowPayload);
-    //tHit = shadowPayload.tHit;
-    //
-    //return shadowPayload.tHit > 0;
 }
 
 bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in float3 N, in UINT currentRayRecursionDepth, in bool retrieveTHit = true, in float TMax = 10000)
