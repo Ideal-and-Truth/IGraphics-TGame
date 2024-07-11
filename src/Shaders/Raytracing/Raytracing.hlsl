@@ -332,34 +332,35 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     float3 tangent;
     float3 objectNormal;
     float3 objectTangent;
-    //{
-    //    float3 vertexNormals[3] = {
-    //        vertexInfo[0].normal,
-    //        vertexInfo[1].normal,
-    //        vertexInfo[2].normal
-    //    };
-    //    objectNormal = normalize(HitAttribute(vertexNormals, attr));
-    //    float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
-    //    objectNormal *= orientation;
-    //    
-    //    normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
-    //}
-    //normal = NormalMap(normal, uv, vertexInfo, attr);
+    {
+        float3 vertexNormals[3] = {
+            vertexInfo[0].normal,
+            vertexInfo[1].normal,
+            vertexInfo[2].normal
+        };
+        objectNormal = normalize(HitAttribute(vertexNormals, attr));
+        float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
+        objectNormal *= orientation;
+        
+        normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
+    }
+    normal = NormalMap(normal, uv, vertexInfo, attr);
+    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
 
-    objectNormal = normalize(HitAttribute(vertexNormals, attr));
-    objectTangent = normalize(HitAttribute(vertexTangents, attr));
-
-    float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
-    objectNormal *= orientation;
-    objectTangent *= orientation;
+    //objectNormal = normalize(HitAttribute(vertexNormals, attr));
+    //objectTangent = normalize(HitAttribute(vertexTangents, attr));
+    //
+    //float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
+    //objectNormal *= orientation;
+    //objectTangent *= orientation;
+    //
+    //normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
+    //tangent = normalize(mul((float3x3)ObjectToWorld3x4(), objectTangent));    
+    //
+    //float3 finalNormal = ComputeNormalMapping(normal, tangent, uv);
+    //payload.radiance = Shade(payload, uv, finalNormal, objectNormal, hitPosition);
     
-    normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
-    tangent = normalize(mul((float3x3)ObjectToWorld3x4(), objectTangent));    
 
-    float3 finalNormal = ComputeNormalMapping(normal, tangent, uv);
-    
-
-    payload.radiance = Shade(payload, uv, finalNormal, objectNormal, hitPosition);
 }
 
 [shader("miss")]
