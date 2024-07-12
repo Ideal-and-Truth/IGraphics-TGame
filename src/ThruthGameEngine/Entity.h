@@ -99,8 +99,8 @@ namespace Truth
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm) const;
 
-		bool HasParent() { return !m_parent.expired(); };
-		bool HasChildren() { return !m_children.empty(); }
+		bool HasParent() const { return !m_parent.expired(); };
+		bool HasChildren() const { return !m_children.empty(); }
 
 		const Matrix& GetParentMatrix() 
 		{

@@ -38,17 +38,21 @@ namespace Truth {
 		/// </summary>
 		struct GameObject
 		{
+			bool isCollider;
+			Vector3 m_size;
+			Vector3 m_Center;
+
 			std::string m_guid;
 			std::string m_fileID;
-			std::string m_classID;
 
 			Matrix m_localTM;
+
 
 			GameObject* m_parent;
 			std::vector<GameObject*> m_children;
 		};
 
-		std::vector<GameObject*> m_gameObject;
+		std::vector<GameObject*> m_rootGameObject;
 
 		std::set<std::string> m_ignore;
 
@@ -68,7 +72,7 @@ namespace Truth {
 
 		void SetRootDir(const std::string& _path);
 		void ParseSceneFile(const std::string& _path);
-		void ParsePrefabFile(const std::string& _path);
+		void ParsePrefabFile(const std::string& _path, GameObject* _parent);
 
 		void Reset();
 
@@ -82,9 +86,9 @@ namespace Truth {
 
 		void ResetGameObjectTree(GameObject* _node);
 
-		Matrix FindPrefabPTM(YAML::Node& _node);
-
 		fs::path OrganizeUnityFile(fs::path& _path);
+
+		GameObject* ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
 	};
 }
 

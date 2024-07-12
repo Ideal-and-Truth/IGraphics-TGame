@@ -182,15 +182,6 @@ void Truth::UnityParser::ResetGameObjectTree(GameObject* _node)
 	delete _node;
 }
 
-/// <summary>
-/// 해당 prefab 노드에 Transform 정보를 역추적한다.
-/// </summary>
-/// <param name="_node"></param>
-/// <returns></returns>
-DirectX::SimpleMath::Matrix Truth::UnityParser::FindPrefabPTM(YAML::Node& _node)
-{
-	return Matrix::Identity;
-}
 
 /// <summary>
 /// Yaml unity 파일 정리
@@ -267,30 +258,151 @@ fs::path Truth::UnityParser::OrganizeUnityFile(fs::path& _path)
 }
 
 /// <summary>
+/// Transformd은 모든 GameObject에 있으므로 해당 노드를 기점으로 GameObject를 파악한다.
+/// 부모에서 자식으로 이어지는 트리 구조를 재귀적으로 파악한다.
+/// </summary>
+/// <param name="_node">현 노드</param>
+/// <param name="_guid">guid</param>
+/// <param name="_parent">부모 (root의 경우 null)</param>
+/// <returns>현 노드에 해당하는 game Object 구조체</returns>
+Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent)
+{
+	GameObject* GO = new GameObject;
+	GO->isCollider = false;
+	GO->m_parent = _parent;
+	GO->m_guid = _guid;
+
+	// get transform data
+	Vector3 pos = {
+		_node["m_LocalPosition"]["x"].as<float>(),
+		_node["m_LocalPosition"]["y"].as<float>(),
+		_node["m_LocalPosition"]["z"].as<float>()
+	};
+
+	Quaternion rot = {
+		_node["m_LocalRotation"]["x"].as<float>(),
+		_node["m_LocalRotation"]["y"].as<float>(),
+		_node["m_LocalRotation"]["z"].as<float>(),
+		_node["m_LocalRotation"]["w"].as<float>(),
+	};
+
+	Vector3 scale = {
+		_node["m_LocalScale"]["x"].as<float>(),
+		_node["m_LocalScale"]["y"].as<float>(),
+		_node["m_LocalScale"]["z"].as<float>()
+	};
+
+	// create Local Matrix
+	Matrix LTM = Matrix::CreateScale(scale);
+	LTM *= Matrix::CreateFromQuaternion(rot);
+	LTM *= Matrix::CreateTranslation(pos);
+
+	// get game object
+	std::string GOfid = _node["m_GameObject"]["fileID"].as<std::string>();
+	GO->m_fileID = GOfid;
+
+	const YAML::Node& GONode = m_nodeMap[_guid][GOfid]->m_node;
+	if (GONode["GameObject"].IsDefined())
+	{
+		// get component list
+		YAML::Node comList = GONode["GameObject"]["m_Component"];
+		for (YAML::iterator it = comList.begin(); it != comList.end(); ++it)
+		{
+
+			// get component list
+			const YAML::Node& comp = *it;
+			std::string compFid = comp["component"]["fileID"].as<std::string>();
+
+			// find box collider
+			const YAML::Node& collider = m_nodeMap[_guid][compFid]->m_node["BoxCollider"];
+			if (collider.IsDefined())
+			{
+				GO->isCollider = true;
+				GO->m_size = {
+					collider["m_Size"]["x"].as<float>(),
+					collider["m_Size"]["y"].as<float>(),
+					collider["m_Size"]["z"].as<float>(),
+				};
+
+				GO->m_Center = {
+					collider["m_Center"]["x"].as<float>(),
+					collider["m_Center"]["y"].as<float>(),
+					collider["m_Center"]["z"].as<float>(),
+				};
+			}
+		}
+	}
+
+	// make child
+	YAML::Node children = _node["m_Children"];
+	for (YAML::iterator it = children.begin(); it != children.end(); ++it)
+	{
+		std::string childFid = (*it)["fileID"].as<std::string>();
+		GO->m_children.push_back(ParseTranfomrNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, GO));
+	}
+	return GO;
+}
+
+/// <summary>
 /// Scene 파일을 파싱한다.
 /// </summary>
 /// <param name="_path">경로</param>
 void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 {
+	// get scene path
 	fs::path uscene(_path);
 	fs::path cscene = OrganizeUnityFile(uscene);
-	
-	std::ifstream dataFile(cscene);
 
+	// copy scene data
+	std::ifstream dataFile(cscene);
 	std::string& guid = m_pathMap[uscene]->m_guid;
 
+	// load yaml unity file
 	auto doc = YAML::LoadAll(dataFile);
 	for (size_t i = 0; i < doc.size(); i++)
 	{
 		ParseYAMLFile(doc[i], guid);
 	}
 
+	// get transform node ( 4 = transform class at unity scene file )
+	for (auto& p : m_classMap[guid]["4"])
+	{
+		// paresing when root game object
+		std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
+		if (parentFid == "0")
+		{
+			m_rootGameObject.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, nullptr));
+		}
+	}
+
+	// get prefab node ( 1001 = prefab class at unity scene file )
 	for (auto& p : m_classMap[guid]["1001"])
 	{
-		const YAML::Node& rootNode = p->m_node["PrefabInstance"]["m_Modification"];
-		const YAML::Node& targetNode = rootNode["m_Modifications"];
+		GameObject* GO = new GameObject;
+		GO->isCollider = false;
+		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
+		
+		Vector3 pos = {
+			prefabNode[1]["value"].as<float>(),
+			prefabNode[2]["value"].as<float>(),
+			prefabNode[3]["value"].as<float>()
+		};
+		Quaternion rot = {
+			prefabNode[5]["value"].as<float>(),
+			prefabNode[6]["value"].as<float>(),
+			prefabNode[7]["value"].as<float>(),
+			prefabNode[4]["value"].as<float>(),
+		};
 
-		auto target = p->m_node["m_Modifications"];
+		GO->m_localTM = Matrix::Identity;
+		GO->m_localTM *= Matrix::CreateFromQuaternion(rot);
+		GO->m_localTM *= Matrix::CreateTranslation(pos);
+
+		std::string prefabGuid = p->m_node["PrefabInstance"]["m_SourcePrefab"]["guid"].as<std::string>();
+
+		// parse prefab file
+		ParsePrefabFile(m_guidMap[prefabGuid]->m_filePath.generic_string(), GO);
+		m_rootGameObject.push_back(GO);
 	}
 }
 
@@ -298,8 +410,10 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 /// Prefab 파일을 파싱한다.
 /// </summary>
 /// <param name="_path">경로</param>
-void Truth::UnityParser::ParsePrefabFile(const std::string& _path)
+/// <param name="_parent">부모 오브젝트</param>
+void Truth::UnityParser::ParsePrefabFile(const std::string& _path, GameObject* _parent)
 {
+	// as same as scene file parse
 	fs::path uscene(_path);
 	fs::path cscene = OrganizeUnityFile(uscene);
 
@@ -311,6 +425,46 @@ void Truth::UnityParser::ParsePrefabFile(const std::string& _path)
 	for (size_t i = 0; i < doc.size(); i++)
 	{
 		ParseYAMLFile(doc[i], guid);
+	}
+
+	// get transform node ( 4 = transform class at unity scene file )
+	for (auto& p : m_classMap[guid]["4"])
+	{
+		// paresing when root game object
+		std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
+		if (parentFid == "0")
+		{
+			ParseTranfomrNode(p->m_node["Transform"], guid, _parent);
+		}
+	}
+
+	// get prefab node ( 1001 = prefab class at unity scene file )
+	for (auto& p : m_classMap[guid]["1001"])
+	{
+		GameObject* GO = new GameObject;
+		GO->isCollider = false;
+		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
+
+		Vector3 pos = {
+			prefabNode[1]["value"].as<float>(),
+			prefabNode[2]["value"].as<float>(),
+			prefabNode[3]["value"].as<float>()
+		};
+		Quaternion rot = {
+			prefabNode[5]["value"].as<float>(),
+			prefabNode[6]["value"].as<float>(),
+			prefabNode[7]["value"].as<float>(),
+			prefabNode[4]["value"].as<float>(),
+		};
+
+		GO->m_localTM = Matrix::Identity;
+		GO->m_localTM *= Matrix::CreateFromQuaternion(rot);
+		GO->m_localTM *= Matrix::CreateTranslation(pos);
+
+		std::string prefabGuid = p->m_node["PrefabInstance"]["m_SourcePrefab"]["guid"].as<std::string>();
+
+		// parse prefab file
+		ParsePrefabFile(m_guidMap[prefabGuid]->m_filePath.generic_string(), GO);
 	}
 }
 
@@ -331,8 +485,8 @@ void Truth::UnityParser::Reset()
 	{
 		delete fn.second;
 	}
-	
-	for (auto& r : m_gameObject)
+
+	for (auto& r : m_rootGameObject)
 	{
 		ResetGameObjectTree(r);
 	}
