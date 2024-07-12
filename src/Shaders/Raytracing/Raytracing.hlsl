@@ -18,23 +18,31 @@
 
 #define SHADOW_ON
 
+#define MAX_POINT_LIGHT_NUM 16
+#define MAX_SPOT_LIGHT_NUM 16
+
 //-----------GLOBAL-----------//
 RWTexture2D<float4> g_renderTarget : register(u0);
 RaytracingAccelerationStructure g_scene : register(t0, space0);
-ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
 TextureCube<float4> g_texEnvironmentMap : register(t1);
 SamplerState LinearWrapSampler : register(s0);
+
+ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
+ConstantBuffer<LightList> g_lightList : register(b1);
 
 //-----------LOCAL-----------//
 StructuredBuffer<uint> l_indices : register(t0, space1);
 StructuredBuffer<PositionNormalUVTangentColor> l_vertices : register(t1, space1);
 Texture2D<float4> l_texDiffuse : register(t2, space1);
-
 Texture2D<float4> l_texNormal : register(t3, space1);
 Texture2D<float4> l_texMetallic : register(t4, space1);
 Texture2D<float4> l_texRoughness : register(t5, space1);
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
+
+// Light
+
+
 
 struct RayPayload
 {
@@ -184,7 +192,6 @@ bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRay
 bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in float3 N, in UINT currentRayRecursionDepth, in bool retrieveTHit = true, in float TMax = 10000)
 {
     tHit = 0;
-    //tHit = 0;
     // Only trace if the surface is facing the target.
     if (dot(ray.direction, N) > 0)
     {
@@ -263,6 +270,27 @@ float3 Shade(
 #else
         L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
 #endif
+
+        // Directional Light
+        {
+            //float3 direction = g_lightList.DirLight.Direction.xyz;
+            //float3 color = g_lightList.DirLight.DiffuseColor.rgb;
+            //float3 direction = float3(1.f, 0.f, 0.f);
+            //float3 color = float3(1.f, 1.f, 1.f);
+            //
+            //L += BxDF::DirectLighting::Shade(Kd, Ks, color, false, roughness, N, V, wi);
+            //
+            //bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -g_lightList.DirLight.Direction.xyz, N, rayPayload);
+            //bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
+            //L += Ideal::Light::ComputeDirectionalLight(
+            //Kd, 
+            //Ks, 
+            ////g_lightList.DirLight.DiffuseColor.rgb, 
+            //color, 
+            //isInShadow, roughness, N, V, 
+            //g_lightList.DirLight.Direction.xyz);
+            
+        }       
     }
 
     // Temp : 0.4는 임시 값

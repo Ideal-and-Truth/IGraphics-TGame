@@ -32,6 +32,8 @@ namespace BxDF
                 float multi = 0.3641 * a; // 0.3641 = PI * 0.1159
 
                 diffuse = Albedo * (single + Albedo * multi);
+                
+
             }
             return diffuse;
         }
@@ -160,7 +162,104 @@ float3 BumpMapNormalToWorldSpaceNormal(float3 bumpNormal, float3 surfaceNormal, 
 
     //return mul(bumpNormal, tangentSpaceToWorldSpace);
     return normalize(mul(bumpNormal, tangentSpaceToWorldSpace));
+}
+
+
+namespace Ideal
+{
+    float Attenuate(float distance, float range)
+    {
+        float att = saturate(1.f - (distance * distance / (range * range)));
+        return att * att;
+        
+        //float numer = distance / range;
+        //numer = numer * numer;
+        //numer = numer * numer;
+        //numer = saturate(1 - numer);
+        //numer = numer * numer;
+        //float denom = dist * dist + 1;
+        //return (numer / denom);
+    }
     
+    namespace Light
+    {
+        float3 ComputeDirectionalLight(
+        in float3 Albedo,
+        in float3 Fo,
+        in float3 Radiance,
+        in bool isInShadow,
+        in float Roughness,
+        in float3 N,
+        in float3 V,
+        in float3 DirectionalLightVector
+        )
+        {
+            float3 directLighting = 0;
+            float3 L = -DirectionalLightVector;
+            
+            float NoL = dot(N, L);
+            if (!isInShadow && NoL > 0)
+            {
+                float3 directDiffuse = 0;
+                if (!BxDF::IsBlack(Albedo))
+                {
+                    directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                }
+                
+                float3 directSpecular = 0;
+                directSpecular = BxDF::Specular::GGX::F(Roughness, N, V, L, Fo);
+                directLighting = NoL * Radiance * (directDiffuse + directSpecular);
+            }
+            return directLighting;
+        }
+        
+        float3 ComputePointLight(
+        in float3 Albedo,
+        in float3 Fo,
+        in float3 Radiance,
+        in bool isInShadow,
+        in float Roughness,
+        in float3 N,
+        in float3 V,
+        in float3 L,
+        in float LightDistance,
+        in float LightRange,
+        in float LightIntensity
+        )
+        {
+            float3 directLighting = 0;
+            
+            if (LightDistance > LightRange)
+            {
+                return directLighting;
+            }
+            
+            float NoL = dot(N, L);
+            if (!isInShadow && NoL > 0)
+            {
+                 // 임의 추가
+                float distance = LightDistance;
+                float attenuation = Attenuate(distance, LightRange);
+                float intensity = LightIntensity * attenuation;
+                    
+                float3 directDiffuse = 0;
+                float3 directSpecular = 0;
+                
+                if (!BxDF::IsBlack(Albedo))
+                {
+                    directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                }
+                
+                directSpecular = BxDF::Specular::GGX::F(Roughness, N, V, L, Fo);
+                
+                directDiffuse *= LightIntensity;
+                directSpecular *= LightIntensity;
+                
+                directLighting = NoL * Radiance * (directDiffuse + directSpecular);
+            }
+            return directLighting;
+        }
+    }
 }
 
 #endif

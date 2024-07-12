@@ -68,4 +68,42 @@ struct PositionNormalUVTangentColor
     XMFLOAT4 color;
 
 };
+
+struct DirectionalLight
+{
+    XMFLOAT4 AmbientColor;
+    XMFLOAT4 DiffuseColor;
+    XMFLOAT3 Direction;
+    float Intensity;
+};
+
+struct PointLight
+{
+    XMFLOAT4 Color;
+    XMFLOAT3 Position;
+    float Range;
+    float Intensity;
+    float pad[3];
+};
+
+struct SpotLight
+{
+    XMFLOAT4 Color;
+    XMFLOAT4 Direction;
+    XMFLOAT3 Position;
+    float SpotAngle;
+    float Range;
+    float Intensity;
+    float pad[2];
+};
+
+struct LightList
+{
+    int PointLightNum;
+    int SpotLightNum;
+    float pad[2];
+    DirectionalLight DirLight;
+    PointLight PointLight[16];  //TEMP
+    SpotLight SpotLight[16];    //TEMP
+};
 #endif // RAYTRACINGHLSLCOMPAT_H

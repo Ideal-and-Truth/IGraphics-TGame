@@ -28,6 +28,10 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
 #include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
+#include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
+#include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
+#include "GraphicsEngine/Resource/Light/IdealPointLight.h"
+
 #include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/Resource/IdealCamera.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
@@ -426,6 +430,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
+	UpdateLightListCBData();
 
 	ResetCommandList();
 
@@ -464,7 +469,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_descriptorManager,
 		m_currentContextIndex,
 		m_cbAllocator[m_currentContextIndex],
-		m_sceneCB, m_skyBoxTexture);
+		m_sceneCB, m_lightListCB, m_skyBoxTexture);
 
 	CopyRaytracingOutputToBackBuffer();
 
@@ -664,20 +669,23 @@ void Ideal::D3D12RayTracingRenderer::SetRenderScene(std::shared_ptr<Ideal::IRend
 
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12RayTracingRenderer::CreateDirectionalLight()
 {
-	// 인터페이스로 따로 뽑아야 할 듯
-	return nullptr;
+	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
+	m_directionalLight = std::static_pointer_cast<Ideal::IdealDirectionalLight>(newLight);
+	return newLight;
 }
 
 std::shared_ptr<Ideal::ISpotLight> Ideal::D3D12RayTracingRenderer::CreateSpotLight()
 {
-	// 인터페이스로 따로 뽑아야 할 듯
-	return nullptr;
+	std::shared_ptr<Ideal::ISpotLight> newLight = std::make_shared<Ideal::IdealSpotLight>();
+	m_spotLights.push_back(std::static_pointer_cast<Ideal::IdealSpotLight>(newLight));
+	return newLight;
 }
 
 std::shared_ptr<Ideal::IPointLight> Ideal::D3D12RayTracingRenderer::CreatePointLight()
 {
-	// 인터페이스로 따로 뽑아야 할 듯
-	return nullptr;
+	std::shared_ptr<Ideal::IPointLight> newLight = std::make_shared<Ideal::IdealPointLight>();
+	m_pointLights.push_back(std::static_pointer_cast<Ideal::IdealPointLight>(newLight));
+	return newLight;
 }
 
 void Ideal::D3D12RayTracingRenderer::SetAssetPath(const std::wstring& AssetPath)
@@ -1047,6 +1055,43 @@ void Ideal::D3D12RayTracingRenderer::WaitForFenceValue(uint64 ExpectedFenceValue
 	}
 	uint64 completedValue1 = m_fence->GetCompletedValue();
 	int a = 3;
+}
+
+void Ideal::D3D12RayTracingRenderer::UpdateLightListCBData()
+{
+	//----------------Directional Light-----------------//
+	if (m_directionalLight)
+	{
+		m_lightListCB.DirLight = m_directionalLight->GetDirectionalLightDesc();
+	}
+
+	//----------------Spot Light-----------------//
+	uint32 spotLightNum = m_spotLights.size();
+
+	if (spotLightNum > MAX_SPOT_LIGHT_NUM)
+	{
+		spotLightNum = MAX_SPOT_LIGHT_NUM;
+	}
+
+	for (uint32 i = 0; i < spotLightNum; ++i)
+	{
+		m_lightListCB.SpotLights[i] = m_spotLights[i]->GetSpotLightDesc();
+	}
+	m_lightListCB.SpotLightNum = spotLightNum;
+
+	//----------------Point Light-----------------//
+	uint32 pointLightNum = m_pointLights.size();
+
+	if (pointLightNum > MAX_POINT_LIGHT_NUM)
+	{
+		pointLightNum = MAX_POINT_LIGHT_NUM;
+	}
+	m_lightListCB.PointLightNum = pointLightNum;
+
+	for (uint32 i = 0; i < pointLightNum; ++i)
+	{
+		m_lightListCB.PointLights[i] = m_pointLights[i]->GetPointLightDesc();
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob)

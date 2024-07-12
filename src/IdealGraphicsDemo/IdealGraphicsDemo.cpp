@@ -96,12 +96,12 @@ void DirLightAngle(float* x, float* y, float* z);
 void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
 void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
+void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
-{
+	_In_ int       nCmdShow){
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -143,8 +143,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		gRenderer->Init();
 
-		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
-		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
+		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
 		Vector3 pointLightPosition = Vector3(0.f);
 
@@ -160,6 +160,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"test2/run_.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -240,11 +242,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
-		//dirLight->SetDirection(Vector3(1.f, 0.f, 1.f));
 
 		//pointLight->SetPosition(pointLightPosition);
 		//pointLight->SetRange(300.f);
@@ -454,6 +456,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						AnimationTest(slashAnim);
 						SkinnedMeshObjectAnimationTest(ka);
+						LightTest(dirLight);
 					}
 					//once++;
 					//ImGuiTest();
@@ -772,5 +775,19 @@ void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation)
 {
 	ImGui::Begin("Animation Window");
 	ImGui::Text("Animation Max Frame Count : %d", Animation->GetFrameCount());
+	ImGui::End();
+}
+
+void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
+{
+	ImGui::Begin("Directional Light");
+	ImGui::Text("Rotation Axis X");
+	static float angleZ = 0.f;
+	ImGui::SliderFloat("Z", &angleZ, 0.f, 180.f);
+	Matrix mat = Matrix::Identity;
+	mat *= Matrix::CreateRotationZ(angleZ);
+	Vector3 rot = mat.Forward();
+	if(DirLight)
+		//DirLight->SetDirection(rot);
 	ImGui::End();
 }

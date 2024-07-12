@@ -51,6 +51,9 @@ namespace Ideal
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
 	class IdealScreenQuad;
+	class IdealDirectionalLight;
+	class IdealSpotLight;
+	class IdealPointLight;
 
 	struct ConstantBufferContainer;
 	// Manager
@@ -202,6 +205,14 @@ namespace Ideal
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager = nullptr;
 
+		// Light
+		void UpdateLightListCBData();
+
+		std::shared_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
+		std::vector<std::shared_ptr<Ideal::IdealSpotLight>> m_spotLights;
+		std::vector<std::shared_ptr<Ideal::IdealPointLight>> m_pointLights;
+
+
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
@@ -218,6 +229,7 @@ namespace Ideal
 	private:
 		// AS
 		SceneConstantBuffer m_sceneCB;
+		CB_LightList m_lightListCB;
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();
