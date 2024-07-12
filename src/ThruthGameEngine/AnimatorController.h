@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "GraphEditor.h"
 
 namespace Truth
 {
@@ -9,16 +10,38 @@ namespace Truth
 namespace Truth
 {
 
-	struct AnimatorState
+	class AnimationInfo
+		: public std::enable_shared_from_this<AnimationInfo>
 	{
-		std::string nodeName = "";
-		std::string animationName = "";
-		float4 animationSpeed = 0.f;
-		bool isDefaultState = false;
-		bool isActivated = false;
-		bool isLoopTime = false;
+	public:
+		std::string m_animationName;
+		std::wstring m_animationPath;
+		bool m_isChangesOnFinish;
+		std::vector<std::shared_ptr<AnimationInfo>> m_nextStates;
+
+		int m_id;
+		static uint32 m_stateCount;
+
+	public:
+		AnimationInfo();
+		~AnimationInfo();
+
+	public:
+		bool HasTransition() { return !m_nextStates.empty(); }
+		void AddTransition(std::shared_ptr<AnimationInfo> _nextState);
+		void DeleteTransition(std::shared_ptr<AnimationInfo> _entity);
 	};
 
+	struct AnimeInfo
+	{
+		std::string name = "Empty";
+		GraphEditor::TemplateIndex templateIndex = 0;
+		float x = 0;
+		float y = 0;
+		bool isSelected = false;
+
+		std::wstring path;
+	};
 
 	class AnimatorController :
 		public Component
@@ -32,21 +55,13 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
-	private:
-		std::shared_ptr<AnimatorState> m_entry;
-		std::shared_ptr<AnimatorState> m_exit;
-
-		std::shared_ptr<Truth::Component> m_state;
-
-
-	private:
-		PROPERTY(currentStateName);
-		std::string m_currentStateName;
-
-		PROPERTY(currentState);
-		std::shared_ptr<AnimatorState> m_currentState;
+	public:
 		PROPERTY(states);
-		std::vector<std::shared_ptr<AnimatorState>> m_states;
+		//std::vector<std::string> m_states;
+		std::vector<std::shared_ptr<AnimationInfo>> m_states;
+		std::shared_ptr <AnimationInfo> m_currentState;
+
+		std::vector<AnimeInfo> m_infos;
 
 		std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
 
@@ -65,6 +80,10 @@ namespace Truth
 
 		METHOD(Update);
 		void Update();
+
+	public:
+		void AddState(std::shared_ptr<AnimationInfo> _state);
+
 
 	private:
 		bool m_isAnimationEnd;

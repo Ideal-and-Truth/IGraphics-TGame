@@ -12,6 +12,8 @@ namespace Truth
 	class Transform;
 	class Managers;
 	class Component;
+	class AnimatorController;
+	class AnimationInfo;
 }
 
 class EditorUI
@@ -38,6 +40,8 @@ private:
 
 	std::weak_ptr<Truth::Entity> m_selectedEntity;
 
+	std::shared_ptr<Truth::AnimationInfo> m_selectedState;
+
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd);
 	~EditorUI() {}
@@ -48,6 +52,7 @@ private:
 	void ShowHierarchyWindow(bool* p_open);
 	void ShowContentsDrawerWindow(bool* p_open);
 	void ShowMenuBar(bool* p_open);
+	void ShowAnimator(bool* p_open);
 
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
 
@@ -56,6 +61,14 @@ private:
 	void DisplayComponent(std::shared_ptr<Truth::Component> _component);
 
 	void DisplayEntity(std::weak_ptr<Truth::Entity> _entity);
+
+	void DisplayAnimatorController(std::shared_ptr<Truth::AnimationInfo> _animationInfo);
+
+
+private:
+	// 테스트용
+	int m_testSize = 0;
+	int m_selectedNum = 0;
 };
 
 

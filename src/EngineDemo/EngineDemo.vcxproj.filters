@@ -49,9 +49,6 @@
     <Filter Include="Component\Enemy">
       <UniqueIdentifier>{e864a2a5-287c-447b-8b00-aa05e9901fee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Player\PlayerState">
-      <UniqueIdentifier>{05865445-d2b9-4210-848d-4a67bab7bfd6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\BattleSystem\Weapon">
       <UniqueIdentifier>{9444ff9b-e7ce-4eb5-a751-7b11655795bf}</UniqueIdentifier>
     </Filter>
@@ -105,9 +102,6 @@
     <ClInclude Include="DamageSystem.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerStates.h">
-      <Filter>Component\Player\PlayerState</Filter>
-    </ClInclude>
     <ClInclude Include="CombatZone.h">
       <Filter>Component\Enemy</Filter>
     </ClInclude>
@@ -157,9 +151,6 @@
     </ClCompile>
     <ClCompile Include="DamageSystem.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerStates.cpp">
-      <Filter>Component\Player\PlayerState</Filter>
     </ClCompile>
     <ClCompile Include="CombatZone.cpp">
       <Filter>Component\Enemy</Filter>

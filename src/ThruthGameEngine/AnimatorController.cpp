@@ -1,25 +1,14 @@
 #include "AnimatorController.h"
 #include "SkinnedMesh.h"
+#include <memory>
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::AnimatorController)
 
+uint32 Truth::AnimationInfo::m_stateCount = 0;
+
 Truth::AnimatorController::AnimatorController()
-	: m_currentStateName("")
 {
-	m_entry->nodeName = "Entry";
-	m_entry->animationName = "";
-	m_entry->animationSpeed = 0.f;
-	m_entry->isDefaultState = false;
-	m_entry->isActivated = false;
-	m_entry->isLoopTime = false;
 
-
-	m_exit->nodeName = "Exit";
-	m_exit->animationName = "";
-	m_exit->animationSpeed = 0.f;
-	m_exit->isDefaultState = false;
-	m_exit->isActivated = false;
-	m_exit->isLoopTime = false;
 }
 
 Truth::AnimatorController::~AnimatorController()
@@ -39,36 +28,25 @@ void Truth::AnimatorController::Awake()
 
 void Truth::AnimatorController::Start()
 {
-	auto components = m_owner.lock().get()->GetTypeInfo().GetProperty("components")->Get<std::vector<std::shared_ptr<Component>>>(m_owner.lock().get()).Get();
-	for (auto& c : components)
-	{
-		if (c.get()->m_name == "States")
-		{
-			m_state = c;
-		}
-	}
+	AddState(std::make_shared<Truth::AnimationInfo>());
+	AddState(std::make_shared<Truth::AnimationInfo>());
+	AddState(std::make_shared<Truth::AnimationInfo>());
 
-// 	auto components = m_owner.lock().get()->GetTypeInfo().GetProperty("components")->Get<std::vector<std::shared_ptr<Component>>>(m_owner.lock().get()).Get();
-// 	for (auto& c : components)
-// 	{
-// 		if (c.get()->m_name == "States")
-// 		{
-// 			currentState = c.get()->GetTypeInfo().GetProperty("currentState")->Get<AnimatorState>(c.get()).Get();
-// 		}
-// 	}
-// 	m_currentStateName = currentState.nodeName;
-// 
-// 	currentState.isActivated = !m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
-// 	if (currentState.isActivated == false)
-// 	{
-// 		m_skinnedMesh->SetAnimation(currentState.nodeName, currentState.isLoopTime);
-// 
-// 	}
+	m_states[0]->m_animationName = "Idle";
+	m_states[1]->m_animationName = "Run";
+	m_states[2]->m_animationName = "Attack";
+
+	m_states[0]->m_animationPath = L"Kachujin/Idle";
+	m_states[1]->m_animationPath = L"Kachujin/Run";
+	m_states[2]->m_animationPath = L"Kachujin/Slash";
+
+	m_states[0]->m_isChangesOnFinish = false;
+	m_states[1]->m_isChangesOnFinish = false;
+	m_states[2]->m_isChangesOnFinish = true;
 }
 
 void Truth::AnimatorController::Update()
 {
-	m_currentState = m_state.get()->GetTypeInfo().GetProperty("currentState")->Get<std::shared_ptr<AnimatorState>>(m_state.get()).Get();
 
 
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
@@ -79,13 +57,59 @@ void Truth::AnimatorController::Update()
 
 }
 
+void Truth::AnimatorController::AddState(std::shared_ptr<AnimationInfo> _state)
+{
+	m_states.push_back(_state);
+}
+
 void Truth::AnimatorController::CheckTransition()
 {
-
+	for (auto& next : m_currentState->m_nextStates)
+	{
+		if (0)
+		{
+			m_currentState = next;
+		}
+	}
 }
 
 void Truth::AnimatorController::NextState()
 {
+	for (auto& next : m_currentState->m_nextStates)
+	{
+		if (0)
+		{
+			m_currentState = next;
+		}
+	}
+	m_skinnedMesh->SetAnimation(m_currentState->m_animationName, m_currentState->m_isChangesOnFinish);
 
 }
 
+Truth::AnimationInfo::AnimationInfo()
+	: m_id(m_stateCount++)
+{
+	m_animationName = "empty";
+}
+
+Truth::AnimationInfo::~AnimationInfo()
+{
+
+}
+
+void Truth::AnimationInfo::AddTransition(std::shared_ptr<AnimationInfo> _nextState)
+{
+	m_nextStates.push_back(_nextState);
+}
+
+void Truth::AnimationInfo::DeleteTransition(std::shared_ptr<AnimationInfo> _info)
+{
+	for (auto c = m_nextStates.begin(); c != m_nextStates.end(); c++)
+	{
+		if ((*c) == _info)
+		{
+			m_nextStates.erase(c);
+			return;
+		}
+	}
+}

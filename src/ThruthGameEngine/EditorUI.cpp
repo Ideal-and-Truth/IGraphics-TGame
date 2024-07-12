@@ -1,6 +1,8 @@
 #include "EditorUI.h"
 #include "GraphicsManager.h"
 #include "imgui.h"
+#include "imgui_internal.h"
+#include "GraphEditor.h"
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Entity.h"
@@ -14,6 +16,7 @@
 #include "InputManager.h"
 #include "Managers.h"
 #include "StringConverter.h"
+#include "AnimatorController.h"
 #include <commdlg.h>
 
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
@@ -39,6 +42,7 @@ void EditorUI::RenderUI(bool* p_open)
 	ShowMenuBar(p_open);
 	ShowInspectorWindow(p_open);
 	ShowHierarchyWindow(p_open);
+	ShowAnimator(p_open);
 	// ShowContentsDrawerWindow(p_open);
 }
 
@@ -125,6 +129,11 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 			// Checking Component
 			TranslateComponent(e);
 		}
+
+		// 		if (m_selectedEntity.lock()->GetComponent<Truth::AnimatorController>().lock())
+		// 		{
+		// 			DisplayAnimator(m_selectedEntity.lock()->GetComponent<Truth::AnimatorController>().lock());
+		// 		}
 
 		while (!m_deletedComponent.empty())
 		{
@@ -448,6 +457,267 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	ImGui::EndMainMenuBar();
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// 
+
+template <typename T, std::size_t N>
+struct Array
+{
+	T data[N];
+	const size_t size() const { return N; }
+
+	const T operator [] (size_t index) const { return data[index]; }
+	operator T* () {
+		T* p = new T[N];
+		memcpy(p, data, sizeof(data));
+		return p;
+	}
+};
+
+template <typename T, typename ... U> Array(T, U...) -> Array<T, 1 + sizeof...(U)>;
+
+struct GraphEditorDelegate : public GraphEditor::Delegate
+{
+	bool AllowedLink(GraphEditor::NodeIndex from, GraphEditor::NodeIndex to) override
+	{
+		return true;
+	}
+
+	void SelectNode(GraphEditor::NodeIndex nodeIndex, bool selected) override
+	{
+		mNodes[nodeIndex].mSelected = selected;
+	}
+
+	void MoveSelectedNodes(const ImVec2 delta) override
+	{
+		for (auto& node : mNodes)
+		{
+			if (!node.mSelected)
+			{
+				continue;
+			}
+			node.x += delta.x;
+			node.y += delta.y;
+		}
+	}
+
+	virtual void RightClick(GraphEditor::NodeIndex nodeIndex, GraphEditor::SlotIndex slotIndexInput, GraphEditor::SlotIndex slotIndexOutput) override
+	{
+	}
+
+	void AddLink(GraphEditor::NodeIndex inputNodeIndex, GraphEditor::SlotIndex inputSlotIndex, GraphEditor::NodeIndex outputNodeIndex, GraphEditor::SlotIndex outputSlotIndex) override
+	{
+		mLinks.push_back({ inputNodeIndex, inputSlotIndex, outputNodeIndex, outputSlotIndex });
+	}
+
+	void DelLink(GraphEditor::LinkIndex linkIndex) override
+	{
+		mLinks.erase(mLinks.begin() + linkIndex);
+	}
+
+	void CustomDraw(ImDrawList* drawList, ImRect rectangle, GraphEditor::NodeIndex nodeIndex) override
+	{
+		drawList->AddLine(rectangle.Min, rectangle.Max, IM_COL32(0, 0, 0, 255));
+		drawList->AddText(rectangle.Min, IM_COL32(255, 128, 64, 255), "Draw");
+	}
+
+	const size_t GetTemplateCount() override
+	{
+		return sizeof(mTemplates) / sizeof(GraphEditor::Template);
+	}
+
+	const GraphEditor::Template GetTemplate(GraphEditor::TemplateIndex index) override
+	{
+		return mTemplates[index];
+	}
+
+	const size_t GetNodeCount() override
+	{
+		return mNodes.size();
+	}
+
+	const GraphEditor::Node GetNode(GraphEditor::NodeIndex index) override
+	{
+		const auto& myNode = mNodes[index];
+		return GraphEditor::Node
+		{
+			myNode.name,
+			myNode.templateIndex,
+			ImRect(ImVec2(myNode.x, myNode.y), ImVec2(myNode.x + 200, myNode.y + 200)),
+			myNode.mSelected
+		};
+	}
+
+	const size_t GetLinkCount() override
+	{
+		return mLinks.size();
+	}
+
+	const GraphEditor::Link GetLink(GraphEditor::LinkIndex index) override
+	{
+		return mLinks[index];
+	}
+
+	// Graph datas
+	static const inline GraphEditor::Template mTemplates[] = {
+		{
+			IM_COL32(160, 160, 180, 255),
+			IM_COL32(100, 100, 140, 255),
+			IM_COL32(110, 110, 150, 255),
+			1,
+			Array{"MyInput"},
+			nullptr,
+			2,
+			Array{"MyOutput0", "MyOuput1"},
+			nullptr
+		},
+
+		{
+			IM_COL32(180, 160, 160, 255),
+			IM_COL32(140, 100, 100, 255),
+			IM_COL32(150, 110, 110, 255),
+			3,
+			nullptr,
+			Array{ IM_COL32(200,100,100,255), IM_COL32(100,200,100,255), IM_COL32(100,100,200,255) },
+			1,
+			Array{"MyOutput0"},
+			Array{ IM_COL32(200,200,200,255)}
+		}
+	};
+
+	struct Node
+	{
+		const char* name;
+		GraphEditor::TemplateIndex templateIndex;
+		float x, y;
+		bool mSelected;
+	};
+
+	std::vector<Node> mNodes = {
+		{
+			"My Node 0",
+			0,
+			0, 0,
+			false
+		},
+
+		{
+			"My Node 1",
+			0,
+			400, 0,
+			false
+		},
+
+		{
+			"My Node 2",
+			1,
+			400, 400,
+			false
+		}
+	};
+
+	std::vector<GraphEditor::Link> mLinks = { {0, 0, 1, 0} };
+};
+
+void EditorUI::ShowAnimator(bool* p_open)
+{
+	// Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
+	// Most functions would normally just assert/crash if the context is missing.
+	IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
+
+	// Verify ABI compatibility between caller code and compiled version of Dear ImGui. This helps detects some build issues.
+	IMGUI_CHECKVERSION();
+
+	static bool no_titlebar = false;
+	static bool no_scrollbar = false;
+	static bool no_menu = true;
+	static bool no_move = false;
+	static bool no_resize = false;
+	static bool no_collapse = false;
+	static bool no_close = false;
+	static bool no_nav = false;
+	static bool no_background = false;
+	static bool no_bring_to_front = false;
+	static bool no_docking = false;
+	static bool unsaved_document = false;
+
+	ImGuiWindowFlags window_flags = 0;
+	if (no_titlebar)        window_flags |= ImGuiWindowFlags_NoTitleBar;
+	if (no_scrollbar)       window_flags |= ImGuiWindowFlags_NoScrollbar;
+	if (no_menu)            window_flags |= ImGuiWindowFlags_MenuBar;
+	if (no_move)            window_flags |= ImGuiWindowFlags_NoMove;
+	if (no_resize)          window_flags |= ImGuiWindowFlags_NoResize;
+	if (no_collapse)        window_flags |= ImGuiWindowFlags_NoCollapse;
+	if (no_nav)             window_flags |= ImGuiWindowFlags_NoNav;
+	if (no_background)      window_flags |= ImGuiWindowFlags_NoBackground;
+	if (no_bring_to_front)  window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+	if (no_docking)         window_flags |= ImGuiWindowFlags_NoDocking;
+	if (unsaved_document)   window_flags |= ImGuiWindowFlags_UnsavedDocument;
+	if (no_close)           p_open = NULL; // Don't pass our bool* to Begin
+
+	// We specify a default position/size in case there's no data in the .ini file.
+	// We only do it to make the demo applications a little more welcoming, but typically this isn't required.
+	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+
+	// Main body of the Demo window starts here.
+	if (!ImGui::Begin("Animator", p_open, window_flags))
+	{
+		// Early out if the window is collapsed, as an optimization.
+		ImGui::End();
+		return;
+	}
+
+	// Most "big" widgets share a common width settings by default. See 'Demo->Layout->Widgets Width' for details.
+	// e.g. Use 2/3 of the space for widgets and 1/3 for labels (right align)
+	//ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.35f);
+	// e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
+	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+
+	/// Animator UI
+	{
+		uint32 selectCount = 0;
+
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::Selectable("Create State"))
+			{
+				/// TODO : 상태 생성
+
+			}
+			ImGui::EndPopup();
+		}
+
+		// Graph Editor
+		static GraphEditor::Options options;
+		static GraphEditorDelegate delegate;
+		static GraphEditor::ViewState viewState;
+		static GraphEditor::FitOnScreen fit = GraphEditor::Fit_None;
+		static bool showGraphEditor = true;
+
+		if (ImGui::Button("Fit all nodes"))
+		{
+			fit = GraphEditor::Fit_AllNodes;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Fit selected nodes"))
+		{
+			fit = GraphEditor::Fit_SelectedNodes;
+		}
+		GraphEditor::Show(delegate, options, viewState, true, &fit);
+
+	}
+
+	
+
+	/// End of ShowDemoWindow()
+	ImGui::PopItemWidth();
+	ImGui::End();
+}
+
 void EditorUI::TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent)
 {
 	DisplayComponent(EntityComponent);
@@ -477,6 +747,8 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 	// 컴포넌트 이름
 	const char* componentName = typeinfo.GetName();
 
+
+
 	auto& properties = typeinfo.GetProperties();
 	bool isSelect = false;
 
@@ -491,7 +763,22 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 				m_deletedComponent.push(std::make_pair(m_selectedEntity, _component->m_index));
 			}
 
+			/// 애니메이터
+			if (componentName == "AnimatorController" && ImGui::Selectable("Create State"))
+			{
+				_component->GetOwner().lock()->GetComponent<Truth::AnimatorController>().lock()->AddState(std::make_shared<Truth::AnimationInfo>());
+			}
+
 			ImGui::EndPopup();
+		}
+		/// 애니메이터
+		if (componentName == "AnimatorController")
+		{
+			for (auto& e : _component->GetOwner().lock()->GetComponent<Truth::AnimatorController>().lock()->m_states)
+			{
+				DisplayAnimatorController(e);
+			}
+			return;
 		}
 		for (auto* p : properties)
 		{
@@ -595,5 +882,96 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 		}
 		ImGui::TreePop();
 	}
+}
+
+void EditorUI::DisplayAnimatorController(std::shared_ptr<Truth::AnimationInfo> _animationInfo)
+{
+	if (_animationInfo == nullptr)
+	{
+		return;
+	}
+
+	bool isSelect = false;
+
+
+	ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags_AllowItemOverlap;
+
+	if (!_animationInfo->HasTransition())
+	{
+		flag |= ImGuiTreeNodeFlags_Leaf;
+	}
+
+	const std::string animationName = _animationInfo->m_animationName + "##" + std::to_string(_animationInfo->m_id);
+	bool isOpen = ImGui::TreeNodeEx(("##" + animationName).c_str(), flag);
+	ImGui::SameLine();
+
+
+	if (ImGui::Selectable(animationName.c_str()))
+	{
+		m_selectedState = _animationInfo;
+	}
+
+	if (ImGui::BeginDragDropSource())
+	{
+		ImGui::SetDragDropPayload("Animation", &_animationInfo, sizeof(_animationInfo));
+		ImGui::Text("%s", animationName.c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Animation"))
+		{
+			IM_ASSERT(payload->DataSize == sizeof(_animationInfo));
+			std::shared_ptr<Truth::AnimationInfo> payload_n = *(const std::shared_ptr<Truth::AnimationInfo>*)payload->Data;
+
+
+			_animationInfo->AddTransition(payload_n);
+
+		}
+		ImGui::EndDragDropTarget();
+	}
+	// Popup Menu
+	if (ImGui::BeginPopupContextItem())
+	{
+		if (ImGui::Selectable("Delete"))
+		{
+			//m_manager->Scene()->m_currentScene->DeleteEntity(_entity.lock());
+		}
+		// 		if (ImGui::Selectable("ChangeName"))
+		// 		{
+		// 			if (ImGui::BeginPopupContextItem())
+		// 			{
+		// 				std::string sName = animationName;
+		// 				char* cName = (char*)sName.c_str();
+		// 				bool isShown = true;
+		// 				ImGui::InputText("##2", cName, 128);
+		// 				if (m_manager->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+		// 				{
+		// 					sName = std::string(cName, cName + strlen(cName));
+		// 					_animationInfo->m_animationName= sName;
+		// 				}
+		// 
+		// 				ImGui::EndPopup();
+		// 			}
+		// 
+		// 		}
+		ImGui::EndPopup();
+	}
+	if (isOpen)
+	{
+		for (auto& child : _animationInfo->m_nextStates)
+		{
+			DisplayAnimatorController(_animationInfo);
+		}
+		ImGui::TreePop();
+	}
+
+#ifdef _DEBUG
+	if (isSelect)
+	{
+		//_component->EditorSetValue();
+	}
+#endif // _DEBUG
 }
 
