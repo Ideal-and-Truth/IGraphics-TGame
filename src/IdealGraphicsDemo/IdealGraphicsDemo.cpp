@@ -97,6 +97,8 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
 void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
+void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -243,15 +245,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
+
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
 
-		//pointLight->SetPosition(pointLightPosition);
-		//pointLight->SetRange(300.f);
-		//pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		//pointLight->SetIntensity(10.f);
+		pointLight->SetPosition(pointLightPosition);
+		pointLight->SetRange(300.f);
+		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		pointLight->SetIntensity(10.f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -457,6 +460,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						AnimationTest(slashAnim);
 						SkinnedMeshObjectAnimationTest(ka);
 						LightTest(dirLight);
+						PointLightInspecter(pointLight);
 					}
 					//once++;
 					//ImGuiTest();
@@ -797,4 +801,15 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	}
 
 	ImGui::End();
+}
+
+
+void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight)
+{
+	//ImGui::Begin("Point Light");
+	//ImGui::Text("Position");
+	//static float position[3] = { 0.f, 0.f, 0.f };
+	////ImGui::SliderFloat3("Position", &position[0], &position[1], &position[2]);
+	//
+	//ImGui::End();
 }

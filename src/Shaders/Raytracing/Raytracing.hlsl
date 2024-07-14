@@ -275,25 +275,46 @@ float3 Shade(
         {
             float3 direction = g_lightList.DirLight.Direction.xyz;
             float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-            //float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-            //float3 color = g_sceneCB.Color.xyz;
-            //float3 color = g_sceneCB.lightDiffuseColor.xyz;
-            //float3 direction = float3(1.f, 0.f, 0.f);
-            //float3 color = float3(1.f, 1.f, 1.f);
             
-            //L += BxDF::DirectLighting::Shade(Kd, Ks, color, false, roughness, N, V, direction);
-            
-            //bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -g_lightList.DirLight.Direction.xyz, N, rayPayload);
             bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
             L += Ideal::Light::ComputeDirectionalLight(
             Kd, 
             Ks, 
-            //g_lightList.DirLight.DiffuseColor.rgb, 
             color, 
             isInShadow, roughness, N, V,
             direction);
-            
-        }       
+        }
+        // Point Light
+        {
+            for (int i = 0; i < g_lightList.PointLightNum; ++i)
+            {
+                float3 position = g_lightList.PointLights[i].Position.xyz;
+                float3 color = g_lightList.PointLights[i].Color.rgb;
+                float range = g_lightList.PointLights[i].Range;
+                
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                float att = Ideal::Attenuate(distance, range);
+                float intensity = g_lightList.PointLights[i].Intensity;
+                
+                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+                
+                float3 light = Ideal::Light::ComputePointLight
+                (
+                Kd,
+                Ks,
+                color,
+                isInShadow,
+                roughness,
+                N,
+                V,
+                direction,
+                distance,
+                range,
+                intensity
+                );
+            }
+        }
     }
 
     // Temp : 0.4는 임시 값
