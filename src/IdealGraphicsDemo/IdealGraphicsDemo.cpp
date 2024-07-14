@@ -782,12 +782,19 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 {
 	ImGui::Begin("Directional Light");
 	ImGui::Text("Rotation Axis X");
-	static float angleZ = 0.f;
-	ImGui::SliderFloat("Z", &angleZ, 0.f, 180.f);
+	static float angleX = 0.f;
+	ImGui::SliderFloat("X", &angleX, 0.f, 10.f);
 	Matrix mat = Matrix::Identity;
-	mat *= Matrix::CreateRotationZ(angleZ);
+	mat *= Matrix::CreateRotationX(angleX);
 	Vector3 rot = mat.Forward();
-	if(DirLight)
-		//DirLight->SetDirection(rot);
+	static float color[3] = { 1.f, 1.f, 1.f };
+	ImGui::ColorEdit3("Diffuse Color", color);
+
+	if (DirLight)
+	{
+		DirLight->SetDirection(rot);
+		DirLight->SetDiffuseColor(Color(color[0], color[1], color[2], 1.f));
+	}
+
 	ImGui::End();
 }

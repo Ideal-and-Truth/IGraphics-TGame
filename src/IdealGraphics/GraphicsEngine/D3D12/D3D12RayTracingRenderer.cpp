@@ -408,6 +408,8 @@ finishAdapter:
 	m_sceneCB.maxRadianceRayRecursionDepth = G_MAX_RAY_RECURSION_DEPTH;
 	m_sceneCB.maxShadowRayRecursionDepth = G_MAX_RAY_RECURSION_DEPTH;
 
+	m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
+
 	// load image
 
 	// create resource
@@ -431,7 +433,9 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
 	UpdateLightListCBData();
-
+	m_sceneCB.color = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
+	//m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
+	m_sceneCB.lightDiffuse = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
 	ResetCommandList();
 
 #ifdef _DEBUG

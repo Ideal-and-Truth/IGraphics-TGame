@@ -15,6 +15,7 @@ struct SceneConstantBuffer
 
 	uint32 maxRadianceRayRecursionDepth;
 	uint32 maxShadowRayRecursionDepth;
+	DirectX::XMVECTOR color;
 	float padding[2];
 };
 
@@ -55,7 +56,7 @@ struct PointLight
 	Vector3 Position;
 	float Range;
 	float Intensity;
-	Vector3 pad;
+	float pad[3];
 };
 
 struct DirectionalLight
@@ -74,8 +75,7 @@ struct SpotLight
 	float SpotAngle;
 	float Range;	
 	float Intensity;
-	float pad;
-	float pad2;
+	float pad[2];
 };
 
 struct CB_LightList

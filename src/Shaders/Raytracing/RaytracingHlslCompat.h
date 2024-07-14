@@ -38,7 +38,8 @@ struct SceneConstantBuffer
     unsigned int maxRadianceRayRecursionDepth;
     unsigned int maxShadowRayRecursionDepth;
 
-    float padding[3];
+    XMVECTOR Color;
+    float padding[2];
 };
 
 struct CubeConstantBuffer
@@ -101,7 +102,8 @@ struct LightList
 {
     int PointLightNum;
     int SpotLightNum;
-    float pad[2];
+    float pad;
+    float pad1;
     DirectionalLight DirLight;
     PointLight PointLight[16];  //TEMP
     SpotLight SpotLight[16];    //TEMP

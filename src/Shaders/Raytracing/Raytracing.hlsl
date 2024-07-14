@@ -263,32 +263,35 @@ float3 Shade(
     {
         float3 wi = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
 
-#ifdef SHADOW_ON
-        // Raytraced shadows
-        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
-        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, isInShadow, roughness, N, V, wi);
-#else
-        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
-#endif
+//#ifdef SHADOW_ON
+//        // Raytraced shadows
+//        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
+//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, isInShadow, roughness, N, V, wi);
+//#else
+//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
+//#endif
 
         // Directional Light
         {
-            //float3 direction = g_lightList.DirLight.Direction.xyz;
+            float3 direction = g_lightList.DirLight.Direction.xyz;
+            float3 color = g_lightList.DirLight.DiffuseColor.rgb;
             //float3 color = g_lightList.DirLight.DiffuseColor.rgb;
+            //float3 color = g_sceneCB.Color.xyz;
+            //float3 color = g_sceneCB.lightDiffuseColor.xyz;
             //float3 direction = float3(1.f, 0.f, 0.f);
             //float3 color = float3(1.f, 1.f, 1.f);
-            //
-            //L += BxDF::DirectLighting::Shade(Kd, Ks, color, false, roughness, N, V, wi);
-            //
+            
+            //L += BxDF::DirectLighting::Shade(Kd, Ks, color, false, roughness, N, V, direction);
+            
             //bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -g_lightList.DirLight.Direction.xyz, N, rayPayload);
-            //bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
-            //L += Ideal::Light::ComputeDirectionalLight(
-            //Kd, 
-            //Ks, 
-            ////g_lightList.DirLight.DiffuseColor.rgb, 
-            //color, 
-            //isInShadow, roughness, N, V, 
-            //g_lightList.DirLight.Direction.xyz);
+            bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
+            L += Ideal::Light::ComputeDirectionalLight(
+            Kd, 
+            Ks, 
+            //g_lightList.DirLight.DiffuseColor.rgb, 
+            color, 
+            isInShadow, roughness, N, V,
+            direction);
             
         }       
     }
