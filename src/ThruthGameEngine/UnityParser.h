@@ -106,8 +106,9 @@ namespace Truth
 
 		GameObject* ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
 
-		void CalculateWorldTM(GameObject* _node);
+		Matrix GetPrefabMatrix(const YAML::Node& _node);
 
+		void CalculateWorldTM(GameObject* _node);
 		void CreateBoxData();
 		void WriteMapData(fs::path _path);
 		void GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
