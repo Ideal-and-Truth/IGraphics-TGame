@@ -162,16 +162,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+//<<<<<<< Updated upstream
 		//gRenderer->ConvertAssetToMyFormat(L"test2/run_.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+	//====== =
+		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+//>>>>>>> Stashed changes
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -460,7 +465,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						AnimationTest(slashAnim);
 						SkinnedMeshObjectAnimationTest(ka);
 						LightTest(dirLight);
-						PointLightInspecter(pointLight);
+						//PointLightInspecter(pointLight);
 					}
 					//once++;
 					//ImGuiTest();

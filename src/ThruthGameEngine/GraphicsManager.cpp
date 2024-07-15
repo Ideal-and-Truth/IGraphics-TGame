@@ -39,6 +39,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	// Editor mode & Release mode
 #ifdef _DEBUG
 	m_renderer = CreateRenderer(
+		//EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR,
 		EGraphicsInterfaceType::D3D12_EDITOR,
 		&_hwnd,
 		_wight,
