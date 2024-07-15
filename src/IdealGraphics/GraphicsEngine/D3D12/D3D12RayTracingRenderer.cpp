@@ -1067,6 +1067,9 @@ void Ideal::D3D12RayTracingRenderer::UpdateLightListCBData()
 	if (m_directionalLight)
 	{
 		m_lightListCB.DirLight = m_directionalLight->GetDirectionalLightDesc();
+		//m_lightListCB.DirLight.AmbientColor = m_directionalLight->GetDirectionalLightDesc().AmbientColor;
+		//m_lightListCB.DirLight.DiffuseColor = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
+		//m_lightListCB.DirLight.Direction = m_directionalLight->GetDirectionalLightDesc().Direction;
 	}
 
 	//----------------Spot Light-----------------//

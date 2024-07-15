@@ -99,6 +99,11 @@ void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
 void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
 
+float lightColor[3] = { 1.f, 1.f, 1.f };
+float lightAngleX = 0.f;
+
+float g_cameraSpeed = 0.18f;
+void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -171,7 +176,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -194,7 +199,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
 		std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
-		//std::shared_ptr<Ideal::IMeshObject> car2 = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
+		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
 		ka->AddAnimation("Run", runAnim);
 		ka->AddAnimation("Slash", slashAnim);
@@ -458,10 +463,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//static int once = 0;
 					//if (once != 0)
 					{
+						CameraWindow(camera);
 						AnimationTest(slashAnim);
 						SkinnedMeshObjectAnimationTest(ka);
-						LightTest(dirLight);
-						PointLightInspecter(pointLight);
+						if (dirLight)
+						{
+							LightTest(dirLight);
+						}
+						if (pointLight)
+						{
+							PointLightInspecter(pointLight);
+						}
 					}
 					//once++;
 					//ImGuiTest();
@@ -488,6 +500,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		gRenderer->DeleteMeshObject(car);
 		car.reset();
+
+		//gRenderer->DeleteMeshObject(boss);
+		//boss.reset();
 		
 		gRenderer.reset();
 	}
@@ -598,7 +613,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 {
-	float speed = 0.02f;
+	float speed = g_cameraSpeed;
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 	{
 		speed *= 0.1f;
@@ -663,6 +678,17 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
 	}
 }
+
+void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera)
+{
+	if (show_angle_window)
+	{
+		ImGui::Begin("Camera Window");
+		ImGui::DragFloat("Camera Speed", &g_cameraSpeed, 0.01f, 0.0f, 1.f);
+		ImGui::End();
+	}
+}
+
 void DirLightAngle(float* x, float* y, float* z)
 {
 	if (show_angle_window)
@@ -796,18 +822,16 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 {
 	ImGui::Begin("Directional Light");
 	ImGui::Text("Rotation Axis X");
-	static float angleX = 0.f;
-	ImGui::SliderFloat("X", &angleX, 0.f, 6.28f);
+	ImGui::SliderFloat("X", &lightAngleX, 0.f, 6.28f);
 	Matrix mat = Matrix::Identity;
-	mat *= Matrix::CreateRotationX(angleX);
+	mat *= Matrix::CreateRotationX(lightAngleX);
 	Vector3 rot = mat.Forward();
-	static float color[3] = { 1.f, 1.f, 1.f };
-	ImGui::ColorEdit3("Diffuse Color", color);
+	ImGui::ColorEdit3("Diffuse Color", lightColor);
 
 	if (DirLight)
 	{
 		DirLight->SetDirection(rot);
-		DirLight->SetDiffuseColor(Color(color[0], color[1], color[2], 1.f));
+		DirLight->SetDiffuseColor(Color(lightColor[0], lightColor[1], lightColor[2], 1.f));
 	}
 
 	ImGui::End();

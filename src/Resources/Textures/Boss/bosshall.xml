@@ -5,6 +5,8 @@
         <DiffuseFile></DiffuseFile>
         <SpecularFile></SpecularFile>
         <NormalFile></NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.16971765" G="0.14786461" B="0.084910125" A="1"/>
         <Specular R="0.16971765" G="0.14786461" B="0.084910125" A="0"/>
@@ -15,6 +17,8 @@
         <DiffuseFile>Treal_statuewall15_low_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>Treal_statuewall15_low_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>Treal_statuewall15_low_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -25,6 +29,8 @@
         <DiffuseFile>Treal_window15_insideoutside_low_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>Treal_window15_insideoutside_low_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>Treal_window15_insideoutside_low_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -35,6 +41,8 @@
         <DiffuseFile>corridor_support_low_support_low_BaseColor.png</DiffuseFile>
         <SpecularFile>corridor_support_low_support_low_BaseColor.png</SpecularFile>
         <NormalFile>corridor_support_low_support_low_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -45,6 +53,8 @@
         <DiffuseFile>T_GateDoorArch_BaseColor.png</DiffuseFile>
         <SpecularFile>T_GateDoorArch_BaseColor.png</SpecularFile>
         <NormalFile>T_GateDoorArch_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -55,6 +65,8 @@
         <DiffuseFile>Treal_torch_low_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>Treal_torch_low_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>Treal_torch_low_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -65,6 +77,8 @@
         <DiffuseFile>T_GateTop_BaseColor.png</DiffuseFile>
         <SpecularFile>T_GateTop_BaseColor.png</SpecularFile>
         <NormalFile>T_GateTop_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -75,6 +89,8 @@
         <DiffuseFile>fire.png</DiffuseFile>
         <SpecularFile>fire.png</SpecularFile>
         <NormalFile>fire.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -85,6 +101,8 @@
         <DiffuseFile>handrail_array_low_low_handrail_BaseColor.png</DiffuseFile>
         <SpecularFile>handrail_array_low_low_handrail_BaseColor.png</SpecularFile>
         <NormalFile>handrail_array_low_handrail_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -95,6 +113,8 @@
         <DiffuseFile></DiffuseFile>
         <SpecularFile></SpecularFile>
         <NormalFile></NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.3415612" G="0.29273489" B="0.2044526" A="1"/>
         <Specular R="0.3415612" G="0.29273489" B="0.2044526" A="20"/>
@@ -105,6 +125,8 @@
         <DiffuseFile>mainbasicetile_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>mainbasicetile_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>mainbasicetile_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -115,6 +137,8 @@
         <DiffuseFile>mainbasetile_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>mainbasetile_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>mainbasetile_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -125,6 +149,8 @@
         <DiffuseFile>T_Gatedoor_BaseColor.png</DiffuseFile>
         <SpecularFile>T_Gatedoor_BaseColor.png</SpecularFile>
         <NormalFile>T_Gatedoor_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -135,6 +161,8 @@
         <DiffuseFile>T_corridor_ceiling001_BaseColor.png</DiffuseFile>
         <SpecularFile>T_corridor_ceiling001_BaseColor.png</SpecularFile>
         <NormalFile>T_corridor_ceiling001_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -145,6 +173,8 @@
         <DiffuseFile></DiffuseFile>
         <SpecularFile></SpecularFile>
         <NormalFile></NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.22916667" G="0.21325926" B="0.16113281" A="1"/>
         <Specular R="0.22916667" G="0.21325926" B="0.16113281" A="20"/>
@@ -155,6 +185,8 @@
         <DiffuseFile>T_GateDoorArch_BaseColor.png</DiffuseFile>
         <SpecularFile>T_GateDoorArch_BaseColor.png</SpecularFile>
         <NormalFile>T_GateDoorArch_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -165,6 +197,8 @@
         <DiffuseFile>T_Gatedoor_BaseColor.png</DiffuseFile>
         <SpecularFile>T_Gatedoor_BaseColor.png</SpecularFile>
         <NormalFile>T_Gatedoor_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -175,6 +209,8 @@
         <DiffuseFile>Treal_statuewall_low_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>Treal_statuewall_low_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>Treal_statuewall_low_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -185,6 +221,8 @@
         <DiffuseFile>mainbasicetile_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>mainbasicetile_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>mainbasicetile_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -195,6 +233,8 @@
         <DiffuseFile>Treal_ceillingbase_low_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>Treal_ceillingbase_low_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>Treal_ceillingbase_low_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -205,6 +245,8 @@
         <DiffuseFile>Treal_ceillingtop_low_DefaultMaterial_BaseColor.png</DiffuseFile>
         <SpecularFile>Treal_ceillingtop_low_DefaultMaterial_BaseColor.png</SpecularFile>
         <NormalFile>Treal_ceillingtop_low_DefaultMaterial_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -215,6 +257,8 @@
         <DiffuseFile>Treal_circularrockstaris_low_Material_BaseColor.png</DiffuseFile>
         <SpecularFile>Treal_circularrockstaris_low_Material_BaseColor.png</SpecularFile>
         <NormalFile>Treal_circularrockstaris_low_Material_BaseColor.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="0"/>
@@ -225,6 +269,8 @@
         <DiffuseFile>T_GateTop_BaseColor.png</DiffuseFile>
         <SpecularFile>T_GateTop_BaseColor.png</SpecularFile>
         <NormalFile>T_GateTop_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -235,6 +281,8 @@
         <DiffuseFile>corridor_support_low_support_low_BaseColor.png</DiffuseFile>
         <SpecularFile>corridor_support_low_support_low_BaseColor.png</SpecularFile>
         <NormalFile>corridor_support_low_support_low_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
@@ -245,6 +293,8 @@
         <DiffuseFile>T_castle_ceilling_basecolor.png</DiffuseFile>
         <SpecularFile>T_castle_ceilling_basecolor.png</SpecularFile>
         <NormalFile>T_castle_ceilling_basecolor_Normal.png</NormalFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="20"/>
