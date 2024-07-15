@@ -103,8 +103,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	m_navMesh = std::make_shared<NavMeshGenerater>();
-	m_navMesh->Initalize(L"TestMap/navTestMap");
+
 
 	CreateMap(L"E:\\Projects\\IGraphics-TGame\\src\\Resources\\MapData\\SampleScene.map");
 }
@@ -299,6 +298,9 @@ void Truth::Scene::ClearEntity()
 void Truth::Scene::CreateMap(const std::wstring& _path)
 {
 	m_managers.lock()->Physics()->CreateMapCollider(_path);
+
+	m_navMesh = std::make_shared<NavMeshGenerater>();
+	m_navMesh->Initalize(_path);
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	std::wstring path = _path + L".mesh";
