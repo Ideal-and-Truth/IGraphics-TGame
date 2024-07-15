@@ -5,11 +5,14 @@
 
 namespace fs = std::filesystem;
 
+class FileUtils;
+
 namespace Truth
 {
 	/// <summary>
 	/// 이 클래스는 Debug 모드에서만 작동하도록 만들 예정
 	/// 오직 에디터에서만 작동하는 클래스
+	/// 해당 클래스로 얻은 정보는 에디터상에서 편집 불가능
 	/// </summary>
 	class UnityParser
 	{
@@ -36,22 +39,31 @@ namespace Truth
 
 		/// <summary>
 		/// unity game object tree
+		/// 이를 기반으로 Entity Tree를 재구성
 		/// </summary>
 		struct GameObject
 		{
-			bool isCollider = false;
-			Vector3 m_size = { 1.0f, 1.0f, 1.0f };
-			Vector3 m_Center = { 0.0f, 0.0f, 0.0f };
+			// Collider Info
+			bool m_isCollider = false;
+			std::vector<Vector3> m_size;
+			std::vector<Vector3> m_Center;
+			
+			// Mesh Filter Info
+			bool m_isMesh = false;
+			std::string m_meshPath = "";
+
+			// Transform Info
+			Matrix m_localTM = Matrix::Identity;
+			Matrix m_worldTM = Matrix::Identity;
 
 			std::string m_guid = "";
 			std::string m_fileID = "";
 
-			Matrix m_localTM = Matrix::Identity;
-			Matrix m_worldTM = Matrix::Identity;
-
 			GameObject* m_parent = nullptr;
 			std::vector<GameObject*> m_children;
 		};
+
+		uint32 m_meshFilterCount = 0;
 
 		std::vector<GameObject*> m_rootGameObject;
 
@@ -98,7 +110,9 @@ namespace Truth
 
 		void CreateBoxData();
 		void WriteMapData(fs::path _path);
-		void SetMapData(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
+		void CalculateNodeWorldTM(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
+		void WriteMapMeshData(fs::path _path);
+		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);
 	};
 }
 

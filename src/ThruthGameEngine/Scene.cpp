@@ -5,6 +5,7 @@
 #include "GraphicsManager.h"
 #include "NavMeshGenerater.h"
 #include "PhysicsManager.h"
+#include "FileUtils.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -298,5 +299,24 @@ void Truth::Scene::ClearEntity()
 void Truth::Scene::CreateMap(const std::wstring& _path)
 {
 	m_managers.lock()->Physics()->CreateMapCollider(_path);
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::wstring path = _path + L".mesh";
+	file->Open(path, FileMode::Read);
+
+	uint32 meshCount = file->Read<uint32>();
+	m_mapMesh.resize(meshCount);
+
+	for (uint32 i = 0; i < meshCount; i++)
+	{
+		std::string meshpath = file->Read<std::string>();
+		Matrix meshTM = file->Read<Matrix>();
+
+		USES_CONVERSION;
+		std::wstring wsval(A2W(meshpath.c_str()));
+
+		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
+		m_mapMesh.back()->SetTransformMatrix(meshTM);
+	}
 }
 

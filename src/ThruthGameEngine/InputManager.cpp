@@ -12,6 +12,7 @@ Truth::InputManager::InputManager()
 	, m_nowMousePosY(0)
 	, m_mouseDx(0)
 	, m_mouseDy(0)
+	, m_deltaWheel(0)
 {
 	DEBUG_PRINT("Create InputManager\n");
 	m_mousePoint = new POINT;
@@ -104,7 +105,7 @@ void Truth::InputManager::Update()
 
 	if (m_fpsMode)
 	{
-		ShowCursor(false);
+		// ShowCursor(false);
 		SetCursorPos(1920 / 2, 1080 / 2);
 
 		if (GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
@@ -114,7 +115,7 @@ void Truth::InputManager::Update()
 	}
 	else
 	{
-		ShowCursor(true);
+		// ShowCursor(true);
 		if (GetKeyState(KEY::F_1) == KEY_STATE::DOWN)
 		{
 			m_fpsMode = true;

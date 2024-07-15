@@ -2,6 +2,12 @@
 #include "Headers.h"
 #include "EventHandler.h"
 #include "Entity.h"
+
+namespace Ideal
+{
+	class IMeshObject;
+}
+
 /// <summary>
 /// 게임이 실제로 돌아가는 씬
 /// </summary>
@@ -28,10 +34,12 @@ namespace Truth
 	public:
 		PROPERTY(name);
 		std::string m_name;
-		PROPERTY(mapPath);
+		
 		std::wstring m_mapPath;
 
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
+
+		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
 
 	private:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;

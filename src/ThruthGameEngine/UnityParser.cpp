@@ -271,7 +271,7 @@ fs::path Truth::UnityParser::OrganizeUnityFile(fs::path& _path)
 Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent)
 {
 	GameObject* GO = new GameObject;
-	GO->isCollider = false;
+	GO->m_isCollider = false;
 	GO->m_parent = _parent;
 	GO->m_guid = _guid;
 
@@ -313,27 +313,38 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 		YAML::Node comList = GONode["GameObject"]["m_Component"];
 		for (YAML::iterator it = comList.begin(); it != comList.end(); ++it)
 		{
-
 			// get component list
 			const YAML::Node& comp = *it;
 			std::string compFid = comp["component"]["fileID"].as<std::string>();
 
-			// find box collider
+			/// find box collider
 			const YAML::Node& collider = m_nodeMap[_guid][compFid]->m_node["BoxCollider"];
 			if (collider.IsDefined())
 			{
-				GO->isCollider = true;
-				GO->m_size = {
+				GO->m_isCollider = true;
+				GO->m_size.push_back({
 					collider["m_Size"]["x"].as<float>(),
 					collider["m_Size"]["y"].as<float>(),
 					collider["m_Size"]["z"].as<float>(),
-				};
+					});
 
-				GO->m_Center = {
+				GO->m_Center.push_back({
 					collider["m_Center"]["x"].as<float>(),
 					collider["m_Center"]["y"].as<float>(),
 					collider["m_Center"]["z"].as<float>(),
-				};
+					});
+			}
+
+			/// find mesh filter
+			const YAML::Node& meshFilter = m_nodeMap[_guid][compFid]->m_node["MeshFilter"];
+			if (meshFilter.IsDefined())
+			{
+				GO->m_isMesh = true;
+				m_meshFilterCount++;
+				if (meshFilter["m_Mesh"]["fileID"].as<std::string>() == "10202")
+				{
+					GO->m_meshPath = "DebugObject/debugCube";
+				}
 			}
 		}
 	}
@@ -407,7 +418,7 @@ void Truth::UnityParser::WriteMapData(fs::path _path)
 
 	for (auto* root : m_rootGameObject)
 	{
-		SetMapData(root, vers, inds);
+		CalculateNodeWorldTM(root, vers, inds);
 	}
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
@@ -423,7 +434,7 @@ void Truth::UnityParser::WriteMapData(fs::path _path)
 	{
 		uint32 verCount = static_cast<uint32>(vers[i].size());
 		file->Write<uint32>(verCount);
-		for (size_t j = 0; j < verCount ; j++)
+		for (size_t j = 0; j < verCount; j++)
 		{
 			file->Write<float>(vers[i][j].x);
 			file->Write<float>(vers[i][j].y);
@@ -439,22 +450,61 @@ void Truth::UnityParser::WriteMapData(fs::path _path)
 	}
 }
 
-void Truth::UnityParser::SetMapData(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds)
+void Truth::UnityParser::CalculateNodeWorldTM(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds)
 {
-	if (_node->isCollider)
+	if (_node->m_isCollider)
 	{
-		_vers.push_back(m_boxVertex);
-		_inds.push_back(m_boxindx);
-
-		for (auto& v : _vers.back())
+		for (size_t i = 0; i < _node->m_size.size(); i++)
 		{
-			v = Vector3::Transform(v, _node->m_worldTM);
+			_vers.push_back(m_boxVertex);
+			_inds.push_back(m_boxindx);
+
+			Matrix temp = Matrix::Identity;
+			temp *= Matrix::CreateScale(_node->m_size[i]);
+			temp *= Matrix::CreateTranslation(_node->m_Center[i]);
+
+			temp = temp * _node->m_worldTM;
+			for (auto& v : _vers.back())
+			{
+				v = Vector3::Transform(v, temp);
+			}
 		}
 	}
 
 	for (auto* c : _node->m_children)
 	{
-		SetMapData(c, _vers, _inds);
+		CalculateNodeWorldTM(c, _vers, _inds);
+	}
+}
+
+void Truth::UnityParser::WriteMapMeshData(fs::path _path)
+{
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::wstring path = L"../Resources/MapData/";
+	path += _path.replace_extension("").filename();
+	path += L".map.mesh";
+
+	file->Open(path, FileMode::Write);
+
+	file->Write<uint32>(m_meshFilterCount);
+
+	for (auto* root : m_rootGameObject)
+	{
+		WriteMapMeshData(root, file);
+	}
+}
+
+void Truth::UnityParser::WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file)
+{
+	if (_node->m_isMesh)
+	{
+		_file->Write<std::string>(_node->m_meshPath);
+		_file->Write<Matrix>(_node->m_worldTM);
+	}
+
+	for (auto* c : _node->m_children)
+	{
+		WriteMapMeshData(c, _file);
 	}
 }
 
@@ -494,14 +544,14 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	for (auto& p : m_classMap[guid]["1001"])
 	{
 		GameObject* GO = new GameObject;
-		GO->isCollider = false;
+		GO->m_isCollider = false;
 		GO->m_parent = nullptr;
 
 		GO->m_guid = guid;
 		GO->m_fileID = p->m_fileID;
 
 		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
-		
+
 		Vector3 pos = {
 			prefabNode[1]["value"].as<float>(),
 			prefabNode[2]["value"].as<float>(),
@@ -531,6 +581,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	}
 
 	WriteMapData(uscene);
+	WriteMapMeshData(uscene);
 }
 
 /// <summary>
@@ -569,7 +620,7 @@ void Truth::UnityParser::ParsePrefabFile(const std::string& _path, GameObject* _
 	for (auto& p : m_classMap[guid]["1001"])
 	{
 		GameObject* GO = new GameObject;
-		GO->isCollider = false;
+		GO->m_isCollider = false;
 		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
 
 		Vector3 pos = {
