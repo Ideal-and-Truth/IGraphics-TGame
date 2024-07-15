@@ -343,6 +343,18 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 	return GO;
 }
 
+void Truth::UnityParser::CalculateWorldTM(GameObject* _node)
+{
+	if (!_node->m_parent)
+	{
+		_node->m_worldTM = _node->m_localTM;
+	}
+	else
+	{
+		_node->m_worldTM = _node->m_localTM * _node->m_parent->m_worldTM;
+	}
+}
+
 /// <summary>
 /// Scene 파일을 파싱한다.
 /// </summary>
@@ -380,6 +392,8 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	{
 		GameObject* GO = new GameObject;
 		GO->isCollider = false;
+		GO->m_parent = nullptr;
+
 		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
 		
 		Vector3 pos = {
@@ -403,6 +417,11 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 		// parse prefab file
 		ParsePrefabFile(m_guidMap[prefabGuid]->m_filePath.generic_string(), GO);
 		m_rootGameObject.push_back(GO);
+	}
+
+	for (auto* root : m_rootGameObject)
+	{
+		CalculateWorldTM(root);
 	}
 }
 
@@ -434,7 +453,7 @@ void Truth::UnityParser::ParsePrefabFile(const std::string& _path, GameObject* _
 		std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
 		if (parentFid == "0")
 		{
-			ParseTranfomrNode(p->m_node["Transform"], guid, _parent);
+			_parent->m_children.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, _parent));
 		}
 	}
 

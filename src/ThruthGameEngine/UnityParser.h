@@ -46,7 +46,7 @@ namespace Truth {
 			std::string m_fileID;
 
 			Matrix m_localTM;
-
+			Matrix m_worldTM;
 
 			GameObject* m_parent;
 			std::vector<GameObject*> m_children;
@@ -89,6 +89,8 @@ namespace Truth {
 		fs::path OrganizeUnityFile(fs::path& _path);
 
 		GameObject* ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
+
+		void CalculateWorldTM(GameObject* _node);
 	};
 }
 
