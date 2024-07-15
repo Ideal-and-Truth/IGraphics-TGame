@@ -38,7 +38,8 @@ struct SceneConstantBuffer
     unsigned int maxRadianceRayRecursionDepth;
     unsigned int maxShadowRayRecursionDepth;
 
-    float padding[3];
+    XMVECTOR Color;
+    float padding[2];
 };
 
 struct CubeConstantBuffer
@@ -67,5 +68,49 @@ struct PositionNormalUVTangentColor
     XMFLOAT3 tangent;
     XMFLOAT4 color;
 
+};
+
+struct DirectionalLight
+{
+    XMFLOAT4 AmbientColor;
+    XMFLOAT4 DiffuseColor;
+    XMFLOAT3 Direction;
+    float Intensity;
+};
+
+struct PointLight
+{
+    XMFLOAT4 Color;
+    XMFLOAT3 Position;
+    float Range;
+    float Intensity;
+    float pad0;
+    float pad1;
+    float pad2;
+};
+
+struct SpotLight
+{
+    XMFLOAT4 Color;
+    XMFLOAT4 Direction;
+    XMFLOAT3 Position;
+    float SpotAngle;
+    float Range;
+    float Intensity;
+    float pad0;
+    float pad1;
+};
+
+struct LightList
+{
+    int PointLightNum;
+    int SpotLightNum;
+
+    DirectionalLight DirLight;
+    PointLight PointLights[16];  //TEMP
+    SpotLight SpotLights[16];    //TEMP
+
+	float pad;
+	float pad1;
 };
 #endif // RAYTRACINGHLSLCOMPAT_H

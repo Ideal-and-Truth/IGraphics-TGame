@@ -171,6 +171,8 @@
   <ItemGroup>
     <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Editor\imguizmo\GraphEditor.h" />
     <ClInclude Include="Editor\imguizmo\ImApp.h" />

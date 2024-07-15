@@ -176,9 +176,6 @@ float4 main(VertexOut input) : SV_TARGET
         spec += S;
     }
 
-
-
-
     float4 litColor = albedo * (ambient + diffuse);
     litColor.a = 1.f;
     return litColor;

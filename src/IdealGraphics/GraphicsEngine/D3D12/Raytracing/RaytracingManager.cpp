@@ -97,7 +97,7 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	CreateAnimationCSPipelineState(Device, AnimationShader);
 }
 
-void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture)
+void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, CB_LightList LightCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture)
 {
 	CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
@@ -128,6 +128,13 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 		Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), SkyBoxTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::SRV_SkyBox, handle3.GetGpuHandle());
 	}
+
+	// Parameter 4
+	auto lightListHandle = CBPool->Allocate(Device.Get(), sizeof(CB_LightList));
+	memcpy(lightListHandle->SystemMemAddr, &LightCB, sizeof(LightCB));
+	auto handle4 = DescriptorManager->Allocate(CurrentFrameIndex);
+	Device->CopyDescriptorsSimple(1, handle4.GetCpuHandle(), lightListHandle->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::CBV_LightList, handle4.GetGpuHandle());
 
 	//-----------------Dispatch Rays----------------//
 
@@ -396,12 +403,14 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		ranges[GlobalRootSignature::Slot::UAV_Output].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : Output
 		ranges[GlobalRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : Global
 		ranges[GlobalRootSignature::Slot::SRV_SkyBox].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1 : SkyBox
+		ranges[GlobalRootSignature::Slot::CBV_LightList].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // b1 : LightList
 
 		// binding
 		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignature::Slot::Count];
 		rootParameters[GlobalRootSignature::Slot::UAV_Output].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_Output]);
 		rootParameters[GlobalRootSignature::Slot::CBV_Global].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::CBV_Global]);
 		rootParameters[GlobalRootSignature::Slot::SRV_SkyBox].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::SRV_SkyBox]);
+		rootParameters[GlobalRootSignature::Slot::CBV_LightList].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::CBV_LightList]);
 
 		// init as
 		rootParameters[GlobalRootSignature::Slot::SRV_AccelerationStructure].InitAsShaderResourceView(0);	// t0

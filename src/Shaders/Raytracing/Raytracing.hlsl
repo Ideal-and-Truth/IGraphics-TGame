@@ -18,23 +18,31 @@
 
 #define SHADOW_ON
 
+#define MAX_POINT_LIGHT_NUM 16
+#define MAX_SPOT_LIGHT_NUM 16
+
 //-----------GLOBAL-----------//
 RWTexture2D<float4> g_renderTarget : register(u0);
 RaytracingAccelerationStructure g_scene : register(t0, space0);
-ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
 TextureCube<float4> g_texEnvironmentMap : register(t1);
 SamplerState LinearWrapSampler : register(s0);
+
+ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
+ConstantBuffer<LightList> g_lightList : register(b1);
 
 //-----------LOCAL-----------//
 StructuredBuffer<uint> l_indices : register(t0, space1);
 StructuredBuffer<PositionNormalUVTangentColor> l_vertices : register(t1, space1);
 Texture2D<float4> l_texDiffuse : register(t2, space1);
-
 Texture2D<float4> l_texNormal : register(t3, space1);
 Texture2D<float4> l_texMetallic : register(t4, space1);
 Texture2D<float4> l_texRoughness : register(t5, space1);
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
+
+// Light
+
+
 
 struct RayPayload
 {
@@ -184,7 +192,6 @@ bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRay
 bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in float3 N, in UINT currentRayRecursionDepth, in bool retrieveTHit = true, in float TMax = 10000)
 {
     tHit = 0;
-    //tHit = 0;
     // Only trace if the surface is facing the target.
     if (dot(ray.direction, N) > 0)
     {
@@ -256,13 +263,64 @@ float3 Shade(
     {
         float3 wi = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
 
-#ifdef SHADOW_ON
-        // Raytraced shadows
-        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
-        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, isInShadow, roughness, N, V, wi);
-#else
-        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
-#endif
+//#ifdef SHADOW_ON
+//        // Raytraced shadows
+//        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
+//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, isInShadow, roughness, N, V, wi);
+//#else
+//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
+//#endif
+
+        int pointLightNum = g_lightList.PointLightNum;
+
+        // Directional Light
+        {
+            float3 direction = g_lightList.DirLight.Direction.xyz;
+            float3 color = g_lightList.DirLight.DiffuseColor.rgb;
+            //float3 color = g_lightList.PointLights[0].Color.rgb;
+            //float3 color = g_lightList.PointLights[0].Position.xyz;
+            
+            bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
+            L += Ideal::Light::ComputeDirectionalLight(
+            Kd, 
+            Ks, 
+            color, 
+            isInShadow, roughness, N, V,
+            direction);
+        }
+        
+        // Point Light
+        {
+            for (int i = 0; i < pointLightNum; ++i)
+            {
+                float3 position = g_lightList.PointLights[i].Position.xyz;
+                float3 color = g_lightList.PointLights[i].Color.rgb;
+                float range = g_lightList.PointLights[i].Range;
+                
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                float att = Ideal::Attenuate(distance, range);
+                float intensity = g_lightList.PointLights[i].Intensity;
+                
+                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+                
+                float3 light = Ideal::Light::ComputePointLight
+                (
+                Kd,
+                Ks,
+                color,
+                isInShadow,
+                roughness,
+                N,
+                V,
+                direction,
+                distance,
+                range,
+                intensity
+                );
+                L += light;
+            }
+        }
     }
 
     // Temp : 0.4는 임시 값
