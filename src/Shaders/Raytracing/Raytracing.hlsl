@@ -271,10 +271,14 @@ float3 Shade(
 //        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
 //#endif
 
+        int pointLightNum = g_lightList.PointLightNum;
+
         // Directional Light
         {
             float3 direction = g_lightList.DirLight.Direction.xyz;
             float3 color = g_lightList.DirLight.DiffuseColor.rgb;
+            //float3 color = g_lightList.PointLights[0].Color.rgb;
+            //float3 color = g_lightList.PointLights[0].Position.xyz;
             
             bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
             L += Ideal::Light::ComputeDirectionalLight(
@@ -284,9 +288,10 @@ float3 Shade(
             isInShadow, roughness, N, V,
             direction);
         }
+        
         // Point Light
         {
-            for (int i = 0; i < g_lightList.PointLightNum; ++i)
+            for (int i = 0; i < pointLightNum; ++i)
             {
                 float3 position = g_lightList.PointLights[i].Position.xyz;
                 float3 color = g_lightList.PointLights[i].Color.rgb;
@@ -313,6 +318,7 @@ float3 Shade(
                 range,
                 intensity
                 );
+                L += light;
             }
         }
     }

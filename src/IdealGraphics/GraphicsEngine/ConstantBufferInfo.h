@@ -56,7 +56,9 @@ struct PointLight
 	Vector3 Position;
 	float Range;
 	float Intensity;
-	float pad[3];
+	float pad0;
+	float pad1;
+	float pad2;
 };
 
 struct DirectionalLight
@@ -75,15 +77,19 @@ struct SpotLight
 	float SpotAngle;
 	float Range;	
 	float Intensity;
-	float pad[2];
+	float pad0;
+	float pad1;
 };
 
 struct CB_LightList
 {
 	int32 PointLightNum;
 	int32 SpotLightNum;
-	float pad[2];
+
 	DirectionalLight DirLight;
 	PointLight PointLights[MAX_POINT_LIGHT_NUM];
 	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
+
+	float pad;
+	float pad1;
 };

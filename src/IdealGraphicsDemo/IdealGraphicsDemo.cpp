@@ -130,9 +130,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,
@@ -148,7 +148,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
 		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
-		Vector3 pointLightPosition = Vector3(0.f);
+		Vector3 pointLightPosition = Vector3(3.f);
 
 		//-------------------Create Camera-------------------//
 		std::shared_ptr<Ideal::ICamera> camera = gRenderer->CreateCamera();
@@ -251,10 +251,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
 
-		pointLight->SetPosition(pointLightPosition);
-		pointLight->SetRange(300.f);
+		pointLight->SetPosition(Vector3(0.f, 3.f,3.f));
+		pointLight->SetRange(6.f);
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		pointLight->SetIntensity(10.f);
+		pointLight->SetIntensity(0.8f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -685,14 +685,23 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 	}
 
 	Vector3 lightPosition = light->GetPosition();
+	float range = light->GetRange();
+	float intensity = light->GetIntensity();
 	if (show_point_light_window)
 	{
 		ImGui::Begin("Point Light Inspector");
 		ImGui::ColorEdit3("Light Color", (float*)&lightColor);
 		light->SetLightColor(Color(lightColor.x, lightColor.y, lightColor.z, lightColor.w));
-		ImGui::InputFloat3("Position", &lightPosition.x);
+		//ImGui::InputFloat3("Position", &lightPosition.x);
+		ImGui::DragFloat3("Position", &lightPosition.x, 1.f, 0.f, 10.f);
 		light->SetPosition(lightPosition);
-		ImGui::SameLine();
+
+		ImGui::DragFloat("Range", &range, 1.f, 0.f, 1000.f);
+		light->SetRange(range);
+
+		ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.f, 100.f);
+		light->SetIntensity(intensity);
+
 		ImGui::End();
 	}
 }
@@ -787,7 +796,7 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	ImGui::Begin("Directional Light");
 	ImGui::Text("Rotation Axis X");
 	static float angleX = 0.f;
-	ImGui::SliderFloat("X", &angleX, 0.f, 10.f);
+	ImGui::SliderFloat("X", &angleX, 0.f, 6.28f);
 	Matrix mat = Matrix::Identity;
 	mat *= Matrix::CreateRotationX(angleX);
 	Vector3 rot = mat.Forward();

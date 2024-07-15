@@ -84,7 +84,9 @@ struct PointLight
     XMFLOAT3 Position;
     float Range;
     float Intensity;
-    float pad[3];
+    float pad0;
+    float pad1;
+    float pad2;
 };
 
 struct SpotLight
@@ -95,17 +97,20 @@ struct SpotLight
     float SpotAngle;
     float Range;
     float Intensity;
-    float pad[2];
+    float pad0;
+    float pad1;
 };
 
 struct LightList
 {
     int PointLightNum;
     int SpotLightNum;
-    float pad;
-    float pad1;
+
     DirectionalLight DirLight;
     PointLight PointLights[16];  //TEMP
     SpotLight SpotLights[16];    //TEMP
+
+	float pad;
+	float pad1;
 };
 #endif // RAYTRACINGHLSLCOMPAT_H
