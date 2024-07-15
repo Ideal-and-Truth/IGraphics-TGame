@@ -12,7 +12,7 @@
 #define G_SWAP_CHAIN_NUM 4
 
 // Raytracing Ray Recursion Depth
-#define G_MAX_RAY_RECURSION_DEPTH 5
+#define G_MAX_RAY_RECURSION_DEPTH 2
 
 // Index Format
 #define INDEX_FORMAT DXGI_FORMAT_R32_UINT

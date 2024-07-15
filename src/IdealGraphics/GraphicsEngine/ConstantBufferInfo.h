@@ -85,11 +85,10 @@ struct CB_LightList
 {
 	int32 PointLightNum;
 	int32 SpotLightNum;
+	float pad;
+	float pad1;
 
 	DirectionalLight DirLight;
 	PointLight PointLights[MAX_POINT_LIGHT_NUM];
 	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
-
-	float pad;
-	float pad1;
 };
