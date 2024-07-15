@@ -110,7 +110,7 @@ namespace Truth
 
 		void CreateBoxData();
 		void WriteMapData(fs::path _path);
-		void CalculateNodeWorldTM(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
+		void GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
 		void WriteMapMeshData(fs::path _path);
 		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);
 	};

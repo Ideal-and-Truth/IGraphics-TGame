@@ -418,7 +418,7 @@ void Truth::UnityParser::WriteMapData(fs::path _path)
 
 	for (auto* root : m_rootGameObject)
 	{
-		CalculateNodeWorldTM(root, vers, inds);
+		GetColliderVertexes(root, vers, inds);
 	}
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
@@ -450,7 +450,7 @@ void Truth::UnityParser::WriteMapData(fs::path _path)
 	}
 }
 
-void Truth::UnityParser::CalculateNodeWorldTM(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds)
+void Truth::UnityParser::GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds)
 {
 	if (_node->m_isCollider)
 	{
@@ -473,7 +473,7 @@ void Truth::UnityParser::CalculateNodeWorldTM(GameObject* _node, std::vector<std
 
 	for (auto* c : _node->m_children)
 	{
-		CalculateNodeWorldTM(c, _vers, _inds);
+		GetColliderVertexes(c, _vers, _inds);
 	}
 }
 
@@ -552,19 +552,57 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 
 		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
 
-		Vector3 pos = {
-			prefabNode[1]["value"].as<float>(),
-			prefabNode[2]["value"].as<float>(),
-			prefabNode[3]["value"].as<float>()
-		};
-		Quaternion rot = {
-			prefabNode[5]["value"].as<float>(),
-			prefabNode[6]["value"].as<float>(),
-			prefabNode[7]["value"].as<float>(),
-			prefabNode[4]["value"].as<float>(),
-		};
+		Vector3 scale = { 1.0f ,1.0f, 1.0f };
+		Vector3 pos = { 0.0f, 0.0f, 0.0f };
+		Quaternion rot = { 0.0f, 0.0f, 0.0f, 1.0f };
+		for (auto itr = prefabNode.begin(); itr != prefabNode.end(); itr++)
+		{
+			if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.x")
+			{
+				scale.x = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.y")
+			{
+				scale.y = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.z")
+			{
+				scale.z = (*itr)["value"].as<float>();
+			}
 
-		GO->m_localTM = Matrix::Identity;
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.x")
+			{
+				pos.x = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.y")
+			{
+				pos.y = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.z")
+			{
+				pos.z = (*itr)["value"].as<float>();
+			}
+
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.w")
+			{
+				rot.w = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.x")
+			{
+				rot.x = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.y")
+			{
+				rot.y = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.z")
+			{
+				rot.z = (*itr)["value"].as<float>();
+			}
+		}
+
+
+		GO->m_localTM = Matrix::CreateScale(scale);
 		GO->m_localTM *= Matrix::CreateFromQuaternion(rot);
 		GO->m_localTM *= Matrix::CreateTranslation(pos);
 
@@ -623,19 +661,57 @@ void Truth::UnityParser::ParsePrefabFile(const std::string& _path, GameObject* _
 		GO->m_isCollider = false;
 		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
 
-		Vector3 pos = {
-			prefabNode[1]["value"].as<float>(),
-			prefabNode[2]["value"].as<float>(),
-			prefabNode[3]["value"].as<float>()
-		};
-		Quaternion rot = {
-			prefabNode[5]["value"].as<float>(),
-			prefabNode[6]["value"].as<float>(),
-			prefabNode[7]["value"].as<float>(),
-			prefabNode[4]["value"].as<float>(),
-		};
+		Vector3 scale = { 1.0f ,1.0f, 1.0f };
+		Vector3 pos = { 0.0f, 0.0f, 0.0f };
+		Quaternion rot = { 0.0f, 0.0f, 0.0f, 1.0f };
+		for (auto itr = prefabNode.begin(); itr != prefabNode.end(); itr++)
+		{
+			if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.x")
+			{
+				scale.x = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.y")
+			{
+				scale.y = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.z")
+			{
+				scale.z = (*itr)["value"].as<float>();
+			}
 
-		GO->m_localTM = Matrix::Identity;
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.x")
+			{
+				pos.x = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.y")
+			{
+				pos.y = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.z")
+			{
+				pos.z = (*itr)["value"].as<float>();
+			}
+
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.w")
+			{
+				rot.w = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.x")
+			{
+				rot.x = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.y")
+			{
+				rot.y = (*itr)["value"].as<float>();
+			}
+			else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.z")
+			{
+				rot.z = (*itr)["value"].as<float>();
+			}
+		}
+
+
+		GO->m_localTM = Matrix::CreateScale(scale);
 		GO->m_localTM *= Matrix::CreateFromQuaternion(rot);
 		GO->m_localTM *= Matrix::CreateTranslation(pos);
 
