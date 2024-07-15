@@ -314,5 +314,6 @@
     </None>
     <None Include="Shaders\Light.hlsli" />
     <None Include="packages.config" />
+    <None Include="..\Shaders\Raytracing\RaytracingHelper.hlsli" />
   </ItemGroup>
 </Project>

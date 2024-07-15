@@ -18,10 +18,12 @@ Ideal::IdealMaterial::IdealMaterial()
 
 Ideal::IdealMaterial::~IdealMaterial()
 {
-	m_diffuseTexture.reset();
-	m_specularTexture.reset();
-	m_emissiveTexture.reset();
-	m_normalTexture.reset();
+	// 2024.07.09 필요없어보임
+	//m_diffuseTexture.reset();
+	//m_specularTexture.reset();
+	//m_emissiveTexture.reset();
+	//m_normalTexture.reset();
+
 }
 
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
@@ -44,6 +46,18 @@ void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> Resour
 	{
 		m_normalTexture = std::make_shared<Ideal::D3D12Texture>();
 		ResourceManager->CreateTexture(m_normalTexture, m_normalTextureFile);
+	}
+
+	if (m_metallicTextureFile.length() > 0)
+	{
+		m_metalicTexture = std::make_shared<Ideal::D3D12Texture>();
+		ResourceManager->CreateTexture(m_metalicTexture, m_metallicTextureFile);
+	}
+
+	if (m_roughnessTextureFile.length() > 0)
+	{
+		m_roughnessTexture = std::make_shared<Ideal::D3D12Texture>();
+		ResourceManager->CreateTexture(m_roughnessTexture, m_roughnessTextureFile);
 	}
 }
 

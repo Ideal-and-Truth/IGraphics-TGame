@@ -51,6 +51,8 @@ namespace AssimpConvert
 		std::string specularTextureFile;
 		std::string emissiveTextureFile;
 		std::string normalTextureFile;
+		std::string metalicTextureFile;
+		std::string roughnessTextureFile;
 	};
 
 
