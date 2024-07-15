@@ -1,6 +1,7 @@
 #include "UnityParser.h"
 #include <fstream>
 #include <iostream>
+#include "FileUtils.h"
 
 Truth::UnityParser::UnityParser()
 {
@@ -11,6 +12,8 @@ Truth::UnityParser::UnityParser()
 	m_ignore.insert("Packages");
 	m_ignore.insert("ProjectSettings");
 	m_ignore.insert("UserSettings");
+
+	CreateBoxData();
 }
 
 Truth::UnityParser::~UnityParser()
@@ -297,6 +300,8 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 	LTM *= Matrix::CreateFromQuaternion(rot);
 	LTM *= Matrix::CreateTranslation(pos);
 
+	GO->m_localTM = LTM;
+
 	// get game object
 	std::string GOfid = _node["m_GameObject"]["fileID"].as<std::string>();
 	GO->m_fileID = GOfid;
@@ -353,6 +358,104 @@ void Truth::UnityParser::CalculateWorldTM(GameObject* _node)
 	{
 		_node->m_worldTM = _node->m_localTM * _node->m_parent->m_worldTM;
 	}
+
+	for (auto* c : _node->m_children)
+	{
+		CalculateWorldTM(c);
+	}
+}
+
+/// <summary>
+/// 박스 콜라이더에 사용할 정점과 인덱스 정보
+/// </summary>
+void Truth::UnityParser::CreateBoxData()
+{
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::wstring path = L"../Resources/Models/DebugObject/debugCube.pos";
+	file->Open(path, FileMode::Read);
+
+	uint32 acc = 0;
+	unsigned int meshNum = file->Read<unsigned int>();
+	for (unsigned int i = 0; i < meshNum; i++)
+	{
+		unsigned int verticesNum = file->Read<unsigned int>();
+		for (unsigned int j = 0; j < verticesNum; j++)
+		{
+			Vector3 p;
+			p.x = file->Read<float>();
+			p.y = file->Read<float>();
+			p.z = file->Read<float>();
+
+			m_boxVertex.push_back(p);
+		}
+
+		unsigned int indNum = file->Read<unsigned int>();
+		for (unsigned int j = 0; j < indNum; j++)
+		{
+			m_boxindx.push_back(file->Read<uint32>() + acc);
+		}
+	}
+}
+
+/// <summary>
+/// 파싱한 데이터를 파일로 작성한다.
+/// </summary>
+void Truth::UnityParser::WriteMapData(fs::path _path)
+{
+	std::vector<std::vector<Vector3>> vers;
+	std::vector<std::vector<uint32>> inds;
+
+	for (auto* root : m_rootGameObject)
+	{
+		SetMapData(root, vers, inds);
+	}
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::wstring path = L"../Resources/MapData/";
+	path += _path.replace_extension("").filename();
+	path += L".map";
+
+	file->Open(path, FileMode::Write);
+	uint32 meshCount = static_cast<uint32>(vers.size());
+
+	file->Write<uint32>(meshCount);
+	for (size_t i = 0; i < meshCount; i++)
+	{
+		uint32 verCount = static_cast<uint32>(vers[i].size());
+		file->Write<uint32>(verCount);
+		for (size_t j = 0; j < verCount ; j++)
+		{
+			file->Write<float>(vers[i][j].x);
+			file->Write<float>(vers[i][j].y);
+			file->Write<float>(vers[i][j].z);
+		}
+
+		uint32 indCount = static_cast<uint32>(inds[i].size());
+		file->Write<uint32>(indCount);
+		for (size_t j = 0; j < indCount; j++)
+		{
+			file->Write<uint32>(inds[i][j]);
+		}
+	}
+}
+
+void Truth::UnityParser::SetMapData(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds)
+{
+	if (_node->isCollider)
+	{
+		_vers.push_back(m_boxVertex);
+		_inds.push_back(m_boxindx);
+
+		for (auto& v : _vers.back())
+		{
+			v = Vector3::Transform(v, _node->m_worldTM);
+		}
+	}
+
+	for (auto* c : _node->m_children)
+	{
+		SetMapData(c, _vers, _inds);
+	}
 }
 
 /// <summary>
@@ -394,6 +497,9 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 		GO->isCollider = false;
 		GO->m_parent = nullptr;
 
+		GO->m_guid = guid;
+		GO->m_fileID = p->m_fileID;
+
 		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
 		
 		Vector3 pos = {
@@ -423,6 +529,8 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	{
 		CalculateWorldTM(root);
 	}
+
+	WriteMapData(uscene);
 }
 
 /// <summary>

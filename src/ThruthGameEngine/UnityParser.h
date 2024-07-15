@@ -5,7 +5,8 @@
 
 namespace fs = std::filesystem;
 
-namespace Truth {
+namespace Truth
+{
 	/// <summary>
 	/// 이 클래스는 Debug 모드에서만 작동하도록 만들 예정
 	/// 오직 에디터에서만 작동하는 클래스
@@ -38,21 +39,24 @@ namespace Truth {
 		/// </summary>
 		struct GameObject
 		{
-			bool isCollider;
-			Vector3 m_size;
-			Vector3 m_Center;
+			bool isCollider = false;
+			Vector3 m_size = { 1.0f, 1.0f, 1.0f };
+			Vector3 m_Center = { 0.0f, 0.0f, 0.0f };
 
-			std::string m_guid;
-			std::string m_fileID;
+			std::string m_guid = "";
+			std::string m_fileID = "";
 
-			Matrix m_localTM;
-			Matrix m_worldTM;
+			Matrix m_localTM = Matrix::Identity;
+			Matrix m_worldTM = Matrix::Identity;
 
-			GameObject* m_parent;
+			GameObject* m_parent = nullptr;
 			std::vector<GameObject*> m_children;
 		};
 
 		std::vector<GameObject*> m_rootGameObject;
+
+		std::vector<Vector3> m_boxVertex;
+		std::vector<uint32> m_boxindx;
 
 		std::set<std::string> m_ignore;
 
@@ -91,6 +95,10 @@ namespace Truth {
 		GameObject* ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
 
 		void CalculateWorldTM(GameObject* _node);
+
+		void CreateBoxData();
+		void WriteMapData(fs::path _path);
+		void SetMapData(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
 	};
 }
 

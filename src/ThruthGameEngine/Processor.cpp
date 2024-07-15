@@ -45,11 +45,11 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	g_inputmanager = m_manager->Input().get();
 
 	Truth::UnityParser up;
+	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
 
 	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 	// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
-	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 
 	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);

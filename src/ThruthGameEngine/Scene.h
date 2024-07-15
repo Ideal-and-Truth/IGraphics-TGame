@@ -28,6 +28,8 @@ namespace Truth
 	public:
 		PROPERTY(name);
 		std::string m_name;
+		PROPERTY(mapPath);
+		std::wstring m_mapPath;
 
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
 
@@ -62,8 +64,7 @@ namespace Truth
 
 		void LoadEntity(std::shared_ptr<Entity> _entity);
 
-
-		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size);
+		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const;
 
 		std::weak_ptr<Entity> FindEntity(std::string _name);
 
@@ -84,6 +85,9 @@ namespace Truth
 		void Exit();
 
 		void ClearEntity();
+
+	private:
+		void CreateMap(const std::wstring& _path);
 	};
 
 	template<class Archive>
