@@ -130,9 +130,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,

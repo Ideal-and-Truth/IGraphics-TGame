@@ -1,6 +1,7 @@
 #include "Animator.h"
-#include "AnimatorController.h"
 #include "SkinnedMesh.h"
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Animator)
 
 
 Truth::Animator::Animator()

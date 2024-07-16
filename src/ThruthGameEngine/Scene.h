@@ -31,7 +31,7 @@ namespace Truth
 
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
 
-	private:
+	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
 		EntityVector m_entities;

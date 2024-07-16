@@ -16,8 +16,15 @@
 #include "InputManager.h"
 #include "Managers.h"
 #include "StringConverter.h"
-#include "AnimatorController.h"
+#include "Animator.h"
 #include <commdlg.h>
+
+GraphEditor::Options EditorUI::options;
+Truth::GraphEditorDelegate EditorUI::delegate;
+GraphEditor::ViewState EditorUI::viewState;
+GraphEditor::FitOnScreen EditorUI::fit = GraphEditor::Fit_None;
+bool EditorUI::showGraphEditor = true;
+
 
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
 	: m_manager(Manager)
@@ -102,11 +109,43 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 	// e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
+	/// 애니메이터 UI
+	bool isShownAnimator = false;
+	for (auto& e : delegate.m_animationInfos)
+	{
+		if (e.mSelected)
+		{
+			isShownAnimator = true;
+			char* cName = (char*)e.name.c_str();
+			ImGui::InputText("##3", cName, 128);
+
+			ImGui::Checkbox("##4", &e.isChangesOnFinished);
+			ImGui::SameLine();
+			ImGui::Text("isChangesOnFinished");
+
+			ImGui::DragFloat("##5", &e.animationSpeed, 0.01f, -5.f, 5.f);
+			ImGui::SameLine();
+			ImGui::Text("animationSpeed");
+
+			USES_CONVERSION;
+			std::string sval(W2A(e.animationPath.c_str()));
+
+			sval.resize(128);
+
+			bool success = ImGui::InputText("##6", (char*)sval.c_str(), 128, ImGuiInputTextFlags_EnterReturnsTrue);
+			if (success)
+			{
+				e.animationPath = A2W(sval.c_str());
+			}
+			ImGui::SameLine();
+			ImGui::Text("animationPath");
+		}
+	}
 
 	/// 여기부터 UI 만들기
 	const auto& entities = m_manager->Scene()->m_currentScene->m_entities;
 
-	if (!m_selectedEntity.expired())
+	if (!m_selectedEntity.expired() && !isShownAnimator)
 	{
 		// Set Entity Name
 		{
@@ -130,10 +169,7 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 			TranslateComponent(e);
 		}
 
-		// 		if (m_selectedEntity.lock()->GetComponent<Truth::AnimatorController>().lock())
-		// 		{
-		// 			DisplayAnimator(m_selectedEntity.lock()->GetComponent<Truth::AnimatorController>().lock());
-		// 		}
+
 
 		while (!m_deletedComponent.empty())
 		{
@@ -525,37 +561,42 @@ void EditorUI::ShowAnimator(bool* p_open)
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
 	/// Animator UI
+	if (m_selectedEntity.lock().get())
 	{
-		uint32 selectCount = 0;
-
-		if (ImGui::BeginPopupContextItem())
+		if (m_selectedEntity.lock().get()->GetComponent<Truth::Animator>().lock())
 		{
-			if (ImGui::Selectable("Create State"))
+			uint32 selectCount = 0;
+
+
+			// Graph Editor
+
+
+			if (ImGui::BeginPopupContextItem())
 			{
-				/// TODO : 상태 생성
+				if (ImGui::Selectable("Create State"))
+				{
+					/// TODO : 상태 생성
+					Truth::GraphEditorDelegate::AnimatorNode node;
+					delegate.m_animationInfos.push_back(node);
 
+				}
+				ImGui::EndPopup();
 			}
-			ImGui::EndPopup();
-		}
 
-		// Graph Editor
-		static GraphEditor::Options options;
-		static GraphEditorDelegate delegate;
-		static GraphEditor::ViewState viewState;
-		static GraphEditor::FitOnScreen fit = GraphEditor::Fit_None;
-		static bool showGraphEditor = true;
+			if (ImGui::Button("Fit all nodes"))
+			{
+				fit = GraphEditor::Fit_AllNodes;
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Fit selected nodes"))
+			{
+				fit = GraphEditor::Fit_SelectedNodes;
+			}
+			GraphEditor::Show(delegate, options, viewState, true, &fit);
 
-		if (ImGui::Button("Fit all nodes"))
-		{
-			fit = GraphEditor::Fit_AllNodes;
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Fit selected nodes"))
-		{
-			fit = GraphEditor::Fit_SelectedNodes;
-		}
-		GraphEditor::Show(delegate, options, viewState, true, &fit);
 
+
+		}
 	}
 
 
@@ -610,23 +651,11 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 				m_deletedComponent.push(std::make_pair(m_selectedEntity, _component->m_index));
 			}
 
-			/// 애니메이터
-			if (componentName == "AnimatorController" && ImGui::Selectable("Create State"))
-			{
-				_component->GetOwner().lock()->GetComponent<Truth::AnimatorController>().lock()->AddState(std::make_shared<Truth::AnimationInfo>());
-			}
-
 			ImGui::EndPopup();
 		}
-		/// 애니메이터
-		if (componentName == "AnimatorController")
-		{
-			for (auto& e : _component->GetOwner().lock()->GetComponent<Truth::AnimatorController>().lock()->m_states)
-			{
-				//DisplayAnimatorController(e);
-			}
-			return;
-		}
+
+
+
 		for (auto* p : properties)
 		{
 			isSelect |= p->DisplayUI(_component.get(), "##" + std::to_string(_component->m_ID));
