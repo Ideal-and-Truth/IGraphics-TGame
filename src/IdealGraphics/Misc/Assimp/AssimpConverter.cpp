@@ -199,8 +199,8 @@ std::string AssimpConverter::WriteTexture(std::string SaveFolder, std::string Fi
 			bool isSuccess = ::CopyFileA(originStr.c_str(), pathStr.c_str(), false);
 			if (!isSuccess)
 			{
-				assert(false);
-				MessageBox(NULL, L"원본 텍스쳐가 없습니다.", L"AssimpConverter", MB_OK);
+				//assert(false);
+				//MessageBox(NULL, L"원본 텍스쳐가 없습니다.", L"AssimpConverter", MB_OK);
 			}
 		}
 	}
@@ -233,6 +233,17 @@ void AssimpConverter::WriteMaterialData(std::wstring FilePath)
 		element = document->NewElement("Name");
 		element->SetText(material->name.c_str());
 		node->LinkEndChild(element);
+
+
+		{
+			//if (material->diffuseTextureFile.find(".tga") != std::string::npos)
+			//{
+			//	//material->diffuseTextureFile = material->diffuseTextureFile.substr(0, material->diffuseTextureFile.size() - 4) + ".png";
+			//	material->diffuseTextureFile = std::string();
+			//	material->specularTextureFile = std::string();
+			//	material->normalTextureFile = std::string();
+			//}
+		}
 
 		element = document->NewElement("DiffuseFile");
 		element->SetText(WriteTexture(folder, material->diffuseTextureFile).c_str());
@@ -493,6 +504,8 @@ void AssimpConverter::ReadSkinData()
 		{
 			continue;
 		}
+
+		if (m_skinnedMeshes.size() <= i) break;
 
 		std::shared_ptr<AssimpConvert::SkinnedMesh> mesh = m_skinnedMeshes[i];
 
