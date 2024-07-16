@@ -76,7 +76,7 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h">
       <Filter>Misc\Thirdparty</Filter>
     </ClInclude>
-    <ClInclude Include="Misc\Utils\PIX.h" />
+    <ClInclude Include="Misc\ThirdParty\Utils\PIX.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12Renderer.h">
       <Filter>GraphicsEngine</Filter>
     </ClInclude>
@@ -93,9 +93,9 @@
     <ClInclude Include="GraphicsEngine\VertexInfo.h">
       <Filter>GraphicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="Misc\Utils\tinyxml2.h" />
-    <ClInclude Include="Misc\Utils\FileUtils.h" />
-    <ClInclude Include="Misc\Utils\StringUtils.h">
+    <ClInclude Include="Misc\ThirdParty\Utils\tinyxml2.h" />
+    <ClInclude Include="Misc\ThirdParty\Utils\FileUtils.h" />
+    <ClInclude Include="Misc\ThirdParty\Utils\StringUtils.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
@@ -149,8 +149,8 @@
     <ClInclude Include="Editor\imgui\imstb_textedit.h" />
     <ClInclude Include="Editor\imgui\imstb_truetype.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
-    <ClInclude Include="Misc\Utils\IndexCreator.h" />
-    <ClInclude Include="Misc\Utils\Utils.h" />
+    <ClInclude Include="Misc\ThirdParty\Utils\IndexCreator.h" />
+    <ClInclude Include="Misc\ThirdParty\Utils\Utils.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.h" />
     <ClInclude Include="GraphicsEngine\D3D12\TestShader.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\D3D12RaytracingResources.h" />
@@ -201,10 +201,10 @@
     <ClCompile Include="GraphicsEngine\VertexInfo.cpp">
       <Filter>GraphicsEngine</Filter>
     </ClCompile>
-    <ClCompile Include="Misc\Utils\tinyxml2.cpp" />
-    <ClCompile Include="Misc\Utils\FileUtils.cpp" />
+    <ClCompile Include="Misc\ThirdParty\Utils\tinyxml2.cpp" />
+    <ClCompile Include="Misc\ThirdParty\Utils\FileUtils.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
-    <ClCompile Include="Misc\Utils\StringUtils.cpp" />
+    <ClCompile Include="Misc\ThirdParty\Utils\StringUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ResourceBase.cpp" />
     <ClCompile Include="GraphicsEngine\private\IdealRendererFactory.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealCamera.cpp" />
@@ -246,7 +246,7 @@
     <ClCompile Include="Editor\imgui\imgui_tables.cpp" />
     <ClCompile Include="Editor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.cpp" />
-    <ClCompile Include="Misc\Utils\IndexCreator.cpp" />
+    <ClCompile Include="Misc\ThirdParty\Utils\IndexCreator.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12RayTracingRenderer.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ShaderManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12SRV.cpp" />

@@ -61,6 +61,9 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	flag |= aiProcess_GenNormals;
 	flag |= aiProcess_CalcTangentSpace;
 	flag |= aiProcess_GlobalScale;
+	//flag |= aiProcess_JoinIdenticalVertices;
+	//flag |= aiProcess_SortByPType;
+	//flag |= aiProcess_LimitBoneWeights;
 
 	if (!isSkinnedData)
 	{

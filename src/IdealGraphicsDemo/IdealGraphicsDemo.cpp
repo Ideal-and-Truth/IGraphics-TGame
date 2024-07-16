@@ -171,10 +171,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"test2/run_.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
@@ -185,10 +187,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
+		std::shared_ptr<Ideal::IAnimation> hiphopAnim = gRenderer->CreateAnimation(L"player/Hip Hop Dancing");
+		player->AddAnimation("Hip", hiphopAnim);
 		//std::shared_ptr<Ideal::IMeshObject> player2 = gRenderer->CreateStaticMeshObject(L"player/SK_Fencer_Lady_Nude");
 
 		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		
+		std::shared_ptr<Ideal::IAnimation> hiphopAnim2 = gRenderer->CreateAnimation(L"Kachujin/HipHop");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
@@ -207,9 +211,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
-		ka->AddAnimation("Run", runAnim);
-		ka->AddAnimation("Slash", slashAnim);
-		ka->SetAnimation("Run", true);
+		//ka->AddAnimation("Run", runAnim);
+		//ka->AddAnimation("Slash", slashAnim);
+		//ka->SetAnimation("Run", true);
+		ka->AddAnimation("HipHop", hiphopAnim2);
 		cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
@@ -460,6 +465,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				// Animation // 역재생 안됨
 				ka->AnimationDeltaTime(0.001f);
 				cat->AnimationDeltaTime(0.001f);
+				player->AnimationDeltaTime(0.001f);
 
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
