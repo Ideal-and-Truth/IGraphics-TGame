@@ -3,6 +3,7 @@
 #include "Collider.h"
 #include "MathConverter.h"
 #include "RigidBody.h"
+#include "FileUtils.h"
 
 // static uint8 physx::m_collsionTable[8] = {};
 
@@ -341,6 +342,48 @@ physx::PxMaterial* Truth::PhysicsManager::CreateMaterial(Vector3 _val)
 }
 
 /// <summary>
+/// 특정 파일에 있는 내용대로 맵의 콜라이더를 만든다.
+/// </summary>
+/// <param name="_path"></param>
+void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
+{
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(_path, FileMode::Read);
+
+	std::vector<std::vector<physx::PxVec3>> vers;
+	std::vector<std::vector<uint32>> inds;
+
+
+	uint32 meshCount = file->Read<uint32>();
+	vers.resize(meshCount);
+	inds.resize(meshCount);
+
+	for (size_t i = 0; i < meshCount; i++)
+	{
+		uint32 verCount = file->Read<uint32>();
+		vers[i].resize(verCount);
+		for (size_t j = 0; j < verCount; j++)
+		{
+			vers[i][j].x = file->Read<float>();
+			vers[i][j].y = file->Read<float>();
+			vers[i][j].z = file->Read<float>();
+		}
+
+		uint32 indCount = file->Read<uint32>();
+		inds[i].resize(indCount);
+		for (size_t j = 0; j < indCount; j++)
+		{
+			inds[i][j] = file->Read<uint32>();
+		}
+	}
+
+	for (auto& m : vers)
+	{
+		CreateMapCollider(m);
+	}
+}
+
+/// <summary>
 /// physx의 Scene을 생성하는 함수
 /// </summary>
 void Truth::PhysicsManager::CreatePhysxScene()
@@ -413,6 +456,40 @@ std::vector<std::vector<physx::PxVec3>> Truth::PhysicsManager::ConvertPointToVer
 	}
 
 	return result;
+}
+
+void Truth::PhysicsManager::CreateMapCollider(const std::vector<physx::PxVec3>& _vers)
+{
+	physx::PxConvexMeshDesc convexDesc;
+	convexDesc.points.count = static_cast<physx::PxU32>(_vers.size());
+	convexDesc.points.stride = sizeof(physx::PxVec3);
+	convexDesc.points.data = _vers.data();
+	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+	physx::PxDefaultMemoryOutputStream buf;
+	physx::PxConvexMeshCookingResult::Enum result;
+
+	if (!m_cooking->cookConvexMesh(convexDesc, buf, &result))
+	{
+		return;
+	}
+
+	physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+
+	physx::PxConvexMesh* convexMesh = m_physics->createConvexMesh(input);
+
+	physx::PxShape* shape = m_physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_material);
+	shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+	shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+
+	physx::PxRigidStatic* body = CreateDefaultRigidStatic();
+
+	body->attachShape(*shape);
+
+	body->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+	body->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
+
+	m_scene->addActor(*body);
 }
 
 /// <summary>

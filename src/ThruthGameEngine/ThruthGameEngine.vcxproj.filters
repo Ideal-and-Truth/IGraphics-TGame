@@ -235,7 +235,9 @@
     <ClCompile Include="NavGeom.cpp">
       <Filter>Component\NavMesh\Geom</Filter>
     </ClCompile>
-    <ClCompile Include="UnityParser.cpp" />
+    <ClCompile Include="UnityParser.cpp">
+      <Filter>UnityParser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -370,7 +372,9 @@
     <ClInclude Include="NavGeom.h">
       <Filter>Component\NavMesh\Geom</Filter>
     </ClInclude>
-    <ClInclude Include="UnityParser.h" />
+    <ClInclude Include="UnityParser.h">
+      <Filter>UnityParser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

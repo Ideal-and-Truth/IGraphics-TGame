@@ -18,8 +18,7 @@ Truth::NavGeom::~NavGeom()
 void Truth::NavGeom::Load(const std::wstring& _path)
 {
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	std::wstring prefix = L"../Resources/Models/";
-	file->Open(prefix + _path + L".pos", FileMode::Read);
+	file->Open(_path, FileMode::Read);
 
 	uint32 acc = 0;
 	unsigned int meshNum = file->Read<unsigned int>();
@@ -29,9 +28,9 @@ void Truth::NavGeom::Load(const std::wstring& _path)
 		for (unsigned int j = 0; j < verticesNum; j++)
 		{
 			Vector3 p;
-			p.x = file->Read<float>() * 2;
-			p.y = file->Read<float>() * 2;
-			p.z = file->Read<float>() * 2;
+			p.x = file->Read<float>();
+			p.y = file->Read<float>();
+			p.z = file->Read<float>();
 
 			m_ver.push_back(p.x);
 			m_ver.push_back(p.y);

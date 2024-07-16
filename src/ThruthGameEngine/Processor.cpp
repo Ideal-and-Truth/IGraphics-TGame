@@ -44,12 +44,21 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
+// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
+
+	g_Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+	//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
+	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+
 	Truth::UnityParser up;
 
-	// up.Parsing("E:\Projects\SampleUnity\parsingTest");
-
-	// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
-	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
+	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
+	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 
 	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
