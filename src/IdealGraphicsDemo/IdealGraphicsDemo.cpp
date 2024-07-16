@@ -135,9 +135,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,
@@ -165,12 +165,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->SetRenderScene(renderScene);
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
+		gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude.fbx", false);
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"test2/run_.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
@@ -183,9 +184,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 		//-------------------Create Mesh Object-------------------//
+		std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
+		//std::shared_ptr<Ideal::IMeshObject> player2 = gRenderer->CreateStaticMeshObject(L"player/SK_Fencer_Lady_Nude");
+
 		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady");
-		
 		
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
@@ -208,7 +210,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		ka->AddAnimation("Run", runAnim);
 		ka->AddAnimation("Slash", slashAnim);
 		ka->SetAnimation("Run", true);
-		//ka2->SetAnimation("Slash", true);
 		cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
@@ -277,6 +278,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//mesh3->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 0.f, 0.f)));
 		//cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.f, 0.f, 0.f)));
 		ka->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
+		cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
 
 		car->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f)) * Matrix::CreateRotationY(-90.f));
 

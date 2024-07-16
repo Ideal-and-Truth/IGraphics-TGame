@@ -21,6 +21,9 @@ void Ideal::IdealSkinnedMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Rendere
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
+	//int i = 0;
+	//if (m_meshes.size() > 1) i = 3;
+	//auto& mesh = m_meshes[i];
 	for (auto& mesh : m_meshes)
 	{
 		// Mesh
