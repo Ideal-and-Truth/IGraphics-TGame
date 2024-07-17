@@ -455,31 +455,66 @@ void AssimpConverter::ReadMaterialData()
 		{
 			srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 			material->diffuseTextureFile = file.C_Str();
+			if (material->diffuseTextureFile.empty())
+			{
+				material->diffuseTextureFile = "DefaultAlbedo.png";
+			}
 		}
+		else
+		{
+			material->diffuseTextureFile = "DefaultAlbedo.png";
+		}
+
+		file.Clear();
 		// Specular Texture
 		srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
 		material->specularTextureFile = file.C_Str();
+		if (material->specularTextureFile.empty())
+		{
+			material->specularTextureFile = "DefaultAlbedo.png";
+		}
 
+		file.Clear();
 		// Emissive Texture
 		srcMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &file);
 		material->emissiveTextureFile = file.C_Str();
+		if (material->emissiveTextureFile.empty())
+		{
+			material->emissiveTextureFile = "DefaultAlbedo.png";
+		}
 
+		file.Clear();
 		// Normal Texture
 		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
 		material->normalTextureFile = file.C_Str();
+		if (material->normalTextureFile.empty())
+		{
+			material->normalTextureFile = "DefaultNormalMap.png";
+		}
 
 		// Metalic Texture
 		aiString metalicFile;
 		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &metalicFile);
 		if (metalicFile.length != 0)
+		{
 			material->metalicTextureFile = metalicFile.C_Str();
+		}
+		else
+		{
+			material->metalicTextureFile = "DefaulBlack.png";
+		}
 
 		// Roughness Texture
 		aiString roughnessFile;
 		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &roughnessFile);
 		if (roughnessFile.length != 0)
+		{
 			material->roughnessTextureFile = roughnessFile.C_Str();
-
+		}
+		else
+		{
+			material->roughnessTextureFile = "DefaulBlack.png";
+		}
 		m_materials.push_back(material);
 	}
 }

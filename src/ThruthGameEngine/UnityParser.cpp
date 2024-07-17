@@ -199,7 +199,7 @@ fs::path Truth::UnityParser::OrganizeUnityFile(fs::path& _path)
 	// unity 와 prefab 파일만 읽는다 일단은
 	if (_path.extension() != ".unity" && _path.extension() != ".prefab")
 	{
-		assert(false && "Not Unity Scene");
+		// assert(false && "Not Unity Scene");
 		return "";
 	}
 
@@ -345,6 +345,11 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 				{
 					GO->m_meshPath = "DebugObject/debugCube";
 				}
+				else
+				{
+					std::string fbxGuid = meshFilter["m_Mesh"]["guid"].as<std::string>();
+					fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
+				}
 			}
 		}
 	}
@@ -354,7 +359,10 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 	for (YAML::iterator it = children.begin(); it != children.end(); ++it)
 	{
 		std::string childFid = (*it)["fileID"].as<std::string>();
-		GO->m_children.push_back(ParseTranfomrNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, GO));
+		if (m_nodeMap[_guid][childFid]->m_node["Transform"].IsDefined())
+		{
+			GO->m_children.push_back(ParseTranfomrNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, GO));
+		}
 	}
 	return GO;
 }
@@ -543,7 +551,7 @@ void Truth::UnityParser::WriteMapMeshData(fs::path _path)
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	std::wstring path = L"../Resources/MapData/";
 	path += _path.replace_extension("").filename();
-	path += L".map.mesh";
+	path += L".map.mmesh";
 
 	file->Open(path, FileMode::Write);
 
@@ -594,10 +602,13 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	for (auto& p : m_classMap[guid]["4"])
 	{
 		// paresing when root game object
-		std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
-		if (parentFid == "0")
+		if (p->m_node["Transform"]["m_Father"]["fileID"].IsDefined())
 		{
-			m_rootGameObject.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, nullptr));
+			std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
+			if (parentFid == "0")
+			{
+				m_rootGameObject.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, nullptr));
+			}
 		}
 	}
 
@@ -655,10 +666,13 @@ void Truth::UnityParser::ParsePrefabFile(const std::string& _path, GameObject* _
 	for (auto& p : m_classMap[guid]["4"])
 	{
 		// paresing when root game object
-		std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
-		if (parentFid == "0")
+		if (p->m_node["Transform"]["m_Father"]["fileID"].IsDefined())
 		{
-			_parent->m_children.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, _parent));
+			std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
+			if (parentFid == "0")
+			{
+				_parent->m_children.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, _parent));
+			}
 		}
 	}
 

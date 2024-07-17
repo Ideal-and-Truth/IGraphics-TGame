@@ -364,9 +364,9 @@ void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 		vers[i].resize(verCount);
 		for (size_t j = 0; j < verCount; j++)
 		{
-			vers[i][j].x = file->Read<float>();
+			vers[i][j].x = -file->Read<float>();
 			vers[i][j].y = file->Read<float>();
-			vers[i][j].z = file->Read<float>();
+			vers[i][j].z = -file->Read<float>();
 		}
 
 		uint32 indCount = file->Read<uint32>();

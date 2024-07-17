@@ -106,7 +106,7 @@ namespace Truth
 		bool HasParent() const { return !m_parent.expired(); };
 		bool HasChildren() const { return !m_children.empty(); }
 
-		const Matrix& GetParentMatrix() 
+		const Matrix& GetParentMatrix() const
 		{
 			if (!m_parent.expired())
 			{

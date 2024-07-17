@@ -105,7 +105,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	}
 
 
-	CreateMap(L"E:\\Projects\\IGraphics-TGame\\src\\Resources\\MapData\\SampleScene.map");
+	CreateMap(L"E:\\Projects\\IGraphics-TGame\\IGraphics-TGame\\src\\Resources\\MapData\\Level_v0.2.0.map");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -302,23 +302,25 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 	m_navMesh = std::make_shared<NavMeshGenerater>();
 	m_navMesh->Initalize(_path);
 
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	std::wstring path = _path + L".mesh";
-	file->Open(path, FileMode::Read);
+// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+// 	std::wstring path = _path + L".mmesh";
+// 	file->Open(path, FileMode::Read);
+// 
+// 	uint32 meshCount = file->Read<uint32>();
+// 	m_mapMesh.resize(meshCount);
+// 
+// 	for (uint32 i = 0; i < meshCount; i++)
+// 	{
+// 		std::string meshpath = file->Read<std::string>();
+// 		Matrix meshTM = file->Read<Matrix>();
+// 
+// 		USES_CONVERSION;
+// 		std::wstring wsval(A2W(meshpath.c_str()));
+// 
+// 		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
+// 		m_mapMesh.back()->SetTransformMatrix(meshTM);
+// 	}
 
-	uint32 meshCount = file->Read<uint32>();
-	m_mapMesh.resize(meshCount);
-
-	for (uint32 i = 0; i < meshCount; i++)
-	{
-		std::string meshpath = file->Read<std::string>();
-		Matrix meshTM = file->Read<Matrix>();
-
-		USES_CONVERSION;
-		std::wstring wsval(A2W(meshpath.c_str()));
-
-		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
-		m_mapMesh.back()->SetTransformMatrix(meshTM);
-	}
+	m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(L"TestMap/Map2"));
 }
 

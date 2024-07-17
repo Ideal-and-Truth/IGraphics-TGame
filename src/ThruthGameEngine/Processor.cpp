@@ -44,21 +44,17 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-// 	g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, true);
-// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
-// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
-// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
-
-	g_Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-	//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
-	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
-	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+// 	g_Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+// 	//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
+// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+	// g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx", false, true);
 
 	Truth::UnityParser up;
 
-	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
-	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
+	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	// up.ParseSceneFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\_Prototype\\Level_v0.2.0.unity");
 
 	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
@@ -66,7 +62,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// 	// 저장할 배열
 	// 	std::vector<Vector3> pos;
 	// 
-	// 	unsigned int meshNum = file->Read<unsigned int>();
+	// 	unsigned int meshNum = file->Read<unsignead int>();
 	// 
 	// 	for (int i = 0; i < meshNum; i++)
 	// 	{
