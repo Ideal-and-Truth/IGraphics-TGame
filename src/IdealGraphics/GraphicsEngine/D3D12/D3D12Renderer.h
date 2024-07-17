@@ -9,7 +9,7 @@
 //#include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include <GraphicsEngine/D3D12/D3D12Definitions.h>
-// TEMP
+
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
@@ -86,6 +86,7 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
 
 		virtual void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
+		virtual void DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> DebugMeshObject) override;
 
 		std::shared_ptr<Ideal::IRenderScene> CreateRenderScene();
 		void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene);

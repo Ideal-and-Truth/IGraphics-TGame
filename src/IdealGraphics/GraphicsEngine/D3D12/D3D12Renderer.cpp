@@ -322,8 +322,6 @@ void Ideal::D3D12Renderer::Render()
 		m_currentRenderScene->DrawScreen(shared_from_this());
 		DrawImGuiMainCamera();
 	}
-
-
 #endif
 	//-------------Begin Render------------//
 	BeginRender();
@@ -485,6 +483,12 @@ void Ideal::D3D12Renderer::DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> 
 	//2024.07.04 TEMP
 	m_currentRenderScene->DeleteObject(MeshObject);
 	MeshObject.reset();
+}
+
+void Ideal::D3D12Renderer::DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> DebugMeshObject)
+{
+	m_currentRenderScene->DeleteDebugObject(DebugMeshObject);
+	DebugMeshObject.reset();
 }
 
 std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12Renderer::CreateRenderScene()

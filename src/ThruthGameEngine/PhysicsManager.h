@@ -121,9 +121,13 @@ namespace Truth
 
 		physx::PxMaterial* CreateMaterial(Vector3 _val);
 
+		void CreateMapCollider(const std::wstring& _path);
+
 	private:
 		void CreatePhysxScene();
 		std::vector<std::vector<physx::PxVec3>> ConvertPointToVertex(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points);
+
+		void CreateMapCollider(const std::vector<physx::PxVec3>& _vers);
 	};
 
 	physx::PxFilterFlags FilterShaderExample(

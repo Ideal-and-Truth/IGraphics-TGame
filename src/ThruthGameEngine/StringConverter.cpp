@@ -93,6 +93,10 @@ std::vector<std::string> StringConverter::split(std::string _str, char _delimite
 
 	while (std::getline(iss, buffer, _delimiter)) 
 	{
+		if (buffer.empty())
+		{
+			continue;
+		}
 		result.push_back(buffer);               
 	}
 
@@ -111,5 +115,15 @@ std::vector<std::wstring> StringConverter::split(std::wstring _str, wchar_t _del
 	}
 
 	return result;
+}
+
+void StringConverter::DeleteAlpha(std::string& _str, char _delimiter)
+{
+	_str.erase(remove(_str.begin(), _str.end(), _delimiter));
+}
+
+void StringConverter::DeleteAlpha(std::wstring& _str, wchar_t _delimiter)
+{
+	_str.erase(remove(_str.begin(), _str.end(), _delimiter));
 }
 

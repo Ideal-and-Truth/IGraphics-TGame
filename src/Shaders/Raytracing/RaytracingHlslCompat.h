@@ -21,6 +21,12 @@ using namespace DirectX;
 typedef UINT32 Index;
 #endif
 
+struct Ray
+{
+	XMFLOAT3 origin;
+	XMFLOAT3 direction;
+};
+
 struct SceneConstantBuffer
 {
     XMMATRIX projectionToWorld;
@@ -28,6 +34,12 @@ struct SceneConstantBuffer
     XMVECTOR lightPosition;
     XMVECTOR lightAmbientColor;
     XMVECTOR lightDiffuseColor;
+
+    unsigned int maxRadianceRayRecursionDepth;
+    unsigned int maxShadowRayRecursionDepth;
+
+    XMVECTOR Color;
+    float padding[2];
 };
 
 struct CubeConstantBuffer
@@ -55,6 +67,51 @@ struct PositionNormalUVTangentColor
     float uv[2];
     XMFLOAT3 tangent;
     XMFLOAT4 color;
+
+};
+
+struct DirectionalLight
+{
+    XMFLOAT4 AmbientColor;
+    XMFLOAT4 DiffuseColor;
+    XMFLOAT3 Direction;
+    float Intensity;
+};
+
+struct PointLight
+{
+    XMFLOAT4 Color;
+    XMFLOAT3 Position;
+    float Range;
+    float Intensity;
+    float pad0;
+    float pad1;
+    float pad2;
+};
+
+struct SpotLight
+{
+    XMFLOAT4 Color;
+    XMFLOAT4 Direction;
+    XMFLOAT3 Position;
+    float SpotAngle;
+    float Range;
+    float Intensity;
+    float pad0;
+    float pad1;
+};
+
+struct LightList
+{
+    int PointLightNum;
+    int SpotLightNum;
+	float pad;
+	float pad1;
+
+    DirectionalLight DirLight;
+    PointLight PointLights[16];  //TEMP
+    SpotLight SpotLights[16];    //TEMP
+
 
 };
 #endif // RAYTRACINGHLSLCOMPAT_H

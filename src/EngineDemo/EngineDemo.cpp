@@ -83,7 +83,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	processor->SaveScene(testScene);
 
 	///...///
- 	processor->LoadScene(L"../Scene/navMeshTest.scene");
+ 	processor->LoadScene(L"../Scene/ParsingTest.scene");
 
  	//processor->LoadScene(L"../Scene/ControllerTest.scene");
 

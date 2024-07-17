@@ -6,65 +6,6 @@
 #include <DetourCommon.h>
 #include <DetourPathCorridor.h>
 
-static float frand()
-{
-	//	return ((float)(rand() & 0xffff)/(float)0xffff);
-	return (float)rand() / (float)RAND_MAX;
-}
-
-inline bool inRange(const float* _v1, const float* _v2, const float _r, const float _h)
-{
-	const float dx = _v2[0] - _v1[0];
-	const float dy = _v2[1] - _v1[1];
-	const float dz = _v2[2] - _v1[2];
-	return (dx * dx + dz * dz) < _r * _r && fabsf(dy) < _h;
-}
-
-static bool getSteerTarget(dtNavMeshQuery* _navQuery, const float* _startPos, const float* _endPos,
-	const float _minTargetDist,
-	const dtPolyRef* _path, const int _pathSize,
-	float* _steerPos, unsigned char& _steerPosFlag, dtPolyRef& _steerPosRef,
-	float* _outPoints = 0, int* _outPointCount = 0)
-{
-	// Find steer target.
-	static const int MAX_STEER_POINTS = 3;
-	float steerPath[MAX_STEER_POINTS * 3];
-	unsigned char steerPathFlags[MAX_STEER_POINTS];
-	dtPolyRef steerPathPolys[MAX_STEER_POINTS];
-	int nsteerPath = 0;
-	_navQuery->findStraightPath(_startPos, _endPos, _path, _pathSize,
-		steerPath, steerPathFlags, steerPathPolys, &nsteerPath, MAX_STEER_POINTS);
-	if (!nsteerPath)
-		return false;
-
-	if (_outPoints && _outPointCount)
-	{
-		*_outPointCount = nsteerPath;
-		for (int i = 0; i < nsteerPath; ++i)
-			dtVcopy(&_outPoints[i * 3], &steerPath[i * 3]);
-	}
-
-
-	int ns = 0;
-	while (ns < nsteerPath)
-	{
-		if ((steerPathFlags[ns] & DT_STRAIGHTPATH_OFFMESH_CONNECTION) ||
-			!inRange(&steerPath[ns * 3], _startPos, _minTargetDist, 1000.0f))
-			break;
-		ns++;
-	}
-	if (ns >= nsteerPath)
-		return false;
-
-	dtVcopy(_steerPos, &steerPath[ns * 3]);
-	_steerPos[1] = _startPos[1];
-	_steerPosFlag = steerPathFlags[ns];
-	_steerPosRef = steerPathPolys[ns];
-
-	return true;
-}
-
-
 Truth::NavMeshGenerater::NavMeshGenerater()
 	: m_cellSize(0.3f)
 	, m_cellHeight(0.2f)
@@ -85,6 +26,14 @@ Truth::NavMeshGenerater::NavMeshGenerater()
 	, m_filterWalkableLowHeightSpans(true)
 	, m_keepInterResults(true)
 	, m_geom(NavGeom())
+	, m_triareas(nullptr)
+	, m_solid(nullptr)
+	, m_pmesh(nullptr)
+	, m_navMesh(nullptr)
+	, m_dmesh(nullptr)
+	, m_cset(nullptr)
+	, m_chf(nullptr)
+	, m_cfg(nullptr)
 {
 	m_ctx = new rcContext;
 	m_navQuery = dtAllocNavMeshQuery();

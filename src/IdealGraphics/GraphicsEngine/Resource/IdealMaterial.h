@@ -31,7 +31,16 @@ namespace Ideal
 		void SetEmissiveTextureFile(std::wstring& File) { m_emissiveTextureFile = File; }
 		void SetNormalTextureFile(std::wstring& File)	{ m_normalTextureFile = File; }
 
+		void SetMetallicTextureFile(std::wstring& File) { m_metallicTextureFile = File; }
+		void SetRoughnessTextureFile(std::wstring& File) { m_roughnessTextureFile = File; }
+
 		std::shared_ptr<Ideal::D3D12Texture> GetDiffuseTexture() { return m_diffuseTexture; }
+		std::shared_ptr<Ideal::D3D12Texture> GetSpecularTexture() { return m_specularTexture; }
+		std::shared_ptr<Ideal::D3D12Texture> GetEmissiveTexture() { return m_emissiveTexture; }
+		std::shared_ptr<Ideal::D3D12Texture> GetNormalTexture() { return m_normalTexture; }
+
+		std::shared_ptr<Ideal::D3D12Texture> GetMetallicTexture() { return m_metalicTexture; }
+		std::shared_ptr<Ideal::D3D12Texture> GetRoughnessTexture() { return m_roughnessTexture; }
 
 	private:
 		Color m_ambient;
@@ -44,10 +53,16 @@ namespace Ideal
 		std::wstring m_emissiveTextureFile;
 		std::wstring m_normalTextureFile;
 
+		std::wstring m_metallicTextureFile;
+		std::wstring m_roughnessTextureFile;
+
 		std::shared_ptr<Ideal::D3D12Texture> m_diffuseTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_specularTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_emissiveTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_normalTexture;
+		
+		std::shared_ptr<Ideal::D3D12Texture> m_metalicTexture;
+		std::shared_ptr<Ideal::D3D12Texture> m_roughnessTexture;
 
 	private:
 		CB_Material m_cbMaterialData;

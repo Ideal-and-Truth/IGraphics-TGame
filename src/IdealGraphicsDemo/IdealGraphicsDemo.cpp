@@ -94,18 +94,27 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera);
 void ImGuiTest();
 void DirLightAngle(float* x, float* y, float* z);
 void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
+void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
+void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
+void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
+void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
+
+float lightColor[3] = { 1.f, 1.f, 1.f };
+float lightAngleX = 0.f;
+
+float g_cameraSpeed = 0.18f;
+void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
-{
+	_In_ int       nCmdShow){
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(428);
+	//_CrtSetBreakAlloc(3822);
 #endif
 
 	// 전역 문자열을 초기화합니다.
@@ -125,14 +134,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
-		bool isEditor = false;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		if (isEditor)
-		{
-			type = EGraphicsInterfaceType::D3D12_EDITOR;
-		}
-
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,
@@ -146,9 +151,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->Init();
 
 		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
-		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
+		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
-		Vector3 pointLightPosition = Vector3(0.f);
+		Vector3 pointLightPosition = Vector3(3.f);
 
 		//-------------------Create Camera-------------------//
 		std::shared_ptr<Ideal::ICamera> camera = gRenderer->CreateCamera();
@@ -162,6 +167,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"TestMap/Map22.fbx", false);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -169,16 +176,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 		//-------------------Create Mesh Object-------------------//
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		//
 		////std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
@@ -190,12 +198,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
+		std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
+		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
-		//ka->AddAnimation("Run", runAnim);
-		//ka->SetAnimation("Run", true);
-		//ka2->AddAnimation("Slash", slashAnim);
+		ka->AddAnimation("Run", runAnim);
+		ka->AddAnimation("Slash", slashAnim);
+		ka->SetAnimation("Run", true);
 		//ka2->SetAnimation("Slash", true);
-		//cat->AddAnimation("Walk", walkAnim);
+		cat->AddAnimation("Walk", walkAnim);
 
 		//-------------------Add Mesh Object to Render Scene-------------------//
 		//renderScene->AddObject(ka);
@@ -240,16 +250,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
+		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
+
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
-		//dirLight->SetDirection(Vector3(1.f, 0.f, 1.f));
 
-		//pointLight->SetPosition(pointLightPosition);
-		//pointLight->SetRange(300.f);
-		//pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		//pointLight->SetIntensity(10.f);
+		pointLight->SetPosition(Vector3(0.f, 3.f,3.f));
+		pointLight->SetRange(6.f);
+		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		pointLight->SetIntensity(0.8f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -261,7 +272,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//mesh3->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 0.f, 0.f)));
 		//cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.f, 0.f, 0.f)));
-		//ka2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
+		ka->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
+
+		car->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f)) * Matrix::CreateRotationY(-90.f));
+
 		//mesh2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
@@ -339,6 +353,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
 						ka->SetTransformMatrix(mat2);
 
+						ka->SetPlayAnimation(false);
+
 						meshes.push_back(ka);
 
 
@@ -349,6 +365,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						std::shared_ptr<Ideal::ISkinnedMeshObject> mesh1 = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 						mesh1->AddAnimation("Walk", walkAnim);
 						mesh1->SetTransformMatrix(mat2);
+
+						mesh1->SetPlayAnimation(false);
+
 						meshes.push_back(mesh1);
 					}
 
@@ -432,10 +451,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 					}
 				}
+				// Animation // 역재생 안됨
+				ka->AnimationDeltaTime(0.001f);
+				cat->AnimationDeltaTime(0.001f);
+
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
-				if (isEditor)
+				//if (isEditor)
+				if (type == EGraphicsInterfaceType::D3D12_EDITOR || type == EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR)
 				{
+					//static int once = 0;
+					//if (once != 0)
+					{
+						CameraWindow(camera);
+						AnimationTest(slashAnim);
+						SkinnedMeshObjectAnimationTest(ka);
+						if (dirLight)
+						{
+							LightTest(dirLight);
+						}
+						if (pointLight)
+						{
+							PointLightInspecter(pointLight);
+						}
+					}
+					//once++;
 					//ImGuiTest();
 					//DirLightAngle(&angleX, &angleY, &angleZ);
 					//PointLightInspecter(pointLight);
@@ -451,6 +491,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			meshes[i].reset();
 		}
 		meshes.clear();
+
+		gRenderer->DeleteMeshObject(ka);
+		ka.reset();
+		
+		gRenderer->DeleteMeshObject(cat);
+		cat.reset();
+
+		gRenderer->DeleteMeshObject(car);
+		car.reset();
+
+		//gRenderer->DeleteMeshObject(boss);
+		//boss.reset();
+		
 		gRenderer.reset();
 	}
 
@@ -560,7 +613,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 
 void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 {
-	float speed = 0.2f;
+	float speed = g_cameraSpeed;
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 	{
 		speed *= 0.1f;
@@ -625,6 +678,17 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
 	}
 }
+
+void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera)
+{
+	if (show_angle_window)
+	{
+		ImGui::Begin("Camera Window");
+		ImGui::DragFloat("Camera Speed", &g_cameraSpeed, 0.01f, 0.0f, 1.f);
+		ImGui::End();
+	}
+}
+
 void DirLightAngle(float* x, float* y, float* z)
 {
 	if (show_angle_window)
@@ -648,14 +712,23 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 	}
 
 	Vector3 lightPosition = light->GetPosition();
+	float range = light->GetRange();
+	float intensity = light->GetIntensity();
 	if (show_point_light_window)
 	{
 		ImGui::Begin("Point Light Inspector");
 		ImGui::ColorEdit3("Light Color", (float*)&lightColor);
 		light->SetLightColor(Color(lightColor.x, lightColor.y, lightColor.z, lightColor.w));
-		ImGui::InputFloat3("Position", &lightPosition.x);
+		//ImGui::InputFloat3("Position", &lightPosition.x);
+		ImGui::DragFloat3("Position", &lightPosition.x, 1.f, 0.f, 10.f);
 		light->SetPosition(lightPosition);
-		ImGui::SameLine();
+
+		ImGui::DragFloat("Range", &range, 1.f, 0.f, 1000.f);
+		light->SetRange(range);
+
+		ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.f, 100.f);
+		light->SetIntensity(intensity);
+
 		ImGui::End();
 	}
 }
@@ -703,4 +776,74 @@ void ImGuiTest()
 			ImGui::End();
 		}
 	}
+}
+
+void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject)
+{
+	ImGui::Begin("Skinned Mesh Object Animation Window");
+
+	static float animationSpeed = 1.f; // 임시 static // 실제 사용 조심
+	ImGui::SliderFloat("Animation Speed", &animationSpeed, 0.0f, 3.0f);
+	SkinnedMeshObject->SetAnimationSpeed(animationSpeed);
+
+	ImGui::Text("Current Animation Index : %d", SkinnedMeshObject->GetCurrentAnimationIndex());
+
+	ImGui::Text("Change Next Animation");
+	if (ImGui::Button("Run"))
+	{
+		SkinnedMeshObject->SetAnimation("Run", false);
+	}
+	if (ImGui::Button("Slash"))
+	{
+		SkinnedMeshObject->SetAnimation("Slash", false);
+	}
+
+	ImGui::Text("Reserve Next Animation");
+	if (ImGui::Button("Run2"))
+	{
+		SkinnedMeshObject->SetAnimation("Run", true);
+	}
+	if (ImGui::Button("Slash2"))
+	{
+		SkinnedMeshObject->SetAnimation("Slash", true);
+	}
+
+	ImGui::End();
+}
+
+void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation)
+{
+	ImGui::Begin("Animation Window");
+	ImGui::Text("Animation Max Frame Count : %d", Animation->GetFrameCount());
+	ImGui::End();
+}
+
+void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
+{
+	ImGui::Begin("Directional Light");
+	ImGui::Text("Rotation Axis X");
+	ImGui::SliderFloat("X", &lightAngleX, 0.f, 6.28f);
+	Matrix mat = Matrix::Identity;
+	mat *= Matrix::CreateRotationX(lightAngleX);
+	Vector3 rot = mat.Forward();
+	ImGui::ColorEdit3("Diffuse Color", lightColor);
+
+	if (DirLight)
+	{
+		DirLight->SetDirection(rot);
+		DirLight->SetDiffuseColor(Color(lightColor[0], lightColor[1], lightColor[2], 1.f));
+	}
+
+	ImGui::End();
+}
+
+
+void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight)
+{
+	//ImGui::Begin("Point Light");
+	//ImGui::Text("Position");
+	//static float position[3] = { 0.f, 0.f, 0.f };
+	////ImGui::SliderFloat3("Position", &position[0], &position[1], &position[2]);
+	//
+	//ImGui::End();
 }

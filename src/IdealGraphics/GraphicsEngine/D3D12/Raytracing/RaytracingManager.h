@@ -30,6 +30,27 @@ namespace Ideal
 
 namespace Ideal
 {
+	struct RayPayload
+	{
+		uint32 rayRecursionDepth;
+		Vector3 radiance;
+	};
+
+	struct ShadowRayPayload
+	{
+		float tHit;
+	};
+
+	namespace PathtracerRayType
+	{
+		enum Enum
+		{
+			Radiance = 0,
+			Shadow,
+			Count
+		};
+	}
+
 	namespace GlobalRootSignature
 	{
 		namespace Slot
@@ -40,6 +61,7 @@ namespace Ideal
 				SRV_AccelerationStructure,
 				CBV_Global,
 				SRV_SkyBox,
+				CBV_LightList,
 				Count
 			};
 		}
@@ -54,6 +76,9 @@ namespace Ideal
 				SRV_IndexBuffer,
 				SRV_VertexBuffer,
 				SRV_Diffuse,
+				SRV_Normal,
+				SRV_Metalic,
+				SRV_Roughness,
 				Count
 			};
 		}
@@ -65,6 +90,14 @@ namespace Ideal
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_Vertices;
 			// Diffuse Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
+			// Normal Textures
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_NormalTexture;
+			// Metalic Textures
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MetalicTexture;
+			// Roughness Textures
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_RoughnessTexture;
+
+
 		};
 	}
 
@@ -101,17 +134,18 @@ namespace Ideal
 	class RaytracingManager
 	{
 		static const uint32 MAX_RAY_RECURSION_DEPTH = G_MAX_RAY_RECURSION_DEPTH;
-		wchar_t* c_raygenShaderName = L"MyRaygenShader";
-		wchar_t* c_closestHitShaderName = L"MyClosestHitShader";
-		wchar_t* c_missShaderName = L"MyMissShader";
-		wchar_t* c_hitGroupName = L"MyHitGroup";
+		const wchar_t* c_raygenShaderName = L"MyRaygenShader";
+		const wchar_t* c_closestHitShaderName[2] = { L"MyClosestHitShader", L"MyClosestHitShader_ShadowRay" };
+		const wchar_t* c_missShaderName[2] = { L"MyMissShader", L"MyMissShader_ShadowRay"};
+		const wchar_t* c_hitGroupName[2] = { L"MyHitGroup", L"MyHitGroup_ShadowRay"};
+
 	public:
 		RaytracingManager();
 		~RaytracingManager();
 
 	public:
 		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
-		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture);
+		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, CB_LightList LightCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture);
 		void Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
 
 		//---UAV Render Target---//

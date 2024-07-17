@@ -41,6 +41,14 @@ std::shared_ptr<Ideal::IdealRenderer> CreateRenderer(
 			std::static_pointer_cast<Ideal::D3D12RayTracingRenderer>(OutRenderer)->SetTexturePath(TexturePath);
 		}
 			break;
+		case EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR:
+		{
+			OutRenderer = std::make_shared<Ideal::D3D12RayTracingRenderer>(*hwnd, Width, Height, true);
+			std::static_pointer_cast<Ideal::D3D12RayTracingRenderer>(OutRenderer)->SetAssetPath(AssetPath);
+			std::static_pointer_cast<Ideal::D3D12RayTracingRenderer>(OutRenderer)->SetModelPath(ModelPath);
+			std::static_pointer_cast<Ideal::D3D12RayTracingRenderer>(OutRenderer)->SetTexturePath(TexturePath);
+		}
+		break;
 		default:
 			break;
 		

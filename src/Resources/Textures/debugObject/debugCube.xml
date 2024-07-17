@@ -2,9 +2,11 @@
 <Materials>
     <Material>
         <Name>Material</Name>
-        <DiffuseFile>default_Texture.png</DiffuseFile>
-        <SpecularFile>default_Texture.png</SpecularFile>
-        <NormalFile>default_Texture.png</NormalFile>
+        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
+        <NormalFile>DefaultNormalMap.png</NormalFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
+        <RoughnessFile>DefaulBlack.png</RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="25"/>

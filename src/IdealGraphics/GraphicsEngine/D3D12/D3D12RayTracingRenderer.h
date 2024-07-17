@@ -51,6 +51,9 @@ namespace Ideal
 	class IdealStaticMeshObject;
 	class IdealSkinnedMeshObject;
 	class IdealScreenQuad;
+	class IdealDirectionalLight;
+	class IdealSpotLight;
+	class IdealPointLight;
 
 	struct ConstantBufferContainer;
 	// Manager
@@ -108,7 +111,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
 		void DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) override;
-
+		void DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> DebugMeshObject) override;
 		// 작동 안함 // 그냥 mesh object 반환
 		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
 
@@ -202,6 +205,14 @@ namespace Ideal
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager = nullptr;
 
+		// Light
+		void UpdateLightListCBData();
+
+		std::shared_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
+		std::vector<std::shared_ptr<Ideal::IdealSpotLight>> m_spotLights;
+		std::vector<std::shared_ptr<Ideal::IdealPointLight>> m_pointLights;
+
+
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
@@ -218,6 +229,7 @@ namespace Ideal
 	private:
 		// AS
 		SceneConstantBuffer m_sceneCB;
+		CB_LightList m_lightListCB;
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();
@@ -243,5 +255,18 @@ namespace Ideal
 
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
+
+		// EDITOR 
+	private:
+		void InitImGui();
+		void DrawImGuiMainCamera();
+		void SetImGuiCameraRenderTarget();
+		void CreateEditorRTV(uint32 Width, uint32 Height);
+
+		bool m_isEditor;
+		Ideal::D3D12DescriptorHandle m_imguiSRVHandle;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
+		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
 	};
 }

@@ -93,15 +93,31 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 	m_skinnedMesh->Draw(Renderer);
 }
 
-void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished /*= true*/)
+void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationName, bool ReserveAnimation /*= true*/)
 {
-	m_whenCurrentAnimationFinishChangeAnimation = WhenCurrentAnimationFinished;
+	m_reservedAnimation = ReserveAnimation;
 	m_nextAnimation = m_animations[AnimationName];
 	if (m_nextAnimation == nullptr)
 	{
 		MessageBoxA(NULL, "NullException - SetAnimation", "SetAnimation", MB_OK);
 		assert(false);
 	}
+
+	if (ReserveAnimation == false)
+	{
+		//m_cacheCurrentAnimation = m_currentAnimation;
+		m_cacheCurrentAnimationFrame = m_cacheCurrentAnimationFrame;
+		m_animationState = EAnimationState::ChangeAnimation;
+	}
+	else
+	{
+		//m_animationState = EAnimationState::ReserveAnimation;
+	}
+}
+
+void Ideal::IdealSkinnedMeshObject::AnimationDeltaTime(const float& DeltaTime)
+{
+	m_sumTime += DeltaTime;
 }
 
 void Ideal::IdealSkinnedMeshObject::AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation)
@@ -136,62 +152,17 @@ void Ideal::IdealSkinnedMeshObject::SetSkinnedMesh(std::shared_ptr<Ideal::IdealS
 
 void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 {
-	m_sumTime += 0.001f;
-
-	// 현재 애니메이션이 끝났는데 다음 애니메이션이 있을 경우?
-	bool changeAnimationFlag = false;
-	if (m_isAnimationFinished)
+	if (m_currentAnimation == nullptr)
 	{
-		if (m_nextAnimation)
-		{
-			if (m_whenCurrentAnimationFinishChangeAnimation)
-			{
-				float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
-
-				for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
-				{
-					Matrix currentFrame = m_currentAnimation->m_animTransform->transforms[m_currentAnimation->frameCount - 1][boneIdx];
-					Matrix nextFrame = m_nextAnimation->m_animTransform->transforms[0][boneIdx];
-					Matrix resultFrame = Matrix::Identity;
-					Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
-					m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
-				}
-				m_ratio = m_sumTime / timePerFrame;
-
-				// 마지막 프레임의 애니메이션이 끝났다는 것
-				if (m_ratio >= 1.0f)
-				{
-					m_currentAnimation = m_nextAnimation;
-					m_nextAnimation = nullptr;
-					m_currentFrame = 0;
-					m_nextFrame = 0;
-					m_isAnimationFinished = false;
-					m_whenCurrentAnimationFinishChangeAnimation = false;
-				}
-
-				changeAnimationFlag = true;
-			}
-			else
-			{
-				m_currentAnimation = m_nextAnimation;
-				m_nextAnimation = nullptr;
-				m_currentFrame = 0;
-				m_nextFrame = 0;
-				m_isAnimationFinished = false;
-			}
-		}
-		else
-		{
-			// next animation이 없을 경우 다시 재생
-			m_isAnimationFinished = false;
-		}
+		return;
 	}
 
-	if (changeAnimationFlag == false && m_currentAnimation)
+	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
+	
+	switch (m_animationState)
 	{
-		// Bone Setting
+		case EAnimationState::CurrentAnimation:
 		{
-			float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
 			if (m_sumTime >= timePerFrame)
 			{
 				m_sumTime = 0.f;
@@ -206,16 +177,64 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 
 			m_ratio = m_sumTime / timePerFrame;
 
-			for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
+			// 평소 애니메이션일 경우
+			AnimationInterpolate(m_currentAnimation, m_currentFrame, m_currentAnimation, m_nextFrame);
+
+			if (m_isAnimationFinished && m_reservedAnimation)
 			{
-				// Current Frame
-				Matrix currentFrame = m_currentAnimation->m_animTransform->transforms[m_currentFrame][boneIdx];
-				Matrix nextFrame = m_currentAnimation->m_animTransform->transforms[m_nextFrame][boneIdx];
-				Matrix resultFrame = Matrix::Identity;
-				Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
-				m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
+				m_animationState = EAnimationState::ReserveAnimation;
 			}
 		}
+		break;
+		case EAnimationState::ChangeAnimation:
+		{
+			// 이전 애니메이션과 다음 애니메이션일 경우
+			AnimationInterpolate(m_currentAnimation, m_cacheCurrentAnimationFrame, m_nextAnimation, 0);
+			m_ratio = m_sumTime / timePerFrame;
+			if (m_ratio >= 1.0f)
+			{
+				m_currentAnimation = m_nextAnimation;
+				m_nextAnimation = nullptr;
+				m_currentFrame = 0;
+				m_nextFrame = 0;
+				m_isAnimationFinished = false;
+				m_reservedAnimation = false;
+				m_animationState = EAnimationState::CurrentAnimation;
+			}
+		}
+		break;
+		case EAnimationState::ReserveAnimation:
+		{
+			AnimationInterpolate(m_currentAnimation, m_currentFrame, m_nextAnimation, 0);
+			m_ratio = m_sumTime / timePerFrame;
+			if (m_ratio >= 1.0f)
+			{
+				m_currentAnimation = m_nextAnimation;
+				m_nextAnimation = nullptr;
+				m_currentFrame = 0;
+				m_nextFrame = 0;
+				m_isAnimationFinished = false;
+				m_reservedAnimation = false;
+				m_animationState = EAnimationState::CurrentAnimation;
+			}
+		}
+		break;
+		default:
+			break;
+
+	}
+	return;
+}
+
+void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::IdealAnimation> BeforeAnimation, uint32 BeforeAnimationFrame, std::shared_ptr<Ideal::IdealAnimation> NextAnimation, uint32 NextAnimationFrame)
+{
+	for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
+	{
+		Matrix currentFrame = BeforeAnimation->m_animTransform->transforms[BeforeAnimationFrame][boneIdx];
+		Matrix nextFrame = NextAnimation->m_animTransform->transforms[NextAnimationFrame][boneIdx];
+		Matrix resultFrame = Matrix::Identity;
+		Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
+		m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
 	}
 }
 
@@ -241,6 +260,11 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 	std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
 )
 {
+	if (m_playAnimation == false)
+	{
+		return;
+	}
+
 	AnimationPlay();
 
 	{

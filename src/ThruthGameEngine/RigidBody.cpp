@@ -72,7 +72,7 @@ void Truth::RigidBody::ApplyTransform()
 
 DirectX::SimpleMath::Quaternion Truth::RigidBody::GetRotation()
 {
-	return m_owner.lock()->GetRotation();
+	return m_owner.lock()->GetLocalRotation();
 }
 
 /// <summary>

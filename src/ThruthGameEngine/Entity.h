@@ -92,15 +92,19 @@ namespace Truth
 		void SetPosition(const Vector3& _pos) const;
 		void SetScale(const Vector3& _scale) const;
 
-		const Vector3& GetPosition() const;
-		const Quaternion& GetRotation() const;
-		const Vector3& GetScale() const;
+		const Vector3& GetLocalPosition() const;
+		const Quaternion& GetLocalRotation() const;
+		const Vector3& GetLocalScale() const;
+
+		const Vector3& GetWorldPosition() const;
+		const Quaternion& GetWorldRotation() const;
+		const Vector3& GetWorldScale() const;
 
 		const Matrix& GetWorldTM() const;
 		void SetWorldTM(const Matrix& _tm) const;
 
-		bool HasParent() { return !m_parent.expired(); };
-		bool HasChildren() { return !m_children.empty(); }
+		bool HasParent() const { return !m_parent.expired(); };
+		bool HasChildren() const { return !m_children.empty(); }
 
 		const Matrix& GetParentMatrix() 
 		{

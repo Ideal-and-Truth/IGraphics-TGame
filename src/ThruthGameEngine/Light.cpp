@@ -32,11 +32,11 @@ void Truth::Light::SetLight(LightType InLightType)
 	}
 	else if (InLightType == LightType::Spot)
 	{
-		m_spotLight = m_managers.lock()->Graphics()->CreateSpotLight();
+		// m_spotLight = m_managers.lock()->Graphics()->CreateSpotLight();
 	}
 	else if (InLightType == LightType::Point)
 	{
-		m_pointLight = m_managers.lock()->Graphics()->CreatePointLight();
+		// m_pointLight = m_managers.lock()->Graphics()->CreatePointLight();
 	}
 }
 
@@ -53,11 +53,11 @@ void Truth::Light::ApplyTransform()
 	}
 	else if (m_lightType == LightType::Spot)
 	{
-		m_spotLight->SetPosition(m_position);
+		// m_spotLight->SetPosition(m_position);
 	}
 	else if (m_lightType == LightType::Point)
 	{
-		m_pointLight->SetPosition(m_position);
+		// m_pointLight->SetPosition(m_position);
 	}
 }
 

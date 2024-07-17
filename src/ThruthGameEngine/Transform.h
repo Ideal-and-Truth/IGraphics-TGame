@@ -16,13 +16,19 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
+
 	public:
+		Vector3 m_worldPosition;
+		Vector3 m_worldScale;
+		Quaternion m_worldRotation;
+
 		PROPERTY(position);
 		Vector3 m_position;
 		PROPERTY(scale);
 		Vector3 m_scale;
 		PROPERTY(rotation);
 		Quaternion m_rotation;
+
 
 		Matrix m_localTM;
 		Matrix m_globalTM;

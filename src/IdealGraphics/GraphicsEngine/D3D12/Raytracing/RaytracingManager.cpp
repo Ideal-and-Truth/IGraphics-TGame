@@ -97,7 +97,7 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	CreateAnimationCSPipelineState(Device, AnimationShader);
 }
 
-void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture)
+void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, CB_LightList LightCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture)
 {
 	CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->SetComputeRootSignature(m_raytracingGlobalRootSignature.Get());
@@ -128,6 +128,13 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 		Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), SkyBoxTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::SRV_SkyBox, handle3.GetGpuHandle());
 	}
+
+	// Parameter 4
+	auto lightListHandle = CBPool->Allocate(Device.Get(), sizeof(CB_LightList));
+	memcpy(lightListHandle->SystemMemAddr, &LightCB, sizeof(LightCB));
+	auto handle4 = DescriptorManager->Allocate(CurrentFrameIndex);
+	Device->CopyDescriptorsSimple(1, handle4.GetCpuHandle(), lightListHandle->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::CBV_LightList, handle4.GetGpuHandle());
 
 	//-----------------Dispatch Rays----------------//
 
@@ -236,13 +243,32 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 			std::shared_ptr<Ideal::IdealMaterial> material = skinnedMesh->GetMeshes()[i]->GetMaterial();
 			if (material)
 			{
-				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
-				if (diffuseTexture)
+				std::shared_ptr<Ideal::D3D12Texture> albedoTexture = material->GetDiffuseTexture();
+				if (albedoTexture)
 				{
-					//blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
-					// TODO : 아래로 바꿀 예정
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), albedoTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
+				if (normalTexture)
+				{
+					blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
+				if (metalicTexture)
+				{
+					blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
+				if (roughnessTexture)
+				{
+					blasGeometry.SRV_Roughness= DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
@@ -288,6 +314,26 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
+				std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
+				if (normalTexture)
+				{
+					blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
+				if (metalicTexture)
+				{
+					blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+
+				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
+				if (roughnessTexture)
+				{
+					blasGeometry.SRV_Roughness = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
 			}
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 			CreateSRV(Device, mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource(), blasGeometry.SRV_VertexBuffer.GetCpuHandle(), mesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
@@ -301,7 +347,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 	}
 
 	uint64 geometrySizeInBLAS = Geometries.size();
-	blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
+	//blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
 	m_contributionToHitGroupIndexCount += geometrySizeInBLAS;
 	
 	// blas ref count 를 증가시킨다.
@@ -357,12 +403,14 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		ranges[GlobalRootSignature::Slot::UAV_Output].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : Output
 		ranges[GlobalRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : Global
 		ranges[GlobalRootSignature::Slot::SRV_SkyBox].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1 : SkyBox
+		ranges[GlobalRootSignature::Slot::CBV_LightList].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // b1 : LightList
 
 		// binding
 		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignature::Slot::Count];
 		rootParameters[GlobalRootSignature::Slot::UAV_Output].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_Output]);
 		rootParameters[GlobalRootSignature::Slot::CBV_Global].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::CBV_Global]);
 		rootParameters[GlobalRootSignature::Slot::SRV_SkyBox].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::SRV_SkyBox]);
+		rootParameters[GlobalRootSignature::Slot::CBV_LightList].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::CBV_LightList]);
 
 		// init as
 		rootParameters[GlobalRootSignature::Slot::SRV_AccelerationStructure].InitAsShaderResourceView(0);	// t0
@@ -386,11 +434,18 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		ranges[LocalRootSignature::Slot::SRV_IndexBuffer].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, space);	// t0 : Indices
 		ranges[LocalRootSignature::Slot::SRV_VertexBuffer].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, space);	// t1 : Vertices
 		ranges[LocalRootSignature::Slot::SRV_Diffuse].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2, space);	// t2 : Diffuse
+		ranges[LocalRootSignature::Slot::SRV_Normal].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3, space);	// t3 : Normal
+		ranges[LocalRootSignature::Slot::SRV_Metalic].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4, space);	// t4 : Metalic
+		ranges[LocalRootSignature::Slot::SRV_Roughness].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5, space);	// t5 : Roughness
+
 
 		CD3DX12_ROOT_PARAMETER rootParameters[LocalRootSignature::Slot::Count];
 		rootParameters[LocalRootSignature::Slot::SRV_IndexBuffer].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_IndexBuffer]);
 		rootParameters[LocalRootSignature::Slot::SRV_VertexBuffer].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_VertexBuffer]);
 		rootParameters[LocalRootSignature::Slot::SRV_Diffuse].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Diffuse]);
+		rootParameters[LocalRootSignature::Slot::SRV_Normal].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Normal]);
+		rootParameters[LocalRootSignature::Slot::SRV_Metalic].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Metalic]);
+		rootParameters[LocalRootSignature::Slot::SRV_Roughness].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Roughness]);
 
 		CD3DX12_ROOT_SIGNATURE_DESC localRootSignatureDesc(ARRAYSIZE(rootParameters), rootParameters);
 		localRootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE;
@@ -406,18 +461,30 @@ void Ideal::RaytracingManager::CreateRaytracingPipelineStateObject(ComPtr<ID3D12
 	CD3DX12_DXIL_LIBRARY_SUBOBJECT* lib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
 	D3D12_SHADER_BYTECODE libxil = CD3DX12_SHADER_BYTECODE(Shader->GetBufferPointer(), Shader->GetSize());
 	lib->SetDXILLibrary(&libxil);
-	lib->DefineExport(c_raygenShaderName);
-	lib->DefineExport(c_closestHitShaderName);
-	lib->DefineExport(c_missShaderName);
+	//lib->DefineExport(c_raygenShaderName);
+	//lib->DefineExport(c_closestHitShaderName);
+	//lib->DefineExport(c_missShaderName);
 
-	CD3DX12_HIT_GROUP_SUBOBJECT* hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
-	hitGroup->SetClosestHitShaderImport(c_closestHitShaderName);
-	hitGroup->SetHitGroupExport(c_hitGroupName);
-	hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
+	//----------------Create Hit Groups----------------//
+	for (uint32 rayType = 0; rayType < Ideal::PathtracerRayType::Count; ++rayType)
+	{
+		CD3DX12_HIT_GROUP_SUBOBJECT* hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
+		if (c_closestHitShaderName[rayType])
+		{
+			hitGroup->SetClosestHitShaderImport(c_closestHitShaderName[rayType]);
+		}
+		hitGroup->SetHitGroupExport(c_hitGroupName[rayType]);
+		hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
+	}
+
+	//hitGroup->SetClosestHitShaderImport(c_closestHitShaderName);
+	//hitGroup->SetHitGroupExport(c_hitGroupName);
+	//hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
 
 	// ray payload와 attribute structure의 최대 크기를 바이트 단위로 정의
 	CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT* shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
-	uint32 payloadSize = sizeof(Color);
+	//uint32 payloadSize = sizeof(Color);
+	uint32 payloadSize = static_cast<uint32>(max(sizeof(Ideal::RayPayload), sizeof(Ideal::ShadowRayPayload)));
 	uint32 attributesSize = sizeof(Vector2);
 	shaderConfig->Config(payloadSize, attributesSize);
 
@@ -447,7 +514,7 @@ void Ideal::RaytracingManager::CreateLocalRootSignatureSubobjects(CD3DX12_STATE_
 	// local root signature로 subobject 설정
 	CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT* rootSignatureAssociation = raytracingPipeline->CreateSubobject<CD3DX12_SUBOBJECT_TO_EXPORTS_ASSOCIATION_SUBOBJECT>();
 	rootSignatureAssociation->SetSubobjectToAssociate(*localRootSignature);
-	rootSignatureAssociation->AddExport(c_hitGroupName);
+	rootSignatureAssociation->AddExports(c_hitGroupName);
 }
 
 void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
@@ -456,8 +523,8 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 	//DescriptorManager->ResetFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 
 	void* rayGenShaderIdentifier;
-	void* missShaderIdentifier;
-	void* hitGroupShaderIdentifier;
+	void* missShaderIdentifier[Ideal::PathtracerRayType::Count];
+	void* hitGroupShaderIdentifier[Ideal::PathtracerRayType::Count];
 
 	uint32 shaderIdentifierSize = 0;
 	ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
@@ -465,9 +532,16 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 	shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
 
 	// Get Shader Identifier
-	rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_raygenShaderName);
-	missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_missShaderName);
-	hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_hitGroupName);
+
+	{
+		rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_raygenShaderName);
+
+		for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
+		{
+			missShaderIdentifier[i] = stateObjectProperties->GetShaderIdentifier(c_missShaderName[i]);
+			hitGroupShaderIdentifier[i] = stateObjectProperties->GetShaderIdentifier(c_hitGroupName[i]);
+		}
+	}
 
 	// RayGen Shader Table
 	{
@@ -485,28 +559,37 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 
 	// Miss Shader Table
 	{
-		uint32 numShaderRecords = 1;
+		uint32 numShaderRecords = Ideal::PathtracerRayType::Count;
 		uint32 shaderRecordSize = shaderIdentifierSize;
 		Ideal::DXRShaderTable missShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"MissShaderTable");
-		missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier, shaderIdentifierSize));
+		for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
+		{
+			missShaderTable.push_back(Ideal::DXRShaderRecord(missShaderIdentifier[i], shaderIdentifierSize));
+		}
+
 		if (DeferredDeleteManager)
 		{
 			DeferredDeleteManager->AddD3D12ResourceToDelete(m_missShaderTable);
 		}
-		m_missShaderTable = missShaderTable.GetResource();
 		m_missShaderTableStrideInBytes = missShaderTable.GetShaderRecordSize();
+		m_missShaderTable = missShaderTable.GetResource();
 	}
 
 	// Hit Shader Table
 	{
-		uint32 numShaderRecords = (uint32)m_contributionToHitGroupIndexCount;
-		if (numShaderRecords == 0) numShaderRecords = 1;
+		uint32 numShaderRecords = (uint32)m_contributionToHitGroupIndexCount * PathtracerRayType::Count;
+		if (numShaderRecords == 0) numShaderRecords = 1 * PathtracerRayType::Count;
 		uint32 shaderRecordSize = shaderIdentifierSize + sizeof(Ideal::LocalRootSignature::RootArgument);
 		Ideal::DXRShaderTable hitGroupShaderTable(Device.Get(), numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
 
 		const std::vector<std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> BLASs = m_ASManager->GetBLASs();
+
 		for (auto& blas : BLASs)
 		{
+			// hit contribution
+			uint32 shaderRecordOffset = hitGroupShaderTable.GetNumShaderRecords();
+			blas->SetInstanceContributionToHitGroupIndex(shaderRecordOffset);
+
 			// blas가 가지고 있는 geometry들을 가져온다.
 			const std::vector<BLASGeometry> blasGeometries = blas->GetGeometries();
 			for (const BLASGeometry& blasGeometry : blasGeometries)
@@ -515,17 +598,22 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 				rootArguments.SRV_Vertices = blasGeometry.SRV_VertexBuffer.GetGpuHandle();
 				rootArguments.SRV_Indices = blasGeometry.SRV_IndexBuffer.GetGpuHandle();
 				rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
+				rootArguments.SRV_NormalTexture = blasGeometry.SRV_Normal.GetGpuHandle();
+				rootArguments.SRV_MetalicTexture = blasGeometry.SRV_Metallic.GetGpuHandle();
+				rootArguments.SRV_RoughnessTexture = blasGeometry.SRV_Roughness.GetGpuHandle();
 
-				hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier, shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
-
+				for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
+				{
+					hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier[i], shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));
+				}
 			}
 		}
 		if (DeferredDeleteManager)
 		{
 			DeferredDeleteManager->AddD3D12ResourceToDelete(m_hitGroupShaderTable);
 		}
-		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 		m_hitGroupShaderTableStrideInBytes = hitGroupShaderTable.GetShaderRecordSize();
+		m_hitGroupShaderTable = hitGroupShaderTable.GetResource();
 	}
 }
 
