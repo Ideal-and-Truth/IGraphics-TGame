@@ -28,9 +28,9 @@ void Truth::NavGeom::Load(const std::wstring& _path)
 		for (unsigned int j = 0; j < verticesNum; j++)
 		{
 			Vector3 p;
-			p.x = file->Read<float>();
+			p.x = -file->Read<float>();
 			p.y = file->Read<float>();
-			p.z = file->Read<float>();
+			p.z = -file->Read<float>();
 
 			m_ver.push_back(p.x);
 			m_ver.push_back(p.y);
