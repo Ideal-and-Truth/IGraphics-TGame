@@ -19,6 +19,7 @@ namespace Truth
 		std::shared_ptr<Ideal::ISkinnedMeshObject> m_skinnedMesh;
 		std::shared_ptr<Ideal::IAnimation> m_animation;
 
+	public:
 		PROPERTY(path);
 		std::wstring m_path;
 
@@ -40,6 +41,7 @@ namespace Truth
 		PROPERTY(animationMaxFrame);
 		int m_animationMaxFrame;
 
+		int m_oldFrame;
 	public:
 		SkinnedMesh();
 		SkinnedMesh(std::wstring _path);
@@ -48,7 +50,6 @@ namespace Truth
 		void SetSkinnedMesh(std::wstring _path);
 		void AddAnimation(std::string _name, std::wstring _path);
 		void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
-		void SetRenderable(bool _isRenderable);
 		void SetAnimationSpeed(float Speed);
 		void SetPlayStop(bool playStop);
 

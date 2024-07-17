@@ -23,8 +23,10 @@ private:
 	std::weak_ptr<Truth::Controller> m_controller;
 	std::weak_ptr<Player> m_player;
 
-	float4 m_forwardInput;
-	float4 m_sideInput;
+	PROPERTY(forwardInput);
+	float m_forwardInput;
+	PROPERTY(sideInput);
+	float m_sideInput;
 
 	float4 m_attackInput;
 

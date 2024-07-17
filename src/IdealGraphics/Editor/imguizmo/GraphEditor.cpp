@@ -474,7 +474,8 @@ static bool HandleConnections(ImDrawList* drawList,
                             const auto link = delegate.GetLink(linkIndex);
                             if (link.mOutputNodeIndex == nl.mOutputNodeIndex && link.mOutputSlotIndex == nl.mOutputSlotIndex)
                             {
-                                delegate.DelLink(linkIndex);
+                                /// 애니메이터를 위해 죽어라
+                                //delegate.DelLink(linkIndex);
                                 
                                 break;
                             }

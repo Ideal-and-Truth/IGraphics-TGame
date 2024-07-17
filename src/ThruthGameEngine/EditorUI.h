@@ -41,13 +41,10 @@ private:
 	std::queue<std::weak_ptr<Truth::Entity>> m_createdEntity;
 
 	std::weak_ptr<Truth::Entity> m_selectedEntity;
+	std::weak_ptr<Truth::Animator> m_selectedAnimator;
 
 
-	static GraphEditor::Options options;
-	static Truth::GraphEditorDelegate delegate;
-	static GraphEditor::ViewState viewState;
-	static GraphEditor::FitOnScreen fit;
-	static bool showGraphEditor;
+	
 
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd);

@@ -19,11 +19,7 @@
 #include "Animator.h"
 #include <commdlg.h>
 
-GraphEditor::Options EditorUI::options;
-Truth::GraphEditorDelegate EditorUI::delegate;
-GraphEditor::ViewState EditorUI::viewState;
-GraphEditor::FitOnScreen EditorUI::fit = GraphEditor::Fit_None;
-bool EditorUI::showGraphEditor = true;
+
 
 
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
@@ -111,34 +107,75 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 
 	/// 애니메이터 UI
 	bool isShownAnimator = false;
-	for (auto& e : delegate.m_animationInfos)
+	if (m_selectedEntity.lock().get())
 	{
-		if (e.mSelected)
+		if (m_selectedEntity.lock().get()->GetComponent<Truth::Animator>().lock())
 		{
-			isShownAnimator = true;
-			char* cName = (char*)e.name.c_str();
-			ImGui::InputText("##3", cName, 128);
-
-			ImGui::Checkbox("##4", &e.isChangesOnFinished);
-			ImGui::SameLine();
-			ImGui::Text("isChangesOnFinished");
-
-			ImGui::DragFloat("##5", &e.animationSpeed, 0.01f, -5.f, 5.f);
-			ImGui::SameLine();
-			ImGui::Text("animationSpeed");
-
-			USES_CONVERSION;
-			std::string sval(W2A(e.animationPath.c_str()));
-
-			sval.resize(128);
-
-			bool success = ImGui::InputText("##6", (char*)sval.c_str(), 128, ImGuiInputTextFlags_EnterReturnsTrue);
-			if (success)
+			m_selectedAnimator = m_selectedEntity.lock().get()->GetComponent<Truth::Animator>();
+			for (auto& e : m_selectedAnimator.lock()->delegate.m_animationNodes)
 			{
-				e.animationPath = A2W(sval.c_str());
+				if (e.mSelected)
+				{
+					isShownAnimator = true;
+					char* cName = (char*)e.name.c_str();
+					ImGui::InputText("##3", cName, 128);
+
+					ImGui::Checkbox("##4", &e.isChangesOnFinished);
+					ImGui::SameLine();
+					ImGui::Text("isChangesOnFinished");
+
+					ImGui::DragFloat("##5", &e.animationSpeed, 0.01f, -5.f, 5.f);
+					ImGui::SameLine();
+					ImGui::Text("animationSpeed");
+
+					USES_CONVERSION;
+					std::string sval(W2A(e.animationPath.c_str()));
+
+					sval.resize(128);
+
+					bool success = ImGui::InputText("##6", (char*)sval.c_str(), 128, ImGuiInputTextFlags_EnterReturnsTrue);
+					if (success)
+					{
+						e.animationPath = A2W(sval.c_str());
+					}
+					ImGui::SameLine();
+					ImGui::Text("animationPath");
+
+					ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+					if (ImGui::BeginTabBar("TransitionsBar", tab_bar_flags))
+					{
+						if (ImGui::BeginTabItem("Transitions"))
+						{
+							static int selected = -1;
+							for (auto& f : m_selectedAnimator.lock()->delegate.mLinks)
+							{
+								//if()
+// 								char buf[32];
+// 								sprintf(buf, [index], "->", [index]);
+// 								if (ImGui::Selectable(buf, selected == n))
+// 									selected = n;
+							}
+
+							ImGui::EndTabItem();
+						}
+						ImGui::EndTabBar();
+					}
+
+					if (ImGui::Button("Delete State"))
+					{
+						for (auto& e : m_selectedAnimator.lock()->delegate.m_animationNodes)
+						{
+							if (e.mSelected)
+							{
+								m_selectedAnimator.lock()->delegate.m_animationNodes.erase(
+									std::remove_if(m_selectedAnimator.lock()->delegate.m_animationNodes.begin()
+										, m_selectedAnimator.lock()->delegate.m_animationNodes.end(), [](auto x)->bool {return x.mSelected; })
+									, m_selectedAnimator.lock()->delegate.m_animationNodes.end());
+							}
+						}
+					}
+				}
 			}
-			ImGui::SameLine();
-			ImGui::Text("animationPath");
 		}
 	}
 
@@ -565,6 +602,8 @@ void EditorUI::ShowAnimator(bool* p_open)
 	{
 		if (m_selectedEntity.lock().get()->GetComponent<Truth::Animator>().lock())
 		{
+			m_selectedAnimator = m_selectedEntity.lock().get()->GetComponent<Truth::Animator>();
+
 			uint32 selectCount = 0;
 
 
@@ -575,24 +614,26 @@ void EditorUI::ShowAnimator(bool* p_open)
 			{
 				if (ImGui::Selectable("Create State"))
 				{
-					/// TODO : 상태 생성
-					Truth::GraphEditorDelegate::AnimatorNode node;
-					delegate.m_animationInfos.push_back(node);
-
+					Truth::Animator::AnimatorNode node;
+					m_selectedAnimator.lock()->delegate.m_animationNodes.push_back(node);
 				}
 				ImGui::EndPopup();
 			}
 
 			if (ImGui::Button("Fit all nodes"))
 			{
-				fit = GraphEditor::Fit_AllNodes;
+				m_selectedAnimator.lock()->fit = GraphEditor::Fit_AllNodes;
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Fit selected nodes"))
 			{
-				fit = GraphEditor::Fit_SelectedNodes;
+				m_selectedAnimator.lock()->fit = GraphEditor::Fit_SelectedNodes;
 			}
-			GraphEditor::Show(delegate, options, viewState, true, &fit);
+			GraphEditor::Show(m_selectedAnimator.lock()->delegate
+				, m_selectedAnimator.lock()->options
+				, m_selectedAnimator.lock()->viewState
+				, true
+				, &m_selectedAnimator.lock()->fit);
 
 
 
@@ -759,9 +800,4 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 		ImGui::TreePop();
 	}
 }
-
-// void EditorUI::DisplayAnimatorInspector(Node _animationInfo)
-// {
-// 
-// }
 
