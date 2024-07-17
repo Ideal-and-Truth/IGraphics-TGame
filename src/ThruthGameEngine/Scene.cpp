@@ -24,6 +24,10 @@ Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 Truth::Scene::~Scene()
 {
 	ClearEntity();
+	for (auto m : m_mapMesh)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m);
+	}
 }
 
 /// <summary>

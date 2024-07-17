@@ -111,6 +111,9 @@ void Truth::Managers::Finalize()
 
 	m_physXManager->Finalize();
 	m_physXManager.reset();
+
+	m_graphicsManager->Finalize();
+	m_graphicsManager.reset();
 }
 
 

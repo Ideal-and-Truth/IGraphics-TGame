@@ -70,6 +70,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 void Truth::GraphicsManager::Finalize()
 {
+	
 }
 
 /// <summary>

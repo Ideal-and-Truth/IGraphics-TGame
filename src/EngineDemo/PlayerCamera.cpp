@@ -42,9 +42,6 @@ void PlayerCamera::Start()
 	targetPos.z -= m_cameraDistance;
 
 	m_owner.lock()->m_transform->m_position = targetPos;
-
-	//m_camera.get()->GetTypeInfo().GetProperty("position")->Set(m_camera.get(), ownerPos);
-
 }
 
 void PlayerCamera::LateUpdate()
@@ -70,40 +67,6 @@ void PlayerCamera::LateUpdate()
 
 void PlayerCamera::FreeCamera()
 {
-	// 자유시점 카메라
-	/*Vector3 cameraPos = m_camera.get()->GetTypeInfo().GetProperty("position")->Get<DirectX::SimpleMath::Vector3>(m_camera.get()).Get();
-	Vector3 cameraLook = m_camera.get()->GetTypeInfo().GetProperty("look")->Get<DirectX::SimpleMath::Vector3>(m_camera.get()).Get();
-
-
-	m_elevation += MouseDy() * m_cameraSpeed;
-	m_azimuth -= MouseDx() * m_cameraSpeed;
-
-	if (m_elevation > 3.13f)
-	{
-		m_elevation = 3.13f;
-	}
-	if (m_elevation < 0.01f)
-	{
-		m_elevation = 0.01f;
-	}
-
-
-	cameraPos.x = m_cameraDistance * sin(m_elevation) * cos(m_azimuth);
-	cameraPos.y = m_cameraDistance * cos(m_elevation);
-	cameraPos.z = m_cameraDistance * sin(m_elevation) * sin(m_azimuth);
-
-	auto ownerPos = m_owner.lock()->m_transform->m_position;
-	cameraPos.x += ownerPos.x;
-	cameraPos.y += ownerPos.y;
-	cameraPos.z += ownerPos.z;
-
-
-	auto look = ownerPos - cameraPos;
-
-
-	m_camera.get()->GetTypeInfo().GetProperty("position")->Set(m_camera.get(), cameraPos);
-	m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);*/
-
 	// 자유시점 카메라2
 	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
 	Vector3 targetPos = m_target->m_position;
@@ -120,17 +83,7 @@ void PlayerCamera::FreeCamera()
 		m_elevation = 0.01f;
 	}
 
-
 	m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01;
-	
-// 	if (GetKey(KEY::LEFT))
-// 	{
-// 		m_elevation += m_cameraSpeed;
-// 	}
-// 	if (GetKey(KEY::RIGHT))
-// 	{
-// 		m_azimuth -= m_cameraSpeed;
-// 	}
 
 	cameraPos.x = m_cameraDistance * sin(m_elevation) * cos(m_azimuth);
 	cameraPos.y = m_cameraDistance * cos(m_elevation);
