@@ -109,7 +109,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	}
 
 
-	CreateMap(L"E:\\Projects\\IGraphics-TGame\\IGraphics-TGame\\src\\Resources\\MapData\\Level_v0.2.0.map");
+	CreateMap(L"E:\\Projects\\IGraphics-TGame\\src\\Resources\\MapData\\Level_v0.2.0.map");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
