@@ -22,7 +22,10 @@ void Ideal::IdealSkinnedMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Rendere
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 
 	//int i = 0;
-	//if (m_meshes.size() > 1) i = 3;
+	//if (m_meshes.size() > 1)
+	//{
+	//	i = 5;
+	//}
 	//auto& mesh = m_meshes[i];
 	for (auto& mesh : m_meshes)
 	{

@@ -67,6 +67,7 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::IdealSkinnedMesh> m_skinnedMesh;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
+		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bonesAnimation;
 
 		CB_Bone m_cbBoneData;
 		CB_Transform m_cbTransformData;

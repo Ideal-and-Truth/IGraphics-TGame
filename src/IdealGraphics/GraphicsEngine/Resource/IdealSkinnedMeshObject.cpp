@@ -50,7 +50,45 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
 
+
+	const auto bones = m_skinnedMesh->GetBones();
+	uint32 boneCount = bones.size();
+	for (uint32 i = 0; i < boneCount; ++i)
+	{
+		//m_cbBoneData.transforms[i] = bones[i]->GetTransform().Transpose();
+		//Matrix boneWorldTM = bones[i]->GetTransform();
+		//Matrix boneNodeTM = bones[i]->GetTransform();
+		//Matrix skinWorldTM = m_transform;
+		//Matrix boneOffsetTM = boneNodeTM * skinWorldTM.Invert();
+		//Matrix boneOffsetTMInverse = boneOffsetTM.Invert();
+		//Matrix finalBoneTM = boneOffsetTMInverse * boneWorldTM;
+
+		int a = 3;
+	}
+
+	//static int once = 0;
+	//if(once < 10)
+	//AnimationPlay();
+	//once++;
+	//uint32 boneCount = bones.size();
+	//for (uint32 i = 0; i < boneCount; ++i)
+	//{
+	//	m_cbBoneData.transforms[i] = bones[i]->GetTransform().Transpose();
+	//}
 	AnimationPlay();
+	//for (uint32 i = 0; i < boneCount; ++i)
+	//{
+	//	//m_cbBoneData.transforms[i] = bones[i]->GetTransform().Transpose();
+	//	Matrix boneWorldTM = m_cbBoneData.transforms[i];
+	//	Matrix boneNodeTM = bones[i]->GetTransform();
+	//	Matrix skinWorldTM = m_transform;
+	//	Matrix boneOffsetTM = boneNodeTM * skinWorldTM.Invert();
+	//	Matrix boneOffsetTMInverse = boneOffsetTM.Invert();
+	//	Matrix finalBoneTM = boneOffsetTMInverse * boneWorldTM;
+	//
+	//	int a = 3;
+	//}
+
 
 	// Bind Descriptor Table
 	auto handle = descriptorHeap->Allocate(2);
@@ -228,13 +266,30 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 
 void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::IdealAnimation> BeforeAnimation, uint32 BeforeAnimationFrame, std::shared_ptr<Ideal::IdealAnimation> NextAnimation, uint32 NextAnimationFrame)
 {
+	const auto bones = m_skinnedMesh->GetBones();
+	//uint32 boneCount = bones.size();
+	//for (uint32 i = 0; i < boneCount; ++i)
+	//{
+	//	m_cbBoneData.transforms[i] = bones[i]->GetTransform().Transpose();
+	//}
+
 	for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
 	{
 		Matrix currentFrame = BeforeAnimation->m_animTransform->transforms[BeforeAnimationFrame][boneIdx];
 		Matrix nextFrame = NextAnimation->m_animTransform->transforms[NextAnimationFrame][boneIdx];
 		Matrix resultFrame = Matrix::Identity;
 		Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
-		m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
+		
+		//m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
+
+		//Matrix boneWorldTM = resultFrame;
+		//Matrix boneNodeTM = bones[boneIdx]->GetTransform();
+		//Matrix skinWorldTM = m_transform;
+		//Matrix boneOffsetTM = boneNodeTM * skinWorldTM.Invert();
+		//Matrix boneOffsetTMInverse = boneOffsetTM.Invert();
+		//Matrix finalBoneTM = boneOffsetTMInverse * boneWorldTM;
+		////m_cbBoneData.transforms[boneIdx] = (finalBoneTM).Transpose();
+		m_cbBoneData.transforms[boneIdx] = (bones[boneIdx]->GetOffsetMatrix() * resultFrame).Transpose();
 	}
 }
 
@@ -262,6 +317,7 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 {
 	if (m_playAnimation == false)
 	{
+		
 		return;
 	}
 
