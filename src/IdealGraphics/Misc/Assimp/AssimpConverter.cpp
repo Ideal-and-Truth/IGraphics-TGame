@@ -141,6 +141,13 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 
 }
 
+void AssimpConverter::ExportMapData(std::wstring savePath, bool IsSkinnedData /*= false*/)
+{
+	std::wstring finalPath = m_modelPath + savePath;
+	ReadModelData(m_scene->mRootNode, -1, -1);
+	WriteMapFile(finalPath);
+}
+
 void AssimpConverter::ExportMaterialData(const std::wstring& savePath)
 {
 	std::wstring filePath = m_texturePath + savePath + L".xml";
@@ -304,6 +311,35 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 	file->Write<uint32>((uint32)m_meshes.size());
 	for (auto& mesh : m_meshes)
 	{
+		file->Write<std::string>(mesh->name);
+		file->Write<int32>(mesh->boneIndex);
+		file->Write<std::string>(mesh->materialName);
+
+		// vertex
+		file->Write<uint32>((uint32)mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(BasicVertex) * (uint32)mesh->vertices.size());
+
+		// index
+		file->Write<uint32>((uint32)mesh->indices.size());
+		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
+
+	}
+}
+
+void AssimpConverter::WriteMapFile(const std::wstring& filePath)
+{
+	for (auto& mesh : m_meshes)
+	{
+		auto path = std::filesystem::path(filePath + ConvertStringToWString(mesh->name) + L".map.mesh");
+
+		std::filesystem::create_directory(path.parent_path());
+
+		std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+		file->Open(path, FileMode::Write);
+
+		// Bone Data
+		file->Write<uint32>(0);
+		file->Write<uint32>(1);
 		file->Write<std::string>(mesh->name);
 		file->Write<int32>(mesh->boneIndex);
 		file->Write<std::string>(mesh->materialName);

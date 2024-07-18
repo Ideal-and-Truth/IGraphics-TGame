@@ -57,6 +57,7 @@ namespace Ideal
 
 		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false) abstract;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) abstract;
+		virtual void ConvertAssetToMapFormat(std::wstring FileName) abstract;
 
 	public:
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) abstract;

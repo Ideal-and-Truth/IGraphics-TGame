@@ -730,6 +730,25 @@ void Ideal::D3D12RayTracingRenderer::ConvertAssetToMyFormat(std::wstring FileNam
 	assimpConverter->ExportMaterialData(FileName);
 }
 
+void Ideal::D3D12RayTracingRenderer::ConvertAssetToMapFormat(std::wstring FileName)
+{
+	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
+	assimpConverter->SetAssetPath(m_assetPath);
+	assimpConverter->SetModelPath(m_modelPath);
+	assimpConverter->SetTexturePath(m_texturePath);
+
+	assimpConverter->ReadAssetFile(FileName, false, false);
+
+	// Temp : ".fbx" »èÁ¦
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+
+	assimpConverter->ExportMapData(FileName, false);
+	assimpConverter->ExportMaterialData(FileName);
+}
+
 void Ideal::D3D12RayTracingRenderer::ConvertAnimationAssetToMyFormat(std::wstring FileName)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();

@@ -34,6 +34,7 @@ public:
 public:
 	void ReadAssetFile(const std::wstring& path, bool isSkinnedData, bool onlyPosition);
 	void ExportModelData(std::wstring savePath, bool IsSkinnedData = false);
+	void ExportMapData(std::wstring savePath, bool IsSkinnedData = false);
 	void ExportMaterialData(const std::wstring& savePath);
 	void ExportAnimationData(std::wstring savePath, uint32 index = 0);
 
@@ -44,6 +45,7 @@ private:
 	std::string WriteTexture(std::string SaveFolder, std::string File);
 	void WriteMaterialData(std::wstring FilePath);
 	void WriteModelFile(const std::wstring& filePath);
+	void WriteMapFile(const std::wstring& filePath);
 	void WriteSkinnedModelFile(const std::wstring& filePath);
 	void ReadModelData(aiNode* node, int32 index, int32 parent);
 	void ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData = true);

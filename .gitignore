@@ -38,3 +38,4 @@ pycache/
 *.DS_Store
 packages/
 *.lib
+src/Resources/Models/TestMap/Map2Scene.map.mesh
