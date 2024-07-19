@@ -47,15 +47,23 @@ void PlayerAnimator::Update()
 
 	m_currentState->OnStateUpdate();
 
-	if (m_isAnimationEnd)
+	if (m_isAnimationChange)
 	{
+		if (GetKeyDown(KEY::LBTN))
+		{
+			//ChangeState(m_animationStateMap["Attack"]);
+			return;
+		}
+
 		if (!m_isMove)
 		{
 			ChangeState(m_animationStateMap["Idle"]);
+			return;
 		}
 		if (m_isMove)
 		{
 			ChangeState(m_animationStateMap["Run"]);
+			return;
 		}
 	}
 }
@@ -69,7 +77,7 @@ void PlayerAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnim
 
 void PlayerAnimator::ChangeState(AnimationState* state)
 {
-	m_isAnimationEnd = false;
+	m_isAnimationChange = false;
 	m_currentState->OnStateExit();
 	m_currentState = state;
 	m_currentState->OnStateEnter();
@@ -81,10 +89,9 @@ void PlayerIdle::Initialize()
 	m_forward = m_pc->GetTypeInfo().GetProperty("forwardInput");
 	m_side = m_pc->GetTypeInfo().GetProperty("sideInput");
 
-
 }
 
-void PlayerIdle::OnStateEnter()
+void PlayerIdle::OnStateEnter() 
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Idle", false);
 }
@@ -94,9 +101,13 @@ void PlayerIdle::OnStateUpdate()
 	if (m_forward->Get<float>(m_pc).Get() != 0.f || m_side->Get<float>(m_pc).Get() != 0.f)
 	{
 		SetProperty("isMove", true);
-		SetProperty("isAnimationEnd", true);
+		SetProperty("isAnimationChange", true);
 	}
 
+// 	if (m_animator->GetTypeInfo().GetProperty("isAnimationChange")->Get<bool>(m_animator).Get())
+// 	{
+// 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState(this);
+// 	}
 }
 
 const Property* AnimationState::GetProperty(const std::string& name)
@@ -121,6 +132,11 @@ void PlayerRun::OnStateUpdate()
 	if (m_forward->Get<float>(m_pc).Get() == 0.f && m_side->Get<float>(m_pc).Get() == 0.f)
 	{
 		SetProperty("isMove", false);
-		SetProperty("isAnimationEnd", true);
+		SetProperty("isAnimationChange", true);
 	}
+}
+
+void PlayerAttack::OnStateEnter()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Idle", false);
 }

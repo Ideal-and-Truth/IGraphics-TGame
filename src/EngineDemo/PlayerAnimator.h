@@ -87,6 +87,25 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
+class PlayerAttack
+	: public AnimationState
+{
+private:
+	PlayerController* m_pc;
+
+public:
+	PlayerAttack(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void Initialize() override;
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+};
+
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class PlayerAnimator :
 	public Truth::Component
@@ -104,9 +123,11 @@ private:
 	PROPERTY(isMove);
 	bool m_isMove;
 
+	PROPERTY(isAttack);
+	bool m_isAttack;
 
-	PROPERTY(isAnimationEnd);
-	bool m_isAnimationEnd;
+	PROPERTY(isAnimationChange);
+	bool m_isAnimationChange;
 
 	std::map<std::string, AnimationState*> m_animationStateMap;
 	AnimationState* m_currentState;
