@@ -55,33 +55,11 @@ void Processor::Initialize(HINSTANCE _hInstance)
 
 	Truth::UnityParser up;
 
-	std::string buffer = "Type:Mesh->Sprite__3_0";
-	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
-	int64 temp = static_cast<int64>(hash);
-	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
-	// up.ParseSceneFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\_Prototype\\Level_v0.2.0.unity");
-
-	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
-	// 
-	// 	// 저장할 배열
-	// 	std::vector<Vector3> pos;
-	// 
-	// 	unsigned int meshNum = file->Read<unsignead int>();
-	// 
-	// 	for (int i = 0; i < meshNum; i++)
-	// 	{
-	// 		unsigned int verticesNum = file->Read<unsigned int>();
-	// 		for (int j = 0; j < verticesNum; j++)
-	// 		{
-	// 			Vector3 p;
-	// 			p.x = file->Read<float>();
-	// 			p.y = file->Read<float>();
-	// 			p.z = file->Read<float>();
-	// 			pos.push_back(p);
-	// 		}
-	// 	}
-	// 
+// 	std::string buffer = "Type:Mesh->Sprite__3_0";
+// 	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
+// 	int64 temp = static_cast<int64>(hash);
+	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
+	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }
