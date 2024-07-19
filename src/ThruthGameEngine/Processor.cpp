@@ -51,15 +51,15 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 // 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 // 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-	g_Renderer->ConvertAssetToMapFormat(L"TestMap/Map2.fbx");
+//	g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx");
 
 	Truth::UnityParser up;
 
 	std::string buffer = "Type:Mesh->Sprite__3_0";
 	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
 	int64 temp = static_cast<int64>(hash);
-	up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
-	up.ParseSceneFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\_Prototype\\Level_v0.2.0.unity");
+	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	// up.ParseSceneFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\_Prototype\\Level_v0.2.0.unity");
 
 	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);

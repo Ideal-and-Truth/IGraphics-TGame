@@ -167,7 +167,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
-		//gRenderer->ConvertAssetToMapFormat(L"TestMap/Map2.fbx");
+		gRenderer->ConvertAssetToMyFormat(L"TestMap/Map22.fbx", false);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
