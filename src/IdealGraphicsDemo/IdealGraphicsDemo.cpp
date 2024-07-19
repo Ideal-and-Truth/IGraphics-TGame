@@ -101,8 +101,9 @@ void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
+float lightAngleY = 0.f;
 
-float g_cameraSpeed = 0.18f;
+float g_cameraSpeed = 0.08f;
 void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -166,8 +167,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Dancing Twerk.fbx");
@@ -183,8 +188,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
@@ -196,23 +199,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> rumbaAnim = gRenderer->CreateAnimation(L"player/Rumba Dancing");
 		//player3->AddAnimation("rumba", rumbaAnim);
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
-		std::shared_ptr<Ideal::IAnimation> hiphopAnim = gRenderer->CreateAnimation(L"player/Hip Hop Dancing");
-		std::shared_ptr<Ideal::IAnimation> CapoeiraAnim = gRenderer->CreateAnimation(L"player/Capoeira");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
+		//std::shared_ptr<Ideal::IAnimation> hiphopAnim = gRenderer->CreateAnimation(L"player/Hip Hop Dancing");
+		//std::shared_ptr<Ideal::IAnimation> CapoeiraAnim = gRenderer->CreateAnimation(L"player/Capoeira");
 		//player->AddAnimation("Hip", CapoeiraAnim);
-		player->AddAnimation("Hip", hiphopAnim);
+		//player->AddAnimation("Hip", hiphopAnim);
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player3 = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude");
 		//std::shared_ptr<Ideal::IAnimation> twerkAnim = gRenderer->CreateAnimation(L"player/Dancing Twerk");
 		//player3->AddAnimation("Twerk",twerkAnim);
-		player->SetTransformMatrix(Matrix::CreateTranslation(Vector3(4,0,0)));
+		//player->SetTransformMatrix(Matrix::CreateTranslation(Vector3(4,0,0)));
 		
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player2 = gRenderer->CreateSkinnedMeshObject(L"player2/myPlayer2");
 		//std::shared_ptr<Ideal::IAnimation> rumba = gRenderer->CreateAnimation(L"player2/Capoeira");
 		//player2->AddAnimation("Rumba", rumba);
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		std::shared_ptr<Ideal::IAnimation> hiphopAnim2 = gRenderer->CreateAnimation(L"Kachujin/HipHop");
-		ka->AddAnimation("HIP", hiphopAnim2);
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		//std::shared_ptr<Ideal::IAnimation> hiphopAnim2 = gRenderer->CreateAnimation(L"Kachujin/HipHop");
+		//ka->AddAnimation("HIP", hiphopAnim2);
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
@@ -222,13 +225,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		////std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		////
-		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
 		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"Boss/bosshall");
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
 		std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
+		std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
 		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
 		//ka->AddAnimation("Run", runAnim);
@@ -483,9 +487,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}
 				// Animation // 역재생 안됨
-				ka->AnimationDeltaTime(0.002f);
+				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
-				player->AnimationDeltaTime(0.002f);
+				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 
 				//-----ImGui Test-----//
@@ -525,8 +529,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		meshes.clear();
 
-		gRenderer->DeleteMeshObject(ka);
-		ka.reset();
+		//gRenderer->DeleteMeshObject(ka);
+		//ka.reset();
 		//
 		//gRenderer->DeleteMeshObject(cat);
 		//cat.reset();
@@ -537,8 +541,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 		
-		gRenderer->DeleteMeshObject(player);
-		player.reset();
+		//gRenderer->DeleteMeshObject(player);
+		//player.reset();
 
 		gRenderer.reset();
 	}
@@ -685,19 +689,19 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 	{
-		Camera->RotateY(-speed);
+		Camera->RotateY(-speed * 0.2);
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 	{
-		Camera->RotateY(speed);
+		Camera->RotateY(speed * 0.2);
 	}
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 	{
-		Camera->Pitch(-speed);
+		Camera->Pitch(-speed * 0.2);
 	}
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 	{
-		Camera->Pitch(speed);
+		Camera->Pitch(speed * 0.2);
 	}
 
 
@@ -861,9 +865,11 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	ImGui::SliderFloat("X", &lightAngleX, 0.f, 6.28f);
 	Matrix mat = Matrix::Identity;
 	mat *= Matrix::CreateRotationX(lightAngleX);
-	Vector3 rot = mat.Forward();
 	ImGui::ColorEdit3("Diffuse Color", lightColor);
+	ImGui::SliderFloat("Y", &lightAngleY, 0.f, 6.28f);
+	mat *= Matrix::CreateRotationY(lightAngleY);
 
+	Vector3 rot = mat.Forward();
 	if (DirLight)
 	{
 		DirLight->SetDirection(rot);

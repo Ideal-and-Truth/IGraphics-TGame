@@ -18,6 +18,8 @@
 
 #define SHADOW_ON
 
+#define BEFORE_REFACTOR
+
 #define MAX_POINT_LIGHT_NUM 16
 #define MAX_SPOT_LIGHT_NUM 16
 
@@ -37,6 +39,8 @@ Texture2D<float4> l_texDiffuse : register(t2, space1);
 Texture2D<float4> l_texNormal : register(t3, space1);
 Texture2D<float4> l_texMetallic : register(t4, space1);
 Texture2D<float4> l_texRoughness : register(t5, space1);
+ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
+
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 
@@ -254,8 +258,28 @@ float3 Shade(
     float3 Ks;
     float3 Kr;
     const float3 Kt;
-    float metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
-    float roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+    float metallic; 
+
+    if(l_materialInfo.bUseMetallicMap)
+    {
+        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+    }
+    else
+    {
+        metallic = l_materialInfo.metallicFactor;
+    }
+    
+    float roughness;
+    if(l_materialInfo.bUseRoughnessMap)
+    {
+        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+    }
+    else
+    {
+        roughness = l_materialInfo.roughnessFactor;
+    }
+
+
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
 
   
@@ -271,6 +295,7 @@ float3 Shade(
 //        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
 //#endif
 
+
         int pointLightNum = g_lightList.PointLightNum;
 
         // Directional Light
@@ -278,8 +303,6 @@ float3 Shade(
             float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
             
             float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-            //float3 color = g_lightList.PointLights[0].Color.rgb;
-            //float3 color = g_lightList.PointLights[0].Position.xyz;
             
             bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
             L += Ideal::Light::ComputeDirectionalLight(
@@ -304,7 +327,7 @@ float3 Shade(
                 float intensity = g_lightList.PointLights[i].Intensity;
                 
                 bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
-                
+
                 float3 light = Ideal::Light::ComputePointLight
                 (
                 Kd,
@@ -341,6 +364,7 @@ float3 Shade(
         {
             RayPayload reflectedPayLoad = rayPayload;
             float3 wi = reflect(-V, N);
+            
             L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad);
         }
         else // No total internal reflection
@@ -473,7 +497,8 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         
         normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
     }
-    normal = NormalMap(normal, uv, vertexInfo, attr);
+    if(l_materialInfo.bUseNormalMap)
+        normal = NormalMap(normal, uv, vertexInfo, attr);
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
 }
 

@@ -122,9 +122,9 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	//flag |= aiProcess_JoinIdenticalVertices;
 	if (!isSkinnedData)
 	{
-		// TODO : FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk
-		//flag |= aiProcess_OptimizeMeshes;
-		//flag |= aiProcess_PreTransformVertices;
+		// TODO : 모델 FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk.
+		flag |= aiProcess_OptimizeMeshes;
+		flag |= aiProcess_PreTransformVertices;
 	}
 	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
@@ -334,6 +334,14 @@ void AssimpConverter::WriteMaterialData(std::wstring FilePath)
 		element->SetAttribute("B", material->emissive.z);
 		element->SetAttribute("A", material->emissive.w);
 		node->LinkEndChild(element);
+
+		element = document->NewElement("Metallic");
+		element->SetAttribute("Factor", material->metallicFactor);
+		node->LinkEndChild(element);
+
+		element = document->NewElement("Roughness");
+		element->SetAttribute("Factor", material->roughnessFactor);
+		node->LinkEndChild(element);
 	}
 
 	std::string filePathString = std::string().assign(FilePath.begin(), FilePath.end());
@@ -518,6 +526,7 @@ void AssimpConverter::ReadMaterialData()
 		}
 		else
 		{
+			material->bUseDiffuseTexture = false;
 			material->diffuseTextureFile = "DefaultAlbedo.png";
 		}
 
@@ -545,6 +554,7 @@ void AssimpConverter::ReadMaterialData()
 		material->normalTextureFile = file.C_Str();
 		if (material->normalTextureFile.empty())
 		{
+			material->bUseNormalTexture= false;
 			material->normalTextureFile = "DefaultNormalMap.png";
 		}
 
@@ -557,6 +567,14 @@ void AssimpConverter::ReadMaterialData()
 		}
 		else
 		{
+			float factor;
+			srcMaterial->Get(AI_MATKEY_METALLIC_FACTOR(0), factor);
+			if (factor < 0) factor = 0.f;
+			if (factor > 1) factor = 1.f;
+
+			material->bUseNormalTexture = false;
+			material->metallicFactor = factor;
+
 			material->metalicTextureFile = "DefaulBlack.png";
 		}
 
@@ -569,6 +587,14 @@ void AssimpConverter::ReadMaterialData()
 		}
 		else
 		{
+			float factor;
+			srcMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR(0), factor);
+			if (factor < 0) factor = 0.f;
+			if (factor > 1) factor = 1.f;
+
+			material->bUseRoughnessTexture = false;
+			material->roughnessFactor = factor;
+
 			material->roughnessTextureFile = "DefaulBlack.png";
 		}
 		m_materials.push_back(material);

@@ -1229,7 +1229,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	else
 	{
 		// 안에서 add ref count를 실행시키긴 함. ....
-		blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), false);
+		blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, m_cbAllocator[m_currentContextIndex], obj, obj->GetName().c_str(), false);
 	}
 
 	if (ShouldBuildShaderTable)
@@ -1244,7 +1244,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
 {
 	//ResetCommandList();
-	auto blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, obj, obj->GetName().c_str(), true);
+	auto blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, m_cbAllocator[m_currentContextIndex], obj, obj->GetName().c_str(), true);
 	// Skinning 데이터는 쉐이더 테이블을 그냥 만든다.
 	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 

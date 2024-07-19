@@ -780,6 +780,20 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 				material->SetEmissive(color);
 			}
 
+			// Metallic
+			{
+				node = node->NextSiblingElement();
+				float MetallicFactor = node->FloatAttribute("Factor");
+				material->SetMetallicFactor(MetallicFactor);
+			}
+
+			// Roughness
+			{
+				node = node->NextSiblingElement();
+				float RoughnessFactor = node->FloatAttribute("Factor");
+				material->SetRoughnessFactor(RoughnessFactor);
+			}
+
 			staticMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();

@@ -38,6 +38,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle SRV_Normal;
 		Ideal::D3D12DescriptorHandle SRV_Metallic;
 		Ideal::D3D12DescriptorHandle SRV_Roughness;
+		Ideal::D3D12DescriptorHandle CBV_MaterialInfo;
 	};
 
 	struct BLASData

@@ -75,6 +75,7 @@ void Ideal::DXRBottomLevelAccelerationStructure::FreeMyHandle()
 		geometry.SRV_Normal.Free();
 		geometry.SRV_Metallic.Free();
 		geometry.SRV_Roughness.Free();
+		geometry.CBV_MaterialInfo.Free();
 	}
 
 	m_geometries.clear();

@@ -22,6 +22,9 @@ namespace Ideal
 		void SetSpecular(Color c) { m_specular = c; }
 		void SetEmissive(Color c) { m_emissive = c; }
 
+		void SetMetallicFactor(const float& f) { m_metallicFactor = f; }
+		void SetRoughnessFactor(const float& f) { m_roughnessFactor = f; }
+
 		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		// Ω¶¿Ã¥ı∂˚ πŸ¿ŒµÂ∏¶ «—¥Ÿ.
 		void BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer);
@@ -42,11 +45,16 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Texture> GetMetallicTexture() { return m_metalicTexture; }
 		std::shared_ptr<Ideal::D3D12Texture> GetRoughnessTexture() { return m_roughnessTexture; }
 
+		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
+
 	private:
 		Color m_ambient;
 		Color m_diffuse;
 		Color m_specular;
 		Color m_emissive;
+
+		float m_metallicFactor;
+		float m_roughnessFactor;
 
 		std::wstring m_diffuseTextureFile;
 		std::wstring m_specularTextureFile;
@@ -66,5 +74,6 @@ namespace Ideal
 
 	private:
 		CB_Material m_cbMaterialData;
+		CB_MaterialInfo	m_cbMaterialInfo;
 	};
 }

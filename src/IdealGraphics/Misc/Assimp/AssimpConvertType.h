@@ -54,6 +54,14 @@ namespace AssimpConvert
 		std::string normalTextureFile;
 		std::string metalicTextureFile;
 		std::string roughnessTextureFile;
+
+		bool bUseDiffuseTexture;
+		bool bUseNormalTexture;
+		bool bUseMetallicTexture;
+		bool bUseRoughnessTexture;
+
+		float metallicFactor;
+		float roughnessFactor;
 	};
 
 

@@ -19,6 +19,17 @@ struct SceneConstantBuffer
 	float padding[2];
 };
 
+struct CB_MaterialInfo
+{
+	bool bUseDiffuseMap;
+	bool bUseNormalMap;
+	bool bUseMetallicMap;
+	bool bUseRoughnessMap;
+
+	float metallicFactor;
+	float roughnessFactor;
+};
+
 struct CB_Bone
 {
 	Matrix transforms[MAX_BONE_TRANSFORMS];
