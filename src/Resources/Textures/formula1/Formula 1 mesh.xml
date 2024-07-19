@@ -5,8 +5,8 @@
         <DiffuseFile>formula1_DefaultMaterial_Diffuse.png</DiffuseFile>
         <SpecularFile>formula1_DefaultMaterial_Specular.png</SpecularFile>
         <NormalFile>formula1_DefaultMaterial_Normal.png</NormalFile>
-        <MetalicFile>formula1_DefaultMaterial_Normal.png</MetalicFile>
-        <RoughnessFile>formula1_DefaultMaterial_Normal.png</RoughnessFile>
+        <MetalicFile></MetalicFile>
+        <RoughnessFile></RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.2" G="0.2" B="0.2" A="32"/>

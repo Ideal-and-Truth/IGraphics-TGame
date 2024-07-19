@@ -4,6 +4,8 @@
 #include "EventManager.h"
 #include "GraphicsManager.h"
 #include "NavMeshGenerater.h"
+#include "PhysicsManager.h"
+#include "FileUtils.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -12,6 +14,7 @@
 Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 	: m_managers(_managers)
 	, m_name("No Name Scene")
+	, m_mapPath(L"E:\\Projects\\IGraphics-TGame\\src\\Resources\\MapData\\SampleScene.map")
 {
 }
 
@@ -100,8 +103,9 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	m_navMesh = std::make_shared<NavMeshGenerater>();
-	m_navMesh->Initalize(L"TestMap/navTestMap");
+
+
+	CreateMap(L"E:\\Projects\\IGraphics-TGame\\IGraphics-TGame\\src\\Resources\\MapData\\Level_v0.2.0.map");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -118,7 +122,7 @@ void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 	}
 }
 
-DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
+DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const 
 {
 	return m_navMesh->FindPath(_start, _end, _size);
 }
@@ -289,5 +293,34 @@ void Truth::Scene::Exit()
 void Truth::Scene::ClearEntity()
 {
 	m_entities.clear();
+}
+
+void Truth::Scene::CreateMap(const std::wstring& _path)
+{
+	m_managers.lock()->Physics()->CreateMapCollider(_path);
+
+	m_navMesh = std::make_shared<NavMeshGenerater>();
+	m_navMesh->Initalize(_path);
+
+// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+// 	std::wstring path = _path + L".mmesh";
+// 	file->Open(path, FileMode::Read);
+// 
+// 	uint32 meshCount = file->Read<uint32>();
+// 	m_mapMesh.resize(meshCount);
+// 
+// 	for (uint32 i = 0; i < meshCount; i++)
+// 	{
+// 		std::string meshpath = file->Read<std::string>();
+// 		Matrix meshTM = file->Read<Matrix>();
+// 
+// 		USES_CONVERSION;
+// 		std::wstring wsval(A2W(meshpath.c_str()));
+// 
+// 		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
+// 		m_mapMesh.back()->SetTransformMatrix(meshTM);
+// 	}
+
+	m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(L"TestMap/Map2"));
 }
 

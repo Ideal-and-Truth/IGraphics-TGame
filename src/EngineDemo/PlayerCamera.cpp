@@ -7,7 +7,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 PlayerCamera::PlayerCamera()
 	: m_elevation(0.1f)
 	, m_azimuth(0.1f)
-	, m_cameraDistance(30.f)
+	, m_cameraDistance(5.f)
 	, m_cameraSpeed(0.003f)
 	, m_isLockOn(false)
 {

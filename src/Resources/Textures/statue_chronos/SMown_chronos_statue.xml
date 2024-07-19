@@ -3,7 +3,7 @@
     <Material>
         <Name>3</Name>
         <DiffuseFile>statue_low_statue_sickle_BaseColorl.png</DiffuseFile>
-        <SpecularFile>statue_low_statue_sickle_BaseColorl.png</SpecularFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>statue_low_statue_sickle_Normal.png</NormalFile>
         <MetalicFile>statue_low_Metalic_8.png</MetalicFile>
         <RoughnessFile>statue_low_Roughness.png</RoughnessFile>
@@ -15,7 +15,7 @@
     <Material>
         <Name>2</Name>
         <DiffuseFile>statue_low_statue_baseclock_BaseColorl.png</DiffuseFile>
-        <SpecularFile>statue_low_statue_baseclock_BaseColorl.png</SpecularFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>statue_low_statue_baseclock_Normal.png</NormalFile>
         <MetalicFile>statue_low_Metalic.png</MetalicFile>
         <RoughnessFile>statue_low_Roughness.png</RoughnessFile>
@@ -27,10 +27,10 @@
     <Material>
         <Name>1</Name>
         <DiffuseFile>statue_low_statue_main_BaseColorl.png</DiffuseFile>
-        <SpecularFile>statue_low_statue_main_BaseColorl.png</SpecularFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>statue_low_statue_main_Normal.png</NormalFile>
-        <MetalicFile></MetalicFile>
-        <RoughnessFile></RoughnessFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
+        <RoughnessFile>DefaulBlack.png</RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.39021397" G="0.80123574" B="0.10021414" A="1"/>
         <Specular R="0.39021397" G="0.80123574" B="0.10021414" A="25"/>

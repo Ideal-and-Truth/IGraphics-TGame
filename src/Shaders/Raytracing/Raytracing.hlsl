@@ -275,7 +275,8 @@ float3 Shade(
 
         // Directional Light
         {
-            float3 direction = g_lightList.DirLight.Direction.xyz;
+            float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
+            
             float3 color = g_lightList.DirLight.DiffuseColor.rgb;
             //float3 color = g_lightList.PointLights[0].Color.rgb;
             //float3 color = g_lightList.PointLights[0].Position.xyz;
@@ -333,8 +334,8 @@ float3 Shade(
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
 
-    if(isReflective)
     //if(metallic > 0.f)
+    if(isReflective)
     {
         if(isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
         {

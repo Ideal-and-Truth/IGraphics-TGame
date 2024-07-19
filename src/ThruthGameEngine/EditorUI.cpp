@@ -455,8 +455,15 @@ void EditorUI::ShowMenuBar(bool* p_open)
 		m_manager->GameToEdit();
 	}
 
-	float4 dt = m_manager->Time()->GetADT();
-	ImGui::Text("frame : %.2f\t", 1 / dt);
+	static float step = 1.0f;
+	static float dtdis = 1.0f; 
+	ImGui::Text("frame : %.2f\t", 1 / dtdis);
+	if (step < 0.0f)
+	{
+		dtdis = m_manager->Time()->GetADT();
+		step += 1.0f;
+	}
+	step -= dtdis;
 
 	if (newScene)
 	{

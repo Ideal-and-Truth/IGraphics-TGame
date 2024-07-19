@@ -2,6 +2,12 @@
 #include "Headers.h"
 #include "EventHandler.h"
 #include "Entity.h"
+
+namespace Ideal
+{
+	class IMeshObject;
+}
+
 /// <summary>
 /// 게임이 실제로 돌아가는 씬
 /// </summary>
@@ -28,10 +34,14 @@ namespace Truth
 	public:
 		PROPERTY(name);
 		std::string m_name;
+		
+		std::wstring m_mapPath;
 
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
 
-	public:
+		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
+
+	private:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
 		EntityVector m_entities;
@@ -62,8 +72,7 @@ namespace Truth
 
 		void LoadEntity(std::shared_ptr<Entity> _entity);
 
-
-		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size);
+		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const;
 
 		std::weak_ptr<Entity> FindEntity(std::string _name);
 
@@ -84,6 +93,9 @@ namespace Truth
 		void Exit();
 
 		void ClearEntity();
+
+	private:
+		void CreateMap(const std::wstring& _path);
 	};
 
 	template<class Archive>

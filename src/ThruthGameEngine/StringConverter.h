@@ -148,6 +148,8 @@ namespace StringConverter
 
 
 	std::vector<std::string> split(std::string _str, char _delimiter);
+	void DeleteAlpha(std::string& _str, char _delimiter);
 	std::vector<std::wstring> split(std::wstring _str, wchar_t _delimiter);
+	void DeleteAlpha(std::wstring& _str, wchar_t _delimiter);
 }
 

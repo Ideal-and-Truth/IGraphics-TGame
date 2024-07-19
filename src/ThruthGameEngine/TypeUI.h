@@ -12,50 +12,6 @@
 
 using namespace DirectX::SimpleMath;
 
-// template <typename, typename = void>
-// struct IsStdVector
-// 	: std::false_type
-// {
-// };
-// template <typename T, typename Alloc>
-// struct IsStdVector<std::vector<T, Alloc>>
-// 	: std::true_type
-// {
-// };
-// 
-// template <typename, typename = void>
-// struct IsStdList
-// 	: std::false_type
-// {
-// };
-// template <typename T, typename Alloc>
-// struct IsStdList<std::list<T, Alloc>>
-// 	: std::true_type
-// {
-// };
-// 
-// template <typename, typename = void>
-// struct IsStdMap
-// 	: std::false_type
-// {
-// };
-// template<typename T>
-// struct IsStdMap<T, std::void_t<typename T::key_type,
-// 	typename T::mapped_type,
-// 	decltype(std::declval<T&>()[std::declval<const typename T::key_type&>()])>>
-// 	: std::true_type { };
-// 
-// template <typename = void>
-// struct IsStdSharedPtr
-// 	: std::false_type
-// {
-// };
-// template <typename T>
-// struct IsStdSharedPtr<std::shared_ptr<T>>
-// 	: std::true_type
-// {
-// };
-
 namespace Truth
 {
 	class Entity;

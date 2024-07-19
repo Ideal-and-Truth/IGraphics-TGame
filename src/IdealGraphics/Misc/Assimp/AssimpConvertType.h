@@ -32,6 +32,7 @@ namespace AssimpConvert
 		int32 index = -1;
 		int32 parent = -1;
 		Matrix transform;
+		Matrix offset;
 	};
 
 	struct Model

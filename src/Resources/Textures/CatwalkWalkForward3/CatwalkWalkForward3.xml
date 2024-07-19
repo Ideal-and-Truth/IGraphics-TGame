@@ -5,7 +5,7 @@
         <DiffuseFile>Ch03_1001_Diffuse.png</DiffuseFile>
         <SpecularFile>Ch03_1001_Specular.png</SpecularFile>
         <NormalFile>Ch03_1001_Normal.png</NormalFile>
-        <MetalicFile>Ch03_1001_Normal.png</MetalicFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
         <RoughnessFile>Ch03_1001_Glossiness.png</RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>

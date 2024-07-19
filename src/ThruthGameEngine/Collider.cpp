@@ -90,11 +90,11 @@ void Truth::Collider::Destroy()
 	}
 
 #ifdef _DEBUG
-	if (m_debugMesh != nullptr)
-	{
-		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
-		m_debugMesh = nullptr;
-	}
+// 	if (m_debugMesh != nullptr)
+// 	{
+// 		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
+// 		m_debugMesh = nullptr;
+// 	}
 #endif // _DEBUG
 }
 

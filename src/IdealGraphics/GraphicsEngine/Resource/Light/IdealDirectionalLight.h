@@ -18,6 +18,17 @@ namespace Ideal
 
 	public:
 		DirectionalLight const& GetDirectionalLightDesc() { return m_directionalLight; }
+		//DirectionalLight GetDirectionalLightDesc() { return m_directionalLight; }
+
+	public:
+		/*DirectionalLight operator=(const DirectionalLight& rhs)
+		{
+			m_directionalLight.AmbientColor = rhs.AmbientColor;
+			m_directionalLight.DiffuseColor = rhs.DiffuseColor;
+			m_directionalLight.Direction = rhs.Direction;
+			m_directionalLight.Intensity = rhs.Intensity;
+			return m_directionalLight;
+		}*/
 
 	private:
 		DirectionalLight m_directionalLight;
