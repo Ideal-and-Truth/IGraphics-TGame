@@ -21,10 +21,14 @@ namespace Ideal
 		const Matrix& GetTransform() const { return m_transform; }
 		void SetTransform(Matrix Transform) { m_transform = Transform; }
 
+		const Matrix& GetOffsetMatrix() const { return m_offsetMatrix; }
+		void SetOffsetMatrix(Matrix OffsetMatrix) { m_offsetMatrix = OffsetMatrix; }
+
 	private:
 		std::string m_boneName;
 		int32 m_boneIndex;
 		int32 m_parent;
 		Matrix m_transform;
+		Matrix m_offsetMatrix;
 	};
 }

@@ -30,6 +30,9 @@ void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> Resour
 {
 	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(ResourceManager);
 
+	if (m_diffuseTextureFile.find(L".tga") != std::string::npos)
+		return;
+
 	if (m_diffuseTextureFile.length() > 0)
 	{
 		m_diffuseTexture = std::make_shared<Ideal::D3D12Texture>();

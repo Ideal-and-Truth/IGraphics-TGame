@@ -823,9 +823,33 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				bone->SetName(file->Read<std::string>());
 				bone->SetParent(file->Read<int32>());
 				bone->SetTransform(file->Read<Matrix>());
+				bone->SetOffsetMatrix(file->Read<Matrix>());
 				skinnedMesh->AddBone(bone);
 			}
 		}
+
+		//std::vector<Matrix> tempAnimBoneTransforms(MAX_BONE_TRANSFORMS, Matrix::Identity);
+		//for (uint32 boneIdx = 0; boneIdx < (uint32)skinnedMesh->GetBones().size(); ++boneIdx)
+		//{
+		//	std::shared_ptr<Ideal::IdealBone> bone = skinnedMesh->GetBones()[boneIdx];
+
+
+		//	// 재조립
+		//	Matrix toRootMatrix = bone->GetTransform();
+		//	Matrix invGlobal = toRootMatrix.Invert();
+
+		//	int32 parentIndex = bone->GetParent();
+
+		//	Matrix matParent = Matrix::Identity;
+		//	if (parentIndex >= 0)
+		//	{
+		//		//matParent = tempAnimBoneTransforms[parentIndex];
+		//		matParent = skinnedMesh->GetBones()[parentIndex]->GetTransform();
+		//	}
+
+		//	tempAnimBoneTransforms[boneIdx] = matParent;
+		//	skinnedMesh->GetBones()[boneIdx]->SetTransform(invGlobal * tempAnimBoneTransforms[boneIdx]);
+		//}
 
 		// SubMesh
 		{
@@ -866,8 +890,6 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				skinnedMesh->AddMesh(mesh);
 			}
 		}
-
-
 	}
 
 	// Material
@@ -1072,6 +1094,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 				std::shared_ptr<Ideal::IdealBone> bone = bones[boneIdx];
 
 				Matrix matAnimation;
+				//Matrix matAnimation = bone->GetTransform();
 
 				std::shared_ptr<ModelKeyframe> keyFrame = OutAnimation->GetKeyframe(bone->GetName());
 
@@ -1089,6 +1112,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 				else
 				{
 					matAnimation = Matrix::Identity;
+					matAnimation = bone->GetTransform();
 				}
 
 				// 재조립
@@ -1105,7 +1129,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 
 				tempAnimBoneTransforms[boneIdx] = matAnimation * matParent;
 
-				animTransform->transforms[frame][boneIdx] = invGlobal * tempAnimBoneTransforms[boneIdx];
+				animTransform->transforms[frame][boneIdx] = tempAnimBoneTransforms[boneIdx];
 			}
 		}
 		OutAnimation->m_animTransform = animTransform;
