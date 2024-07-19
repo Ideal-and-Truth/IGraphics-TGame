@@ -123,8 +123,8 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	if (!isSkinnedData)
 	{
 		// TODO : FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk
-		flag |= aiProcess_OptimizeMeshes;
-		flag |= aiProcess_PreTransformVertices;
+		//flag |= aiProcess_OptimizeMeshes;
+		//flag |= aiProcess_PreTransformVertices;
 	}
 	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);

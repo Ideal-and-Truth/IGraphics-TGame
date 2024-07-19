@@ -173,8 +173,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Dancing Twerk.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player2/myPlayer2.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player2/Capoeira.fbx");
-		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
-		gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		//ERROR : 
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");// -> Assimp Converter에서 FLAG 해제
+		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"test2/run_.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
@@ -183,6 +184,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
