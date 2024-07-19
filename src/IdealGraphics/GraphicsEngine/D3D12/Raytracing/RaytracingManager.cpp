@@ -231,8 +231,10 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 		{
 			Ideal::BLASGeometry blasGeometry;
 			blasGeometry.Name = L"TEMP_SKINNED_BLAS_GEOMETRY";
-			blasGeometry.VertexBufferResource = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource();
-			blasGeometry.VertexBufferGPUAddress = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource()->GetGPUVirtualAddress();
+			//blasGeometry.VertexBufferResource = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource();
+			//blasGeometry.VertexBufferGPUAddress = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource()->GetGPUVirtualAddress();
+			blasGeometry.VertexBufferResource = skinnedMeshObject->GetUAV_VertexBufferByIndex(i)->GetResource();
+			blasGeometry.VertexBufferGPUAddress = skinnedMeshObject->GetUAV_VertexBufferByIndex(i)->GetResource()->GetGPUVirtualAddress();
 			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
 			blasGeometry.VertexCount = skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount();
 
@@ -272,7 +274,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 				}
 			}
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-			CreateSRV(Device, skinnedMeshObject->GetUAV_VertexBuffer()->GetResource(), blasGeometry.SRV_VertexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
+			CreateSRV(Device, skinnedMeshObject->GetUAV_VertexBufferByIndex(i)->GetResource(), blasGeometry.SRV_VertexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetVertexBuffer()->GetElementCount(), sizeof(BasicVertex));
 			blasGeometry.SRV_IndexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 			CreateSRV(Device, skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetResource(), blasGeometry.SRV_IndexBuffer.GetCpuHandle(), skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount(), sizeof(uint32));
 

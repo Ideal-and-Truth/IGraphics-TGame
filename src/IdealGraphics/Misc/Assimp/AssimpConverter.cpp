@@ -847,16 +847,16 @@ void AssimpConverter::ReadKeyFrameData(std::shared_ptr<AssimpConvert::Animation>
 			frameData.time = (float)i;
 			transform.Decompose(OUT frameData.scale, OUT frameData.rotation, OUT frameData.translation);
 
-			Matrix rotationMatrix;
-			Vector3 scale;
-			Decompose(transform, rotationMatrix , scale);
-			auto q = Quaternion::CreateFromRotationMatrix(rotationMatrix);
-			
-			if (scale != frameData.scale)
-			{
-				frameData.rotation = q;
-				frameData.scale = scale;
-			}
+			//Matrix rotationMatrix;
+			//Vector3 scale;
+			//Decompose(transform, rotationMatrix , scale);
+			//auto q = Quaternion::CreateFromRotationMatrix(rotationMatrix);
+			//
+			//if (scale != frameData.scale)
+			//{
+			//	frameData.rotation = q;
+			//	frameData.scale = scale;
+			//}
 		}
 		else
 		{

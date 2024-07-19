@@ -135,9 +135,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,
@@ -166,20 +166,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
-		gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Dancing Twerk.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player2/myPlayer2.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player2/Capoeira.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"player/myPlayer2.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"player/myPlayer3.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"player/myPlayer4.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"player/myPlayer.fbx", true);
 		//ERROR : gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx"); -> Assimp Converter에서 FLAG 해제
-		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"test2/run_.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/run_.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
@@ -540,6 +535,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 		
+		gRenderer->DeleteMeshObject(player);
+		player.reset();
+
 		gRenderer.reset();
 	}
 
