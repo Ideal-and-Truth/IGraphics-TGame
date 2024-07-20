@@ -99,7 +99,6 @@ namespace Ideal
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_RoughnessTexture;
 
 			D3D12_GPU_DESCRIPTOR_HANDLE CBV_MaterialInfo;
-
 		};
 	}
 

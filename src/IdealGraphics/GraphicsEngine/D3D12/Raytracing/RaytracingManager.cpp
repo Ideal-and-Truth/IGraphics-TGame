@@ -277,7 +277,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 					blasGeometry.CBV_MaterialInfo = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
 					auto cb = CBPool->Allocate(Device.Get(), sizeof(CB_MaterialInfo));
 					CB_MaterialInfo* materialInfo = (CB_MaterialInfo*)cb->SystemMemAddr;
-					memcpy(cb->SystemMemAddr, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
+					memcpy(materialInfo, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
 					Device->CopyDescriptorsSimple(1, blasGeometry.CBV_MaterialInfo.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				}
 			}
