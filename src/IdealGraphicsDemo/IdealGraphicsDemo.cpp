@@ -199,11 +199,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> rumbaAnim = gRenderer->CreateAnimation(L"player/Rumba Dancing");
 		//player3->AddAnimation("rumba", rumbaAnim);
 
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
-		//std::shared_ptr<Ideal::IAnimation> hiphopAnim = gRenderer->CreateAnimation(L"player/Hip Hop Dancing");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
+		std::shared_ptr<Ideal::IAnimation> hiphopAnim = gRenderer->CreateAnimation(L"player/Hip Hop Dancing");
+		player->AddAnimation("Hip", hiphopAnim);
 		//std::shared_ptr<Ideal::IAnimation> CapoeiraAnim = gRenderer->CreateAnimation(L"player/Capoeira");
 		//player->AddAnimation("Hip", CapoeiraAnim);
-		//player->AddAnimation("Hip", hiphopAnim);
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player3 = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude");
 		//std::shared_ptr<Ideal::IAnimation> twerkAnim = gRenderer->CreateAnimation(L"player/Dancing Twerk");
 		//player3->AddAnimation("Twerk",twerkAnim);
@@ -213,9 +213,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> rumba = gRenderer->CreateAnimation(L"player2/Capoeira");
 		//player2->AddAnimation("Rumba", rumba);
 
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		//std::shared_ptr<Ideal::IAnimation> hiphopAnim2 = gRenderer->CreateAnimation(L"Kachujin/HipHop");
-		//ka->AddAnimation("HIP", hiphopAnim2);
+		std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+		std::shared_ptr<Ideal::IAnimation> hiphopAnim2 = gRenderer->CreateAnimation(L"Kachujin/HipHop");
+		ka->AddAnimation("HIP", hiphopAnim2);
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
 		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
 		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
@@ -487,7 +487,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}
 				// Animation // 역재생 안됨
-				//ka->AnimationDeltaTime(0.002f);
+				ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
@@ -529,8 +529,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		meshes.clear();
 
-		//gRenderer->DeleteMeshObject(ka);
-		//ka.reset();
+		gRenderer->DeleteMeshObject(ka);
+		ka.reset();
 		//
 		//gRenderer->DeleteMeshObject(cat);
 		//cat.reset();
