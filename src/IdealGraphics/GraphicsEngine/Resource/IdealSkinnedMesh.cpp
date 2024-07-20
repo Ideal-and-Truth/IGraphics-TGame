@@ -59,7 +59,6 @@ void Ideal::IdealSkinnedMesh::AddMaterial(std::shared_ptr<Ideal::IdealMaterial> 
 		if (Material->GetName() == mesh->GetMaterialName())
 		{
 			mesh->SetMaterial(Material);
-			continue;
 		}
 	}
 }

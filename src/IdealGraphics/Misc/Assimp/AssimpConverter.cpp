@@ -342,6 +342,14 @@ void AssimpConverter::WriteMaterialData(std::wstring FilePath)
 		element = document->NewElement("Roughness");
 		element->SetAttribute("Factor", material->roughnessFactor);
 		node->LinkEndChild(element);
+
+		element = document->NewElement("UseTextureInfo");
+		element->SetAttribute("Diffuse", material->bUseDiffuseTexture);
+		element->SetAttribute("Normal", material->bUseNormalTexture);
+		element->SetAttribute("Metallic", material->bUseMetallicTexture);
+		element->SetAttribute("Roughness", material->bUseRoughnessTexture);
+		node->LinkEndChild(element);
+
 	}
 
 	std::string filePathString = std::string().assign(FilePath.begin(), FilePath.end());
@@ -519,10 +527,11 @@ void AssimpConverter::ReadMaterialData()
 		{
 			srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
 			material->diffuseTextureFile = file.C_Str();
-			if (material->diffuseTextureFile.empty())
-			{
-				material->diffuseTextureFile = "DefaultAlbedo.png";
-			}
+			//if (material->diffuseTextureFile.empty())
+			//{
+			//	material->diffuseTextureFile = "DefaultAlbedo.png";
+			//}
+			material->bUseDiffuseTexture = true;
 		}
 		else
 		{
@@ -557,6 +566,10 @@ void AssimpConverter::ReadMaterialData()
 			material->bUseNormalTexture= false;
 			material->normalTextureFile = "DefaultNormalMap.png";
 		}
+		else
+		{
+			material->bUseNormalTexture = true;
+		}
 
 		// Metalic Texture
 		aiString metalicFile;
@@ -564,6 +577,7 @@ void AssimpConverter::ReadMaterialData()
 		if (metalicFile.length != 0)
 		{
 			material->metalicTextureFile = metalicFile.C_Str();
+			material->bUseMetallicTexture = true;
 		}
 		else
 		{
@@ -572,7 +586,7 @@ void AssimpConverter::ReadMaterialData()
 			//if (factor < 0) factor = 0.f;
 			//if (factor > 1) factor = 1.f;
 
-			material->bUseNormalTexture = false;
+			material->bUseMetallicTexture = false;
 			material->metallicFactor = factor;
 
 			material->metalicTextureFile = "DefaulBlack.png";
@@ -584,6 +598,7 @@ void AssimpConverter::ReadMaterialData()
 		if (roughnessFile.length != 0)
 		{
 			material->roughnessTextureFile = roughnessFile.C_Str();
+			material->bUseRoughnessTexture = true;
 		}
 		else
 		{

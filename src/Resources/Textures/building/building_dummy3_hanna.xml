@@ -12,6 +12,7 @@
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Emissive R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
-        <Roughness Factor="-1.0737418e+08"/>
+        <Roughness Factor="0"/>
+        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>

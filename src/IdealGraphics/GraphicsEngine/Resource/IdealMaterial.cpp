@@ -32,42 +32,37 @@ void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> Resour
 {
 	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(ResourceManager);
 
-	if (m_diffuseTextureFile.find(L".tga") != std::string::npos)
-		return;
-
-	if (m_diffuseTextureFile.length() > 0)
+	if (m_diffuseTextureFile.find(L".tga") == std::string::npos)
 	{
-		m_diffuseTexture = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateTexture(m_diffuseTexture, m_diffuseTextureFile);
-		m_cbMaterialInfo.bUseDiffuseMap = true;
+		if (m_diffuseTextureFile.length() > 0)
+		{
+			m_diffuseTexture = std::make_shared<Ideal::D3D12Texture>();
+			ResourceManager->CreateTexture(m_diffuseTexture, m_diffuseTextureFile);
+		}
 	}
 
 	if (m_specularTextureFile.length() > 0)
 	{
 		m_specularTexture = std::make_shared<Ideal::D3D12Texture>();
 		ResourceManager->CreateTexture(m_specularTexture, m_specularTextureFile);
-		
 	}
 
 	if (m_normalTextureFile.length() > 0)
 	{
 		m_normalTexture = std::make_shared<Ideal::D3D12Texture>();
 		ResourceManager->CreateTexture(m_normalTexture, m_normalTextureFile);
-		m_cbMaterialInfo.bUseNormalMap;
 	}
 
 	if (m_metallicTextureFile.length() > 0)
 	{
 		m_metalicTexture = std::make_shared<Ideal::D3D12Texture>();
 		ResourceManager->CreateTexture(m_metalicTexture, m_metallicTextureFile);
-		m_cbMaterialInfo.bUseMetallicMap;
 	}
 
 	if (m_roughnessTextureFile.length() > 0)
 	{
 		m_roughnessTexture = std::make_shared<Ideal::D3D12Texture>();
 		ResourceManager->CreateTexture(m_roughnessTexture, m_roughnessTextureFile);
-		m_cbMaterialInfo.bUseRoughnessMap;
 	}
 
 	m_cbMaterialInfo.metallicFactor = m_metallicFactor;

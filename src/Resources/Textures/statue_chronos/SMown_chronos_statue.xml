@@ -13,6 +13,7 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="0"/>
         <Roughness Factor="0"/>
+        <UseTextureInfo Diffuse="true" Normal="true" Metallic="true" Roughness="true"/>
     </Material>
     <Material>
         <Name>2</Name>
@@ -27,6 +28,7 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="0"/>
         <Roughness Factor="0"/>
+        <UseTextureInfo Diffuse="true" Normal="true" Metallic="true" Roughness="true"/>
     </Material>
     <Material>
         <Name>1</Name>
@@ -41,5 +43,6 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0.5"/>
+        <UseTextureInfo Diffuse="true" Normal="true" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>

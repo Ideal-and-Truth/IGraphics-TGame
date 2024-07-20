@@ -13,6 +13,7 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0.43431461"/>
+        <UseTextureInfo Diffuse="true" Normal="true" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>Mirrors</Name>
@@ -26,7 +27,8 @@
         <Specular R="0.2" G="0.2" B="0.2" A="1024"/>
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
-        <Roughness Factor="-2.2"/>
+        <Roughness Factor="0"/>
+        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>Fillers</Name>
@@ -40,6 +42,7 @@
         <Specular R="0" G="0" B="0" A="1"/>
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
-        <Roughness Factor="-2.2"/>
+        <Roughness Factor="0"/>
+        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>

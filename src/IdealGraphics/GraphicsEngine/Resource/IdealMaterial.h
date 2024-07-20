@@ -30,12 +30,17 @@ namespace Ideal
 		void BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
 		void SetDiffuseTextureFile(std::wstring& File)	{ m_diffuseTextureFile = File; }
+		void SetIsUseDiffuse(bool b) {m_cbMaterialInfo.bUseDiffuseMap = b; }
 		void SetSpecularTextureFile(std::wstring& File) { m_specularTextureFile = File; }
+
 		void SetEmissiveTextureFile(std::wstring& File) { m_emissiveTextureFile = File; }
 		void SetNormalTextureFile(std::wstring& File)	{ m_normalTextureFile = File; }
+		void SetIsUseNormal(bool b) { m_cbMaterialInfo.bUseNormalMap = b; }
 
 		void SetMetallicTextureFile(std::wstring& File) { m_metallicTextureFile = File; }
+		void SetIsUseMetallic(bool b) { m_cbMaterialInfo.bUseMetallicMap = b; }
 		void SetRoughnessTextureFile(std::wstring& File) { m_roughnessTextureFile = File; }
+		void SetIsUseRoughness(bool b) { m_cbMaterialInfo.bUseRoughnessMap = b; }
 
 		std::shared_ptr<Ideal::D3D12Texture> GetDiffuseTexture() { return m_diffuseTexture; }
 		std::shared_ptr<Ideal::D3D12Texture> GetSpecularTexture() { return m_specularTexture; }
