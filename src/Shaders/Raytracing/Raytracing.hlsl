@@ -266,7 +266,8 @@ float3 Shade(
     }
     else
     {
-        metallic = l_materialInfo.metallicFactor;
+        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //metallic = l_materialInfo.metallicFactor;
     }
     
     float roughness;
@@ -276,7 +277,8 @@ float3 Shade(
     }
     else
     {
-        roughness = l_materialInfo.roughnessFactor;
+        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //roughness = l_materialInfo.roughnessFactor;
     }
 
 
@@ -498,7 +500,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
     }
     if(l_materialInfo.bUseNormalMap)
-        normal = NormalMap(normal, uv, vertexInfo, attr);
+      normal = NormalMap(normal, uv, vertexInfo, attr);
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
 }
 

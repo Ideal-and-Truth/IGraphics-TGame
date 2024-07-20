@@ -569,8 +569,8 @@ void AssimpConverter::ReadMaterialData()
 		{
 			float factor;
 			srcMaterial->Get(AI_MATKEY_METALLIC_FACTOR(0), factor);
-			if (factor < 0) factor = 0.f;
-			if (factor > 1) factor = 1.f;
+			//if (factor < 0) factor = 0.f;
+			//if (factor > 1) factor = 1.f;
 
 			material->bUseNormalTexture = false;
 			material->metallicFactor = factor;
