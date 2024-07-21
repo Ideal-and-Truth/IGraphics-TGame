@@ -199,9 +199,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> rumbaAnim = gRenderer->CreateAnimation(L"player/Rumba Dancing");
 		//player3->AddAnimation("rumba", rumbaAnim);
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
-		std::shared_ptr<Ideal::IAnimation> hiphopAnim = gRenderer->CreateAnimation(L"player/Hip Hop Dancing");
-		player->AddAnimation("Hip", hiphopAnim);
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> player = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude@T-Pose");
+		//std::shared_ptr<Ideal::IAnimation> hiphopAnim = gRenderer->CreateAnimation(L"player/Hip Hop Dancing");
+		//player->AddAnimation("Hip", hiphopAnim);
 		//std::shared_ptr<Ideal::IAnimation> CapoeiraAnim = gRenderer->CreateAnimation(L"player/Capoeira");
 		//player->AddAnimation("Hip", CapoeiraAnim);
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player3 = gRenderer->CreateSkinnedMeshObject(L"player/SK_Fencer_Lady_Nude");
@@ -230,10 +230,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
+		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
-		std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
-		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
+		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
+		std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
 
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
 		//ka->AddAnimation("Run", runAnim);
@@ -288,14 +288,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
 
 		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
 
-		pointLight->SetPosition(Vector3(0.f, 3.f,3.f));
-		pointLight->SetRange(6.f);
-		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		pointLight->SetIntensity(0.8f);
+		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		//pointLight->SetPosition(Vector3(0.f, 3.f,3.f));
+		//pointLight->SetRange(6.f);
+		//pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		//pointLight->SetIntensity(0.8f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -490,7 +490,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
-				player->AnimationDeltaTime(0.002f);
+				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 
 				//-----ImGui Test-----//
@@ -508,10 +508,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						{
 							LightTest(dirLight);
 						}
-						if (pointLight)
-						{
-							PointLightInspecter(pointLight);
-						}
+						//if (pointLight)
+						//{
+						//	PointLightInspecter(pointLight);
+						//}
 					}
 					//once++;
 					//ImGuiTest();

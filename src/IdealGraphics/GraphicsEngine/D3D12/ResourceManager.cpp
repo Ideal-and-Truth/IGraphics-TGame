@@ -801,14 +801,14 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 				bool normal = node->BoolAttribute("Normal");
 				bool metallic = node->BoolAttribute("Metallic");
 				bool roughness = node->BoolAttribute("Roughness");
-				//material->SetIsUseDiffuse(diffuse);
-				//material->SetIsUseNormal(normal);
-				//material->SetIsUseMetallic(metallic);
-				//material->SetIsUseRoughness(roughness);
-				material->SetIsUseDiffuse(false);
-				material->SetIsUseNormal(false);
-				material->SetIsUseMetallic(false);
-				material->SetIsUseRoughness(false);
+				material->SetIsUseDiffuse(diffuse);
+				material->SetIsUseNormal(normal);
+				material->SetIsUseMetallic(metallic);
+				material->SetIsUseRoughness(roughness);
+				//material->SetIsUseDiffuse(true);
+				//material->SetIsUseNormal(true);
+				//material->SetIsUseMetallic(true);
+				//material->SetIsUseRoughness(true);
 			}
 
 			staticMesh->AddMaterial(material);
@@ -1038,10 +1038,14 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				bool normal = node->BoolAttribute("Normal");
 				bool metallic = node->BoolAttribute("Metallic");
 				bool roughness = node->BoolAttribute("Roughness");
-				material->SetIsUseDiffuse(diffuse);
-				material->SetIsUseNormal(normal);
-				material->SetIsUseMetallic(metallic);
-				material->SetIsUseRoughness(roughness);
+				//material->SetIsUseDiffuse(diffuse);
+				//material->SetIsUseNormal(normal);
+				//material->SetIsUseMetallic(metallic);
+				//material->SetIsUseRoughness(roughness);
+				material->SetIsUseDiffuse(true);
+				material->SetIsUseNormal(true);
+				material->SetIsUseMetallic(true);
+				material->SetIsUseRoughness(true);
 			}
 			skinnedMesh->AddMaterial(material);
 

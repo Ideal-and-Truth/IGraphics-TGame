@@ -230,7 +230,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 		for (uint32 i = 0; i < numMesh; ++i)
 		{
 			Ideal::BLASGeometry blasGeometry;
-			blasGeometry.Name = L"TEMP_SKINNED_BLAS_GEOMETRY";
+			blasGeometry.Name = std::wstring(L"TEMP_SKINNED_BLAS_GEOMETRY");
 			//blasGeometry.VertexBufferResource = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource();
 			//blasGeometry.VertexBufferGPUAddress = skinnedMeshObject->GetUAV_VertexBuffer()->GetResource()->GetGPUVirtualAddress();
 			blasGeometry.VertexBufferResource = skinnedMeshObject->GetUAV_VertexBufferByIndex(i)->GetResource();
@@ -302,7 +302,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 		for (uint32 i = 0; i < numMesh; ++i)
 		{
 			Ideal::BLASGeometry blasGeometry;
-			blasGeometry.Name = L"TEMP_BLAS_GEOMETRY";
+			blasGeometry.Name = std::wstring(L"TEMP_BLAS_GEOMETRY");
 			blasGeometry.VertexBufferResource = mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource();
 			blasGeometry.VertexBufferGPUAddress = mesh->GetMeshes()[i]->GetVertexBuffer()->GetResource()->GetGPUVirtualAddress();
 			blasGeometry.VertexStrideInBytes = sizeof(BasicVertex);
