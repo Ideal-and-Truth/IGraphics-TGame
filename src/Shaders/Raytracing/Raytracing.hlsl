@@ -385,6 +385,7 @@ float3 Shade(
                 // Ref: eq 24.4, [Ray-tracing from the Ground Up]
                 //L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
                 float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
+                
                 L += result;
             }
         }

@@ -225,15 +225,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		////std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		////
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
 		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"Boss/bosshall");
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
-		std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
-		std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
-		std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
+		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
+		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
+		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
+
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
 		//ka->AddAnimation("Run", runAnim);
 		//ka->AddAnimation("Slash", slashAnim);
@@ -309,7 +310,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ka->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
 		//cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
 
-		car->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f)) * Matrix::CreateRotationY(-90.f));
+		//car->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f)) * Matrix::CreateRotationY(-90.f));
 
 		//mesh2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
 
@@ -535,8 +536,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(cat);
 		//cat.reset();
 
-		gRenderer->DeleteMeshObject(car);
-		car.reset();
+		//gRenderer->DeleteMeshObject(car);
+		//car.reset();
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
