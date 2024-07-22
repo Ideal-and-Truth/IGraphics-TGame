@@ -6,6 +6,8 @@
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
+#include "GraphicsEngine/ConstantBufferInfo.h"
+
 namespace Ideal
 {
 	class D3D12VertexBuffer;
@@ -38,7 +40,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle SRV_Normal;
 		Ideal::D3D12DescriptorHandle SRV_Metallic;
 		Ideal::D3D12DescriptorHandle SRV_Roughness;
-		Ideal::D3D12DescriptorHandle CBV_MaterialInfo;
+		CB_MaterialInfo C_MaterialInfo;
 	};
 
 	struct BLASData
