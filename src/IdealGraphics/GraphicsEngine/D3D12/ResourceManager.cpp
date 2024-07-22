@@ -454,7 +454,7 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 
 	if (makeRTV)
 		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-	
+
 	Check(m_device->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
@@ -467,7 +467,7 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 
 	resource->SetName(Name.c_str());
 	OutTexture->Create(resource);
-	
+
 	if (makeSRV)
 	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -780,6 +780,37 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 				material->SetEmissive(color);
 			}
 
+			// Metallic
+			{
+				node = node->NextSiblingElement();
+				float MetallicFactor = node->FloatAttribute("Factor");
+				material->SetMetallicFactor(MetallicFactor);
+			}
+
+			// Roughness
+			{
+				node = node->NextSiblingElement();
+				float RoughnessFactor = node->FloatAttribute("Factor");
+				material->SetRoughnessFactor(RoughnessFactor);
+			}
+
+			// UseTextureInfo
+			{
+				node = node->NextSiblingElement();
+				bool diffuse = node->BoolAttribute("Diffuse");
+				bool normal = node->BoolAttribute("Normal");
+				bool metallic = node->BoolAttribute("Metallic");
+				bool roughness = node->BoolAttribute("Roughness");
+				material->SetIsUseDiffuse(diffuse);
+				material->SetIsUseNormal(normal);
+				material->SetIsUseMetallic(metallic);
+				material->SetIsUseRoughness(roughness);
+				//material->SetIsUseDiffuse(true);
+				//material->SetIsUseNormal(true);
+				//material->SetIsUseMetallic(true);
+				//material->SetIsUseRoughness(true);
+			}
+
 			staticMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();
@@ -827,29 +858,6 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				skinnedMesh->AddBone(bone);
 			}
 		}
-
-		//std::vector<Matrix> tempAnimBoneTransforms(MAX_BONE_TRANSFORMS, Matrix::Identity);
-		//for (uint32 boneIdx = 0; boneIdx < (uint32)skinnedMesh->GetBones().size(); ++boneIdx)
-		//{
-		//	std::shared_ptr<Ideal::IdealBone> bone = skinnedMesh->GetBones()[boneIdx];
-
-
-		//	// ÀçÁ¶¸³
-		//	Matrix toRootMatrix = bone->GetTransform();
-		//	Matrix invGlobal = toRootMatrix.Invert();
-
-		//	int32 parentIndex = bone->GetParent();
-
-		//	Matrix matParent = Matrix::Identity;
-		//	if (parentIndex >= 0)
-		//	{
-		//		//matParent = tempAnimBoneTransforms[parentIndex];
-		//		matParent = skinnedMesh->GetBones()[parentIndex]->GetTransform();
-		//	}
-
-		//	tempAnimBoneTransforms[boneIdx] = matParent;
-		//	skinnedMesh->GetBones()[boneIdx]->SetTransform(invGlobal * tempAnimBoneTransforms[boneIdx]);
-		//}
 
 		// SubMesh
 		{
@@ -1009,6 +1017,36 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				material->SetEmissive(color);
 			}
 
+			// Metallic
+			{
+				node = node->NextSiblingElement();
+				float MetallicFactor = node->FloatAttribute("Factor");
+				material->SetMetallicFactor(MetallicFactor);
+			}
+
+			// Roughness
+			{
+				node = node->NextSiblingElement();
+				float RoughnessFactor = node->FloatAttribute("Factor");
+				material->SetRoughnessFactor(RoughnessFactor);
+			}
+
+			// UseTextureInfo
+			{
+				node = node->NextSiblingElement();
+				bool diffuse = node->BoolAttribute("Diffuse");
+				bool normal = node->BoolAttribute("Normal");
+				bool metallic = node->BoolAttribute("Metallic");
+				bool roughness = node->BoolAttribute("Roughness");
+				//material->SetIsUseDiffuse(diffuse);
+				//material->SetIsUseNormal(normal);
+				//material->SetIsUseMetallic(metallic);
+				//material->SetIsUseRoughness(roughness);
+				material->SetIsUseDiffuse(true);
+				material->SetIsUseNormal(true);
+				material->SetIsUseMetallic(true);
+				material->SetIsUseRoughness(true);
+			}
 			skinnedMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();

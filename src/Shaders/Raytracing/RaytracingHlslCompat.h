@@ -42,6 +42,17 @@ struct SceneConstantBuffer
     float padding[2];
 };
 
+struct MaterialInfoConstantBuffer
+{
+    bool bUseTexture;
+    bool bUseNormalMap;
+    bool bUseMetallicMap;
+    bool bUseRoughnessMap;
+
+	float metallicFactor;
+	float roughnessFactor;
+};
+
 struct CubeConstantBuffer
 {
     XMFLOAT4 albedo;

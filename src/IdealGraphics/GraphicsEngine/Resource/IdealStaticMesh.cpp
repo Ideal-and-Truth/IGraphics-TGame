@@ -60,7 +60,7 @@ void Ideal::IdealStaticMesh::AddMaterial(std::shared_ptr<Ideal::IdealMaterial> M
 		if (Material->GetName() == mesh->GetMaterialName())
 		{
 			mesh->SetMaterial(Material);
-			return;
+			continue;
 		}
 	}
 }
