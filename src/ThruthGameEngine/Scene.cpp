@@ -297,10 +297,10 @@ void Truth::Scene::ClearEntity()
 
 void Truth::Scene::CreateMap(const std::wstring& _path)
 {
-	m_managers.lock()->Physics()->CreateMapCollider(_path);
-
-	m_navMesh = std::make_shared<NavMeshGenerater>();
-	m_navMesh->Initalize(_path);
+// 	m_managers.lock()->Physics()->CreateMapCollider(_path);
+// 
+// 	m_navMesh = std::make_shared<NavMeshGenerater>();
+// 	m_navMesh->Initalize(_path);
 
 // 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 // 	std::wstring path = _path + L".mmesh";
@@ -321,6 +321,6 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 // 		m_mapMesh.back()->SetTransformMatrix(meshTM);
 // 	}
 
-	m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(L"TestMap/Map2"));
+	//m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(L"TestMap/Map2"));
 }
 

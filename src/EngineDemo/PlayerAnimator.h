@@ -45,10 +45,6 @@ class PlayerIdle
 	: public AnimationState
 {
 private:
-	PlayerController* m_pc;
-	const Property* m_forward;
-	const Property* m_side;
-
 
 
 public:
@@ -64,14 +60,29 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
+class PlayerWalk
+	: public AnimationState
+{
+private:
+
+
+public:
+	PlayerWalk(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void Initialize() override;
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+};
+
 class PlayerRun
 	: public AnimationState
 {
 private:
-	PlayerController* m_pc;
-	const Property* m_forward;
-	const Property* m_side;
-
 
 
 public:
@@ -91,7 +102,6 @@ class PlayerAttack
 	: public AnimationState
 {
 private:
-	PlayerController* m_pc;
 
 public:
 	PlayerAttack(Truth::Component* animator)
@@ -118,19 +128,26 @@ private:
 
 private:
 	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
+	std::shared_ptr<PlayerController> m_playerController;
 
 
-	PROPERTY(isMove);
-	bool m_isMove;
 
-	PROPERTY(isAttack);
-	bool m_isAttack;
+	PROPERTY(isWalk);
+	bool m_isWalk;
+
+	PROPERTY(isRun);
+	bool m_isRun;
+
+	PROPERTY(isAttack1);
+	bool m_isAttack1;
 
 	PROPERTY(isAnimationChange);
 	bool m_isAnimationChange;
 
 	std::map<std::string, AnimationState*> m_animationStateMap;
 	AnimationState* m_currentState;
+
+
 
 public:
 	PlayerAnimator();
@@ -148,7 +165,7 @@ public:
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 
-	void ChangeState(AnimationState* state);
+	void ChangeState(std::string stateName);
 };
 
 template<class Archive>

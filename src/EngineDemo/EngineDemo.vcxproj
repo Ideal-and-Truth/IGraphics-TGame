@@ -71,9 +71,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
-    <VcpkgEnabled>false</VcpkgEnabled>
-    <VcpkgAutoLink>false</VcpkgAutoLink>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgEnabled>true</VcpkgEnabled>
+    <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -160,7 +160,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shooter.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestFollwer.h" />
     <ClInclude Include="TestMovement.h" />
   </ItemGroup>
   <ItemGroup>
@@ -180,7 +179,6 @@
     <ClCompile Include="PlayerCamera.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="Shooter.cpp" />
-    <ClCompile Include="TestFollwer.cpp" />
     <ClCompile Include="TestMovement.cpp" />
   </ItemGroup>
   <ItemGroup>
