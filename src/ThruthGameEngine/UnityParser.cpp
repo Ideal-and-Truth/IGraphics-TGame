@@ -643,7 +643,7 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 
 		std::wstring finalPath = m_convertPath + m_sceneName.generic_wstring() + L"/" + fPath.filename().generic_wstring();
 
-		m_gp->ConvertAsset(finalPath);
+		m_gp->ConvertAsset(finalPath, false, false, true);
 	}
 }
 

@@ -707,7 +707,7 @@ void Ideal::D3D12RayTracingRenderer::SetTexturePath(const std::wstring& TextureP
 	m_texturePath = TexturePath;
 }
 
-void Ideal::D3D12RayTracingRenderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
+void Ideal::D3D12RayTracingRenderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
 	assimpConverter->SetAssetPath(m_assetPath);
@@ -722,7 +722,7 @@ void Ideal::D3D12RayTracingRenderer::ConvertAssetToMyFormat(std::wstring FileNam
 	FileName.pop_back();
 	FileName.pop_back();
 
-	assimpConverter->ExportModelData(FileName, isSkinnedData);
+	assimpConverter->ExportModelData(FileName, isSkinnedData, NeedConvertCenter);
 	if (NeedVertexInfo)
 	{
 		assimpConverter->ExportVertexPositionData(FileName);

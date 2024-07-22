@@ -102,7 +102,7 @@ namespace Ideal
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }
 		virtual void SetTexturePath(const std::wstring& TexturePath) override { m_texturePath = TexturePath; }
 
-		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false) override;
+		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) override;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
 
 		//--------ImGui--------//

@@ -124,7 +124,7 @@ namespace Ideal
 		void SetAssetPath(const std::wstring& AssetPath) override;
 		void SetModelPath(const std::wstring& ModelPath) override;
 		void SetTexturePath(const std::wstring& TexturePath) override;
-		void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false) override;
+		void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) override;
 		void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
 		bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 		void ClearImGui() override;

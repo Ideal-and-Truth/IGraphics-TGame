@@ -188,7 +188,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"MapData/SampleScene/building_dummy3_hanna.fbx", false, false, true);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");

@@ -33,7 +33,7 @@ public:
 
 public:
 	void ReadAssetFile(const std::wstring& path, bool isSkinnedData, bool onlyPosition);
-	void ExportModelData(std::wstring savePath, bool IsSkinnedData = false);
+	void ExportModelData(std::wstring savePath, bool IsSkinnedData = false, bool IsConvertCenter = false);
 	void ExportMaterialData(const std::wstring& savePath);
 	void ExportAnimationData(std::wstring savePath, uint32 index = 0);
 
@@ -45,11 +45,11 @@ private:
 	void WriteMaterialData(std::wstring FilePath);
 	void WriteModelFile(const std::wstring& filePath);
 	void WriteSkinnedModelFile(const std::wstring& filePath);
-	void ReadModelData(aiNode* node, int32 index, int32 parent);
-	void ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData = true);
+	void ReadModelData(aiNode* node, int32 index, int32 parent, bool convertCenter = false);
+	void ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData = true, bool converCenter = false);
 	void ReadMaterialData();
 	void ReadSkinData();
-	void ReadMeshData(aiNode* node, int32 bone);
+	void ReadMeshData(aiNode* node, int32 bone, bool convertCenter = false);
 	void ReadSkinnedMeshData(aiNode* node, int32 bone);
 
 	std::shared_ptr<AssimpConvert::Animation> ReadAnimationData(aiAnimation* srcAnimation);

@@ -55,7 +55,7 @@ namespace Ideal
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;
 		virtual void SetTexturePath(const std::wstring& TexturePath) abstract;
 
-		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false) abstract;
+		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) abstract;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) abstract;
 
 	public:
