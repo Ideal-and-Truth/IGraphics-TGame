@@ -2,8 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include "FileUtils.h"
+#include "GraphicsManager.h"
 
-Truth::UnityParser::UnityParser()
+Truth::UnityParser::UnityParser(GraphicsManager* _gp)
+	:m_gp(_gp)
 {
 	m_ignore.insert(".vs");
 	m_ignore.insert("Library");
@@ -619,9 +621,30 @@ void Truth::UnityParser::WriteMapMeshData(fs::path _path)
 	}
 }
 
-std::string Truth::UnityParser::ConvertUnloadedMesh(fs::path _path)
+void Truth::UnityParser::ConvertUnloadedMesh()
 {
-	return ";";
+	fs::path assetPath = m_assetPath / m_sceneName;
+	assetPath += "/";
+
+	if (!fs::exists(assetPath))
+	{
+		return;
+	}
+
+	fs::path modelPath = m_modelPath / m_sceneName;
+	modelPath += "/";
+	fs::create_directories(modelPath);
+	fs::create_directories(m_texturePath / m_sceneName);
+
+	for (fs::directory_iterator itr(assetPath); itr != fs::end(itr); itr++)
+	{
+		const fs::directory_entry& entry = *itr;
+		const fs::path& fPath = entry.path();
+
+		std::wstring finalPath = m_convertPath + m_sceneName.generic_wstring() + L"/" + fPath.filename().generic_wstring();
+
+		m_gp->ConvertAsset(finalPath);
+	}
 }
 
 void Truth::UnityParser::WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file)
@@ -635,17 +658,26 @@ void Truth::UnityParser::WriteMapMeshData(GameObject* _node, std::shared_ptr<Fil
 		}
 		else
 		{
-			std::wstring path = m_defaultPath;
-			path += m_sceneName.generic_wstring() + L"/";
+			std::wstring assetPath = m_assetPath;
+			assetPath += m_sceneName.generic_wstring() + L"/";
 
 			fs::path origin = _node->m_meshPath;
-			fs::path filePath = path;
-			filePath += origin.filename().replace_extension(".mesh");
+			fs::path filePath = assetPath;
+			fs::path copiedfile = filePath / origin.filename();
 
+			if (!fs::exists(copiedfile))
+			{
+				fs::create_directories(filePath);
+
+				fs::copy(origin, filePath);
+			}
+
+			result = m_sconvertPath + m_sceneName.generic_string() + "/" + origin.filename().replace_extension("").generic_string();
 		}
 
 		_file->Write<std::string>(result);
 		_file->Write<Matrix>(_node->m_worldTM);
+
 	}
 
 	for (auto* c : _node->m_children)
@@ -718,6 +750,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 
 	WriteMapData();
 	WriteMapMeshData(uscene);
+	ConvertUnloadedMesh();
 }
 
 /// <summary>
@@ -731,6 +764,7 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 	fs::path uscene(_path);
 	if (_path.extension() == ".fbx")
 	{
+		m_meshFilterCount++;
 		_parent->m_isMesh = true;
 		_parent->m_meshPath = _path.generic_string();
 		return;

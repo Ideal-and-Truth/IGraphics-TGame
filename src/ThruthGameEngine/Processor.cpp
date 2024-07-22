@@ -47,13 +47,14 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	g_inputmanager = m_manager->Input().get();
 
 // 	g_Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-// 	//gRenderer->ConvertAssetToMyFormat(L"Tower/Tower.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
 // 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 // 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 // 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-//	g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx");
+	// g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx");
 
-	Truth::UnityParser up;
+	Truth::UnityParser up(m_manager->Graphics().get());
 
 // 	std::string buffer = "Type:Mesh->Sprite__3_0";
 // 	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
