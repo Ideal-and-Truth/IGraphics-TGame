@@ -176,15 +176,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4.fbx");
+ 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Idle/Idle.FBX");
  		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk.FBX");
+ 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/Run/Sword And Shield Run.FBX");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4.fbx");
 //  		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations/Move/Run/run_strafe_front.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");

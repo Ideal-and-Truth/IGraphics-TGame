@@ -17,6 +17,7 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
 	, m_animationMaxFrame(0)
+	, m_oldFrame(0)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -32,6 +33,7 @@ Truth::SkinnedMesh::SkinnedMesh()
 	, m_isAnimationPlaying(false)
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
+	, m_oldFrame(0)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -99,12 +101,28 @@ void Truth::SkinnedMesh::FixedUpdate()
 
 void Truth::SkinnedMesh::Update()
 {
-	
-	m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
+
+	if (!m_isAnimationChanged)
+	{
+		m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
+	}
+
+	if (m_isAnimationChanged)
+	{
+		if (m_skinnedMesh->GetCurrentAnimationIndex() == 0)
+		{
+			m_currentFrame = 0;
+			m_oldFrame = 0;
+			m_isAnimationChanged = false;
+		}
+	}
+
 	if (m_animation != nullptr)
 	{
 		m_animationMaxFrame = m_animation->GetFrameCount();
 		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
+
+
 
 		if (m_oldFrame > m_currentFrame)
 		{
@@ -117,7 +135,9 @@ void Truth::SkinnedMesh::Update()
 			m_isAnimationPlaying = true;
 		}
 
-		m_oldFrame = m_skinnedMesh->GetCurrentAnimationIndex();
+		m_oldFrame = m_currentFrame;
+
+
 	}
 
 }

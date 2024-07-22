@@ -50,11 +50,11 @@ void Truth::Animator::Update()
 		m_currentNode = delegate.m_animationNodes[delegate.mLinks[0].mOutputNodeIndex];
 	}
 
-	if (m_skinnedMesh->m_isAnimationEnd)
-	{
-		m_skinnedMesh->SetAnimation(m_currentNode.name, m_currentNode.isChangesOnFinished);
-		//m_currentNode.isAnimationPlayed = false;
-	}
+// 	if (m_skinnedMesh->m_isAnimationEnd)
+// 	{
+// 		m_skinnedMesh->SetAnimation(m_currentNode.name, m_currentNode.isChangesOnFinished);
+// 		//m_currentNode.isAnimationPlayed = false;
+// 	}
 
 }
 
@@ -66,15 +66,15 @@ void Truth::Animator::GraphEditorDelegate::CustomDraw(ImDrawList* drawList, ImRe
 	int b = 0;
 	if (m_animationNodes[nodeIndex].isAnimationPlayed)
 	{
-		float progress = (float)m_animator->m_skinnedMesh->m_currentFrame;
-		float progress_dir = (float)m_animator->m_skinnedMesh->m_animationMaxFrame;
-
-
-		ImVec2 lenVec(rectangle.Max.x - rectangle.Min.x, rectangle.Max.y - rectangle.Min.y);
-		ImVec2 pVec;
-		pVec.x = rectangle.Min.x + lenVec.x * (progress / progress_dir);
-		pVec.y = rectangle.Max.y - 30.f;
-		drawList->AddRectFilled(rectangle.Min, pVec, IM_COL32(155, 155, 255, 255));
+// 		float progress = (float)m_animator->m_skinnedMesh->m_currentFrame;
+// 		float progress_dir = (float)m_animator->m_skinnedMesh->m_animationMaxFrame;
+// 
+// 
+// 		ImVec2 lenVec(rectangle.Max.x - rectangle.Min.x, rectangle.Max.y - rectangle.Min.y);
+// 		ImVec2 pVec;
+// 		pVec.x = rectangle.Min.x + lenVec.x * (progress / progress_dir);
+// 		pVec.y = rectangle.Max.y - 30.f;
+// 		drawList->AddRectFilled(rectangle.Min, pVec, IM_COL32(155, 155, 255, 255));
 
 	}
 }

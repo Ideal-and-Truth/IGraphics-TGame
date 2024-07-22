@@ -22,7 +22,6 @@ public:
 	}
 
 public:
-	virtual void Initialize() {}
 	virtual void OnStateEnter() {}
 	virtual void OnStateUpdate() {}
 	virtual void OnStateExit() {}
@@ -55,7 +54,6 @@ public:
 	}
 
 public:
-	virtual void Initialize() override;
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
 };
@@ -74,7 +72,6 @@ public:
 	}
 
 public:
-	virtual void Initialize() override;
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
 };
@@ -93,25 +90,74 @@ public:
 	}
 
 public:
-	virtual void Initialize() override;
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
 };
 
-class PlayerAttack
+class NormalAttack1
 	: public AnimationState
 {
 private:
 
 public:
-	PlayerAttack(Truth::Component* animator)
+	NormalAttack1(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
 	}
 
 public:
-	virtual void Initialize() override;
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+};
+
+class NormalAttack2
+	: public AnimationState
+{
+private:
+
+public:
+	NormalAttack2(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+};
+
+class NormalAttack3
+	: public AnimationState
+{
+private:
+
+public:
+	NormalAttack3(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+};
+
+class NormalAttack4
+	: public AnimationState
+{
+private:
+
+public:
+	NormalAttack4(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
 };
@@ -138,16 +184,18 @@ private:
 	PROPERTY(isRun);
 	bool m_isRun;
 
-	PROPERTY(isAttack1);
-	bool m_isAttack1;
+	PROPERTY(isAttack);
+	bool m_isAttack;
 
-	PROPERTY(isAnimationChange);
-	bool m_isAnimationChange;
+
+	PROPERTY(isAnimationEnd);
+	bool m_isAnimationEnd;
 
 	std::map<std::string, AnimationState*> m_animationStateMap;
 	AnimationState* m_currentState;
 
-
+	PROPERTY(currentFrame);
+	int m_currentFrame;
 
 public:
 	PlayerAnimator();

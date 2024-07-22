@@ -5,6 +5,12 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 
 PlayerAnimator::PlayerAnimator()
+	: m_isAnimationEnd(false)
+	, m_currentFrame(0)
+	, m_currentState(nullptr)
+	, m_isWalk(false)
+	, m_isRun(false)
+	, m_isAttack(false)
 {
 	m_name = "PlayerAnimator";
 }
@@ -17,16 +23,18 @@ PlayerAnimator::~PlayerAnimator()
 void PlayerAnimator::Awake()
 {
 	m_animationStateMap["Idle"] = new PlayerIdle(this);
-	m_animationStateMap["Idle"]->Initialize();
 
 	m_animationStateMap["Walk"] = new PlayerWalk(this);
-	m_animationStateMap["Walk"]->Initialize();
 
 	m_animationStateMap["Run"] = new PlayerRun(this);
-	m_animationStateMap["Run"]->Initialize();
 
-	m_animationStateMap["NormalAttack1"] = new PlayerAttack(this);
-	m_animationStateMap["NormalAttack1"]->Initialize();
+	m_animationStateMap["NormalAttack1"] = new NormalAttack1(this);
+
+	m_animationStateMap["NormalAttack2"] = new NormalAttack2(this);
+
+	m_animationStateMap["NormalAttack3"] = new NormalAttack3(this);
+
+	m_animationStateMap["NormalAttack4"] = new NormalAttack4(this);
 
 	m_currentState = m_animationStateMap["Idle"];
 }
@@ -55,39 +63,43 @@ void PlayerAnimator::Start()
 void PlayerAnimator::Update()
 {
 	//m_skinnedMesh->SetAnimationSpeed(0.1f);
+	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
+	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 
 	m_currentState->OnStateUpdate();
 
-	if (m_isAnimationChange)
+	if (m_isAttack)
 	{
-		if (GetKeyDown(KEY::LBTN))
-		{
-			//m_isAttack1 = true;
-			return;
-		}
+		m_isAttack = false;
+	}
 
-		if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
-			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() != 0.f)
+	if (GetKeyDown(KEY::LBTN))
+	{
+		m_isAttack = true;
+		return;
+	}
+
+	if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
+		|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() != 0.f)
+	{
+		if (GetKey(KEY::LSHIFT))
 		{
-			if (GetKey(KEY::LSHIFT))
-			{
-				m_isRun = true;
-				m_isWalk = false;
-				return;
-			}
-			else
-			{
-				m_isRun = false;
-			}
-			m_isWalk = true;
+			m_isRun = true;
+			m_isWalk = false;
 			return;
 		}
 		else
 		{
-			m_isWalk = false;
 			m_isRun = false;
-			return;
 		}
+		m_isWalk = true;
+		return;
+	}
+	else
+	{
+		m_isWalk = false;
+		m_isRun = false;
+		return;
 	}
 }
 
@@ -100,15 +112,9 @@ void PlayerAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnim
 
 void PlayerAnimator::ChangeState(std::string stateName)
 {
-	m_isAnimationChange = false;
 	m_currentState->OnStateExit();
 	m_currentState = m_animationStateMap[stateName];
 	m_currentState->OnStateEnter();
-}
-
-void PlayerIdle::Initialize()
-{
-
 }
 
 void PlayerIdle::OnStateEnter()
@@ -118,26 +124,26 @@ void PlayerIdle::OnStateEnter()
 
 void PlayerIdle::OnStateUpdate()
 {
+	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
+		GetProperty("isAttack")->Set(m_animator, false);
+	}
+
 	if (GetProperty("isWalk")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Walk");
-		GetProperty("isAnimationChange")->Set(m_animator, true);
 	}
+
 	if (GetProperty("isRun")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Run");
-		GetProperty("isAnimationChange")->Set(m_animator, true);
 	}
 }
 
 const Property* AnimationState::GetProperty(const std::string& name)
 {
 	return m_animator->GetTypeInfo().GetProperty(name.c_str());
-}
-
-void PlayerWalk::Initialize()
-{
-
 }
 
 void PlayerWalk::OnStateEnter()
@@ -147,22 +153,21 @@ void PlayerWalk::OnStateEnter()
 
 void PlayerWalk::OnStateUpdate()
 {
+	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
+		GetProperty("isAttack")->Set(m_animator, false);
+	}
+
 	if (GetProperty("isRun")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Run");
-		GetProperty("isAnimationChange")->Set(m_animator, true);
 	}
 
 	if (!GetProperty("isWalk")->Get<bool>(m_animator).Get() && !GetProperty("isRun")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isAnimationChange")->Set(m_animator, true);
 	}
-}
-
-void PlayerRun::Initialize()
-{
-
 }
 
 void PlayerRun::OnStateEnter()
@@ -172,30 +177,91 @@ void PlayerRun::OnStateEnter()
 
 void PlayerRun::OnStateUpdate()
 {
+	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
+		GetProperty("isAttack")->Set(m_animator, false);
+	}
+
 	if (GetProperty("isWalk")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Walk");
-		GetProperty("isAnimationChange")->Set(m_animator, true);
 	}
 
 	if (!GetProperty("isWalk")->Get<bool>(m_animator).Get() && !GetProperty("isRun")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isAnimationChange")->Set(m_animator, true);
 	}
 }
 
-void PlayerAttack::Initialize()
+void NormalAttack1::OnStateEnter()
 {
-
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack1", false);
 }
 
-void PlayerAttack::OnStateEnter()
+void NormalAttack1::OnStateUpdate()
 {
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack1", true);
+	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 33 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 44))
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack2");
+		GetProperty("isAttack")->Set(m_animator, false);
+	}
+	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
+	}
 }
 
-void PlayerAttack::OnStateUpdate()
+void NormalAttack2::OnStateEnter()
 {
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack2", false);
+}
 
+void NormalAttack2::OnStateUpdate()
+{
+	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 33 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 41))
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack3");
+		GetProperty("isAttack")->Set(m_animator, false);
+	}
+	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
+	}
+}
+
+void NormalAttack3::OnStateEnter()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack3", false);
+}
+
+void NormalAttack3::OnStateUpdate()
+{
+	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 29 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 36))
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack4");
+		GetProperty("isAttack")->Set(m_animator, false);
+	}
+	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
+	}
+}
+
+void NormalAttack4::OnStateEnter()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack4", false);
+}
+
+void NormalAttack4::OnStateUpdate()
+{
+	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 65 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 73))
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
+		GetProperty("isAttack")->Set(m_animator, false);
+	}
+	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
+	}
 }

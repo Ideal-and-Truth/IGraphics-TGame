@@ -19,7 +19,7 @@ namespace Truth
 		std::shared_ptr<Ideal::ISkinnedMeshObject> m_skinnedMesh;
 		std::shared_ptr<Ideal::IAnimation> m_animation;
 
-	public:
+	private:
 		PROPERTY(path);
 		std::wstring m_path;
 
@@ -42,6 +42,7 @@ namespace Truth
 		int m_animationMaxFrame;
 
 		int m_oldFrame;
+
 	public:
 		SkinnedMesh();
 		SkinnedMesh(std::wstring _path);
