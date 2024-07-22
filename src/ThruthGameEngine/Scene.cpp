@@ -14,7 +14,7 @@
 Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 	: m_managers(_managers)
 	, m_name("No Name Scene")
-	, m_mapPath(L"E:\\Projects\\IGraphics-TGame\\src\\Resources\\MapData\\SampleScene.map")
+	, m_mapPath(L"SampleScene")
 {
 }
 
@@ -24,6 +24,10 @@ Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 Truth::Scene::~Scene()
 {
 	ClearEntity();
+	for (auto& m : m_mapMesh)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m);
+	}
 }
 
 /// <summary>
@@ -105,7 +109,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	}
 
 
-	CreateMap(L"E:\\Projects\\IGraphics-TGame\\IGraphics-TGame\\src\\Resources\\MapData\\Level_v0.2.0.map");
+	CreateMap(L"SampleScene");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -297,30 +301,30 @@ void Truth::Scene::ClearEntity()
 
 void Truth::Scene::CreateMap(const std::wstring& _path)
 {
-	m_managers.lock()->Physics()->CreateMapCollider(_path);
+	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
+
+	m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
 
 	m_navMesh = std::make_shared<NavMeshGenerater>();
-	m_navMesh->Initalize(_path);
+	m_navMesh->Initalize(mapPath + L"Data.map");
 
-// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-// 	std::wstring path = _path + L".mmesh";
-// 	file->Open(path, FileMode::Read);
-// 
-// 	uint32 meshCount = file->Read<uint32>();
-// 	m_mapMesh.resize(meshCount);
-// 
-// 	for (uint32 i = 0; i < meshCount; i++)
-// 	{
-// 		std::string meshpath = file->Read<std::string>();
-// 		Matrix meshTM = file->Read<Matrix>();
-// 
-// 		USES_CONVERSION;
-// 		std::wstring wsval(A2W(meshpath.c_str()));
-// 
-// 		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
-// 		m_mapMesh.back()->SetTransformMatrix(meshTM);
-// 	}
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::wstring path = mapPath + L"Meshes.mList";
+	file->Open(path, FileMode::Read);
 
-	m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(L"TestMap/Map2"));
+	uint32 meshCount = file->Read<uint32>();
+	m_mapMesh.resize(meshCount);
+
+	for (uint32 i = 0; i < meshCount; i++)
+	{
+		std::string meshpath = file->Read<std::string>();
+		Matrix meshTM = file->Read<Matrix>();
+
+		USES_CONVERSION;
+		std::wstring wsval(A2W(meshpath.c_str()));
+
+		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
+		m_mapMesh.back()->SetTransformMatrix(meshTM);
+	}
 }
 

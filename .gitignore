@@ -38,3 +38,7 @@ pycache/
 *.DS_Store
 packages/
 *.lib
+src/Resources/Models/TestMap/Map2Scene.map.mesh
+src/Resources/Assets/MapData/SampleScene/building_dummy3_hanna.fbx
+src/Resources/Models/MapData/SampleScene/building_dummy3_hanna.mesh
+src/Resources/Textures/MapData/SampleScene/building_dummy3_hanna.xml

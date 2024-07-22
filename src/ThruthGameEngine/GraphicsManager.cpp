@@ -70,6 +70,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 void Truth::GraphicsManager::Finalize()
 {
+	
 }
 
 /// <summary>
@@ -86,9 +87,9 @@ void Truth::GraphicsManager::Render()
 }
 
 
-void Truth::GraphicsManager::ConvertAsset(std::wstring _path, bool _isSkind /*= false*/, bool _isData /*= false*/)
+void Truth::GraphicsManager::ConvertAsset(std::wstring _path, bool _isSkind /*= false*/, bool _isData /*= false*/, bool _isCenter)
 {
-	m_renderer->ConvertAssetToMyFormat(_path, _isSkind, _isData);
+	m_renderer->ConvertAssetToMyFormat(_path, _isSkind, _isData, _isCenter);
 }
 
 /// <summary>

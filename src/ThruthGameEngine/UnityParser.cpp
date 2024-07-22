@@ -2,8 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include "FileUtils.h"
+#include "GraphicsManager.h"
 
-Truth::UnityParser::UnityParser()
+Truth::UnityParser::UnityParser(GraphicsManager* _gp)
+	:m_gp(_gp)
 {
 	m_ignore.insert(".vs");
 	m_ignore.insert("Library");
@@ -158,7 +160,7 @@ void Truth::UnityParser::ParseDir(fs::path& _path)
 /// Yaml로 이루어진 unity 파일 파싱
 /// </summary>
 /// <param name="_node">Yaml Node</param>
-void Truth::UnityParser::ParseYAMLFile(YAML::Node& _node, std::string& _guid)
+void Truth::UnityParser::ParseYAMLFile(YAML::Node& _node, const std::string& _guid)
 {
 	// Tag에 있는 정보를 가져와서 파싱한다.
 	std::string data = _node.Tag();
@@ -199,7 +201,7 @@ fs::path Truth::UnityParser::OrganizeUnityFile(fs::path& _path)
 	// unity 와 prefab 파일만 읽는다 일단은
 	if (_path.extension() != ".unity" && _path.extension() != ".prefab")
 	{
-		// assert(false && "Not Unity Scene");
+		assert(false && "Not Unity Scene");
 		return "";
 	}
 
@@ -309,49 +311,7 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 	const YAML::Node& GONode = m_nodeMap[_guid][GOfid]->m_node;
 	if (GONode["GameObject"].IsDefined())
 	{
-		// get component list
-		YAML::Node comList = GONode["GameObject"]["m_Component"];
-		for (YAML::iterator it = comList.begin(); it != comList.end(); ++it)
-		{
-			// get component list
-			const YAML::Node& comp = *it;
-			std::string compFid = comp["component"]["fileID"].as<std::string>();
-
-			/// find box collider
-			const YAML::Node& collider = m_nodeMap[_guid][compFid]->m_node["BoxCollider"];
-			if (collider.IsDefined())
-			{
-				GO->m_isCollider = true;
-				GO->m_size.push_back({
-					collider["m_Size"]["x"].as<float>(),
-					collider["m_Size"]["y"].as<float>(),
-					collider["m_Size"]["z"].as<float>(),
-					});
-
-				GO->m_Center.push_back({
-					collider["m_Center"]["x"].as<float>(),
-					collider["m_Center"]["y"].as<float>(),
-					collider["m_Center"]["z"].as<float>(),
-					});
-			}
-
-			/// find mesh filter
-			const YAML::Node& meshFilter = m_nodeMap[_guid][compFid]->m_node["MeshFilter"];
-			if (meshFilter.IsDefined())
-			{
-				GO->m_isMesh = true;
-				m_meshFilterCount++;
-				if (meshFilter["m_Mesh"]["fileID"].as<std::string>() == "10202")
-				{
-					GO->m_meshPath = "DebugObject/debugCube";
-				}
-				else
-				{
-					std::string fbxGuid = meshFilter["m_Mesh"]["guid"].as<std::string>();
-					fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
-				}
-			}
-		}
+		ParseGameObject(_guid, GONode["GameObject"], GO);
 	}
 
 	// make child
@@ -363,8 +323,96 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 		{
 			GO->m_children.push_back(ParseTranfomrNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, GO));
 		}
+		else if (m_nodeMap[_guid][childFid]->m_node["PrefabInstance"].IsDefined())
+		{
+			GO->m_children.push_back(ParsePrefabNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, GO));
+		}
 	}
 	return GO;
+}
+
+Truth::UnityParser::GameObject* Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent)
+{
+	GameObject* GO = new GameObject;
+	GO->m_isCollider = false;
+	GO->m_parent = _parent;
+
+	// get transform data
+	GO->m_localTM = GetPrefabMatrix(_node["m_Modification"]["m_Modifications"]);
+
+	const std::string& prefabGuid = _node["m_SourcePrefab"]["guid"].as<std::string>();
+	GO->m_guid = prefabGuid;
+
+	const fs::path& prefabPath = m_guidMap[prefabGuid]->m_filePath;
+
+	if (prefabPath.extension() == ".prefab")
+	{
+		ReadPrefabFile(prefabPath, GO);
+	}
+	else if (prefabPath.extension() == ".fbx")
+	{
+		GO->m_isMesh = true;
+		GO->m_meshPath = prefabPath.generic_string();
+	}
+
+	return GO;
+}
+
+void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner)
+{
+	// get component list
+	YAML::Node comList = _node["m_Component"];
+	for (YAML::iterator it = comList.begin(); it != comList.end(); ++it)
+	{
+		// get component list
+		const YAML::Node& comp = *it;
+		std::string compFid = comp["component"]["fileID"].as<std::string>();
+
+		/// find box collider
+		const YAML::Node& collider = m_nodeMap[_guid][compFid]->m_node["BoxCollider"];
+		if (collider.IsDefined())
+		{
+			ParseBoxCollider(collider, _owner);
+		}
+
+		/// find mesh filter
+		const YAML::Node& meshFilter = m_nodeMap[_guid][compFid]->m_node["MeshFilter"];
+		if (meshFilter.IsDefined())
+		{
+			ParseMeshFilter(meshFilter, _owner);
+		}
+	}
+}
+
+void Truth::UnityParser::ParseBoxCollider(const YAML::Node& _node, GameObject* _owner)
+{
+	_owner->m_isCollider = true;
+	_owner->m_size.push_back({
+		_node["m_Size"]["x"].as<float>(),
+		_node["m_Size"]["y"].as<float>(),
+		_node["m_Size"]["z"].as<float>(),
+		});
+
+	_owner->m_Center.push_back({
+		_node["m_Center"]["x"].as<float>(),
+		_node["m_Center"]["y"].as<float>(),
+		_node["m_Center"]["z"].as<float>(),
+		});
+}
+
+void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _owner)
+{
+	m_meshFilterCount++;
+	_owner->m_isMesh = true;
+	if (_node["m_Mesh"]["fileID"].as<std::string>() == "10202")
+	{
+		_owner->m_meshPath = m_debugCubePath.generic_string();
+	}
+	else
+	{
+		std::string fbxGuid = _node["m_Mesh"]["guid"].as<std::string>();
+		fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
+	}
 }
 
 DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node)
@@ -480,7 +528,7 @@ void Truth::UnityParser::CreateBoxData()
 /// <summary>
 /// 파싱한 데이터를 파일로 작성한다.
 /// </summary>
-void Truth::UnityParser::WriteMapData(fs::path _path)
+void Truth::UnityParser::WriteMapData()
 {
 	std::vector<std::vector<Vector3>> vers;
 	std::vector<std::vector<uint32>> inds;
@@ -491,9 +539,13 @@ void Truth::UnityParser::WriteMapData(fs::path _path)
 	}
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	std::wstring path = L"../Resources/MapData/";
-	path += _path.replace_extension("").filename();
-	path += L".map";
+	std::wstring path = m_defaultPath;
+	path += m_sceneName.generic_wstring() + L"/";
+	path += L"Data.map";
+
+	fs::path tempPath = path;
+
+	fs::create_directories(tempPath.parent_path());
 
 	file->Open(path, FileMode::Write);
 	uint32 meshCount = static_cast<uint32>(vers.size());
@@ -549,9 +601,15 @@ void Truth::UnityParser::GetColliderVertexes(GameObject* _node, std::vector<std:
 void Truth::UnityParser::WriteMapMeshData(fs::path _path)
 {
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	std::wstring path = L"../Resources/MapData/";
-	path += _path.replace_extension("").filename();
-	path += L".map.mmesh";
+
+	std::wstring path = m_defaultPath;
+	path += m_sceneName.generic_wstring() + L"/";
+	path += L"Meshes.mList";
+
+	fs::path tempPath = path;
+
+	fs::create_directories(tempPath.parent_path());
+
 
 	file->Open(path, FileMode::Write);
 
@@ -563,12 +621,63 @@ void Truth::UnityParser::WriteMapMeshData(fs::path _path)
 	}
 }
 
+void Truth::UnityParser::ConvertUnloadedMesh()
+{
+	fs::path assetPath = m_assetPath / m_sceneName;
+	assetPath += "/";
+
+	if (!fs::exists(assetPath))
+	{
+		return;
+	}
+
+	fs::path modelPath = m_modelPath / m_sceneName;
+	modelPath += "/";
+	fs::create_directories(modelPath);
+	fs::create_directories(m_texturePath / m_sceneName);
+
+	for (fs::directory_iterator itr(assetPath); itr != fs::end(itr); itr++)
+	{
+		const fs::directory_entry& entry = *itr;
+		const fs::path& fPath = entry.path();
+
+		std::wstring finalPath = m_convertPath + m_sceneName.generic_wstring() + L"/" + fPath.filename().generic_wstring();
+
+		m_gp->ConvertAsset(finalPath, false, false, true);
+	}
+}
+
 void Truth::UnityParser::WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file)
 {
 	if (_node->m_isMesh)
 	{
-		_file->Write<std::string>(_node->m_meshPath);
+		std::string result;
+		if (_node->m_meshPath == m_debugCubePath)
+		{
+			result = _node->m_meshPath;
+		}
+		else
+		{
+			std::wstring assetPath = m_assetPath;
+			assetPath += m_sceneName.generic_wstring() + L"/";
+
+			fs::path origin = _node->m_meshPath;
+			fs::path filePath = assetPath;
+			fs::path copiedfile = filePath / origin.filename();
+
+			if (!fs::exists(copiedfile))
+			{
+				fs::create_directories(filePath);
+
+				fs::copy(origin, filePath);
+			}
+
+			result = m_sconvertPath + m_sceneName.generic_string() + "/" + origin.filename().replace_extension("").generic_string();
+		}
+
+		_file->Write<std::string>(result);
 		_file->Write<Matrix>(_node->m_worldTM);
+
 	}
 
 	for (auto* c : _node->m_children)
@@ -586,6 +695,8 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	// get scene path
 	fs::path uscene(_path);
 	fs::path cscene = OrganizeUnityFile(uscene);
+
+	m_sceneName = uscene.filename().replace_extension("");
 
 	// copy scene data
 	std::ifstream dataFile(cscene);
@@ -628,7 +739,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 		std::string prefabGuid = p->m_node["PrefabInstance"]["m_SourcePrefab"]["guid"].as<std::string>();
 
 		// parse prefab file
-		ParsePrefabFile(m_guidMap[prefabGuid]->m_filePath.generic_string(), GO);
+		ReadPrefabFile(m_guidMap[prefabGuid]->m_filePath.generic_string(), GO);
 		m_rootGameObject.push_back(GO);
 	}
 
@@ -637,8 +748,9 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 		CalculateWorldTM(root);
 	}
 
-	WriteMapData(uscene);
+	WriteMapData();
 	WriteMapMeshData(uscene);
+	ConvertUnloadedMesh();
 }
 
 /// <summary>
@@ -646,10 +758,17 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 /// </summary>
 /// <param name="_path">경로</param>
 /// <param name="_parent">부모 오브젝트</param>
-void Truth::UnityParser::ParsePrefabFile(const std::string& _path, GameObject* _parent)
+void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _parent)
 {
 	// as same as scene file parse
 	fs::path uscene(_path);
+	if (_path.extension() == ".fbx")
+	{
+		m_meshFilterCount++;
+		_parent->m_isMesh = true;
+		_parent->m_meshPath = _path.generic_string();
+		return;
+	}
 	fs::path cscene = OrganizeUnityFile(uscene);
 
 	std::ifstream dataFile(cscene);
@@ -679,17 +798,47 @@ void Truth::UnityParser::ParsePrefabFile(const std::string& _path, GameObject* _
 	// get prefab node ( 1001 = prefab class at unity scene file )
 	for (auto& p : m_classMap[guid]["1001"])
 	{
-		GameObject* GO = new GameObject;
-		GO->m_isCollider = false;
-		YAML::Node prefabNode = p->m_node["PrefabInstance"]["m_Modification"]["m_Modifications"];
-
-		GO->m_localTM = GetPrefabMatrix(prefabNode);
-
-		std::string prefabGuid = p->m_node["PrefabInstance"]["m_SourcePrefab"]["guid"].as<std::string>();
-
-		// parse prefab file
-		ParsePrefabFile(m_guidMap[prefabGuid]->m_filePath.generic_string(), GO);
+		_parent->m_children.push_back(ParsePrefabNode(p->m_node["PrefabInstance"], guid, _parent));
 	}
+}
+
+void Truth::UnityParser::ParseUnityFile(const std::string& _path)
+{
+	// get scene path
+	fs::path uscene(_path);
+	fs::path cscene = OrganizeUnityFile(uscene);
+
+	// copy scene data
+	std::ifstream dataFile(cscene);
+	std::string& guid = m_pathMap[uscene]->m_guid;
+
+	// load yaml unity file
+	auto doc = YAML::LoadAll(dataFile);
+	for (size_t i = 0; i < doc.size(); i++)
+	{
+		ParseYAMLFile(doc[i], guid);
+	}
+
+	// get root game object
+	YAML::Node p = m_classMap[guid]["1660057539"][0]->m_node["SceneRoots"]["m_Roots"];
+
+	for (auto itr = p.begin(); itr != p.end(); itr++)
+	{
+		const std::string& fid = (*itr)["fileID"].as<std::string>();
+		YAML::Node& node = m_nodeMap[guid][fid]->m_node;
+
+		if (node["Transform"].IsDefined())
+		{
+			m_rootGameObject.push_back(ParseTranfomrNode(node["Transform"], guid, nullptr));
+		}
+		else if (node["PrefabInstance"].IsDefined())
+		{
+			m_rootGameObject.push_back(ParsePrefabNode(node["PrefabInstance"], guid, nullptr));
+		}
+	}
+
+	WriteMapData();
+	WriteMapMeshData(uscene);
 }
 
 /// <summary>

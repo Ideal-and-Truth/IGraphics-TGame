@@ -2,7 +2,7 @@
 <Materials>
     <Material>
         <Name>Material</Name>
-        <DiffuseFile>default_Texture.png</DiffuseFile>
+        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

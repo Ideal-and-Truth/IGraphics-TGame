@@ -35,7 +35,7 @@ namespace Truth
 		void Finalize();
 		void Render();
 
-		void ConvertAsset(std::wstring _path, bool _isSkind = false, bool _isData = false);
+		void ConvertAsset(std::wstring _path, bool _isSkind = false, bool _isData = false, bool _isCenter = false);
 
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMesh(std::wstring _path);
 		std::shared_ptr<Ideal::IMeshObject> CreateMesh(std::wstring _path);
