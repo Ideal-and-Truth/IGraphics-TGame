@@ -454,7 +454,7 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 
 	if (makeRTV)
 		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-	
+
 	Check(m_device->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
@@ -467,7 +467,7 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 
 	resource->SetName(Name.c_str());
 	OutTexture->Create(resource);
-	
+
 	if (makeSRV)
 	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -780,6 +780,37 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 				material->SetEmissive(color);
 			}
 
+			// Metallic
+			{
+				node = node->NextSiblingElement();
+				float MetallicFactor = node->FloatAttribute("Factor");
+				material->SetMetallicFactor(MetallicFactor);
+			}
+
+			// Roughness
+			{
+				node = node->NextSiblingElement();
+				float RoughnessFactor = node->FloatAttribute("Factor");
+				material->SetRoughnessFactor(RoughnessFactor);
+			}
+
+			// UseTextureInfo
+			{
+				node = node->NextSiblingElement();
+				bool diffuse = node->BoolAttribute("Diffuse");
+				bool normal = node->BoolAttribute("Normal");
+				bool metallic = node->BoolAttribute("Metallic");
+				bool roughness = node->BoolAttribute("Roughness");
+				material->SetIsUseDiffuse(diffuse);
+				material->SetIsUseNormal(normal);
+				material->SetIsUseMetallic(metallic);
+				material->SetIsUseRoughness(roughness);
+				//material->SetIsUseDiffuse(true);
+				//material->SetIsUseNormal(true);
+				//material->SetIsUseMetallic(true);
+				//material->SetIsUseRoughness(true);
+			}
+
 			staticMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();
@@ -823,6 +854,7 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				bone->SetName(file->Read<std::string>());
 				bone->SetParent(file->Read<int32>());
 				bone->SetTransform(file->Read<Matrix>());
+				bone->SetOffsetMatrix(file->Read<Matrix>());
 				skinnedMesh->AddBone(bone);
 			}
 		}
@@ -866,8 +898,6 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				skinnedMesh->AddMesh(mesh);
 			}
 		}
-
-
 	}
 
 	// Material
@@ -987,6 +1017,36 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				material->SetEmissive(color);
 			}
 
+			// Metallic
+			{
+				node = node->NextSiblingElement();
+				float MetallicFactor = node->FloatAttribute("Factor");
+				material->SetMetallicFactor(MetallicFactor);
+			}
+
+			// Roughness
+			{
+				node = node->NextSiblingElement();
+				float RoughnessFactor = node->FloatAttribute("Factor");
+				material->SetRoughnessFactor(RoughnessFactor);
+			}
+
+			// UseTextureInfo
+			{
+				node = node->NextSiblingElement();
+				bool diffuse = node->BoolAttribute("Diffuse");
+				bool normal = node->BoolAttribute("Normal");
+				bool metallic = node->BoolAttribute("Metallic");
+				bool roughness = node->BoolAttribute("Roughness");
+				//material->SetIsUseDiffuse(diffuse);
+				//material->SetIsUseNormal(normal);
+				//material->SetIsUseMetallic(metallic);
+				//material->SetIsUseRoughness(roughness);
+				material->SetIsUseDiffuse(true);
+				material->SetIsUseNormal(true);
+				material->SetIsUseMetallic(true);
+				material->SetIsUseRoughness(true);
+			}
 			skinnedMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();
@@ -1072,6 +1132,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 				std::shared_ptr<Ideal::IdealBone> bone = bones[boneIdx];
 
 				Matrix matAnimation;
+				//Matrix matAnimation = bone->GetTransform();
 
 				std::shared_ptr<ModelKeyframe> keyFrame = OutAnimation->GetKeyframe(bone->GetName());
 
@@ -1089,6 +1150,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 				else
 				{
 					matAnimation = Matrix::Identity;
+					matAnimation = bone->GetTransform();
 				}
 
 				// ¿Á¡∂∏≥
@@ -1105,7 +1167,7 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 
 				tempAnimBoneTransforms[boneIdx] = matAnimation * matParent;
 
-				animTransform->transforms[frame][boneIdx] = invGlobal * tempAnimBoneTransforms[boneIdx];
+				animTransform->transforms[frame][boneIdx] = tempAnimBoneTransforms[boneIdx];
 			}
 		}
 		OutAnimation->m_animTransform = animTransform;

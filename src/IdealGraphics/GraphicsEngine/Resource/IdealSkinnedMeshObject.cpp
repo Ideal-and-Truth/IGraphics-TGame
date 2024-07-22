@@ -49,7 +49,7 @@ void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> R
 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
-
+	
 	AnimationPlay();
 
 	// Bind Descriptor Table
@@ -228,13 +228,16 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 
 void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::IdealAnimation> BeforeAnimation, uint32 BeforeAnimationFrame, std::shared_ptr<Ideal::IdealAnimation> NextAnimation, uint32 NextAnimationFrame)
 {
+	const auto bones = m_skinnedMesh->GetBones();
+
 	for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
 	{
 		Matrix currentFrame = BeforeAnimation->m_animTransform->transforms[BeforeAnimationFrame][boneIdx];
 		Matrix nextFrame = NextAnimation->m_animTransform->transforms[NextAnimationFrame][boneIdx];
 		Matrix resultFrame = Matrix::Identity;
 		Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
-		m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
+		
+		m_cbBoneData.transforms[boneIdx] = (bones[boneIdx]->GetOffsetMatrix() * resultFrame).Transpose();
 	}
 }
 
@@ -243,11 +246,22 @@ void Ideal::IdealSkinnedMeshObject::CreateUAVVertexBuffer(ComPtr<ID3D12Device5> 
 	auto& meshes = m_skinnedMesh->GetMeshes();
 	uint64 numMesh = meshes.size();
 	// 그냥 하나라고 가정하고 씀
-	uint32 numVertexCount = meshes[0]->GetVertexBuffer()->GetElementCount();
-	uint32 size = numVertexCount * sizeof(BasicVertex);
-	m_uavBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
-	m_uavBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UAV_SkinnedVertex");
-	m_uavView = ResourceManager->CreateUAV(m_uavBuffer, numVertexCount, sizeof(BasicVertex));
+	//m_uavBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+	//m_uavBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UAV_SkinnedVertex");
+	//m_uavView = ResourceManager->CreateUAV(m_uavBuffer, numVertexCount, sizeof(BasicVertex));
+
+	for (uint32 i = 0; i < numMesh; ++i)
+	{
+		uint32 numVertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
+		uint32 size = numVertexCount * sizeof(BasicVertex);
+		std::shared_ptr<Ideal::D3D12UAVBuffer> newVertexBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+		std::wstring name = L"UAV_SkinnedVertex";
+		name += std::to_wstring(m_vertexBuffers.size());
+		newVertexBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name.c_str());
+		std::shared_ptr<Ideal::D3D12UnorderedAccessView> newUAVView = ResourceManager->CreateUAV(newVertexBuffer, numVertexCount, sizeof(BasicVertex));
+		m_vertexBuffers.push_back(newVertexBuffer);
+		m_vertexBufferUAVs.push_back(newUAVView);
+	}
 }
 
 void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
@@ -262,6 +276,7 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 {
 	if (m_playAnimation == false)
 	{
+		
 		return;
 	}
 
@@ -289,7 +304,8 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 					CBPool,
 					meshes[i]->GetVertexBuffer(),
 					&m_cbBoneData,
-					m_uavView
+					//m_uavView
+					m_vertexBufferUAVs[i]
 				);
 			}
 		}

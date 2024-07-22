@@ -79,6 +79,7 @@ namespace Ideal
 				SRV_Normal,
 				SRV_Metalic,
 				SRV_Roughness,
+				CBV_MaterialInfo,
 				Count
 			};
 		}
@@ -97,7 +98,7 @@ namespace Ideal
 			// Roughness Textures
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_RoughnessTexture;
 
-
+			D3D12_GPU_DESCRIPTOR_HANDLE CBV_MaterialInfo;
 		};
 	}
 
@@ -154,7 +155,7 @@ namespace Ideal
 
 		//---AS---//
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLASByName(const std::wstring& Name);
-		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
+		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
 		std::shared_ptr<Ideal::BLASInstanceDesc> AllocateInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex = UINT_MAX, Matrix transform = Matrix::Identity, BYTE InstanceMask = 1);
 
 		//void DeleteBLASByName(const std::wstring& Name);
