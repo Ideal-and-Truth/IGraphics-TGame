@@ -727,7 +727,6 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	for (auto& p : m_classMap[guid]["1001"])
 	{
 		GameObject* GO = new GameObject;
-		GO->m_isCollider = false;
 		GO->m_parent = nullptr;
 
 		GO->m_guid = guid;
@@ -737,6 +736,21 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 		GO->m_localTM = GetPrefabMatrix(prefabNode);
 
 		std::string prefabGuid = p->m_node["PrefabInstance"]["m_SourcePrefab"]["guid"].as<std::string>();
+
+		const YAML::Node& childNodes = p->m_node["PrefabInstance"]["m_Modification"]["m_AddedComponents"];
+
+		for (auto& n : childNodes)
+		{
+			std::string fid = n["addedObject"]["fileID"].as<std::string>();
+
+			const YAML::Node& childNode = m_nodeMap[guid][fid]->m_node;
+
+			if (childNode["BoxCollider"].IsDefined())
+			{
+				GO->m_isCollider = true;
+				ParseBoxCollider(childNode["BoxCollider"], GO);
+			}
+		}
 
 		// parse prefab file
 		ReadPrefabFile(m_guidMap[prefabGuid]->m_filePath.generic_string(), GO);
