@@ -41,13 +41,9 @@ void PlayerAnimator::Awake()
 
 void PlayerAnimator::Start()
 {
-	// 	m_currentAnimation = "PlayerIdle";
-	// 	m_nextAnimation = "PlayerIdle";
-	// 
 	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
 	m_playerController = m_owner.lock().get()->GetComponent<PlayerController>().lock();
 
-	// 
 	m_skinnedMesh->AddAnimation("Idle", L"PlayerAnimations1/Idle/Idle");
 	m_skinnedMesh->AddAnimation("Walk", L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk");
 	m_skinnedMesh->AddAnimation("Run", L"PlayerAnimations1/Move/Run/Sword And Shield Run");
@@ -55,7 +51,6 @@ void PlayerAnimator::Start()
 	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2");
 	m_skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3");
 	m_skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4");
-	//m_skinnedMesh->SetAnimation("Run", true);
 
 	m_currentState->OnStateEnter();
 }
