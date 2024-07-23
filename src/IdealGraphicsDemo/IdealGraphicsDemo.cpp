@@ -188,6 +188,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block Impact.fbx");
 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block End.fbx");
 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Hit/Sword And Shield Impact.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Dodge/Stand To Roll.fbx");
 		gRenderer->ConvertAssetToMyFormat(L"MapData/SampleScene/building_dummy3_hanna.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false);

@@ -48,6 +48,8 @@ void PlayerAnimator::Awake()
 
 	m_animationStateMap["Hit"] = new PlayerHit(this);
 
+	m_animationStateMap["Dodge"] = new PlayerDodge(this);
+
 	m_currentState = m_animationStateMap["Idle"];
 }
 
@@ -69,6 +71,7 @@ void PlayerAnimator::Start()
 	m_skinnedMesh->AddAnimation("GuardHit", L"PlayerAnimations1/Guard/Sword And Shield Block Impact");
 	m_skinnedMesh->AddAnimation("GuardEnd", L"PlayerAnimations1/Guard/Sword And Shield Block End");
 	m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations1/Hit/Sword And Shield Impact");
+	m_skinnedMesh->AddAnimation("Dodge", L"PlayerAnimations1/Dodge/Stand To Roll");
 
 	m_currentState->OnStateEnter();
 }
@@ -117,6 +120,12 @@ void PlayerAnimator::Update()
 	else
 	{
 		m_isGuard = false;
+	}
+
+	if (GetKeyDown(KEY::SPACE))
+	{
+		m_isDodge = true;
+		return;
 	}
 
 	if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
@@ -179,6 +188,11 @@ void PlayerIdle::OnStateUpdate()
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
 	}
 
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
+
 	if (GetProperty("isGuard")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Guard");
@@ -213,6 +227,11 @@ void PlayerWalk::OnStateEnter()
 
 void PlayerWalk::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
+
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
@@ -245,6 +264,11 @@ void PlayerRun::OnStateUpdate()
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
+	}
+
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
 	}
 
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
@@ -432,4 +456,23 @@ void ChargedAttack1::OnStateUpdate()
 void ChargedAttack1::OnStateExit()
 {
 	GetProperty("isAttacking")->Set(m_animator, false);
+}
+
+void PlayerDodge::OnStateEnter()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Dodge", true);
+}
+
+void PlayerDodge::OnStateUpdate()
+{
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		GetProperty("isDodge")->Set(m_animator, false);
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Walk");
+	}
+}
+
+void PlayerDodge::OnStateExit()
+{
+
 }

@@ -221,6 +221,24 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class PlayerDodge
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerDodge(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class PlayerAnimator :
@@ -266,6 +284,8 @@ private:
 	PROPERTY(isHit);
 	bool m_isHit;
 
+	PROPERTY(isDodge);
+	bool m_isDodge;
 
 
 	PROPERTY(isAnimationEnd);
