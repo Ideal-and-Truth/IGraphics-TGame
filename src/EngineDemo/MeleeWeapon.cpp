@@ -52,7 +52,6 @@ void MeleeWeapon::Update()
 
 void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 {
-	/// TODO : 이 구조는 온트리거스테이로 바꿔야함
 	if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
 	{
 		if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
