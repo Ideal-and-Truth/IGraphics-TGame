@@ -16,17 +16,19 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	std::shared_ptr<Truth::Camera> m_camera;
+	std::weak_ptr<Truth::Camera> m_camera;
 
-	std::shared_ptr<Truth::Transform> m_target;
+	std::weak_ptr<Truth::Transform> m_target;
 
 	float4 m_cameraDistance;
+	PROPERTY(elevation);
 	float4 m_elevation;
+	PROPERTY(azimuth);
 	float4 m_azimuth;
 	float4 m_cameraSpeed;
 
 	bool m_isLockOn;
-
+	
 public:
 	PlayerCamera();
 	virtual ~PlayerCamera();

@@ -6,33 +6,42 @@ class Enemy :
 	GENERATE_CLASS_TYPE_INFO(Enemy);
 private:
 	friend class boost::serialization::access;
+	BOOST_SERIALIZATION_SPLIT_MEMBER();
 	template<class Archive>
-	void serialize(Archive& _ar, const unsigned int _file_version);
+	void save(Archive& ar, const unsigned int file_version) const;
+	template<class Archive>
+	void load(Archive& ar, const unsigned int file_version);
 
 private:
 	PROPERTY(speed);
-	float4 m_speed;
+	float m_speed;
 
 	PROPERTY(attackCoefficient);
-	float4 m_attackCoefficient;
+	float m_attackCoefficient;
 
 	PROPERTY(moveCoefficient);
-	float4 m_moveCoefficient;
+	float m_moveCoefficient;
 
 	PROPERTY(maxTP);
-	float4 m_maxTP;
+	float m_maxTP;
 
 	PROPERTY(maxCP);
-	float4 m_maxCP;
+	float m_maxCP;
 
 	PROPERTY(currentDamage);
-	float4 m_currentDamage;
+	float m_currentDamage;
 
 	PROPERTY(currentTP);
-	float4 m_currentTP;
+	float m_currentTP;
 
 	PROPERTY(currentCP);
-	float4 m_currentCP;
+	float m_currentCP;
+
+	PROPERTY(target);
+	std::weak_ptr<Truth::Entity> m_target;
+
+	PROPERTY(isTargetIn);
+	bool m_isTargetIn;
 
 public:
 	Enemy();
@@ -41,13 +50,27 @@ public:
 	METHOD(Awake);
 	void Awake();
 
+	METHOD(Start);
+	void Start();
+
 	METHOD(Update);
 	void Update();
 };
 
 template<class Archive>
-void Enemy::serialize(Archive& _ar, const unsigned int _file_version)
+void Enemy::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
+
 }
 
+template<class Archive>
+void Enemy::save(Archive& _ar, const unsigned int file_version) const
+{
+	_ar& boost::serialization::base_object<Component>(*this);
+
+}
+
+
+BOOST_CLASS_EXPORT_KEY(Enemy)
+BOOST_CLASS_VERSION(Enemy, 0)

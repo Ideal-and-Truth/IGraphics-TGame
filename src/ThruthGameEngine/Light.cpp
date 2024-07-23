@@ -2,6 +2,7 @@
 #include "Managers.h"
 #include "GraphicsManager.h"
 #include "Entity.h"
+#include "Transform.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Light)
 
@@ -14,7 +15,6 @@ Truth::Light::Light()
 	, m_spotLight(nullptr)
 	, m_pointLight(nullptr)
 	, m_lightType(LightType::Directional)
-	, m_direction(Vector3(1.f, 0.f, 1.f))
 	, m_position(Vector3(0.f, 0.f, 0.f))
 {
 	m_name = "Light";
@@ -32,11 +32,11 @@ void Truth::Light::SetLight(LightType InLightType)
 	}
 	else if (InLightType == LightType::Spot)
 	{
-		// m_spotLight = m_managers.lock()->Graphics()->CreateSpotLight();
+		m_spotLight = m_managers.lock()->Graphics()->CreateSpotLight();
 	}
 	else if (InLightType == LightType::Point)
 	{
-		// m_pointLight = m_managers.lock()->Graphics()->CreatePointLight();
+		m_pointLight = m_managers.lock()->Graphics()->CreatePointLight();
 	}
 }
 
@@ -49,15 +49,15 @@ void Truth::Light::ApplyTransform()
 {
 	if (m_lightType == LightType::Directional)
 	{
-		m_directionalLight->SetDirection(m_direction);
+		m_directionalLight->SetDirection(m_owner.lock().get()->m_transform->m_globalTM.Forward());
 	}
 	else if (m_lightType == LightType::Spot)
 	{
-		// m_spotLight->SetPosition(m_position);
+		m_spotLight->SetPosition(m_position);
 	}
 	else if (m_lightType == LightType::Point)
 	{
-		// m_pointLight->SetPosition(m_position);
+		m_pointLight->SetPosition(m_position);
 	}
 }
 

@@ -6,6 +6,8 @@
 #include "Types.h"
 #include <queue>
 
+#include "Animator.h"
+
 namespace Truth
 {
 	class Entity;
@@ -13,6 +15,8 @@ namespace Truth
 	class Managers;
 	class Component;
 }
+
+
 
 class EditorUI
 {
@@ -37,6 +41,10 @@ private:
 	std::queue<std::weak_ptr<Truth::Entity>> m_createdEntity;
 
 	std::weak_ptr<Truth::Entity> m_selectedEntity;
+	std::weak_ptr<Truth::Animator> m_selectedAnimator;
+
+
+	
 
 public:
 	EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd);
@@ -48,6 +56,7 @@ private:
 	void ShowHierarchyWindow(bool* p_open);
 	void ShowContentsDrawerWindow(bool* p_open);
 	void ShowMenuBar(bool* p_open);
+	void ShowAnimator(bool* p_open);
 
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
 
@@ -56,6 +65,10 @@ private:
 	void DisplayComponent(std::shared_ptr<Truth::Component> _component);
 
 	void DisplayEntity(std::weak_ptr<Truth::Entity> _entity);
+
+
 };
 
 
+
+//};

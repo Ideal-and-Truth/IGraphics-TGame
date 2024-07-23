@@ -12,41 +12,32 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	PROPERTY(speed);
-	float4 m_speed;
-
-	PROPERTY(jumpForce);
-	float4 m_jumpForce;
+	PROPERTY(moveSpeed);
+	float m_moveSpeed;
 
 	PROPERTY(lookRotationDampFactor);
-	float4 m_lookRotationDampFactor;
-
-	PROPERTY(attackCoefficient);
-	float4 m_attackCoefficient;
-
-	PROPERTY(moveCoefficient);
-	float4 m_moveCoefficient;
+	float m_lookRotationDampFactor;
 
 	PROPERTY(stopTiming);
-	float4 m_stopTiming;
+	float m_stopTiming;
 
 	PROPERTY(maxTP);
-	float4 m_maxTP;
+	float m_maxTP;
 
 	PROPERTY(maxCP);
-	float4 m_maxCP;
+	float m_maxCP;
 
 	PROPERTY(currentDamage);
-	float4 m_currentDamage;
+	float m_currentDamage;
 
 	PROPERTY(currentTP);
-	float4 m_currentTP;
+	float m_currentTP;
 
 	PROPERTY(currentCP);
-	float4 m_currentCP;
+	float m_currentCP;
 
 	PROPERTY(chargingCP);
-	float4 m_chargingCP;
+	float m_chargingCP;
 
 	PROPERTY(isDecreaseCP);
 	bool m_isDecreaseCP;

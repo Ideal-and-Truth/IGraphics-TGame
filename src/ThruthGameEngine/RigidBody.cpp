@@ -28,6 +28,7 @@ Truth::RigidBody::RigidBody()
 	, m_freezeRotation{ false, false , false }
 	, m_body(nullptr)
 	, m_isController(false)
+	, m_controller(nullptr)
 {
 	m_canMultiple = false;
 	m_name = typeid(*this).name();

@@ -1,5 +1,7 @@
 #include "Enemy.h"
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Enemy)
+
 Enemy::Enemy()
 	: m_speed(0.f)
 	, m_attackCoefficient(0.f)
@@ -9,6 +11,7 @@ Enemy::Enemy()
 	, m_currentDamage(0.f)
 	, m_currentTP(0.f)
 	, m_currentCP(0.f)
+	, m_isTargetIn(false)
 {
 	m_name = "Enemy";
 }
@@ -20,10 +23,19 @@ Enemy::~Enemy()
 
 void Enemy::Awake()
 {
+	m_target = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player");
+}
 
+void Enemy::Start()
+{
+	
 }
 
 void Enemy::Update()
 {
+	if (!m_isTargetIn)
+	{
+		return;
+	}
 
 }

@@ -2,6 +2,7 @@
 #include "Managers.h"
 #include "GraphicsManager.h"
 #include "ISkinnedMeshObject.h"
+#include "IAnimation.h"
 #include "Entity.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::SkinnedMesh)
@@ -12,9 +13,11 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
 	, m_currentFrame(0)
-	, m_isAnimationStart(false)
+	, m_isAnimationPlaying(false)
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
+	, m_animationMaxFrame(0)
+	, m_oldFrame(0)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -26,9 +29,11 @@ Truth::SkinnedMesh::SkinnedMesh()
 	, m_isRendering(true)
 	, m_skinnedMesh(nullptr)
 	, m_currentFrame(0)
-	, m_isAnimationStart(false)
+	, m_animationMaxFrame(0)
+	, m_isAnimationPlaying(false)
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
+	, m_oldFrame(0)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -69,13 +74,19 @@ void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrent
 {
 	if (m_animation != nullptr)
 	{
-		m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
 		m_isAnimationChanged = true;
+		m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
 	}
 }
 
-void Truth::SkinnedMesh::SetRenderable(bool _isRenderable)
+void Truth::SkinnedMesh::SetAnimationSpeed(float Speed)
 {
+	m_skinnedMesh->SetAnimationSpeed(Speed);
+}
+
+void Truth::SkinnedMesh::SetPlayStop(bool playStop)
+{
+	m_skinnedMesh->SetPlayAnimation(playStop);
 }
 
 void Truth::SkinnedMesh::Initalize()
@@ -85,28 +96,49 @@ void Truth::SkinnedMesh::Initalize()
 
 void Truth::SkinnedMesh::FixedUpdate()
 {
-	// 원래는 프레임 단위여야되지만 지금 애니메이션의 마지막 프레임을 몰라서
-	// 업데이트에 넣는게 유연한듯
-	m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
-	if (m_currentFrame == 0)
-	{
-		m_isAnimationEnd = true;
-	}
-	else if (m_currentFrame == 1)
-	{
-		m_isAnimationStart = true;
-		m_isAnimationChanged = false;
-	}
-	else
-	{
-		m_isAnimationStart = false;
-		m_isAnimationEnd = false;
-	}
-	
+
 }
 
 void Truth::SkinnedMesh::Update()
 {
+
+	if (!m_isAnimationChanged)
+	{
+		m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
+	}
+
+	if (m_isAnimationChanged)
+	{
+		if (m_skinnedMesh->GetCurrentAnimationIndex() == 0)
+		{
+			m_currentFrame = 0;
+			m_oldFrame = 0;
+			m_isAnimationChanged = false;
+		}
+	}
+
+	if (m_animation != nullptr)
+	{
+		m_animationMaxFrame = m_animation->GetFrameCount();
+		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
+
+
+
+		if (m_oldFrame > m_currentFrame)
+		{
+			m_isAnimationEnd = true;
+			m_isAnimationPlaying = false;
+		}
+		else
+		{
+			m_isAnimationEnd = false;
+			m_isAnimationPlaying = true;
+		}
+
+		m_oldFrame = m_currentFrame;
+
+
+	}
 
 }
 

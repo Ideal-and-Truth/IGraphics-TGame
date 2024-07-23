@@ -79,6 +79,9 @@ namespace TypeUI
 		{
 			USES_CONVERSION;
 			std::string sval(W2A(_val.c_str()));
+
+			sval.resize(128);
+
 			bool success = ImGui::InputText(_name, (char*)sval.c_str(), 128, ImGuiInputTextFlags_EnterReturnsTrue);
 			if (success)
 			{

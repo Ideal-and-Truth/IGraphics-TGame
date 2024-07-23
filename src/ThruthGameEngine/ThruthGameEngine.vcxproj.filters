@@ -112,15 +112,6 @@
     <Filter Include="Component\Collider\Mesh">
       <UniqueIdentifier>{a3d62599-8c3f-4505-8320-aaf4bcf2cc83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\NavMesh">
-      <UniqueIdentifier>{e62e00d4-2521-49d4-b2f2-649be3eab1c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\NavMesh\Geom">
-      <UniqueIdentifier>{e5ae6624-5d48-4676-a482-d1992ec5b13a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UnityParser">
-      <UniqueIdentifier>{2ca8590a-1363-4e59-8524-264bcd37b065}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -229,15 +220,9 @@
       <Filter>Utils\Math</Filter>
     </ClCompile>
     <ClCompile Include="MeshCollider.cpp" />
-    <ClCompile Include="NavMeshGenerater.cpp">
-      <Filter>Component\NavMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="NavGeom.cpp">
-      <Filter>Component\NavMesh\Geom</Filter>
-    </ClCompile>
-    <ClCompile Include="UnityParser.cpp">
-      <Filter>UnityParser</Filter>
-    </ClCompile>
+    <ClCompile Include="NavGeom.cpp" />
+    <ClCompile Include="NavMeshGenerater.cpp" />
+    <ClCompile Include="UnityParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -366,15 +351,9 @@
       <Filter>Utils\Math</Filter>
     </ClInclude>
     <ClInclude Include="MeshCollider.h" />
-    <ClInclude Include="NavMeshGenerater.h">
-      <Filter>Component\NavMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="NavGeom.h">
-      <Filter>Component\NavMesh\Geom</Filter>
-    </ClInclude>
-    <ClInclude Include="UnityParser.h">
-      <Filter>UnityParser</Filter>
-    </ClInclude>
+    <ClInclude Include="NavGeom.h" />
+    <ClInclude Include="NavMeshGenerater.h" />
+    <ClInclude Include="UnityParser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
