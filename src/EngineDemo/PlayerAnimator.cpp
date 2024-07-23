@@ -13,6 +13,8 @@ PlayerAnimator::PlayerAnimator()
 	, m_isRun(false)
 	, m_isAttack(false)
 	, m_isAttacking(false)
+	, m_isGuard(false)
+	, m_isHit(false)
 {
 	m_name = "PlayerAnimator";
 }
@@ -38,6 +40,8 @@ void PlayerAnimator::Awake()
 
 	m_animationStateMap["NormalAttack4"] = new NormalAttack4(this);
 
+	m_animationStateMap["Guard"] = new PlayerGuard(this);
+
 	m_animationStateMap["Hit"] = new PlayerHit(this);
 
 	m_currentState = m_animationStateMap["Idle"];
@@ -56,7 +60,11 @@ void PlayerAnimator::Start()
 	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2");
 	m_skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3");
 	m_skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4");
-	/// m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4");
+	m_skinnedMesh->AddAnimation("Guard", L"PlayerAnimations1/Guard/Sword And Shield Block");
+	m_skinnedMesh->AddAnimation("GuardIdle", L"PlayerAnimations1/Guard/Sword And Shield Block Idle");
+	m_skinnedMesh->AddAnimation("GuardHit", L"PlayerAnimations1/Guard/Sword And Shield Block Impact");
+	m_skinnedMesh->AddAnimation("GuardEnd", L"PlayerAnimations1/Guard/Sword And Shield Block End");
+	m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations1/Hit/Sword And Shield Impact");
 
 	m_currentState->OnStateEnter();
 }
@@ -78,6 +86,18 @@ void PlayerAnimator::Update()
 	{
 		m_isAttack = true;
 		return;
+	}
+
+	if (GetKey(KEY::RBTN))
+	{
+		m_isGuard = true;
+		m_isWalk = false;
+		m_isRun = false;
+		return;
+	}
+	else
+	{
+		m_isGuard = false;
 	}
 
 	if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
@@ -133,6 +153,11 @@ void PlayerIdle::OnStateUpdate()
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
+	}
+
+	if (GetProperty("isGuard")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Guard");
 	}
 
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
@@ -313,15 +338,46 @@ void NormalAttack4::OnStateExit()
 	GetProperty("isAttacking")->Set(m_animator, false);
 }
 
+void PlayerGuard::OnStateEnter()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Guard", true);
+}
+
+void PlayerGuard::OnStateUpdate()
+{
+	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardHit", true);
+		GetProperty("isHit")->Set(m_animator, false);
+	}
+
+	if (!GetProperty("isGuard")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
+		return;
+	}
+
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardIdle", false);
+	}
+}
+
+void PlayerGuard::OnStateExit()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardEnd", true);
+}
+
 void PlayerHit::OnStateEnter()
 {
-	//dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Hit", true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Hit", true);
 }
 
 void PlayerHit::OnStateUpdate()
 {
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
+		GetProperty("isHit")->Set(m_animator, false);
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
 }
@@ -330,3 +386,4 @@ void PlayerHit::OnStateExit()
 {
 	GetProperty("isHit")->Set(m_animator, false);
 }
+

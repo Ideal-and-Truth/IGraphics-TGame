@@ -183,6 +183,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2.fbx");
 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3.fbx");
 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block Idle.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block Impact.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block End.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Hit/Sword And Shield Impact.fbx");
 		gRenderer->ConvertAssetToMyFormat(L"MapData/SampleScene/building_dummy3_hanna.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false);

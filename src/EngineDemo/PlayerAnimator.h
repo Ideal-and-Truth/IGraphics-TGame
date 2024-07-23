@@ -167,6 +167,24 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class PlayerGuard
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerGuard(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 class PlayerHit
 	: public AnimationState
 {
@@ -217,6 +235,9 @@ private:
 
 	PROPERTY(isAttacking);
 	bool m_isAttacking;
+
+	PROPERTY(isGuard);
+	bool m_isGuard;
 
 	PROPERTY(isHit);
 	bool m_isHit;

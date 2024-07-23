@@ -67,9 +67,10 @@ void PlayerController::PlayerMove(const void*)
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
 
 	bool isAttacking = m_owner.lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_owner.lock()->GetComponent<PlayerAnimator>().lock().get()).Get();
+	bool isGuarding = m_owner.lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_owner.lock()->GetComponent<PlayerAnimator>().lock().get()).Get();
 
 
-	if (isAttacking)
+	if (isAttacking || isGuarding)
 	{
 		return;
 	}
