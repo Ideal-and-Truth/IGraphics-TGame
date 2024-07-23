@@ -132,8 +132,11 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
 
 float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in float TMax = 10000)
 {
+    // offset 과는 관계없이 똑같은 노말값 오류 현상
     float tOffset = 0.001f;
-    float3 offsetAlongRay = tOffset * wi;
+    //float3 offsetAlongRay = tOffset * wi;
+    //탄젠트 오프셋(Tangent Offset):
+    float3 offsetAlongRay = tOffset * N;
     
     float3 adjustedHitPosition = hitPosition + offsetAlongRay;
     Ray ray;
@@ -154,7 +157,8 @@ bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRay
     tHit = 0;   // 임시로 0으로 초기화
     if(currentRayRecursionDepth >= g_sceneCB.maxShadowRayRecursionDepth)
     {
-        return false;
+        //return false;
+        return true;
     }
     
     // 확장된 레이 세팅
@@ -241,7 +245,7 @@ void CalculateSpecularAndReflectionCoefficients(
         Kr = Ks;
         //Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
         //Kr = Ks * (1.0 - roughness);
-        Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
+        //Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
     }
     else
     {
@@ -271,24 +275,26 @@ float3 Shade(
     const float3 Kt;
     float metallic; 
 
-    if(!l_materialInfo.bUseMetallicMap)
+    if(l_materialInfo.bUseMetallicMap)
     {
-        metallic = l_materialInfo.metallicFactor;
         //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     else
     {
+        metallic = l_materialInfo.metallicFactor;
         metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     
     float roughness;
-    if(!l_materialInfo.bUseRoughnessMap)
+    if(l_materialInfo.bUseRoughnessMap)
     {
-        roughness = l_materialInfo.roughnessFactor;
         //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     else
     {
+        roughness = l_materialInfo.roughnessFactor;
         roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
 
@@ -368,13 +374,11 @@ float3 Shade(
     bool isTransmissive = !BxDF::IsBlack(Kt); // 일단 굴절은 뺄까?
     
     float smallValue = 1e-6f;
-    //float smallValue = 0.001f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
-
     //if(metallic > 0.001f)
     if(isReflective)
     {
-        if(isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
+        if(isReflective || (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
         {
             RayPayload reflectedPayLoad = rayPayload;
             float3 wi = reflect(-V, N);
