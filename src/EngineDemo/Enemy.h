@@ -14,28 +14,28 @@ private:
 
 private:
 	PROPERTY(speed);
-	float4 m_speed;
+	float m_speed;
 
 	PROPERTY(attackCoefficient);
-	float4 m_attackCoefficient;
+	float m_attackCoefficient;
 
 	PROPERTY(moveCoefficient);
-	float4 m_moveCoefficient;
+	float m_moveCoefficient;
 
 	PROPERTY(maxTP);
-	float4 m_maxTP;
+	float m_maxTP;
 
 	PROPERTY(maxCP);
-	float4 m_maxCP;
+	float m_maxCP;
 
 	PROPERTY(currentDamage);
-	float4 m_currentDamage;
+	float m_currentDamage;
 
 	PROPERTY(currentTP);
-	float4 m_currentTP;
+	float m_currentTP;
 
 	PROPERTY(currentCP);
-	float4 m_currentCP;
+	float m_currentCP;
 
 	PROPERTY(target);
 	std::weak_ptr<Truth::Entity> m_target;

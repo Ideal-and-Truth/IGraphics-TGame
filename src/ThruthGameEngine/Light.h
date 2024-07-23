@@ -27,9 +27,6 @@ namespace Truth
 		std::shared_ptr<Ideal::ISpotLight> m_spotLight;
 		std::shared_ptr<Ideal::IPointLight> m_pointLight;
 
-		PROPERTY(direction);
-		Vector3 m_direction;
-
 		PROPERTY(position);
 		Vector3 m_position;
 

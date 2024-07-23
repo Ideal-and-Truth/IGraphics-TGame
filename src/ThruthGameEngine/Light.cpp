@@ -2,6 +2,7 @@
 #include "Managers.h"
 #include "GraphicsManager.h"
 #include "Entity.h"
+#include "Transform.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Light)
 
@@ -14,7 +15,6 @@ Truth::Light::Light()
 	, m_spotLight(nullptr)
 	, m_pointLight(nullptr)
 	, m_lightType(LightType::Directional)
-	, m_direction(Vector3(1.f, 0.f, 1.f))
 	, m_position(Vector3(0.f, 0.f, 0.f))
 {
 	m_name = "Light";
@@ -49,7 +49,7 @@ void Truth::Light::ApplyTransform()
 {
 	if (m_lightType == LightType::Directional)
 	{
-		m_directionalLight->SetDirection(m_direction);
+		m_directionalLight->SetDirection(m_owner.lock().get()->m_transform->m_globalTM.Forward());
 	}
 	else if (m_lightType == LightType::Spot)
 	{

@@ -13,31 +13,31 @@ private:
 
 private:
 	PROPERTY(moveSpeed);
-	float4 m_moveSpeed;
+	float m_moveSpeed;
 
 	PROPERTY(lookRotationDampFactor);
-	float4 m_lookRotationDampFactor;
+	float m_lookRotationDampFactor;
 
 	PROPERTY(stopTiming);
-	float4 m_stopTiming;
+	float m_stopTiming;
 
 	PROPERTY(maxTP);
-	float4 m_maxTP;
+	float m_maxTP;
 
 	PROPERTY(maxCP);
-	float4 m_maxCP;
+	float m_maxCP;
 
 	PROPERTY(currentDamage);
-	float4 m_currentDamage;
+	float m_currentDamage;
 
 	PROPERTY(currentTP);
-	float4 m_currentTP;
+	float m_currentTP;
 
 	PROPERTY(currentCP);
-	float4 m_currentCP;
+	float m_currentCP;
 
 	PROPERTY(chargingCP);
-	float4 m_chargingCP;
+	float m_chargingCP;
 
 	PROPERTY(isDecreaseCP);
 	bool m_isDecreaseCP;

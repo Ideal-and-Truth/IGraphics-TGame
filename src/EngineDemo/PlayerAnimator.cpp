@@ -1,5 +1,6 @@
 #include "PlayerAnimator.h"
 #include "SkinnedMesh.h"
+#include "Player.h"
 #include "PlayerController.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
@@ -11,6 +12,7 @@ PlayerAnimator::PlayerAnimator()
 	, m_isWalk(false)
 	, m_isRun(false)
 	, m_isAttack(false)
+	, m_isAttacking(false)
 {
 	m_name = "PlayerAnimator";
 }
@@ -36,6 +38,8 @@ void PlayerAnimator::Awake()
 
 	m_animationStateMap["NormalAttack4"] = new NormalAttack4(this);
 
+	m_animationStateMap["Hit"] = new PlayerHit(this);
+
 	m_currentState = m_animationStateMap["Idle"];
 }
 
@@ -43,6 +47,7 @@ void PlayerAnimator::Start()
 {
 	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
 	m_playerController = m_owner.lock().get()->GetComponent<PlayerController>().lock();
+	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 
 	m_skinnedMesh->AddAnimation("Idle", L"PlayerAnimations1/Idle/Idle");
 	m_skinnedMesh->AddAnimation("Walk", L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk");
@@ -51,6 +56,7 @@ void PlayerAnimator::Start()
 	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2");
 	m_skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3");
 	m_skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4");
+	/// m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4");
 
 	m_currentState->OnStateEnter();
 }
@@ -112,6 +118,11 @@ void PlayerAnimator::ChangeState(std::string stateName)
 	m_currentState->OnStateEnter();
 }
 
+void PlayerAnimator::SetPlayerDamage(float damage)
+{
+	m_player->GetTypeInfo().GetProperty("currentDamage")->Set(m_player.get(), damage);
+}
+
 void PlayerIdle::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Idle", false);
@@ -119,6 +130,11 @@ void PlayerIdle::OnStateEnter()
 
 void PlayerIdle::OnStateUpdate()
 {
+	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
+	}
+
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
@@ -148,6 +164,11 @@ void PlayerWalk::OnStateEnter()
 
 void PlayerWalk::OnStateUpdate()
 {
+	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
+	}
+
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
@@ -172,6 +193,11 @@ void PlayerRun::OnStateEnter()
 
 void PlayerRun::OnStateUpdate()
 {
+	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
+	}
+
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
@@ -192,6 +218,9 @@ void PlayerRun::OnStateUpdate()
 void NormalAttack1::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack1", false);
+	/// TODO : 플레이어 데미지 세팅 여기서 (각 공격마다 세팅해줘야 될 수도)
+	///dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(1.f);
+	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
 void NormalAttack1::OnStateUpdate()
@@ -207,9 +236,15 @@ void NormalAttack1::OnStateUpdate()
 	}
 }
 
+void NormalAttack1::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+}
+
 void NormalAttack2::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack2", false);
+	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
 void NormalAttack2::OnStateUpdate()
@@ -225,9 +260,15 @@ void NormalAttack2::OnStateUpdate()
 	}
 }
 
+void NormalAttack2::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+}
+
 void NormalAttack3::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack3", false);
+	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
 void NormalAttack3::OnStateUpdate()
@@ -243,9 +284,15 @@ void NormalAttack3::OnStateUpdate()
 	}
 }
 
+void NormalAttack3::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+}
+
 void NormalAttack4::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack4", false);
+	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
 void NormalAttack4::OnStateUpdate()
@@ -259,4 +306,27 @@ void NormalAttack4::OnStateUpdate()
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
+}
+
+void NormalAttack4::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+}
+
+void PlayerHit::OnStateEnter()
+{
+	//dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Hit", true);
+}
+
+void PlayerHit::OnStateUpdate()
+{
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
+	}
+}
+
+void PlayerHit::OnStateExit()
+{
+	GetProperty("isHit")->Set(m_animator, false);
 }

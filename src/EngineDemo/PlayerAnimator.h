@@ -7,6 +7,7 @@ namespace Truth
 }
 
 class PlayerController;
+class Player;
 
 class AnimationState abstract
 {
@@ -109,6 +110,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class NormalAttack2
@@ -126,6 +128,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class NormalAttack3
@@ -143,6 +146,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class NormalAttack4
@@ -160,7 +164,27 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
+
+class PlayerHit
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerHit(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class PlayerAnimator :
@@ -175,9 +199,13 @@ private:
 private:
 	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
 	std::shared_ptr<PlayerController> m_playerController;
+	std::shared_ptr<Player> m_player;
 
 
-
+	/// <summary>
+	///  상태 조절을 위한 것들
+	/// </summary>
+	/// <param name=""></param>
 	PROPERTY(isWalk);
 	bool m_isWalk;
 
@@ -187,11 +215,20 @@ private:
 	PROPERTY(isAttack);
 	bool m_isAttack;
 
+	PROPERTY(isAttacking);
+	bool m_isAttacking;
+
+	PROPERTY(isHit);
+	bool m_isHit;
+
+
 
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
 
+	PROPERTY(animationStateMap);
 	std::map<std::string, AnimationState*> m_animationStateMap;
+
 	AnimationState* m_currentState;
 
 	PROPERTY(currentFrame);
@@ -214,6 +251,8 @@ public:
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 
 	void ChangeState(std::string stateName);
+
+	void SetPlayerDamage(float damage);
 };
 
 template<class Archive>

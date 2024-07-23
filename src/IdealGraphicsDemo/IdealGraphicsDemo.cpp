@@ -103,7 +103,7 @@ void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow){
+	_In_ int       nCmdShow) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -168,26 +168,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 	//====== =
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/SK_Fencer_Lady_Nude.fbx", true);
-//>>>>>>> Stashed changes
-		//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
-		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/SK_Fencer_Lady_Nude.fbx", true, false, true);
+		//>>>>>>> Stashed changes
+				//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
+				//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
+		// 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+		// 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+		// 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 
-//  		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Idle/Idle.FBX");
-//  		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk.FBX");
-//  		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/Run/Sword And Shield Run.FBX");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3.fbx");
-// 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4.fbx");
-		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/testWalk.fbx");
-//  		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations/Move/Run/run_strafe_front.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Idle/Idle.FBX");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk.FBX");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/Run/Sword And Shield Run.FBX");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4.fbx");
+		gRenderer->ConvertAssetToMyFormat(L"MapData/SampleScene/building_dummy3_hanna.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
@@ -268,7 +267,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
 
-		pointLight->SetPosition(Vector3(0.f, 3.f,3.f));
+		pointLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		pointLight->SetRange(6.f);
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
 		pointLight->SetIntensity(0.8f);
@@ -498,13 +497,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		gRenderer->DeleteMeshObject(ka);
 		ka.reset();
-		
+
 		gRenderer->DeleteMeshObject(cat);
 		cat.reset();
 
 		gRenderer->DeleteMeshObject(car);
 		car.reset();
-		
+
 		gRenderer.reset();
 	}
 
@@ -567,39 +566,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	switch (message)
 	{
-		case WM_COMMAND:
+	case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		// 메뉴 선택을 구문 분석합니다:
+		switch (wmId)
 		{
-			int wmId = LOWORD(wParam);
-			// 메뉴 선택을 구문 분석합니다:
-			switch (wmId)
-			{
-				break;
-				case IDM_EXIT:
-					DestroyWindow(hWnd);
-					break;
-				default:
-					return DefWindowProc(hWnd, message, wParam, lParam);
-			}
-		}
-		break;
-		case WM_SIZE:
-		{
-			if (gRenderer)
-			{
-				RECT rect;
-				GetClientRect(g_hWnd, &rect);
-				//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
-				DWORD width = rect.right - rect.left;
-				DWORD height = rect.bottom - rect.top;
-				gRenderer->Resize(width, height);
-			}
-		}
-		break;
-		case WM_DESTROY:
-			PostQuitMessage(0);
+			break;
+		case IDM_EXIT:
+			DestroyWindow(hWnd);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	}
+	break;
+	case WM_SIZE:
+	{
+		if (gRenderer)
+		{
+			RECT rect;
+			GetClientRect(g_hWnd, &rect);
+			//AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+			DWORD width = rect.right - rect.left;
+			DWORD height = rect.bottom - rect.top;
+			gRenderer->Resize(width, height);
+		}
+	}
+	break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }
