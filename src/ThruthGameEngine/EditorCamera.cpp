@@ -36,6 +36,15 @@ void Truth::EditorCamera::Update(float _dt)
 		m_camera->Strafe(_dt * m_speed);
 	}
 
+	if (GetKey(KEY::E))
+	{
+		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, _dt * m_speed, 0.0f));
+	}
+	if (GetKey(KEY::Q))
+	{
+		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, -_dt * m_speed, 0.0f));
+	}
+
 	if (GetKey(KEY::LMOUSE))
 	{
 		m_camera->Pitch(MouseDy() * 0.003f);

@@ -9,6 +9,11 @@ class FileUtils;
 
 namespace Truth
 {
+	class GraphicsManager;
+}
+
+namespace Truth
+{
 	/// <summary>
 	/// 이 클래스는 Debug 모드에서만 작동하도록 만들 예정
 	/// 오직 에디터에서만 작동하는 클래스
@@ -82,13 +87,26 @@ namespace Truth
 		// guid, classID, vector<node>
 		std::map<std::string, std::map<std::string, std::vector<UnityNodeFormat*>>> m_classMap;
 
+		const fs::path m_defaultPath = "../Resources/MapData/";
+		const fs::path m_assetPath = "../Resources/Assets/MapData/";
+		const fs::path m_modelPath = "../Resources/Models/MapData/";
+		const fs::path m_texturePath = "../Resources/Textures/MapData/";
+		const fs::path m_debugCubePath = "DebugObject/debugCube";
+		fs::path m_sceneName;
+
+		const std::wstring m_convertPath = L"MapData/";
+		const std::string m_sconvertPath = "MapData/";
+		
+		GraphicsManager* m_gp;
+
 	public:
-		UnityParser();
+		UnityParser(GraphicsManager* _gp);
 		~UnityParser();
 
 		void SetRootDir(const std::string& _path);
 		void ParseSceneFile(const std::string& _path);
-		void ParsePrefabFile(const std::string& _path, GameObject* _parent);
+
+		void ParseUnityFile(const std::string& _path);
 
 		void Reset();
 
@@ -98,22 +116,33 @@ namespace Truth
 		void ParseFile(fs::path& _path);
 		void ParseDir(fs::path& _path);
 
-		void ParseYAMLFile(YAML::Node& _node, std::string& _guid);
+		void ParseYAMLFile(YAML::Node& _node, const std::string& _guid);
 
 		void ResetGameObjectTree(GameObject* _node);
 
 		fs::path OrganizeUnityFile(fs::path& _path);
 
 		GameObject* ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
+		GameObject* ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
+		
+		void ReadPrefabFile(const fs::path& _path, GameObject* _parent);
+
+		void ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner);
+		void ParseBoxCollider(const YAML::Node& _node, GameObject* _owner);
+		void ParseMeshFilter(const YAML::Node& _node, GameObject* _owner);
 
 		Matrix GetPrefabMatrix(const YAML::Node& _node);
 
 		void CalculateWorldTM(GameObject* _node);
 		void CreateBoxData();
-		void WriteMapData(fs::path _path);
+
+		void WriteMapData();
 		void GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
+
 		void WriteMapMeshData(fs::path _path);
 		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);
+
+		void ConvertUnloadedMesh();
 	};
 }
 

@@ -19,6 +19,7 @@ using namespace DirectX;
 
 // Shader will use byte encoding to access indices.
 typedef UINT32 Index;
+//typedef unsigned int uint32;
 #endif
 
 struct Ray
@@ -44,13 +45,15 @@ struct SceneConstantBuffer
 
 struct MaterialInfoConstantBuffer
 {
-    bool bUseTexture;
-    bool bUseNormalMap;
-    bool bUseMetallicMap;
-    bool bUseRoughnessMap;
+    unsigned int bUseTexture;
+    unsigned int bUseNormalMap;
+    unsigned int bUseMetallicMap;
+    unsigned int bUseRoughnessMap;
 
 	float metallicFactor;
 	float roughnessFactor;
+    float pad0;
+    float pad1;
 };
 
 struct CubeConstantBuffer

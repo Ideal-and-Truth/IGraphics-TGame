@@ -14,6 +14,8 @@
 
 #include "UnityParser.h"
 
+#include <xxhash.h>
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -44,35 +46,21 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-	Truth::UnityParser up;
+// 	g_Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
+// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
+// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
+// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+	// g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx");
 
-	// up.Parsing("E:\Projects\SampleUnity\parsingTest");
-	//g_Renderer->ConvertAssetToMyFormat(L"Character/01.fbx/SK_Fencer_Lady_Nude.fbx", true, false);
+	Truth::UnityParser up(m_manager->Graphics().get());
 
-	//  g_Renderer->ConvertAssetToMyFormat(L"TestMap/navTestMap.fbx", false, false);
-	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
-
-	// 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	// 	file->Open(L"../Resources/Models/debugCube/debugCube.pos", FileMode::Read);
-	// 
-	// 	// 저장할 배열
-	// 	std::vector<Vector3> pos;
-	// 
-	// 	unsigned int meshNum = file->Read<unsigned int>();
-	// 
-	// 	for (int i = 0; i < meshNum; i++)
-	// 	{
-	// 		unsigned int verticesNum = file->Read<unsigned int>();
-	// 		for (int j = 0; j < verticesNum; j++)
-	// 		{
-	// 			Vector3 p;
-	// 			p.x = file->Read<float>();
-	// 			p.y = file->Read<float>();
-	// 			p.z = file->Read<float>();
-	// 			pos.push_back(p);
-	// 		}
-	// 	}
-	// 
+// 	std::string buffer = "Type:Mesh->Sprite__3_0";
+// 	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
+// 	int64 temp = static_cast<int64>(hash);
+	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
+	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }

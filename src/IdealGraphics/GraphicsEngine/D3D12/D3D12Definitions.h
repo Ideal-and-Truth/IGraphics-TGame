@@ -6,6 +6,7 @@
 // Test
 #define BeforeRefactor
 
+#define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
 // SWAP CHAIN & MAX PENDING
 

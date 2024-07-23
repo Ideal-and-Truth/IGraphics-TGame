@@ -40,6 +40,7 @@ Texture2D<float4> l_texNormal : register(t3, space1);
 Texture2D<float4> l_texMetallic : register(t4, space1);
 Texture2D<float4> l_texRoughness : register(t5, space1);
 ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
+//StructuredBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
@@ -498,7 +499,8 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         
         normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
     }
-    if(l_materialInfo.bUseNormalMap == false)
+    //if(l_materialInfo.bUseNormalMap == false)
+    if(l_materialInfo.bUseNormalMap == true)
     {
         normal = NormalMap(normal, uv, vertexInfo, attr);
     }

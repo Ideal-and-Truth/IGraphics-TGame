@@ -21,13 +21,15 @@ struct SceneConstantBuffer
 
 struct CB_MaterialInfo
 {
-	bool bUseDiffuseMap;
-	bool bUseNormalMap;
-	bool bUseMetallicMap;
-	bool bUseRoughnessMap;
+	uint32 bUseDiffuseMap;
+	uint32 bUseNormalMap;
+	uint32 bUseMetallicMap;
+	uint32 bUseRoughnessMap;
 
 	float metallicFactor;
 	float roughnessFactor;
+	float pad0;
+	float pad1;
 };
 
 struct CB_Bone

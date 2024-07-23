@@ -3,6 +3,7 @@
 #include "Misc/Utils/tinyxml2.h"
 #include "Misc/Utils/FileUtils.h"
 #include <filesystem>
+#include <algorithm>
 
 bool IsNegative(const Matrix& m)
 {
@@ -142,7 +143,7 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	}
 }
 
-void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData /*= false*/)
+void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData /*= false*/, bool IsConvertCenter /*= false*/)
 {
 	// skinned data일 경우 
 	m_isSkinnedData = IsSkinnedData;
@@ -160,40 +161,40 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 		{
 			FILE* file;
 			fopen_s(&file, "../Vertices.csv", "w");
-		
+
 			for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
 			{
 				std::string name = bone->name;
 				::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
 			}
-		
+
 			fprintf(file, "\n");
-		
+
 			for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
 			{
 				std::string name = mesh->name;
 				//::printf("%s\n", name.c_str());
 				::fprintf(file, "name : %s\n", name.c_str());
-		
+
 				for (UINT i = 0; i < mesh->vertices.size(); i++)
 				{
 					Vector3 p = mesh->vertices[i].Position;
 					Vector4 indices = mesh->vertices[i].BlendIndices;
 					Vector4 weights = mesh->vertices[i].BlendWeights;
-		
+
 					::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
 					::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
 					::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
 				}
 			}
-		
+
 			fclose(file);
 		}
 	}
 	else
 	{
 		std::wstring finalPath = m_modelPath + savePath + L".mesh";
-		ReadModelData(m_scene->mRootNode, -1, -1);
+		ReadModelData(m_scene->mRootNode, -1, -1, IsConvertCenter);
 		WriteModelFile(finalPath);
 	}
 }
@@ -428,7 +429,7 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 	}
 }
 
-void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent)
+void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, bool convertCenter /*= false*/)
 {
 	std::shared_ptr<AssimpConvert::Bone> bone = std::make_shared<AssimpConvert::Bone>();
 	bone->index = index;
@@ -450,7 +451,7 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent)
 
 	m_bones.push_back(bone);
 
-	ReadMeshData(node, index);
+	ReadMeshData(node, index, convertCenter);
 
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
@@ -458,7 +459,7 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent)
 	}
 }
 
-void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData /*= true*/)
+void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData /*= true*/, bool converCenter /*= false*/)
 {
 	std::shared_ptr<AssimpConvert::Bone> bone = std::make_shared<AssimpConvert::Bone>();
 	bone->index = index;
@@ -563,7 +564,7 @@ void AssimpConverter::ReadMaterialData()
 		material->normalTextureFile = file.C_Str();
 		if (material->normalTextureFile.empty())
 		{
-			material->bUseNormalTexture= false;
+			material->bUseNormalTexture = false;
 			material->normalTextureFile = "DefaultNormalMap.png";
 		}
 		else
@@ -660,7 +661,7 @@ void AssimpConverter::ReadSkinData()
 	}
 }
 
-void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
+void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter /*= false*/)
 {
 	// 마지막 노드는 정보를 들고 있다.
 	if (node->mNumMeshes < 1)
@@ -687,6 +688,9 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 
 		const uint32 startVertex = (uint32)mesh->vertices.size();
 
+		Vector3 minpos = { FLT_MAX, FLT_MAX , FLT_MAX };
+		Vector3 maxpos = { -FLT_MAX, -FLT_MAX , -FLT_MAX };
+
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 		{
@@ -696,6 +700,14 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 				/*vertex.Position.x *= 0.01;
 				vertex.Position.y *= 0.01;
 				vertex.Position.z *= 0.01;*/
+
+				minpos.x = std::min(minpos.x, vertex.Position.x);
+				minpos.y = std::min(minpos.y, vertex.Position.y);
+				minpos.z = std::min(minpos.z, vertex.Position.z);
+
+				maxpos.x = max(maxpos.x, vertex.Position.x);
+				maxpos.y = max(maxpos.y, vertex.Position.y);
+				maxpos.z = max(maxpos.z, vertex.Position.z);
 			}
 
 			// UV
@@ -717,6 +729,15 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone)
 			}
 
 			mesh->vertices.push_back(vertex);
+		}
+
+		if (convertCenter)
+		{
+			Vector3 center = (maxpos + minpos) / 2;
+			for (auto& m : mesh->vertices)
+			{
+				m.Position -= center;
+			}
 		}
 
 		// Index

@@ -529,7 +529,7 @@ void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
 	// TODO
 }
 
-void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
+void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
 	assimpConverter->SetAssetPath(m_assetPath);
