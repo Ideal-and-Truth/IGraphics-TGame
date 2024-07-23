@@ -15,6 +15,8 @@ PlayerAnimator::PlayerAnimator()
 	, m_isAttacking(false)
 	, m_isGuard(false)
 	, m_isHit(false)
+	, m_isCharged(0.f)
+	, m_isChargedAttack(false)
 {
 	m_name = "PlayerAnimator";
 }
@@ -39,6 +41,8 @@ void PlayerAnimator::Awake()
 	m_animationStateMap["NormalAttack3"] = new NormalAttack3(this);
 
 	m_animationStateMap["NormalAttack4"] = new NormalAttack4(this);
+
+	m_animationStateMap["ChargedAttack1"] = new ChargedAttack1(this);
 
 	m_animationStateMap["Guard"] = new PlayerGuard(this);
 
@@ -86,6 +90,21 @@ void PlayerAnimator::Update()
 	{
 		m_isAttack = true;
 		return;
+	}
+
+	if (GetKey(KEY::LBTN))
+	{
+		m_isCharged += GetDeltaTime();
+
+		if (m_isChargedAttack)
+		{
+			m_isCharged = 0.f;
+		}
+	}
+	else
+	{
+		m_isChargedAttack = false;
+		m_isCharged = 0.f;
 	}
 
 	if (GetKey(KEY::RBTN))
@@ -150,6 +169,11 @@ void PlayerIdle::OnStateEnter()
 
 void PlayerIdle::OnStateUpdate()
 {
+	if (GetProperty("isCharged")->Get<float>(m_animator).Get() > 1.f)
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("ChargedAttack1");
+	}
+
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
@@ -250,6 +274,7 @@ void NormalAttack1::OnStateEnter()
 
 void NormalAttack1::OnStateUpdate()
 {
+
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 33 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 44))
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack2");
@@ -387,3 +412,24 @@ void PlayerHit::OnStateExit()
 	GetProperty("isHit")->Set(m_animator, false);
 }
 
+void ChargedAttack1::OnStateEnter()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack4", false);
+	GetProperty("isAttacking")->Set(m_animator, true);
+	GetProperty("isChargedAttack")->Set(m_animator, true);
+	GetProperty("isWalk")->Set(m_animator, false);
+	GetProperty("isRun")->Set(m_animator, false);
+}
+
+void ChargedAttack1::OnStateUpdate()
+{
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
+	}
+}
+
+void ChargedAttack1::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+}
