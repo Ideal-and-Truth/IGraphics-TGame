@@ -115,6 +115,9 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     rayDesc.TMax = 10000.0;
     
     UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
+    //rayFlags = RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
+    //UINT rayFlags = 0;
+    //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;
     TraceRay(
         g_scene,
         rayFlags, 
@@ -225,24 +228,31 @@ void CalculateSpecularAndReflectionCoefficients(
     // Ensure the value is within the valid range to avoid numerical issues
     float cos_theta = dot(normalize(V), normalize(N));
     cos_theta = saturate(cos_theta);
-
+    
     // Calculate F0 based on whether the surface is metallic or not
     float3 F0 = lerp(float3(0.04, 0.04, 0.04), Albedo, metallic);
-
+    
     // Calculate Ks using the Fresnel function
     Ks = BxDF::Fresnel(F0, cos_theta);
-
+    
     // For metallic materials, Kr is same as Ks
     if(metallic > 0.f)
     {
         Kr = Ks;
+        //Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
+        //Kr = Ks * (1.0 - roughness);
+        Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
     }
     else
     {
         //float3 diffuseReflection = Albedo * (1.0f - Ks);
         //Kr = diffuseReflection * (1.f - metallic) + Ks * metallic;
-        Kr = Ks * (1.0 - roughness);
+
+        //Kr = Ks * (1.0 - roughness);
+        Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
     }
+    Ks = saturate(Ks);
+    Kr = saturate(Kr);
 }
 
 float3 Shade(
@@ -263,21 +273,23 @@ float3 Shade(
 
     if(!l_materialInfo.bUseMetallicMap)
     {
-        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        metallic = l_materialInfo.metallicFactor;
+        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     else
     {
-        metallic = l_materialInfo.metallicFactor;
+        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     
     float roughness;
     if(!l_materialInfo.bUseRoughnessMap)
     {
-        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+        roughness = l_materialInfo.roughnessFactor;
+        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     else
     {
-        roughness = l_materialInfo.roughnessFactor;
+        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
 
 
@@ -316,35 +328,35 @@ float3 Shade(
         
         // Point Light
         {
-            for (int i = 0; i < pointLightNum; ++i)
-            {
-                float3 position = g_lightList.PointLights[i].Position.xyz;
-                float3 color = g_lightList.PointLights[i].Color.rgb;
-                float range = g_lightList.PointLights[i].Range;
-                
-                float3 direction = normalize(position - hitPosition);
-                float distance = length(position - hitPosition);
-                float att = Ideal::Attenuate(distance, range);
-                float intensity = g_lightList.PointLights[i].Intensity;
-                
-                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
-
-                float3 light = Ideal::Light::ComputePointLight
-                (
-                Kd,
-                Ks,
-                color,
-                isInShadow,
-                roughness,
-                N,
-                V,
-                direction,
-                distance,
-                range,
-                intensity
-                );
-                L += light;
-            }
+            //for (int i = 0; i < pointLightNum; ++i)
+            //{
+            //    float3 position = g_lightList.PointLights[i].Position.xyz;
+            //    float3 color = g_lightList.PointLights[i].Color.rgb;
+            //    float range = g_lightList.PointLights[i].Range;
+            //    
+            //    float3 direction = normalize(position - hitPosition);
+            //    float distance = length(position - hitPosition);
+            //    float att = Ideal::Attenuate(distance, range);
+            //    float intensity = g_lightList.PointLights[i].Intensity;
+            //    
+            //    bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+            //
+            //    float3 light = Ideal::Light::ComputePointLight
+            //    (
+            //    Kd,
+            //    Ks,
+            //    color,
+            //    isInShadow,
+            //    roughness,
+            //    N,
+            //    V,
+            //    direction,
+            //    distance,
+            //    range,
+            //    intensity
+            //    );
+            //    L += light;
+            //}
         }
     }
 
@@ -356,9 +368,10 @@ float3 Shade(
     bool isTransmissive = !BxDF::IsBlack(Kt); // ÀÏ´Ü ±¼ÀýÀº »¬±î?
     
     float smallValue = 1e-6f;
+    //float smallValue = 0.001f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
 
-    //if(metallic > 0.f)
+    //if(metallic > 0.001f)
     if(isReflective)
     {
         if(isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
@@ -376,18 +389,13 @@ float3 Shade(
                 // Radiance contribution from reflection.
                 float3 wi;
                 //float3 Fr = Kr * BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo);    // Calculates wi
-                float3 Fr = BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo);    // Calculates wi
-                Fr *= Kr;
-                if (any(isnan(Fr)) || any(isinf(Fr)))
-                {
-                    Fr = float3(0, 0, 0);
-                }
+                float3 Fr = Kr * BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo);    // Calculates wi
                 RayPayload reflectedRayPayLoad = rayPayload;
                 // Ref: eq 24.4, [Ray-tracing from the Ground Up]
-                //L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
-                float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
+                L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
+                //float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
+                //L += result;
                 
-                L += result;
             }
         }
     }
@@ -504,6 +512,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     {
         normal = NormalMap(normal, uv, vertexInfo, attr);
     }
+    normal = normalize(normal);
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
 }
 
