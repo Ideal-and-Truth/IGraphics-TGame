@@ -315,6 +315,8 @@ public:
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 
+	void SetAnimationSpeed(float speed);
+
 	void ChangeState(std::string stateName);
 
 	void SetPlayerDamage(float damage);

@@ -17,6 +17,7 @@ PlayerAnimator::PlayerAnimator()
 	, m_isHit(false)
 	, m_isCharged(0.f)
 	, m_isChargedAttack(false)
+	, m_isDodge(false)
 {
 	m_name = "PlayerAnimator";
 }
@@ -157,6 +158,11 @@ void PlayerAnimator::Update()
 void PlayerAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
 {
 	m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
+}
+
+void PlayerAnimator::SetAnimationSpeed(float speed)
+{
+	m_skinnedMesh->SetAnimationSpeed(speed);
 }
 
 void PlayerAnimator::ChangeState(std::string stateName)
@@ -389,14 +395,14 @@ void NormalAttack4::OnStateExit()
 
 void PlayerGuard::OnStateEnter()
 {
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Guard", true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Guard", false);
 }
 
 void PlayerGuard::OnStateUpdate()
 {
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardHit", true);
+		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardHit", false);
 		GetProperty("isHit")->Set(m_animator, false);
 	}
 
@@ -460,7 +466,8 @@ void ChargedAttack1::OnStateExit()
 
 void PlayerDodge::OnStateEnter()
 {
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Dodge", true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.7f);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Dodge", false);
 }
 
 void PlayerDodge::OnStateUpdate()
@@ -474,5 +481,5 @@ void PlayerDodge::OnStateUpdate()
 
 void PlayerDodge::OnStateExit()
 {
-
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 }
