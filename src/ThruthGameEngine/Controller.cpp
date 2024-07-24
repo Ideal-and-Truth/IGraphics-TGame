@@ -62,7 +62,7 @@ void Truth::Controller::Awake()
 
 	m_rigidbody->m_body = m_controller->getActor();
 	m_controller->getActor()->userData = m_rigidbody.get();
-
+	
 	// create collider to access physx shape
 	m_collider = std::make_shared<CapsuleCollider>();
 	m_collider->m_transform = m_owner.lock()->GetComponent<Transform>();
