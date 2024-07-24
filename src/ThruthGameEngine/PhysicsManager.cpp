@@ -139,7 +139,7 @@ void Truth::PhysicsManager::FixedUpdate()
 				TM *= Matrix::CreateFromQuaternion(rot);
 				TM *= Matrix::CreateTranslation(pos);
 
-				rigidbody->SetWorldTM(rigidbody->m_invertLocalTM * TM);
+				rigidbody->SetLocalTM(rigidbody->m_invertLocalTM * TM);
 			}
 		}
 	}

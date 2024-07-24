@@ -62,13 +62,13 @@ void Truth::RigidBody::Initalize()
 /// </summary>
 void Truth::RigidBody::ApplyTransform()
 {
-	// 	Vector3 pos = m_owner.lock()->GetPosition();
-	// 	Quaternion rot = m_owner.lock()->GetRotation();
-	// 
-	// 	m_body->setGlobalPose(physx::PxTransform(
-	// 		MathConverter::Convert(pos),
-	// 		MathConverter::Convert(rot)
-	// 	), false);
+	Vector3 pos = m_owner.lock()->GetWorldPosition();
+	Quaternion rot = m_owner.lock()->GetWorldRotation();
+
+	m_body->setGlobalPose(physx::PxTransform(
+		MathConverter::Convert(pos),
+		MathConverter::Convert(rot)
+	), false);
 }
 
 DirectX::SimpleMath::Quaternion Truth::RigidBody::GetRotation()

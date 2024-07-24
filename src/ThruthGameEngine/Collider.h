@@ -80,6 +80,9 @@ namespace Truth
 		METHOD(Awake);
 		void Awake();
 
+		METHOD(FixedUpdate);
+		void FixedUpdate();
+
 		METHOD(SetCenter);
 		void SetCenter(Vector3 _pos);
 
