@@ -69,9 +69,9 @@ const DirectX::SimpleMath::Matrix& Truth::Component::GetWorldTM() const
 	return m_owner.lock()->m_transform->m_globalTM;
 }
 
-void Truth::Component::SetWorldTM(const Matrix& _tm)
+void Truth::Component::SetLocalTM(const Matrix& _tm)
 {
-	m_owner.lock()->m_transform->SetWorldTM(_tm);
+	m_owner.lock()->m_transform->SetLocalTM(_tm);
 }
 
 void Truth::Component::AddEmptyEntity()

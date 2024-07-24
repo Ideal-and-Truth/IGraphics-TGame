@@ -74,9 +74,6 @@ void Truth::Controller::Awake()
 	physx::PxShape** tempShapes = new physx::PxShape*[nbs];
 	m_controller->getActor()->getShapes(tempShapes, nbs);
 	m_collider->m_collider = tempShapes[0];
-	m_collider->m_collider->setLocalPose(physx::PxTransform(
-		MathConverter::Convert(Vector3{ m_height, 0.0f, 0.0f})
-	));
 	m_collider->m_collider->userData = m_collider.get();
 
 	delete[] tempShapes;

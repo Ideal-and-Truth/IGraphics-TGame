@@ -104,7 +104,7 @@ namespace Truth
 			ApplyTransform();
 		}
 
-		inline void SetWorldTM(Matrix _tm)
+		inline void SetLocalTM(Matrix _tm)
 		{
 			m_localTM = _tm;
 			_tm.Decompose(m_scale, m_rotation, m_position);
