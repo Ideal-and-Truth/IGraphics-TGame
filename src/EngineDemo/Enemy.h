@@ -62,8 +62,6 @@ void Enemy::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 
-	_ar& m_speed;
-	_ar& m_maxTP;
 
 }
 
@@ -72,8 +70,7 @@ void Enemy::save(Archive& _ar, const unsigned int file_version) const
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 
-	_ar& m_speed;
-	_ar& m_maxTP;
+	
 }
 
 
