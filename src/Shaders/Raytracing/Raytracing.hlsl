@@ -115,6 +115,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     rayDesc.TMax = 10000.0;
     
     UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
+    rayFlags = RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     TraceRay(
         g_scene,
         rayFlags, 
@@ -236,12 +237,14 @@ void CalculateSpecularAndReflectionCoefficients(
     if(metallic > 0.f)
     {
         Kr = Ks;
+        Kr = Ks * (1.0 - roughness) + Albedo * roughness *(1.0 - Ks);
     }
     else
     {
         //float3 diffuseReflection = Albedo * (1.0f - Ks);
         //Kr = diffuseReflection * (1.f - metallic) + Ks * metallic;
         Kr = Ks * (1.0 - roughness);
+        Kr = Ks * (1.0 - roughness) + Albedo * roughness *(1.0 - Ks);
     }
 }
 
@@ -263,21 +266,25 @@ float3 Shade(
 
     if(!l_materialInfo.bUseMetallicMap)
     {
-        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //metallic = l_materialInfo.metallicFactor;
+        metallic = 0;
+
     }
     else
     {
-        metallic = l_materialInfo.metallicFactor;
+        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     
     float roughness;
     if(!l_materialInfo.bUseRoughnessMap)
     {
-        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //roughness = l_materialInfo.roughnessFactor;
+        roughness = 1;
     }
     else
     {
-        roughness = l_materialInfo.roughnessFactor;
+        roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
     }
 
 

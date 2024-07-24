@@ -4,7 +4,7 @@
 
 Truth::EditorCamera::EditorCamera(Managers* _managers)
 	: m_camera(nullptr)
-	, m_speed(300.0f)
+	, m_speed(50.0f)
 	, m_managers(_managers)
 {
 	m_camera = m_managers->Graphics()->CreateCamera();
