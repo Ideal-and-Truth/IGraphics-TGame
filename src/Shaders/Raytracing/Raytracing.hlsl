@@ -238,23 +238,18 @@ void CalculateSpecularAndReflectionCoefficients(
     
     // Calculate Ks using the Fresnel function
     Ks = BxDF::Fresnel(F0, cos_theta);
-    
-    // For metallic materials, Kr is same as Ks
-    if(metallic > 0.f)
-    {
-        Kr = Ks;
-        //Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
-        //Kr = Ks * (1.0 - roughness);
-        //Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
-    }
-    else
-    {
-        //float3 diffuseReflection = Albedo * (1.0f - Ks);
-        //Kr = diffuseReflection * (1.f - metallic) + Ks * metallic;
-
-        //Kr = Ks * (1.0 - roughness);
-        Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
-    }
+    Kr = Ks * (1.0 - roughness);
+    //if(!any(metallic)) metallic = 0.04f;
+    //// For metallic materials, Kr is same as Ks
+    //if(metallic > 0.f)
+    //{
+    //    //Kr = Ks;
+    //    Kr = Ks * (1.0 - roughness);
+    //}
+    //else
+    //{
+    //    Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
+    //}
     Ks = saturate(Ks);
     Kr = saturate(Kr);
 }
@@ -284,6 +279,7 @@ float3 Shade(
     {
         metallic = l_materialInfo.metallicFactor;
         metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //metallic = 1;
     }
     
     float roughness;
@@ -296,6 +292,7 @@ float3 Shade(
     {
         roughness = l_materialInfo.roughnessFactor;
         roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //roughness = 1;
     }
 
 
