@@ -711,12 +711,12 @@ void EditorUI::DisplayComponent(std::shared_ptr<Truth::Component> _component)
 			isSelect |= p->DisplayUI(_component.get(), "##" + std::to_string(_component->m_ID));
 		}
 	}
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (isSelect)
 	{
 		_component->EditorSetValue();
 	}
-#endif // _DEBUG
+#endif // EDITOR_MODE
 }
 
 void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)

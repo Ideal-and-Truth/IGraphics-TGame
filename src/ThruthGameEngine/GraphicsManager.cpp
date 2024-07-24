@@ -4,9 +4,9 @@
 #include "imgui.h"
 #include "Camera.h"
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 #include "EditorCamera.h"
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 
 /// <summary>
@@ -37,10 +37,9 @@ Truth::GraphicsManager::~GraphicsManager()
 void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height)
 {
 	// Editor mode & Release mode
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	m_renderer = CreateRenderer(
 		EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR,
-		//EGraphicsInterfaceType::D3D12_EDITOR,
 		&_hwnd,
 		_wight,
 		_height,
@@ -50,7 +49,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	);
 #else
 	m_renderer = CreateRenderer(
-		EGraphicsInterfaceType::D3D12,
+		EGraphicsInterfaceType::D3D12_RAYTRACING,
 		&_hwnd,
 		_wight,
 		_height,
@@ -58,7 +57,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 		m_assetPath[1],
 		m_assetPath[2]
 	);
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 	
 	m_renderer->Init();
@@ -79,12 +78,12 @@ void Truth::GraphicsManager::Finalize()
 /// </summary>
 void Truth::GraphicsManager::Render()
 {
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	m_renderer->Render();
 #else
 	CompleteCamera();
 	m_renderer->Render();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 }
 
 
@@ -171,13 +170,13 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 	m_mainCamera = _camera;
 }
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 {
 	m_renderer->SetMainCamera(_camera->m_camera);
 	// m_mainCamera = _camera;
 }
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 void Truth::GraphicsManager::CompleteCamera()
 {

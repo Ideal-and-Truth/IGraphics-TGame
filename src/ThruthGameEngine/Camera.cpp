@@ -105,9 +105,9 @@ void Truth::Camera::CompleteCamera()
 	m_camera->SetLook(m_look);
 }
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 void Truth::Camera::EditorSetValue()
 {
 	m_camera->SetLens(m_fov, m_aspect, m_nearZ, m_farZ);
 }
-#endif // _DEBUG
+#endif // EDITOR_MODE

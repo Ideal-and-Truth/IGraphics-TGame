@@ -231,7 +231,6 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 	}
 	m_skyBoxTexture.reset();
 
-#ifdef _DEBUG
 	if (m_isEditor)
 	{
 		m_imguiSRVHandle.Free();
@@ -242,7 +241,6 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 	}
-#endif
 
 	m_resourceManager = nullptr;
 }
@@ -382,7 +380,6 @@ finishAdapter:
 
 
 	//---------------Editor---------------//
-#ifdef _DEBUG
 	if (m_isEditor)
 	{
 		//------ImGuiSRVHeap------//
@@ -396,7 +393,6 @@ finishAdapter:
 		CreateEditorRTV(m_width, m_height);
 		InitImGui();
 	}
-#endif
 	m_sceneCB.CameraPos = Vector4(0.f);
 
 	m_sceneCB.lightPos = Vector4(3.f, 1.8f, -3.f, 0.f);
@@ -477,7 +473,6 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 	CopyRaytracingOutputToBackBuffer();
 
-#ifdef _DEBUG
 	if (m_isEditor)
 	{
 		ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
@@ -513,10 +508,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
 		DrawImGuiMainCamera();
 	}
-#endif
 
 	//---------------------Editor-------------------------//
-#ifdef _DEBUG
 	if (m_isEditor)
 	{
 		ImGuiIO& io = ImGui::GetIO();
@@ -535,7 +528,6 @@ void Ideal::D3D12RayTracingRenderer::Render()
 			ImGui::RenderPlatformWindowsDefault(nullptr, (void*)commandList.Get());
 		}
 	}
-#endif
 
 	//---------------------Present-------------------------//
 	EndRender();
@@ -759,7 +751,6 @@ bool Ideal::D3D12RayTracingRenderer::SetImGuiWin32WndProcHandler(HWND hWnd, UINT
 
 void Ideal::D3D12RayTracingRenderer::ClearImGui()
 {
-#ifdef _DEBUG
 	if (m_isEditor)
 	{
 		ImGui_ImplDX12_NewFrame();
@@ -767,7 +758,6 @@ void Ideal::D3D12RayTracingRenderer::ClearImGui()
 		ImGui::NewFrame();
 		ImGui::DockSpaceOverViewport();
 	}
-#endif
 }
 
 void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)

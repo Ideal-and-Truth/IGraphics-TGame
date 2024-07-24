@@ -29,11 +29,11 @@ namespace Truth
 
 		std::unique_ptr<ComponentFactory> m_componentFactory;
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		bool m_isEdit = true;
 	private:
 		std::shared_ptr<EditorCamera> m_editorCamera;
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 	public:
 		Managers();
@@ -49,10 +49,10 @@ namespace Truth
 		void Finalize();
 
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		void EditToGame();
 		void GameToEdit();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 
 

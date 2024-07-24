@@ -45,9 +45,9 @@ namespace Truth
 		METHOD(ApplyTransform);
 		void ApplyTransform();
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		virtual void EditorSetValue();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 	};
 

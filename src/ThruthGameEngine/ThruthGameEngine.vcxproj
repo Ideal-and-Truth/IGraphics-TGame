@@ -169,16 +169,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Libraries\Debuglib\GameEngine\</OutDir>
     <IntDir>..\Libraries\Debuglib\GameEngine\</IntDir>
+    <LibraryPath>$(SolutionDir)vcpkg_installed\x64-windows\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Libraries\ReleaseLib\GameEngine\</OutDir>
     <IntDir>..\Libraries\Debuglib\GameEngine\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
     <VcpkgEnabled>true</VcpkgEnabled>
     <VcpkgManifestInstall>true</VcpkgManifestInstall>
     <VcpkgAutoLink>true</VcpkgAutoLink>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgConfiguration>Release</VcpkgConfiguration>
+    <VcpkgInstalledDir>$(SolutionDir)vcpkg_installed\</VcpkgInstalledDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -262,7 +267,7 @@
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)Libraries\ReleaseLib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib</AdditionalDependencies>
+      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib;DebugUtils.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

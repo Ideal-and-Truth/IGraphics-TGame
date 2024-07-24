@@ -62,10 +62,10 @@ void Truth::Mesh::DeleteMesh()
 	m_managers.lock()->Graphics()->DeleteMeshObject(m_mesh);
 }
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 void Truth::Mesh::EditorSetValue()
 {
 	SetMesh(m_path);
 }
-#endif // _DEBUG
+#endif // EDITOR_MODE
 

@@ -79,7 +79,7 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 	{
 		DeleteEntity(child);
 	}
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (m_managers.lock()->m_isEdit)
 	{
 		_p->Destroy();
@@ -93,7 +93,7 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 	}
 #else
 	m_beginDestroy.push(_p);
-#endif // _DEBUG
+#endif // EDITOR_MODE
 }
 
 /// <summary>
@@ -143,7 +143,7 @@ std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
 	return std::weak_ptr<Entity>();
 }
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 void Truth::Scene::EditorUpdate()
 {
 	m_rootEntities.clear();
@@ -155,7 +155,7 @@ void Truth::Scene::EditorUpdate()
 		}
 	}
 }
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 /// <summary>
 /// ¾À ¾÷µ¥ÀÌÆ®
@@ -184,9 +184,9 @@ void Truth::Scene::Update()
 		auto& e = m_awakedEntity.front();
 		e->m_index = static_cast<int32>(m_entities.size());
 		m_entities.push_back(e);
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		m_rootEntities.push_back(e);
-#endif // _DEBUG
+#endif // EDITOR_MODE
 		m_startedEntity.push(e);
 		e->Awake();
 		m_awakedEntity.pop();
@@ -303,7 +303,7 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 {
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
 
-	// m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
+	m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
 
 	m_navMesh = std::make_shared<NavMeshGenerater>();
 	m_navMesh->Initalize(mapPath + L"Data.map");

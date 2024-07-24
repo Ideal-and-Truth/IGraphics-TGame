@@ -153,10 +153,10 @@ void Truth::SkinnedMesh::DeleteMesh()
 	m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
 }
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 void Truth::SkinnedMesh::EditorSetValue()
 {
 	SetSkinnedMesh(m_path);
 }
-#endif // _DEBUG
+#endif // EDITOR_MODE
 

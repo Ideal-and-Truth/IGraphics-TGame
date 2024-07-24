@@ -23,10 +23,10 @@ void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
 	CreateManagers();
 	InitlizeManagers(_hwnd, _width, _height);
 	m_componentFactory = std::make_unique<ComponentFactory>();
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	m_editorCamera = std::make_shared<EditorCamera>(this);
 	m_editorCamera->SetMainCamera();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 }
 
 void Truth::Managers::Update() const
@@ -34,7 +34,7 @@ void Truth::Managers::Update() const
 	m_inputManager->Update();
 	m_timeManager->Update();
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (!m_isEdit)
 	{
 		m_physXManager->Update();
@@ -51,13 +51,13 @@ void Truth::Managers::Update() const
 	m_physXManager->Update();
 	m_sceneManager->Update();
 	m_eventManager->Update();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 }
 
 void Truth::Managers::LateUpdate() const
 {
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (!m_isEdit)
 	{
 		m_sceneManager->LateUpdate();
@@ -66,7 +66,7 @@ void Truth::Managers::LateUpdate() const
 #else
 	m_sceneManager->LateUpdate();
 	m_eventManager->LateUpdate();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 }
 
 void Truth::Managers::FixedUpdate() const
@@ -80,7 +80,7 @@ void Truth::Managers::Render() const
 {
 	m_sceneManager->ApplyTransform();
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (m_isEdit)
 	{
 		m_graphicsManager->Render();
@@ -92,7 +92,7 @@ void Truth::Managers::Render() const
 	}
 #else
 	m_graphicsManager->Render();
-#endif // DEBUG
+#endif // EDITOR_MODE
 }
 
 void Truth::Managers::Finalize()
@@ -117,7 +117,7 @@ void Truth::Managers::Finalize()
 }
 
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 void Truth::Managers::EditToGame()
 {
 	if (!m_isEdit)
@@ -141,7 +141,7 @@ void Truth::Managers::GameToEdit()
 	m_isEdit = true;
 	m_inputManager->m_fpsMode = false;
 }
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 void Truth::Managers::CreateManagers()
 {
