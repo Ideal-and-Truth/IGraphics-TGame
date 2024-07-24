@@ -303,7 +303,7 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 {
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
 
-	m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
+	// m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
 
 	m_navMesh = std::make_shared<NavMeshGenerater>();
 	m_navMesh->Initalize(mapPath + L"Data.map");

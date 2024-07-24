@@ -139,7 +139,7 @@ namespace Truth
 		const Vector3& GetScale() const;
 
 		const Matrix& GetWorldTM() const;
-		void SetWorldTM(const Matrix& _tm);
+		void SetLocalTM(const Matrix& _tm);
 
 		void AddEmptyEntity();
 		void AddEntity(std::shared_ptr<Entity> _entity);

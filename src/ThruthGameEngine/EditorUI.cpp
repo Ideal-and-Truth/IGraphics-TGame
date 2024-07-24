@@ -210,7 +210,7 @@ void EditorUI::ShowInspectorWindow(bool* p_open)
 
 		while (!m_deletedComponent.empty())
 		{
-			auto t = m_deletedComponent.front();
+			auto& t = m_deletedComponent.front();
 			t.first.lock()->DeleteComponent(t.second);
 			m_deletedComponent.pop();
 		}
@@ -395,6 +395,8 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	const auto& currentSceneEntities = currentScene->m_entities;
 
 	ImGui::BeginMainMenuBar();
+	ImGui::Text("\t\t\t\t\t\t\t");
+
 	ImGui::Button("Menu");
 
 	static bool newScene = false;
