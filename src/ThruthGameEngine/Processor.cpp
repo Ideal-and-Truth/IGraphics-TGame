@@ -59,8 +59,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	std::string buffer = "Type:Mesh->Sprite__3_0";
 // 	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
 // 	int64 temp = static_cast<int64>(hash);
-	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
-	// up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
+// 	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
+// 	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }

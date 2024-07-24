@@ -3,13 +3,12 @@
 #include "Camera.h"
 #include "Controller.h"
 #include "Player.h"
+#include "PlayerAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 
 PlayerController::PlayerController()
-	: m_camera(nullptr)
-	, m_controller(nullptr)
-	, m_forwardInput(0.f)
+	: m_forwardInput(0.f)
 	, m_sideInput(0.f)
 	, m_attackInput(0.f)
 {
@@ -28,18 +27,10 @@ void PlayerController::Awake()
 
 void PlayerController::Start()
 {
-	std::vector<std::shared_ptr<Truth::Entity>> entities = m_managers.lock()->Scene()->m_currentScene->GetTypeInfo().GetProperty("entities")->Get<std::vector<std::shared_ptr<Truth::Entity>>>(m_managers.lock()->Scene()->m_currentScene.get()).Get();
+	m_camera = m_managers.lock()->Scene()->m_currentScene->FindEntity("ThirdPersonCamera");
 
-	for (auto& e : entities)
-	{
-		if (e.get()->m_name == "ThirdPersonCamera")
-		{
-			m_camera = e;
-		}
-	}
-
-	m_controller= m_owner.lock().get()->GetComponent<Truth::Controller>().lock();
-	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
+	m_controller = m_owner.lock().get()->GetComponent<Truth::Controller>();
+	m_player = m_owner.lock().get()->GetComponent<Player>();
 
 	// 플레이어 이동 이벤트 (이벤트함수 베이스)
 	//EventBind("PlayerWalk", &PlayerController::PlayerMove);
@@ -56,9 +47,9 @@ void PlayerController::Update()
 void PlayerController::PlayerMove(const void*)
 {
 	// 플레이어 이동
-	Vector3 cameraPos = m_camera->m_transform->m_position;
+	Vector3 cameraPos = m_camera.lock()->m_transform->m_position;
 
-	float playerSpeed = m_player.get()->GetTypeInfo().GetProperty("speed")->Get<float4>(m_player.get()).Get();
+	float playerSpeed = m_player.lock().get()->GetTypeInfo().GetProperty("moveSpeed")->Get<float4>(m_player.lock().get()).Get();
 
 	if (GetKey(KEY::LSHIFT))
 	{
@@ -74,6 +65,14 @@ void PlayerController::PlayerMove(const void*)
 
 
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
+
+	bool isAttacking = m_owner.lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_owner.lock()->GetComponent<PlayerAnimator>().lock().get()).Get();
+
+
+	if (isAttacking)
+	{
+		return;
+	}
 
 	if (GetKey(KEY::W))
 	{
@@ -111,21 +110,15 @@ void PlayerController::PlayerMove(const void*)
 	}
 
 	/// TODO : 피직스 컨트롤러에 적용하고 트랜스폼을 리기드 바디로 사용해야함
+
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
-	// m_controller->Move(disp);
 	Vector3 disp2 = right * m_sideInput * playerSpeed;
-	// m_controller->Move(disp2);
 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f) * GetDeltaTime();
-
 	Vector3 finalMovement = disp + disp2 + gravity;
+	m_controller.lock()->Move(finalMovement);
 
-	m_controller->Move(finalMovement);
-
-// 	m_owner.lock()->m_transform->m_position += direction * m_forwardInput * playerSpeed;
-// 	m_owner.lock()->m_transform->m_position += right * m_sideInput * playerSpeed;
 
 	// 플레이어 회전
-	Vector3 upVec = { 0,1,0 };
 	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
 	m_faceDirection = { playerDir.x ,0, playerDir.z };
 	if (m_faceDirection == Vector3::Zero)
@@ -133,8 +126,8 @@ void PlayerController::PlayerMove(const void*)
 		return;
 	}
 	Quaternion lookRot;
-	Quaternion::LookRotation(m_faceDirection, upVec, lookRot);
-	auto lookRotationDampFactor = m_player.get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float4>(m_player.get()).Get();
+	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
+	auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float4>(m_player.lock().get()).Get();
 	m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
 }
 

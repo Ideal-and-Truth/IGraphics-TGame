@@ -168,6 +168,13 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UAV.h" />
     <ClInclude Include="GraphicsEngine\D3D12\DeferredDeleteManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
+    <ClInclude Include="Editor\imguizmo\GraphEditor.h" />
+    <ClInclude Include="Editor\imguizmo\ImApp.h" />
+    <ClInclude Include="Editor\imguizmo\ImCurveEdit.h" />
+    <ClInclude Include="Editor\imguizmo\ImGradient.h" />
+    <ClInclude Include="Editor\imguizmo\ImGuizmo.h" />
+    <ClInclude Include="Editor\imguizmo\ImSequencer.h" />
+    <ClInclude Include="Editor\imguizmo\ImZoomSlider.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -259,6 +266,11 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UAV.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\DeferredDeleteManager.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
+    <ClCompile Include="Editor\imguizmo\GraphEditor.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImGradient.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImGuizmo.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImSequencer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

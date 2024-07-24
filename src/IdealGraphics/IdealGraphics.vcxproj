@@ -174,6 +174,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Editor\imguizmo\GraphEditor.h" />
+    <ClInclude Include="Editor\imguizmo\ImApp.h" />
+    <ClInclude Include="Editor\imguizmo\ImCurveEdit.h" />
+    <ClInclude Include="Editor\imguizmo\ImGradient.h" />
+    <ClInclude Include="Editor\imguizmo\ImGuizmo.h" />
+    <ClInclude Include="Editor\imguizmo\ImSequencer.h" />
+    <ClInclude Include="Editor\imguizmo\ImZoomSlider.h" />
     <ClInclude Include="GraphicsEngine\D3D12\DeferredDeleteManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UAV.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorManager.h" />
@@ -274,6 +281,11 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Editor\imguizmo\GraphEditor.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImGradient.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImGuizmo.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImSequencer.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\DeferredDeleteManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UAV.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorManager.cpp" />

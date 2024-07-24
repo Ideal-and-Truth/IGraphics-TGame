@@ -2,6 +2,8 @@
 #include "Component.h"
 #include "Collider.h"
 
+class PlayerAnimator;
+class Player;
 
 class MeleeWeapon :
 	public Truth::Component
@@ -14,6 +16,12 @@ private:
 
 private:
 	std::shared_ptr<Truth::Collider> m_collider;
+	std::shared_ptr<PlayerAnimator> m_playerAnimator;
+	std::shared_ptr<Player> m_player;
+
+	std::vector<std::shared_ptr<Truth::Entity>> m_onHitEnemys;
+
+	bool m_isAttacking;
 
 public:
 	MeleeWeapon();
@@ -27,6 +35,12 @@ public:
 
 	METHOD(Update);
 	void Update();
+
+	METHOD(OnTriggerEnter);
+	void OnTriggerEnter(Truth::Collider* _other);
+
+	METHOD(OnTriggerExit);
+	void OnTriggerExit(Truth::Collider* _other);
 };
 
 template<class Archive>

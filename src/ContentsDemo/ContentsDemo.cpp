@@ -97,8 +97,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	gRenderer->SetMainCamera(camera);
 
 	//-------------------Create Scene-------------------//
-	std::shared_ptr<Ideal::IRenderScene> renderScene = gRenderer->CreateRenderScene();
-	gRenderer->SetRenderScene(renderScene);
+// 	std::shared_ptr<Ideal::IRenderScene> renderScene = gRenderer->CreateRenderScene();
+// 	gRenderer->SetRenderScene(renderScene);
 
 	// 기본 메시지 루프입니다:
 	while (msg.message != WM_QUIT)

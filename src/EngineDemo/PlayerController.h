@@ -19,17 +19,21 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	std::shared_ptr<Truth::Entity> m_camera;
-	std::shared_ptr<Truth::Controller> m_controller;
-	std::shared_ptr<Player> m_player;
+	std::weak_ptr<Truth::Entity> m_camera;
+	std::weak_ptr<Truth::Controller> m_controller;
+	std::weak_ptr<Player> m_player;
 
-	float4 m_forwardInput;
-	float4 m_sideInput;
+	PROPERTY(forwardInput);
+	float m_forwardInput;
+	PROPERTY(sideInput);
+	float m_sideInput;
 
 	float4 m_attackInput;
 
 	Vector3 m_faceDirection;
 
+	PROPERTY(angle);
+	Vector3 m_angle;
 public:
 	PlayerController();
 	virtual ~PlayerController();

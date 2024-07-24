@@ -31,6 +31,9 @@
     <Filter Include="Component\Bullet">
       <UniqueIdentifier>{8a6966f1-adc0-47d9-8eaa-1a998d8e63ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\BulletSpowner">
+      <UniqueIdentifier>{7bdae6a6-f93c-4e5d-9fef-b4e72e114ab3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Component\DebugComponent">
       <UniqueIdentifier>{efe874c3-c70a-4af3-ad04-09ed6df054f7}</UniqueIdentifier>
     </Filter>
@@ -46,17 +49,8 @@
     <Filter Include="Component\Enemy">
       <UniqueIdentifier>{e864a2a5-287c-447b-8b00-aa05e9901fee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\StateMachine">
-      <UniqueIdentifier>{cacbf6e2-7b44-4cb6-9461-0d41859c7a3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Player\PlayerState">
-      <UniqueIdentifier>{05865445-d2b9-4210-848d-4a67bab7bfd6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\BattleSystem\Weapon">
       <UniqueIdentifier>{9444ff9b-e7ce-4eb5-a751-7b11655795bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Entity\Folloer">
-      <UniqueIdentifier>{7bdae6a6-f93c-4e5d-9fef-b4e72e114ab3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -90,17 +84,8 @@
     <ClInclude Include="ComponentBase.h">
       <Filter>Component\DebugComponent</Filter>
     </ClInclude>
-    <ClInclude Include="Damageable.h">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="StateMachine.h">
-      <Filter>Component\StateMachine</Filter>
-    </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Component\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="MeleeTriggerEnterDamager.h">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
     <ClInclude Include="PlayerController.h">
       <Filter>Component\Player</Filter>
@@ -108,17 +93,20 @@
     <ClInclude Include="PlayerCamera.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerStateMachine.h">
-      <Filter>Component\Player\PlayerState</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerAnimator.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
     <ClInclude Include="MeleeWeapon.h">
       <Filter>Component\BattleSystem\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="TestFollwer.h">
-      <Filter>Entity\Folloer</Filter>
+    <ClInclude Include="DamageSystem.h">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatZone.h">
+      <Filter>Component\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyController.h">
+      <Filter>Component\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -143,17 +131,8 @@
     <ClCompile Include="ComponentBase.cpp">
       <Filter>Component\DebugComponent</Filter>
     </ClCompile>
-    <ClCompile Include="Damageable.cpp">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="StateMachine.cpp">
-      <Filter>Component\StateMachine</Filter>
-    </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Component\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="MeleeTriggerEnterDamager.cpp">
-      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
       <Filter>Component\Player</Filter>
@@ -161,17 +140,20 @@
     <ClCompile Include="PlayerCamera.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerStateMachine.cpp">
-      <Filter>Component\Player\PlayerState</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerAnimator.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
     <ClCompile Include="MeleeWeapon.cpp">
       <Filter>Component\BattleSystem\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="TestFollwer.cpp">
-      <Filter>Entity\Folloer</Filter>
+    <ClCompile Include="DamageSystem.cpp">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatZone.cpp">
+      <Filter>Component\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyController.cpp">
+      <Filter>Component\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

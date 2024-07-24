@@ -34,14 +34,14 @@ namespace Truth
 	public:
 		PROPERTY(name);
 		std::string m_name;
-		
+
 		std::wstring m_mapPath;
 
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
 
-	private:
+	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
 		EntityVector m_entities;

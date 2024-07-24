@@ -29,6 +29,7 @@
 
 #include "SkinnedMesh.h"
 #include "Light.h"
+#include "Animator.h"
 
 #include "Controller.h"
 
@@ -83,7 +84,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 	processor->SaveScene(testScene);
 
 	///...///
- 	processor->LoadScene(L"../Scene/ParsingTest.scene");
+ 	//processor->LoadScene(L"../Scene/localTest.scene");
+ 	processor->LoadScene(L"../Scene/test.scene");
+
+ 	//processor->LoadScene(L"../Scene/navMeshTest.scene");
+
 
  	//processor->LoadScene(L"../Scene/ControllerTest.scene");
 
