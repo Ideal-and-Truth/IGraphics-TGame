@@ -29,7 +29,7 @@ void TestFollwer::Update()
 		dir.y = 0.0f;
 		dir.Normalize(dir);
 		dir.y = -100.0f;
-		dir *= GetDeltaTime() * 10;
+		dir *= GetDeltaTime() * 30;
 		m_controller.lock()->Move(dir);
 	}
 }

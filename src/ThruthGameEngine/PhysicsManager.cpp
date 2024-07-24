@@ -124,8 +124,7 @@ void Truth::PhysicsManager::FixedUpdate()
 
 				if (rigidbody->IsController())
 				{
-					auto& p = rigidbody->GetController()->getPosition();
-					pos = MathConverter::Convert(rigidbody->GetController()->getPosition());
+					pos = MathConverter::Convert(rigidbody->GetController()->getFootPosition());
 					rot = rigidbody->GetRotation();
 				}
 				else

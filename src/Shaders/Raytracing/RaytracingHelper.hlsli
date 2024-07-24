@@ -32,13 +32,10 @@ namespace BxDF
                 float multi = 0.3641 * a; // 0.3641 = PI * 0.1159
 
                 diffuse = Albedo * (single + Albedo * multi);
-                
-
             }
             return diffuse;
         }
     }
-    
     // Fresnel reflectance - schlick approximation.
     float3 Fresnel(in float3 F0, in float cos_thetai)
     {
@@ -161,7 +158,8 @@ float3 BumpMapNormalToWorldSpaceNormal(float3 bumpNormal, float3 surfaceNormal, 
     float3x3 tangentSpaceToWorldSpace = float3x3(tangent, bitangent, surfaceNormal);
 
     //return mul(bumpNormal, tangentSpaceToWorldSpace);
-    return normalize(mul(bumpNormal, tangentSpaceToWorldSpace));
+    //return normalize(mul(bumpNormal, tangentSpaceToWorldSpace));
+    return mul(bumpNormal, tangentSpaceToWorldSpace);
 }
 
 
