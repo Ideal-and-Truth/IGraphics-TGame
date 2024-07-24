@@ -2,7 +2,7 @@
 <Materials>
     <Material>
         <Name>hair1</Name>
-        <DiffuseFile>Hair_BaseColor_Ash.tga</DiffuseFile>
+        <DiffuseFile>DefaultWhite.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -17,7 +17,7 @@
     </Material>
     <Material>
         <Name>EyesCornea1</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>DefaultWhite.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -28,11 +28,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>Eyes1</Name>
-        <DiffuseFile>Eyes_BaseColor_01.tga</DiffuseFile>
+        <DiffuseFile>DefaultWhite.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -47,7 +47,7 @@
     </Material>
     <Material>
         <Name>body1</Name>
-        <DiffuseFile>Body_BaseColor.tga</DiffuseFile>
+        <DiffuseFile>DefaultWhite.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -62,7 +62,7 @@
     </Material>
     <Material>
         <Name>face</Name>
-        <DiffuseFile>Head_BaseColor.tga</DiffuseFile>
+        <DiffuseFile>DefaultWhite.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
