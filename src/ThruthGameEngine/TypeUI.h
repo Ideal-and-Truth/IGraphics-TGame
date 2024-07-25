@@ -9,6 +9,9 @@
 #include "imgui.h"
 #include <atlconv.h>
 
+#define PI 3.1415926
+#define RadToDeg 57.29577951f
+#define DegToRad 0.017453293f
 
 using namespace DirectX::SimpleMath;
 
@@ -92,18 +95,24 @@ namespace TypeUI
 		else if constexpr (std::is_same_v<T, Quaternion>)
 		{
 			float value[3] = {};
+			
+			Vector3 delta;
+
 			Vector3 temp = _val.ToEuler();
 			value[0] = temp.x;
 			value[1] = temp.y;
 			value[2] = temp.z;
+
 			bool isSelect = ImGui::DragFloat3(_name, value, 0.01f);
 			if (isSelect)
 			{
-				temp.x = value[0];
-				temp.y = value[1];
-				temp.z = value[2];
+				delta = {
+					temp.x - value[0],
+					temp.y - value[1],
+					temp.z - value[2]
+				};
 			}
-			_val = Quaternion::CreateFromYawPitchRoll(temp);
+			_val = _val * Quaternion::CreateFromYawPitchRoll(delta);
 			return isSelect;
 		}
 
