@@ -55,14 +55,14 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 	m_skinnedMesh = m_managers.lock()->Graphics()->CreateSkinnedMesh(_path);
 }
 
-void Truth::SkinnedMesh::AddAnimation(std::string _name, std::wstring _path)
+void Truth::SkinnedMesh::AddAnimation(std::string _name, std::wstring _path, const Matrix& _offset /*= Matrix::Identity*/)
 {
 	if (m_animation != nullptr)
 	{
 		m_animation.reset();
 	}
 
-	m_animation = m_managers.lock()->Graphics()->CreateAnimation(_path);
+	m_animation = m_managers.lock()->Graphics()->CreateAnimation(_path, _offset);
 
 	if (m_skinnedMesh != nullptr)
 	{

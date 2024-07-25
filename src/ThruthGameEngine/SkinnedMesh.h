@@ -49,7 +49,7 @@ namespace Truth
 		virtual ~SkinnedMesh();
 
 		void SetSkinnedMesh(std::wstring _path);
-		void AddAnimation(std::string _name, std::wstring _path);
+		void AddAnimation(std::string _name, std::wstring _path, const Matrix& _offset = Matrix::Identity);
 		void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 		void SetAnimationSpeed(float Speed);
 		void SetPlayStop(bool playStop);

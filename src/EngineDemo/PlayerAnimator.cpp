@@ -50,7 +50,13 @@ void PlayerAnimator::Start()
 	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 
 	m_skinnedMesh->AddAnimation("Idle", L"PlayerAnimations1/Idle/Idle");
-	m_skinnedMesh->AddAnimation("Walk", L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk");
+	// m_skinnedMesh->AddAnimation("Walk", L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk");
+	
+	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3{ 1.5f, 0.0f, 0.0f });
+	Matrix t = Matrix::CreateFromQuaternion(q);
+	t *= Matrix::CreateTranslation(Vector3{ 0.0f, 0.02f, 0.0f });
+	
+	m_skinnedMesh->AddAnimation("Walk", L"test2/testWalk2", t);
 	m_skinnedMesh->AddAnimation("Run", L"PlayerAnimations1/Move/Run/Sword And Shield Run");
 	m_skinnedMesh->AddAnimation("NormalAttack1", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1");
 	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2");

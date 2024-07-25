@@ -115,7 +115,7 @@ namespace Ideal
 		// 작동 안함 // 그냥 mesh object 반환
 		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
 
-		std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
+		std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName, const Matrix& offset = Matrix::Identity) override;
 		std::shared_ptr<Ideal::IRenderScene> CreateRenderScene();
 		void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene);
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight() override;

@@ -632,10 +632,10 @@ std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateDebugM
 	return CreateStaticMeshObject(FileName);
 }
 
-std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimation(const std::wstring& FileName)
+std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimation(const std::wstring& FileName, const Matrix& offset /*= Matrix::Identity*/)
 {
 	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
-	m_resourceManager->CreateAnimation(newAnimation, FileName);
+	m_resourceManager->CreateAnimation(newAnimation, FileName, offset);
 
 	return newAnimation;
 }

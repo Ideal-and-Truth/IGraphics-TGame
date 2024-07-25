@@ -1062,7 +1062,7 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 	m_dynamicMeshes[key] = skinnedMesh;
 }
 
-void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename)
+void Ideal::ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename, const Matrix& offset /*= Matrix::Identity*/)
 {
 	std::string key = StringUtils::ConvertWStringToString(filename);
 	std::shared_ptr<Ideal::IdealAnimation> animation = m_animations[key];
@@ -1163,6 +1163,10 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 				if (parentIndex >= 0)
 				{
 					matParent = tempAnimBoneTransforms[parentIndex];
+				}
+				else
+				{
+					matParent = offset;
 				}
 
 				tempAnimBoneTransforms[boneIdx] = matAnimation * matParent;

@@ -52,6 +52,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+	g_Renderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk2.fbx");// -> Assimp Converter에서 FLAG 해제
 		// g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx");
 
 	Truth::UnityParser up(m_manager->Graphics().get());

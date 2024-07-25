@@ -461,10 +461,10 @@ std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12Renderer::CreateSkinnedMe
 	return newSkinnedMesh;
 }
 
-std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const std::wstring& FileName)
+std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const std::wstring& FileName, const Matrix& _offset)
 {
 	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
-	m_resourceManager->CreateAnimation(newAnimation, FileName);
+	m_resourceManager->CreateAnimation(newAnimation, FileName, _offset);
 
 	return newAnimation;
 }

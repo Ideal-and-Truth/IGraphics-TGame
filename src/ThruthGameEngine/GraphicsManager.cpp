@@ -117,9 +117,9 @@ std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateDebugMeshObjec
 	return m_renderer->CreateDebugMeshObject(_path);
 }
 
-std::shared_ptr<Ideal::IAnimation> Truth::GraphicsManager::CreateAnimation(std::wstring _path)
+std::shared_ptr<Ideal::IAnimation> Truth::GraphicsManager::CreateAnimation(std::wstring _path, const Matrix& _offset /*= Matrix::Identity*/)
 {
-	return m_renderer->CreateAnimation(_path);
+	return m_renderer->CreateAnimation(_path, _offset);
 }
 
 std::shared_ptr<Ideal::IDirectionalLight> Truth::GraphicsManager::CreateDirectionalLight()
