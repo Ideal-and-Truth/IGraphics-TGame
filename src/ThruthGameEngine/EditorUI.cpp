@@ -542,13 +542,6 @@ void EditorUI::ShowMenuBar(bool* p_open)
 /// <summary>
 /// 
 /// </summary>
-/// 
-
-
-
-/// <summary>
-/// 
-/// </summary>
 /// <param name="p_open"></param>
 void EditorUI::ShowAnimator(bool* p_open)
 {

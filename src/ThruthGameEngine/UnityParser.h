@@ -42,6 +42,13 @@ namespace Truth
 			fs::path m_filePath;
 		};
 
+		struct MatarialData
+		{
+			fs::path m_albedo;
+			fs::path m_normal;
+			fs::path m_metalicRoughness;
+		};
+
 		/// <summary>
 		/// unity game object tree
 		/// 이를 기반으로 Entity Tree를 재구성
@@ -66,7 +73,11 @@ namespace Truth
 
 			GameObject* m_parent = nullptr;
 			std::vector<GameObject*> m_children;
+
+			std::vector<MatarialData> m_matarialVector;
 		};
+
+
 
 		uint32 m_meshFilterCount = 0;
 
@@ -97,6 +108,8 @@ namespace Truth
 		const std::wstring m_convertPath = L"MapData/";
 		const std::string m_sconvertPath = "MapData/";
 		
+		std::map<std::string, MatarialData> m_matarialMap;
+
 		GraphicsManager* m_gp;
 
 	public:
@@ -130,6 +143,7 @@ namespace Truth
 		void ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner);
 		void ParseBoxCollider(const YAML::Node& _node, GameObject* _owner);
 		void ParseMeshFilter(const YAML::Node& _node, GameObject* _owner);
+		void ParseMaterial(const YAML::Node& _node);
 
 		Matrix GetPrefabMatrix(const YAML::Node& _node);
 
