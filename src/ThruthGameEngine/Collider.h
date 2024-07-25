@@ -63,9 +63,9 @@ namespace Truth
 
 		bool m_isController;
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		std::shared_ptr<Ideal::IMeshObject> m_debugMesh;
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 	protected:
 
@@ -92,12 +92,12 @@ namespace Truth
 		void OnDisable();
 		void OnEnable();
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		METHOD(ApplyTransform);
 		void ApplyTransform();
 
 		void EditorSetValue();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 	protected:
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);

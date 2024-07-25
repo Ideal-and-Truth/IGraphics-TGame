@@ -71,9 +71,9 @@ namespace Truth
 		virtual void OnTriggerStay() {};
 		virtual void Initalize() {};
 		virtual void ApplyTransform() {};
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		virtual void EditorSetValue() {};
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 
 		void SetOwner(std::weak_ptr<Entity> _val) { m_owner = _val; }

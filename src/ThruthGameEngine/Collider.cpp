@@ -21,9 +21,9 @@ Truth::Collider::Collider(bool _isTrigger /*= true*/)
 	, m_body(nullptr)
 	, m_colliderID(m_colliderIDGenerator++)
 	, m_rigidbody()
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	, m_debugMesh(nullptr)
-#endif // _DEBUG
+#endif // EDITOR_MODE
 	, m_shape()
 	, m_enable(true)
 	, m_isController(false)
@@ -48,9 +48,9 @@ Truth::Collider::Collider(Vector3 _pos, bool _isTrigger /*= true*/)
 	, m_shape()
 	, m_enable(true)
 	, m_isController(false)
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	, m_debugMesh(nullptr)
-#endif // _DEBUG
+#endif // EDITOR_MODE
 {
 	m_size = { 1.0f, 1.0f, 1.0f };
 }
@@ -68,13 +68,13 @@ Truth::Collider::~Collider()
 		m_collider = nullptr;
 	}
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (m_debugMesh != nullptr)
 	{
 		m_managers.lock()->Graphics()->DeleteDebugMeshObject(m_debugMesh);
 		m_debugMesh = nullptr;
 	}
-#endif // _DEBUG
+#endif // EDITOR_MODE
 }
 
 /// <summary>
@@ -89,13 +89,13 @@ void Truth::Collider::Destroy()
 		m_body->detachShape(*m_collider);
 	}
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 // 	if (m_debugMesh != nullptr)
 // 	{
 // 		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
 // 		m_debugMesh = nullptr;
 // 	}
-#endif // _DEBUG
+#endif // EDITOR_MODE
 }
 
 /// <summary>
@@ -214,7 +214,7 @@ void Truth::Collider::OnEnable()
 	m_body->attachShape(*m_collider);
 }
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 /// <summary>
 /// 디버깅 매쉬를 그리기 위한 함수
 /// </summary>
@@ -243,7 +243,7 @@ void Truth::Collider::EditorSetValue()
 		OnEnable();
 	}
 }
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 /// <summary>
 /// 콜라이더를 physx를 통해 생성한다
@@ -283,7 +283,7 @@ physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
 /// <param name="_path">디버깅 매쉬경로</param>
 void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 {
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	switch (m_shape)
 	{
 	case Truth::ColliderShape::BOX:
@@ -309,7 +309,7 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 		break;
 	}
 
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 	m_localTM = Matrix::CreateScale(m_size);
 	m_localTM *= Matrix::CreateTranslation(m_center);

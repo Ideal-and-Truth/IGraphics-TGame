@@ -77,9 +77,9 @@ namespace Truth
 		std::weak_ptr<Entity> FindEntity(std::string _name);
 
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		void EditorUpdate();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 		void Update();
 		void FixedUpdate();

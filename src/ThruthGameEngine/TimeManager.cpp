@@ -45,7 +45,7 @@ void Truth::TimeManager::Update()
 		static_cast<float4>(m_frequency.QuadPart);
 
 	// 디버깅시에는 최소 프레임 제한
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (delta > 0.16f)
 	{
 		delta = 0.16f;
@@ -59,7 +59,7 @@ void Truth::TimeManager::Update()
 	// 고정 프레임 시간
 	m_fixedDeltaTime += delta * m_timeScale;
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	if (m_managers.lock()->m_isEdit)
 	{
 		m_fixedDeltaTime = 0.0f;

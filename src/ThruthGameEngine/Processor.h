@@ -3,6 +3,7 @@
 #include "Managers.h"
 #include "SceneManager.h"
 
+
 namespace Truth
 {
 	class Managers;

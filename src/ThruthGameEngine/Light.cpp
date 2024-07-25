@@ -61,7 +61,7 @@ void Truth::Light::ApplyTransform()
 	}
 }
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 void Truth::Light::EditorSetValue()
 {
 	SetLight(m_lightType);

@@ -5,9 +5,9 @@ namespace Truth
 {
 	class Mesh;
 	class Camera;
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 	class EditorCamera;
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 }
 
@@ -52,9 +52,9 @@ namespace Truth
 		void DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> _meshObject);
 
 		void SetMainCamera(Camera* _camera);
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 
 		float GetAspect() const { return m_aspect; }

@@ -43,7 +43,7 @@
 #pragma comment(lib, "../packages/NVIDIA.PhysX.4.1.229882250/installed/x64-windows/lib/PhysXVehicle_static_64.lib")
 #pragma comment(lib, "../packages/NVIDIA.PhysX.4.1.229882250/installed/x64-windows/lib/SceneQuery_static_64.lib")
 #pragma comment(lib, "../packages/NVIDIA.PhysX.4.1.229882250/installed/x64-windows/lib/SimulationController_static_64.lib")
-#endif // DEBUG
+#endif // EDITOR_MODE
 
 namespace Truth
 {

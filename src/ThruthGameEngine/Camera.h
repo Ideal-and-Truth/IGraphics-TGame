@@ -66,9 +66,9 @@ namespace Truth
 
 		void CompleteCamera();
 
-#ifdef _DEBUG
+#ifdef EDITOR_MODE
 		virtual void EditorSetValue();
-#endif // _DEBUG
+#endif // EDITOR_MODE
 
 		METHOD(Start);
 		virtual void Start();
