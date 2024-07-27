@@ -25,7 +25,8 @@ namespace BxDF
 
                 float facing = 0.5 + 0.5 * LoV;
                 float rough = facing * (0.9 - 0.4 * facing) * ((0.5 + NoH) / NoH);
-                float3 smooth = 1.05 * (1 - pow(1 - NoL, 5)) * (1 - pow(1 - NoV, 5));
+                //float3 smooth = 1.05 * (1 - pow(1 - NoL, 5)) * (1 - pow(1 - NoV, 5));
+                float3 smooth = 1.05f * (1 - pow(1 - NoL, 5)) * (1 - pow(1 - NoV, 5));
 
                     // Extract 1 / PI from the single equation since it's ommited in the reflectance function.
                 float3 single = lerp(smooth, rough, a);
@@ -158,13 +159,19 @@ float3 BumpMapNormalToWorldSpaceNormal(float3 bumpNormal, float3 surfaceNormal, 
     float3x3 tangentSpaceToWorldSpace = float3x3(tangent, bitangent, surfaceNormal);
 
     //return mul(bumpNormal, tangentSpaceToWorldSpace);
-    //return normalize(mul(bumpNormal, tangentSpaceToWorldSpace));
-    return mul(bumpNormal, tangentSpaceToWorldSpace);
+    return normalize(mul(bumpNormal, tangentSpaceToWorldSpace));
+    //return mul(bumpNormal, tangentSpaceToWorldSpace);
 }
 
 
 namespace Ideal
 {
+    bool CheckReflect(float3 Kr)
+    {
+        if(Kr.r < 0.05f)
+            return false;
+        return true;
+    }
     float Attenuate(float distance, float range)
     {
         float att = saturate(1.f - (distance * distance / (range * range)));

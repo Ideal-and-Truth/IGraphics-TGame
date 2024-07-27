@@ -89,11 +89,11 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
         vertices[1].tangent,
         vertices[2].tangent
     };
-    tangent = HitAttribute(vertexTangents, attr);
+    tangent = normalize(HitAttribute(vertexTangents, attr));
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
-    float3 ret = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
-    return ret;
+    float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
+    return worldNormal;
 }
 
 RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float bounceContribution = 1, bool cullNonOpaque = false)
@@ -115,7 +115,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     rayDesc.TMax = 10000.0;
     
     UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
-    //rayFlags = RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
+    rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     //UINT rayFlags = 0;
     //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;
     TraceRay(
@@ -238,20 +238,10 @@ void CalculateSpecularAndReflectionCoefficients(
     
     // Calculate Ks using the Fresnel function
     Ks = BxDF::Fresnel(F0, cos_theta);
-    Kr = Ks * (1.0 - roughness);
-    //if(!any(metallic)) metallic = 0.04f;
-    //// For metallic materials, Kr is same as Ks
-    //if(metallic > 0.f)
-    //{
-    //    //Kr = Ks;
-    //    Kr = Ks * (1.0 - roughness);
-    //}
-    //else
-    //{
-    //    Kr = Ks * (1.0 - roughness) + Albedo * roughness * (1.0 - Ks);
-    //}
-    Ks = saturate(Ks);
-    Kr = saturate(Kr);
+    //Ks = roughness;
+    //Kr = Ks * (1.0 - roughness);
+    Kr = 1 - roughness;
+    //Kr = metallic;
 }
 
 float3 Shade(
@@ -264,12 +254,12 @@ float3 Shade(
     float3 V = -WorldRayDirection();
     float3 L = 0;
     
-    const float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).xyz;
+    float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).xyz;
     float3 Ks;
     float3 Kr;
     const float3 Kt;
     float metallic; 
-
+    float roughness;
     if(l_materialInfo.bUseMetallicMap)
     {
         //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
@@ -279,22 +269,26 @@ float3 Shade(
     {
         metallic = l_materialInfo.metallicFactor;
         metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
-        //metallic = 1;
     }
     
-    float roughness;
     if(l_materialInfo.bUseRoughnessMap)
     {
         //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
-        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
+        roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
     }
     else
     {
-        roughness = l_materialInfo.roughnessFactor;
-        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
-        //roughness = 1;
+        //roughness = l_materialInfo.roughnessFactor;
+        roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
     }
-
+    //metallic = 1;
+    //roughness = 0;
+    //metallic = l_materialInfo.metallicFactor;
+    //roughness = l_materialInfo.roughnessFactor;
 
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
 
@@ -319,7 +313,9 @@ float3 Shade(
             float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
             
             float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-            
+            //float3 color = float3(0.3f,0.3f,0.3f);
+            //float3 color = float3(0.5f,0.5f,0.5f);
+            //float3 color = float3(0.f,0.f,0.f);
             bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
             L += Ideal::Light::ComputeDirectionalLight(
             Kd, 
@@ -327,6 +323,10 @@ float3 Shade(
             color, 
             isInShadow, roughness, N, V,
             direction);
+            //if(BxDF::IsBlack(L))
+            //{
+            //    L += 0.4f * Kd;
+            //}
         }
         
         // Point Light
@@ -364,18 +364,19 @@ float3 Shade(
     }
 
     // Temp : 0.4는 임시 값
-    L += 0.4f * Kd;
+    
+    L += 0.2f * Kd;
     
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);
+    //bool isReflective = Ideal::CheckReflect(Kr);
     bool isTransmissive = !BxDF::IsBlack(Kt); // 일단 굴절은 뺄까?
     
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
-    //if(metallic > 0.001f)
     if(isReflective)
     {
-        if(isReflective || (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
+        if(isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
         {
             RayPayload reflectedPayLoad = rayPayload;
             float3 wi = reflect(-V, N);
@@ -509,11 +510,11 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
     }
     //if(l_materialInfo.bUseNormalMap == false)
-    if(l_materialInfo.bUseNormalMap == true)
+    //if(l_materialInfo.bUseNormalMap == true)
     {
         normal = NormalMap(normal, uv, vertexInfo, attr);
     }
-    normal = normalize(normal);
+    //normal = normalize(normal);
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
 }
 
