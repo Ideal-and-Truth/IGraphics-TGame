@@ -106,13 +106,14 @@ struct PointLight
 struct SpotLight
 {
     XMFLOAT4 Color;
-    XMFLOAT4 Direction;
-    XMFLOAT3 Position;
+    XMFLOAT3 Direction;
     float SpotAngle;
+    XMFLOAT3 Position;
     float Range;
     float Intensity;
     float pad0;
     float pad1;
+    float pad2;
 };
 
 struct LightList

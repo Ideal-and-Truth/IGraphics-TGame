@@ -90,7 +90,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 // Test Function
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera);
-void CameraTick(std::shared_ptr<Ideal::ICamera> Camera);
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight = nullptr);
 void ImGuiTest();
 void DirLightAngle(float* x, float* y, float* z);
 void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
@@ -98,6 +98,8 @@ void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> S
 void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
 void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
+void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
+
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
@@ -173,7 +175,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
@@ -313,15 +315,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
 
-		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
+		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		spotLight->SetPosition(Vector3(0.f, 3.f, 3.f));
+		spotLight->SetRange(6.f);
+		spotLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		spotLight->SetIntensity(0.8f);
 
-		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
-		//pointLight->SetPosition(Vector3(0.f, 3.f,3.f));
-		//pointLight->SetRange(6.f);
-		//pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		//pointLight->SetIntensity(0.8f);
+
+		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		pointLight->SetPosition(Vector3(0.f, 3.f, 3.f));
+		pointLight->SetRange(6.f);
+		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		pointLight->SetIntensity(0.8f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -371,7 +378,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					g_FrameCount = 0;
 				}
 
-				CameraTick(camera);
+				CameraTick(camera, spotLight);
 				//pointLight->SetPosition(camera->GetPosition());
 				//auto cp = camera->GetPosition();
 				//auto pp = pointLight->GetPosition();
@@ -534,10 +541,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						{
 							LightTest(dirLight);
 						}
-						//if (pointLight)
-						//{
-						//	PointLightInspecter(pointLight);
-						//}
+						if (pointLight)
+						{
+							PointLightInspecter(pointLight);
+						}
+						if (spotLight)
+						{
+							SpotLightInspector(spotLight);
+						}
 					}
 					//once++;
 					//ImGuiTest();
@@ -678,7 +689,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
 
-void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight /*= nullptr*/)
 {
 	if (!g_CameraMove)
 		return;
@@ -746,6 +757,12 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 	{
 		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
 	}
+
+	if (SpotLight)
+	{
+		SpotLight->SetPosition(Camera->GetPosition());
+		SpotLight->SetDirection(Camera->GetLook());
+	}
 }
 
 void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera)
@@ -801,6 +818,56 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 
 		ImGui::End();
 	}
+}
+
+
+void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> SpotLight)
+{
+
+	ImVec4 lightColor;
+	{
+		lightColor.x = SpotLight->GetLightColor().R();
+		lightColor.y = SpotLight->GetLightColor().G();
+		lightColor.z = SpotLight->GetLightColor().B();
+		lightColor.w = SpotLight->GetLightColor().A();
+	}
+
+	ImVec4 lightPos;
+	{
+		lightPos.x = SpotLight->GetPosition().x;
+		lightPos.y = SpotLight->GetPosition().y;
+		lightPos.z = SpotLight->GetPosition().z;
+	}
+
+	float dir[3] = {
+		SpotLight->GetDirection().x,
+		SpotLight->GetDirection().y,
+		SpotLight->GetDirection().z
+	};
+
+	float range = SpotLight->GetRange();
+	float intensity = SpotLight->GetIntensity();
+	float angle = SpotLight->GetSpotAngle();
+
+
+	ImGui::Begin("Spot Light Inspector");
+
+	ImGui::InputFloat3("Light Position", &lightPos.x);
+	ImGui::InputFloat3("Light Direction", &dir[0]);
+
+	ImGui::ColorEdit3("Light Color", (float*)&lightColor);
+	SpotLight->SetLightColor(Color(lightColor.x, lightColor.y, lightColor.z, lightColor.w));
+	//ImGui::InputFloat3("Position", &lightPosition.x);
+	ImGui::DragFloat("Angle", &angle, 1.f, 0.f, 10.f);
+	SpotLight->SetSpotAngle(angle);
+
+	ImGui::DragFloat("Range", &range, 1.f, 0.f, 1000.f);
+	SpotLight->SetRange(range);
+
+	ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.f, 100.f);
+	SpotLight->SetIntensity(intensity);
+
+	ImGui::End();
 }
 
 void ImGuiTest()

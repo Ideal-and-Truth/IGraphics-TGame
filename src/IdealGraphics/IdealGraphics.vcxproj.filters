@@ -303,5 +303,6 @@
     <None Include="Shaders\Light.hlsli" />
     <None Include="packages.config" />
     <None Include="..\Shaders\Raytracing\RaytracingHelper.hlsli" />
+    <None Include="..\Shaders\Raytracing\DisneyBSDF.hlsli" />
   </ItemGroup>
 </Project>

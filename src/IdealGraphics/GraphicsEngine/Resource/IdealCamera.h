@@ -22,6 +22,7 @@ namespace Ideal
 		virtual Vector3 GetPosition() override { return m_position; };
 		virtual void SetPosition(const Vector3& Position) override;
 		virtual void SetLook(Vector3 Look) override;
+		virtual Vector3 GetLook() override { return m_look; }
 
 		DirectX::SimpleMath::Matrix GetView()const { return m_view; }
 		DirectX::SimpleMath::Matrix GetProj()const { return m_proj; }
