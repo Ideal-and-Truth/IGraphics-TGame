@@ -448,6 +448,7 @@ float3 Shade(
                 float range = g_lightList.SpotLights[i].Range;
                 float angle = g_lightList.SpotLights[i].SpotAngle;
                 float intensity = g_lightList.SpotLights[i].Intensity;
+                float softness = g_lightList.SpotLights[i].Softness;
                 float3 direction = normalize(position - hitPosition);
                 float distance = length(position - hitPosition);
                 float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
@@ -484,6 +485,7 @@ float3 Shade(
             distance,
             range,
             intensity,
+            softness,
             lightDirection,
             angle
         );

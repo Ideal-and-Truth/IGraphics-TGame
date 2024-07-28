@@ -849,6 +849,7 @@ void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> SpotLight)
 	float intensity = SpotLight->GetIntensity();
 	float angle = SpotLight->GetSpotAngle();
 
+	float softness = SpotLight->GetSoftness();
 
 	ImGui::Begin("Spot Light Inspector");
 
@@ -866,6 +867,9 @@ void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> SpotLight)
 
 	ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.f, 100.f);
 	SpotLight->SetIntensity(intensity);
+
+	ImGui::DragFloat("Softness", &softness, 0.1f, 0.f, 30.f);
+	SpotLight->SetSoftness(softness);
 
 	ImGui::End();
 }

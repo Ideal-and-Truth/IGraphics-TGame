@@ -27,5 +27,8 @@ namespace Ideal
 		virtual void SetSpotAngle(const float& SpotAngle) abstract;
 		virtual void SetRange(const float& Range) abstract;
 		virtual void SetIntensity(const float& Intensity) abstract;
+
+		virtual float GetSoftness() abstract;
+		virtual void SetSoftness(const float& Softness) abstract;
 	};
 }

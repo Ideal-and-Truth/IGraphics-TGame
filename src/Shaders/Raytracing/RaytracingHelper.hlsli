@@ -341,6 +341,7 @@ namespace Ideal
     in float LightDistance,
     in float LightRange,
     in float LightIntensity,
+    in float LightSoftness,
     in float3 SpotDirection,
     in float SpotAngle
 )
@@ -359,11 +360,19 @@ namespace Ideal
                 float spotEffect = dot(normalize(-L), SpotDirection);
                 float cutoff = cos(radians(SpotAngle * 0.5));
                 
-                if (spotEffect > cutoff)
+                //float SpotSoftness = 10.0f;
+                //float SpotSoftness = 1.0f;
+                float SpotSoftness = LightSoftness;
+                float outerCutoff = cos(radians((SpotAngle * 0.5) + SpotSoftness));
+        
+                    // 스포트라이트 감쇠 적용 (부드러운 가장자리 효과)
+                float smoothFactor = smoothstep(outerCutoff, cutoff, spotEffect);
+                
+                if (spotEffect > outerCutoff)
                 {
             // 스포트라이트의 감쇠 계산
                     float attenuation = Attenuate(LightDistance, LightRange);
-                    float intensity = LightIntensity * attenuation * pow(spotEffect, 4); // 스포트라이트 효과 강화
+                    float intensity = LightIntensity * attenuation * smoothFactor; // 스포트라이트 효과 강화
 
                     float3 directDiffuse = 0;
                     float3 directSpecular = 0;

@@ -111,7 +111,7 @@ struct SpotLight
     XMFLOAT3 Position;
     float Range;
     float Intensity;
-    float pad0;
+    float Softness;
     float pad1;
     float pad2;
 };

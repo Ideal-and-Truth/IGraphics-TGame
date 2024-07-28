@@ -8,6 +8,7 @@ Ideal::IdealSpotLight::IdealSpotLight()
 	m_spotLight.SpotAngle = 37.7f;
 	m_spotLight.Range = 4.7f;
 	m_spotLight.Intensity = 3.4f;
+	m_spotLight.Softness = 1.f;
 }
 
 Ideal::IdealSpotLight::~IdealSpotLight()
@@ -43,4 +44,9 @@ void Ideal::IdealSpotLight::SetRange(const float& Range)
 void Ideal::IdealSpotLight::SetIntensity(const float& Intensity)
 {
 	m_spotLight.Intensity = Intensity;
+}
+
+void Ideal::IdealSpotLight::SetSoftness(const float& Softness)
+{
+	m_spotLight.Softness = Softness;
 }

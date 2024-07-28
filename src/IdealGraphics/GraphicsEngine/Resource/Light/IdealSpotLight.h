@@ -29,6 +29,9 @@ namespace Ideal
 		virtual float GetIntensity() override { return m_spotLight.Intensity; }
 		virtual void SetIntensity(const float& Intensity) override;
 
+		virtual float GetSoftness() override { return m_spotLight.Softness; }
+		virtual void SetSoftness(const float& Softness) override;
+
 	public:
 		SpotLight const& GetSpotLightDesc() { return m_spotLight; }
 
