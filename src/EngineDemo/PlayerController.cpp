@@ -31,9 +31,6 @@ void PlayerController::Start()
 
 	m_controller = m_owner.lock().get()->GetComponent<Truth::Controller>();
 	m_player = m_owner.lock().get()->GetComponent<Player>();
-
-	// 플레이어 이동 이벤트 (이벤트함수 베이스)
-	//EventBind("PlayerWalk", &PlayerController::PlayerMove);
 }
 
 void PlayerController::Update()

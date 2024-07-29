@@ -144,6 +144,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationState.h" />
     <ClInclude Include="Bullet.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -153,6 +154,7 @@
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="DamageSystem.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="framework.h" />
@@ -167,6 +169,7 @@
     <ClInclude Include="TestMovement.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationState.cpp" />
     <ClCompile Include="Bullet.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -176,6 +179,7 @@
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="DamageSystem.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
     <ClCompile Include="MeleeWeapon.cpp" />

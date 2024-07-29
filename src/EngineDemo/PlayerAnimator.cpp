@@ -228,11 +228,6 @@ void PlayerIdle::OnStateUpdate()
 	}
 }
 
-const Property* AnimationState::GetProperty(const std::string& name)
-{
-	return m_animator->GetTypeInfo().GetProperty(name.c_str());
-}
-
 void PlayerWalk::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Walk", false);

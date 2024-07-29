@@ -7,18 +7,18 @@ namespace Truth
 	class SkinnedMesh;
 }
 
-class PlayerController;
-class Player;
+class Enemy;
+class EnemyController;
 
 
-class PlayerIdle
+class EnemyIdle
 	: public AnimationState
 {
 private:
 
 
 public:
-	PlayerIdle(Truth::Component* animator)
+	EnemyIdle(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -29,14 +29,14 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
-class PlayerWalk
+class EnemyChase
 	: public AnimationState
 {
 private:
 
 
 public:
-	PlayerWalk(Truth::Component* animator)
+	EnemyChase(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -47,14 +47,14 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
-class PlayerRun
+class EnemyReturn
 	: public AnimationState
 {
 private:
 
 
 public:
-	PlayerRun(Truth::Component* animator)
+	EnemyReturn(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -65,13 +65,14 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
-class NormalAttack1
+class EnemyAttackReady
 	: public AnimationState
 {
 private:
 
+
 public:
-	NormalAttack1(Truth::Component* animator)
+	EnemyAttackReady(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -80,16 +81,16 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
 };
 
-class NormalAttack2
+class EnemyAttack
 	: public AnimationState
 {
 private:
 
+
 public:
-	NormalAttack2(Truth::Component* animator)
+	EnemyAttack(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -98,16 +99,16 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
 };
 
-class NormalAttack3
+class EnemyHit
 	: public AnimationState
 {
 private:
 
+
 public:
-	NormalAttack3(Truth::Component* animator)
+	EnemyHit(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -116,16 +117,16 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
 };
 
-class NormalAttack4
+class EnemyDeath
 	: public AnimationState
 {
 private:
 
+
 public:
-	NormalAttack4(Truth::Component* animator)
+	EnemyDeath(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -134,87 +135,14 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
-};
-
-class ChargedAttack1
-	: public AnimationState
-{
-private:
-
-public:
-	ChargedAttack1(Truth::Component* animator)
-		: AnimationState(animator)
-	{
-
-	}
-
-public:
-	virtual void OnStateEnter() override;
-	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
-};
-
-class PlayerGuard
-	: public AnimationState
-{
-private:
-
-public:
-	PlayerGuard(Truth::Component* animator)
-		: AnimationState(animator)
-	{
-
-	}
-
-public:
-	virtual void OnStateEnter() override;
-	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
-};
-
-class PlayerHit
-	: public AnimationState
-{
-private:
-
-public:
-	PlayerHit(Truth::Component* animator)
-		: AnimationState(animator)
-	{
-
-	}
-
-public:
-	virtual void OnStateEnter() override;
-	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
-};
-
-class PlayerDodge
-	: public AnimationState
-{
-private:
-
-public:
-	PlayerDodge(Truth::Component* animator)
-		: AnimationState(animator)
-	{
-		 
-	}
-
-public:
-	virtual void OnStateEnter() override;
-	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
 };
 
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
-class PlayerAnimator :
+class EnemyAnimator :
 	public Truth::Component
 {
-	GENERATE_CLASS_TYPE_INFO(PlayerAnimator);
+	GENERATE_CLASS_TYPE_INFO(EnemyAnimator);
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -222,8 +150,8 @@ private:
 
 private:
 	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
-	std::shared_ptr<PlayerController> m_playerController;
-	std::shared_ptr<Player> m_player;
+	std::shared_ptr<Enemy> m_enemy;
+	std::shared_ptr<EnemyController> m_enemyController;
 
 
 	/// <summary>
@@ -232,35 +160,25 @@ private:
 	/// <param name=""></param>
 	/// 
 	/// ----------------------------------------
-	PROPERTY(isWalk);
-	bool m_isWalk;
 
-	PROPERTY(isRun);
-	bool m_isRun;
+	PROPERTY(isChase);
+	bool m_isChase;
+
+	PROPERTY(isComeBack);
+	bool m_isComeBack;
+
+	PROPERTY(isAttackReady);
+	bool m_isAttackReady;
 
 	PROPERTY(isAttack);
 	bool m_isAttack;
 
-	PROPERTY(isChargedAttack);
-	bool m_isChargedAttack;
-
-	PROPERTY(isCharged);
-	float m_isCharged;
-
-	PROPERTY(isAttacking);
-	bool m_isAttacking;
-
-	PROPERTY(isGuard);
-	bool m_isGuard;
-
 	PROPERTY(isHit);
 	bool m_isHit;
 
-	PROPERTY(isDodge);
-	bool m_isDodge;
+	PROPERTY(isDead);
+	bool m_isDead;
 
-	PROPERTY(isLockOn);
-	bool m_isLockOn;
 
 	/// ----------------------------------------
 
@@ -276,8 +194,8 @@ private:
 	int m_currentFrame;
 
 public:
-	PlayerAnimator();
-	virtual ~PlayerAnimator();
+	EnemyAnimator();
+	virtual ~EnemyAnimator();
 
 	METHOD(Awake);
 	void Awake();
@@ -295,13 +213,13 @@ public:
 
 	void ChangeState(std::string stateName);
 
-	void SetPlayerDamage(float damage);
+	void SetEnemyDamage(float damage);
 };
 
 template<class Archive>
-void PlayerAnimator::serialize(Archive& _ar, const unsigned int _file_version)
+void EnemyAnimator::serialize(Archive& _ar, const unsigned int _file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 }
 
-BOOST_CLASS_EXPORT_KEY(PlayerAnimator)
+BOOST_CLASS_EXPORT_KEY(EnemyAnimator)

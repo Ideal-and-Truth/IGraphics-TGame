@@ -25,6 +25,12 @@ private:
 	std::weak_ptr<Enemy> m_enemy;
 	std::weak_ptr<Truth::Entity> m_target;
 
+	Vector3 m_homePos;
+	float m_speed;
+
+	PROPERTY(isComeBack);
+	bool m_isComeBack;
+
 public:
 	EnemyController();
 	virtual ~EnemyController();
@@ -37,6 +43,7 @@ public:
 
 private:
 	void FollowTarget();
+	void ComeBackHome();
 };
 
 template<class Archive>
