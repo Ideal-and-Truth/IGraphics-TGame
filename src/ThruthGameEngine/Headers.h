@@ -70,4 +70,6 @@ using namespace DirectX::SimpleMath;
 #include <codecvt>
 #include <string>
 
+#include <filesystem>
+
 #include <atlconv.h>

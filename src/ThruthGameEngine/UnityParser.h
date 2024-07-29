@@ -56,7 +56,7 @@ namespace Truth
 		struct GameObject
 		{
 			// Collider Info
-			bool m_isCollider = false;
+			bool m_isBoxCollider = false;
 			std::vector<Vector3> m_size;
 			std::vector<Vector3> m_Center;
 			

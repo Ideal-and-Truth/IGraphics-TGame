@@ -4,6 +4,10 @@
 #include "FileUtils.h"
 #include "GraphicsManager.h"
 
+#include "Entity.h"
+#include "Component.h"
+#include "BoxCollider.h"
+
 /// <summary>
 /// 파서 생성자
 /// </summary>
@@ -277,7 +281,7 @@ fs::path Truth::UnityParser::OrganizeUnityFile(fs::path& _path)
 Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent)
 {
 	GameObject* GO = new GameObject;
-	GO->m_isCollider = false;
+	GO->m_isBoxCollider = false;
 	GO->m_parent = _parent;
 	GO->m_guid = _guid;
 
@@ -338,7 +342,7 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 Truth::UnityParser::GameObject* Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent)
 {
 	GameObject* GO = new GameObject;
-	GO->m_isCollider = false;
+	GO->m_isBoxCollider = false;
 	GO->m_parent = _parent;
 
 	// get transform data
@@ -390,7 +394,7 @@ void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::N
 
 void Truth::UnityParser::ParseBoxCollider(const YAML::Node& _node, GameObject* _owner)
 {
-	_owner->m_isCollider = true;
+	_owner->m_isBoxCollider = true;
 	_owner->m_size.push_back({
 		_node["m_Size"]["x"].as<float>(),
 		_node["m_Size"]["y"].as<float>(),
@@ -582,7 +586,7 @@ void Truth::UnityParser::WriteMapData()
 
 void Truth::UnityParser::GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds)
 {
-	if (_node->m_isCollider)
+	if (_node->m_isBoxCollider)
 	{
 		for (size_t i = 0; i < _node->m_size.size(); i++)
 		{
@@ -768,7 +772,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 
 			if (childNode["BoxCollider"].IsDefined())
 			{
-				GO->m_isCollider = true;
+				GO->m_isBoxCollider = true;
 				ParseBoxCollider(childNode["BoxCollider"], GO);
 			}
 		}

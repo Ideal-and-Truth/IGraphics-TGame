@@ -109,7 +109,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	}
 
 
-	CreateMap(L"SampleScene");
+	CreateMap(m_mapPath);
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -141,6 +141,15 @@ std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
 		}
 	}
 	return std::weak_ptr<Entity>();
+}
+
+void Truth::Scene::ResetMapData()
+{
+	m_managers.lock()->Physics()->ResetPhysX();
+	for (auto& m : m_mapMesh)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m);
+	}
 }
 
 #ifdef EDITOR_MODE
@@ -301,8 +310,18 @@ void Truth::Scene::ClearEntity()
 
 void Truth::Scene::CreateMap(const std::wstring& _path)
 {
+	if (_path.empty())
+	{
+		return;
+	}
+
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
 
+	std::filesystem::path p(L"../Resources/MapData/" + _path);
+	if (!std::filesystem::exists(p))
+	{
+		return;
+	}
 	m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
 
 	m_navMesh = std::make_shared<NavMeshGenerater>();
