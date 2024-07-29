@@ -230,7 +230,7 @@ public:
 	PlayerDodge(Truth::Component* animator)
 		: AnimationState(animator)
 	{
-
+		 
 	}
 
 public:
@@ -260,6 +260,8 @@ private:
 	///  상태 조절을 위한 것들
 	/// </summary>
 	/// <param name=""></param>
+	/// 
+	/// ----------------------------------------
 	PROPERTY(isWalk);
 	bool m_isWalk;
 
@@ -287,6 +289,10 @@ private:
 	PROPERTY(isDodge);
 	bool m_isDodge;
 
+	PROPERTY(isLockOn);
+	bool m_isLockOn;
+
+	/// ----------------------------------------
 
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;

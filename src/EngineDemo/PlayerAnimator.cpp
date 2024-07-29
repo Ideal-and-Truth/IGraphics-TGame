@@ -18,6 +18,7 @@ PlayerAnimator::PlayerAnimator()
 	, m_isCharged(0.f)
 	, m_isChargedAttack(false)
 	, m_isDodge(false)
+	, m_isLockOn(false)
 {
 	m_name = "PlayerAnimator";
 }
@@ -85,7 +86,7 @@ void PlayerAnimator::Start()
 
 void PlayerAnimator::Update()
 {
-	m_skinnedMesh->SetAnimationSpeed(-1.f);
+	//m_skinnedMesh->SetAnimationSpeed(0.1f);
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 
