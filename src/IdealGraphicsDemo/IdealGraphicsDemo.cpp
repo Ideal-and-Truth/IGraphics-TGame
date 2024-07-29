@@ -90,7 +90,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 // Test Function
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera);
-void CameraTick(std::shared_ptr<Ideal::ICamera> Camera);
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight = nullptr);
 void ImGuiTest();
 void DirLightAngle(float* x, float* y, float* z);
 void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
@@ -98,18 +98,21 @@ void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> S
 void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
 void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
+void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
+
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
 float lightAngleY = 0.f;
 
 float g_cameraSpeed = 0.04f;
+bool g_CameraMove = true;
 void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow){
+	_In_ int       nCmdShow) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -166,12 +169,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->SetRenderScene(renderScene);
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
+		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
@@ -209,7 +213,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> twerkAnim = gRenderer->CreateAnimation(L"player/Dancing Twerk");
 		//player3->AddAnimation("Twerk",twerkAnim);
 		//player->SetTransformMatrix(Matrix::CreateTranslation(Vector3(4,0,0)));
-		
+
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player2 = gRenderer->CreateSkinnedMeshObject(L"player2/myPlayer2");
 		//std::shared_ptr<Ideal::IAnimation> rumba = gRenderer->CreateAnimation(L"player2/Capoeira");
 		//player2->AddAnimation("Rumba", rumba);
@@ -232,12 +236,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
 		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
-		std::shared_ptr<Ideal::IMeshObject> sphere = gRenderer->CreateStaticMeshObject(L"UVSphere/UVSphere");
-		std::shared_ptr<Ideal::IMeshObject> sphere2 = gRenderer->CreateStaticMeshObject(L"UVSphere2/UVSphere");
-		sphere2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.5f, 0.f, 0.f)));
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+
+		Matrix floorMat = Matrix::CreateScale(Vector3(15.f, 1.f, 15.f)) *
+			Matrix::CreateTranslation(Vector3(2.5f, -2.5f, 5.f));
+		//mesh->SetTransformMatrix(floorMat);
+		//std::shared_ptr<Ideal::IMeshObject> sphere = gRenderer->CreateStaticMeshObject(L"UVSphere/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere1 = gRenderer->CreateStaticMeshObject(L"UVSphere1/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere2 = gRenderer->CreateStaticMeshObject(L"UVSphere2/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere3 = gRenderer->CreateStaticMeshObject(L"UVSphere3/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere4 = gRenderer->CreateStaticMeshObject(L"UVSphere4/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere5 = gRenderer->CreateStaticMeshObject(L"UVSphere5/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere6 = gRenderer->CreateStaticMeshObject(L"UVSphere6/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere7 = gRenderer->CreateStaticMeshObject(L"UVSphere7/UVSphere");
+		//std::shared_ptr<Ideal::IMeshObject> sphere8 = gRenderer->CreateStaticMeshObject(L"UVSphere8/UVSphere");
+		//sphere1->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.5f, 0.f, 0.f)));
+		//sphere2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0.f, 2.5f, 0.f)));
+		//sphere3->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.5f, 2.5f, 0.f)));
+		//sphere4->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0.f, 5.f, 0.f)));
+		//sphere5->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.5f, 5.f, 0.f)));
+		//sphere6->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 0.f, 0.f)));
+		//sphere7->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 2.5f, 0.f)));
+		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
+
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
-		std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
+		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
 
 		////-------------------Add Animation to Skinned Mesh Object-------------------//
 		//ka->AddAnimation("Run", runAnim);
@@ -291,15 +315,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
 
-		//std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
+		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		spotLight->SetPosition(Vector3(0.f, 3.f, 3.f));
+		spotLight->SetRange(6.f);
+		spotLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		spotLight->SetIntensity(0.8f);
 
-		//std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
-		//pointLight->SetPosition(Vector3(0.f, 3.f,3.f));
-		//pointLight->SetRange(6.f);
-		//pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		//pointLight->SetIntensity(0.8f);
+
+		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		pointLight->SetPosition(Vector3(0.f, 3.f, 3.f));
+		pointLight->SetRange(6.f);
+		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+		pointLight->SetIntensity(0.8f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -349,7 +378,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					g_FrameCount = 0;
 				}
 
-				CameraTick(camera);
+				CameraTick(camera, spotLight);
 				//pointLight->SetPosition(camera->GetPosition());
 				//auto cp = camera->GetPosition();
 				//auto pp = pointLight->GetPosition();
@@ -512,10 +541,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						{
 							LightTest(dirLight);
 						}
-						//if (pointLight)
-						//{
-						//	PointLightInspecter(pointLight);
-						//}
+						if (pointLight)
+						{
+							PointLightInspecter(pointLight);
+						}
+						if (spotLight)
+						{
+							SpotLightInspector(spotLight);
+						}
 					}
 					//once++;
 					//ImGuiTest();
@@ -534,8 +567,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		meshes.clear();
 
-		//gRenderer->DeleteMeshObject(ka);
-		//ka.reset();
+		gRenderer->DeleteMeshObject(mesh);
+		mesh.reset();
 		//
 		//gRenderer->DeleteMeshObject(cat);
 		//cat.reset();
@@ -545,7 +578,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
-		
+
 		//gRenderer->DeleteMeshObject(player);
 		//player.reset();
 
@@ -656,8 +689,10 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
 
-void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight /*= nullptr*/)
 {
+	if (!g_CameraMove)
+		return;
 	float speed = g_cameraSpeed;
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 	{
@@ -722,6 +757,12 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera)
 	{
 		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
 	}
+
+	if (SpotLight)
+	{
+		SpotLight->SetPosition(Camera->GetPosition());
+		SpotLight->SetDirection(Camera->GetLook());
+	}
 }
 
 void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera)
@@ -730,6 +771,7 @@ void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera)
 	{
 		ImGui::Begin("Camera Window");
 		ImGui::DragFloat("Camera Speed", &g_cameraSpeed, 0.01f, 0.0f, 1.f);
+		ImGui::Checkbox("Move", &g_CameraMove);
 		ImGui::End();
 	}
 }
@@ -776,6 +818,60 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 
 		ImGui::End();
 	}
+}
+
+
+void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> SpotLight)
+{
+
+	ImVec4 lightColor;
+	{
+		lightColor.x = SpotLight->GetLightColor().R();
+		lightColor.y = SpotLight->GetLightColor().G();
+		lightColor.z = SpotLight->GetLightColor().B();
+		lightColor.w = SpotLight->GetLightColor().A();
+	}
+
+	ImVec4 lightPos;
+	{
+		lightPos.x = SpotLight->GetPosition().x;
+		lightPos.y = SpotLight->GetPosition().y;
+		lightPos.z = SpotLight->GetPosition().z;
+	}
+
+	float dir[3] = {
+		SpotLight->GetDirection().x,
+		SpotLight->GetDirection().y,
+		SpotLight->GetDirection().z
+	};
+
+	float range = SpotLight->GetRange();
+	float intensity = SpotLight->GetIntensity();
+	float angle = SpotLight->GetSpotAngle();
+
+	float softness = SpotLight->GetSoftness();
+
+	ImGui::Begin("Spot Light Inspector");
+
+	ImGui::InputFloat3("Light Position", &lightPos.x);
+	ImGui::InputFloat3("Light Direction", &dir[0]);
+
+	ImGui::ColorEdit3("Light Color", (float*)&lightColor);
+	SpotLight->SetLightColor(Color(lightColor.x, lightColor.y, lightColor.z, lightColor.w));
+	//ImGui::InputFloat3("Position", &lightPosition.x);
+	ImGui::DragFloat("Angle", &angle, 1.f, 0.f, 10.f);
+	SpotLight->SetSpotAngle(angle);
+
+	ImGui::DragFloat("Range", &range, 1.f, 0.f, 1000.f);
+	SpotLight->SetRange(range);
+
+	ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.f, 100.f);
+	SpotLight->SetIntensity(intensity);
+
+	ImGui::DragFloat("Softness", &softness, 0.1f, 0.f, 30.f);
+	SpotLight->SetSoftness(softness);
+
+	ImGui::End();
 }
 
 void ImGuiTest()

@@ -509,6 +509,7 @@ void AssimpConverter::ReadMaterialData()
 		material->ambient = Color(color.r, color.g, color.b, 1.f);
 
 		// Diffuse
+		// 임시로 Reflectivity로 바꿨음
 		srcMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
 		material->diffuse = Color(color.r, color.g, color.b, 1.f);
 
