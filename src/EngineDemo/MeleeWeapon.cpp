@@ -33,6 +33,10 @@ void MeleeWeapon::Start()
 
 void MeleeWeapon::Update()
 {
+	if (GetKeyDown(KEY::LBTN))
+	{
+		//m_owner.lock()->m_transform->m_lo
+	}
 	m_isAttacking = m_playerAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_playerAnimator.get()).Get();
 
 	if (!m_isAttacking)

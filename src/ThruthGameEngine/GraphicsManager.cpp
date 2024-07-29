@@ -37,7 +37,7 @@ Truth::GraphicsManager::~GraphicsManager()
 void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height)
 {
 	// Editor mode & Release mode
-#ifdef EDITOR_MODE
+#ifdef /*EDITOR_MODE
 	m_renderer = CreateRenderer(
 		EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR,
 		&_hwnd,
@@ -46,7 +46,17 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 		m_assetPath[0],
 		m_assetPath[1],
 		m_assetPath[2]
-	);
+	);*/EDITOR_MODE
+		m_renderer = CreateRenderer(
+			EGraphicsInterfaceType::D3D12_EDITOR,
+			&_hwnd,
+			_wight,
+			_height,
+			m_assetPath[0],
+			m_assetPath[1],
+			m_assetPath[2]
+		);
+
 #else
 	m_renderer = CreateRenderer(
 		EGraphicsInterfaceType::D3D12_RAYTRACING,
@@ -59,7 +69,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	);
 #endif // EDITOR_MODE
 
-	
+
 	m_renderer->Init();
 
 	// 추후에 카메라에 넘겨 줄 시야각
@@ -70,7 +80,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 void Truth::GraphicsManager::Finalize()
 {
-	
+
 }
 
 /// <summary>
