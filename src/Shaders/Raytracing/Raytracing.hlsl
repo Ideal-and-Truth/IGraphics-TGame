@@ -437,7 +437,7 @@ float3 Shade(
                 float intensity = g_lightList.PointLights[i].Intensity;
                 
                 bool isInShadow = false;
-                if(distance <= range)
+                //if(distance <= range)
                 {
                     isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
                 }
@@ -650,7 +650,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         normal = normalize(mul((float3x3) ObjectToWorld3x4(), objectNormal));
     }
     //if(l_materialInfo.bUseNormalMap == false)
-    //if(l_materialInfo.bUseNormalMap == true)
+    if(l_materialInfo.bUseNormalMap == true)
     {
 #ifdef BeforeRefactor
         normal = NormalMap(normal, uv, vertexInfo, attr);

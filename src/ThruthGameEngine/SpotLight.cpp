@@ -10,6 +10,13 @@ Truth::SpotLight::SpotLight()
 	: Component()
 	, m_isRendering(true)
 	, m_spotLight(nullptr)
+	, m_position{ 0.0f, 0.0f, 0.0f }
+	, m_direction{ 0.0f, -1.0f, 0.0f }
+	, m_angle(10.f)
+	, m_range(10.f)
+	, m_intensity(10.f)
+	, m_softness(0.0f)
+	, m_lightColor{ 1.0f, 1.0f, 1.0f, 1.0f }
 {
 	m_name = "SpotLight";
 }
@@ -33,17 +40,35 @@ void Truth::SpotLight::SetColor()
 	m_spotLight->SetLightColor(m_lightColor);
 }
 
+void Truth::SpotLight::SetAngle()
+{
+	m_spotLight->SetSpotAngle(m_angle);
+}
+
+void Truth::SpotLight::SetRange()
+{
+	m_spotLight->SetRange(m_range);
+}
+
+void Truth::SpotLight::SetSoftness()
+{
+	m_spotLight->SetSoftness(m_softness);
+}
+
 void Truth::SpotLight::Initalize()
 {
 	SetLight();
 	SetIntensity();
 	SetColor();
+	SetSoftness();
+	SetRange();
+	SetAngle();
 }
 
 void Truth::SpotLight::ApplyTransform()
 {
 	m_spotLight->SetPosition(m_position);
-	// m_spotLight->SetDirection(m_direction);
+	m_spotLight->SetDirection(m_direction);
 }
 
 #ifdef EDITOR_MODE
@@ -51,6 +76,9 @@ void Truth::SpotLight::EditorSetValue()
 {
 	SetIntensity();
 	SetColor();
+	SetSoftness();
+	SetRange();
+	SetAngle();
 }
 #endif // _DEBUG
 

@@ -23,7 +23,7 @@ namespace Truth
 		PROPERTY(position);
 		Vector3 m_position;
 		PROPERTY(direction);
-		Vector4 m_direction;
+		Vector3 m_direction;
 
 		PROPERTY(angle);
 		float m_angle;
@@ -32,6 +32,9 @@ namespace Truth
 
 		PROPERTY(intensity);
 		float m_intensity;
+
+		PROPERTY(softness);
+		float m_softness;
 
 		PROPERTY(lightColor);
 		Color m_lightColor;
@@ -43,6 +46,9 @@ namespace Truth
 		void SetLight();
 		void SetIntensity();
 		void SetColor();
+		void SetAngle();
+		void SetRange();
+		void SetSoftness();
 
 		METHOD(Initalize);
 		void Initalize();
@@ -58,13 +64,26 @@ namespace Truth
 	void Truth::SpotLight::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-
+		_ar& m_position;
+		_ar& m_direction;
+		_ar& m_angle;
+		_ar& m_range;
+		_ar& m_intensity;
+		_ar& m_softness;
+		_ar& m_lightColor;
 	}
 
 	template<class Archive>
 	void Truth::SpotLight::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
+		_ar& m_position;
+		_ar& m_direction;
+		_ar& m_angle;
+		_ar& m_range;
+		_ar& m_intensity;
+		_ar& m_softness;
+		_ar& m_lightColor;
 
 	}
 }
