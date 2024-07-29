@@ -77,8 +77,6 @@ namespace Truth
 			std::vector<MatarialData> m_matarialVector;
 		};
 
-
-
 		uint32 m_meshFilterCount = 0;
 
 		std::vector<GameObject*> m_rootGameObject;

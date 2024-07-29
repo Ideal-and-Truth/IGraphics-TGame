@@ -28,7 +28,7 @@ private:
 	float4 m_cameraSpeed;
 
 	bool m_isLockOn;
-	
+
 public:
 	PlayerCamera();
 	virtual ~PlayerCamera();
@@ -41,6 +41,8 @@ public:
 
 	METHOD(LateUpdate);
 	void LateUpdate();
+
+	std::weak_ptr<Truth::Camera> GetCamera() { return m_camera; };
 
 private:
 	void FreeCamera();

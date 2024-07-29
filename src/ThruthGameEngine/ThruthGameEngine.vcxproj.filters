@@ -201,7 +201,7 @@
     <ClCompile Include="SkinnedMesh.cpp">
       <Filter>Component\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
+    <ClCompile Include="DirectionLight.cpp">
       <Filter>Component\Light</Filter>
     </ClCompile>
     <ClCompile Include="Animator.cpp">
@@ -332,7 +332,7 @@
     <ClInclude Include="SkinnedMesh.h">
       <Filter>Component\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
+    <ClInclude Include="DirectionLight.h">
       <Filter>Component\Light</Filter>
     </ClInclude>
     <ClInclude Include="Animator.h">
