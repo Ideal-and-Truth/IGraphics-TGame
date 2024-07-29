@@ -115,6 +115,27 @@ namespace TypeUI
 			_val = _val * Quaternion::CreateFromYawPitchRoll(delta);
 			return isSelect;
 		}
+		else if constexpr (std::is_same_v<T, Color>)
+		{
+			float value[4] = {};
+
+			value[0] = _val.x;
+			value[1] = _val.y;
+			value[2] = _val.z;
+			value[3] = _val.w;
+
+			bool isSelect = ImGui::DragFloat4(_name, value, 0.001f, 0.0f, 1.0f);
+			if (isSelect)
+			{
+				_val = {
+					value[0],
+					value[1],
+					value[2],
+					value[3]
+				};
+			}
+			return isSelect;
+		}
 
 		return false;
 	}

@@ -34,6 +34,9 @@
 #include "Controller.h"
 
 #include "NavMeshGenerater.h"
+
+#include "DirectionLight.h"
+#include "PointLight.h"
 #pragma endregion test Scene
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

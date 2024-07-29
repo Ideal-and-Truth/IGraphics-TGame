@@ -12,9 +12,12 @@ Truth::DirectionLight::DirectionLight()
 	: Component()
 	, m_isRendering(true)
 	, m_directionalLight(nullptr)
-	, m_position(Vector3(0.f, 0.f, 0.f))
+	, m_direction{ 1.0f, 1.0f, 1.0f }
+	, m_intensity(1.0f)
+	, m_diffuseColor{ 1.0f, 1.0f, 1.0f, 1.0f }
+	, m_ambientColor{ 1.0f, 1.0f, 1.0f, 1.0f }
 {
-	m_name = "Light";
+	m_name = "DirectionLight";
 }
 
 Truth::DirectionLight::~DirectionLight()
@@ -26,20 +29,40 @@ void Truth::DirectionLight::SetLight()
 	m_directionalLight = m_managers.lock()->Graphics()->CreateDirectionalLight();
 }
 
+void Truth::DirectionLight::SetIntensity()
+{
+	m_directionalLight->SetIntensity(m_intensity);
+}
+
+void Truth::DirectionLight::SetDiffuse()
+{
+	m_directionalLight->SetDiffuseColor(m_diffuseColor);
+}
+
+void Truth::DirectionLight::SetAmbient()
+{
+	m_directionalLight->SetAmbientColor(m_ambientColor);
+}
+
 void Truth::DirectionLight::Initalize()
 {
 	SetLight();
+	SetIntensity();
+	SetDiffuse();
+	SetAmbient();
 }
 
 void Truth::DirectionLight::ApplyTransform()
 {
-	m_directionalLight->SetDirection(m_owner.lock().get()->m_transform->m_globalTM.Forward());
+	m_directionalLight->SetDirection(m_direction);
 }
 
 #ifdef EDITOR_MODE
 void Truth::DirectionLight::EditorSetValue()
 {
-	SetLight();
+	SetIntensity();
+	SetDiffuse();
+	SetAmbient();
 }
 #endif // _DEBUG
 
