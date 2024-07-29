@@ -2,17 +2,10 @@
 #include "Component.h"
 namespace Truth
 {
-	enum class LightType
-	{
-		Directional,
-		Spot,
-		Point,
-	};
-
-	class Light :
+	class DirectionLight :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(Light);
+		GENERATE_CLASS_TYPE_INFO(DirectionLight);
 	private:
 		friend class boost::serialization::access;
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -22,10 +15,7 @@ namespace Truth
 		void load(Archive& ar, const unsigned int file_version);
 
 	private:
-		LightType m_lightType;
 		std::shared_ptr<Ideal::IDirectionalLight> m_directionalLight;
-		std::shared_ptr<Ideal::ISpotLight> m_spotLight;
-		std::shared_ptr<Ideal::IPointLight> m_pointLight;
 
 		PROPERTY(position);
 		Vector3 m_position;
@@ -34,10 +24,10 @@ namespace Truth
 		bool m_isRendering;
 
 	public:
-		Light();
-		virtual ~Light();
+		DirectionLight();
+		virtual ~DirectionLight();
 
-		void SetLight(LightType InLightType);
+		void SetLight();
 
 		METHOD(Initalize);
 		void Initalize();
@@ -52,17 +42,17 @@ namespace Truth
 	};
 
 	template<class Archive>
-	void Truth::Light::load(Archive& _ar, const unsigned int file_version)
+	void Truth::DirectionLight::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 	}
 
 	template<class Archive>
-	void Truth::Light::save(Archive& _ar, const unsigned int file_version) const
+	void Truth::DirectionLight::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 	}
 }
 
-BOOST_CLASS_EXPORT_KEY(Truth::Light)
-BOOST_CLASS_VERSION(Truth::Light, 0)
+BOOST_CLASS_EXPORT_KEY(Truth::DirectionLight)
+BOOST_CLASS_VERSION(Truth::DirectionLight, 0)

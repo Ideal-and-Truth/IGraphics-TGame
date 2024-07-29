@@ -4,6 +4,10 @@
 #include "FileUtils.h"
 #include "GraphicsManager.h"
 
+/// <summary>
+/// 파서 생성자
+/// </summary>
+/// <param name="_gp">그래픽 엔진 (컨버팅 용)</param>
 Truth::UnityParser::UnityParser(GraphicsManager* _gp)
 	:m_gp(_gp)
 {
@@ -415,6 +419,11 @@ void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _o
 	}
 }
 
+void Truth::UnityParser::ParseMaterial(const YAML::Node& _node)
+{
+
+}
+
 DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node)
 {
 	Vector3 scale = { 1.0f ,1.0f, 1.0f };
@@ -636,6 +645,13 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 	fs::create_directories(modelPath);
 	fs::create_directories(m_texturePath / m_sceneName);
 
+	std::set<std::wstring> convertingPath;
+
+// 	for (auto& p : assetPath)
+// 	{
+// 		
+// 	}
+
 	for (fs::directory_iterator itr(assetPath); itr != fs::end(itr); itr++)
 	{
 		const fs::directory_entry& entry = *itr;
@@ -643,7 +659,12 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 
 		std::wstring finalPath = m_convertPath + m_sceneName.generic_wstring() + L"/" + fPath.filename().generic_wstring();
 
-		m_gp->ConvertAsset(finalPath, false, false, true);
+		convertingPath.insert(finalPath);
+
+	}
+	for (auto& p : convertingPath)
+	{
+		m_gp->ConvertAsset(p, false, false, true);
 	}
 }
 
