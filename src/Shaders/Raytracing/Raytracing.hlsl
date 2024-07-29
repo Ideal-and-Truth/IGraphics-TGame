@@ -116,7 +116,16 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
         vertices[1].tangent,
         vertices[2].tangent
     };
-    tangent = normalize(HitAttribute(vertexTangents, attr));
+    tangent = HitAttribute(vertexTangents, attr);
+    {
+        //float3 v0 = vertices[0].position;
+        //float3 v1 = vertices[1].position;
+        //float3 v2 = vertices[2].position;
+        //float2 uv0 = float2(vertices[0].uv[0],vertices[0].uv[1]);
+        //float2 uv1 = float2(vertices[1].uv[0],vertices[1].uv[1]);
+        //float2 uv2 = float2(vertices[2].uv[0],vertices[2].uv[1]);
+        //tangent = CalculateTangent(v0, v1, v2, uv0, uv1, uv2);
+    }
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
@@ -165,13 +174,13 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N
     float tOffset = 0.001f;
     
     // 0
-    //float3 offsetAlongRay = tOffset * wi;
-    //float3 adjustedHitPosition = hitPosition + offsetAlongRay;
-    //ÅºÁ¨Æ® ¿ÀÇÁ¼Â(Tangent Offset):
+    float3 offsetAlongRay = tOffset * wi;
+    float3 adjustedHitPosition = hitPosition + offsetAlongRay;
     
     // 1
-    float3 offsetAlongRay = tOffset * N;
-    float3 adjustedHitPosition = hitPosition + offsetAlongRay;
+    //ÅºÁ¨Æ® ¿ÀÇÁ¼Â(Tangent Offset):
+    //float3 offsetAlongRay = tOffset * N;
+    //float3 adjustedHitPosition = hitPosition + offsetAlongRay;
     
     // 2
     //float3 offsetAlongRay = tOffset * normalize(N + wi);
@@ -199,6 +208,11 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N
     Ray ray;
     ray.origin = adjustedHitPosition;
     ray.direction = wi;
+
+    if(dot(ray.direction, N) <= 0)
+    {
+        ray.origin += N * 0.001f;
+    }
 
     float tMin = 0;
     float tMax = TMax;
@@ -422,8 +436,11 @@ float3 Shade(
                 float att = Ideal::Attenuate(distance, range);
                 float intensity = g_lightList.PointLights[i].Intensity;
                 
-                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
-            
+                bool isInShadow = false;
+                if(distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+                }
                 float3 light = Ideal::Light::ComputePointLight
                 (
                 Kd,
@@ -452,53 +469,37 @@ float3 Shade(
                 float3 direction = normalize(position - hitPosition);
                 float distance = length(position - hitPosition);
                 float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
-                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
                 
-                float SpotPenumbra = 1.f;
-                //float3 light = Ideal::Light::ComputeSpotLight
-                //(
-                //Kd,
-                //Ks,
-                //color,
-                //isInShadow,
-                //roughness,
-                //N,
-                //V,
-                //direction,
-                //distance,
-                //range,
-                //intensity,
-                //-lightDirection,
-                //angle,
-                //SpotPenumbra
-                //);
-                
+                bool isInShadow = false;
+                if(distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+                }
                 float3 light = Ideal::Light::ComputeSpotLight2(
-            Kd,
-            Ks,
-            color,
-            isInShadow,
-            roughness,
-            N,
-            V,
-            direction,
-            distance,
-            range,
-            intensity,
-            softness,
-            lightDirection,
-            angle
-        );
+                     Kd,
+                     Ks,
+                     color,
+                     isInShadow,
+                     roughness,
+                     N,
+                     V,
+                     direction,
+                     distance,
+                     range,
+                     intensity,
+                     softness,
+                     lightDirection,
+                     angle
+                 );
 
                 L += light;
             }
-
         }
     }
 
-    // Temp : 0.4´Â ÀÓ½Ã °ª
     
 #ifdef BeforeRefactor
+    // Temp : 0.2´Â ÀÓ½Ã °ª
     L += 0.2f * Kd;
 #endif
     
