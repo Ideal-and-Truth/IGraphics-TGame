@@ -85,13 +85,14 @@ struct DirectionalLight
 struct SpotLight
 {
 	Color Color;
-	Vector4 Direction;
-	Vector3 Position;
+	Vector3 Direction;
 	float SpotAngle;
+	Vector3 Position;
 	float Range;	
 	float Intensity;
-	float pad0;
+	float Softness;
 	float pad1;
+	float pad2;
 };
 
 struct CB_LightList
