@@ -81,7 +81,7 @@ namespace Ideal
 
 		virtual std::shared_ptr<Ideal::IMeshObject> CreateStaticMeshObject(const std::wstring& FileName) override;
 		virtual std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMeshObject(const std::wstring& FileName) override;
-		virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
+		virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName, const Matrix& _offset = Matrix::Identity) override;
 
 		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
 

@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
+#include "../Utils/SimpleMath.h"
+
 
 namespace Ideal
 {
@@ -34,7 +36,7 @@ namespace Ideal
 
 		virtual std::shared_ptr<Ideal::IMeshObject>			CreateStaticMeshObject(const std::wstring& FileName) abstract;
 		virtual std::shared_ptr<Ideal::ISkinnedMeshObject>	CreateSkinnedMeshObject(const std::wstring& FileName) abstract;
-		virtual std::shared_ptr<Ideal::IAnimation>			CreateAnimation(const std::wstring& FileName) abstract;
+		virtual std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName, const DirectX::SimpleMath::Matrix& offset = DirectX::SimpleMath::Matrix::Identity) abstract;
 
 		// CreateDebugMeshObject : 레이트레이싱에서는 그냥 Static Mesh Object 반환 //
 		virtual std::shared_ptr<Ideal::IMeshObject>			CreateDebugMeshObject(const std::wstring& FileName) abstract;

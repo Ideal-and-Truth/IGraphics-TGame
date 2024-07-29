@@ -40,7 +40,7 @@ namespace Truth
 		std::shared_ptr<Ideal::ISkinnedMeshObject> CreateSkinnedMesh(std::wstring _path);
 		std::shared_ptr<Ideal::IMeshObject> CreateMesh(std::wstring _path);
 		std::shared_ptr<Ideal::IMeshObject> CreateDebugMeshObject(std::wstring _path);
-		std::shared_ptr<Ideal::IAnimation> CreateAnimation(std::wstring _path);
+		std::shared_ptr<Ideal::IAnimation> CreateAnimation(std::wstring _path, const Matrix& _offset = Matrix::Identity);
 
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight();
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight();
