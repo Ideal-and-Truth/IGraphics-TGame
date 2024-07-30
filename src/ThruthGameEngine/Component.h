@@ -139,6 +139,7 @@ namespace Truth
 		const Vector3& GetScale() const;
 
 		const Matrix& GetWorldTM() const;
+		const Matrix& GetParentWorldTM() const;
 		const Matrix& GetLocalTM() const;
 		void SetLocalTM(const Matrix& _tm);
 

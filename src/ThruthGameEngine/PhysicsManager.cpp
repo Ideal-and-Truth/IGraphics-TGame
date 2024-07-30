@@ -139,9 +139,9 @@ void Truth::PhysicsManager::FixedUpdate()
 				TM *= Matrix::CreateFromQuaternion(rot);
 				TM *= Matrix::CreateTranslation(pos);
 
-				Matrix localTM = rigidbody->GetLocalTM();
-
-				rigidbody->SetLocalTM(localTM.Invert() * TM);
+				Matrix pTM = rigidbody->GetParentMatrix();
+				
+				rigidbody->SetLocalTM(TM * pTM.Invert());
 			}
 		}
 	}
