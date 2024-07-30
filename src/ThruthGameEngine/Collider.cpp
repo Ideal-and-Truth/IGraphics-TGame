@@ -155,6 +155,8 @@ void Truth::Collider::Awake()
 		m_managers.lock()->Physics()->AddScene(m_body);
 		return;
 	}
+
+	m_body = m_rigidbody.lock()->m_body;
 }
 
 void Truth::Collider::FixedUpdate()
