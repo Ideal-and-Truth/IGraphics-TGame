@@ -651,10 +651,10 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 
 	std::set<std::wstring> convertingPath;
 
-// 	for (auto& p : assetPath)
-// 	{
-// 		
-// 	}
+	// 	for (auto& p : assetPath)
+	// 	{
+	// 		
+	// 	}
 
 	for (fs::directory_iterator itr(assetPath); itr != fs::end(itr); itr++)
 	{
@@ -703,6 +703,11 @@ void Truth::UnityParser::WriteMapMeshData(GameObject* _node, std::shared_ptr<Fil
 		_file->Write<std::string>(result);
 		_file->Write<Matrix>(_node->m_worldTM);
 
+		_file->Write(_node->m_matarialsGuid.size());
+		for (auto& mat : _node->m_matarialsGuid)
+		{
+			_file->Write(mat);
+		}
 	}
 
 	for (auto* c : _node->m_children)
@@ -799,45 +804,127 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 /// <param name="_parent">부모 오브젝트</param>
 void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _parent)
 {
-	// as same as scene file parse
-	fs::path uscene(_path);
+	/// fbx file
 	if (_path.extension() == ".fbx")
 	{
 		m_meshFilterCount++;
 		_parent->m_isMesh = true;
 		_parent->m_meshPath = _path.generic_string();
-		return;
-	}
-	fs::path cscene = OrganizeUnityFile(uscene);
 
-	std::ifstream dataFile(cscene);
+		// get matarial
 
-	std::string& guid = m_pathMap[uscene]->m_guid;
+		fs::path metaPath = _path;
+		metaPath += ".meta";
 
-	auto doc = YAML::LoadAll(dataFile);
-	for (size_t i = 0; i < doc.size(); i++)
-	{
-		ParseYAMLFile(doc[i], guid);
-	}
+		fs::path uscene(metaPath);
+		std::ifstream dataFile(metaPath);
 
-	// get transform node ( 4 = transform class at unity scene file )
-	for (auto& p : m_classMap[guid]["4"])
-	{
-		// paresing when root game object
-		if (p->m_node["Transform"]["m_Father"]["fileID"].IsDefined())
+		auto doc = YAML::LoadAll(dataFile);
+		for (size_t i = 0; i < doc.size(); i++)
 		{
-			std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
-			if (parentFid == "0")
+			const YAML::Node& model = doc[i]["ModelImporter"];
+			if (model.IsDefined())
 			{
-				_parent->m_children.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, _parent));
+				const YAML::Node& externalObjects = model["externalObjects"];
+				if (externalObjects.IsDefined() && externalObjects.IsSequence())
+				{
+					for (auto& node : externalObjects)
+					{
+						if (node["first"]["type"].as<std::string>() == "UnityEngine:Material")
+						{
+							std::string matGuid = node["second"]["guid"].as<std::string>();
+							_parent->m_matarialsGuid.push_back(matGuid);
+							if (m_matarialMap.find(matGuid) != m_matarialMap.end())
+							{
+								continue;
+							}
+							m_matarialMap[matGuid] = MatarialData();
+							MatarialData& matdata = m_matarialMap[matGuid];
+
+							matdata.m_name = node["first"]["name"].as<std::string>();
+
+							fs::path matfile = m_guidMap[matGuid]->m_filePath;
+							std::ifstream matDataFile(matfile);
+							auto matDoc = YAML::LoadAll(matDataFile);
+							for (auto& matNode : matDoc)
+							{
+								const YAML::Node& texNode = matNode["Material"]["m_SavedProperties"]["m_TexEnvs"];
+								if (texNode.IsDefined() && texNode.IsSequence())
+								{
+									for (auto& texmap : texNode)
+									{
+										if (texmap["_BumpMap"].IsDefined())
+										{
+											std::string texGuid = texmap["_BumpMap"]["m_Texture"]["guid"].as<std::string>();
+											matdata.m_normal = m_guidMap[texGuid]->m_filePath;
+											if (!fs::exists(m_texturePath / m_sceneName / matdata.m_normal.filename()))
+											{
+												fs::copy(matdata.m_normal, m_texturePath / m_sceneName);
+											}
+										}
+										else if (texmap["_MainTex"].IsDefined())
+										{
+											std::string texGuid = texmap["_MainTex"]["m_Texture"]["guid"].as<std::string>();
+											matdata.m_albedo = m_guidMap[texGuid]->m_filePath;
+
+											if (!fs::exists(m_texturePath / m_sceneName / matdata.m_albedo.filename()))
+											{
+												fs::copy(matdata.m_albedo, m_texturePath / m_sceneName);
+											}
+										}
+										else if (texmap["_MetallicGlossMap"].IsDefined())
+										{
+											std::string texGuid = texmap["_MetallicGlossMap"]["m_Texture"]["guid"].as<std::string>();
+											matdata.m_metalicRoughness = m_guidMap[texGuid]->m_filePath;
+
+											if (!fs::exists(m_texturePath / m_sceneName / matdata.m_metalicRoughness.filename()))
+											{
+												fs::copy(matdata.m_metalicRoughness, m_texturePath / m_sceneName);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
-
-	// get prefab node ( 1001 = prefab class at unity scene file )
-	for (auto& p : m_classMap[guid]["1001"])
+	/// as same as scene file parse
+	else
 	{
-		_parent->m_children.push_back(ParsePrefabNode(p->m_node["PrefabInstance"], guid, _parent));
+		fs::path uscene(_path);
+		fs::path cscene = OrganizeUnityFile(uscene);
+		std::ifstream dataFile(cscene);
+
+		std::string& guid = m_pathMap[uscene]->m_guid;
+
+		auto doc = YAML::LoadAll(dataFile);
+		for (size_t i = 0; i < doc.size(); i++)
+		{
+			ParseYAMLFile(doc[i], guid);
+		}
+
+		// get transform node ( 4 = transform class at unity scene file )
+		for (auto& p : m_classMap[guid]["4"])
+		{
+			// paresing when root game object
+			if (p->m_node["Transform"]["m_Father"]["fileID"].IsDefined())
+			{
+				std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
+				if (parentFid == "0")
+				{
+					_parent->m_children.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, _parent));
+				}
+			}
+		}
+
+		// get prefab node ( 1001 = prefab class at unity scene file )
+		for (auto& p : m_classMap[guid]["1001"])
+		{
+			_parent->m_children.push_back(ParsePrefabNode(p->m_node["PrefabInstance"], guid, _parent));
+		}
 	}
 }
 

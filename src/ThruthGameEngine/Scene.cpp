@@ -339,6 +339,12 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		std::string meshpath = file->Read<std::string>();
 		Matrix meshTM = file->Read<Matrix>();
 
+		size_t matCount = file->Read<size_t>();
+		for (uint32 i = 0; i < matCount ; i++)
+		{
+			std::string mat = file->Read<std::string>();
+		}
+
 		USES_CONVERSION;
 		std::wstring wsval(A2W(meshpath.c_str()));
 

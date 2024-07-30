@@ -437,9 +437,9 @@ float3 Shade(
                 float intensity = g_lightList.PointLights[i].Intensity;
                 
                 bool isInShadow = false;
-                //if(distance <= range)
+                if(distance <= range)
                 {
-                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
                 }
                 float3 light = Ideal::Light::ComputePointLight
                 (
@@ -473,7 +473,7 @@ float3 Shade(
                 bool isInShadow = false;
                 if(distance <= range)
                 {
-                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
                 }
                 float3 light = Ideal::Light::ComputeSpotLight2(
                      Kd,

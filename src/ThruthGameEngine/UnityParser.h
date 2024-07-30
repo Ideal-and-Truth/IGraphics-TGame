@@ -44,6 +44,7 @@ namespace Truth
 
 		struct MatarialData
 		{
+			std::string m_name;
 			fs::path m_albedo;
 			fs::path m_normal;
 			fs::path m_metalicRoughness;
@@ -63,6 +64,7 @@ namespace Truth
 			// Mesh Filter Info
 			bool m_isMesh = false;
 			std::string m_meshPath = "";
+			std::vector<std::string> m_matarialsGuid;
 
 			// Transform Info
 			Matrix m_localTM = Matrix::Identity;
@@ -73,8 +75,6 @@ namespace Truth
 
 			GameObject* m_parent = nullptr;
 			std::vector<GameObject*> m_children;
-
-			std::vector<MatarialData> m_matarialVector;
 		};
 
 		uint32 m_meshFilterCount = 0;
@@ -95,6 +95,8 @@ namespace Truth
 		std::map<std::string, std::map<std::string, UnityNodeFormat*>> m_nodeMap;
 		// guid, classID, vector<node>
 		std::map<std::string, std::map<std::string, std::vector<UnityNodeFormat*>>> m_classMap;
+		// guid, matarialdata
+		std::map<std::string, MatarialData> m_matarialMap;
 
 		const fs::path m_defaultPath = "../Resources/MapData/";
 		const fs::path m_assetPath = "../Resources/Assets/MapData/";
@@ -106,7 +108,6 @@ namespace Truth
 		const std::wstring m_convertPath = L"MapData/";
 		const std::string m_sconvertPath = "MapData/";
 		
-		std::map<std::string, MatarialData> m_matarialMap;
 
 		GraphicsManager* m_gp;
 
