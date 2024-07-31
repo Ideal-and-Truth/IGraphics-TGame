@@ -82,6 +82,7 @@ float3 HitAttribute(float3 vertexAttribute[3], BuiltInTriangleIntersectionAttrib
     return vertexAttribute[0] +
         attr.barycentrics.x * (vertexAttribute[1] - vertexAttribute[0]) +
         attr.barycentrics.y * (vertexAttribute[2] - vertexAttribute[0]);
+
 }
 
 float2 HitAttribute(float2 vertexAttribute[3], BuiltInTriangleIntersectionAttributes attr)
@@ -93,22 +94,6 @@ float2 HitAttribute(float2 vertexAttribute[3], BuiltInTriangleIntersectionAttrib
 
 float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangentColor vertices[3], in MyAttributes attr)
 {
-    //float3 tangent;
-    //float3 vertexTangents[3] =
-    //{
-    //    vertices[0].tangent,
-    //    vertices[1].tangent,
-    //    vertices[2].tangent
-    //};
-    //tangent = normalize(HitAttribute(vertexTangents, attr));
-    //
-    //float3 newNormal = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
-    //float3 bitangent = normalize(cross(tangent, normal));
-    //newNormal = (newNormal * 2.f) - 1.f;
-    //newNormal = (newNormal.x * tangent) + (newNormal.y * bitangent) + (newNormal.z * normal); //TBN변환
-    //return normalize(newNormal);
-    
-    
     float3 tangent;
     float3 vertexTangents[3] =
     {
@@ -118,13 +103,14 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     };
     tangent = HitAttribute(vertexTangents, attr);
     {
-        //float3 v0 = vertices[0].position;
-        //float3 v1 = vertices[1].position;
-        //float3 v2 = vertices[2].position;
-        //float2 uv0 = float2(vertices[0].uv[0],vertices[0].uv[1]);
-        //float2 uv1 = float2(vertices[1].uv[0],vertices[1].uv[1]);
-        //float2 uv2 = float2(vertices[2].uv[0],vertices[2].uv[1]);
-        //tangent = CalculateTangent(v0, v1, v2, uv0, uv1, uv2);
+        ////
+        float3 v0 = vertices[0].position;
+        float3 v1 = vertices[1].position;
+        float3 v2 = vertices[2].position;
+        float2 uv0 = float2(vertices[0].uv[0],vertices[0].uv[1]);
+        float2 uv1 = float2(vertices[1].uv[0],vertices[1].uv[1]);
+        float2 uv2 = float2(vertices[2].uv[0],vertices[2].uv[1]);
+        tangent = CalculateTangent(v0, v1, v2, uv0, uv1, uv2);
     }
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
@@ -310,12 +296,6 @@ void CalculateSpecularAndReflectionCoefficients(
     float3 F = F0 + (1.0 - F0) * pow(1.0 - saturate(dot(N, V)), 5.0);
     if (metallic > 0.f)
     {
-        //float3 r0 = Albedo * metallic;
-        //float hv = clamp(dot(N, V), 0.0f, 1.0f);
-        //float3 fresnel = r0 + (1.0f - r0) * pow(1.0f - hv, 5.0f);
-        //Ks = fresnel;
-        
-        Ks = Albedo * metallic;
         Ks = F;
     }
     else
@@ -325,8 +305,6 @@ void CalculateSpecularAndReflectionCoefficients(
     
     float roughnessFactor = pow(1.0 - roughness, 2.0); // Roughness가 높을수록 반사율을 줄임
     Kr = F * roughnessFactor;
-    
-    //Kr = F;
 }
 
 float3 Shade(
@@ -341,6 +319,11 @@ float3 Shade(
     float3 V = -WorldRayDirection();
     float3 L = 0;
     
+    //if(dot(N, V) < 0.f)
+    //{
+    ////return float3(0,0,0);
+    //}
+
     float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).xyz;
     float3 Ks;
     float3 Kr;
@@ -377,15 +360,8 @@ float3 Shade(
 #endif
         //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
     }
-    //metallic = 1;
-    //roughness = 0;
-    //metallic = l_materialInfo.metallicFactor;
-    //roughness = l_materialInfo.roughnessFactor;
 
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
-    //Kr = 0.5f;
-    //Ks = metallic;
-    //roughness = 0;
   
     if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
@@ -399,9 +375,10 @@ float3 Shade(
 //        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
 //#endif
 
-
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
+        //int pointLightNum = 0;
+        //int spotLightNum = 0;
         // Directional Light
         {
             float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
@@ -417,10 +394,6 @@ float3 Shade(
             color,
             isInShadow, roughness, N, V,
             direction);
-            //if(BxDF::IsBlack(L))
-            //{
-            //    L += 0.4f * Kd;
-            //}
         }
         
         // Point Light
@@ -473,7 +446,7 @@ float3 Shade(
                 bool isInShadow = false;
                 if(distance <= range)
                 {
-                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload);
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
                 }
                 float3 light = Ideal::Light::ComputeSpotLight2(
                      Kd,
@@ -502,7 +475,7 @@ float3 Shade(
     // Temp : 0.2는 임시 값
     L += 0.2f * Kd;
 #endif
-    
+    //return L;
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);
     //bool isReflective = Ideal::CheckReflect(Kr);
@@ -510,6 +483,7 @@ float3 Shade(
     
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
+
     if (isReflective)
     {
         if (isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
@@ -517,6 +491,7 @@ float3 Shade(
             RayPayload reflectedPayLoad = rayPayload;
             float3 wi = reflect(-V, N);
             
+            //L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad, spawnParameters);
             L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad, spawnParameters);
         }
         else // No total internal reflection
@@ -551,6 +526,7 @@ inline Ray GenerateCameraRay(uint2 index, out float3 origin, out float3 directio
 
     // Unproject the pixel coordinate into a ray.
     float4 world = mul(float4(screenPos, 0, 1), g_sceneCB.projectionToWorld);
+    //float4 world = mul(g_sceneCB.projectionToWorld, float4(screenPos, 0, 1));
     
     world.xyz /= world.w;
     origin = g_sceneCB.cameraPosition.xyz;
@@ -630,7 +606,6 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
     float2 uv = HitAttribute(vertexTexCoords, attr);
 
- 
     // Normal
     float3 normal;
     float3 tangent;
@@ -646,18 +621,31 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         objectNormal = normalize(HitAttribute(vertexNormals, attr));
         float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
         objectNormal *= orientation;
-        
-        normal = normalize(mul((float3x3) ObjectToWorld3x4(), objectNormal));
+
+        // 여기부터 임시
+        //normal = NormalMap(objectNormal, uv, vertexInfo, attr);
+        //normal = normalize(mul((float3x3)ObjectToWorld3x4(), normal));
+        // 여기까지
+
+        normal = normalize(mul((float3x3)ObjectToWorld3x4(), objectNormal));
+        //normal = objectNormal;
+        //normal = normalize(mul(objectNormal, (float3x3) ObjectToWorld3x4()));
     }
+   
     //if(l_materialInfo.bUseNormalMap == false)
-    //if(l_materialInfo.bUseNormalMap == true)
+    if(l_materialInfo.bUseNormalMap == true)
     {
 #ifdef BeforeRefactor
-        normal = NormalMap(normal, uv, vertexInfo, attr);
+    normal = NormalMap(normal, uv, vertexInfo, attr);
 #endif
     }
-    //normal = normalize(normal);
-    
+    //if(dot(-WorldRayDirection(), normal) < 0)
+    //{
+    //    payload.radiance = float3(1,1,1); return;
+    //}
+    //payload.radiance = normal; return;
+    //payload.radiance = normal;
+    //return; 
     SafeSpawnPointParameters spawn;
     spawn.v0 = l_vertices[indices[0]].position;
     spawn.v1 = l_vertices[indices[1]].position;

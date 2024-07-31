@@ -238,8 +238,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
 		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 
-		Matrix floorMat = Matrix::CreateScale(Vector3(15.f, 1.f, 15.f)) *
-			Matrix::CreateTranslation(Vector3(2.5f, -2.5f, 5.f));
+		Matrix floorMat = Matrix::CreateRotationY(3.14);
 		//mesh->SetTransformMatrix(floorMat);
 		//std::shared_ptr<Ideal::IMeshObject> sphere = gRenderer->CreateStaticMeshObject(L"UVSphere/UVSphere");
 		//std::shared_ptr<Ideal::IMeshObject> sphere1 = gRenderer->CreateStaticMeshObject(L"UVSphere1/UVSphere");
@@ -321,14 +320,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		spotLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		spotLight->SetRange(6.f);
 		spotLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		spotLight->SetIntensity(0.8f);
+		spotLight->SetIntensity(0.f);
 
 
 		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		pointLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		pointLight->SetRange(6.f);
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		pointLight->SetIntensity(0.8f);
+		pointLight->SetIntensity(0.f);
 
 		//------------------Add Light to Render Scene-----------------//
 		// Directional Light일 경우 그냥 바뀐다.
@@ -684,7 +683,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	float aspectRatio = float(WIDTH) / HEIGHT;
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	//float aspectRatio = float(1296) / 999.f;
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 10000.f);
 	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
