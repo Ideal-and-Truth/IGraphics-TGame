@@ -349,7 +349,14 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		std::wstring wsval(A2W(meshpath.c_str()));
 
 		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
-		m_mapMesh.back()->SetTransformMatrix(meshTM);
+
+		Matrix flipYZ = Matrix::Identity;
+		flipYZ.m[0][0] = -1.f;
+
+		Matrix flipXY = Matrix::Identity;
+		flipXY.m[2][2] = -1.f;
+
+		m_mapMesh.back()->SetTransformMatrix(flipYZ * flipXY * meshTM);
 	}
 }
 
