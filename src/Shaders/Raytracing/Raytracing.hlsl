@@ -113,6 +113,7 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
         tangent = CalculateTangent(v0, v1, v2, uv0, uv1, uv2);
     }
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
+    //return texSample;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
     return worldNormal;
@@ -318,11 +319,6 @@ float3 Shade(
 {
     float3 V = -WorldRayDirection();
     float3 L = 0;
-    
-    //if(dot(N, V) < 0.f)
-    //{
-    ////return float3(0,0,0);
-    //}
 
     float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).xyz;
     float3 Ks;
@@ -384,9 +380,7 @@ float3 Shade(
             float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
             
             float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-            //float3 color = float3(0.3f,0.3f,0.3f);
-            //float3 color = float3(0.5f,0.5f,0.5f);
-            //float3 color = float3(0.f,0.f,0.f);
+            
             bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
             L += Ideal::Light::ComputeDirectionalLight(
             Kd,
@@ -639,10 +633,10 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     normal = NormalMap(normal, uv, vertexInfo, attr);
 #endif
     }
-    //if(dot(-WorldRayDirection(), normal) < 0)
-    //{
-    //    payload.radiance = float3(1,1,1); return;
-    //}
+    if(dot(-WorldRayDirection(), normal) < 0)
+    {
+        //payload.radiance = float3(1,1,1); return;
+    }
     //payload.radiance = normal; return;
     //payload.radiance = normal;
     //return; 

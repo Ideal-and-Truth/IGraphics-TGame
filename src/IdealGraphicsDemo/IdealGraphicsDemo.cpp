@@ -169,6 +169,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->SetRenderScene(renderScene);
 
 		//-------------------Convert FBX(Model, Animation)-------------------//
+		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
+
 		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
@@ -199,6 +202,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 		//-------------------Create Mesh Object-------------------//
+		std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/SM_chronos.Main_tPose");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/untitled");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player3 = gRenderer->CreateSkinnedMeshObject(L"player/myPlayer");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> tempPlayer = gRenderer->CreateSkinnedMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//std::shared_ptr<Ideal::IAnimation> rumbaAnim = gRenderer->CreateAnimation(L"player/Rumba Dancing");
@@ -236,8 +241,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
 		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-
+		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		Matrix floorMat = Matrix::CreateRotationY(3.14);
 		//mesh->SetTransformMatrix(floorMat);
 		//std::shared_ptr<Ideal::IMeshObject> sphere = gRenderer->CreateStaticMeshObject(L"UVSphere/UVSphere");
@@ -566,8 +570,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		meshes.clear();
 
-		gRenderer->DeleteMeshObject(mesh);
-		mesh.reset();
+		//gRenderer->DeleteMeshObject(mesh);
+		//mesh.reset();
 		//
 		//gRenderer->DeleteMeshObject(cat);
 		//cat.reset();

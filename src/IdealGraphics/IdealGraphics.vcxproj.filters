@@ -168,6 +168,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UAV.h" />
     <ClInclude Include="GraphicsEngine\D3D12\DeferredDeleteManager.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
+    <ClInclude Include="GraphicsEngine\public\IMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">

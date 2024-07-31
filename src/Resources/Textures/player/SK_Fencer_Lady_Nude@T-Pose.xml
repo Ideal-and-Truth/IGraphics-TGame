@@ -2,7 +2,7 @@
 <Materials>
     <Material>
         <Name>hair1</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>Hair_BaseColor_Ash.tga</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -32,7 +32,7 @@
     </Material>
     <Material>
         <Name>Eyes1</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>Eyes_BaseColor_01.tga</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -47,7 +47,7 @@
     </Material>
     <Material>
         <Name>body1</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>Body_BaseColor.tga</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -62,7 +62,7 @@
     </Material>
     <Material>
         <Name>face</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>Head_BaseColor.tga</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

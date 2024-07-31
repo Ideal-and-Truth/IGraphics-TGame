@@ -199,6 +199,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\TestShader.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\D3D12RaytracingResources.h" />
     <ClInclude Include="GraphicsEngine\public\imconfig.h" />
+    <ClInclude Include="GraphicsEngine\public\IMesh.h" />
     <ClInclude Include="GraphicsEngine\public\imgui.h" />
     <ClInclude Include="Editor\imgui\imgui_impl_dx12.h" />
     <ClInclude Include="Editor\imgui\imgui_impl_win32.h" />
