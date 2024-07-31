@@ -391,6 +391,13 @@ void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::N
 		{
 			ParseMeshFilter(meshFilter, _owner);
 		}
+
+		/// find Light
+		const YAML::Node& light = m_nodeMap[_guid][compFid]->m_node["Light"];
+		if (light.IsDefined())
+		{
+			ParseLight(light, _owner);
+		}
 	}
 }
 
@@ -425,9 +432,16 @@ void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _o
 	}
 }
 
-void Truth::UnityParser::ParseMaterial(const YAML::Node& _node)
+void Truth::UnityParser::ParseLight(const YAML::Node& _node, GameObject* _owner)
 {
-
+	_owner->m_intensity = _node["m_Intensity"].as<float>();
+	_owner->m_type = _node["m_Type"].as<uint32>();
+	_owner->m_color.x = _node["m_Color"]["r"].as<float>();
+	_owner->m_color.y = _node["m_Color"]["g"].as<float>();
+	_owner->m_color.z = _node["m_Color"]["b"].as<float>();
+	_owner->m_color.w = _node["m_Color"]["a"].as<float>();
+	_owner->m_range = _node["m_Range"].as<float>();
+	_owner->m_angle = _node["m_SpotAngle"].as<float>();
 }
 
 DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node)
@@ -796,6 +810,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 
 	WriteMapData();
 	WriteMapMeshData(uscene);
+
 	ConvertUnloadedMesh();
 }
 

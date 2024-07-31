@@ -66,6 +66,17 @@ namespace Truth
 			std::string m_meshPath = "";
 			std::vector<std::string> m_matarialsGuid;
 
+			bool m_isLight = false;
+			uint32 m_type;
+			// same thigins
+			float m_intensity;
+			Color m_color;
+
+			float m_range;
+			float m_angle;
+			
+			Vector3 m_direction;
+
 			// Transform Info
 			Matrix m_localTM = Matrix::Identity;
 			Matrix m_worldTM = Matrix::Identity;
@@ -144,7 +155,7 @@ namespace Truth
 		void ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner);
 		void ParseBoxCollider(const YAML::Node& _node, GameObject* _owner);
 		void ParseMeshFilter(const YAML::Node& _node, GameObject* _owner);
-		void ParseMaterial(const YAML::Node& _node);
+		void ParseLight(const YAML::Node& _node, GameObject* _owner);
 
 		Matrix GetPrefabMatrix(const YAML::Node& _node);
 
