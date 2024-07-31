@@ -75,6 +75,8 @@ namespace Truth
 
 			GameObject* m_parent = nullptr;
 			std::vector<GameObject*> m_children;
+
+			std::string m_name;
 		};
 
 		uint32 m_meshFilterCount = 0;

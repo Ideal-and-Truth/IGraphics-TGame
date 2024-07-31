@@ -376,6 +376,8 @@ void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::N
 		const YAML::Node& comp = *it;
 		std::string compFid = comp["component"]["fileID"].as<std::string>();
 
+		_owner->m_name;
+
 		/// find box collider
 		const YAML::Node& collider = m_nodeMap[_guid][compFid]->m_node["BoxCollider"];
 		if (collider.IsDefined())
@@ -668,7 +670,7 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 	}
 	for (auto& p : convertingPath)
 	{
-		m_gp->ConvertAsset(p, false, false, true);
+		m_gp->ConvertAsset(p, false, false);
 	}
 }
 

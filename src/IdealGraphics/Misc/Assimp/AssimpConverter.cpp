@@ -124,11 +124,12 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	if (!isSkinnedData)
 	{
 		// TODO : 모델 FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk.
-		flag |= aiProcess_OptimizeMeshes;
-		flag |= aiProcess_PreTransformVertices;
+		// flag |= aiProcess_OptimizeMeshes;
+		// flag |= aiProcess_PreTransformVertices;
 	}
-	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
+	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, true);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
+	bool s = m_importer->GetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS);
 
 	m_scene = m_importer->ReadFile(
 		ConvertWStringToString(fileStr),
@@ -670,13 +671,15 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 		return;
 	}
 
-	std::shared_ptr<AssimpConvert::Mesh> mesh = std::make_shared<AssimpConvert::Mesh>();
-	mesh->name = node->mName.C_Str();
-	mesh->boneIndex = bone;
+	
 
 	// submesh
 	for (uint32 i = 0; i < node->mNumMeshes; ++i)
 	{
+		std::shared_ptr<AssimpConvert::Mesh> mesh = std::make_shared<AssimpConvert::Mesh>();
+		mesh->name = node->mName.C_Str();
+		mesh->boneIndex = bone;
+
 		uint32 index = node->mMeshes[i];
 		const aiMesh* srcMesh = m_scene->mMeshes[index];
 
@@ -687,10 +690,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 		// mesh가 여러개일 경우 index가 중복될 수 있다. 
 		// 하나로 관리하기 위해 미리 이전 vertex의 size를 가져와서 이번에 추가하는 index에 더해 중복을 피한다.
 
-		const uint32 startVertex = (uint32)mesh->vertices.size();
-
-		Vector3 minpos = { FLT_MAX, FLT_MAX , FLT_MAX };
-		Vector3 maxpos = { -FLT_MAX, -FLT_MAX , -FLT_MAX };
+		//const uint32 startVertex = (uint32)mesh->vertices.size();
 
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
@@ -701,14 +701,6 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 				/*vertex.Position.x *= 0.01;
 				vertex.Position.y *= 0.01;
 				vertex.Position.z *= 0.01;*/
-
-				minpos.x = std::min(minpos.x, vertex.Position.x);
-				minpos.y = std::min(minpos.y, vertex.Position.y);
-				minpos.z = std::min(minpos.z, vertex.Position.z);
-
-				maxpos.x = max(maxpos.x, vertex.Position.x);
-				maxpos.y = max(maxpos.y, vertex.Position.y);
-				maxpos.z = max(maxpos.z, vertex.Position.z);
 			}
 
 			// UV
@@ -732,15 +724,6 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 			mesh->vertices.push_back(vertex);
 		}
 
-		if (convertCenter)
-		{
-			Vector3 center = (maxpos + minpos) / 2;
-			for (auto& m : mesh->vertices)
-			{
-				m.Position -= center;
-			}
-		}
-
 		// Index
 		for (uint32 f = 0; f < srcMesh->mNumFaces; ++f)
 		{
@@ -748,11 +731,11 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 
 			for (uint32 k = 0; k < face.mNumIndices; ++k)
 			{
-				mesh->indices.push_back(face.mIndices[k] + startVertex);
+				mesh->indices.push_back(face.mIndices[k]);
 			}
 		}
+		m_meshes.push_back(mesh);
 	}
-	m_meshes.push_back(mesh);
 }
 
 void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
