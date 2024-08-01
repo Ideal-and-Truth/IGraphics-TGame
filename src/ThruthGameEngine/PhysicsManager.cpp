@@ -31,6 +31,8 @@ Truth::PhysicsManager::PhysicsManager()
 			physx::m_collsionTable[i] += 1 << j;
 		}
 	}
+
+	SetCollisionFilter(3, 0, false);
 }
 
 /// <summary>
@@ -47,6 +49,8 @@ Truth::PhysicsManager::~PhysicsManager()
 /// </summary>
 void Truth::PhysicsManager::Initalize()
 {
+	m_qCallback = new TruthPxQueryFilterCallback();
+
 	// physx 의 기본 요소를 생성하는 foundation
 	m_foundation = ::PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
 
@@ -385,6 +389,43 @@ void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 }
 
 /// <summary>
+/// 해당 방향으로 ray를 쐈을 때 부딫히는 지점을 구한다 (물리 연산 상)
+/// </summary>
+/// <param name="_start">시작</param>
+/// <param name="_direction">방향</param>
+/// <param name="_range">범위</param>
+/// <returns>부딫힌 지점</returns>
+DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range)
+{
+	physx::PxRaycastBuffer rayCastBuffer;
+	physx::PxQueryFilterData queryFilterData;
+	queryFilterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	// queryFilterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
+	queryFilterData.data.word0 = 0;
+	bool hitCheck = m_scene->raycast(
+		MathConverter::Convert(_start),
+		MathConverter::Convert(_direction),
+		_range,
+		rayCastBuffer,
+		physx::PxHitFlags(physx::PxHitFlag::ePOSITION),
+		queryFilterData,
+		m_qCallback
+	);
+
+	rayCastBuffer.nbTouches;
+	if (hitCheck)
+	{
+		int a = 1;
+		return MathConverter::Convert(rayCastBuffer.block.position);
+		// return _start + (_direction * _range);
+	}
+	else
+	{
+		return _start + (_direction * _range);
+	}
+}
+
+/// <summary>
 /// physx의 Scene을 생성하는 함수
 /// </summary>
 void Truth::PhysicsManager::CreatePhysxScene()
@@ -529,4 +570,21 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 	}
 
 	return physx::PxFilterFlag::eDEFAULT;
+}
+
+physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags)
+{
+	if (physx::m_collsionTable[filterData.word0] & 1 << shape->getQueryFilterData().word0)
+	{
+		return physx::PxQueryHitType::Enum::eBLOCK;
+	}
+	else
+	{
+		return physx::PxQueryHitType::Enum::eNONE;
+	}
+}
+
+physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit)
+{
+	return physx::PxQueryHitType::Enum::eBLOCK;
 }

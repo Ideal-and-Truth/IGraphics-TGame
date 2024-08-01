@@ -327,6 +327,7 @@ void Truth::Collider::SetUpFiltering(uint32 _filterGroup)
 	physx::PxFilterData filterData;
 	filterData.word0 = _filterGroup;
 	m_collider->setSimulationFilterData(filterData);
+	m_collider->setQueryFilterData(filterData);
 }
 
 
