@@ -39,6 +39,7 @@ Texture2D<float4> l_texDiffuse : register(t2, space1);
 Texture2D<float4> l_texNormal : register(t3, space1);
 Texture2D<float4> l_texMetallic : register(t4, space1);
 Texture2D<float4> l_texRoughness : register(t5, space1);
+Texture2D<float4> l_texMask : register(t6, space1);
 ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 //StructuredBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 
@@ -329,18 +330,21 @@ float3 Shade(
     if (l_materialInfo.bUseMetallicMap)
     {
         //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
-        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     else
     {
-        metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
+        metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     
     if (l_materialInfo.bUseRoughnessMap)
     {
         //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
 //#ifdef BeforeRefactor
-        roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        //roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
 //#else
 //        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
 //#endif
@@ -350,7 +354,8 @@ float3 Shade(
     {
         //roughness = l_materialInfo.roughnessFactor;
 //#ifdef BeforeRefactor
-        roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        //roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
+        roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
 //#else
 //        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
 //#endif

@@ -59,7 +59,7 @@ inline void SerializeAndCreateRootSignature(ComPtr<ID3D12Device5> Device, D3D12_
 	Check(
 		Device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&(*rootSignature))),
 		L"Failed to create Rootsignature"
-		);
+	);
 
 
 	if (ResourceName)
@@ -85,7 +85,7 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	m_ASManager = std::make_unique<DXRAccelerationStructureManager>();
 	m_uavSingleDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
 	m_uavSingleDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
-	
+
 	CreateUAVRenderTarget(Device, Width, Height);	//device, width, height
 	CreateRootSignature(Device);	//device
 	CreateRaytracingPipelineStateObject(Device, RaytracingShader); // device, shader
@@ -104,7 +104,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	CommandList->SetDescriptorHeaps(1, DescriptorManager->GetDescriptorHeap().GetAddressOf());
 
 	// TODO : Global Root 연결해주는 부분 나중에 뺄 것
-	
+
 	// Parameter 0
 	auto handle0 = DescriptorManager->Allocate(CurrentFrameIndex);
 	//Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), OutputUAVHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -149,7 +149,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 
 	dispatchRayDesc.RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
 	dispatchRayDesc.RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
-	
+
 	dispatchRayDesc.Width = m_width;
 	dispatchRayDesc.Height = m_height;
 	dispatchRayDesc.Depth = 1;
@@ -243,45 +243,82 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 			blasGeometry.IndexCount = skinnedMesh->GetMeshes()[i]->GetIndexBuffer()->GetElementCount();
 
 			std::shared_ptr<Ideal::IdealMaterial> material = skinnedMesh->GetMeshes()[i]->GetMaterial();
+
 			if (material)
 			{
-				std::shared_ptr<Ideal::D3D12Texture> albedoTexture = material->GetDiffuseTexture();
-				if (albedoTexture)
+				// material이 이미 들어가있는지를 검사한다.
+				auto findMaterial = m_materialMapInFixedDescriptorTable[material->GetID()];
+				if (findMaterial != nullptr)
 				{
-					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), albedoTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					// TODO : blasgeometry.material = this
+					blasGeometry.Material = findMaterial;
 				}
-
-				std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
-				if (normalTexture)
+				else
 				{
-					blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				}
+					// 만약 없을 경우 만든다.
+					m_materialMapInFixedDescriptorTable[material->GetID()] = material;
+					blasGeometry.Material = material;
+					{
+						auto diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+						material->SetDiffuseTextureHandleInRayTracing(diffuse);
 
-				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
-				if (metalicTexture)
-				{
-					blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				}
+						auto normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+						material->SetNormalTextureHandleInRayTracing(normal);
 
-				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
-				if (roughnessTexture)
-				{
-					blasGeometry.SRV_Roughness = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				}
+						auto mask = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+						material->SetMaskTextureHandleInRayTracing(mask);
 
-				{
-					//blasGeometry.CB_MaterialInfo = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					//auto cb = CBPool->Allocate(Device.Get(), sizeof(CB_MaterialInfo));
-					//CB_MaterialInfo* materialInfo = (CB_MaterialInfo*)cb->SystemMemAddr;
-					//memcpy(materialInfo, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
-					//Device->CopyDescriptorsSimple(1, blasGeometry.CB_MaterialInfo.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+						material->CopyHandleToRayTracingDescriptorTable(Device);
+						//material->TextureChanged();
+						material->AddRefCountInRayTracing();
+					}
 
-					// Init as constant
-					memcpy(&blasGeometry.C_MaterialInfo, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
+
+					//std::shared_ptr<Ideal::D3D12Texture> albedoTexture = material->GetDiffuseTexture();
+					//if (albedoTexture)
+					//{
+					//	blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//	Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), albedoTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//}
+					//
+					//std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
+					//if (normalTexture)
+					//{
+					//	blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//	Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//}
+					//
+					//std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
+					//if (metalicTexture)
+					//{
+					//	blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//	Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//}
+					//
+					//std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
+					//if (roughnessTexture)
+					//{
+					//	blasGeometry.SRV_Roughness = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//	Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//}
+					//
+					//std::shared_ptr<Ideal::D3D12Texture> maskTexture = material->GetMaskTexture();
+					//if (maskTexture)
+					//{
+					//	blasGeometry.SRV_Mask = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//	Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Mask.GetCpuHandle(), maskTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//}
+					//
+					//{
+					//	//blasGeometry.CB_MaterialInfo = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//	//auto cb = CBPool->Allocate(Device.Get(), sizeof(CB_MaterialInfo));
+					//	//CB_MaterialInfo* materialInfo = (CB_MaterialInfo*)cb->SystemMemAddr;
+					//	//memcpy(materialInfo, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
+					//	//Device->CopyDescriptorsSimple(1, blasGeometry.CB_MaterialInfo.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//
+					//	// Init as constant
+					//	memcpy(&blasGeometry.C_MaterialInfo, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
+					//}
 				}
 			}
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
@@ -318,45 +355,80 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 			std::shared_ptr<Ideal::IdealMaterial> material = mesh->GetMeshes()[i]->GetMaterial();
 			if (material)
 			{
-				std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
-				if (diffuseTexture)
+				// material이 이미 들어가있는지를 검사한다.
+				auto findMaterial = m_materialMapInFixedDescriptorTable[material->GetID()];
+				if (findMaterial != nullptr)
 				{
-					//blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
-					blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					// TODO : blasgeometry.material = this
+					blasGeometry.Material = findMaterial;
 				}
-				std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
-				if (normalTexture)
+				else
 				{
-					blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				}
+					// 만약 없을 경우 만든다.
+					m_materialMapInFixedDescriptorTable[material->GetID()] = material;
+					blasGeometry.Material = material;
+					{
+						auto diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+						material->SetDiffuseTextureHandleInRayTracing(diffuse);
 
-				std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
-				if (metalicTexture)
-				{
-					blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				}
+						auto normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+						material->SetNormalTextureHandleInRayTracing(normal);
 
-				std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
-				if (roughnessTexture)
-				{
-					blasGeometry.SRV_Roughness = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				}
+						auto mask = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+						material->SetMaskTextureHandleInRayTracing(mask);
 
-				{
-					// 생각해보니 cb pool는 매 프레임 초기화를 한다...
-					// Init as constant 로 바꿔야 할 것 같다.
-					//blasGeometry.CBV_MaterialInfo = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-					//auto cb = CBPool->Allocate(Device.Get(), sizeof(CB_MaterialInfo));
-					//CB_MaterialInfo* materialInfo = (CB_MaterialInfo*)cb->SystemMemAddr;
-					//memcpy(cb->SystemMemAddr, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
-					//Device->CopyDescriptorsSimple(1, blasGeometry.CBV_MaterialInfo.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+						material->CopyHandleToRayTracingDescriptorTable(Device);
+						//material->TextureChanged();
+						material->AddRefCountInRayTracing();
+					}
+					//if (material)
+					//{
+					//	std::shared_ptr<Ideal::D3D12Texture> diffuseTexture = material->GetDiffuseTexture();
+					//	if (diffuseTexture)
+					//	{
+					//		//blasGeometry.DiffuseTexture = diffuseTexture->GetSRV();
+					//		blasGeometry.SRV_Diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//		Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Diffuse.GetCpuHandle(), diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//	}
+					//	std::shared_ptr<Ideal::D3D12Texture> normalTexture = material->GetNormalTexture();
+					//	if (normalTexture)
+					//	{
+					//		blasGeometry.SRV_Normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//		Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Normal.GetCpuHandle(), normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//	}
 
-					// Init as constant
-					memcpy(&blasGeometry.C_MaterialInfo, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
+					//	std::shared_ptr<Ideal::D3D12Texture> metalicTexture = material->GetMetallicTexture();
+					//	if (metalicTexture)
+					//	{
+					//		blasGeometry.SRV_Metallic = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//		Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Metallic.GetCpuHandle(), metalicTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//	}
+
+					//	std::shared_ptr<Ideal::D3D12Texture> roughnessTexture = material->GetRoughnessTexture();
+					//	if (roughnessTexture)
+					//	{
+					//		blasGeometry.SRV_Roughness = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//		Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Roughness.GetCpuHandle(), roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//	}
+
+					//	std::shared_ptr<Ideal::D3D12Texture> maskTexture = material->GetMaskTexture();
+					//	if (maskTexture)
+					//	{
+					//		blasGeometry.SRV_Mask = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//		Device->CopyDescriptorsSimple(1, blasGeometry.SRV_Mask.GetCpuHandle(), maskTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					//	}
+
+					//	{
+					//		// 생각해보니 cb pool는 매 프레임 초기화를 한다...
+					//		// Init as constant 로 바꿔야 할 것 같다.
+					//		//blasGeometry.CBV_MaterialInfo = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
+					//		//auto cb = CBPool->Allocate(Device.Get(), sizeof(CB_MaterialInfo));
+					//		//CB_MaterialInfo* materialInfo = (CB_MaterialInfo*)cb->SystemMemAddr;
+					//		//memcpy(cb->SystemMemAddr, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
+					//		//Device->CopyDescriptorsSimple(1, blasGeometry.CBV_MaterialInfo.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+					//		// Init as constant
+					//		memcpy(&blasGeometry.C_MaterialInfo, &material->GetMaterialInfo(), sizeof(CB_MaterialInfo));
 				}
 			}
 			blasGeometry.SRV_VertexBuffer = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
@@ -373,13 +445,12 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 	uint64 geometrySizeInBLAS = Geometries.size();
 	//blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
 	m_contributionToHitGroupIndexCount += geometrySizeInBLAS;
-	
+
 	// blas ref count 를 증가시킨다.
 	blas->AddRefCount();
 
 	return blas;
 }
-
 std::shared_ptr<Ideal::BLASInstanceDesc> Ideal::RaytracingManager::AllocateInstanceByBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, uint32 InstanceContributionToHitGroupIndex /*= UINT_MAX*/, Matrix transform /*= Matrix::Identity*/, BYTE InstanceMask /*= 1*/)
 {
 	auto blasInstanceDesc = m_ASManager->AddInstanceByBLAS(BLAS, InstanceContributionToHitGroupIndex, transform, InstanceMask);
@@ -413,8 +484,16 @@ void Ideal::RaytracingManager::FinalCreate2(ComPtr<ID3D12Device5> Device, ComPtr
 	//m_ASManager->Build2(Device, CommandList, UploadBufferPool, nullptr, ForceBuild);
 }
 
-void Ideal::RaytracingManager::UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
+void Ideal::RaytracingManager::UpdateAccelerationStructures(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
 {
+	std::vector<std::shared_ptr<Ideal::IdealMaterial>> materials;
+	for (auto m : m_materialMapInFixedDescriptorTable)
+	{
+		if (m.second->IsTextureChanged())
+		{
+			m.second->CopyHandleToRayTracingDescriptorTable(Device);
+		}
+	}
 	m_ASManager->Build(Device, CommandList, UploadBufferPool, DeferredDeleteManager);
 }
 
@@ -461,6 +540,7 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		ranges[LocalRootSignature::Slot::SRV_Normal].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3, space);	// t3 : Normal
 		ranges[LocalRootSignature::Slot::SRV_Metalic].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4, space);	// t4 : Metalic
 		ranges[LocalRootSignature::Slot::SRV_Roughness].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5, space);	// t5 : Roughness
+		ranges[LocalRootSignature::Slot::SRV_Mask].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6, space);	// t5 : Roughness
 		//ranges[LocalRootSignature::Slot::CBV_MaterialInfo].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, space);	// b0 : material info
 
 
@@ -471,6 +551,7 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		rootParameters[LocalRootSignature::Slot::SRV_Normal].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Normal]);
 		rootParameters[LocalRootSignature::Slot::SRV_Metalic].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Metalic]);
 		rootParameters[LocalRootSignature::Slot::SRV_Roughness].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Roughness]);
+		rootParameters[LocalRootSignature::Slot::SRV_Mask].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::SRV_Mask]);
 		//rootParameters[LocalRootSignature::Slot::CBV_MaterialInfo].InitAsDescriptorTable(1, &ranges[LocalRootSignature::Slot::CBV_MaterialInfo]);
 		rootParameters[LocalRootSignature::Slot::CBV_MaterialInfo].InitAsConstants(sizeof(CB_MaterialInfo), 0, 1);
 		//rootParameters[LocalRootSignature::Slot::CBV_MaterialInfo].InitAsConstants(SizeOfInUint32(CB_MaterialInfo), 0, 1);
@@ -625,13 +706,18 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 				Ideal::LocalRootSignature::RootArgument rootArguments;
 				rootArguments.SRV_Vertices = blasGeometry.SRV_VertexBuffer.GetGpuHandle();
 				rootArguments.SRV_Indices = blasGeometry.SRV_IndexBuffer.GetGpuHandle();
-				rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
-				rootArguments.SRV_NormalTexture = blasGeometry.SRV_Normal.GetGpuHandle();
-				rootArguments.SRV_MetalicTexture = blasGeometry.SRV_Metallic.GetGpuHandle();
-				rootArguments.SRV_RoughnessTexture = blasGeometry.SRV_Roughness.GetGpuHandle();
-				//rootArguments.CBV_MaterialInfo = blasGeometry.CBV_MaterialInfo.GetGpuHandle();
-				rootArguments.CBV_MaterialInfo = blasGeometry.C_MaterialInfo;
-				
+				//rootArguments.SRV_DiffuseTexture = blasGeometry.SRV_Diffuse.GetGpuHandle();
+				//rootArguments.SRV_NormalTexture = blasGeometry.SRV_Normal.GetGpuHandle();
+				//rootArguments.SRV_MetalicTexture = blasGeometry.SRV_Metallic.GetGpuHandle();
+				//rootArguments.SRV_RoughnessTexture = blasGeometry.SRV_Roughness.GetGpuHandle();
+				////rootArguments.CBV_MaterialInfo = blasGeometry.CBV_MaterialInfo.GetGpuHandle();
+				//rootArguments.SRV_MaskTexture = blasGeometry.SRV_Mask.GetGpuHandle();
+				//rootArguments.CBV_MaterialInfo = blasGeometry.C_MaterialInfo;
+				rootArguments.SRV_DiffuseTexture = blasGeometry.Material->GetDiffuseTextureHandleInRayTracing().GetGpuHandle();
+				rootArguments.SRV_NormalTexture = blasGeometry.Material->GetNormalTextureHandleInRayTracing().GetGpuHandle();
+				rootArguments.SRV_MaskTexture = blasGeometry.Material->GetMaskTextureHandleInRayTracing().GetGpuHandle();
+				rootArguments.CBV_MaterialInfo = blasGeometry.Material->GetMaterialInfo();
+
 				for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
 				{
 					hitGroupShaderTable.push_back(Ideal::DXRShaderRecord(hitGroupShaderIdentifier[i], shaderIdentifierSize, &rootArguments, sizeof(rootArguments)));

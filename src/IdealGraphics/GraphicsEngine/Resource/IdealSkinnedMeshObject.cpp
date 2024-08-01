@@ -19,7 +19,7 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
 #include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
-
+#include "GraphicsEngine/VertexInfo.h"
 #include <d3dx12.h>
 //#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
@@ -31,6 +31,19 @@ Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
 Ideal::IdealSkinnedMeshObject::~IdealSkinnedMeshObject()
 {
 
+}
+
+uint32 Ideal::IdealSkinnedMeshObject::GetMeshesSize()
+{
+	uint32 ret = m_skinnedMesh->GetMeshes().size();
+	return ret;
+}
+
+std::shared_ptr<Ideal::IMesh> Ideal::IdealSkinnedMeshObject::GetMeshByIndex(uint32 index)
+{
+	//return m_skinnedMesh->GetMeshes()[index];
+	std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> mesh = m_skinnedMesh->GetMeshes()[index];
+	return mesh;
 }
 
 void Ideal::IdealSkinnedMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)

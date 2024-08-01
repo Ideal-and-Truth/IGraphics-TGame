@@ -51,6 +51,8 @@ using namespace std;
 #include "GraphicsEngine/public/IPointLight.h"
 
 #include "GraphicsEngine/public/ITexture.h"
+#include "GraphicsEngine/public/IMesh.h"
+#include "GraphicsEngine/public/IMaterial.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -102,6 +104,7 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
 void ImageTest(std::shared_ptr<Ideal::ITexture> Texture);
 void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
 
+void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::ITexture> Texture = nullptr);
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
@@ -288,7 +291,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 
 		//--------------------Create Texture----------------------//
-		std::shared_ptr<Ideal::ITexture> testTexture = gRenderer->CreateTexture(L"../Resources/Textures/DefaultTexture/GridBox_Default.png");
+		std::shared_ptr<Ideal::ITexture> testTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
+
+		//--------------------Create Material----------------------//
+		std::shared_ptr<Ideal::IMaterial> testMaterial = gRenderer->CreateMaterial();
+		testMaterial->SetBaseMap(testTexture);
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
@@ -387,36 +394,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//if (tX == 0)
 					//for(int i = 0; i < 10; i++)
 					{
-						tX += 3;
-						//cat->SetDrawObject(false);
-						std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-						ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-						if (tX % 2 == 0)
-							ka->AddAnimation("Run", runAnim);
-						else
-							ka->AddAnimation("Slash", slashAnim);
-						//ka->AddAnimation("Run", runAnim);
-
-						Matrix mat2 = Matrix::Identity;
-						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-						ka->SetTransformMatrix(mat2);
-
-						ka->SetPlayAnimation(false);
-
-						meshes.push_back(ka);
-
-
-						std::shared_ptr<Ideal::IMeshObject> mesh0 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-						mesh0->SetTransformMatrix(mat2);
-						meshes.push_back(mesh0);
-
-						std::shared_ptr<Ideal::ISkinnedMeshObject> mesh1 = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-						mesh1->AddAnimation("Walk", walkAnim);
-						mesh1->SetTransformMatrix(mat2);
-
-						mesh1->SetPlayAnimation(false);
-
-						meshes.push_back(mesh1);
+						//tX += 3;
+						////cat->SetDrawObject(false);
+						//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+						//ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
+						//if (tX % 2 == 0)
+						//	ka->AddAnimation("Run", runAnim);
+						//else
+						//	ka->AddAnimation("Slash", slashAnim);
+						////ka->AddAnimation("Run", runAnim);
+						//
+						//Matrix mat2 = Matrix::Identity;
+						//mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
+						//ka->SetTransformMatrix(mat2);
+						//
+						//ka->SetPlayAnimation(false);
+						//
+						//meshes.push_back(ka);
+						//
+						//
+						//std::shared_ptr<Ideal::IMeshObject> mesh0 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+						//mesh0->SetTransformMatrix(mat2);
+						//meshes.push_back(mesh0);
+						//
+						//std::shared_ptr<Ideal::ISkinnedMeshObject> mesh1 = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+						//mesh1->AddAnimation("Walk", walkAnim);
+						//mesh1->SetTransformMatrix(mat2);
+						//
+						//mesh1->SetPlayAnimation(false);
+						//
+						//meshes.push_back(mesh1);
 					}
 
 
@@ -531,6 +538,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						if (testTexture)
 						{
 							ImageTest(testTexture);
+						}
+						if (playerRe)
+						{
+							SkinnedMeshObjectGetMeshTest(playerRe, testMaterial, testTexture);
 						}
 					}
 					//once++;
@@ -965,11 +976,38 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	ImGui::End();
 }
 
-
 void ImageTest(std::shared_ptr<Ideal::ITexture> Texture)
 {
-	ImGui::Begin("Point Light");
+	ImGui::Begin("Image Test");
 	const ImVec2 size(100, 100);
 	ImGui::Image((ImTextureID)Texture->GetImageID(), size);
+	ImGui::End();
+}
+
+void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::ITexture> Texture /*= nullptr*/)
+{
+	ImGui::Begin("SkinnedMesh Get Mesh Test");
+	auto size = SkinnedMeshObject->GetMeshesSize();
+	
+	for (int i = 0; i < size; ++i)
+	{
+		auto mesh = SkinnedMeshObject->GetMeshByIndex(i);
+		ImGui::Text(mesh->GetName().c_str());
+		//mesh->SetMaterial()
+		//auto material = mesh->GetMaterialObject();
+		//material->SetBaseMap(Texture);
+	}
+	if (Material)
+	{
+		static int once = 0;
+		once++;
+		if (once >= 3000)
+		{
+			once = 1;
+			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject()->SetBaseMap(Texture);
+			int a = 3;
+		}
+	}
+
 	ImGui::End();
 }

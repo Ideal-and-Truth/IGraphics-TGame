@@ -3,6 +3,7 @@
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 #include <d3d12.h>
 #include <d3dx12.h>
 
@@ -33,9 +34,20 @@ uint32 Ideal::D3D12Texture::GetHeight()
 	return m_height;
 }
 
-void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource)
+void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
 {
 	m_resource = Resource;
+	m_deferredDeleteManager = DeferredDeleteManager;
+}
+
+void Ideal::D3D12Texture::Free()
+{
+	//m_refCount--;
+	//if (m_refCount <= 0)
+	//{
+	//	m_refCount = 0;
+	//	m_deferredDeleteManager.lock()->AddTextureToDeferredDelete(shared_from_this());
+	//}
 }
 
 void Ideal::D3D12Texture::EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle)

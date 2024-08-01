@@ -25,7 +25,12 @@ namespace Ideal
 	public:
 		IdealStaticMeshObject();
 		virtual ~IdealStaticMeshObject();
+	public:
+		// Interface //
+		virtual uint32 GetMeshesSize() override;
+		virtual std::shared_ptr<Ideal::IMesh> GetMeshByIndex(uint32 index) override;
 
+	public:
 		void Init(ComPtr<ID3D12Device> Device);
 		// 2024.05.07 Ver2
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);

@@ -15,9 +15,9 @@ namespace Ideal
 		virtual ~IMaterial() {}
 
 	public:
-		virtual void SetBaseMap(std::weak_ptr<Ideal::ITexture> Texture) abstract;
-		virtual void SetNormalMap(std::weak_ptr<Ideal::ITexture> Texture) abstract;
+		virtual void SetBaseMap(std::shared_ptr<Ideal::ITexture> Texture) abstract;
+		virtual void SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		// R : Metallic, A : Smoothness
-		virtual void SetMaskMap(std::weak_ptr<Ideal::ITexture> Texture) abstract;
+		virtual void SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 	};
 }

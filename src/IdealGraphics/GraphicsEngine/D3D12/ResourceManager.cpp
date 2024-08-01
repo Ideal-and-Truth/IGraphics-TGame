@@ -45,9 +45,10 @@ ResourceManager::~ResourceManager()
 	WaitForFenceValue();
 }
 
-void ResourceManager::Init(ComPtr<ID3D12Device5> Device)
+void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
 {
 	m_device = Device;
+	m_deferredDeleteManager = DeferredDeleteManager;
 
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -261,12 +262,29 @@ void ResourceManager::CreateIndexBufferUint16(std::shared_ptr<Ideal::D3D12IndexB
 	WaitForFenceValue();
 }
 
+uint64 ResourceManager::AllocateMaterialID()
+{
+	uint64 ret = m_materialID;
+	m_materialID++;
+	return ret;
+}
+
 void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
 {
-	if (!OutTexture)
+	std::string name = StringUtils::ConvertWStringToString(Path);
+	if (m_textures[name] != nullptr)
 	{
-		OutTexture = std::make_shared<Ideal::D3D12Texture>();
+		OutTexture = m_textures[name];
+		return;
 	}
+
+	m_textures[name] = std::make_shared<Ideal::D3D12Texture>();
+	OutTexture = m_textures[name];
+	OutTexture->SetName(name);
+	//if (!OutTexture)
+	//{
+	//	OutTexture = std::make_shared<Ideal::D3D12Texture>();
+	//}
 	// 2024.05.14 : 이 함수 Texture에 있어야 할지도// 
 	// 2024.05.15 : fence때문에 잘 모르겠다. 일단 넘어간다.
 
@@ -339,7 +357,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, cpuHandle);
 
 	//----------------------Final Create---------------------//
-	OutTexture->Create(resource);
+	OutTexture->Create(resource, m_deferredDeleteManager);
 	OutTexture->EmplaceSRV(srvHandle);
 }
 
@@ -424,7 +442,7 @@ void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& Out
 	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, cpuHandle);
 
 	//----------------------Final Create---------------------//
-	OutTexture->Create(resource);
+	OutTexture->Create(resource, m_deferredDeleteManager);
 	OutTexture->EmplaceSRV(srvHandle);
 }
 
@@ -466,7 +484,7 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 	));
 
 	resource->SetName(Name.c_str());
-	OutTexture->Create(resource);
+	OutTexture->Create(resource, m_deferredDeleteManager);
 
 	if (makeSRV)
 	{
@@ -811,6 +829,14 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 				//material->SetIsUseRoughness(true);
 			}
 
+			// Material Id Allocate
+			material->SetID(AllocateMaterialID());
+			//material->Create(shared_from_this());
+
+			material->SetBaseMap(m_defaultAlbedo);
+			material->SetNormalMap(m_defaultNormal);
+			material->SetMaskMap(m_defaultMask);
+
 			staticMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();
@@ -1070,6 +1096,15 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				material->SetIsUseMetallic(true);
 				material->SetIsUseRoughness(true);
 			}
+
+			// Material Id Allocate
+			material->SetID(AllocateMaterialID());
+			//material->Create(shared_from_this());
+
+			material->SetBaseMap(m_defaultAlbedo);
+			material->SetNormalMap(m_defaultNormal);
+			material->SetMaskMap(m_defaultMask);
+
 			skinnedMesh->AddMaterial(material);
 
 			materialNode = materialNode->NextSiblingElement();
@@ -1083,6 +1118,25 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 
 	// KeyBinding
 	m_dynamicMeshes[key] = skinnedMesh;
+}
+
+void ResourceManager::DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture)
+{
+	m_textures[Texture->GetName()] = nullptr;
+}
+
+void ResourceManager::CreateDefaultTextures()
+{
+	CreateTexture(m_defaultAlbedo,	L"../Resources/DefaultData/DefaultAlbedo.png");
+	CreateTexture(m_defaultNormal,	L"../Resources/DefaultData/DefaultNormalMap.png");
+	CreateTexture(m_defaultMask,	L"../Resources/DefaultData/DefaultBlack.png");
+}
+
+std::shared_ptr<Ideal::IdealMaterial> ResourceManager::CreateMaterial()
+{
+	auto newMaterial = std::make_shared<Ideal::IdealMaterial>();
+	newMaterial->SetID(AllocateMaterialID());
+	return newMaterial;
 }
 
 void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename)

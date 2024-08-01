@@ -1,18 +1,21 @@
 #pragma once
+#include "GraphicsEngine/Resource/ResourceBase.h"
 #include "ITexture.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include <memory>
 
 struct ID3D12Resource;
 
 namespace Ideal
 {
 	class D3D12Renderer;
+	class DeferredDeleteManager;
 }
 
 namespace Ideal
 {
-	class D3D12Texture : public D3D12Resource, public ITexture
+	class D3D12Texture : public D3D12Resource, public ResourceBase,public ITexture, public std::enable_shared_from_this<D3D12Texture>
 	{
 	public:
 		D3D12Texture();
@@ -27,8 +30,11 @@ namespace Ideal
 	public:
 		// ResourceManager에서 호출된다.
 		void Create(
-			ComPtr<ID3D12Resource> Resource
+			ComPtr<ID3D12Resource> Resource, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager
 		);
+
+		// DeferredDelete에 넣어주어야 한다.
+		void Free();
 
 		void EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle);
 
@@ -60,6 +66,9 @@ namespace Ideal
 
 		Ideal::D3D12DescriptorHandle m_srvHandleInEditor;
 
+
+		std::weak_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager;
+
 	private:
 		// 2024.05.15 Texture일 경우 필요한 여러가지 정보들
 		//std::vector<std::shared_ptr<Ideal::
@@ -67,6 +76,9 @@ namespace Ideal
 
 		uint32 m_width;
 		uint32 m_height;
+
+	private:
+		uint32 m_refCount = 0;
 	};
 }
 

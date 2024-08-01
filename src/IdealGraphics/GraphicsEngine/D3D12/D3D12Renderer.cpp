@@ -239,7 +239,7 @@ finishAdapter:
 			ComPtr<ID3D12Resource> resource;
 			Check(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource)));
 			m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
-			m_renderTargets[i]->Create(resource);
+			m_renderTargets[i]->Create(resource, m_deferredDeleteManager);
 			m_renderTargets[i]->EmplaceRTV(handle);
 		}
 	}
@@ -264,7 +264,7 @@ finishAdapter:
 
 	//------------------Resource Manager---------------------//
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
-	m_resourceManager->Init(m_device);
+	m_resourceManager->Init(m_device, m_deferredDeleteManager);
 	m_resourceManager->SetAssetPath(m_assetPath);
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
@@ -403,7 +403,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
 		m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
 
-		m_renderTargets[i]->Create(resource);
+		m_renderTargets[i]->Create(resource, m_deferredDeleteManager);
 		m_renderTargets[i]->EmplaceRTV(handle);
 	}
 	// CreateDepthStencil
@@ -532,6 +532,17 @@ void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
 std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName)
 {
 	return nullptr;
+}
+
+std::shared_ptr<Ideal::IMaterial> Ideal::D3D12Renderer::CreateMaterial()
+{
+	return nullptr;
+}
+
+void Ideal::D3D12Renderer::DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture)
+{
+	m_deferredDeleteManager->AddTextureToDeferredDelete(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
+	m_resourceManager->DeleteTexture(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
 }
 
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
@@ -871,7 +882,7 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 				nullptr,
 				IID_PPV_ARGS(resource.GetAddressOf())
 			));
-			m_editorTexture->Create(resource);
+			m_editorTexture->Create(resource, m_deferredDeleteManager);
 
 			//-----SRV-----//
 			{

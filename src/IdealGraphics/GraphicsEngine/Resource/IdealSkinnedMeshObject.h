@@ -48,6 +48,12 @@ namespace Ideal
 		IdealSkinnedMeshObject();
 		virtual ~IdealSkinnedMeshObject();
 
+	public:
+		// Interface //
+		virtual uint32 GetMeshesSize() override;
+		virtual std::shared_ptr<Ideal::IMesh> GetMeshByIndex(uint32 index) override;
+
+	public:
 		void Init(std::shared_ptr<IdealRenderer> Renderer);
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 

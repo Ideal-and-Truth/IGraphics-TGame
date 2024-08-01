@@ -53,7 +53,9 @@ namespace Ideal
 
 		// Texture
 		virtual std::shared_ptr<Ideal::ITexture>			CreateTexture(const std::wstring& FileName) abstract;
-		//virtual std::shared_ptr<Ideal::IMaterial>			CreateMaterial() abstract;
+		virtual std::shared_ptr<Ideal::IMaterial>			CreateMaterial() abstract;
+
+		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

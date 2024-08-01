@@ -133,6 +133,9 @@ namespace Ideal
 
 		// Texture
 		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName) override;
+		virtual std::shared_ptr<Ideal::IMaterial> CreateMaterial() override;
+
+		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
 
 	private:
 		void CreateCommandlists();

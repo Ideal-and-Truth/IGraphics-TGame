@@ -1,6 +1,12 @@
 #pragma once
 #include "IRendererResource.h"
 #include "../Utils/SimpleMath.h"
+#include <memory>
+
+namespace Ideal
+{
+	class IMesh;
+}
 
 namespace Ideal
 {
@@ -21,5 +27,10 @@ namespace Ideal
 		virtual void SetDrawObject(bool IsDraw) abstract;
 
 		virtual Ideal::EMeshType GetMeshType() const abstract;
+
+	public:
+		virtual unsigned int GetMeshesSize() abstract;
+		virtual std::shared_ptr<Ideal::IMesh> GetMeshByIndex(unsigned int) abstract;
+
 	};
 }

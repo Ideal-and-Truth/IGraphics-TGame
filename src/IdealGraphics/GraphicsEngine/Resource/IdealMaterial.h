@@ -1,7 +1,8 @@
 #pragma once
+#include "IMaterial.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
-
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 namespace Ideal
 {
 	class IdealRenderer;
@@ -11,12 +12,20 @@ namespace Ideal
 
 namespace Ideal
 {
-	class IdealMaterial : public ResourceBase
+	class IdealMaterial : public ResourceBase, public IMaterial
 	{
 	public:
 		IdealMaterial();
 		virtual ~IdealMaterial();
 
+	public:
+		//--------IMaterial Interface--------//
+		virtual void SetBaseMap(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture) override;
+		// R : Metallic, A : Smoothness
+		virtual void SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture) override;
+
+	public:
 		void SetAmbient(Color c) { m_ambient = c; }
 		void SetDiffuse(Color c) { m_diffuse = c; }
 		void SetSpecular(Color c) { m_specular = c; }
@@ -29,12 +38,12 @@ namespace Ideal
 		// Ω¶¿Ã¥ı∂˚ πŸ¿ŒµÂ∏¶ «—¥Ÿ.
 		void BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
-		void SetDiffuseTextureFile(std::wstring& File)	{ m_diffuseTextureFile = File; }
-		void SetIsUseDiffuse(bool b) {m_cbMaterialInfo.bUseDiffuseMap = b; }
+		void SetDiffuseTextureFile(std::wstring& File) { m_diffuseTextureFile = File; }
+		void SetIsUseDiffuse(bool b) { m_cbMaterialInfo.bUseDiffuseMap = b; }
 		void SetSpecularTextureFile(std::wstring& File) { m_specularTextureFile = File; }
 
 		void SetEmissiveTextureFile(std::wstring& File) { m_emissiveTextureFile = File; }
-		void SetNormalTextureFile(std::wstring& File)	{ m_normalTextureFile = File; }
+		void SetNormalTextureFile(std::wstring& File) { m_normalTextureFile = File; }
 		void SetIsUseNormal(bool b) { m_cbMaterialInfo.bUseNormalMap = b; }
 
 		void SetMetallicTextureFile(std::wstring& File) { m_metallicTextureFile = File; }
@@ -49,6 +58,9 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::D3D12Texture> GetMetallicTexture() { return m_metalicTexture; }
 		std::shared_ptr<Ideal::D3D12Texture> GetRoughnessTexture() { return m_roughnessTexture; }
+
+		std::shared_ptr<Ideal::D3D12Texture> GetMaskTexture() { return m_maskTexture; }
+
 
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
 
@@ -73,12 +85,40 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Texture> m_specularTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_emissiveTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_normalTexture;
-		
+
 		std::shared_ptr<Ideal::D3D12Texture> m_metalicTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_roughnessTexture;
+
+		std::shared_ptr<Ideal::D3D12Texture> m_maskTexture;
+
+	public:
+		//--- Ray Tracing Info ---//
+		void Free();
+		void CopyHandleToRayTracingDescriptorTable(ComPtr<ID3D12Device> Device);
+		Ideal::D3D12DescriptorHandle GetDiffuseTextureHandleInRayTracing() { return m_diffuseTextureInRayTracing; }
+		Ideal::D3D12DescriptorHandle GetNormalTextureHandleInRayTracing() { return m_normalTextureInRayTracing; }
+		Ideal::D3D12DescriptorHandle GetMaskTextureHandleInRayTracing() { return m_maskTextureInRayTracing; }
+		void SetDiffuseTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_diffuseTextureInRayTracing = handle; }
+		void SetNormalTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_normalTextureInRayTracing = handle; }
+		void SetMaskTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_maskTextureInRayTracing = handle; }
+		void AddRefCountInRayTracing() { m_refCountInRayTracing++; }
+
+	private:
+		// ray tracing descriptor table handles
+		Ideal::D3D12DescriptorHandle m_diffuseTextureInRayTracing;
+		Ideal::D3D12DescriptorHandle m_normalTextureInRayTracing;
+		Ideal::D3D12DescriptorHandle m_maskTextureInRayTracing;
+		uint64 m_refCountInRayTracing = 0;
 
 	private:
 		CB_Material m_cbMaterialData;
 		CB_MaterialInfo	m_cbMaterialInfo;
+
+	public:
+		void TextureChanged() { m_isTextureChanged = true; }
+		bool IsTextureChanged() { return m_isTextureChanged; }
+
+	private:
+		bool m_isTextureChanged = true;
 	};
 }

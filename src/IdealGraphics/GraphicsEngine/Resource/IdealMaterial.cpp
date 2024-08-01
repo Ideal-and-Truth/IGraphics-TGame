@@ -11,6 +11,8 @@
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
 
+#include "ITexture.h"
+
 Ideal::IdealMaterial::IdealMaterial()
 {
 	m_cbMaterialInfo.bUseDiffuseMap = false;
@@ -26,6 +28,25 @@ Ideal::IdealMaterial::~IdealMaterial()
 	//m_specularTexture.reset();
 	//m_emissiveTexture.reset();
 	//m_normalTexture.reset();
+}
+
+void Ideal::IdealMaterial::SetBaseMap(std::shared_ptr<Ideal::ITexture> Texture)
+{
+	// 만약 기존 텍스쳐가 있을경우 Free 해준다.
+	m_diffuseTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
+	m_isTextureChanged = true;
+}
+
+void Ideal::IdealMaterial::SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture)
+{
+	m_normalTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
+	m_isTextureChanged = true;
+}
+
+void Ideal::IdealMaterial::SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture)
+{
+	m_maskTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
+	m_isTextureChanged = true;
 }
 
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
@@ -132,4 +153,28 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_SRV_NORMAL, incrementSize);
 		device->CopyDescriptorsSimple(1, srvDest, normalCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
+}
+
+void Ideal::IdealMaterial::Free()
+{
+	m_refCountInRayTracing--;
+	if (m_refCountInRayTracing <= 0)
+	{
+		m_refCountInRayTracing = 0;
+		m_diffuseTextureInRayTracing.Free();
+		m_normalTextureInRayTracing.Free();
+		m_maskTextureInRayTracing.Free();
+	}
+}
+
+void Ideal::IdealMaterial::CopyHandleToRayTracingDescriptorTable(ComPtr<ID3D12Device> Device)
+{
+	m_isTextureChanged = false;
+
+	if(m_diffuseTexture)
+		Device->CopyDescriptorsSimple(1, m_diffuseTextureInRayTracing.GetCpuHandle(), m_diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	if(m_normalTexture)
+		Device->CopyDescriptorsSimple(1, m_normalTextureInRayTracing.GetCpuHandle(), m_normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	if(m_roughnessTexture)
+		Device->CopyDescriptorsSimple(1, m_maskTextureInRayTracing.GetCpuHandle(), m_roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }

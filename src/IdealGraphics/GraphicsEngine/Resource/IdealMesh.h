@@ -1,4 +1,5 @@
 #pragma once
+#include "IMesh.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "Core/Core.h"
 //#include "GraphicsEngine/D3D12/D3D12Renderer.h"
@@ -14,23 +15,29 @@
 namespace Ideal
 {
 	class IdealMaterial;
+	class IMesh;
 }
 
 namespace Ideal
 {
 	template <typename TVertexType>
-	class IdealMesh : public ResourceBase
+	class IdealMesh : public ResourceBase, public IMesh
 	{
 		//friend class IdealStaticMeshObject;
 
 	public:
-		IdealMesh() 
+		IdealMesh()
 			: m_vertexBuffer(nullptr),
 			m_indexBuffer(nullptr),
 			m_material(nullptr),
 			m_boneIndex(0)
 		{}
 		virtual ~IdealMesh() {};
+
+	public:
+		virtual std::string GetName() override { return m_name; }
+		virtual void SetMaterial(std::shared_ptr<Ideal::IMaterial> Material) override { m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material); }
+		virtual std::shared_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
 
 	public:
 		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
@@ -48,10 +55,10 @@ namespace Ideal
 			m_indices.clear();
 
 			//----------Material----------//
-			if (m_material)
-			{
-				m_material->Create(ResourceManager);
-			}
+			//if (m_material)
+			//{
+			//	m_material->Create(ResourceManager);
+			//}
 		}
 
 		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return m_vertexBuffer->GetView(); }

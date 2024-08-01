@@ -20,6 +20,17 @@ Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
 
 }
 
+uint32 Ideal::IdealStaticMeshObject::GetMeshesSize()
+{
+	uint32 ret = m_staticMesh->GetMeshes().size();
+	return ret;
+}
+
+std::shared_ptr<Ideal::IMesh> Ideal::IdealStaticMeshObject::GetMeshByIndex(uint32 index)
+{
+	return nullptr;
+}
+
 void Ideal::IdealStaticMeshObject::Init(ComPtr<ID3D12Device> Device)
 {
 

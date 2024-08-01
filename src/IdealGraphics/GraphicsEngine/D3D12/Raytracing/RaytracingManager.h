@@ -79,6 +79,7 @@ namespace Ideal
 				SRV_Normal,
 				SRV_Metalic,
 				SRV_Roughness,
+				SRV_Mask,
 				CBV_MaterialInfo,
 				Count
 			};
@@ -97,6 +98,8 @@ namespace Ideal
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MetalicTexture;
 			// Roughness Textures
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_RoughnessTexture;
+			// Mask Texture
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MaskTexture;
 
 			//D3D12_GPU_DESCRIPTOR_HANDLE CBV_MaterialInfo;
 			CB_MaterialInfo CBV_MaterialInfo;
@@ -166,7 +169,7 @@ namespace Ideal
 		void SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform);
 		void FinalCreate2(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild = false);
 
-		void UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
+		void UpdateAccelerationStructures(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		//ComPtr<ID3D12Resource> GetTLASResource();
 
 		//---Root Singnature---//
@@ -215,6 +218,10 @@ namespace Ideal
 		// 늘려주고 끝낸다.
 		// 이로인해 다음 Instance는 다시 자기만의 instance를 가질 수 있게 된다.
 		uint64 m_contributionToHitGroupIndexCount = 0;
+
+		// 중복되는 Material 관리..?
+		std::unordered_map<uint64,std::shared_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
+
 
 		//---Animation Compute Shader---//
 	public:

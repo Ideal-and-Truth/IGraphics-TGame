@@ -13,6 +13,7 @@ namespace Ideal
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12UAVBuffer;
+	class IdealMaterial;
 
 	class DeferredDeleteManager;
 }
@@ -40,7 +41,10 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle SRV_Normal;
 		Ideal::D3D12DescriptorHandle SRV_Metallic;
 		Ideal::D3D12DescriptorHandle SRV_Roughness;
+		Ideal::D3D12DescriptorHandle SRV_Mask;
 		CB_MaterialInfo C_MaterialInfo;
+
+		std::shared_ptr<Ideal::IdealMaterial> Material;
 	};
 
 	struct BLASData
