@@ -434,6 +434,8 @@ void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _o
 
 void Truth::UnityParser::ParseLight(const YAML::Node& _node, GameObject* _owner)
 {
+	_owner->m_isLight = true;
+	m_lightCount++;
 	_owner->m_intensity = _node["m_Intensity"].as<float>();
 	_owner->m_type = _node["m_Type"].as<uint32>();
 	_owner->m_color.x = _node["m_Color"]["r"].as<float>();
@@ -627,6 +629,50 @@ void Truth::UnityParser::GetColliderVertexes(GameObject* _node, std::vector<std:
 	}
 }
 
+void Truth::UnityParser::WriteLightData(fs::path _path)
+{
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+
+	std::wstring path = m_defaultPath;
+	path += m_sceneName.generic_wstring() + L"/";
+	path += L"Lights.lList";
+
+	fs::path tempPath = path;
+
+	fs::create_directories(tempPath.parent_path());
+
+	file->Open(path, FileMode::Write);
+
+	file->Write<uint32>(m_lightCount);
+
+	for (auto* root : m_rootGameObject)
+	{
+		WriteLightData(root, file);
+	}
+}
+
+void Truth::UnityParser::WriteLightData(GameObject* _node, std::shared_ptr<FileUtils> _file)
+{
+	if (_node->m_isLight)
+	{
+		_file->Write<uint32>(_node->m_type);
+		_file->Write<float>(_node->m_intensity);
+		_file->Write<float>(_node->m_color.R());
+		_file->Write<float>(_node->m_color.G());
+		_file->Write<float>(_node->m_color.B());
+		_file->Write<float>(_node->m_color.A());
+		_file->Write<float>(_node->m_range);
+		_file->Write<float>(_node->m_angle);
+
+		_file->Write<Matrix>(_node->m_worldTM);
+	}
+
+	for (auto* c : _node->m_children)
+	{
+		WriteLightData(c, _file);
+	}
+}
+
 void Truth::UnityParser::WriteMapMeshData(fs::path _path)
 {
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
@@ -810,6 +856,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 
 	WriteMapData();
 	WriteMapMeshData(uscene);
+	WriteLightData(uscene);
 
 	ConvertUnloadedMesh();
 }
@@ -982,6 +1029,7 @@ void Truth::UnityParser::ParseUnityFile(const std::string& _path)
 
 	WriteMapData();
 	WriteMapMeshData(uscene);
+	WriteLightData(uscene);
 }
 
 /// <summary>

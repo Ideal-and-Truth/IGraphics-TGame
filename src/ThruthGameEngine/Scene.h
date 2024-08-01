@@ -42,6 +42,7 @@ namespace Truth
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
+		std::vector<std::shared_ptr<Ideal::ILight>> m_mapLight;
 
 	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;

@@ -74,8 +74,6 @@ namespace Truth
 
 			float m_range;
 			float m_angle;
-			
-			Vector3 m_direction;
 
 			// Transform Info
 			Matrix m_localTM = Matrix::Identity;
@@ -91,6 +89,7 @@ namespace Truth
 		};
 
 		uint32 m_meshFilterCount = 0;
+		uint32 m_lightCount = 0;
 
 		std::vector<GameObject*> m_rootGameObject;
 
@@ -164,6 +163,9 @@ namespace Truth
 
 		void WriteMapData();
 		void GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
+
+		void WriteLightData(fs::path _path);
+		void WriteLightData(GameObject* _node, std::shared_ptr<FileUtils> _file);
 
 		void WriteMapMeshData(fs::path _path);
 		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);

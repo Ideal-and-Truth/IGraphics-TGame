@@ -2,17 +2,17 @@
 <Materials>
     <Material>
         <Name>black</Name>
-        <DiffuseFile>T_hotelwindow_BaseMap.png</DiffuseFile>
-        <SpecularFile>T_hotelwindow_BaseMap.png</SpecularFile>
-        <NormalFile>T_hotelwindow_Normal.png</NormalFile>
-        <MetalicFile>T_hotelwindow_MaskMap.png</MetalicFile>
-        <RoughnessFile>T_hotelwindow_MaskMap.png</RoughnessFile>
+        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
+        <NormalFile>DefaultNormalMap.png</NormalFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
+        <RoughnessFile>DefaulBlack.png</RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0" G="0" B="0" A="1"/>
         <Specular R="0" G="0" B="0" A="25"/>
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0.5"/>
-        <UseTextureInfo Diffuse="true" Normal="true" Metallic="true" Roughness="true"/>
+        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>
