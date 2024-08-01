@@ -610,8 +610,7 @@ void AssimpConverter::ReadMaterialData()
 
 		file.Clear();
 		// Metalic Texture
-		aiString metalicFile;
-		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &metalicFile);
+		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &file);
 		std::wstring ws = utf8_to_wstring(file.C_Str());
 		std::string finalPath = wstring_to_multibyte(ws);
 		if (finalPath.size() != 0)
@@ -634,8 +633,7 @@ void AssimpConverter::ReadMaterialData()
 
 		file.Clear();
 		// Roughness Texture
-		aiString roughnessFile;
-		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &roughnessFile);
+		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &file);
 		ws = utf8_to_wstring(file.C_Str());
 		finalPath = wstring_to_multibyte(ws);
 		if (finalPath.size() != 0)

@@ -529,6 +529,11 @@ void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
 	// TODO
 }
 
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName)
+{
+	return nullptr;
+}
+
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();

@@ -96,6 +96,7 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() override;
 
 		virtual void SetSkyBox(const std::wstring& FileName) override;
+		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName) override;
 
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }

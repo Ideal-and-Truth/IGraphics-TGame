@@ -18,6 +18,21 @@ Ideal::D3D12Texture::~D3D12Texture()
 	m_dsvHandle.Free();
 }
 
+uint64 Ideal::D3D12Texture::GetImageID()
+{
+	return static_cast<uint64>(m_srvHandleInEditor.GetGpuHandle().ptr);
+}
+
+uint32 Ideal::D3D12Texture::GetWidth()
+{
+	return m_width;
+}
+
+uint32 Ideal::D3D12Texture::GetHeight()
+{
+	return m_height;
+}
+
 void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource)
 {
 	m_resource = Resource;
@@ -63,5 +78,10 @@ Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetDSV()
 		__debugbreak();
 	}
 	return m_dsvHandle;
+}
+
+void Ideal::D3D12Texture::EmplaceSRVInEditor(Ideal::D3D12DescriptorHandle SRVHandle)
+{
+	m_srvHandleInEditor = SRVHandle;
 }
 

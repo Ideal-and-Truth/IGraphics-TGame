@@ -198,6 +198,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
     <ClInclude Include="GraphicsEngine\D3D12\TestShader.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\D3D12RaytracingResources.h" />
+    <ClInclude Include="GraphicsEngine\public\IMaterial.h" />
     <ClInclude Include="GraphicsEngine\public\imconfig.h" />
     <ClInclude Include="GraphicsEngine\public\IMesh.h" />
     <ClInclude Include="GraphicsEngine\public\imgui.h" />
@@ -221,6 +222,7 @@
     <ClInclude Include="GraphicsEngine\public\IMeshObject.h" />
     <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
     <ClInclude Include="GraphicsEngine\public\ISpotLight.h" />
+    <ClInclude Include="GraphicsEngine\public\ITexture.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealCamera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorHeap.h" />
@@ -229,7 +231,6 @@
     <ClInclude Include="GraphicsEngine\public\IdealRendererFactory.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealMesh.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealBone.h" />
-    <ClInclude Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMeshObject.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealSkinnedMeshObject.h" />
@@ -314,7 +315,6 @@
     <ClCompile Include="GraphicsEngine\private\IdealRendererFactory.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealBone.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\IdealRaytracingRenderScene.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealStaticMeshObject.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealMaterial.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealSkinnedMeshObject.cpp" />

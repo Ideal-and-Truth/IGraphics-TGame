@@ -50,6 +50,8 @@ using namespace std;
 #include "GraphicsEngine/public/ISpotLight.h"
 #include "GraphicsEngine/public/IPointLight.h"
 
+#include "GraphicsEngine/public/ITexture.h"
+
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
 
@@ -97,7 +99,7 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
 void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
-void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
+void ImageTest(std::shared_ptr<Ideal::ITexture> Texture);
 void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
 
 
@@ -196,6 +198,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerRe/Sword And Shield Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
 
 		//-------------------Test Vertices Pos-------------------//
@@ -203,6 +206,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/SM_chronos.Main_tPose");
+		std::shared_ptr<Ideal::IAnimation> swordAnim = gRenderer->CreateAnimation(L"PlayerRe/Sword And Shield Slash");
+		//playerRe->AddAnimation("SwordAnim", swordAnim);
+		//playerRe->SetAnimation("SwordAnim");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/untitled");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player3 = gRenderer->CreateSkinnedMeshObject(L"player/myPlayer");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> tempPlayer = gRenderer->CreateSkinnedMeshObject(L"statue_chronos/SMown_chronos_statue");
@@ -279,40 +285,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//renderScene->AddObject(mesh);
 		//renderScene->AddDebugObject(mesh);
 		//renderScene->AddObject(mesh2);
-
-		static int transformX = 0.f;
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
-		{
-			//for (int i = 0; i < 0; i++)
-			//{
-			//	//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-			//	//Matrix mat = Matrix::Identity;
-			//	//mat.Translation(Vector3(i * 1.f, 0.f, 5.f));
-			//	//mesh->SetTransformMatrix(mat);
-			//	////renderScene->AddObject(mesh);
-			//	//meshes.push_back(mesh);
-			//	//
-			//	std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-			//	if (i % 2 == 0)
-			//		ka->AddAnimation("Run", runAnim);
-			//	else
-			//		ka->AddAnimation("Slash", slashAnim);
-			//	
-			//	Matrix mat2 = Matrix::Identity;
-			//	mat2.Translation(Vector3(i * 1.f, 0.f, 0.f));
-			//	//
-			//	//meshes.push_back(mesh);
-			//	ka->SetTransformMatrix(mat2);
-			//	//
-			//	//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-			//	//Matrix mat3 = Matrix::Identity;
-			//	//mat3.Translation(Vector3(i * 1.f, 0.f, 15.f));
-			//	//mesh2->SetTransformMatrix(mat3);
-			//	//transformX += 1;
-			//}
-		}
-		//renderScene->AddObject(mesh2);
-		//renderScene->AddObject(mesh3);
+
+		//--------------------Create Texture----------------------//
+		std::shared_ptr<Ideal::ITexture> testTexture = gRenderer->CreateTexture(L"../Resources/Textures/DefaultTexture/GridBox_Default.png");
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
@@ -528,7 +504,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//cat->AnimationDeltaTime(0.002f);
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
-
+				playerRe->AnimationDeltaTime(0.002f);
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				//if (isEditor)
@@ -551,6 +527,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						if (spotLight)
 						{
 							SpotLightInspector(spotLight);
+						}
+						if (testTexture)
+						{
+							ImageTest(testTexture);
 						}
 					}
 					//once++;
@@ -986,12 +966,10 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 }
 
 
-void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight)
+void ImageTest(std::shared_ptr<Ideal::ITexture> Texture)
 {
-	//ImGui::Begin("Point Light");
-	//ImGui::Text("Position");
-	//static float position[3] = { 0.f, 0.f, 0.f };
-	////ImGui::SliderFloat3("Position", &position[0], &position[1], &position[2]);
-	//
-	//ImGui::End();
+	ImGui::Begin("Point Light");
+	const ImVec2 size(100, 100);
+	ImGui::Image((ImTextureID)Texture->GetImageID(), size);
+	ImGui::End();
 }

@@ -39,7 +39,6 @@
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
-#include "GraphicsEngine/Resource/IdealRaytracingRenderScene.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
@@ -387,7 +386,7 @@ finishAdapter:
 	{
 		//------ImGuiSRVHeap------//
 		m_imguiSRVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-		m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
+		m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_EDITOR_SRV_COUNT);
 
 		//---------------------Editor RTV-------------------------//
 		m_editorRTVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
@@ -648,29 +647,6 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimati
 	return newAnimation;
 }
 
-std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12RayTracingRenderer::CreateRenderScene()
-{
-	ResetCommandList();
-
-	std::shared_ptr<Ideal::IdealRaytracingRenderScene> ret = std::make_shared<Ideal::IdealRaytracingRenderScene>();
-	ret->Init(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
-
-	m_commandLists[m_currentContextIndex]->Close();
-	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	Fence();
-	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
-	return ret;
-}
-
-void Ideal::D3D12RayTracingRenderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene)
-{
-	// 인터페이스로 따로 뽑아야 할 듯
-	std::shared_ptr<Ideal::IdealRaytracingRenderScene> renderScene = std::static_pointer_cast<Ideal::IdealRaytracingRenderScene>(RenderScene);
-	m_renderScene = renderScene;
-}
-
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12RayTracingRenderer::CreateDirectionalLight()
 {
 	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
@@ -775,6 +751,21 @@ void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
 	std::shared_ptr <Ideal::D3D12Texture> skyBox = std::make_shared<Ideal::D3D12Texture>();
 	m_resourceManager->CreateTextureDDS(skyBox, FileName);
 	m_skyBoxTexture = skyBox;
+}
+
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName)
+{
+	std::shared_ptr<Ideal::D3D12Texture> texture;
+	m_resourceManager->CreateTexture(texture, FileName);
+
+	if (m_isEditor)
+	{
+		auto srv = texture->GetSRV();
+		auto dest = m_imguiSRVHeap->Allocate();
+		m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		texture->EmplaceSRVInEditor(dest);
+	}
+	return texture;
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
@@ -1179,16 +1170,6 @@ void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 	);
 
 	commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
-}
-
-void Ideal::D3D12RayTracingRenderer::InitRenderScene()
-{
-	//m_renderScene->Init(m_device, TODO, TODO);
-}
-
-void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
-{
-	m_renderScene->Draw(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()

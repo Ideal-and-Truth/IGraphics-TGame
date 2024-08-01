@@ -968,6 +968,29 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 					//auto texture
 				}
 			}
+			// Metalic Texture
+			node = node->NextSiblingElement();
+			if (node->GetText())
+			{
+				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+				if (textureStr.length() > 0)
+				{
+					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+					material->SetMetallicTextureFile(finalTextureStr);
+				}
+			}
+
+			// Roughness Texture
+			node = node->NextSiblingElement();
+			if (node->GetText())
+			{
+				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+				if (textureStr.length() > 0)
+				{
+					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+					material->SetRoughnessTextureFile(finalTextureStr);
+				}
+			}
 
 			// Ambient
 			{

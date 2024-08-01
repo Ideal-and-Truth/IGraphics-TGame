@@ -339,21 +339,21 @@ float3 Shade(
     if (l_materialInfo.bUseRoughnessMap)
     {
         //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
-#ifdef BeforeRefactor
+//#ifdef BeforeRefactor
         roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
-#else
-        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
-#endif
+//#else
+//        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
+//#endif
         //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
     }
     else
     {
         //roughness = l_materialInfo.roughnessFactor;
-#ifdef BeforeRefactor
+//#ifdef BeforeRefactor
         roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
-#else
-        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
-#endif
+//#else
+//        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
+//#endif
         //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
     }
 
