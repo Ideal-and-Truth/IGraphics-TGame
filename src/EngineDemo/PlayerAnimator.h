@@ -263,6 +263,7 @@ private:
 	bool m_isLockOn;
 
 	/// ----------------------------------------
+	float m_lastHp;
 
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;

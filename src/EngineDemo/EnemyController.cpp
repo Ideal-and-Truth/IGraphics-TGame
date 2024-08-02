@@ -8,6 +8,12 @@ BOOST_CLASS_EXPORT_IMPLEMENT(EnemyController)
 EnemyController::EnemyController()
 	: m_speed(0.f)
 	, m_isComeBack(false)
+	, m_isAttackReady(false)
+	, m_isBackStep(false)
+	, m_isDead(false)
+	, m_canMove(false)
+	, m_passingTime(0.f)
+	, m_sideMove(1.f)
 {
 	m_name = "EnemyController";
 }
@@ -27,22 +33,32 @@ void EnemyController::Start()
 
 void EnemyController::Update()
 {
+	if (m_isDead)
+	{
+		return;
+	}
+
 	bool isTargetIn = m_enemy.lock().get()->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.lock().get()).Get();
 	m_speed = m_enemy.lock().get()->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.lock().get()).Get();
+	m_passingTime += GetDeltaTime();
 
 	if (!isTargetIn)
 	{
 		ComeBackHome();
 		return;
 	}
-
-	FollowTarget();
+	if (m_canMove)
+	{
+		FollowTarget();
+	}
 }
 
 void EnemyController::FollowTarget()
 {
 	if (!m_controller.expired() && !m_target.expired())
 	{
+		m_isComeBack = false;
+
 		Vector3 pos = m_owner.lock()->GetWorldPosition();
 		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
 			pos,
@@ -52,8 +68,12 @@ void EnemyController::FollowTarget()
 
 		Vector3 dir = targetPos - pos;
 		float distance = sqrt(pow(dir.x, 2.f) + pow(dir.z, 2.f));
+
+		// 일정거리까지 추적 후 멈춤
 		if (distance > 10.f)
 		{
+			m_isBackStep = false;
+			m_isAttackReady = false;
 			dir.y = 0.0f;
 			dir.Normalize(dir);
 			dir.y = -100.0f;
@@ -61,8 +81,12 @@ void EnemyController::FollowTarget()
 			m_controller.lock()->Move(dir);
 
 		}
+		// 뒷걸음질
 		else if (distance < 9.f)
 		{
+			m_isBackStep = true;
+			m_isAttackReady = false;
+
 			Vector3 backDir = dir;
 			backDir.y = 0.0f;
 			backDir.Normalize(backDir);
@@ -73,6 +97,30 @@ void EnemyController::FollowTarget()
 			backDir.z *= -1.f;
 			m_controller.lock()->Move(backDir);
 		}
+		// 간보기
+		else
+		{
+			m_isBackStep = false;
+			m_isAttackReady = true;
+
+			dir.y = 0.0f;
+			dir.Normalize(dir);
+			Vector3 right = -dir.Cross({ 0.f,1.f,0.f });
+
+
+			if (m_passingTime > 3.f)
+			{
+				m_passingTime = 0.f;
+				m_sideMove *= -1.f;
+			}
+
+
+			right *= m_sideMove;
+			right *= GetDeltaTime() * m_speed;
+
+			m_controller.lock()->Move(right);
+		}
+
 
 		// 적 회전
 		dir.y = 0.0f;
@@ -87,6 +135,8 @@ void EnemyController::ComeBackHome()
 {
 	if (!m_controller.expired())
 	{
+		m_isAttackReady = false;
+
 		Vector3 pos = m_owner.lock()->GetWorldPosition();
 		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
 			pos,
@@ -103,6 +153,7 @@ void EnemyController::ComeBackHome()
 
 
 		float distance = sqrt(pow(backDir.x, 2.f) + pow(backDir.z, 2.f));
+		// 돌아가기
 		if (distance > 1.f)
 		{
 			m_isComeBack = true;
@@ -116,7 +167,7 @@ void EnemyController::ComeBackHome()
 			Quaternion::LookRotation(backDir, Vector3::Up, lookRot);
 			m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
 		}
-
+		// 추적 해제
 		else
 		{
 			Quaternion::LookRotation(dir, Vector3::Up, lookRot);

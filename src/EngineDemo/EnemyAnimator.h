@@ -33,11 +33,14 @@ class EnemyChase
 	: public AnimationState
 {
 private:
-
+	bool m_isChangePose;
+	bool m_isBackStep;
 
 public:
 	EnemyChase(Truth::Component* animator)
 		: AnimationState(animator)
+		 , m_isChangePose(false)
+		 , m_isBackStep(false)
 	{
 
 	}
@@ -69,11 +72,14 @@ class EnemyAttackReady
 	: public AnimationState
 {
 private:
-
+	float m_sidePose;
+	bool m_isChangePose;
 
 public:
 	EnemyAttackReady(Truth::Component* animator)
 		: AnimationState(animator)
+		, m_sidePose(0.f)
+		, m_isChangePose(false)
 	{
 
 	}
@@ -101,6 +107,24 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
+class EnemyParriableAttack
+	: public AnimationState
+{
+private:
+
+
+public:
+	EnemyParriableAttack(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+};
+
 class EnemyHit
 	: public AnimationState
 {
@@ -109,6 +133,24 @@ private:
 
 public:
 	EnemyHit(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+};
+
+class EnemyParried
+	: public AnimationState
+{
+private:
+
+
+public:
+	EnemyParried(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -173,14 +215,28 @@ private:
 	PROPERTY(isAttack);
 	bool m_isAttack;
 
+	PROPERTY(isParryAttack);
+	bool m_isParryAttack;
+
 	PROPERTY(isHit);
 	bool m_isHit;
+
+	PROPERTY(isParried);
+	bool m_isParried;
 
 	PROPERTY(isDead);
 	bool m_isDead;
 
+	PROPERTY(sideMove);
+	float m_sideMove;
 
+	PROPERTY(isBackStep);
+	bool m_isBackStep;
 	/// ----------------------------------------
+	PROPERTY(passingTime);
+	float m_passingTime;
+
+	float m_lastHp;
 
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
@@ -192,6 +248,9 @@ private:
 
 	PROPERTY(currentFrame);
 	int m_currentFrame;
+
+private:
+	int RandomNumber(int _min, int _max);
 
 public:
 	EnemyAnimator();
@@ -210,6 +269,8 @@ public:
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 
 	void SetAnimationSpeed(float speed);
+
+	void SetAnimationPlay(bool playStop);
 
 	void ChangeState(std::string stateName);
 

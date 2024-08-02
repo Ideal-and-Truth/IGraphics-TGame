@@ -8,6 +8,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 PlayerAnimator::PlayerAnimator()
 	: m_isAnimationEnd(false)
 	, m_currentFrame(0)
+	, m_lastHp(0.f)
 	, m_currentState(nullptr)
 	, m_isWalk(false)
 	, m_isRun(false)
@@ -63,11 +64,11 @@ void PlayerAnimator::Start()
 
 	m_skinnedMesh->AddAnimation("Idle", L"PlayerAnimations1/Idle/Idle");
 	m_skinnedMesh->AddAnimation("Walk", L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk");
-	
+
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3{ 1.5f, 0.0f, 0.0f });
 	Matrix t = Matrix::CreateFromQuaternion(q);
 	t *= Matrix::CreateTranslation(Vector3{ 0.0f, 0.02f, 0.0f });
-	
+
 	//m_skinnedMesh->AddAnimation("Walk", L"test2/testWalk2", t);
 	m_skinnedMesh->AddAnimation("Run", L"PlayerAnimations1/Move/Run/Sword And Shield Run");
 	m_skinnedMesh->AddAnimation("NormalAttack1", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1");
@@ -90,7 +91,6 @@ void PlayerAnimator::Update()
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 
-	m_currentState->OnStateUpdate();
 
 	if (m_isAttack)
 	{
@@ -100,7 +100,7 @@ void PlayerAnimator::Update()
 	if (GetKeyDown(KEY::LBTN))
 	{
 		m_isAttack = true;
-		return;
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 
 	if (GetKey(KEY::LBTN))
@@ -123,41 +123,57 @@ void PlayerAnimator::Update()
 		m_isGuard = true;
 		m_isWalk = false;
 		m_isRun = false;
-		return;
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 	else
 	{
 		m_isGuard = false;
 	}
 
-	if (GetKeyDown(KEY::SPACE))
+	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
 	{
-		m_isDodge = true;
-		return;
+		m_isHit = true;
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 
-	if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
-		|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() != 0.f)
+	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
 	{
-		if (GetKey(KEY::LSHIFT))
+		if (GetKeyDown(KEY::SPACE))
 		{
-			m_isRun = true;
-			m_isWalk = false;
-			return;
+			m_isDodge = true;
+		}
+
+		if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
+			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() != 0.f)
+		{
+			if (GetKey(KEY::LSHIFT))
+			{
+				m_isRun = true;
+				m_isWalk = false;
+			}
+			else
+			{
+				m_isRun = false;
+				m_isWalk = true;
+			}
 		}
 		else
 		{
+			m_isWalk = false;
 			m_isRun = false;
 		}
-		m_isWalk = true;
-		return;
 	}
-	else
+
+	m_currentState->OnStateUpdate();
+
+	if (!m_isAttacking && !m_isGuard)
 	{
-		m_isWalk = false;
-		m_isRun = false;
-		return;
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
 	}
+
+
+
+	m_lastHp = m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get();
 }
 
 

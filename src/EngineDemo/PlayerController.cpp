@@ -3,7 +3,6 @@
 #include "Camera.h"
 #include "Controller.h"
 #include "Player.h"
-#include "PlayerAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 
@@ -11,6 +10,7 @@ PlayerController::PlayerController()
 	: m_forwardInput(0.f)
 	, m_sideInput(0.f)
 	, m_attackInput(0.f)
+	, m_canMove(true)
 {
 	m_name = "PlayerController";
 }
@@ -63,12 +63,11 @@ void PlayerController::PlayerMove(const void*)
 
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
 
-	bool isAttacking = m_owner.lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_owner.lock()->GetComponent<PlayerAnimator>().lock().get()).Get();
-	bool isGuarding = m_owner.lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_owner.lock()->GetComponent<PlayerAnimator>().lock().get()).Get();
 
-
-	if (isAttacking || isGuarding)
+	if (!m_canMove)
 	{
+		m_forwardInput = 0.f;
+		m_sideInput = 0.f;
 		return;
 	}
 

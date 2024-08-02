@@ -183,6 +183,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Left Strafe Walking.fbx");
 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Right Strafe Walking.fbx");
 		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Standing Walk Back.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Jump Attack.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Parried.fbx");
 
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Idle/Idle.FBX");
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk.FBX");
@@ -195,6 +197,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block Idle.fbx");
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block Impact.fbx");
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Sword And Shield Block End.fbx");
+ 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Guard/Standing Melee Parry.fbx");
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Hit/Sword And Shield Impact.fbx");
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Dodge/Stand To Roll.fbx");
 // 		gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations1/Move/BackStep/Standing Walk Back.fbx");
