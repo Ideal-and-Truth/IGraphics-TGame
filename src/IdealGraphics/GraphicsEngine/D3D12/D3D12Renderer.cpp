@@ -26,6 +26,8 @@
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 
+#include "GraphicsEngine/Resource/IdealMaterial.h"
+
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
@@ -544,6 +546,12 @@ void Ideal::D3D12Renderer::DeleteTexture(std::shared_ptr<Ideal::ITexture> Textur
 	if (!Texture) return;
 	m_deferredDeleteManager->AddTextureToDeferredDelete(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
 	m_resourceManager->DeleteTexture(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
+}
+
+void Ideal::D3D12Renderer::DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material)
+{
+	if (!Material) return;
+	m_deferredDeleteManager->AddMaterialToDefferedDelete(std::static_pointer_cast<Ideal::IdealMaterial>(Material));
 }
 
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/)

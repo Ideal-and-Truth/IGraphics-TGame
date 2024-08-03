@@ -45,10 +45,12 @@ ResourceManager::~ResourceManager()
 	Fence();
 	WaitForFenceValue();
 
+	m_defaultMaterial.reset();
 	m_defaultAlbedo.reset();
 	m_defaultNormal.reset();
 	m_defaultMask.reset();
 	m_textures.clear();
+
 	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultAlbedo);
 	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultNormal);
 	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultMask);
@@ -660,7 +662,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 					file->Read(&data, sizeof(uint32) * count);
 					mesh->AddIndices(indices);
 				}
-
+				mesh->SetMaterial(m_defaultMaterial);
 				staticMesh->AddMesh(mesh);
 			}
 		}
@@ -838,16 +840,16 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 				//material->SetIsUseRoughness(true);
 			}
 
-			// Material Id Allocate
-			material->SetID(AllocateMaterialID());
-			//material->Create(shared_from_this());
+			{
+				// Material Id Allocate
+				//material->SetID(AllocateMaterialID());
+				//
+				//material->SetBaseMap(m_defaultAlbedo);
+				//material->SetNormalMap(m_defaultNormal);
+				//material->SetMaskMap(m_defaultMask);
 
-			material->SetBaseMap(m_defaultAlbedo);
-			material->SetNormalMap(m_defaultNormal);
-			material->SetMaskMap(m_defaultMask);
-
-			staticMesh->AddMaterial(material);
-
+				//staticMesh->AddMaterial(m_defaultMaterial);
+			}
 			materialNode = materialNode->NextSiblingElement();
 		}
 	}
@@ -929,7 +931,7 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 					file->Read(&data, sizeof(uint32) * count);
 					mesh->AddIndices(indices);
 				}
-
+				mesh->SetMaterial(m_defaultMaterial);
 				skinnedMesh->AddMesh(mesh);
 			}
 		}
@@ -1106,16 +1108,16 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				material->SetIsUseRoughness(true);
 			}
 
-			// Material Id Allocate
-			material->SetID(AllocateMaterialID());
-			//material->Create(shared_from_this());
+			{
+				// Material Id Allocate
+				//material->SetID(AllocateMaterialID());
+				//
+				//material->SetBaseMap(m_defaultAlbedo);
+				//material->SetNormalMap(m_defaultNormal);
+				//material->SetMaskMap(m_defaultMask);
 
-			material->SetBaseMap(m_defaultAlbedo);
-			material->SetNormalMap(m_defaultNormal);
-			material->SetMaskMap(m_defaultMask);
-
-			skinnedMesh->AddMaterial(material);
-
+				skinnedMesh->AddMaterial(m_defaultMaterial);
+			}
 			materialNode = materialNode->NextSiblingElement();
 		}
 	}
@@ -1127,6 +1129,20 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 
 	// KeyBinding
 	m_dynamicMeshes[key] = skinnedMesh;
+}
+
+std::shared_ptr<Ideal::IdealMaterial> ResourceManager::GetDefaultMaterial()
+{
+	return m_defaultMaterial;
+}
+
+void ResourceManager::CreateDefaultMaterial()
+{
+	m_defaultMaterial = std::make_shared<Ideal::IdealMaterial>();
+	m_defaultMaterial->SetBaseMap(m_defaultAlbedo);
+	m_defaultMaterial->SetNormalMap(m_defaultNormal);
+	m_defaultMaterial->SetMaskMap(m_defaultMask);
+	m_defaultMaterial->SetID(AllocateMaterialID());
 }
 
 void ResourceManager::DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture)

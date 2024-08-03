@@ -262,6 +262,7 @@
     <ClInclude Include="GraphicsEngine\Resource\ModelAnimation.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\Utils.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RayTracingFlagManger.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMesh.h" />
@@ -343,6 +344,7 @@
     <ClCompile Include="GraphicsEngine\Resource\IdealStaticMesh.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\ShaderManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RayTracingFlagManger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />

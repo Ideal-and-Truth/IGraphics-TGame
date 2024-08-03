@@ -17,7 +17,9 @@ namespace Ideal
 
 	public:
 		virtual std::string GetName() abstract;
-		virtual void SetMaterial(std::shared_ptr<Ideal::IMaterial> Material) abstract;
+		virtual void SetMaterialObject(std::shared_ptr<Ideal::IMaterial> Material) abstract;
+
+		// 나중에 이거 없앨듯
 		virtual std::shared_ptr<Ideal::IMaterial> GetMaterialObject() abstract;
 	};
 }

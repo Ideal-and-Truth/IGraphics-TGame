@@ -245,6 +245,7 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		ImGui::DestroyContext();
 	}
 #endif
+	m_resourceManager->GetDefaultMaterial()->Free();
 	m_raytracingManager = nullptr;
 	m_resourceManager = nullptr;
 }
@@ -347,6 +348,7 @@ finishAdapter:
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
 	m_resourceManager->CreateDefaultTextures();
+	m_resourceManager->CreateDefaultMaterial();
 
 	{
 		std::shared_ptr<Ideal::ShaderManager> m_shaderManager = std::make_shared<Ideal::ShaderManager>();
@@ -420,6 +422,7 @@ finishAdapter:
 	//CreateDeviceDependentResources();
 
 	RaytracingManagerInit();
+	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -776,6 +779,7 @@ std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(c
 std::shared_ptr<Ideal::IMaterial> Ideal::D3D12RayTracingRenderer::CreateMaterial()
 {
 	std::shared_ptr<Ideal::IMaterial> ret = m_resourceManager->CreateMaterial();
+	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, std::static_pointer_cast<Ideal::IdealMaterial>(ret));
 	return ret;
 }
 
@@ -784,6 +788,12 @@ void Ideal::D3D12RayTracingRenderer::DeleteTexture(std::shared_ptr<Ideal::ITextu
 	if (!Texture) return;
 	m_deferredDeleteManager->AddTextureToDeferredDelete(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
 	m_resourceManager->DeleteTexture(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material)
+{
+	if (!Material) return;
+	m_deferredDeleteManager->AddMaterialToDefferedDelete(std::static_pointer_cast<Ideal::IdealMaterial>(Material));
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
@@ -1140,7 +1150,7 @@ void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath
 		L"-I", L"../Shaders/Raytracing/"
 	};
 	ComPtr<IDxcResult> result;
-	//compiler->Compile(&sourceBuffer, nullptr, 0, includeHandler.Get(), IID_PPV_ARGS(&result));
+	//compiler->Compile(&sourceBuffer, nullptr, 0, includeHandler.Get()e, IID_PPV_ARGS(&result));
 	compiler->Compile(&sourceBuffer, args, _countof(args), includeHandler.Get(), IID_PPV_ARGS(&result));
 
 
@@ -1149,7 +1159,6 @@ void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath
 	if (encoding)
 	{
 		auto a = (char*)encoding->GetBufferPointer();
-		int b = 3;
 	}
 
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
@@ -1209,6 +1218,8 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 {
+	m_raytracingManager->UpdateMaterial(m_device, m_deferredDeleteManager);
+	m_raytracingManager->UpdateTexture(m_device);
 	m_raytracingManager->UpdateAccelerationStructures(shared_from_this(), m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
 }
 
@@ -1233,7 +1244,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 
 	if (ShouldBuildShaderTable)
 	{
-		m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+		m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
 	}
 
 	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
@@ -1245,7 +1256,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	//ResetCommandList();
 	auto blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, m_cbAllocator[m_currentContextIndex], obj, obj->GetName().c_str(), true);
 	// Skinning 데이터는 쉐이더 테이블을 그냥 만든다.
-	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+	m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
 
 	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
 	obj->SetBLASInstanceDesc(instanceDesc);

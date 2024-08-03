@@ -51,6 +51,7 @@ namespace Ideal
 	class IMeshObject;
 	class ISkinnedMeshObject;
 	class IRenderScene;
+	class IMaterial;
 }
 
 namespace Ideal
@@ -100,7 +101,8 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IMaterial> CreateMaterial() override;
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
-
+		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) override;
+					 
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }

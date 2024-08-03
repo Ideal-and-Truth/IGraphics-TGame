@@ -10,6 +10,7 @@ namespace Ideal
 	class DXRBottomLevelAccelerationStructure;
 	class DXRTopLevelAccelerationStructure;
 	class D3D12Texture;
+	class IdealMaterial;
 }
 namespace Ideal
 {
@@ -52,6 +53,8 @@ namespace Ideal
 		void AddTextureToDeferredDelete(std::shared_ptr<Ideal::D3D12Texture> Texture);
 		void DeleteTexture(uint32 DeleteContextIndex);
 
+		void AddMaterialToDefferedDelete(std::shared_ptr<Ideal::IdealMaterial> Material);
+		void DeleteMaterial(uint32 DeleteContextIndex);
 	private:
 		uint32 m_currentContextIndex = 0;
 
@@ -60,6 +63,7 @@ namespace Ideal
 		std::vector<std::shared_ptr<DXRBottomLevelAccelerationStructure>> m_blasToDelete[MAX_PENDING_FRAMES];
 		std::vector<std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure>> m_tlasToDelete[MAX_PENDING_FRAMES];
 		std::vector<std::shared_ptr<Ideal::D3D12Texture>> m_textureToDelete[MAX_PENDING_FRAMES];
+		std::vector<std::shared_ptr<Ideal::IdealMaterial>> m_materialToDelete[MAX_PENDING_FRAMES];
 
 		// ver3
 		uint64 m_frameCount = 0;

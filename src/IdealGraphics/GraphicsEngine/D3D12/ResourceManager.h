@@ -170,10 +170,14 @@ namespace Ideal
 
 	public:
 		void CreateDefaultTextures();
-	
+		void CreateDefaultMaterial();
+		std::shared_ptr<Ideal::IdealMaterial> GetDefaultMaterial();
+
 	private:
 		std::shared_ptr<Ideal::D3D12Texture> m_defaultAlbedo;
 		std::shared_ptr<Ideal::D3D12Texture> m_defaultNormal;
 		std::shared_ptr<Ideal::D3D12Texture> m_defaultMask;
+
+		std::shared_ptr<Ideal::IdealMaterial> m_defaultMaterial;
 	};
 }

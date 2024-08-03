@@ -292,12 +292,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//--------------------Create Texture----------------------//
 		std::shared_ptr<Ideal::ITexture> testTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
-		//testTexture = nullptr;
+		std::shared_ptr<Ideal::ITexture> testTexture2 = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
+		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
 
 		//--------------------Create Material----------------------//
-		//std::shared_ptr<Ideal::IMaterial> testMaterial = gRenderer->CreateMaterial();
-		//testMaterial->SetBaseMap(testTexture);
+		std::shared_ptr<Ideal::IMaterial> testMaterial = gRenderer->CreateMaterial();
+		//testMaterial = nullptr;
+		testMaterial->SetBaseMap(testTexture2);
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
@@ -543,7 +545,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (playerRe)
 						{
-							SkinnedMeshObjectGetMeshTest(playerRe, nullptr, testTexture);
+							SkinnedMeshObjectGetMeshTest(playerRe, testMaterial, testTexture);
 						}
 					}
 					//once++;
@@ -577,8 +579,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		gRenderer->DeleteMeshObject(playerRe);
 		playerRe.reset();
+		gRenderer->DeleteMaterial(testMaterial);
+		testMaterial.reset();
 		gRenderer->DeleteTexture(testTexture);
 		testTexture.reset();
+		gRenderer->DeleteTexture(testTexture2);
+		testTexture2.reset();
+
 		gRenderer.reset();
 	}
 
@@ -1009,6 +1016,21 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 			once = 1;
 			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject()->SetBaseMap(Texture);
 			int a = 3;
+		}
+	}
+	if (Material)
+	{
+		static int once = 0;
+		once++;
+		if (once >= 1000)
+		{
+			once = 1;
+			SkinnedMeshObject->GetMeshByIndex(0)->SetMaterialObject(Material);
+			//for (int i = 0; i < size; ++i)
+			//{
+			//	auto mesh = SkinnedMeshObject->GetMeshByIndex(i);
+			//	mesh->SetMaterialObject(Material);
+			//}
 		}
 	}
 

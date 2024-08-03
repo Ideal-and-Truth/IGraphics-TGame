@@ -3,6 +3,8 @@
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
+
 namespace Ideal
 {
 	class IdealRenderer;
@@ -115,10 +117,13 @@ namespace Ideal
 		CB_MaterialInfo	m_cbMaterialInfo;
 
 	public:
-		void TextureChanged() { m_isTextureChanged = true; }
+		//void MaterialChanged(std::shared_ptr<Ideal::IdealMaterial> Material) { m_prevMaterial = Material; m_isMaterialChanged = true; }
+		void TextureChanged() { m_isTextureChanged = true; Ideal::Singleton::RayTracingFlagManger::GetInstance().SetTextureChanged(); }
 		bool IsTextureChanged() { return m_isTextureChanged; }
 
 	private:
+		//std::shared_ptr<Ideal::IdealMaterial> m_prevMaterial;
+		//bool m_isMaterialChanged = true;
 		bool m_isTextureChanged = true;
 	};
 }

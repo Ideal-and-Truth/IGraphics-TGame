@@ -10,6 +10,7 @@
 //#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
 #include <d3d12.h>
 #include <d3dx12.h>
 namespace Ideal
@@ -36,7 +37,11 @@ namespace Ideal
 
 	public:
 		virtual std::string GetName() override { return m_name; }
-		virtual void SetMaterial(std::shared_ptr<Ideal::IMaterial> Material) override { m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material); }
+		virtual void SetMaterialObject(std::shared_ptr<Ideal::IMaterial> Material) override 
+		{
+			Ideal::Singleton::RayTracingFlagManger::GetInstance().SetMaterialChanged();
+			m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material); 
+		}
 		virtual std::shared_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
 
 	public:

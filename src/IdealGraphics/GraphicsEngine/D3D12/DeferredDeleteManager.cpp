@@ -2,6 +2,8 @@
 #include "GraphicsEngine/public/IMeshObject.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
+#include "GraphicsEngine/Resource/IdealMaterial.h"
+
 Ideal::DeferredDeleteManager::DeferredDeleteManager()
 {
 
@@ -224,5 +226,24 @@ void Ideal::DeferredDeleteManager::DeleteTexture(uint32 DeleteContextIndex)
 			Resource.reset();
 		}
 		m_textureToDelete[DeleteContextIndex].clear();
+	}
+}
+
+void Ideal::DeferredDeleteManager::AddMaterialToDefferedDelete(std::shared_ptr<Ideal::IdealMaterial> Material)
+{
+	m_materialToDelete[m_currentContextIndex].push_back(Material);
+}
+
+void Ideal::DeferredDeleteManager::DeleteMaterial(uint32 DeleteContextIndex)
+{
+	if (m_materialToDelete[DeleteContextIndex].size() > 0)
+	{
+		for (auto& Resource : m_materialToDelete[DeleteContextIndex])
+		{
+			// 현재 Free는 RayTracing의 핸들 값을 해제함.
+			Resource->Free();
+			Resource.reset();
+		}
+		m_materialToDelete[DeleteContextIndex].clear();
 	}
 }

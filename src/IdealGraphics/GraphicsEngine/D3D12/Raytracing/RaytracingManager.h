@@ -181,7 +181,7 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12Shader> Shader
 		);
 		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
-		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
+		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 
 		//TEMP
 		ComPtr<ID3D12Resource> GetRayGenShaderTable() { return m_rayGenShaderTable; }
@@ -219,6 +219,15 @@ namespace Ideal
 		// 이로인해 다음 Instance는 다시 자기만의 instance를 가질 수 있게 된다.
 		uint64 m_contributionToHitGroupIndexCount = 0;
 
+		//---Material Texture---//
+	public:
+		// Mateiral이 바뀌었는지 검사한다.
+		void UpdateMaterial(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
+		// Material의 텍스쳐가 바뀌었는지를 검사한다.
+		void UpdateTexture(ComPtr<ID3D12Device5> Device);
+		void CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IdealMaterial> NewMaterial);
+
+	private:
 		// 중복되는 Material 관리..?
 		std::unordered_map<uint64,std::shared_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
 

@@ -11,6 +11,8 @@
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/public/IdealRenderer.h"
 
+#include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
+
 #include "ITexture.h"
 
 Ideal::IdealMaterial::IdealMaterial()
@@ -32,6 +34,7 @@ Ideal::IdealMaterial::~IdealMaterial()
 
 void Ideal::IdealMaterial::SetBaseMap(std::shared_ptr<Ideal::ITexture> Texture)
 {
+	Ideal::Singleton::RayTracingFlagManger::GetInstance().SetTextureChanged();
 	// 만약 기존 텍스쳐가 있을경우 Free 해준다.
 	m_diffuseTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 	m_isTextureChanged = true;
@@ -39,12 +42,14 @@ void Ideal::IdealMaterial::SetBaseMap(std::shared_ptr<Ideal::ITexture> Texture)
 
 void Ideal::IdealMaterial::SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture)
 {
+	Ideal::Singleton::RayTracingFlagManger::GetInstance().SetTextureChanged();
 	m_normalTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 	m_isTextureChanged = true;
 }
 
 void Ideal::IdealMaterial::SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture)
 {
+	Ideal::Singleton::RayTracingFlagManger::GetInstance().SetTextureChanged();
 	m_maskTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 	m_isTextureChanged = true;
 }
@@ -157,8 +162,8 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 
 void Ideal::IdealMaterial::Free()
 {
-	m_refCountInRayTracing--;
-	if (m_refCountInRayTracing <= 0)
+	//m_refCountInRayTracing--;
+	//if (m_refCountInRayTracing <= 0)
 	{
 		m_refCountInRayTracing = 0;
 		m_diffuseTextureInRayTracing.Free();
