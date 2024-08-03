@@ -23,6 +23,7 @@
 #include "GraphicsEngine/Resource/IdealAnimation.h"
 #include "GraphicsEngine/Resource/ModelAnimation.h"
 
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "ThirdParty/Include/DirectXTK12/DDSTextureLoader.h"
@@ -43,6 +44,14 @@ ResourceManager::~ResourceManager()
 {
 	Fence();
 	WaitForFenceValue();
+
+	m_defaultAlbedo.reset();
+	m_defaultNormal.reset();
+	m_defaultMask.reset();
+	m_textures.clear();
+	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultAlbedo);
+	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultNormal);
+	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultMask);
 }
 
 void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
@@ -1122,7 +1131,8 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 
 void ResourceManager::DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture)
 {
-	m_textures[Texture->GetName()] = nullptr;
+	//m_textures[Texture->GetName()] = nullptr;
+	m_textures.erase(Texture->GetName());
 }
 
 void ResourceManager::CreateDefaultTextures()

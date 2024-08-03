@@ -292,10 +292,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//--------------------Create Texture----------------------//
 		std::shared_ptr<Ideal::ITexture> testTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
+		//testTexture = nullptr;
+		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
 
 		//--------------------Create Material----------------------//
-		std::shared_ptr<Ideal::IMaterial> testMaterial = gRenderer->CreateMaterial();
-		testMaterial->SetBaseMap(testTexture);
+		//std::shared_ptr<Ideal::IMaterial> testMaterial = gRenderer->CreateMaterial();
+		//testMaterial->SetBaseMap(testTexture);
 
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
@@ -541,7 +543,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (playerRe)
 						{
-							SkinnedMeshObjectGetMeshTest(playerRe, testMaterial, testTexture);
+							SkinnedMeshObjectGetMeshTest(playerRe, nullptr, testTexture);
 						}
 					}
 					//once++;
@@ -573,9 +575,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 
-		//gRenderer->DeleteMeshObject(player);
-		//player.reset();
-
+		gRenderer->DeleteMeshObject(playerRe);
+		playerRe.reset();
+		gRenderer->DeleteTexture(testTexture);
+		testTexture.reset();
 		gRenderer.reset();
 	}
 
@@ -997,7 +1000,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		//auto material = mesh->GetMaterialObject();
 		//material->SetBaseMap(Texture);
 	}
-	if (Material)
+	if (Texture)
 	{
 		static int once = 0;
 		once++;

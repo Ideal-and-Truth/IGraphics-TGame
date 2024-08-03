@@ -224,6 +224,7 @@ Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width,
 
 Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
+
 	Fence();
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;   ++i)
 	{
@@ -244,7 +245,7 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		ImGui::DestroyContext();
 	}
 #endif
-
+	m_raytracingManager = nullptr;
 	m_resourceManager = nullptr;
 }
 
@@ -780,6 +781,7 @@ std::shared_ptr<Ideal::IMaterial> Ideal::D3D12RayTracingRenderer::CreateMaterial
 
 void Ideal::D3D12RayTracingRenderer::DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture)
 {
+	if (!Texture) return;
 	m_deferredDeleteManager->AddTextureToDeferredDelete(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
 	m_resourceManager->DeleteTexture(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
 }

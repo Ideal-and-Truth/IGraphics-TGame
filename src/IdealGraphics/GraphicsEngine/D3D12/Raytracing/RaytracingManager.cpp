@@ -75,7 +75,7 @@ Ideal::RaytracingManager::RaytracingManager()
 
 Ideal::RaytracingManager::~RaytracingManager()
 {
-
+	m_materialMapInFixedDescriptorTable.clear();
 }
 
 void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)

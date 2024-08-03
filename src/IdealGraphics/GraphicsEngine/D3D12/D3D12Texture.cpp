@@ -17,6 +17,8 @@ Ideal::D3D12Texture::~D3D12Texture()
 	m_srvHandle.Free();
 	m_rtvHandle.Free();
 	m_dsvHandle.Free();
+
+	m_srvHandleInEditor.Free();
 }
 
 uint64 Ideal::D3D12Texture::GetImageID()

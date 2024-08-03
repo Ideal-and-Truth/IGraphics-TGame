@@ -541,6 +541,7 @@ std::shared_ptr<Ideal::IMaterial> Ideal::D3D12Renderer::CreateMaterial()
 
 void Ideal::D3D12Renderer::DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture)
 {
+	if (!Texture) return;
 	m_deferredDeleteManager->AddTextureToDeferredDelete(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
 	m_resourceManager->DeleteTexture(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
 }

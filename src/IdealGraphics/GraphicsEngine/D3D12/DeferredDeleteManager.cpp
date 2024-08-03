@@ -1,7 +1,7 @@
 #include "DeferredDeleteManager.h"
 #include "GraphicsEngine/public/IMeshObject.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
-
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
 Ideal::DeferredDeleteManager::DeferredDeleteManager()
 {
 
@@ -27,8 +27,8 @@ void Ideal::DeferredDeleteManager::DeleteDeferredResources(uint32 CurrentContext
 
 #ifdef BeforeRefactor
 	// ver2
-	DeleteTexture(CurrentContextIndex);
 	DeleteD3D12Resource(CurrentContextIndex);
+	DeleteTexture(CurrentContextIndex);
 	DeleteMeshObject(CurrentContextIndex);
 	DeleteBLAS(CurrentContextIndex);
 	DeleteTLAS(CurrentContextIndex);
