@@ -28,12 +28,14 @@ uint64 Ideal::D3D12Texture::GetImageID()
 
 uint32 Ideal::D3D12Texture::GetWidth()
 {
-	return m_width;
+	uint64 ret = m_resource->GetDesc().Width;
+	return (uint32)ret;
 }
 
 uint32 Ideal::D3D12Texture::GetHeight()
 {
-	return m_height;
+	uint64 ret = m_resource->GetDesc().Height;
+	return (uint32)ret;
 }
 
 void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)

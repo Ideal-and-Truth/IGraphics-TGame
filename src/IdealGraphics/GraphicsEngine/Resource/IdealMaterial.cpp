@@ -38,6 +38,7 @@ void Ideal::IdealMaterial::SetBaseMap(std::shared_ptr<Ideal::ITexture> Texture)
 	// 만약 기존 텍스쳐가 있을경우 Free 해준다.
 	m_diffuseTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 	m_isTextureChanged = true;
+	m_cbMaterialInfo.bUseDiffuseMap = true;
 }
 
 void Ideal::IdealMaterial::SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture)
@@ -45,6 +46,7 @@ void Ideal::IdealMaterial::SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture
 	Ideal::Singleton::RayTracingFlagManger::GetInstance().SetTextureChanged();
 	m_normalTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 	m_isTextureChanged = true;
+	m_cbMaterialInfo.bUseNormalMap = true;
 }
 
 void Ideal::IdealMaterial::SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture)
@@ -52,6 +54,7 @@ void Ideal::IdealMaterial::SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture)
 	Ideal::Singleton::RayTracingFlagManger::GetInstance().SetTextureChanged();
 	m_maskTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 	m_isTextureChanged = true;
+	m_cbMaterialInfo.bUseRoughnessMap = true;
 }
 
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)

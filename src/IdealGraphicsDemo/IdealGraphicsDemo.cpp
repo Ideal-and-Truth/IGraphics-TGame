@@ -104,7 +104,7 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
 void ImageTest(std::shared_ptr<Ideal::ITexture> Texture);
 void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
 
-void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::ITexture> Texture = nullptr);
+void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 = nullptr, std::shared_ptr<Ideal::ITexture> Texture = nullptr, std::shared_ptr<Ideal::ITexture> Texture2 = nullptr);
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
@@ -289,15 +289,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
-		std::shared_ptr<Ideal::ITexture> testTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
-		std::shared_ptr<Ideal::ITexture> testTexture2 = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> faceTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> faceNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_Normal.png");
+		std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
+		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
 
 		//--------------------Create Material----------------------//
-		std::shared_ptr<Ideal::IMaterial> testMaterial = gRenderer->CreateMaterial();
-		//testMaterial = nullptr;
-		testMaterial->SetBaseMap(testTexture2);
+		std::shared_ptr<Ideal::IMaterial> skirtMaterial = gRenderer->CreateMaterial();
+		skirtMaterial->SetBaseMap(skirtBottomTexture);
+		skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
+
+		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
+		eyeMaterial->SetBaseMap(eyeTexture);
 #pragma endregion
 
 #pragma region CreateLight
@@ -461,13 +467,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						{
 							SpotLightInspector(spotLight);
 						}
-						if (testTexture)
+						if (faceTexture)
 						{
-							ImageTest(testTexture);
+							ImageTest(faceTexture);
+						}
+						if (eyeTexture)
+						{
+							ImageTest(eyeTexture);
+						}
+						if (skirtBottomTexture)
+						{
+							ImageTest(skirtBottomTexture);
 						}
 						if (playerRe)
 						{
-							SkinnedMeshObjectGetMeshTest(playerRe, testMaterial, testTexture);
+							SkinnedMeshObjectGetMeshTest(playerRe, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 						}
 					}
 					//once++;
@@ -498,16 +512,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
-
 		gRenderer->DeleteMeshObject(playerRe);
 		playerRe.reset();
-		gRenderer->DeleteMaterial(testMaterial);
-		testMaterial.reset();
-		gRenderer->DeleteTexture(testTexture);
-		testTexture.reset();
-		gRenderer->DeleteTexture(testTexture2);
-		testTexture2.reset();
-
+		gRenderer->DeleteMaterial(skirtMaterial);
+		skirtMaterial.reset();
+		gRenderer->DeleteMaterial(eyeMaterial);
+		eyeMaterial.reset();
+		gRenderer->DeleteTexture(faceTexture);
+		faceTexture.reset();
+		gRenderer->DeleteTexture(faceNormalTexture);
+		faceNormalTexture.reset();
+		gRenderer->DeleteTexture(eyeTexture);
+		eyeTexture.reset();
+		gRenderer->DeleteTexture(skirtBottomTexture);
+		skirtBottomTexture.reset();
+		gRenderer->DeleteTexture(skirtBottomNormalTexture);
+		skirtBottomNormalTexture.reset();
 		gRenderer.reset();
 	}
 
@@ -908,6 +928,7 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	ImGui::End();
 }
 
+// ImGui에 이미지를 띄워보는 용도의 함수
 void ImageTest(std::shared_ptr<Ideal::ITexture> Texture)
 {
 	ImGui::Begin("Image Test");
@@ -916,18 +937,19 @@ void ImageTest(std::shared_ptr<Ideal::ITexture> Texture)
 	ImGui::End();
 }
 
-void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::ITexture> Texture /*= nullptr*/)
+// 기능 정리 :
+// 모델에서 매쉬 오브젝트 추출 -> 매쉬 이거 가지고 있지 말 것. 지금 shared_ptr로 되어 있음
+// 
+void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture2 /*= nullptr*/)
 {
 	ImGui::Begin("SkinnedMesh Get Mesh Test");
 	auto size = SkinnedMeshObject->GetMeshesSize();
 	
+	// 모델 정보
 	for (int i = 0; i < size; ++i)
 	{
 		auto mesh = SkinnedMeshObject->GetMeshByIndex(i);
 		ImGui::Text(mesh->GetName().c_str());
-		//mesh->SetMaterial()
-		//auto material = mesh->GetMaterialObject();
-		//material->SetBaseMap(Texture);
 	}
 	if (Texture)
 	{
@@ -936,10 +958,16 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		if (once >= 3000)
 		{
 			once = 1;
+			// 예시로 GetMaterialObject를 사용함. -> 이는 기본 머테리얼을 가져와서 사용하므로 가급적 사용X
+			// 차라리 Material을 새로 만들어서 SetMaterialObject를 해주셈
+			// 이건 그냥 SetBaseMap의 예시
 			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject().lock()->SetBaseMap(Texture);
+			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject().lock()->SetNormalMap(Texture2);
 			int a = 3;
 		}
 	}
+
+	// 아래는 머테리얼을 바꾼다
 	if (Material)
 	{
 		static int once = 0;
@@ -948,13 +976,17 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		{
 			once = 1;
 			SkinnedMeshObject->GetMeshByIndex(0)->SetMaterialObject(Material);
-			//for (int i = 0; i < size; ++i)
-			//{
-			//	auto mesh = SkinnedMeshObject->GetMeshByIndex(i);
-			//	mesh->SetMaterialObject(Material);
-			//}
 		}
 	}
-
+	if (Material2)
+	{
+		static int once = 0;
+		once++;
+		if (once >= 1000)
+		{
+			once = 1;
+			SkinnedMeshObject->GetMeshByIndex(4)->SetMaterialObject(Material2);
+		}
+	}
 	ImGui::End();
 }
