@@ -28,8 +28,8 @@ namespace Ideal
 		void Resize(std::shared_ptr<IdealRenderer> Renderer);
 
 	private:
-		std::shared_ptr<Ideal::IdealMesh<ScreenQuadVertex>> m_quadMesh;
-		std::vector<ScreenQuadVertex> m_vertices;
+		std::shared_ptr<Ideal::IdealMesh<QuadVertex>> m_quadMesh;
+		std::vector<QuadVertex> m_vertices;
 		std::vector<uint32> m_indices;
 
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_screenQuadPSO;

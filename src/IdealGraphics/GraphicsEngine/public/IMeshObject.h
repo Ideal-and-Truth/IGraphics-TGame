@@ -6,6 +6,7 @@
 namespace Ideal
 {
 	class IMesh;
+	class IBone;
 }
 
 namespace Ideal
@@ -31,6 +32,8 @@ namespace Ideal
 	public:
 		virtual unsigned int GetMeshesSize() abstract;
 		virtual std::shared_ptr<Ideal::IMesh> GetMeshByIndex(unsigned int) abstract;
-
+		
+		virtual unsigned int GetBonesSize() abstract;
+		virtual std::weak_ptr<Ideal::IBone> GetBoneByIndex(unsigned int) abstract;
 	};
 }

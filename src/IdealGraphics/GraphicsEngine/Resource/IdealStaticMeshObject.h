@@ -29,6 +29,8 @@ namespace Ideal
 		// Interface //
 		virtual uint32 GetMeshesSize() override;
 		virtual std::shared_ptr<Ideal::IMesh> GetMeshByIndex(uint32 index) override;
+		virtual uint32 GetBonesSize() override;
+		virtual std::weak_ptr<Ideal::IBone> GetBoneByIndex(uint32 index) override;
 
 	public:
 		void Init(ComPtr<ID3D12Device> Device);

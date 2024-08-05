@@ -31,6 +31,16 @@ std::shared_ptr<Ideal::IMesh> Ideal::IdealStaticMeshObject::GetMeshByIndex(uint3
 	return nullptr;
 }
 
+uint32 Ideal::IdealStaticMeshObject::GetBonesSize()
+{
+	return 0;
+}
+
+std::weak_ptr<Ideal::IBone> Ideal::IdealStaticMeshObject::GetBoneByIndex(uint32 index)
+{
+	return std::weak_ptr<Ideal::IBone>();
+}
+
 void Ideal::IdealStaticMeshObject::Init(ComPtr<ID3D12Device> Device)
 {
 

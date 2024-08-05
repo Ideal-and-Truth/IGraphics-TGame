@@ -198,6 +198,7 @@
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DynamicConstantBufferAllocator.h" />
     <ClInclude Include="GraphicsEngine\D3D12\TestShader.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\D3D12RaytracingResources.h" />
+    <ClInclude Include="GraphicsEngine\public\IBone.h" />
     <ClInclude Include="GraphicsEngine\public\IMaterial.h" />
     <ClInclude Include="GraphicsEngine\public\imconfig.h" />
     <ClInclude Include="GraphicsEngine\public\IMesh.h" />
@@ -242,6 +243,8 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
     <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealCanvas.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealImage.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
@@ -326,6 +329,8 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealCanvas.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealImage.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\IndexCreator.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\ThirdParty\Utils\FileUtils.cpp" />

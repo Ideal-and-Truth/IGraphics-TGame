@@ -53,6 +53,7 @@ using namespace std;
 #include "GraphicsEngine/public/ITexture.h"
 #include "GraphicsEngine/public/IMesh.h"
 #include "GraphicsEngine/public/IMaterial.h"
+#include "GraphicsEngine/public/IBone.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -103,7 +104,7 @@ void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
 void ImageTest(std::shared_ptr<Ideal::ITexture> Texture);
 void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
-
+void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 = nullptr, std::shared_ptr<Ideal::ITexture> Texture = nullptr, std::shared_ptr<Ideal::ITexture> Texture2 = nullptr);
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
@@ -481,6 +482,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (playerRe)
 						{
+
+							SkinnedMeshObjectBoneInfoTest(playerRe);
 							SkinnedMeshObjectGetMeshTest(playerRe, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 						}
 					}
@@ -937,16 +940,33 @@ void ImageTest(std::shared_ptr<Ideal::ITexture> Texture)
 	ImGui::End();
 }
 
+void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject)
+{
+	ImGui::Begin("SkinnedMesh Bone Test");
+	auto boneSize = SkinnedMeshObject->GetBonesSize();
+	ImGui::Separator();
+	// 본 정보
+	ImGui::Text("Bone Info");
+	for (int i = 0; i < boneSize; ++i)
+	{
+		auto bone = SkinnedMeshObject->GetBoneByIndex(i);
+		ImGui::Text(bone.lock()->GetName().c_str());
+		auto matrix = bone.lock()->GetTransform();
+		int a = 3;
+	}
+	ImGui::End();
+}
 // 기능 정리 :
 // 모델에서 매쉬 오브젝트 추출 -> 매쉬 이거 가지고 있지 말 것. 지금 shared_ptr로 되어 있음
 // 
 void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture2 /*= nullptr*/)
 {
 	ImGui::Begin("SkinnedMesh Get Mesh Test");
-	auto size = SkinnedMeshObject->GetMeshesSize();
-	
-	// 모델 정보
-	for (int i = 0; i < size; ++i)
+	auto meshSize = SkinnedMeshObject->GetMeshesSize();
+	ImGui::Separator();
+	// 매쉬 정보
+	ImGui::Text("Mesh Info");
+	for (int i = 0; i < meshSize; ++i)
 	{
 		auto mesh = SkinnedMeshObject->GetMeshByIndex(i);
 		ImGui::Text(mesh->GetName().c_str());

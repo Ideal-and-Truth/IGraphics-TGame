@@ -46,9 +46,21 @@ std::shared_ptr<Ideal::IMesh> Ideal::IdealSkinnedMeshObject::GetMeshByIndex(uint
 	return mesh;
 }
 
+uint32 Ideal::IdealSkinnedMeshObject::GetBonesSize()
+{
+	uint32 ret = m_bones.size();
+	return ret;
+}
+
+std::weak_ptr<Ideal::IBone> Ideal::IdealSkinnedMeshObject::GetBoneByIndex(uint32 index)
+{
+	std::weak_ptr<Ideal::IdealBone> ret = m_bones[index];
+	return ret;
+}
+
 void Ideal::IdealSkinnedMeshObject::Init(std::shared_ptr<IdealRenderer> Renderer)
 {
-
+	
 }
 
 void Ideal::IdealSkinnedMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer)
@@ -243,14 +255,19 @@ void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::
 {
 	const auto bones = m_skinnedMesh->GetBones();
 
-	for (uint32 boneIdx = 0; boneIdx < m_bones.size(); ++boneIdx)
+	for (uint32 boneIdx = 0; boneIdx < bones.size(); ++boneIdx)
 	{
 		Matrix currentFrame = BeforeAnimation->m_animTransform->transforms[BeforeAnimationFrame][boneIdx];
 		Matrix nextFrame = NextAnimation->m_animTransform->transforms[NextAnimationFrame][boneIdx];
 		Matrix resultFrame = Matrix::Identity;
 		Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
 		
-		m_cbBoneData.transforms[boneIdx] = (bones[boneIdx]->GetOffsetMatrix() * resultFrame).Transpose();
+		Matrix finalMatrix = bones[boneIdx]->GetOffsetMatrix() * resultFrame;
+
+		m_cbBoneData.transforms[boneIdx] = finalMatrix.Transpose();
+
+		// SkinnedMesh"Object"가 가지고 있는 본의 정보
+		m_bones[boneIdx]->SetTransform(finalMatrix);
 	}
 }
 

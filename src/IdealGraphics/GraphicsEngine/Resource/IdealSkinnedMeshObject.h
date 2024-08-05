@@ -11,7 +11,7 @@ namespace Ideal
 {
 	class IAnimation;
 
-	class Idealbone;
+	class IdealBone;
 	class IdealRenderer;
 	class IdealAnimation;
 	class IdealSkinnedMesh;
@@ -52,6 +52,8 @@ namespace Ideal
 		// Interface //
 		virtual uint32 GetMeshesSize() override;
 		virtual std::shared_ptr<Ideal::IMesh> GetMeshByIndex(uint32 index) override;
+		virtual uint32 GetBonesSize() override;
+		virtual std::weak_ptr<Ideal::IBone> GetBoneByIndex(uint32 index) override;
 
 	public:
 		void Init(std::shared_ptr<IdealRenderer> Renderer);
@@ -73,7 +75,6 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::IdealSkinnedMesh> m_skinnedMesh;
 		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bones;
-		std::vector<std::shared_ptr<Ideal::IdealBone>> m_bonesAnimation;
 
 		CB_Bone m_cbBoneData;
 		CB_Transform m_cbTransformData;
