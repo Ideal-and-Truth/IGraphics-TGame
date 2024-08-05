@@ -31,6 +31,7 @@ void Ideal::DeferredDeleteManager::DeleteDeferredResources(uint32 CurrentContext
 	// ver2
 	DeleteD3D12Resource(CurrentContextIndex);
 	DeleteTexture(CurrentContextIndex);
+	DeleteMaterial(CurrentContextIndex);
 	DeleteMeshObject(CurrentContextIndex);
 	DeleteBLAS(CurrentContextIndex);
 	DeleteTLAS(CurrentContextIndex);
@@ -241,7 +242,7 @@ void Ideal::DeferredDeleteManager::DeleteMaterial(uint32 DeleteContextIndex)
 		for (auto& Resource : m_materialToDelete[DeleteContextIndex])
 		{
 			// 현재 Free는 RayTracing의 핸들 값을 해제함.
-			Resource->Free();
+			Resource->FreeInRayTracing();
 			Resource.reset();
 		}
 		m_materialToDelete[DeleteContextIndex].clear();

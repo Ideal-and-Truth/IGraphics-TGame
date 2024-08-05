@@ -53,15 +53,15 @@ namespace Ideal
 		void SetRoughnessTextureFile(std::wstring& File) { m_roughnessTextureFile = File; }
 		void SetIsUseRoughness(bool b) { m_cbMaterialInfo.bUseRoughnessMap = b; }
 
-		std::shared_ptr<Ideal::D3D12Texture> GetDiffuseTexture() { return m_diffuseTexture; }
-		std::shared_ptr<Ideal::D3D12Texture> GetSpecularTexture() { return m_specularTexture; }
-		std::shared_ptr<Ideal::D3D12Texture> GetEmissiveTexture() { return m_emissiveTexture; }
-		std::shared_ptr<Ideal::D3D12Texture> GetNormalTexture() { return m_normalTexture; }
-
-		std::shared_ptr<Ideal::D3D12Texture> GetMetallicTexture() { return m_metalicTexture; }
-		std::shared_ptr<Ideal::D3D12Texture> GetRoughnessTexture() { return m_roughnessTexture; }
-
-		std::shared_ptr<Ideal::D3D12Texture> GetMaskTexture() { return m_maskTexture; }
+		//std::shared_ptr<Ideal::D3D12Texture> GetDiffuseTexture() { return m_diffuseTexture; }
+		//std::shared_ptr<Ideal::D3D12Texture> GetSpecularTexture() { return m_specularTexture; }
+		//std::shared_ptr<Ideal::D3D12Texture> GetEmissiveTexture() { return m_emissiveTexture; }
+		//std::shared_ptr<Ideal::D3D12Texture> GetNormalTexture() { return m_normalTexture; }
+		//
+		//std::shared_ptr<Ideal::D3D12Texture> GetMetallicTexture() { return m_metalicTexture; }
+		//std::shared_ptr<Ideal::D3D12Texture> GetRoughnessTexture() { return m_roughnessTexture; }
+		//
+		//std::shared_ptr<Ideal::D3D12Texture> GetMaskTexture() { return m_maskTexture; }
 
 
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
@@ -83,19 +83,19 @@ namespace Ideal
 		std::wstring m_metallicTextureFile;
 		std::wstring m_roughnessTextureFile;
 
-		std::shared_ptr<Ideal::D3D12Texture> m_diffuseTexture;
+		std::weak_ptr<Ideal::D3D12Texture> m_diffuseTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_specularTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_emissiveTexture;
-		std::shared_ptr<Ideal::D3D12Texture> m_normalTexture;
+		std::weak_ptr<Ideal::D3D12Texture> m_normalTexture;
 
-		std::shared_ptr<Ideal::D3D12Texture> m_metalicTexture;
-		std::shared_ptr<Ideal::D3D12Texture> m_roughnessTexture;
+		std::weak_ptr<Ideal::D3D12Texture> m_metalicTexture;
+		std::weak_ptr<Ideal::D3D12Texture> m_roughnessTexture;
 
-		std::shared_ptr<Ideal::D3D12Texture> m_maskTexture;
+		std::weak_ptr<Ideal::D3D12Texture> m_maskTexture;
 
 	public:
 		//--- Ray Tracing Info ---//
-		void Free();
+		void FreeInRayTracing();
 		void CopyHandleToRayTracingDescriptorTable(ComPtr<ID3D12Device> Device);
 		Ideal::D3D12DescriptorHandle GetDiffuseTextureHandleInRayTracing() { return m_diffuseTextureInRayTracing; }
 		Ideal::D3D12DescriptorHandle GetNormalTextureHandleInRayTracing() { return m_normalTextureInRayTracing; }

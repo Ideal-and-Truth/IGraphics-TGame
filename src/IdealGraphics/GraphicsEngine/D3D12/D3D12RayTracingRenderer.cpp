@@ -226,7 +226,7 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
 
 	Fence();
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;   ++i)
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;	++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 		m_deferredDeleteManager->DeleteDeferredResources(i);
@@ -245,7 +245,8 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		ImGui::DestroyContext();
 	}
 #endif
-	m_resourceManager->GetDefaultMaterial()->Free();
+
+	m_resourceManager->GetDefaultMaterial()->FreeInRayTracing();
 	m_raytracingManager = nullptr;
 	m_resourceManager = nullptr;
 }

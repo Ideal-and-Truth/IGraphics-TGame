@@ -20,6 +20,6 @@ namespace Ideal
 		virtual void SetMaterialObject(std::shared_ptr<Ideal::IMaterial> Material) abstract;
 
 		// 나중에 이거 없앨듯
-		virtual std::shared_ptr<Ideal::IMaterial> GetMaterialObject() abstract;
+		virtual std::weak_ptr<Ideal::IMaterial> GetMaterialObject() abstract;
 	};
 }

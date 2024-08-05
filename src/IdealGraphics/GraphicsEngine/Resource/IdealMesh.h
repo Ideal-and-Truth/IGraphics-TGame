@@ -30,7 +30,6 @@ namespace Ideal
 		IdealMesh()
 			: m_vertexBuffer(nullptr),
 			m_indexBuffer(nullptr),
-			m_material(nullptr),
 			m_boneIndex(0)
 		{}
 		virtual ~IdealMesh() {};
@@ -42,7 +41,7 @@ namespace Ideal
 			Ideal::Singleton::RayTracingFlagManger::GetInstance().SetMaterialChanged();
 			m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material); 
 		}
-		virtual std::shared_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
+		virtual std::weak_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
 
 	public:
 		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
@@ -83,7 +82,7 @@ namespace Ideal
 
 		const std::string& GetMaterialName() { return m_materialName; }
 		void SetMaterialName(const std::string& MaterialName) { m_materialName = MaterialName; }
-		std::shared_ptr<Ideal::IdealMaterial> GetMaterial() { return m_material; }
+		std::weak_ptr<Ideal::IdealMaterial> GetMaterial() { return m_material; }
 		void SetMaterial(std::shared_ptr<IdealMaterial> Material) { m_material = Material; }
 		void SetBoneIndex(const int32& Index) { m_boneIndex = Index; }
 	private:
@@ -93,7 +92,7 @@ namespace Ideal
 		std::vector<TVertexType>			m_vertices;
 		std::vector<uint32>					m_indices;
 
-		std::shared_ptr<Ideal::IdealMaterial> m_material;
+		std::weak_ptr<Ideal::IdealMaterial> m_material;
 		std::string m_materialName;
 
 		std::vector<Ideal::IdealBone> m_bones;

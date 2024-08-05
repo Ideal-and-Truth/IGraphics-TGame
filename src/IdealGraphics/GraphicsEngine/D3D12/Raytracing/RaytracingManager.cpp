@@ -246,13 +246,13 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 
 			blasGeometry.SkinnedMesh = skinnedMesh->GetMeshes()[i];
 
-			std::shared_ptr<Ideal::IdealMaterial> material = skinnedMesh->GetMeshes()[i]->GetMaterial();
+			std::weak_ptr<Ideal::IdealMaterial> material = skinnedMesh->GetMeshes()[i]->GetMaterial();
 
-			if (material)
+			if (material.lock() != nullptr)
 			{
 				// material이 이미 들어가있는지를 검사한다.
-				auto findMaterial = m_materialMapInFixedDescriptorTable[material->GetID()];
-				if (findMaterial != nullptr)
+				auto findMaterial = m_materialMapInFixedDescriptorTable[material.lock()->GetID()];
+				if (findMaterial.lock() != nullptr)
 				{
 					// TODO : blasgeometry.material = this
 					blasGeometry.Material = findMaterial;
@@ -307,12 +307,12 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 
 			blasGeometry.BasicMesh = mesh->GetMeshes()[i];
 
-			std::shared_ptr<Ideal::IdealMaterial> material = mesh->GetMeshes()[i]->GetMaterial();
-			if (material)
+			std::weak_ptr<Ideal::IdealMaterial> material = mesh->GetMeshes()[i]->GetMaterial();
+			if (material.lock() != nullptr)
 			{
 				// material이 이미 들어가있는지를 검사한다.
-				auto findMaterial = m_materialMapInFixedDescriptorTable[material->GetID()];
-				if (findMaterial != nullptr)
+				auto findMaterial = m_materialMapInFixedDescriptorTable[material.lock()->GetID()];
+				if (findMaterial.lock() != nullptr)
 				{
 					// TODO : blasgeometry.material = this
 					blasGeometry.Material = findMaterial;
@@ -618,10 +618,10 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 					blasGeometry.Material = blasGeometry.SkinnedMesh->GetMaterial();
 				}
 
-				rootArguments.SRV_DiffuseTexture = blasGeometry.Material->GetDiffuseTextureHandleInRayTracing().GetGpuHandle();
-				rootArguments.SRV_NormalTexture = blasGeometry.Material->GetNormalTextureHandleInRayTracing().GetGpuHandle();
-				rootArguments.SRV_MaskTexture = blasGeometry.Material->GetMaskTextureHandleInRayTracing().GetGpuHandle();
-				rootArguments.CBV_MaterialInfo = blasGeometry.Material->GetMaterialInfo();
+				rootArguments.SRV_DiffuseTexture = blasGeometry.Material.lock()->GetDiffuseTextureHandleInRayTracing().GetGpuHandle();
+				rootArguments.SRV_NormalTexture = blasGeometry.Material.lock()->GetNormalTextureHandleInRayTracing().GetGpuHandle();
+				rootArguments.SRV_MaskTexture = blasGeometry.Material.lock()->GetMaskTextureHandleInRayTracing().GetGpuHandle();
+				rootArguments.CBV_MaterialInfo = blasGeometry.Material.lock()->GetMaterialInfo();
 
 				for (uint32 i = 0; i < Ideal::PathtracerRayType::Count; ++i)
 				{
@@ -655,28 +655,28 @@ void Ideal::RaytracingManager::UpdateTexture(ComPtr<ID3D12Device5> Device)
 		std::vector<std::shared_ptr<Ideal::IdealMaterial>> materials;
 		for (auto m : m_materialMapInFixedDescriptorTable)
 		{
-			if (m.second->IsTextureChanged())
+			if (m.second.lock()->IsTextureChanged())
 			{
-				m.second->CopyHandleToRayTracingDescriptorTable(Device);
+				m.second.lock()->CopyHandleToRayTracingDescriptorTable(Device);
 			}
 		}
 	}
 }
 
-void Ideal::RaytracingManager::CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IdealMaterial> NewMaterial)
+void Ideal::RaytracingManager::CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::weak_ptr<Ideal::IdealMaterial> NewMaterial)
 {
-	m_materialMapInFixedDescriptorTable[NewMaterial->GetID()] = NewMaterial;
+	m_materialMapInFixedDescriptorTable[NewMaterial.lock()->GetID()] = NewMaterial;
 	{
 		auto diffuse = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-		NewMaterial->SetDiffuseTextureHandleInRayTracing(diffuse);
+		NewMaterial.lock()->SetDiffuseTextureHandleInRayTracing(diffuse);
 
 		auto normal = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-		NewMaterial->SetNormalTextureHandleInRayTracing(normal);
+		NewMaterial.lock()->SetNormalTextureHandleInRayTracing(normal);
 
 		auto mask = DescriptorManager->AllocateFixed(FIXED_DESCRIPTOR_HEAP_CBV_SRV_UAV);
-		NewMaterial->SetMaskTextureHandleInRayTracing(mask);
+		NewMaterial.lock()->SetMaskTextureHandleInRayTracing(mask);
 
-		NewMaterial->CopyHandleToRayTracingDescriptorTable(Device);
+		NewMaterial.lock()->CopyHandleToRayTracingDescriptorTable(Device);
 		//NewMaterial->AddRefCountInRayTracing();
 	}
 }

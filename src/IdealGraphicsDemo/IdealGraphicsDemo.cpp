@@ -143,6 +143,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
+#pragma region EditorInitialize
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
@@ -168,11 +169,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ICamera> camera = gRenderer->CreateCamera();
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
+#pragma endregion
 
-		//-------------------Create Scene-------------------//
-		//std::shared_ptr<Ideal::IRenderScene> renderScene = gRenderer->CreateRenderScene();
-		//gRenderer->SetRenderScene(renderScene);
-
+#pragma region FBXConvert
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
@@ -203,10 +202,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerRe/Sword And Shield Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
+#pragma endregion
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
+#pragma region CreateMeshObjectAndAnimation
 		//-------------------Create Mesh Object-------------------//
 		std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/SM_chronos.Main_tPose");
 		std::shared_ptr<Ideal::IAnimation> swordAnim = gRenderer->CreateAnimation(L"PlayerRe/Sword And Shield Slash");
@@ -282,14 +283,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ka->AddAnimation("HipHop", hiphopAnim2);
 		//cat->AddAnimation("Walk", walkAnim);
 
-		//-------------------Add Mesh Object to Render Scene-------------------//
-		//renderScene->AddObject(ka);
-		//renderScene->AddObject(cat);
-		//renderScene->AddObject(mesh);
-		//renderScene->AddDebugObject(mesh);
-		//renderScene->AddObject(mesh2);
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 
+#pragma endregion
+
+#pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
 		std::shared_ptr<Ideal::ITexture> testTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
 		std::shared_ptr<Ideal::ITexture> testTexture2 = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
@@ -300,7 +298,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IMaterial> testMaterial = gRenderer->CreateMaterial();
 		//testMaterial = nullptr;
 		testMaterial->SetBaseMap(testTexture2);
+#pragma endregion
 
+#pragma region CreateLight
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
@@ -320,22 +320,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
 		pointLight->SetIntensity(0.f);
 
-		//------------------Add Light to Render Scene-----------------//
-		// Directional Light일 경우 그냥 바뀐다.
-		//renderScene->AddLight(dirLight);
-		//renderScene->AddLight(spotLight);
-		//renderScene->AddLight(pointLight);
-		//renderScene->AddLight(pointLight2);
-
-
-		//mesh3->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 0.f, 0.f)));
-		//cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.f, 0.f, 0.f)));
-		//ka->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
-		//cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
-
-		//car->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f)) * Matrix::CreateRotationY(-90.f));
-
-		//mesh2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
+#pragma endregion
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -395,61 +380,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-					//if (tX == 0)
-					//for(int i = 0; i < 10; i++)
-					{
-						//tX += 3;
-						////cat->SetDrawObject(false);
-						//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-						//ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-						//if (tX % 2 == 0)
-						//	ka->AddAnimation("Run", runAnim);
-						//else
-						//	ka->AddAnimation("Slash", slashAnim);
-						////ka->AddAnimation("Run", runAnim);
-						//
-						//Matrix mat2 = Matrix::Identity;
-						//mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-						//ka->SetTransformMatrix(mat2);
-						//
-						//ka->SetPlayAnimation(false);
-						//
-						//meshes.push_back(ka);
-						//
-						//
-						//std::shared_ptr<Ideal::IMeshObject> mesh0 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-						//mesh0->SetTransformMatrix(mat2);
-						//meshes.push_back(mesh0);
-						//
-						//std::shared_ptr<Ideal::ISkinnedMeshObject> mesh1 = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-						//mesh1->AddAnimation("Walk", walkAnim);
-						//mesh1->SetTransformMatrix(mat2);
-						//
-						//mesh1->SetPlayAnimation(false);
-						//
-						//meshes.push_back(mesh1);
-					}
 
-
-					//{
-					//	//cat->SetDrawObject(false);
-					//	std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-					//	ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-					//	if (tX % 2 == 0)
-					//		ka->AddAnimation("Run", runAnim);
-					//	else
-					//		ka->AddAnimation("Slash", slashAnim);
-					//	//ka->AddAnimation("Run", runAnim);
-					//
-					//	Matrix mat2 = Matrix::Identity;
-					//	mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-					//	ka->SetTransformMatrix(mat2);
-					//
-					//	meshes.push_back(ka);
-					//}
 				}
-
-
 
 				if (GetAsyncKeyState('C') & 0x8000)
 				{
@@ -464,19 +396,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					ka->SetTransformMatrix(mat2);
 					tX++;
 
-
-					//}
-					//if (GetAsyncKeyState('X') & 0x8000)
-					//{
 					std::shared_ptr<Ideal::IMeshObject> mesh;
-					//if (tX % 2 == 0)
 					mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-					//else
-					//	mesh = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-
-					//Matrix mat2 = Matrix::Identity;
-					//mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-
+					
 					meshes.push_back(mesh);
 					mesh->SetTransformMatrix(mat2);
 					tX++;
@@ -1014,7 +936,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		if (once >= 3000)
 		{
 			once = 1;
-			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject()->SetBaseMap(Texture);
+			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject().lock()->SetBaseMap(Texture);
 			int a = 3;
 		}
 	}

@@ -58,41 +58,41 @@ void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> Resour
 {
 	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(ResourceManager);
 
-	if (m_diffuseTextureFile.find(L".tga") == std::string::npos)
-	{
-		if (m_diffuseTextureFile.length() > 0)
-		{
-			m_diffuseTexture = std::make_shared<Ideal::D3D12Texture>();
-			ResourceManager->CreateTexture(m_diffuseTexture, m_diffuseTextureFile);
-		}
-	}
-
-	if (m_specularTextureFile.length() > 0)
-	{
-		m_specularTexture = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateTexture(m_specularTexture, m_specularTextureFile);
-	}
-
-	if (m_normalTextureFile.length() > 0)
-	{
-		m_normalTexture = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateTexture(m_normalTexture, m_normalTextureFile);
-	}
-
-	if (m_metallicTextureFile.length() > 0)
-	{
-		m_metalicTexture = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateTexture(m_metalicTexture, m_metallicTextureFile);
-	}
-
-	if (m_roughnessTextureFile.length() > 0)
-	{
-		m_roughnessTexture = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateTexture(m_roughnessTexture, m_roughnessTextureFile);
-	}
-
-	m_cbMaterialInfo.metallicFactor = m_metallicFactor;
-	m_cbMaterialInfo.roughnessFactor = m_roughnessFactor;
+	//if (m_diffuseTextureFile.find(L".tga") == std::string::npos)
+	//{
+	//	if (m_diffuseTextureFile.length() > 0)
+	//	{
+	//		m_diffuseTexture = std::make_shared<Ideal::D3D12Texture>();
+	//		ResourceManager->CreateTexture(m_diffuseTexture, m_diffuseTextureFile);
+	//	}
+	//}
+	//
+	//if (m_specularTextureFile.length() > 0)
+	//{
+	//	m_specularTexture = std::make_shared<Ideal::D3D12Texture>();
+	//	ResourceManager->CreateTexture(m_specularTexture, m_specularTextureFile);
+	//}
+	//
+	//if (m_normalTextureFile.length() > 0)
+	//{
+	//	m_normalTexture = std::make_shared<Ideal::D3D12Texture>();
+	//	ResourceManager->CreateTexture(m_normalTexture, m_normalTextureFile);
+	//}
+	//
+	//if (m_metallicTextureFile.length() > 0)
+	//{
+	//	m_metalicTexture = std::make_shared<Ideal::D3D12Texture>();
+	//	ResourceManager->CreateTexture(m_metalicTexture, m_metallicTextureFile);
+	//}
+	//
+	//if (m_roughnessTextureFile.length() > 0)
+	//{
+	//	m_roughnessTexture = std::make_shared<Ideal::D3D12Texture>();
+	//	ResourceManager->CreateTexture(m_roughnessTexture, m_roughnessTextureFile);
+	//}
+	//
+	//m_cbMaterialInfo.metallicFactor = m_metallicFactor;
+	//m_cbMaterialInfo.roughnessFactor = m_roughnessFactor;
 }
 
 void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer)
@@ -130,9 +130,9 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_MESH, handle.GetGpuHandle());
 
 	// 2024.05.03 : 그냥 다음 srv인 specular와 normal까지 가져올 것 같은데?
-	if (m_diffuseTexture)
+	if (!m_diffuseTexture.expired())
 	{
-		Ideal::D3D12DescriptorHandle diffuseHandle = m_diffuseTexture->GetSRV();
+		Ideal::D3D12DescriptorHandle diffuseHandle = m_diffuseTexture.lock()->GetSRV();
 		D3D12_CPU_DESCRIPTOR_HANDLE diffuseCPUAddress = diffuseHandle.GetCpuHandle();
 
 		//auto handle = descriptorHeap->Allocate(1);
@@ -148,9 +148,9 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_SRV_SPECULAR, incrementSize);
 		device->CopyDescriptorsSimple(1, srvDest, specularCPUAddress, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
-	if (m_normalTexture)
+	if (!m_normalTexture.expired())
 	{
-		Ideal::D3D12DescriptorHandle normalHandle = m_normalTexture->GetSRV();
+		Ideal::D3D12DescriptorHandle normalHandle = m_normalTexture.lock()->GetSRV();
 		D3D12_CPU_DESCRIPTOR_HANDLE normalCPUAddress = normalHandle.GetCpuHandle();
 		
 
@@ -160,7 +160,7 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	}
 }
 
-void Ideal::IdealMaterial::Free()
+void Ideal::IdealMaterial::FreeInRayTracing()
 {
 	//m_refCountInRayTracing--;
 	//if (m_refCountInRayTracing <= 0)
@@ -176,10 +176,10 @@ void Ideal::IdealMaterial::CopyHandleToRayTracingDescriptorTable(ComPtr<ID3D12De
 {
 	m_isTextureChanged = false;
 
-	if(m_diffuseTexture)
-		Device->CopyDescriptorsSimple(1, m_diffuseTextureInRayTracing.GetCpuHandle(), m_diffuseTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	if(m_normalTexture)
-		Device->CopyDescriptorsSimple(1, m_normalTextureInRayTracing.GetCpuHandle(), m_normalTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	if(m_roughnessTexture)
-		Device->CopyDescriptorsSimple(1, m_maskTextureInRayTracing.GetCpuHandle(), m_roughnessTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	if(!m_diffuseTexture.expired())
+		Device->CopyDescriptorsSimple(1, m_diffuseTextureInRayTracing.GetCpuHandle(), m_diffuseTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	if(!m_normalTexture.expired())
+		Device->CopyDescriptorsSimple(1, m_normalTextureInRayTracing.GetCpuHandle(), m_normalTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	if(!m_roughnessTexture.expired())
+		Device->CopyDescriptorsSimple(1, m_maskTextureInRayTracing.GetCpuHandle(), m_roughnessTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }

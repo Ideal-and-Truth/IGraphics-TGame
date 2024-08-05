@@ -46,7 +46,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle SRV_Mask;
 		CB_MaterialInfo C_MaterialInfo;
 
-		std::shared_ptr<Ideal::IdealMaterial> Material;
+		std::weak_ptr<Ideal::IdealMaterial> Material;
 
 		std::shared_ptr<Ideal::IdealMesh<BasicVertex>> BasicMesh;
 		std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> SkinnedMesh;

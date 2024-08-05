@@ -225,11 +225,11 @@ namespace Ideal
 		void UpdateMaterial(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		// Material의 텍스쳐가 바뀌었는지를 검사한다.
 		void UpdateTexture(ComPtr<ID3D12Device5> Device);
-		void CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::IdealMaterial> NewMaterial);
+		void CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::weak_ptr<Ideal::IdealMaterial> NewMaterial);
 
 	private:
 		// 중복되는 Material 관리..?
-		std::unordered_map<uint64,std::shared_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
+		std::unordered_map<uint64,std::weak_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
 
 
 		//---Animation Compute Shader---//
