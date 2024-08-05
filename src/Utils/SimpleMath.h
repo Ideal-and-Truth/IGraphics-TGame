@@ -821,6 +821,14 @@ namespace DirectX
 		// Color
 		struct Color : public XMFLOAT4
 		{
+			template<class Archive>
+			void serialize(Archive& _ar, const unsigned int _file_version)
+			{
+				_ar& x;
+				_ar& y;
+				_ar& z;
+				_ar& w;
+			}
 			Color() noexcept : XMFLOAT4(0, 0, 0, 1.f) {}
 			constexpr Color(float _r, float _g, float _b) noexcept : XMFLOAT4(_r, _g, _b, 1.f) {}
 			constexpr Color(float _r, float _g, float _b, float _a) noexcept : XMFLOAT4(_r, _g, _b, _a) {}

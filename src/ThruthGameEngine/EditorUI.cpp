@@ -20,8 +20,6 @@
 #include <commdlg.h>
 
 
-
-
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
 	: m_manager(Manager)
 	, m_notUsedID(0)
@@ -403,6 +401,7 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	static bool saveAsScene = false;
 	static bool loadScene = false;
 	static bool	saveScene = false;
+	static bool	loadMap = false;
 
 	if (ImGui::BeginPopupContextItem("menu", 0))
 	{
@@ -421,6 +420,10 @@ void EditorUI::ShowMenuBar(bool* p_open)
 		if (ImGui::Selectable("Load Scene"))
 		{
 			loadScene = true;
+		}
+		if (ImGui::Selectable("Load Map Data"))
+		{
+			loadMap = true;
 		}
 		if (ImGui::Selectable("Create Empty"))
 		{
@@ -533,6 +536,36 @@ void EditorUI::ShowMenuBar(bool* p_open)
 		{
 			std::wstring filepath = m_openFileName.lpstrFile;
 			m_manager->Scene()->LoadSceneData(filepath);
+		}
+	}
+	else if (loadMap)
+	{
+		ImGui::OpenPopup("Input String");
+		if (ImGui::BeginPopupModal("Input String", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Enter your text below:");
+			ImGui::InputText("##input", inputTextBuffer, IM_ARRAYSIZE(inputTextBuffer));
+
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
+				USES_CONVERSION;
+				auto& s = m_manager->Scene()->m_currentScene;
+				s->ResetMapData();
+				s->m_mapPath = A2W(inputTextBuffer);
+				s->CreateMap(s->m_mapPath);
+				loadMap = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				loadMap = false;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
 		}
 	}
 

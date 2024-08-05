@@ -44,6 +44,7 @@ namespace Truth
 
 		struct MatarialData
 		{
+			std::string m_name;
 			fs::path m_albedo;
 			fs::path m_normal;
 			fs::path m_metalicRoughness;
@@ -56,13 +57,23 @@ namespace Truth
 		struct GameObject
 		{
 			// Collider Info
-			bool m_isCollider = false;
+			bool m_isBoxCollider = false;
 			std::vector<Vector3> m_size;
 			std::vector<Vector3> m_Center;
 			
 			// Mesh Filter Info
 			bool m_isMesh = false;
 			std::string m_meshPath = "";
+			std::vector<std::string> m_matarialsGuid;
+
+			bool m_isLight = false;
+			uint32 m_type;
+			// same thigins
+			float m_intensity;
+			Color m_color;
+
+			float m_range;
+			float m_angle;
 
 			// Transform Info
 			Matrix m_localTM = Matrix::Identity;
@@ -74,10 +85,11 @@ namespace Truth
 			GameObject* m_parent = nullptr;
 			std::vector<GameObject*> m_children;
 
-			std::vector<MatarialData> m_matarialVector;
+			std::string m_name;
 		};
 
 		uint32 m_meshFilterCount = 0;
+		uint32 m_lightCount = 0;
 
 		std::vector<GameObject*> m_rootGameObject;
 
@@ -95,6 +107,8 @@ namespace Truth
 		std::map<std::string, std::map<std::string, UnityNodeFormat*>> m_nodeMap;
 		// guid, classID, vector<node>
 		std::map<std::string, std::map<std::string, std::vector<UnityNodeFormat*>>> m_classMap;
+		// guid, matarialdata
+		std::map<std::string, MatarialData> m_matarialMap;
 
 		const fs::path m_defaultPath = "../Resources/MapData/";
 		const fs::path m_assetPath = "../Resources/Assets/MapData/";
@@ -106,7 +120,6 @@ namespace Truth
 		const std::wstring m_convertPath = L"MapData/";
 		const std::string m_sconvertPath = "MapData/";
 		
-		std::map<std::string, MatarialData> m_matarialMap;
 
 		GraphicsManager* m_gp;
 
@@ -141,7 +154,7 @@ namespace Truth
 		void ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner);
 		void ParseBoxCollider(const YAML::Node& _node, GameObject* _owner);
 		void ParseMeshFilter(const YAML::Node& _node, GameObject* _owner);
-		void ParseMaterial(const YAML::Node& _node);
+		void ParseLight(const YAML::Node& _node, GameObject* _owner);
 
 		Matrix GetPrefabMatrix(const YAML::Node& _node);
 
@@ -150,6 +163,9 @@ namespace Truth
 
 		void WriteMapData();
 		void GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
+
+		void WriteLightData(fs::path _path);
+		void WriteLightData(GameObject* _node, std::shared_ptr<FileUtils> _file);
 
 		void WriteMapMeshData(fs::path _path);
 		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);

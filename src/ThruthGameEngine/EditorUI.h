@@ -65,10 +65,5 @@ private:
 	void DisplayComponent(std::shared_ptr<Truth::Component> _component);
 
 	void DisplayEntity(std::weak_ptr<Truth::Entity> _entity);
-
-
 };
 
-
-
-//};

@@ -38,6 +38,7 @@
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="NavGeom.h" />
     <ClInclude Include="NavMeshGenerater.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="PxEventCallback.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="EventManager.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="ShapeType.h" />
     <ClInclude Include="SkinnedMesh.h" />
     <ClInclude Include="SphereCollider.h" />
+    <ClInclude Include="SpotLight.h" />
     <ClInclude Include="StringConverter.h" />
     <ClInclude Include="TestComponent.h" />
     <ClInclude Include="TimeManager.h" />
@@ -86,6 +88,7 @@
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="NavGeom.cpp" />
     <ClCompile Include="NavMeshGenerater.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PxEventCallback.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="EventManager.cpp" />
@@ -101,6 +104,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkinnedMesh.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
+    <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="StringConverter.cpp" />
     <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="TimeManager.cpp" />

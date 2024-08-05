@@ -155,6 +155,8 @@ void Truth::Collider::Awake()
 		m_managers.lock()->Physics()->AddScene(m_body);
 		return;
 	}
+
+	m_body = m_rigidbody.lock()->m_body;
 }
 
 void Truth::Collider::FixedUpdate()
@@ -325,6 +327,7 @@ void Truth::Collider::SetUpFiltering(uint32 _filterGroup)
 	physx::PxFilterData filterData;
 	filterData.word0 = _filterGroup;
 	m_collider->setSimulationFilterData(filterData);
+	m_collider->setQueryFilterData(filterData);
 }
 
 

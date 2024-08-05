@@ -8,6 +8,8 @@ namespace Ideal
 	class IMeshObject;
 }
 
+class EditorUI;
+
 /// <summary>
 /// 게임이 실제로 돌아가는 씬
 /// </summary>
@@ -40,6 +42,7 @@ namespace Truth
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
+		std::vector<std::shared_ptr<Ideal::ILight>> m_mapLight;
 
 	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
@@ -96,6 +99,8 @@ namespace Truth
 
 	private:
 		void CreateMap(const std::wstring& _path);
+		void ResetMapData();
+
 	};
 
 	template<class Archive>
@@ -103,6 +108,7 @@ namespace Truth
 	{
 		_ar& m_name;
 		_ar& m_rootEntities;
+		_ar& m_mapPath;
 	}
 
 	template<class Archive>
@@ -110,6 +116,10 @@ namespace Truth
 	{
 		_ar& m_name;
 		_ar& m_rootEntities;
+		if (file_version >= 2)
+		{
+			_ar& m_mapPath;
+		}
 	}
 }
-BOOST_CLASS_VERSION(Truth::Scene, 1)
+BOOST_CLASS_VERSION(Truth::Scene, 2)

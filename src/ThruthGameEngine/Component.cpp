@@ -69,6 +69,16 @@ const DirectX::SimpleMath::Matrix& Truth::Component::GetWorldTM() const
 	return m_owner.lock()->m_transform->m_globalTM;
 }
 
+const DirectX::SimpleMath::Matrix& Truth::Component::GetParentWorldTM() const
+{
+	return m_owner.lock()->GetParentMatrix();
+}
+
+const DirectX::SimpleMath::Matrix& Truth::Component::GetLocalTM() const
+{
+	return m_owner.lock()->m_transform->m_localTM;
+}
+
 void Truth::Component::SetLocalTM(const Matrix& _tm)
 {
 	m_owner.lock()->m_transform->SetLocalTM(_tm);

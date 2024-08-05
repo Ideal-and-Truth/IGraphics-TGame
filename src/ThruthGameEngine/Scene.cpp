@@ -6,6 +6,7 @@
 #include "NavMeshGenerater.h"
 #include "PhysicsManager.h"
 #include "FileUtils.h"
+#include "ISpotLight.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -109,7 +110,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	}
 
 
-	CreateMap(L"SampleScene");
+	CreateMap(m_mapPath);
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -126,7 +127,7 @@ void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 	}
 }
 
-DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const 
+DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const
 {
 	return m_navMesh->FindPath(_start, _end, _size);
 }
@@ -141,6 +142,15 @@ std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
 		}
 	}
 	return std::weak_ptr<Entity>();
+}
+
+void Truth::Scene::ResetMapData()
+{
+	m_managers.lock()->Physics()->ResetPhysX();
+	for (auto& m : m_mapMesh)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m);
+	}
 }
 
 #ifdef EDITOR_MODE
@@ -301,8 +311,18 @@ void Truth::Scene::ClearEntity()
 
 void Truth::Scene::CreateMap(const std::wstring& _path)
 {
+	if (_path.empty())
+	{
+		return;
+	}
+
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
 
+	std::filesystem::path p(L"../Resources/MapData/" + _path);
+	if (!std::filesystem::exists(p))
+	{
+		return;
+	}
 	m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
 
 	m_navMesh = std::make_shared<NavMeshGenerater>();
@@ -320,11 +340,102 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		std::string meshpath = file->Read<std::string>();
 		Matrix meshTM = file->Read<Matrix>();
 
+		size_t matCount = file->Read<size_t>();
+		for (uint32 i = 0; i < matCount; i++)
+		{
+			std::string mat = file->Read<std::string>();
+		}
+
 		USES_CONVERSION;
 		std::wstring wsval(A2W(meshpath.c_str()));
 
 		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
-		m_mapMesh.back()->SetTransformMatrix(meshTM);
+
+		Matrix flipYZ = Matrix::Identity;
+		flipYZ.m[0][0] = -1.f;
+
+		Matrix flipXY = Matrix::Identity;
+		flipXY.m[2][2] = -1.f;
+
+		m_mapMesh.back()->SetTransformMatrix(flipYZ * flipXY * meshTM);
+	}
+
+	std::shared_ptr<FileUtils> lightFile = std::make_shared<FileUtils>();
+	std::wstring lightpath = mapPath + L"Lights.lList";
+	lightFile->Open(lightpath, FileMode::Read);
+
+	uint32 lightCount = lightFile->Read<uint32>();
+	for (uint32 i = 0; i < lightCount; i++)
+	{
+		uint32 type = lightFile->Read<uint32>();
+
+		float intensity = lightFile->Read<float>();
+		Color color =
+		{
+			lightFile->Read<float>(),
+			lightFile->Read<float>(),
+			lightFile->Read<float>(),
+			lightFile->Read<float>()
+		};
+
+		float range = lightFile->Read<float>();
+		float angle = lightFile->Read<float>();
+
+		Matrix worldTM = lightFile->Read<Matrix>();
+
+		Vector3 dir = { 0.0f, 0.0f, 1.0f };
+
+		Vector3 pos;
+		Vector3 sca;
+		Quaternion rot;
+		worldTM.Decompose(sca, rot, pos);
+		
+		Matrix rotMat = Matrix::CreateFromQuaternion(rot);
+
+		dir = Vector3::Transform(dir, rotMat);
+
+		switch (type)
+		{
+		// spot
+		case 0:
+		{
+			std::shared_ptr<Ideal::ISpotLight> spotlight
+				= m_managers.lock()->Graphics()->CreateSpotLight();
+			spotlight->SetIntensity(intensity);
+			spotlight->SetLightColor(color);
+			spotlight->SetDirection(dir);
+			spotlight->SetRange(range);
+			spotlight->SetPosition(pos);
+			spotlight->SetSpotAngle(angle);
+			m_mapLight.push_back(spotlight);
+			break;
+		}
+		// direction
+		case 1:
+		{
+// 			std::shared_ptr<Ideal::IDirectionalLight> directionlight
+// 				 = m_managers.lock()->Graphics()->CreateDirectionalLight();
+// 			directionlight->SetIntensity(intensity);
+// 			directionlight->SetDiffuseColor(color);
+// 			directionlight->SetDirection(dir);
+// 			m_mapLight.push_back(directionlight);
+//  			break;
+		}
+		// point
+		case 2:
+		{
+			std::shared_ptr<Ideal::IPointLight> pointLight
+				= m_managers.lock()->Graphics()->CreatePointLight();
+			pointLight->SetIntensity(intensity);
+			pointLight->SetLightColor(color);
+			pointLight->SetRange(range);
+			pointLight->SetPosition(pos);
+			m_mapLight.push_back(pointLight);
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }
 

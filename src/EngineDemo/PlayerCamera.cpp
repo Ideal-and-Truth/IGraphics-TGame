@@ -1,6 +1,7 @@
 #include "PlayerCamera.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "PhysicsManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 
@@ -60,8 +61,8 @@ void PlayerCamera::LateUpdate()
 void PlayerCamera::FreeCamera()
 {
 	// 자유시점 카메라
-	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
-	Vector3 targetPos = m_target.lock()->m_position;
+	Vector3 cameraPos = m_owner.lock()->m_transform->m_position ;
+	Vector3 targetPos = m_target.lock()->m_position + Vector3{ 0.0f, 2.0f, 0.0f };
 
 	m_elevation += MouseDy() * m_cameraSpeed;
 	m_azimuth -= MouseDx() * m_cameraSpeed;
@@ -95,9 +96,14 @@ void PlayerCamera::FreeCamera()
 	cameraPos.y += targetPos.y;
 	cameraPos.z += targetPos.z;
 
+	Vector3 look = targetPos - cameraPos;
+	look.Normalize(look);
+	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance);
+	// look = targetPos - cameraPos;
+
 	m_owner.lock()->m_transform->m_position = cameraPos;
-	auto look = targetPos - cameraPos;
-	m_camera.lock().get()->GetTypeInfo().GetProperty("look")->Set(m_camera.lock().get(), look);
+	m_camera.lock()->m_look = look;
+
 	look.Normalize();
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0;

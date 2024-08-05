@@ -48,6 +48,7 @@
 namespace Truth
 {
 	class PxEventCallback;
+	class TruthPxQueryFilterCallback;
 }
 
 namespace physx
@@ -87,7 +88,7 @@ namespace Truth
 		// physx::PxOmniPvd* m_oPvd;
 
 		physx::PxCooking* m_cooking;
-
+		TruthPxQueryFilterCallback* m_qCallback;
 		bool m_isInteractive = false;
 	public:
 
@@ -123,6 +124,10 @@ namespace Truth
 
 		void CreateMapCollider(const std::wstring& _path);
 
+		Vector3 GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range);
+
+
+
 	private:
 		void CreatePhysxScene();
 		std::vector<std::vector<physx::PxVec3>> ConvertPointToVertex(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points);
@@ -149,5 +154,16 @@ namespace Truth
 		virtual void onAdvance(const physx::PxRigidBody* const* _bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 _count) {};
 		virtual void onConstraintBreak(physx::PxConstraintInfo* _constraints, physx::PxU32 _count) {};
 	};
+
+	class TruthPxQueryFilterCallback
+		: public physx::PxQueryFilterCallback
+	{
+	public:
+		physx::PxQueryHitType::Enum preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags) override;
+		physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit) override;
+
+	};
+
+	
 }
 

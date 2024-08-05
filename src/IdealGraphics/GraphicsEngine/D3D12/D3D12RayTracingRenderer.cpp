@@ -224,7 +224,7 @@ Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width,
 Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
 	Fence();
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;   ++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 		m_deferredDeleteManager->DeleteDeferredResources(i);

@@ -50,7 +50,6 @@ namespace Truth
 		physx::PxRigidDynamic* m_body;
 
 		Matrix m_localTM;
-		Matrix m_invertLocalTM;
 		Matrix m_globalTM;
 
 	private:

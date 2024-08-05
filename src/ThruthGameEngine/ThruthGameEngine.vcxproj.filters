@@ -112,6 +112,12 @@
     <Filter Include="Component\Collider\Mesh">
       <UniqueIdentifier>{a3d62599-8c3f-4505-8320-aaf4bcf2cc83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UnityParser">
+      <UniqueIdentifier>{e57a742f-8069-475e-82b1-9b8bac3d5fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="navMesh">
+      <UniqueIdentifier>{245addea-d861-4c64-b048-dc2e97dd724e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -220,9 +226,19 @@
       <Filter>Utils\Math</Filter>
     </ClCompile>
     <ClCompile Include="MeshCollider.cpp" />
-    <ClCompile Include="NavGeom.cpp" />
-    <ClCompile Include="NavMeshGenerater.cpp" />
-    <ClCompile Include="UnityParser.cpp" />
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="UnityParser.cpp">
+      <Filter>UnityParser</Filter>
+    </ClCompile>
+    <ClCompile Include="NavGeom.cpp">
+      <Filter>navMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMeshGenerater.cpp">
+      <Filter>navMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -351,9 +367,19 @@
       <Filter>Utils\Math</Filter>
     </ClInclude>
     <ClInclude Include="MeshCollider.h" />
-    <ClInclude Include="NavGeom.h" />
-    <ClInclude Include="NavMeshGenerater.h" />
-    <ClInclude Include="UnityParser.h" />
+    <ClInclude Include="PointLight.h">
+      <Filter>Component\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="UnityParser.h">
+      <Filter>UnityParser</Filter>
+    </ClInclude>
+    <ClInclude Include="NavGeom.h">
+      <Filter>navMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMeshGenerater.h">
+      <Filter>navMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
