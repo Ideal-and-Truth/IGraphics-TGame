@@ -106,3 +106,18 @@ struct CB_LightList
 	PointLight PointLights[MAX_POINT_LIGHT_NUM];
 	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
 };
+
+//----Sprite----//
+struct CB_Sprite
+{
+	Vector2 ScreenPos;
+	Vector2 Pos;
+	Vector2 Scale;
+	Vector2 TexSize;
+	Vector2 TexSamplePos;
+	Vector2 TexSampleSize;
+	float Z;
+	float Alpha;
+	float pad0;
+	float pad1;
+};
