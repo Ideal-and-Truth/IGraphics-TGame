@@ -26,9 +26,9 @@ uint32 Ideal::IdealStaticMeshObject::GetMeshesSize()
 	return ret;
 }
 
-std::shared_ptr<Ideal::IMesh> Ideal::IdealStaticMeshObject::GetMeshByIndex(uint32 index)
+std::weak_ptr<Ideal::IMesh> Ideal::IdealStaticMeshObject::GetMeshByIndex(uint32 index)
 {
-	return nullptr;
+	return std::weak_ptr<Ideal::IMesh>();
 }
 
 uint32 Ideal::IdealStaticMeshObject::GetBonesSize()

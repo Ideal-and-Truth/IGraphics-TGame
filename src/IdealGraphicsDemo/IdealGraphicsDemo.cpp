@@ -940,6 +940,7 @@ void ImageTest(std::shared_ptr<Ideal::ITexture> Texture)
 	ImGui::End();
 }
 
+// 기능 본 정보 추출
 void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject)
 {
 	ImGui::Begin("SkinnedMesh Bone Test");
@@ -958,7 +959,7 @@ void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Sk
 }
 // 기능 정리 :
 // 모델에서 매쉬 오브젝트 추출 -> 매쉬 이거 가지고 있지 말 것. 지금 shared_ptr로 되어 있음
-// 
+// 머테리얼 적용 및 가지고 있는 머테리얼 가져오기
 void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture2 /*= nullptr*/)
 {
 	ImGui::Begin("SkinnedMesh Get Mesh Test");
@@ -969,7 +970,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 	for (int i = 0; i < meshSize; ++i)
 	{
 		auto mesh = SkinnedMeshObject->GetMeshByIndex(i);
-		ImGui::Text(mesh->GetName().c_str());
+		ImGui::Text(mesh.lock()->GetName().c_str());
 	}
 	if (Texture)
 	{
@@ -981,8 +982,8 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 			// 예시로 GetMaterialObject를 사용함. -> 이는 기본 머테리얼을 가져와서 사용하므로 가급적 사용X
 			// 차라리 Material을 새로 만들어서 SetMaterialObject를 해주셈
 			// 이건 그냥 SetBaseMap의 예시
-			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject().lock()->SetBaseMap(Texture);
-			SkinnedMeshObject->GetMeshByIndex(5)->GetMaterialObject().lock()->SetNormalMap(Texture2);
+			SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetBaseMap(Texture);
+			SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetNormalMap(Texture2);
 			int a = 3;
 		}
 	}
@@ -995,7 +996,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		if (once >= 1000)
 		{
 			once = 1;
-			SkinnedMeshObject->GetMeshByIndex(0)->SetMaterialObject(Material);
+			SkinnedMeshObject->GetMeshByIndex(0).lock()->SetMaterialObject(Material);
 		}
 	}
 	if (Material2)
@@ -1005,7 +1006,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		if (once >= 1000)
 		{
 			once = 1;
-			SkinnedMeshObject->GetMeshByIndex(4)->SetMaterialObject(Material2);
+			SkinnedMeshObject->GetMeshByIndex(4).lock()->SetMaterialObject(Material2);
 		}
 	}
 	ImGui::End();
