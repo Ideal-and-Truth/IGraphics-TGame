@@ -106,6 +106,11 @@ void MeleeWeapon::OnTriggerExit(Truth::Collider* _other)
 			auto player = e->GetComponent<Player>().lock().get();
 			float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
 			float playerHp = player->GetTypeInfo().GetProperty("currentTP")->Get<float>(player).Get();
+			if (m_playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_playerAnimator.get()).Get())
+			{
+				enemyDamage *= 0.3f;
+			}
+
 			float hpLeft = playerHp - enemyDamage;
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
 		}
