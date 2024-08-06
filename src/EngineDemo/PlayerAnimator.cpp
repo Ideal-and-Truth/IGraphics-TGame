@@ -128,6 +128,7 @@ void PlayerAnimator::Update()
 	else
 	{
 		m_isGuard = false;
+
 	}
 
 	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)

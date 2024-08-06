@@ -60,6 +60,32 @@ void MeleeWeapon::Update()
 		m_isAttacking = m_enemyAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_enemyAnimator.get()).Get();
 	}
 
+	for (auto& e : m_onHitEnemys)
+	{
+		if (m_player)
+		{
+			auto enemy = e->GetComponent<Enemy>().lock().get();
+			float playerDamage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
+			float enemyHp = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy).Get();
+			float hpLeft = enemyHp - playerDamage;
+			enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
+		}
+		else if (m_enemy)
+		{
+			auto player = e->GetComponent<Player>().lock().get();
+			float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
+			float playerHp = player->GetTypeInfo().GetProperty("currentTP")->Get<float>(player).Get();
+			if (m_playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_playerAnimator.get()).Get())
+			{
+				enemyDamage *= 0.3f;
+			}
+
+			float hpLeft = playerHp - enemyDamage;
+			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
+		}
+	}
+
+	m_onHitEnemys.clear();
 }
 
 void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
@@ -91,30 +117,5 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 
 void MeleeWeapon::OnTriggerExit(Truth::Collider* _other)
 {
-	for (auto& e : m_onHitEnemys)
-	{
-		if (m_player)
-		{
-			auto enemy = e->GetComponent<Enemy>().lock().get();
-			float playerDamage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
-			float enemyHp = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy).Get();
-			float hpLeft = enemyHp - playerDamage;
-			enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
-		}
-		else if (m_enemy)
-		{
-			auto player = e->GetComponent<Player>().lock().get();
-			float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
-			float playerHp = player->GetTypeInfo().GetProperty("currentTP")->Get<float>(player).Get();
-			if (m_playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_playerAnimator.get()).Get())
-			{
-				enemyDamage *= 0.3f;
-			}
-
-			float hpLeft = playerHp - enemyDamage;
-			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
-		}
-	}
-
-	m_onHitEnemys.clear();
+	
 }

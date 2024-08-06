@@ -113,6 +113,20 @@ void EnemyAnimator::Update()
 		}
 	}
 
+	if (m_isParried)
+	{
+		m_passingTime += GetDeltaTime();
+		if (m_passingTime < 3.f)
+		{
+			m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+			return;
+		}
+		else
+		{
+			m_isParried = false;
+		}
+	}
+
 	if (!m_isAttack && !m_isHit && !m_isParryAttack && !m_isParried)
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
@@ -374,9 +388,8 @@ void EnemyParried::OnStateEnter()
 
 void EnemyParried::OnStateUpdate()
 {
-	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	if (!GetProperty("isParried")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isParried")->Set(m_animator, false);
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("AttackReady");
 	}
 }
