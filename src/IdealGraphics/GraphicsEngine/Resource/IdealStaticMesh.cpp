@@ -32,10 +32,10 @@ void Ideal::IdealStaticMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer
 		commandList->IASetIndexBuffer(&indexBufferView);
 
 		// Material
-		std::shared_ptr<Ideal::IdealMaterial> material = mesh->GetMaterial();
-		if (material != nullptr)
+		std::weak_ptr<Ideal::IdealMaterial> material = mesh->GetMaterial();
+		if (!material.expired())
 		{
-			material->BindToShader(d3d12Renderer);
+			material.lock()->BindToShader(d3d12Renderer);
 		}
 		// Final Draw
 		commandList->DrawIndexedInstanced(mesh->GetElementCount(), 1, 0, 0, 0);
@@ -52,7 +52,7 @@ void Ideal::IdealStaticMesh::AddMaterial(std::shared_ptr<Ideal::IdealMaterial> M
 	for (auto& mesh : m_meshes)
 	{
 		// 이미 material이 바인딩 되어 있을 경우
-		if (mesh->GetMaterial() != nullptr)
+		if (!mesh->GetMaterial().expired())
 		{
 			continue;
 		}

@@ -870,7 +870,7 @@ void Ideal::IdealRenderScene::CreateScreenQuadPSO(ID3D12Device* Device)
 	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Device);
 
 	m_screenQuadPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
-	m_screenQuadPSO->SetInputLayout(ScreenQuadVertex::InputElements, ScreenQuadVertex::InputElementCount);
+	m_screenQuadPSO->SetInputLayout(QuadVertex::InputElements, QuadVertex::InputElementCount);
 
 	std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
 	vs->CompileFromFile(L"../Shaders/FullScreenVS.hlsl", nullptr, nullptr, "main", "vs_5_0");

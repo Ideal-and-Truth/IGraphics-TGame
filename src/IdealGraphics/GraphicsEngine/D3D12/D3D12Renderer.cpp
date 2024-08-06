@@ -26,6 +26,8 @@
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 
+#include "GraphicsEngine/Resource/IdealMaterial.h"
+
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
@@ -239,7 +241,7 @@ finishAdapter:
 			ComPtr<ID3D12Resource> resource;
 			Check(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource)));
 			m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
-			m_renderTargets[i]->Create(resource);
+			m_renderTargets[i]->Create(resource, m_deferredDeleteManager);
 			m_renderTargets[i]->EmplaceRTV(handle);
 		}
 	}
@@ -264,7 +266,7 @@ finishAdapter:
 
 	//------------------Resource Manager---------------------//
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
-	m_resourceManager->Init(m_device);
+	m_resourceManager->Init(m_device, m_deferredDeleteManager);
 	m_resourceManager->SetAssetPath(m_assetPath);
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
@@ -403,7 +405,7 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
 		m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
 
-		m_renderTargets[i]->Create(resource);
+		m_renderTargets[i]->Create(resource, m_deferredDeleteManager);
 		m_renderTargets[i]->EmplaceRTV(handle);
 	}
 	// CreateDepthStencil
@@ -461,7 +463,7 @@ std::shared_ptr<Ideal::ISkinnedMeshObject> Ideal::D3D12Renderer::CreateSkinnedMe
 	return newSkinnedMesh;
 }
 
-std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const std::wstring& FileName, const Matrix& _offset)
+std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const std::wstring& FileName, const Matrix& _offset/* = Matrix::Identity*/)
 {
 	std::shared_ptr<Ideal::IdealAnimation> newAnimation = std::make_shared<Ideal::IdealAnimation>();
 	m_resourceManager->CreateAnimation(newAnimation, FileName, _offset);
@@ -529,7 +531,30 @@ void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
 	// TODO
 }
 
-void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter)
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName)
+{
+	return nullptr;
+}
+
+std::shared_ptr<Ideal::IMaterial> Ideal::D3D12Renderer::CreateMaterial()
+{
+	return nullptr;
+}
+
+void Ideal::D3D12Renderer::DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture)
+{
+	if (!Texture) return;
+	m_deferredDeleteManager->AddTextureToDeferredDelete(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
+	m_resourceManager->DeleteTexture(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
+}
+
+void Ideal::D3D12Renderer::DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material)
+{
+	if (!Material) return;
+	m_deferredDeleteManager->AddMaterialToDefferedDelete(std::static_pointer_cast<Ideal::IdealMaterial>(Material));
+}
+
+void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter/* = false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
 	assimpConverter->SetAssetPath(m_assetPath);
@@ -866,7 +891,7 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 				nullptr,
 				IID_PPV_ARGS(resource.GetAddressOf())
 			));
-			m_editorTexture->Create(resource);
+			m_editorTexture->Create(resource, m_deferredDeleteManager);
 
 			//-----SRV-----//
 			{

@@ -1,6 +1,7 @@
 #include "DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
+#include "GraphicsEngine/Resource/IdealMaterial.h"
 
 inline void AllocateUAVBuffer(ID3D12Device* pDevice, UINT64 bufferSize, ID3D12Resource** ppResource, D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_COMMON, const wchar_t* resourceName = nullptr)
 {
@@ -71,11 +72,13 @@ void Ideal::DXRBottomLevelAccelerationStructure::FreeMyHandle()
 	{
 		geometry.SRV_IndexBuffer.Free();
 		geometry.SRV_VertexBuffer.Free();
-		geometry.SRV_Diffuse.Free();
-		geometry.SRV_Normal.Free();
-		geometry.SRV_Metallic.Free();
-		geometry.SRV_Roughness.Free();
+		//geometry.SRV_Diffuse.Free();
+		//geometry.SRV_Normal.Free();
+		//geometry.SRV_Metallic.Free();
+		//geometry.SRV_Roughness.Free();
+		//geometry.SRV_Mask.Free();
 		//geometry.CBV_MaterialInfo.Free();
+		//geometry.Material->Free();
 	}
 
 	m_geometries.clear();

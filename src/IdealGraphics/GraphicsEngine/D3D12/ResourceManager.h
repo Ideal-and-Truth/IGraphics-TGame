@@ -20,6 +20,7 @@ namespace Ideal
 	class IdealSkinnedMesh;
 	class IdealAnimation;
 	class RaytracingManager;
+	class DeferredDeleteManager;
 }
 
 namespace Ideal
@@ -46,6 +47,11 @@ namespace Ideal
 
 	class ResourceManager : public std::enable_shared_from_this<ResourceManager>
 	{
+	private:
+		//--resource id--//
+		uint64 AllocateMaterialID();
+		uint64 m_materialID = 0;
+
 	public:
 		ResourceManager();
 		virtual ~ResourceManager();
@@ -56,7 +62,7 @@ namespace Ideal
 		void SetTexturePath(const std::wstring& TexturePath) { m_texturePath = TexturePath; }
 
 	public:
-		void Init(ComPtr<ID3D12Device5> Device);
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		void Fence();
 		void WaitForFenceValue();
 
@@ -127,6 +133,10 @@ namespace Ideal
 
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHeap() { return m_rtvHeap->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(); };
 
+		std::shared_ptr<Ideal::IdealMaterial> CreateMaterial();
+
+		void DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture);
+
 	private:
 		ComPtr<ID3D12Device5> m_device = nullptr;
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator = nullptr;
@@ -136,6 +146,8 @@ namespace Ideal
 		ComPtr<ID3D12Fence> m_fence = nullptr;
 		uint64 m_fenceValue = 0;
 		HANDLE m_fenceEvent = NULL;
+
+		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager;
 
 	private:
 		// Descriptor heaps
@@ -151,9 +163,21 @@ namespace Ideal
 		std::wstring m_modelPath;
 		std::wstring m_texturePath;
 
-		// TODO : weak ptr
 		std::map<std::string, std::shared_ptr<Ideal::IdealStaticMesh>> m_staticMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealSkinnedMesh>> m_dynamicMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
+		std::map<std::string, std::shared_ptr<Ideal::D3D12Texture>> m_textures;
+
+	public:
+		void CreateDefaultTextures();
+		void CreateDefaultMaterial();
+		std::shared_ptr<Ideal::IdealMaterial> GetDefaultMaterial();
+
+	private:
+		std::shared_ptr<Ideal::D3D12Texture> m_defaultAlbedo;
+		std::shared_ptr<Ideal::D3D12Texture> m_defaultNormal;
+		std::shared_ptr<Ideal::D3D12Texture> m_defaultMask;
+
+		std::shared_ptr<Ideal::IdealMaterial> m_defaultMaterial;
 	};
 }

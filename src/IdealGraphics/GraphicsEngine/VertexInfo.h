@@ -92,7 +92,7 @@ public:
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
 
-struct ScreenQuadVertex
+struct QuadVertex
 {
 	Vector3 Position;
 	Vector2 UV;

@@ -1,6 +1,8 @@
 #include "DeferredDeleteManager.h"
 #include "GraphicsEngine/public/IMeshObject.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
+#include "GraphicsEngine/D3D12/D3D12Texture.h"
+#include "GraphicsEngine/Resource/IdealMaterial.h"
 
 Ideal::DeferredDeleteManager::DeferredDeleteManager()
 {
@@ -28,10 +30,11 @@ void Ideal::DeferredDeleteManager::DeleteDeferredResources(uint32 CurrentContext
 #ifdef BeforeRefactor
 	// ver2
 	DeleteD3D12Resource(CurrentContextIndex);
+	DeleteTexture(CurrentContextIndex);
+	DeleteMaterial(CurrentContextIndex);
 	DeleteMeshObject(CurrentContextIndex);
 	DeleteBLAS(CurrentContextIndex);
 	DeleteTLAS(CurrentContextIndex);
-	
 	m_currentContextIndex = CurrentContextIndex;
 #endif
 
@@ -44,7 +47,7 @@ void Ideal::DeferredDeleteManager::DeleteDeferredResources(uint32 CurrentContext
 	//DeleteTLAS(DeleteContextIndex);
 	//
 	//m_currentContextIndex = CurrentContextIndex;
-} 
+}
 void Ideal::DeferredDeleteManager::AddD3D12ResourceToDelete(ComPtr<ID3D12Resource> D3D12Resource)
 {
 #ifdef BeforeRefactor
@@ -70,7 +73,7 @@ void Ideal::DeferredDeleteManager::DeleteD3D12Resource(uint32 DeleteContextIndex
 		m_resourcesToDelete[DeleteContextIndex].clear();
 	}
 #else
-	while(!m_resourcesToDelete2.empty())
+	while (!m_resourcesToDelete2.empty())
 	{
 		auto& Resource = m_resourcesToDelete2.front();
 		if (Resource.ContextIndex == m_frameCount)
@@ -110,7 +113,7 @@ void Ideal::DeferredDeleteManager::DeleteMeshObject(uint32 DeleteContextIndex)
 		m_meshObjectsToDelete[DeleteContextIndex].clear();
 	}
 #else
-	while(!m_meshObjectsToDelete2.empty())
+	while (!m_meshObjectsToDelete2.empty())
 	{
 		auto& Resource = m_meshObjectsToDelete2.front();
 		if (Resource.ContextIndex == m_frameCount)
@@ -208,4 +211,40 @@ void Ideal::DeferredDeleteManager::DeleteTLAS(uint32 DeleteContextIndex)
 		}
 	}
 #endif
+}
+
+void Ideal::DeferredDeleteManager::AddTextureToDeferredDelete(std::shared_ptr<Ideal::D3D12Texture> Texture)
+{
+	m_textureToDelete[m_currentContextIndex].push_back(Texture);
+}
+
+void Ideal::DeferredDeleteManager::DeleteTexture(uint32 DeleteContextIndex)
+{
+	if (m_textureToDelete[DeleteContextIndex].size() > 0)
+	{
+		for (auto& Resource : m_textureToDelete[DeleteContextIndex])
+		{
+			Resource.reset();
+		}
+		m_textureToDelete[DeleteContextIndex].clear();
+	}
+}
+
+void Ideal::DeferredDeleteManager::AddMaterialToDefferedDelete(std::shared_ptr<Ideal::IdealMaterial> Material)
+{
+	m_materialToDelete[m_currentContextIndex].push_back(Material);
+}
+
+void Ideal::DeferredDeleteManager::DeleteMaterial(uint32 DeleteContextIndex)
+{
+	if (m_materialToDelete[DeleteContextIndex].size() > 0)
+	{
+		for (auto& Resource : m_materialToDelete[DeleteContextIndex])
+		{
+			// 현재 Free는 RayTracing의 핸들 값을 해제함.
+			Resource->FreeInRayTracing();
+			Resource.reset();
+		}
+		m_materialToDelete[DeleteContextIndex].clear();
+	}
 }

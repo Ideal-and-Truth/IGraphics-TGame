@@ -96,6 +96,8 @@ namespace Ideal
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 1024;
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
 
+		static const uint32 MAX_EDITOR_SRV_COUNT = 256;
+
 	public:
 		D3D12RayTracingRenderer(HWND hwnd, uint32 Width, uint32 Height, bool EditorMode);
 		virtual ~D3D12RayTracingRenderer();
@@ -116,8 +118,6 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
 
 		std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName, const Matrix& offset = Matrix::Identity) override;
-		std::shared_ptr<Ideal::IRenderScene> CreateRenderScene();
-		void SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene);
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight() override;
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight() override;
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight() override;
@@ -130,6 +130,13 @@ namespace Ideal
 		void ClearImGui() override;
 
 		virtual void SetSkyBox(const std::wstring& FileName) override;
+
+		// Texture
+		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName) override;
+		virtual std::shared_ptr<Ideal::IMaterial> CreateMaterial() override;
+
+		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) override;
 
 	private:
 		void CreateCommandlists();
@@ -233,11 +240,6 @@ namespace Ideal
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();
-
-		// Scene Test
-		std::shared_ptr<Ideal::IdealRaytracingRenderScene> m_renderScene;
-		void InitRenderScene();
-		void TestDrawRenderScene();
 
 		// AS Manager
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
