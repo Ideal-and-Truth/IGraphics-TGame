@@ -1,8 +1,10 @@
 #include "MeleeWeapon.h"
 #include "BoxCollider.h"
 #include "PlayerAnimator.h"
-#include "Enemy.h"
 #include "Player.h"
+#include "EnemyAnimator.h"
+#include "Enemy.h"
+#include "Transform.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(MeleeWeapon)
 
@@ -27,21 +29,71 @@ void MeleeWeapon::Awake()
 void MeleeWeapon::Start()
 {
 	m_collider = m_owner.lock().get()->GetComponent<Truth::BoxCollider>().lock();
-	m_playerAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<PlayerAnimator>().lock();
-	m_player = m_owner.lock()->m_parent.lock().get()->GetComponent<Player>().lock();
+	if (m_owner.lock()->m_parent.lock()->m_name == "Player")
+	{
+		m_player = m_owner.lock()->m_parent.lock().get()->GetComponent<Player>().lock();
+		m_playerAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<PlayerAnimator>().lock();
+	}
+	else
+	{
+		m_enemy = m_owner.lock()->m_parent.lock().get()->GetComponent<Enemy>().lock();
+		m_enemyAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<EnemyAnimator>().lock();
+	}
 }
 
 void MeleeWeapon::Update()
 {
-	if (GetKeyDown(KEY::LBTN))
+	/// 이거좀 치워라
+	if (m_isAttacking)
 	{
-		//m_owner.lock()->m_transform->m_lo
+		Vector3 angle = m_owner.lock()->m_parent.lock().get()->m_transform->m_rotation.ToEuler();
+		angle.y += 3.55f * GetDeltaTime();
+		m_owner.lock()->m_parent.lock().get()->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(angle);
 	}
-	m_isAttacking = m_playerAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_playerAnimator.get()).Get();
 
-	if (!m_isAttacking)
+	if (m_player)
 	{
-		for (auto& e : m_onHitEnemys)
+		m_isAttacking = m_playerAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_playerAnimator.get()).Get();
+	}
+	else if (m_enemy)
+	{
+		m_isAttacking = m_enemyAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_enemyAnimator.get()).Get();
+	}
+
+}
+
+void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
+{
+	if (m_isAttacking)
+	{
+		if (m_player)
+		{
+			if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
+			{
+				if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
+				{
+					m_onHitEnemys.push_back(_other->GetOwner().lock());
+				}
+			}
+		}
+		else if (m_enemy)
+		{
+			if (_other->GetOwner().lock()->GetComponent<Player>().lock())
+			{
+				if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
+				{
+					m_onHitEnemys.push_back(_other->GetOwner().lock());
+				}
+			}
+		}
+	}
+}
+
+void MeleeWeapon::OnTriggerExit(Truth::Collider* _other)
+{
+	for (auto& e : m_onHitEnemys)
+	{
+		if (m_player)
 		{
 			auto enemy = e->GetComponent<Enemy>().lock().get();
 			float playerDamage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
@@ -49,23 +101,15 @@ void MeleeWeapon::Update()
 			float hpLeft = enemyHp - playerDamage;
 			enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
 		}
-
-		m_onHitEnemys.clear();
-	}
-}
-
-void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
-{
-	if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
-	{
-		if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
+		else if (m_enemy)
 		{
-			m_onHitEnemys.push_back(_other->GetOwner().lock());
+			auto player = e->GetComponent<Player>().lock().get();
+			float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
+			float playerHp = player->GetTypeInfo().GetProperty("currentTP")->Get<float>(player).Get();
+			float hpLeft = playerHp - enemyDamage;
+			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
 		}
 	}
-}
 
-void MeleeWeapon::OnTriggerExit(Truth::Collider* _other)
-{
-
+	m_onHitEnemys.clear();
 }

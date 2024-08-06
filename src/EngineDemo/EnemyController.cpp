@@ -70,7 +70,7 @@ void EnemyController::FollowTarget()
 		float distance = sqrt(pow(dir.x, 2.f) + pow(dir.z, 2.f));
 
 		// 일정거리까지 추적 후 멈춤
-		if (distance > 10.f)
+		if (distance > 5.f)
 		{
 			m_isBackStep = false;
 			m_isAttackReady = false;
@@ -82,7 +82,7 @@ void EnemyController::FollowTarget()
 
 		}
 		// 뒷걸음질
-		else if (distance < 9.f)
+		else if (distance < 4.f)
 		{
 			m_isBackStep = true;
 			m_isAttackReady = false;

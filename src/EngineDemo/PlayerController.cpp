@@ -106,7 +106,6 @@ void PlayerController::PlayerMove(const void*)
 		m_sideInput = 0.f;
 	}
 
-	/// TODO : 피직스 컨트롤러에 적용하고 트랜스폼을 리기드 바디로 사용해야함
 
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
 	Vector3 disp2 = right * m_sideInput * playerSpeed;

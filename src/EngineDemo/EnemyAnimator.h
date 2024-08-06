@@ -105,6 +105,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class EnemyParriableAttack
@@ -123,6 +124,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class EnemyHit
@@ -232,6 +234,9 @@ private:
 
 	PROPERTY(isBackStep);
 	bool m_isBackStep;
+
+	PROPERTY(isAttacking);
+	bool m_isAttacking;
 	/// ----------------------------------------
 	PROPERTY(passingTime);
 	float m_passingTime;

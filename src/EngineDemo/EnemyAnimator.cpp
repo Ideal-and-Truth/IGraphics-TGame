@@ -26,6 +26,7 @@ EnemyAnimator::EnemyAnimator()
 	, m_isComeBack(false)
 	, m_isAnimationEnd(false)
 	, m_isBackStep(false)
+	, m_isAttacking(false)
 {
 
 }
@@ -108,7 +109,7 @@ void EnemyAnimator::Update()
 				m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 				m_isAttack = true;
 			}
-			
+			m_isAttacking = true;
 		}
 	}
 
@@ -320,6 +321,11 @@ void EnemyAttack::OnStateUpdate()
 	}
 }
 
+void EnemyAttack::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+}
+
 void EnemyParriableAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyParriableAttack", false);
@@ -327,7 +333,7 @@ void EnemyParriableAttack::OnStateEnter()
 
 void EnemyParriableAttack::OnStateUpdate()
 {
-	if (0)
+	if (false)
 	{
 		GetProperty("isParryAttack")->Set(m_animator, false);
 		GetProperty("isParried")->Set(m_animator, true);
@@ -341,6 +347,11 @@ void EnemyParriableAttack::OnStateUpdate()
 	}
 }
 
+
+void EnemyParriableAttack::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+}
 
 void EnemyHit::OnStateEnter()
 {

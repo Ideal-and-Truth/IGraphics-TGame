@@ -2,8 +2,10 @@
 #include "Component.h"
 #include "Collider.h"
 
-class PlayerAnimator;
 class Player;
+class PlayerAnimator;
+class Enemy;
+class EnemyAnimator;
 
 class MeleeWeapon :
 	public Truth::Component
@@ -16,13 +18,16 @@ private:
 
 private:
 	std::shared_ptr<Truth::Collider> m_collider;
-	std::shared_ptr<PlayerAnimator> m_playerAnimator;
 	std::shared_ptr<Player> m_player;
+	std::shared_ptr<PlayerAnimator> m_playerAnimator;
+
+	std::shared_ptr<Enemy> m_enemy;
+	std::shared_ptr<EnemyAnimator> m_enemyAnimator;
 
 	std::vector<std::shared_ptr<Truth::Entity>> m_onHitEnemys;
 
 	bool m_isAttacking;
-
+	
 public:
 	MeleeWeapon();
 	virtual ~MeleeWeapon();

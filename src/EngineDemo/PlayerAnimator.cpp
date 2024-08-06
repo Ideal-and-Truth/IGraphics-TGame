@@ -217,11 +217,6 @@ void PlayerIdle::OnStateUpdate()
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
 	}
 
-	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
-	}
-
 	if (GetProperty("isGuard")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Guard");
