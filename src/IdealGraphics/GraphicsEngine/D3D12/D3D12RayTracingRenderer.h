@@ -117,14 +117,14 @@ namespace Ideal
 		// 작동 안함 // 그냥 mesh object 반환
 		virtual std::shared_ptr<Ideal::IMeshObject>	CreateDebugMeshObject(const std::wstring& FileName) override;
 
-		std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName) override;
+		std::shared_ptr<Ideal::IAnimation> CreateAnimation(const std::wstring& FileName, const Matrix& offset = Matrix::Identity) override;
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight() override;
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight() override;
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight() override;
 		void SetAssetPath(const std::wstring& AssetPath) override;
 		void SetModelPath(const std::wstring& ModelPath) override;
 		void SetTexturePath(const std::wstring& TexturePath) override;
-		void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false) override;
+		void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) override;
 		void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
 		bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 		void ClearImGui() override;
