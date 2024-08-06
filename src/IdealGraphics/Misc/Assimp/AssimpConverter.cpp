@@ -146,11 +146,12 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	if (!isSkinnedData)
 	{
 		// TODO : 모델 FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk.
-		flag |= aiProcess_OptimizeMeshes;
-		flag |= aiProcess_PreTransformVertices;
+		//flag |= aiProcess_OptimizeMeshes;
+		//flag |= aiProcess_PreTransformVertices;
 	}
-	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
+	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, true);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
+	bool s = m_importer->GetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS);
 
 	m_scene = m_importer->ReadFile(
 		ConvertWStringToString(fileStr),
@@ -726,13 +727,14 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 		return;
 	}
 
-	std::shared_ptr<AssimpConvert::Mesh> mesh = std::make_shared<AssimpConvert::Mesh>();
-	mesh->name = node->mName.C_Str();
-	mesh->boneIndex = bone;
 
 	// submesh
 	for (uint32 i = 0; i < node->mNumMeshes; ++i)
 	{
+		std::shared_ptr<AssimpConvert::Mesh> mesh = std::make_shared<AssimpConvert::Mesh>();
+		mesh->name = node->mName.C_Str();
+		mesh->boneIndex = bone;
+
 		uint32 index = node->mMeshes[i];
 		const aiMesh* srcMesh = m_scene->mMeshes[index];
 
@@ -784,11 +786,11 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 
 			for (uint32 k = 0; k < face.mNumIndices; ++k)
 			{
-				mesh->indices.push_back(face.mIndices[k] + startVertex);
+				mesh->indices.push_back(face.mIndices[k]);
 			}
 		}
+		m_meshes.push_back(mesh);
 	}
-	m_meshes.push_back(mesh);
 }
 
 void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parentBone /*= -1*/)
