@@ -1,5 +1,11 @@
 #pragma once
 #include "Component.h"
+
+namespace Ideal
+{
+	class IMaterial;
+}
+
 namespace Truth
 {
 	class Mesh :
@@ -22,6 +28,8 @@ namespace Truth
 
 		PROPERTY(isRendering);
 		bool m_isRendering;
+
+		std::vector<std::weak_ptr<Ideal::IMaterial>> m_material;
 
 	public:
 		Mesh();

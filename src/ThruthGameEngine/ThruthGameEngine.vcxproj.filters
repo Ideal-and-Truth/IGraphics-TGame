@@ -118,6 +118,18 @@
     <Filter Include="navMesh">
       <UniqueIdentifier>{245addea-d861-4c64-b048-dc2e97dd724e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Mesh\SkindedMesh">
+      <UniqueIdentifier>{1f12477e-c5ec-4050-9948-8154cc431f88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Mesh\Matarial">
+      <UniqueIdentifier>{b6fad28f-a227-4ace-adf8-870f21691bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Mesh\StaticMesh">
+      <UniqueIdentifier>{af153011-55fd-4105-a6ae-59c7e6d4f705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Mesh\Texture">
+      <UniqueIdentifier>{bc9727cb-6a5d-4d2d-ae5d-93620a72ff4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -186,9 +198,6 @@
     <ClCompile Include="GraphicsManager.cpp">
       <Filter>Manager\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Component\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Component\Camera</Filter>
     </ClCompile>
@@ -203,9 +212,6 @@
     </ClCompile>
     <ClCompile Include="TypeUI.cpp">
       <Filter>Utils\ImguiTypeUI</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinnedMesh.cpp">
-      <Filter>Component\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="DirectionLight.cpp">
       <Filter>Component\Light</Filter>
@@ -239,6 +245,18 @@
       <Filter>navMesh</Filter>
     </ClCompile>
     <ClCompile Include="SpotLight.cpp" />
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Component\Mesh\StaticMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedMesh.cpp">
+      <Filter>Component\Mesh\SkindedMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Matarial.cpp">
+      <Filter>Component\Mesh\Matarial</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Component\Mesh\Texture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -324,9 +342,6 @@
     <ClInclude Include="GraphicsManager.h">
       <Filter>Manager\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Component\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Component\Camera</Filter>
     </ClInclude>
@@ -344,9 +359,6 @@
     </ClInclude>
     <ClInclude Include="TypeUI.h">
       <Filter>Utils\ImguiTypeUI</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinnedMesh.h">
-      <Filter>Component\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="DirectionLight.h">
       <Filter>Component\Light</Filter>
@@ -380,6 +392,18 @@
       <Filter>navMesh</Filter>
     </ClInclude>
     <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="Mesh.h">
+      <Filter>Component\Mesh\StaticMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMesh.h">
+      <Filter>Component\Mesh\SkindedMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Matarial.h">
+      <Filter>Component\Mesh\Matarial</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Component\Mesh\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

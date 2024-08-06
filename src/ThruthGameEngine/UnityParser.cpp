@@ -765,8 +765,8 @@ void Truth::UnityParser::WriteMapMeshData(GameObject* _node, std::shared_ptr<Fil
 		_file->Write<std::string>(result);
 		_file->Write<Matrix>(_node->m_worldTM);
 
-		_file->Write(_node->m_matarialsGuid.size());
-		for (auto& mat : _node->m_matarialsGuid)
+		_file->Write(_node->m_matarialsName.size());
+		for (auto& mat : _node->m_matarialsName)
 		{
 			_file->Write(mat);
 		}
@@ -897,7 +897,6 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 						if (node["first"]["type"].as<std::string>() == "UnityEngine:Material")
 						{
 							std::string matGuid = node["second"]["guid"].as<std::string>();
-							_parent->m_matarialsGuid.push_back(matGuid);
 							if (m_matarialMap.find(matGuid) != m_matarialMap.end())
 							{
 								continue;
@@ -906,6 +905,7 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 							MatarialData& matdata = m_matarialMap[matGuid];
 
 							matdata.m_name = node["first"]["name"].as<std::string>();
+							_parent->m_matarialsName.push_back(matdata.m_name);
 
 							fs::path matfile = m_guidMap[matGuid]->m_filePath;
 							std::ifstream matDataFile(matfile);

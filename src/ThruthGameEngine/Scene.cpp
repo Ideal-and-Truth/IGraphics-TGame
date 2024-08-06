@@ -341,9 +341,10 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		Matrix meshTM = file->Read<Matrix>();
 
 		size_t matCount = file->Read<size_t>();
+		std::vector<std::string> matName;
 		for (uint32 i = 0; i < matCount; i++)
 		{
-			std::string mat = file->Read<std::string>();
+			matName.push_back(file->Read<std::string>());
 		}
 
 		USES_CONVERSION;
