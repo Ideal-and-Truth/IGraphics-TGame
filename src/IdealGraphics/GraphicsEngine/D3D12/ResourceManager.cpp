@@ -1116,7 +1116,7 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 				//material->SetNormalMap(m_defaultNormal);
 				//material->SetMaskMap(m_defaultMask);
 
-				skinnedMesh->AddMaterial(m_defaultMaterial);
+				//skinnedMesh->AddMaterial(m_defaultMaterial);
 			}
 			materialNode = materialNode->NextSiblingElement();
 		}

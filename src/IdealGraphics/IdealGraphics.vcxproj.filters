@@ -160,7 +160,6 @@
     <ClInclude Include="..\Shaders\Raytracing\RaytracingHlslCompat.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructure.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructureManager.h" />
-    <ClInclude Include="D3D12StructuredBuffer.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\D3D12DescriptorManager.h" />
@@ -174,6 +173,16 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealCanvas.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealImage.h" />
     <ClInclude Include="GraphicsEngine\public\IBone.h" />
+    <ClInclude Include="Editor\imguizmo\GraphEditor.h" />
+    <ClInclude Include="Editor\imguizmo\ImApp.h" />
+    <ClInclude Include="Editor\imguizmo\ImCurveEdit.h" />
+    <ClInclude Include="Editor\imguizmo\ImGradient.h" />
+    <ClInclude Include="Editor\imguizmo\ImGuizmo.h" />
+    <ClInclude Include="Editor\imguizmo\ImSequencer.h" />
+    <ClInclude Include="Editor\imguizmo\ImZoomSlider.h" />
+    <ClInclude Include="GraphicsEngine\public\IImage.h" />
+    <ClInclude Include="GraphicsEngine\public\ISprite.h" />
+    <ClInclude Include="GraphicsEngine\Resource\IdealSprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -258,7 +267,6 @@
     <ClCompile Include="GraphicsEngine\D3D12\D3D12SRV.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructure.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\DXRAccelerationStructureManager.cpp" />
-    <ClCompile Include="D3D12StructuredBuffer.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12UploadBufferPool.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\D3D12DescriptorManager.cpp" />
@@ -267,6 +275,12 @@
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RayTracingFlagManger.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealCanvas.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealImage.cpp" />
+    <ClCompile Include="Editor\imguizmo\GraphEditor.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImGradient.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImGuizmo.cpp" />
+    <ClCompile Include="Editor\imguizmo\ImSequencer.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\IdealSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
