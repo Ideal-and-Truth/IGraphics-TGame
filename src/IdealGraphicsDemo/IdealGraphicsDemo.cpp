@@ -50,6 +50,11 @@ using namespace std;
 #include "GraphicsEngine/public/ISpotLight.h"
 #include "GraphicsEngine/public/IPointLight.h"
 
+#include "GraphicsEngine/public/ITexture.h"
+#include "GraphicsEngine/public/IMesh.h"
+#include "GraphicsEngine/public/IMaterial.h"
+#include "GraphicsEngine/public/IBone.h"
+
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
 
@@ -97,9 +102,10 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
 void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void AnimationTest(std::shared_ptr<Ideal::IAnimation> Animation);
 void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight);
-void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight);
+void ImageTest(std::shared_ptr<Ideal::ITexture> Texture);
 void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
-
+void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
+void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 = nullptr, std::shared_ptr<Ideal::ITexture> Texture = nullptr, std::shared_ptr<Ideal::ITexture> Texture2 = nullptr);
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
@@ -138,6 +144,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 	{
+#pragma region EditorInitialize
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
@@ -163,26 +170,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ICamera> camera = gRenderer->CreateCamera();
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
+#pragma endregion
 
-		//-------------------Create Scene-------------------//
-		//std::shared_ptr<Ideal::IRenderScene> renderScene = gRenderer->CreateRenderScene();
-		//gRenderer->SetRenderScene(renderScene);
-
+#pragma region FBXConvert
 		//-------------------Convert FBX(Model, Animation)-------------------//
+		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
+
 		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Dancing Twerk.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player2/myPlayer2.fbx", true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"player2/Capoeira.fbx");
 		//ERROR : 
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx");// -> Assimp Converter에서 FLAG 해제
 		//gRenderer->ConvertAssetToMyFormat(L"CatwalkWalkForward3/CatwalkWalkForward3.fbx", true);
@@ -193,13 +201,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerRe/Sword And Shield Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
-		// gRenderer->ConvertAssetToMyFormat(L"MapData/SampleScene/building_dummy3_hanna.fbx", false);
+#pragma endregion
 
 		//-------------------Test Vertices Pos-------------------//
 		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
+#pragma region CreateMeshObjectAndAnimation
 		//-------------------Create Mesh Object-------------------//
+		std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/SM_chronos.Main_tPose");
+		std::shared_ptr<Ideal::IAnimation> swordAnim = gRenderer->CreateAnimation(L"PlayerRe/Sword And Shield Slash");
+		//playerRe->AddAnimation("SwordAnim", swordAnim);
+		//playerRe->SetAnimation("SwordAnim");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/untitled");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> player3 = gRenderer->CreateSkinnedMeshObject(L"player/myPlayer");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> tempPlayer = gRenderer->CreateSkinnedMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//std::shared_ptr<Ideal::IAnimation> rumbaAnim = gRenderer->CreateAnimation(L"player/Rumba Dancing");
@@ -237,10 +252,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
 		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-
-		Matrix floorMat = Matrix::CreateScale(Vector3(15.f, 1.f, 15.f)) *
-			Matrix::CreateTranslation(Vector3(2.5f, -2.5f, 5.f));
+		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		Matrix floorMat = Matrix::CreateRotationY(3.14);
 		//mesh->SetTransformMatrix(floorMat);
 		//std::shared_ptr<Ideal::IMeshObject> sphere = gRenderer->CreateStaticMeshObject(L"UVSphere/UVSphere");
 		//std::shared_ptr<Ideal::IMeshObject> sphere1 = gRenderer->CreateStaticMeshObject(L"UVSphere1/UVSphere");
@@ -271,47 +284,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ka->AddAnimation("HipHop", hiphopAnim2);
 		//cat->AddAnimation("Walk", walkAnim);
 
-		//-------------------Add Mesh Object to Render Scene-------------------//
-		//renderScene->AddObject(ka);
-		//renderScene->AddObject(cat);
-		//renderScene->AddObject(mesh);
-		//renderScene->AddDebugObject(mesh);
-		//renderScene->AddObject(mesh2);
-
-		static int transformX = 0.f;
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
-		{
-			//for (int i = 0; i < 0; i++)
-			//{
-			//	//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-			//	//Matrix mat = Matrix::Identity;
-			//	//mat.Translation(Vector3(i * 1.f, 0.f, 5.f));
-			//	//mesh->SetTransformMatrix(mat);
-			//	////renderScene->AddObject(mesh);
-			//	//meshes.push_back(mesh);
-			//	//
-			//	std::shared_ptr<Ideal::ISkinnedMeshObject> ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-			//	if (i % 2 == 0)
-			//		ka->AddAnimation("Run", runAnim);
-			//	else
-			//		ka->AddAnimation("Slash", slashAnim);
-			//	
-			//	Matrix mat2 = Matrix::Identity;
-			//	mat2.Translation(Vector3(i * 1.f, 0.f, 0.f));
-			//	//
-			//	//meshes.push_back(mesh);
-			//	ka->SetTransformMatrix(mat2);
-			//	//
-			//	//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-			//	//Matrix mat3 = Matrix::Identity;
-			//	//mat3.Translation(Vector3(i * 1.f, 0.f, 15.f));
-			//	//mesh2->SetTransformMatrix(mat3);
-			//	//transformX += 1;
-			//}
-		}
-		//renderScene->AddObject(mesh2);
-		//renderScene->AddObject(mesh3);
 
+#pragma endregion
+
+#pragma region CreateTextureAndMaterial
+		//--------------------Create Texture----------------------//
+		std::shared_ptr<Ideal::ITexture> faceTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> faceNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_Normal.png");
+		std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
+		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png");
+		//testTexture2 = nullptr;
+		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
+
+		//--------------------Create Material----------------------//
+		std::shared_ptr<Ideal::IMaterial> skirtMaterial = gRenderer->CreateMaterial();
+		skirtMaterial->SetBaseMap(skirtBottomTexture);
+		skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
+
+		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
+		eyeMaterial->SetBaseMap(eyeTexture);
+#pragma endregion
+
+#pragma region CreateLight
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
@@ -322,31 +318,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		spotLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		spotLight->SetRange(6.f);
 		spotLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		spotLight->SetIntensity(0.8f);
+		spotLight->SetIntensity(0.f);
 
 
 		std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 		pointLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		pointLight->SetRange(6.f);
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
-		pointLight->SetIntensity(0.8f);
+		pointLight->SetIntensity(0.f);
 
-		//------------------Add Light to Render Scene-----------------//
-		// Directional Light일 경우 그냥 바뀐다.
-		//renderScene->AddLight(dirLight);
-		//renderScene->AddLight(spotLight);
-		//renderScene->AddLight(pointLight);
-		//renderScene->AddLight(pointLight2);
-
-
-		//mesh3->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 0.f, 0.f)));
-		//cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(2.f, 0.f, 0.f)));
-		//ka->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
-		//cat->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
-
-		//car->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f)) * Matrix::CreateRotationY(-90.f));
-
-		//mesh2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-2.f, 0.f, 0.f)));
+#pragma endregion
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -406,61 +387,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-					//if (tX == 0)
-					//for(int i = 0; i < 10; i++)
-					{
-						tX += 3;
-						//cat->SetDrawObject(false);
-						std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-						ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-						if (tX % 2 == 0)
-							ka->AddAnimation("Run", runAnim);
-						else
-							ka->AddAnimation("Slash", slashAnim);
-						//ka->AddAnimation("Run", runAnim);
 
-						Matrix mat2 = Matrix::Identity;
-						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-						ka->SetTransformMatrix(mat2);
-
-						ka->SetPlayAnimation(false);
-
-						meshes.push_back(ka);
-
-
-						std::shared_ptr<Ideal::IMeshObject> mesh0 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-						mesh0->SetTransformMatrix(mat2);
-						meshes.push_back(mesh0);
-
-						std::shared_ptr<Ideal::ISkinnedMeshObject> mesh1 = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-						mesh1->AddAnimation("Walk", walkAnim);
-						mesh1->SetTransformMatrix(mat2);
-
-						mesh1->SetPlayAnimation(false);
-
-						meshes.push_back(mesh1);
-					}
-
-
-					//{
-					//	//cat->SetDrawObject(false);
-					//	std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-					//	ka = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-					//	if (tX % 2 == 0)
-					//		ka->AddAnimation("Run", runAnim);
-					//	else
-					//		ka->AddAnimation("Slash", slashAnim);
-					//	//ka->AddAnimation("Run", runAnim);
-					//
-					//	Matrix mat2 = Matrix::Identity;
-					//	mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-					//	ka->SetTransformMatrix(mat2);
-					//
-					//	meshes.push_back(ka);
-					//}
 				}
-
-
 
 				if (GetAsyncKeyState('C') & 0x8000)
 				{
@@ -475,19 +403,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					ka->SetTransformMatrix(mat2);
 					tX++;
 
-
-					//}
-					//if (GetAsyncKeyState('X') & 0x8000)
-					//{
 					std::shared_ptr<Ideal::IMeshObject> mesh;
-					//if (tX % 2 == 0)
 					mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-					//else
-					//	mesh = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
-
-					//Matrix mat2 = Matrix::Identity;
-					//mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-
+					
 					meshes.push_back(mesh);
 					mesh->SetTransformMatrix(mat2);
 					tX++;
@@ -526,7 +444,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//cat->AnimationDeltaTime(0.002f);
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
-
+				playerRe->AnimationDeltaTime(0.002f);
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				//if (isEditor)
@@ -550,6 +468,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						{
 							SpotLightInspector(spotLight);
 						}
+						if (faceTexture)
+						{
+							ImageTest(faceTexture);
+						}
+						if (eyeTexture)
+						{
+							ImageTest(eyeTexture);
+						}
+						if (skirtBottomTexture)
+						{
+							ImageTest(skirtBottomTexture);
+						}
+						if (playerRe)
+						{
+
+							SkinnedMeshObjectBoneInfoTest(playerRe);
+							SkinnedMeshObjectGetMeshTest(playerRe, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+						}
 					}
 					//once++;
 					//ImGuiTest();
@@ -568,8 +504,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		meshes.clear();
 
-		gRenderer->DeleteMeshObject(mesh);
-		mesh.reset();
+		//gRenderer->DeleteMeshObject(mesh);
+		//mesh.reset();
 		//
 		//gRenderer->DeleteMeshObject(cat);
 		//cat.reset();
@@ -579,10 +515,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
-
-		//gRenderer->DeleteMeshObject(player);
-		//player.reset();
-
+		gRenderer->DeleteMeshObject(playerRe);
+		playerRe.reset();
+		gRenderer->DeleteMaterial(skirtMaterial);
+		skirtMaterial.reset();
+		gRenderer->DeleteMaterial(eyeMaterial);
+		eyeMaterial.reset();
+		gRenderer->DeleteTexture(faceTexture);
+		faceTexture.reset();
+		gRenderer->DeleteTexture(faceNormalTexture);
+		faceNormalTexture.reset();
+		gRenderer->DeleteTexture(eyeTexture);
+		eyeTexture.reset();
+		gRenderer->DeleteTexture(skirtBottomTexture);
+		skirtBottomTexture.reset();
+		gRenderer->DeleteTexture(skirtBottomNormalTexture);
+		skirtBottomNormalTexture.reset();
 		gRenderer.reset();
 	}
 
@@ -685,7 +633,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 {
 	float aspectRatio = float(WIDTH) / HEIGHT;
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	//float aspectRatio = float(1296) / 999.f;
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 10000.f);
 	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
@@ -981,13 +931,83 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	ImGui::End();
 }
 
-
-void PointLightTest(std::shared_ptr<Ideal::IPointLight> PointLight)
+// ImGui에 이미지를 띄워보는 용도의 함수
+void ImageTest(std::shared_ptr<Ideal::ITexture> Texture)
 {
-	//ImGui::Begin("Point Light");
-	//ImGui::Text("Position");
-	//static float position[3] = { 0.f, 0.f, 0.f };
-	////ImGui::SliderFloat3("Position", &position[0], &position[1], &position[2]);
-	//
-	//ImGui::End();
+	ImGui::Begin("Image Test");
+	const ImVec2 size(100, 100);
+	ImGui::Image((ImTextureID)Texture->GetImageID(), size);
+	ImGui::End();
+}
+
+// 기능 본 정보 추출
+void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject)
+{
+	ImGui::Begin("SkinnedMesh Bone Test");
+	auto boneSize = SkinnedMeshObject->GetBonesSize();
+	ImGui::Separator();
+	// 본 정보
+	ImGui::Text("Bone Info");
+	for (int i = 0; i < boneSize; ++i)
+	{
+		auto bone = SkinnedMeshObject->GetBoneByIndex(i);
+		ImGui::Text(bone.lock()->GetName().c_str());
+		auto matrix = bone.lock()->GetTransform();
+		int a = 3;
+	}
+	ImGui::End();
+}
+// 기능 정리 :
+// 모델에서 매쉬 오브젝트 추출 -> 매쉬 이거 가지고 있지 말 것. 지금 shared_ptr로 되어 있음
+// 머테리얼 적용 및 가지고 있는 머테리얼 가져오기
+void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture /*= nullptr*/, std::shared_ptr<Ideal::ITexture> Texture2 /*= nullptr*/)
+{
+	ImGui::Begin("SkinnedMesh Get Mesh Test");
+	auto meshSize = SkinnedMeshObject->GetMeshesSize();
+	ImGui::Separator();
+	// 매쉬 정보
+	ImGui::Text("Mesh Info");
+	for (int i = 0; i < meshSize; ++i)
+	{
+		auto mesh = SkinnedMeshObject->GetMeshByIndex(i);
+		ImGui::Text(mesh.lock()->GetName().c_str());
+	}
+	if (Texture)
+	{
+		static int once = 0;
+		once++;
+		if (once >= 3000)
+		{
+			once = 1;
+			// 예시로 GetMaterialObject를 사용함. -> 이는 기본 머테리얼을 가져와서 사용하므로 가급적 사용X
+			// 차라리 Material을 새로 만들어서 SetMaterialObject를 해주셈
+			// 이건 그냥 SetBaseMap의 예시
+			SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetBaseMap(Texture);
+			SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetNormalMap(Texture2);
+			int a = 3;
+		}
+	}
+
+	// 아래는 머테리얼을 바꾼다
+	if (Material)
+	{
+		static int once = 0;
+		once++;
+		if (once >= 1000)
+		{
+			once = 1;
+			SkinnedMeshObject->GetMeshByIndex(0).lock()->SetMaterialObject(Material);
+		}
+	}
+	if (Material2)
+	{
+		static int once = 0;
+		once++;
+		if (once >= 1000)
+		{
+			once = 1;
+			SkinnedMeshObject->GetMeshByIndex(4).lock()->SetMaterialObject(Material2);
+		}
+	}
+	ImGui::End();
 }

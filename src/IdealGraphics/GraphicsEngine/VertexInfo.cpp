@@ -76,13 +76,13 @@ const D3D12_INPUT_LAYOUT_DESC SkinnedVertex::InputLayout =
 	SkinnedVertex::InputElementCount
 };
 
-const D3D12_INPUT_ELEMENT_DESC ScreenQuadVertex::InputElements[] =
+const D3D12_INPUT_ELEMENT_DESC QuadVertex::InputElements[] =
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 };
-const D3D12_INPUT_LAYOUT_DESC ScreenQuadVertex::InputLayout =
+const D3D12_INPUT_LAYOUT_DESC QuadVertex::InputLayout =
 {
-	ScreenQuadVertex::InputElements,
-	ScreenQuadVertex::InputElementCount
+	QuadVertex::InputElements,
+	QuadVertex::InputElementCount
 };

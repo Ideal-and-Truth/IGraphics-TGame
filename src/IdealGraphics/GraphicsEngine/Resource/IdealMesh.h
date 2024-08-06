@@ -1,4 +1,5 @@
 #pragma once
+#include "IMesh.h"
 #include "GraphicsEngine/Resource/ResourceBase.h"
 #include "Core/Core.h"
 //#include "GraphicsEngine/D3D12/D3D12Renderer.h"
@@ -9,28 +10,38 @@
 //#include "GraphicsEngine/D3D12/D3D12Renderer.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 //#include "GraphicsEngine/D3D12/D3D12ThirdParty.h"
+#include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
 #include <d3d12.h>
 #include <d3dx12.h>
 namespace Ideal
 {
 	class IdealMaterial;
+	class IMesh;
 }
 
 namespace Ideal
 {
 	template <typename TVertexType>
-	class IdealMesh : public ResourceBase
+	class IdealMesh : public ResourceBase, public IMesh
 	{
 		//friend class IdealStaticMeshObject;
 
 	public:
-		IdealMesh() 
+		IdealMesh()
 			: m_vertexBuffer(nullptr),
 			m_indexBuffer(nullptr),
-			m_material(nullptr),
 			m_boneIndex(0)
 		{}
 		virtual ~IdealMesh() {};
+
+	public:
+		virtual std::string GetName() override { return m_name; }
+		virtual void SetMaterialObject(std::shared_ptr<Ideal::IMaterial> Material) override 
+		{
+			Ideal::Singleton::RayTracingFlagManger::GetInstance().SetMaterialChanged();
+			m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material); 
+		}
+		virtual std::weak_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
 
 	public:
 		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
@@ -48,10 +59,10 @@ namespace Ideal
 			m_indices.clear();
 
 			//----------Material----------//
-			if (m_material)
-			{
-				m_material->Create(ResourceManager);
-			}
+			//if (m_material)
+			//{
+			//	m_material->Create(ResourceManager);
+			//}
 		}
 
 		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return m_vertexBuffer->GetView(); }
@@ -71,7 +82,7 @@ namespace Ideal
 
 		const std::string& GetMaterialName() { return m_materialName; }
 		void SetMaterialName(const std::string& MaterialName) { m_materialName = MaterialName; }
-		std::shared_ptr<Ideal::IdealMaterial> GetMaterial() { return m_material; }
+		std::weak_ptr<Ideal::IdealMaterial> GetMaterial() { return m_material; }
 		void SetMaterial(std::shared_ptr<IdealMaterial> Material) { m_material = Material; }
 		void SetBoneIndex(const int32& Index) { m_boneIndex = Index; }
 	private:
@@ -81,7 +92,7 @@ namespace Ideal
 		std::vector<TVertexType>			m_vertices;
 		std::vector<uint32>					m_indices;
 
-		std::shared_ptr<Ideal::IdealMaterial> m_material;
+		std::weak_ptr<Ideal::IdealMaterial> m_material;
 		std::string m_materialName;
 
 		std::vector<Ideal::IdealBone> m_bones;

@@ -24,6 +24,8 @@ namespace AssimpConvert
 		std::string materialName;
 		std::vector<SkinnedVertex> vertices;
 		std::vector<uint32> indices;
+
+		int32 parentIndexIfHaveNotBone = -1;
 	};
 
 	struct Bone

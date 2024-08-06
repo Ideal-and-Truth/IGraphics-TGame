@@ -26,7 +26,7 @@ void Ideal::IdealScreenQuad::Init(std::shared_ptr<IdealRenderer> Renderer)
 	m_indices = { 0, 1, 2, 2, 1, 3 };
 
 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(Renderer);
-	m_quadMesh = std::make_shared<Ideal::IdealMesh<ScreenQuadVertex>>();
+	m_quadMesh = std::make_shared<Ideal::IdealMesh<QuadVertex>>();
 	m_quadMesh->AddVertices(m_vertices);
 	m_quadMesh->AddIndices(m_indices);
 	m_quadMesh->Create(d3d12Renderer->GetResourceManager());

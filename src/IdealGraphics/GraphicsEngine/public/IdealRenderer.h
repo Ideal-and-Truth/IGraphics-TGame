@@ -14,6 +14,9 @@ namespace Ideal
 	class IDirectionalLight;
 	class IPointLight;
 	class ISpotLight;
+	class ITexture;
+	class IMaterial;
+	class IMesh;
 }
 
 namespace Ideal
@@ -43,14 +46,19 @@ namespace Ideal
 
 		virtual void										DeleteMeshObject(std::shared_ptr<Ideal::IMeshObject> MeshObject) abstract;
 		virtual void										DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> DebugMeshObject) abstract;
-		//virtual std::shared_ptr<Ideal::IRenderScene>		CreateRenderScene() abstract;
-		//virtual void										SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene) abstract;
 
 		virtual std::shared_ptr<Ideal::IDirectionalLight>	CreateDirectionalLight() abstract;
 		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() abstract;
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() abstract;
 
 		virtual void SetSkyBox(const std::wstring& FileName) abstract;
+
+		// Texture
+		virtual std::shared_ptr<Ideal::ITexture>			CreateTexture(const std::wstring& FileName) abstract;
+		virtual std::shared_ptr<Ideal::IMaterial>			CreateMaterial() abstract;
+
+		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) abstract;
+		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

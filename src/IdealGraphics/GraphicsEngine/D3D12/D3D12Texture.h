@@ -1,27 +1,40 @@
 #pragma once
+#include "GraphicsEngine/Resource/ResourceBase.h"
+#include "ITexture.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include <memory>
 
 struct ID3D12Resource;
 
 namespace Ideal
 {
 	class D3D12Renderer;
+	class DeferredDeleteManager;
 }
 
 namespace Ideal
 {
-	class D3D12Texture : public D3D12Resource
+	class D3D12Texture : public D3D12Resource, public ResourceBase,public ITexture, public std::enable_shared_from_this<D3D12Texture>
 	{
 	public:
 		D3D12Texture();
 		virtual ~D3D12Texture();
 
 	public:
+		//------------ITexture Interface------------//
+		virtual uint64 GetImageID() override;
+		virtual uint32 GetWidth() override;
+		virtual uint32 GetHeight() override;
+
+	public:
 		// ResourceManager에서 호출된다.
 		void Create(
-			ComPtr<ID3D12Resource> Resource
+			ComPtr<ID3D12Resource> Resource, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager
 		);
+
+		// DeferredDelete에 넣어주어야 한다.
+		void Free();
 
 		void EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle);
 
@@ -37,6 +50,10 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle GetSRV();
 		Ideal::D3D12DescriptorHandle GetRTV();
 		Ideal::D3D12DescriptorHandle GetDSV();
+
+	public:
+		void EmplaceSRVInEditor(Ideal::D3D12DescriptorHandle SRVHandle);
+
 	private:
 		// 2024.04.21
 		// Texture가 descriptor heap에 할당된 주소를 가지고 있는다.
@@ -47,10 +64,21 @@ namespace Ideal
 
 		Ideal::D3D12DescriptorHandle m_dsvHandle;
 
+		Ideal::D3D12DescriptorHandle m_srvHandleInEditor;
+
+
+		std::weak_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager;
+
 	private:
 		// 2024.05.15 Texture일 경우 필요한 여러가지 정보들
 		//std::vector<std::shared_ptr<Ideal::
 		//std::vector<std::shared_ptr<Ideal::D3D12View>> m_renderTargetViews;
+
+		uint32 m_width;
+		uint32 m_height;
+
+	private:
+		uint32 m_refCount = 0;
 	};
 }
 

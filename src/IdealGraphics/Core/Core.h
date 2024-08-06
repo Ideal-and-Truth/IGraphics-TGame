@@ -37,8 +37,6 @@ inline size_t AlignConstantBufferSize(size_t size)
 
 inline void Check(HRESULT hr)
 {
-	
-	
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, L"어디선가", L"Check", MB_OK);

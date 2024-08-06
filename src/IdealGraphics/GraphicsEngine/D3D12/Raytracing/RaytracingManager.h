@@ -79,6 +79,7 @@ namespace Ideal
 				SRV_Normal,
 				SRV_Metalic,
 				SRV_Roughness,
+				SRV_Mask,
 				CBV_MaterialInfo,
 				Count
 			};
@@ -97,6 +98,8 @@ namespace Ideal
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MetalicTexture;
 			// Roughness Textures
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_RoughnessTexture;
+			// Mask Texture
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MaskTexture;
 
 			//D3D12_GPU_DESCRIPTOR_HANDLE CBV_MaterialInfo;
 			CB_MaterialInfo CBV_MaterialInfo;
@@ -166,7 +169,7 @@ namespace Ideal
 		void SetGeometryTransformByIndex(uint32 InstanceIndex, const Matrix& Transform);
 		void FinalCreate2(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, bool ForceBuild = false);
 
-		void UpdateAccelerationStructures(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
+		void UpdateAccelerationStructures(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12UploadBufferPool> UploadBufferPool, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		//ComPtr<ID3D12Resource> GetTLASResource();
 
 		//---Root Singnature---//
@@ -178,7 +181,7 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12Shader> Shader
 		);
 		void CreateLocalRootSignatureSubobjects(CD3DX12_STATE_OBJECT_DESC* raytracingPipeline);
-		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
+		void BuildShaderTables(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 
 		//TEMP
 		ComPtr<ID3D12Resource> GetRayGenShaderTable() { return m_rayGenShaderTable; }
@@ -215,6 +218,19 @@ namespace Ideal
 		// 늘려주고 끝낸다.
 		// 이로인해 다음 Instance는 다시 자기만의 instance를 가질 수 있게 된다.
 		uint64 m_contributionToHitGroupIndexCount = 0;
+
+		//---Material Texture---//
+	public:
+		// Mateiral이 바뀌었는지 검사한다.
+		void UpdateMaterial(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
+		// Material의 텍스쳐가 바뀌었는지를 검사한다.
+		void UpdateTexture(ComPtr<ID3D12Device5> Device);
+		void CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::weak_ptr<Ideal::IdealMaterial> NewMaterial);
+
+	private:
+		// 중복되는 Material 관리..?
+		std::unordered_map<uint64,std::weak_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
+
 
 		//---Animation Compute Shader---//
 	public:

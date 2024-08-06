@@ -7,13 +7,16 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 #include "GraphicsEngine/ConstantBufferInfo.h"
+#include "GraphicsEngine/Resource/IdealMesh.h"
+#include "GraphicsEngine/VertexInfo.h"
 
 namespace Ideal
 {
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
 	class D3D12UAVBuffer;
-
+	class IdealMaterial;
+	template <typename T> class IdealMesh;
 	class DeferredDeleteManager;
 }
 
@@ -40,7 +43,13 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle SRV_Normal;
 		Ideal::D3D12DescriptorHandle SRV_Metallic;
 		Ideal::D3D12DescriptorHandle SRV_Roughness;
+		Ideal::D3D12DescriptorHandle SRV_Mask;
 		CB_MaterialInfo C_MaterialInfo;
+
+		std::weak_ptr<Ideal::IdealMaterial> Material;
+
+		std::shared_ptr<Ideal::IdealMesh<BasicVertex>> BasicMesh;
+		std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> SkinnedMesh;
 	};
 
 	struct BLASData

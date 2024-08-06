@@ -39,11 +39,12 @@
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
-#include "GraphicsEngine/Resource/IdealRaytracingRenderScene.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
+
+#include "GraphicsEngine/Resource/IdealMaterial.h"
 
 
 #include "GraphicsEngine/D3D12/TestShader.h"
@@ -223,8 +224,9 @@ Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width,
 
 Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
+
 	Fence();
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;   ++i)
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;	++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 		m_deferredDeleteManager->DeleteDeferredResources(i);
@@ -242,6 +244,8 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		ImGui::DestroyContext();
 	}
 
+	m_resourceManager->GetDefaultMaterial()->FreeInRayTracing();
+	m_raytracingManager = nullptr;
 	m_resourceManager = nullptr;
 }
 
@@ -338,10 +342,13 @@ finishAdapter:
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
 
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
-	m_resourceManager->Init(m_device);
+	m_resourceManager->Init(m_device, m_deferredDeleteManager);
 	m_resourceManager->SetAssetPath(m_assetPath);
 	m_resourceManager->SetModelPath(m_modelPath);
 	m_resourceManager->SetTexturePath(m_texturePath);
+	m_resourceManager->CreateDefaultTextures();
+	m_resourceManager->CreateDefaultMaterial();
+
 	{
 		std::shared_ptr<Ideal::ShaderManager> m_shaderManager = std::make_shared<Ideal::ShaderManager>();
 		m_shaderManager->Init();
@@ -384,7 +391,7 @@ finishAdapter:
 	{
 		//------ImGuiSRVHeap------//
 		m_imguiSRVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-		m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 2 /*FONT*/ /*Main Camera*/);
+		m_imguiSRVHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_EDITOR_SRV_COUNT);
 
 		//---------------------Editor RTV-------------------------//
 		m_editorRTVHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
@@ -412,6 +419,7 @@ finishAdapter:
 	//CreateDeviceDependentResources();
 
 	RaytracingManagerInit();
+	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -640,29 +648,6 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimati
 	return newAnimation;
 }
 
-std::shared_ptr<Ideal::IRenderScene> Ideal::D3D12RayTracingRenderer::CreateRenderScene()
-{
-	ResetCommandList();
-
-	std::shared_ptr<Ideal::IdealRaytracingRenderScene> ret = std::make_shared<Ideal::IdealRaytracingRenderScene>();
-	ret->Init(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
-
-	m_commandLists[m_currentContextIndex]->Close();
-	ID3D12CommandList* ppCommandLists[] = { m_commandLists[m_currentContextIndex].Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	Fence();
-	WaitForFenceValue(m_lastFenceValues[m_currentContextIndex]);
-	return ret;
-}
-
-void Ideal::D3D12RayTracingRenderer::SetRenderScene(std::shared_ptr<Ideal::IRenderScene> RenderScene)
-{
-	// 인터페이스로 따로 뽑아야 할 듯
-	std::shared_ptr<Ideal::IdealRaytracingRenderScene> renderScene = std::static_pointer_cast<Ideal::IdealRaytracingRenderScene>(RenderScene);
-	m_renderScene = renderScene;
-}
-
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12RayTracingRenderer::CreateDirectionalLight()
 {
 	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
@@ -767,6 +752,41 @@ void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
 	m_skyBoxTexture = skyBox;
 }
 
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName)
+{
+	std::shared_ptr<Ideal::D3D12Texture> texture;
+	m_resourceManager->CreateTexture(texture, FileName);
+
+	if (m_isEditor)
+	{
+		auto srv = texture->GetSRV();
+		auto dest = m_imguiSRVHeap->Allocate();
+		m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		texture->EmplaceSRVInEditor(dest);
+	}
+	return texture;
+}
+
+std::shared_ptr<Ideal::IMaterial> Ideal::D3D12RayTracingRenderer::CreateMaterial()
+{
+	std::shared_ptr<Ideal::IMaterial> ret = m_resourceManager->CreateMaterial();
+	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, std::static_pointer_cast<Ideal::IdealMaterial>(ret));
+	return ret;
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture)
+{
+	if (!Texture) return;
+	m_deferredDeleteManager->AddTextureToDeferredDelete(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
+	m_resourceManager->DeleteTexture(std::static_pointer_cast<Ideal::D3D12Texture>(Texture));
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material)
+{
+	if (!Material) return;
+	m_deferredDeleteManager->AddMaterialToDefferedDelete(std::static_pointer_cast<Ideal::IdealMaterial>(Material));
+}
+
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -835,7 +855,7 @@ void Ideal::D3D12RayTracingRenderer::CreateRTV()
 			ComPtr<ID3D12Resource> resource;
 			Check(m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource)));
 			m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
-			m_renderTargets[i]->Create(resource);
+			m_renderTargets[i]->Create(resource, m_deferredDeleteManager);
 			m_renderTargets[i]->EmplaceRTV(handle);
 		}
 	}
@@ -1121,7 +1141,7 @@ void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath
 		L"-I", L"../Shaders/Raytracing/"
 	};
 	ComPtr<IDxcResult> result;
-	//compiler->Compile(&sourceBuffer, nullptr, 0, includeHandler.Get(), IID_PPV_ARGS(&result));
+	//compiler->Compile(&sourceBuffer, nullptr, 0, includeHandler.Get()e, IID_PPV_ARGS(&result));
 	compiler->Compile(&sourceBuffer, args, _countof(args), includeHandler.Get(), IID_PPV_ARGS(&result));
 
 
@@ -1130,7 +1150,6 @@ void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath
 	if (encoding)
 	{
 		auto a = (char*)encoding->GetBufferPointer();
-		int b = 3;
 	}
 
 	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
@@ -1171,16 +1190,6 @@ void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 	commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
 }
 
-void Ideal::D3D12RayTracingRenderer::InitRenderScene()
-{
-	//m_renderScene->Init(m_device, TODO, TODO);
-}
-
-void Ideal::D3D12RayTracingRenderer::TestDrawRenderScene()
-{
-	m_renderScene->Draw(m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex]);
-}
-
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
@@ -1200,7 +1209,9 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 {
-	m_raytracingManager->UpdateAccelerationStructures(m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
+	m_raytracingManager->UpdateMaterial(m_device, m_deferredDeleteManager);
+	m_raytracingManager->UpdateTexture(m_device);
+	m_raytracingManager->UpdateAccelerationStructures(shared_from_this(), m_device, m_commandLists[m_currentContextIndex], m_BLASInstancePool[m_currentContextIndex], m_deferredDeleteManager);
 }
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
@@ -1224,7 +1235,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 
 	if (ShouldBuildShaderTable)
 	{
-		m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+		m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
 	}
 
 	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
@@ -1236,7 +1247,7 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	//ResetCommandList();
 	auto blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, m_cbAllocator[m_currentContextIndex], obj, obj->GetName().c_str(), true);
 	// Skinning 데이터는 쉐이더 테이블을 그냥 만든다.
-	m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
+	m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
 
 	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
 	obj->SetBLASInstanceDesc(instanceDesc);
@@ -1373,7 +1384,7 @@ void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height
 				nullptr,
 				IID_PPV_ARGS(resource.GetAddressOf())
 			));
-			m_editorTexture->Create(resource);
+			m_editorTexture->Create(resource, m_deferredDeleteManager);
 
 			//-----SRV-----//
 			{

@@ -165,9 +165,7 @@ float3 BumpMapNormalToWorldSpaceNormal(float3 bumpNormal, float3 surfaceNormal, 
     float3 bitangent = normalize(cross(tangent, surfaceNormal));
     float3x3 tangentSpaceToWorldSpace = float3x3(tangent, bitangent, surfaceNormal);
 
-    //return mul(bumpNormal, tangentSpaceToWorldSpace);
     return normalize(mul(bumpNormal, tangentSpaceToWorldSpace));
-    //return mul(bumpNormal, tangentSpaceToWorldSpace);
 }
 
 
@@ -209,7 +207,8 @@ namespace Ideal
             float3 directLighting = 0;
             float3 L = -DirectionalLightVector;
             
-            float NoL = dot(N, L);
+            //float NoL = dot(N, L);
+            float NoL = dot(L, N);
             if (!isInShadow && NoL > 0)
             {
                 float3 directDiffuse = 0;
