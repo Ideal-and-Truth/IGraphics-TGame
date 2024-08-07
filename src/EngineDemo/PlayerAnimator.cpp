@@ -2,6 +2,7 @@
 #include "SkinnedMesh.h"
 #include "Player.h"
 #include "PlayerController.h"
+#include "EnemyAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 
@@ -9,6 +10,7 @@ PlayerAnimator::PlayerAnimator()
 	: m_isAnimationEnd(false)
 	, m_currentFrame(0)
 	, m_lastHp(0.f)
+	, m_passingTime(0.f)
 	, m_currentState(nullptr)
 	, m_isWalk(false)
 	, m_isRun(false)
@@ -120,6 +122,7 @@ void PlayerAnimator::Update()
 
 	if (GetKey(KEY::RBTN))
 	{
+		m_passingTime += GetDeltaTime();
 		m_isGuard = true;
 		m_isWalk = false;
 		m_isRun = false;
@@ -128,14 +131,14 @@ void PlayerAnimator::Update()
 	else
 	{
 		m_isGuard = false;
-
+		m_passingTime = 0.f;
 	}
 
-	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
-	{
-		m_isHit = true;
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-	}
+// 	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
+// 	{
+// 		m_isHit = true;
+// 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+// 	}
 
 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
 	{
@@ -178,6 +181,26 @@ void PlayerAnimator::Update()
 }
 
 
+
+void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
+{
+	// 적인지 보고
+	auto enemy = _other->GetOwner().lock()->m_parent.lock();
+	if (enemy)
+	{
+		auto enemyAnim = enemy->GetComponent<EnemyAnimator>().lock();
+		if (enemyAnim)
+		{
+			m_isHit = true;
+			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+
+			if ((m_passingTime > 0.f && m_passingTime < 0.2f) && enemyAnim->GetTypeInfo().GetProperty("isParryAttack")->Get<bool>(enemyAnim.get()).Get())
+			{
+				enemyAnim->GetTypeInfo().GetProperty("isParried")->Set(enemyAnim.get(), true);
+			}
+		}
+	}
+}
 
 void PlayerAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
 {
@@ -446,7 +469,6 @@ void PlayerHit::OnStateUpdate()
 {
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isHit")->Set(m_animator, false);
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
 }

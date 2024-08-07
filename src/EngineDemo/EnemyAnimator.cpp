@@ -98,7 +98,7 @@ void EnemyAnimator::Update()
 		m_passingTime += GetDeltaTime();
 		if (m_passingTime > 2.f)
 		{
-			int random = RandomNumber(1,5);
+			int random = RandomNumber(1, 5);
 			if (random >= 1 && random <= 2)
 			{
 				m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
@@ -116,15 +116,7 @@ void EnemyAnimator::Update()
 	if (m_isParried)
 	{
 		m_passingTime += GetDeltaTime();
-		if (m_passingTime < 3.f)
-		{
-			m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-			return;
-		}
-		else
-		{
-			m_isParried = false;
-		}
+		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 	}
 
 	if (!m_isAttack && !m_isHit && !m_isParryAttack && !m_isParried)
@@ -347,13 +339,13 @@ void EnemyParriableAttack::OnStateEnter()
 
 void EnemyParriableAttack::OnStateUpdate()
 {
-	if (false)
+	if (GetProperty("isParried")->Get<bool>(m_animator).Get())
 	{
 		GetProperty("isParryAttack")->Set(m_animator, false);
-		GetProperty("isParried")->Set(m_animator, true);
+		GetProperty("passingTime")->Set(m_animator, 0.f);
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Parried");
 	}
-	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		GetProperty("passingTime")->Set(m_animator, 0.f);
 		GetProperty("isParryAttack")->Set(m_animator, false);
@@ -388,8 +380,15 @@ void EnemyParried::OnStateEnter()
 
 void EnemyParried::OnStateUpdate()
 {
-	if (!GetProperty("isParried")->Get<bool>(m_animator).Get())
+	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
+		GetProperty("passingTime")->Set(m_animator, 0.f);
+		GetProperty("isParried")->Set(m_animator, false);
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Hit");
+	}
+	if (GetProperty("passingTime")->Get<float>(m_animator).Get() > 3.f)
+	{
+		GetProperty("isParried")->Set(m_animator, false);
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("AttackReady");
 	}
 }

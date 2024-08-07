@@ -38,6 +38,8 @@ void MeleeWeapon::Start()
 	{
 		m_enemy = m_owner.lock()->m_parent.lock().get()->GetComponent<Enemy>().lock();
 		m_enemyAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<EnemyAnimator>().lock();
+		auto target = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
+		m_playerAnimator = target->GetComponent<PlayerAnimator>().lock();
 	}
 }
 
@@ -117,5 +119,5 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 
 void MeleeWeapon::OnTriggerExit(Truth::Collider* _other)
 {
-	
+
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 #include "AnimationState.h"
+#include "Collider.h"
+
 
 namespace Truth
 {
@@ -265,6 +267,8 @@ private:
 	/// ----------------------------------------
 	float m_lastHp;
 
+	float m_passingTime;
+
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
 
@@ -289,6 +293,8 @@ public:
 	METHOD(Update);
 	void Update();
 
+	METHOD(OnTriggerEnter);
+	void OnTriggerEnter(Truth::Collider* _other);
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 
