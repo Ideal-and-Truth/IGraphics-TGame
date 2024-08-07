@@ -18,7 +18,7 @@ BulletMove::~BulletMove()
 void BulletMove::Start()
 {
 	auto r = m_owner.lock()->GetComponent<Truth::RigidBody>().lock().get();
-	Vector3 power(0.0f, 0.0f, -100.0f);
+	Vector3 power(0.0f, 10000.0f, 0.0f);
 	r->AddImpulse(power);
 }
 
@@ -63,5 +63,6 @@ void BulletMove::Update()
 
 void BulletMove::OnCollisionEnter(Truth::Collider* _other)
 {
+	m_managers.lock()->Scene()->m_currentScene->DeleteEntity(m_owner.lock());
 	DEBUG_PRINT("Collision Enter\n");
 }
