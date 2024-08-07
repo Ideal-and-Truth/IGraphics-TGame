@@ -28,6 +28,7 @@ namespace Ideal
 		void DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 		// ComPtr<ID3D12Device> Device, ComPtr<ID3D12CommandList> CommandList, std::shared_ptr<Ideal::D3D12ConstantBufferPool> ConstantBufferPool
 	public:
+		//---Interface---//
 		Vector2 const& GetPosition() { return m_cbSprite.Pos; }
 		Vector2 const& GetSamplePosition() { return m_cbSprite.TexSamplePos; }
 		Vector2 const& GetSampleSize() { return m_cbSprite.TexSampleSize; }
