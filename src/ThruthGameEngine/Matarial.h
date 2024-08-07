@@ -3,7 +3,7 @@
 
 namespace Truth
 {
-	class Textrue;
+	struct Texture;
 }
 namespace Ideal
 {
@@ -20,9 +20,11 @@ namespace Truth
 
 		std::shared_ptr<Ideal::IMaterial> m_material;
 
-		std::shared_ptr<Textrue> m_baseMap;
-		std::shared_ptr<Textrue> m_normalMap;
-		std::shared_ptr<Textrue> m_maskMap;
+		std::shared_ptr<Texture> m_baseMap;
+		std::shared_ptr<Texture> m_normalMap;
+		std::shared_ptr<Texture> m_maskMap;
+
+		void SetTexture();
 	};
 }
 

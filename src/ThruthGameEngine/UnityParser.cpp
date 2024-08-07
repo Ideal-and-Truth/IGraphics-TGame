@@ -711,11 +711,15 @@ void Truth::UnityParser::WriteMaterialData()
 
 	file->Open(path, FileMode::Write);
 
-	file->Write<uint32>(m_matarialMap.size());
+	file->Write<size_t>(m_matarialMap.size());
 
-	for (auto* root : m_rootGameObject)
+	for (auto& mat : m_matarialMap)
 	{
-		WriteMapMeshData(root, file);
+		file->Write<std::string>(mat.first);
+		file->Write<std::string>(mat.second.m_name);
+		file->Write<std::string>(mat.second.m_albedo.generic_string());
+		file->Write<std::string>(mat.second.m_normal.generic_string());
+		file->Write<std::string>(mat.second.m_metalicRoughness.generic_string());
 	}
 }
 
@@ -875,7 +879,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 	WriteMapData();
 	WriteMapMeshData(uscene);
 	WriteLightData(uscene);
-
+	WriteMaterialData();
 	ConvertUnloadedMesh();
 }
 

@@ -34,7 +34,7 @@ namespace Truth
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		};
-
+	public:
 		// path / texture
 		std::map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
 
