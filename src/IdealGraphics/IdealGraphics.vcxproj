@@ -251,9 +251,10 @@
     <ClInclude Include="GraphicsEngine\Resource\IdealScreenQuad.h" />
     <ClInclude Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.h" />
     <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
-    <ClInclude Include="GraphicsEngine\Resource\IdealCanvas.h" />
-    <ClInclude Include="GraphicsEngine\Resource\IdealImage.h" />
+    <ClInclude Include="GraphicsEngine\Resource\UI\IdealCanvas.h" />
+    <ClInclude Include="GraphicsEngine\Resource\UI\IdealImage.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealSprite.h" />
+    <ClInclude Include="GraphicsEngine\Resource\UI\UIResourceBase.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
@@ -342,8 +343,8 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealSpotLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealScreenQuad.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\IdealCanvas.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\IdealImage.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\UI\IdealCanvas.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\UI\IdealImage.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\IdealSprite.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\IndexCreator.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
@@ -379,6 +380,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Shaders\Raytracing\Raytracing.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\UI.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

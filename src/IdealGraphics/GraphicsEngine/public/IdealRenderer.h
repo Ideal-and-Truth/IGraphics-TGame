@@ -60,6 +60,9 @@ namespace Ideal
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) abstract;
 
+		// Sprite
+		// virtual std::shared_ptr<
+
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;

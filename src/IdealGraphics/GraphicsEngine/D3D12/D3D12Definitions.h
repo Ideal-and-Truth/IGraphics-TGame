@@ -62,3 +62,20 @@
 #define SCREEN_DESCRIPTOR_INDEX_SRV_POSH 2
 #define SCREEN_DESCRIPTOR_INDEX_SRV_POSW 3
 #define SCREEN_DESCRIPTOR_INDEX_SRV_Depth 4
+
+// UI Canvas
+namespace Ideal
+{
+	namespace RectRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Sprite = 0,
+				CBV_RectInfo,
+				Count
+			};
+		}
+	}
+}

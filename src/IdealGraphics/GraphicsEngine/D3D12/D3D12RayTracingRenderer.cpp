@@ -1275,6 +1275,14 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 
 }
 
+void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
+{
+	//------UI Descriptor Heap------//
+	m_uiDescriptorHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
+	m_uiDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_UI_DESCRIPTOR_COUNT);
+
+}
+
 void Ideal::D3D12RayTracingRenderer::InitImGui()
 {
 	IMGUI_CHECKVERSION();
