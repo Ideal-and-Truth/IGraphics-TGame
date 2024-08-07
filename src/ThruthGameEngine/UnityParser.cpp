@@ -698,7 +698,25 @@ void Truth::UnityParser::WriteMapMeshData(fs::path _path)
 
 void Truth::UnityParser::WriteMaterialData()
 {
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 
+	std::wstring path = m_defaultPath;
+	path += m_sceneName.generic_wstring() + L"/";
+	path += L"Material.mats";
+
+	fs::path tempPath = path;
+
+	fs::create_directories(tempPath.parent_path());
+
+
+	file->Open(path, FileMode::Write);
+
+	file->Write<uint32>(m_matarialMap.size());
+
+	for (auto* root : m_rootGameObject)
+	{
+		WriteMapMeshData(root, file);
+	}
 }
 
 void Truth::UnityParser::ConvertUnloadedMesh()
