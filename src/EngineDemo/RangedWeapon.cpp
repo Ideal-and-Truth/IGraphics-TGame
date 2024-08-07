@@ -34,7 +34,8 @@ void RangedWeapon::Update()
 		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugSphere");
 		bullet->m_name = "bullet";
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
-// 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
-// 		bullet->SetScale(Vector3(4.0f, 4.0f, 4.0f));
+		bullet->Initailize();
+ 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
+ 		bullet->SetScale(Vector3(4.0f, 4.0f, 4.0f));
 	}
 }
