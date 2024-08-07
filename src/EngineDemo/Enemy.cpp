@@ -3,13 +3,13 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(Enemy)
 
 Enemy::Enemy()
-	: m_speed(0.f)
+	: m_speed(3.0f)
 	, m_attackCoefficient(0.f)
 	, m_moveCoefficient(0.f)
-	, m_maxTP(0.f)
+	, m_maxTP(100.f)
 	, m_maxCP(0.f)
-	, m_currentDamage(0.f)
-	, m_currentTP(0.f)
+	, m_currentDamage(20.f)
+	, m_currentTP(100.f)
 	, m_currentCP(0.f)
 	, m_isTargetIn(false)
 {

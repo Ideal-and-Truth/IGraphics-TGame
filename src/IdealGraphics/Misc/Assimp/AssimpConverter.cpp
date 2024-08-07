@@ -3,7 +3,29 @@
 #include "Misc/Utils/tinyxml2.h"
 #include "Misc/Utils/FileUtils.h"
 #include <filesystem>
-#include <algorithm>
+#include "Misc/Utils/StringUtils.h"
+
+// 유틸리티 함수: UTF-8 문자열을 wstring으로 변환
+std::wstring utf8_to_wstring(const std::string& utf8Str) {
+	if (utf8Str.empty()) return std::wstring();
+
+	int wideCharLength = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, NULL, 0);
+	std::wstring wideStr(wideCharLength, 0);
+	MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], wideCharLength);
+
+	return wideStr;
+}
+
+// 유틸리티 함수: wstring을 로컬 멀티바이트 문자열로 변환
+std::string wstring_to_multibyte(const std::wstring& wideStr) {
+	if (wideStr.empty()) return std::string();
+
+	int multiByteLength = WideCharToMultiByte(CP_ACP, 0, wideStr.c_str(), -1, NULL, 0, NULL, NULL);
+	std::string multiByteStr(multiByteLength, 0);
+	WideCharToMultiByte(CP_ACP, 0, wideStr.c_str(), -1, &multiByteStr[0], multiByteLength, NULL, NULL);
+
+	return multiByteStr;
+}
 
 bool IsNegative(const Matrix& m)
 {
@@ -124,8 +146,8 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	if (!isSkinnedData)
 	{
 		// TODO : 모델 FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk.
-		// flag |= aiProcess_OptimizeMeshes;
-		// flag |= aiProcess_PreTransformVertices;
+		//flag |= aiProcess_OptimizeMeshes;
+		//flag |= aiProcess_PreTransformVertices;
 	}
 	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, true);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
@@ -160,42 +182,42 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 
 		//Write CSV File
 		{
-			FILE* file;
-			fopen_s(&file, "../Vertices.csv", "w");
-
-			for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
-			{
-				std::string name = bone->name;
-				::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
-			}
-
-			fprintf(file, "\n");
-
-			for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
-			{
-				std::string name = mesh->name;
-				//::printf("%s\n", name.c_str());
-				::fprintf(file, "name : %s\n", name.c_str());
-
-				for (UINT i = 0; i < mesh->vertices.size(); i++)
-				{
-					Vector3 p = mesh->vertices[i].Position;
-					Vector4 indices = mesh->vertices[i].BlendIndices;
-					Vector4 weights = mesh->vertices[i].BlendWeights;
-
-					::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
-					::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
-					::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
-				}
-			}
-
-			fclose(file);
+			//FILE* file;
+			//fopen_s(&file, "../Vertices.csv", "w");
+			//
+			//for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
+			//{
+			//	std::string name = bone->name;
+			//	::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
+			//}
+			//
+			//fprintf(file, "\n");
+			//
+			//for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
+			//{
+			//	std::string name = mesh->name;
+			//	//::printf("%s\n", name.c_str());
+			//	::fprintf(file, "name : %s\n", name.c_str());
+			//
+			//	for (UINT i = 0; i < mesh->vertices.size(); i++)
+			//	{
+			//		Vector3 p = mesh->vertices[i].Position;
+			//		Vector4 indices = mesh->vertices[i].BlendIndices;
+			//		Vector4 weights = mesh->vertices[i].BlendWeights;
+			//
+			//		::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
+			//		::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
+			//		::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
+			//	}
+			//}
+			//
+			//fclose(file);
 		}
 	}
 	else
 	{
 		std::wstring finalPath = m_modelPath + savePath + L".mesh";
-		ReadModelData(m_scene->mRootNode, -1, -1, IsConvertCenter);
+		ReadModelData(m_scene->mRootNode, -1, -1);
 		WriteModelFile(finalPath);
 	}
 }
@@ -225,6 +247,7 @@ void AssimpConverter::ExportVertexPositionData(const std::wstring& savePath)
 
 std::string AssimpConverter::WriteTexture(std::string SaveFolder, std::string File)
 {
+	std::wstring fileP = StringUtils::ConvertStringToWString(File);
 	std::string fileName = std::filesystem::path(File).filename().string();
 	std::string folderName = std::filesystem::path(SaveFolder).filename().string();
 
@@ -466,8 +489,7 @@ void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 pare
 	bone->index = index;
 	bone->parent = parent;
 	bone->name = node->mName.C_Str();
-
-
+	
 	/// Relative Transform
 	// float 첫번째 주소 값으로 matrix 복사
 	Matrix transform(node->mTransformation[0]);
@@ -486,7 +508,7 @@ void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 pare
 	// Mesh까지 읽을 경우
 	if (readMeshData)
 	{
-		ReadSkinnedMeshData(node, index);
+		ReadSkinnedMeshData(node, index, bone->parent);
 	}
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
@@ -529,11 +551,9 @@ void AssimpConverter::ReadMaterialData()
 		if (srcMaterial->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), file) == AI_SUCCESS)
 		{
 			srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
-			material->diffuseTextureFile = file.C_Str();
-			//if (material->diffuseTextureFile.empty())
-			//{
-			//	material->diffuseTextureFile = "DefaultAlbedo.png";
-			//}
+			std::wstring ws = utf8_to_wstring(file.C_Str());
+			std::string finalPath = wstring_to_multibyte(ws);
+			material->diffuseTextureFile = finalPath;
 			material->bUseDiffuseTexture = true;
 		}
 		else
@@ -544,42 +564,57 @@ void AssimpConverter::ReadMaterialData()
 
 		file.Clear();
 		// Specular Texture
-		srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
-		material->specularTextureFile = file.C_Str();
-		if (material->specularTextureFile.empty())
+		if (srcMaterial->Get(AI_MATKEY_TEXTURE_SPECULAR(0), file) == AI_SUCCESS)
+		{
+			srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
+			std::wstring ws = utf8_to_wstring(file.C_Str());
+			std::string finalPath = wstring_to_multibyte(ws);
+			material->specularTextureFile = finalPath;
+		}
+		else
 		{
 			material->specularTextureFile = "DefaultAlbedo.png";
 		}
 
 		file.Clear();
 		// Emissive Texture
-		srcMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &file);
-		material->emissiveTextureFile = file.C_Str();
-		if (material->emissiveTextureFile.empty())
+		if (srcMaterial->Get(AI_MATKEY_TEXTURE_EMISSIVE(0), file) == AI_SUCCESS)
+		{
+			srcMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &file);
+			std::wstring ws = utf8_to_wstring(file.C_Str());
+			std::string finalPath = wstring_to_multibyte(ws);
+			material->emissiveTextureFile = finalPath;
+		}
+		else
 		{
 			material->emissiveTextureFile = "DefaultAlbedo.png";
 		}
 
 		file.Clear();
 		// Normal Texture
-		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
-		material->normalTextureFile = file.C_Str();
-		if (material->normalTextureFile.empty())
+		if (srcMaterial->Get(AI_MATKEY_TEXTURE_NORMALS(0), file) == AI_SUCCESS)
+		{
+			srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
+			std::wstring ws = utf8_to_wstring(file.C_Str());
+			std::string finalPath = wstring_to_multibyte(ws);
+			material->normalTextureFile = finalPath;
+			material->bUseNormalTexture = true;
+		}
+		else
 		{
 			material->bUseNormalTexture = false;
 			material->normalTextureFile = "DefaultNormalMap.png";
 		}
-		else
-		{
-			material->bUseNormalTexture = true;
-		}
 
+		file.Clear();
 		// Metalic Texture
 		aiString metalicFile;
 		srcMaterial->GetTexture(aiTextureType_METALNESS, 0, &metalicFile);
-		if (metalicFile.length != 0)
+		std::wstring ws = utf8_to_wstring(file.C_Str());
+		std::string finalPath = wstring_to_multibyte(ws);
+		if (finalPath.size() != 0)
 		{
-			material->metalicTextureFile = metalicFile.C_Str();
+			material->metalicTextureFile = finalPath;
 			material->bUseMetallicTexture = true;
 		}
 		else
@@ -595,12 +630,15 @@ void AssimpConverter::ReadMaterialData()
 			material->metalicTextureFile = "DefaulBlack.png";
 		}
 
+		file.Clear();
 		// Roughness Texture
 		aiString roughnessFile;
 		srcMaterial->GetTexture(aiTextureType_SHININESS, 0, &roughnessFile);
-		if (roughnessFile.length != 0)
+		ws = utf8_to_wstring(file.C_Str());
+		finalPath = wstring_to_multibyte(ws);
+		if (finalPath.size() != 0)
 		{
-			material->roughnessTextureFile = roughnessFile.C_Str();
+			material->roughnessTextureFile = finalPath;
 			material->bUseRoughnessTexture = true;
 		}
 		else
@@ -623,16 +661,25 @@ void AssimpConverter::ReadSkinData()
 {
 	for (uint32 i = 0; i < m_scene->mNumMeshes; ++i)
 	{
-		aiMesh* srcMesh = m_scene->mMeshes[i];
+		const aiMesh* srcMesh = m_scene->mMeshes[i];
+		//srcMesh = m_aiMeshes[i];
+		if (i == 28)
+		{
+			int a = 3;
+		}
+		bool hasNotBone = false;
 		if (srcMesh->HasBones() == false)
 		{
-			continue;
+			//continue;
+			// has bone이 없으면 부모를 따라가면 되지 않을까
+			hasNotBone = true;
+			//m_skinnedMeshes[i]->parentIndexIfHaveNotBone;
 		}
-
 		std::shared_ptr<AssimpConvert::SkinnedMesh> mesh = m_skinnedMeshes[i];
 
 		std::vector<AssimpConvert::BoneWeights> tempVertexBoneWeights;
 		tempVertexBoneWeights.resize(mesh->vertices.size());
+
 
 		// bone을 순회하면서 연관된 vertexId, Weight를 구해서 기록
 		for (uint32 b = 0; b < srcMesh->mNumBones; b++)
@@ -654,6 +701,15 @@ void AssimpConverter::ReadSkinData()
 		// 최종 결과
 		for (uint32 v = 0; v < tempVertexBoneWeights.size(); ++v)
 		{
+			if (hasNotBone)
+			{
+				// 만약 본이 없을 경우 그냥 부모 본에 붙어있게하고 계산안한다.
+				uint32 parentBoneIndex = mesh->parentIndexIfHaveNotBone;
+				mesh->vertices[v].BlendIndices = Vector4(parentBoneIndex, 0, 0, 0);
+				mesh->vertices[v].BlendWeights = Vector4(1, 0, 0, 0);
+				continue;
+			}
+
 			tempVertexBoneWeights[v].Normalize();
 
 			AssimpConvert::BlendWeight blendWeight = tempVertexBoneWeights[v].GetBlendWeights();
@@ -671,7 +727,6 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 		return;
 	}
 
-	
 
 	// submesh
 	for (uint32 i = 0; i < node->mNumMeshes; ++i)
@@ -690,7 +745,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 		// mesh가 여러개일 경우 index가 중복될 수 있다. 
 		// 하나로 관리하기 위해 미리 이전 vertex의 size를 가져와서 이번에 추가하는 index에 더해 중복을 피한다.
 
-		//const uint32 startVertex = (uint32)mesh->vertices.size();
+		const uint32 startVertex = (uint32)mesh->vertices.size();
 
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
@@ -738,7 +793,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 	}
 }
 
-void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
+void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parentBone /*= -1*/)
 {
 	// 마지막 노드는 정보를 들고 있다.
 	if (node->mNumMeshes < 1)
@@ -754,7 +809,8 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
 		mesh->boneIndex = bone;
 
 		uint32 index = node->mMeshes[i];
-		const aiMesh* srcMesh = m_scene->mMeshes[index];
+		//const aiMesh* srcMesh = m_scene->mMeshes[index];
+		aiMesh* srcMesh = m_scene->mMeshes[index];
 
 		// Material 이름
 		const aiMaterial* material = m_scene->mMaterials[srcMesh->mMaterialIndex];
@@ -802,10 +858,10 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone)
 
 			for (uint32 k = 0; k < face.mNumIndices; ++k)
 			{
-				//mesh->indices.push_back(face.mIndices[k] + startVertex);
 				mesh->indices.push_back(face.mIndices[k]);
 			}
 		}
+		mesh->parentIndexIfHaveNotBone = parentBone;
 		m_skinnedMeshes.push_back(mesh);
 	}
 }

@@ -52,6 +52,9 @@
     <Filter Include="Component\BattleSystem\Weapon">
       <UniqueIdentifier>{9444ff9b-e7ce-4eb5-a751-7b11655795bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Base">
+      <UniqueIdentifier>{d9d0c37b-ef3a-4df1-b394-6d03770b4328}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -108,6 +111,15 @@
     <ClInclude Include="EnemyController.h">
       <Filter>Component\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyAnimator.h">
+      <Filter>Component\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationState.h">
+      <Filter>Component\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="RangedWeapon.h">
+      <Filter>Component\BattleSystem\Weapon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -154,6 +166,15 @@
     </ClCompile>
     <ClCompile Include="EnemyController.cpp">
       <Filter>Component\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyAnimator.cpp">
+      <Filter>Component\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationState.cpp">
+      <Filter>Component\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="RangedWeapon.cpp">
+      <Filter>Component\BattleSystem\Weapon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

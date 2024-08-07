@@ -82,7 +82,6 @@ namespace Ideal
 	class RaytracingManager;
 	class D3D12DescriptorManager;
 }
-struct TestVertex;
 
 namespace Ideal
 {
@@ -95,6 +94,7 @@ namespace Ideal
 	private:
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 1024;
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
+		static const uint32	MAX_UI_DESCRIPTOR_COUNT = 256;
 
 		static const uint32 MAX_EDITOR_SRV_COUNT = 256;
 
@@ -257,6 +257,13 @@ namespace Ideal
 
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
+
+		// UI
+	private:
+		void CreateUIDescriptorHeap();
+
+		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_uiDescriptorHeap;
+
 
 		// EDITOR 
 	private:

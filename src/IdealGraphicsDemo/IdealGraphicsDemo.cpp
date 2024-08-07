@@ -953,7 +953,6 @@ void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Sk
 		auto bone = SkinnedMeshObject->GetBoneByIndex(i);
 		ImGui::Text(bone.lock()->GetName().c_str());
 		auto matrix = bone.lock()->GetTransform();
-		int a = 3;
 	}
 	ImGui::End();
 }

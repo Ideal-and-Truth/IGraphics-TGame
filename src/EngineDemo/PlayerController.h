@@ -34,6 +34,10 @@ private:
 
 	PROPERTY(angle);
 	Vector3 m_angle;
+
+	PROPERTY(canMove);
+	bool m_canMove;
+
 public:
 	PlayerController();
 	virtual ~PlayerController();

@@ -3,7 +3,6 @@
 #include "Camera.h"
 #include "Controller.h"
 #include "Player.h"
-#include "PlayerAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 
@@ -11,6 +10,7 @@ PlayerController::PlayerController()
 	: m_forwardInput(0.f)
 	, m_sideInput(0.f)
 	, m_attackInput(0.f)
+	, m_canMove(true)
 {
 	m_name = "PlayerController";
 }
@@ -31,9 +31,6 @@ void PlayerController::Start()
 
 	m_controller = m_owner.lock().get()->GetComponent<Truth::Controller>();
 	m_player = m_owner.lock().get()->GetComponent<Player>();
-
-	// 플레이어 이동 이벤트 (이벤트함수 베이스)
-	//EventBind("PlayerWalk", &PlayerController::PlayerMove);
 }
 
 void PlayerController::Update()
@@ -66,11 +63,11 @@ void PlayerController::PlayerMove(const void*)
 
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
 
-	bool isAttacking = m_owner.lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_owner.lock()->GetComponent<PlayerAnimator>().lock().get()).Get();
 
-
-	if (isAttacking)
+	if (!m_canMove)
 	{
+		m_forwardInput = 0.f;
+		m_sideInput = 0.f;
 		return;
 	}
 
@@ -109,7 +106,6 @@ void PlayerController::PlayerMove(const void*)
 		m_sideInput = 0.f;
 	}
 
-	/// TODO : 피직스 컨트롤러에 적용하고 트랜스폼을 리기드 바디로 사용해야함
 
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
 	Vector3 disp2 = right * m_sideInput * playerSpeed;

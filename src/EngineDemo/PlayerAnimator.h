@@ -1,5 +1,8 @@
 #pragma once
 #include "Component.h"
+#include "AnimationState.h"
+#include "Collider.h"
+
 
 namespace Truth
 {
@@ -9,37 +12,6 @@ namespace Truth
 class PlayerController;
 class Player;
 
-class AnimationState abstract
-{
-public:
-	Truth::Entity* m_owner;
-	Truth::Component* m_animator;
-
-
-	AnimationState(Truth::Component* animator)
-		: m_animator(animator)
-	{
-		m_owner = m_animator->GetOwner().lock().get();
-	}
-
-public:
-	virtual void OnStateEnter() {}
-	virtual void OnStateUpdate() {}
-	virtual void OnStateExit() {}
-
-
-
-	const Property* GetProperty(const std::string& name);
-
-	template <typename T>
-	void SetProperty(const std::string name, const T& value);
-};
-
-template <typename T>
-void AnimationState::SetProperty(const std::string name, const T& value)
-{
-	m_animator->GetTypeInfo().GetProperty(name.c_str())->Set(m_animator, value);
-}
 
 class PlayerIdle
 	: public AnimationState
@@ -167,6 +139,42 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class ChargedAttack1
+	: public AnimationState
+{
+private:
+
+public:
+	ChargedAttack1(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class PlayerGuard
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerGuard(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 class PlayerHit
 	: public AnimationState
 {
@@ -177,6 +185,24 @@ public:
 		: AnimationState(animator)
 	{
 
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class PlayerDodge
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerDodge(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+		 
 	}
 
 public:
@@ -206,6 +232,8 @@ private:
 	///  상태 조절을 위한 것들
 	/// </summary>
 	/// <param name=""></param>
+	/// 
+	/// ----------------------------------------
 	PROPERTY(isWalk);
 	bool m_isWalk;
 
@@ -215,13 +243,31 @@ private:
 	PROPERTY(isAttack);
 	bool m_isAttack;
 
+	PROPERTY(isChargedAttack);
+	bool m_isChargedAttack;
+
+	PROPERTY(isCharged);
+	float m_isCharged;
+
 	PROPERTY(isAttacking);
 	bool m_isAttacking;
+
+	PROPERTY(isGuard);
+	bool m_isGuard;
 
 	PROPERTY(isHit);
 	bool m_isHit;
 
+	PROPERTY(isDodge);
+	bool m_isDodge;
 
+	PROPERTY(isLockOn);
+	bool m_isLockOn;
+
+	/// ----------------------------------------
+	float m_lastHp;
+
+	float m_passingTime;
 
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
@@ -247,8 +293,12 @@ public:
 	METHOD(Update);
 	void Update();
 
+	METHOD(OnTriggerEnter);
+	void OnTriggerEnter(Truth::Collider* _other);
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
+
+	void SetAnimationSpeed(float speed);
 
 	void ChangeState(std::string stateName);
 

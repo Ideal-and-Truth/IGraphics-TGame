@@ -62,6 +62,7 @@ void Enemy::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 
+
 }
 
 template<class Archive>
@@ -69,6 +70,7 @@ void Enemy::save(Archive& _ar, const unsigned int file_version) const
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 
+	
 }
 
 

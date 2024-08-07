@@ -10,7 +10,7 @@ Truth::Entity::Entity(std::shared_ptr<Managers> _mangers)
 	, m_layer(0)
 	, m_tag("None")
 	, m_index(-1)
-	, m_parent()
+	, m_parent(std::weak_ptr<Entity>())
 {
 	m_transform = std::make_shared<Transform>();
 	m_components.push_back(m_transform);
@@ -20,7 +20,7 @@ Truth::Entity::Entity()
 	: m_layer()
 	, m_index()
 	, m_ID(m_entityCount++)
-	, m_parent()
+	, m_parent(std::weak_ptr<Entity>())
 {
 }
 

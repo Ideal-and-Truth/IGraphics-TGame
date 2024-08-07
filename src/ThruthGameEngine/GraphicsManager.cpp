@@ -41,6 +41,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 #ifdef EDITOR_MODE
 	m_renderer = CreateRenderer(
 		EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR,
+		//EGraphicsInterfaceType::D3D12_EDITOR,
 		&_hwnd,
 		_wight,
 		_height,
@@ -48,6 +49,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 		m_assetPath[1],
 		m_assetPath[2]
 	);
+
 #else
 	m_renderer = CreateRenderer(
 		EGraphicsInterfaceType::D3D12_RAYTRACING,

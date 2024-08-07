@@ -50,7 +50,7 @@ private:
 	void ReadMaterialData();
 	void ReadSkinData();
 	void ReadMeshData(aiNode* node, int32 bone, bool convertCenter = false);
-	void ReadSkinnedMeshData(aiNode* node, int32 bone);
+	void ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parentBone = -1);
 
 	std::shared_ptr<AssimpConvert::Animation> ReadAnimationData(aiAnimation* srcAnimation);
 	std::shared_ptr<AssimpConvert::AnimationNode> ParseAnimationNode(std::shared_ptr<AssimpConvert::Animation> animation, aiNodeAnim* srcNode);
