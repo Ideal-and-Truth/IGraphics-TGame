@@ -696,6 +696,11 @@ void Truth::UnityParser::WriteMapMeshData(fs::path _path)
 	}
 }
 
+void Truth::UnityParser::WriteMaterialData()
+{
+
+}
+
 void Truth::UnityParser::ConvertUnloadedMesh()
 {
 	fs::path assetPath = m_assetPath / m_sceneName;
@@ -712,11 +717,6 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 	fs::create_directories(m_texturePath / m_sceneName);
 
 	std::set<std::wstring> convertingPath;
-
-	// 	for (auto& p : assetPath)
-	// 	{
-	// 		
-	// 	}
 
 	for (fs::directory_iterator itr(assetPath); itr != fs::end(itr); itr++)
 	{
@@ -920,31 +920,32 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 										if (texmap["_BumpMap"].IsDefined())
 										{
 											std::string texGuid = texmap["_BumpMap"]["m_Texture"]["guid"].as<std::string>();
-											matdata.m_normal = m_guidMap[texGuid]->m_filePath;
-											if (!fs::exists(m_texturePath / m_sceneName / matdata.m_normal.filename()))
+											fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+											if (!fs::exists(p))
 											{
-												fs::copy(matdata.m_normal, m_texturePath / m_sceneName);
+												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName);
 											}
+											matdata.m_normal = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 										}
 										else if (texmap["_MainTex"].IsDefined())
 										{
 											std::string texGuid = texmap["_MainTex"]["m_Texture"]["guid"].as<std::string>();
-											matdata.m_albedo = m_guidMap[texGuid]->m_filePath;
-
-											if (!fs::exists(m_texturePath / m_sceneName / matdata.m_albedo.filename()))
+											fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+											if (!fs::exists(p))
 											{
-												fs::copy(matdata.m_albedo, m_texturePath / m_sceneName);
+												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName);
 											}
+											matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 										}
 										else if (texmap["_MetallicGlossMap"].IsDefined())
 										{
 											std::string texGuid = texmap["_MetallicGlossMap"]["m_Texture"]["guid"].as<std::string>();
-											matdata.m_metalicRoughness = m_guidMap[texGuid]->m_filePath;
-
-											if (!fs::exists(m_texturePath / m_sceneName / matdata.m_metalicRoughness.filename()))
+											fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+											if (!fs::exists(p))
 											{
-												fs::copy(matdata.m_metalicRoughness, m_texturePath / m_sceneName);
+												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName);
 											}
+											matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 										}
 									}
 								}

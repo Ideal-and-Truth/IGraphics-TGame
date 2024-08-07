@@ -170,6 +170,8 @@ namespace Truth
 		void WriteMapMeshData(fs::path _path);
 		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);
 
+		void WriteMaterialData();
+
 		void ConvertUnloadedMesh();
 	};
 }
