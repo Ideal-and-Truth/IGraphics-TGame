@@ -432,14 +432,14 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		Vector3 sca;
 		Quaternion rot;
 		worldTM.Decompose(sca, rot, pos);
-		
+
 		Matrix rotMat = Matrix::CreateFromQuaternion(rot);
 
 		dir = Vector3::Transform(dir, rotMat);
 
 		switch (type)
 		{
-		// spot
+			// spot
 		case 0:
 		{
 			std::shared_ptr<Ideal::ISpotLight> spotlight
@@ -456,13 +456,13 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		// direction
 		case 1:
 		{
-// 			std::shared_ptr<Ideal::IDirectionalLight> directionlight
-// 				 = m_managers.lock()->Graphics()->CreateDirectionalLight();
-// 			directionlight->SetIntensity(intensity);
-// 			directionlight->SetDiffuseColor(color);
-// 			directionlight->SetDirection(dir);
-// 			m_mapLight.push_back(directionlight);
-//  			break;
+			// 			std::shared_ptr<Ideal::IDirectionalLight> directionlight
+			// 				 = m_managers.lock()->Graphics()->CreateDirectionalLight();
+			// 			directionlight->SetIntensity(intensity);
+			// 			directionlight->SetDiffuseColor(color);
+			// 			directionlight->SetDirection(dir);
+			// 			m_mapLight.push_back(directionlight);
+			//  			break;
 		}
 		// point
 		case 2:
