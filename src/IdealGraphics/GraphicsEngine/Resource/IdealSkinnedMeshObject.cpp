@@ -42,6 +42,10 @@ uint32 Ideal::IdealSkinnedMeshObject::GetMeshesSize()
 std::weak_ptr<Ideal::IMesh> Ideal::IdealSkinnedMeshObject::GetMeshByIndex(uint32 index)
 {
 	//return m_skinnedMesh->GetMeshes()[index];
+	if (index >= m_skinnedMesh->GetMeshes().size())
+	{
+		return std::weak_ptr<Ideal::IMesh>();
+	}
 	std::shared_ptr<Ideal::IdealMesh<SkinnedVertex>> mesh = m_skinnedMesh->GetMeshes()[index];
 	return mesh;
 }

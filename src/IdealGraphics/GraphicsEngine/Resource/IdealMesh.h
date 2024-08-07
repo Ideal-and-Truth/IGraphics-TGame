@@ -42,7 +42,7 @@ namespace Ideal
 			m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material); 
 		}
 		virtual std::weak_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
-
+		virtual std::string GetFBXMaterialName() override { return m_materialName; }
 	public:
 		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 		{
