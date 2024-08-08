@@ -181,6 +181,11 @@ void Truth::Scene::Update()
 	while (!m_beginDestroy.empty())
 	{
 		auto& e = m_beginDestroy.front();
+		if (e->m_isDead)
+		{
+			m_beginDestroy.pop();
+			continue;
+		}
 		e->Destroy();
 		m_entities.back()->m_index = e->m_index;
 		std::iter_swap(m_entities.begin() + e->m_index, m_entities.begin() + (m_entities.size() - 1));
@@ -199,7 +204,7 @@ void Truth::Scene::Update()
 		m_rootEntities.push_back(e);
 #endif // EDITOR_MODE
 		m_startedEntity.push(e);
-		e->Awake();
+		e->Awake();  
 		m_awakedEntity.pop();
 	}
 	while (!m_startedEntity.empty())
