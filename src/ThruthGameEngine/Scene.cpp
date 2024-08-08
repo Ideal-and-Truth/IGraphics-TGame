@@ -39,7 +39,7 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 {
 	_p->m_index = static_cast<int32>(m_entities.size());
 	m_entities.push_back(_p);
-	_p->Initailize();
+	_p->Initialize();
 	m_awakedEntity.push(_p);
 
 	if (_p->m_parent.expired())
@@ -119,7 +119,7 @@ void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 	m_entities.push_back(_entity);
 	_entity->SetManager(m_managers);
 	m_awakedEntity.push(_entity);
-	_entity->Initailize();
+	_entity->Initialize();
 
 	for (auto& child : _entity->m_children)
 	{

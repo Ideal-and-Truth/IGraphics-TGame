@@ -87,7 +87,7 @@ namespace Truth
 		Entity();
 		~Entity();
 
-		void Initailize();
+		void Initialize();
 
 		void SetPosition(const Vector3& _pos) const;
 		void SetScale(const Vector3& _scale) const;
