@@ -27,6 +27,7 @@ void RangedWeapon::Update()
 	if (GetKeyDown(KEY::SPACE))
 	{
 		std::shared_ptr<Truth::Entity> bullet = std::make_shared<Truth::Entity>(m_managers.lock());
+		bullet->Initialize();
 		bullet->m_layer = 1;
 		bullet->AddComponent<BulletMove>();
 		bullet->AddComponent<Truth::RigidBody>();
@@ -34,8 +35,7 @@ void RangedWeapon::Update()
 		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugSphere");
 		bullet->m_name = "bullet";
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
-		bullet->Initailize();
- 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
+		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition + Vector3{0.0f, 10.0f, 0.0f});
  		bullet->SetScale(Vector3(4.0f, 4.0f, 4.0f));
 	}
 }

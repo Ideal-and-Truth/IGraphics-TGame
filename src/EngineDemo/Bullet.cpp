@@ -17,9 +17,9 @@ Bullet::~Bullet()
 
 }
 
-void Bullet::Initailize()
+void Bullet::Initialize()
 {
-	__super::Initailize();
+	__super::Initialize();
 	AddComponent<BulletMove>();
 	AddComponent<Truth::RigidBody>();
 	AddComponent<Truth::SphereCollider>(2.0f, false);

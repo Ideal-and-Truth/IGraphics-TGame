@@ -61,7 +61,6 @@ namespace Truth
 
 		bool m_isDead = false;
 
-
 		ComponentMethod m_onCollisionEnter;
 		ComponentMethod m_onCollisionStay;
 		ComponentMethod m_onCollisionExit;
@@ -87,7 +86,7 @@ namespace Truth
 		Entity();
 		~Entity();
 
-		void Initailize();
+		void Initialize();
 
 		void SetPosition(const Vector3& _pos) const;
 		void SetScale(const Vector3& _scale) const;
