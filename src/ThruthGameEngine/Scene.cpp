@@ -391,16 +391,17 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 
 		m_mapMesh.back()->SetTransformMatrix(flipYZ * flipXY * meshTM);
 
-// 		if (matCount > 0)
-// 		{
-// 			auto mesh = m_mapMesh.back();
-// 			uint32 meshSize = mesh->GetMeshesSize();
-// 			for (uint32 i = 0; i < mesh->GetMeshesSize(); i++)
-// 			{
-// 				auto submesh = mesh->GetMeshByIndex(i);
-// 				submesh.lock()->SetMaterialObject(gp->m_matarialMap[matName[i]]->m_material);
-// 			}
-// 		}
+		if (matCount > 0)
+		{
+			auto mesh = m_mapMesh.back();
+			uint32 meshSize = mesh->GetMeshesSize();
+			for (uint32 i = 0; i < mesh->GetMeshesSize(); i++)
+			{
+				auto submesh = mesh->GetMeshByIndex(i).lock();
+				std::string smat = submesh->GetFBXMaterialName();
+				submesh->SetMaterialObject(gp->m_matarialMap[smat]->m_material);
+			}
+		}
 	}
 
 	std::shared_ptr<FileUtils> lightFile = std::make_shared<FileUtils>();
