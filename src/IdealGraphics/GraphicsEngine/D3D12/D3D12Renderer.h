@@ -102,7 +102,11 @@ namespace Ideal
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
 		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) override;
-					 
+
+		// Sprite
+		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
+		virtual void DeleteSprite() override;
+
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }
