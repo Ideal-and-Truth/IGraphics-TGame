@@ -12,7 +12,9 @@ namespace Ideal
 	class D3D12Texture;
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12DynamicDescriptorHeap;
+	class D3D12DescriptorHeap;
 	template <typename> class IdealMesh;
+	class ITexture;
 }
 
 namespace Ideal
@@ -25,25 +27,25 @@ namespace Ideal
 
 	public:
 		// device, cb pool, commandlist 필요
-		void DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
+		void DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 		// ComPtr<ID3D12Device> Device, ComPtr<ID3D12CommandList> CommandList, std::shared_ptr<Ideal::D3D12ConstantBufferPool> ConstantBufferPool
 	public:
 		//---Interface---//
-		Vector2 const& GetPosition() { return m_cbSprite.Pos; }
-		Vector2 const& GetSamplePosition() { return m_cbSprite.TexSamplePos; }
-		Vector2 const& GetSampleSize() { return m_cbSprite.TexSampleSize; }
-		float GetZ() { return m_cbSprite.Z; }
-		float GetAlpha() { return m_cbSprite.Alpha; }
+		virtual Vector2 const& GetPosition() override { return m_cbSprite.Pos; }
+		virtual Vector2 const& GetSamplePosition() override { return m_cbSprite.TexSamplePos; }
+		virtual Vector2 const& GetSampleSize() override { return m_cbSprite.TexSampleSize; }
+		virtual float GetZ() override { return m_cbSprite.Z; }
+		virtual float GetAlpha() override { return m_cbSprite.Alpha; }
 
-		void SetScreenPosition(Vector2 ScreenPos);
-		void SetPosition(Vector2 Position);
-		void SetTextureSize(Vector2 TextureSize);
-		void SetTextureSamplePosition(Vector2 TextureSamplePosition);
-		void SetTextureSampleSize(Vector2 TextureSampleSize);
-		void SetZ(float Z);
-		void SetAlpha(float Alpha);
+		virtual void SetScreenPosition(const Vector2& ScreenPos) override;
+		virtual void SetPosition(const Vector2& Position) override;
+		virtual void SetTextureSize(const Vector2& TextureSize) override;
+		virtual void SetTextureSamplePosition(const Vector2& TextureSamplePosition) override;
+		virtual void SetTextureSampleSize(const Vector2& TextureSampleSize) override;
+		virtual void SetZ(float Z) override;
+		virtual void SetAlpha(float Alpha) override;
 
-		void SetTexture(std::weak_ptr<Ideal::D3D12Texture> Texture);
+		virtual void SetTexture(std::weak_ptr<Ideal::ITexture> Texture) override;
 
 	public:
 		// default mesh를 넣어줄 것

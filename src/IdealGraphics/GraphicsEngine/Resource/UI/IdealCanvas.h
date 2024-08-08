@@ -4,11 +4,16 @@
 
 struct ID3D12Device;
 struct ID3D12RootSignature;
+struct ID3D12PipelineState;
+struct ID3D12GraphicsCommandList;
 
 namespace Ideal
 {
 	class D3D12PipelineStateObject;
 	class IdealSprite;
+	class D3D12DynamicDescriptorHeap;
+	class D3D12DynamicConstantBufferAllocator;
+	class D3D12DescriptorHeap;
 }
 
 namespace Ideal
@@ -40,7 +45,7 @@ namespace Ideal
 
 	public:
 		void Init(ComPtr<ID3D12Device> Device);
-		void DrawCanvas();
+		void DrawCanvas(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
 		void AddSprite(std::weak_ptr<Ideal::IdealSprite> Sprite);
 		void DeleteSprite(std::weak_ptr<Ideal::IdealSprite> Sprite);
@@ -50,7 +55,8 @@ namespace Ideal
 		void CreatePSO(ComPtr<ID3D12Device> Device);
 
 		ComPtr<ID3D12RootSignature> m_rectRootSignature;
-		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_rectPSO;
+		ComPtr<ID3D12PipelineState> m_rectPSO;
+		//std::shared_ptr<Ideal::D3D12PipelineStateObject> m_rectPSO;
 
 	private:
 		std::vector<std::weak_ptr<Ideal::IdealSprite>> m_sprites;

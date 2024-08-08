@@ -50,7 +50,7 @@ namespace Truth
 		EntityVector m_entities;
 		EntityVector m_rootEntities;
 
-		std::weak_ptr<Managers> m_managers;
+		std::weak_ptr<Managers> m_managers;  
 
 	private:
 		std::queue<std::shared_ptr<Entity>> m_beginDestroy;

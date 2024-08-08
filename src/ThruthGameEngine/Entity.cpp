@@ -130,6 +130,11 @@ void Truth::Entity::Awake()
 
 void Truth::Entity::Destroy()
 {
+	if (m_isDead)
+	{
+		return;
+	}
+	m_isDead = true;
 	IterateComponentMethod(m_destroy);
 	m_components.clear();
 }

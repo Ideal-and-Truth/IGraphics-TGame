@@ -20,7 +20,7 @@ Ideal::IdealSprite::~IdealSprite()
 
 }
 
-void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
 	// TODO :
 	// Set Descriptor Heap
@@ -60,27 +60,27 @@ void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12Gr
 	CommandList->DrawIndexedInstanced(m_mesh.lock()->GetElementCount(), 1, 0, 0, 0);
 }
 
-void Ideal::IdealSprite::SetScreenPosition(Vector2 ScreenPos)
+void Ideal::IdealSprite::SetScreenPosition(const Vector2& ScreenPos)
 {
 	m_cbSprite.ScreenPos = ScreenPos;
 }
 
-void Ideal::IdealSprite::SetPosition(Vector2 Position)
+void Ideal::IdealSprite::SetPosition(const Vector2& Position)
 {
 	m_cbSprite.Pos = Position;
 }
 
-void Ideal::IdealSprite::SetTextureSize(Vector2 TextureSize)
+void Ideal::IdealSprite::SetTextureSize(const Vector2& TextureSize)
 {
 	m_cbSprite.TexSize = TextureSize;
 }
 
-void Ideal::IdealSprite::SetTextureSamplePosition(Vector2 TextureSamplePosition)
+void Ideal::IdealSprite::SetTextureSamplePosition(const Vector2& TextureSamplePosition)
 {
 	m_cbSprite.TexSamplePos;
 }
 
-void Ideal::IdealSprite::SetTextureSampleSize(Vector2 TextureSampleSize)
+void Ideal::IdealSprite::SetTextureSampleSize(const Vector2& TextureSampleSize)
 {
 	m_cbSprite.TexSampleSize;
 }
@@ -95,9 +95,9 @@ void Ideal::IdealSprite::SetAlpha(float Alpha)
 	m_cbSprite.Alpha = Alpha;
 }
 
-void Ideal::IdealSprite::SetTexture(std::weak_ptr<Ideal::D3D12Texture> Texture)
+void Ideal::IdealSprite::SetTexture(std::weak_ptr<Ideal::ITexture> Texture)
 {
-	m_texture = Texture;
+	m_texture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture.lock());
 }
 
 void Ideal::IdealSprite::SetMesh(std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> Mesh)

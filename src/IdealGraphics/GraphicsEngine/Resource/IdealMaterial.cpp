@@ -155,7 +155,6 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	{
 		Ideal::D3D12DescriptorHandle normalHandle = m_normalTexture.lock()->GetSRV();
 		D3D12_CPU_DESCRIPTOR_HANDLE normalCPUAddress = normalHandle.GetCpuHandle();
-		
 
 		//auto handle = descriptorHeap->Allocate(1);
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_SRV_NORMAL, incrementSize);
