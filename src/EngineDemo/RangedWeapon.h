@@ -1,5 +1,12 @@
 #pragma once
 #include "Component.h"
+#include "Collider.h"
+
+class Player;
+class PlayerAnimator;
+class Enemy;
+class EnemyAnimator;
+
 class RangedWeapon :
 	public Truth::Component
 {
@@ -14,8 +21,19 @@ private:
 	void load(Archive& ar, const unsigned int file_version);
 
 private:
+	std::vector<std::pair<std::shared_ptr<Truth::Entity>, float>> m_bullets;
 
+	std::shared_ptr<Truth::Collider> m_collider;
 
+	std::shared_ptr<Player> m_player;
+	std::shared_ptr<PlayerAnimator> m_playerAnimator;
+
+	std::shared_ptr<Enemy> m_enemy;
+	std::shared_ptr<EnemyAnimator> m_enemyAnimator;
+
+	std::vector<std::shared_ptr<Truth::Entity>> m_onHitEnemys;
+
+	bool m_isAttacking;
 public:
 	RangedWeapon();
 	virtual ~RangedWeapon();
@@ -23,8 +41,17 @@ public:
 	METHOD(Awake);
 	void Awake();
 
+	METHOD(Start);
+	void Start();
+
 	METHOD(Update);
 	void Update();
+
+	METHOD(OnTriggerEnter);
+	void OnTriggerEnter(Truth::Collider* _other);
+
+	METHOD(OnTriggerExit);
+	void OnTriggerExit(Truth::Collider* _other);
 };
 
 template<class Archive>

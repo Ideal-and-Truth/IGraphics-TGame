@@ -121,6 +121,7 @@ void PlayerController::PlayerMove(const void*)
 	{
 		return;
 	}
+	m_playerDirection = playerDir;
 	Quaternion lookRot;
 	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
 	auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float4>(m_player.lock().get()).Get();

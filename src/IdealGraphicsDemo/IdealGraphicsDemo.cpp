@@ -168,8 +168,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 	//====== =
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/SK_Fencer_Lady_Nude.fbx", true, false, true);
-		//gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/chronos.Main_tPose1.fbx", true, false, true);
+		//gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/SK_Fencer_Lady_Nude.fbx", true, false, true);
+		gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/chronos.Main_tPose1.fbx", true, false, true);
 		//>>>>>>> Stashed changes
 				//gRenderer->ConvertAssetToMyFormat(L"Boss/bosshall.fbx", false, false);
 				//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
