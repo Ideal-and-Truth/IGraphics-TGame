@@ -2,7 +2,7 @@
 #define UI_HLSL
 
 
-Texture2D texture : register(t0);
+Texture2D UIImage : register(t0);
 SamplerState WrapLinearSampler : register(s0);
 
 cbuffer CB_Sprite : register(b0)
@@ -31,7 +31,7 @@ struct PSInput
     float4 Pos : SV_POSITION;
     float4 Color : COLOR;
     float2 TexCoord : TEXCOORD;
-}
+};
 
 PSInput VS(VSInput Input)
 {
@@ -39,7 +39,7 @@ PSInput VS(VSInput Input)
     
     float2 scale = (g_TexSize / g_ScreenRes) * g_Scale;
     float2 offset = (g_Pos / g_ScreenRes);  // float 좌표계 기준 지정한 위치
-    float2 pos = Input.Pos.xy * scale + offset;
+    float2 Pos = Input.Pos.xy * scale + offset;
     result.Pos = float4(Pos.xy * float2(2, -2) + float2(-1, 1), g_Z, 1); // 정규 좌표계로 변환
 
     float2 texScale = (g_TexSampleSize / g_TexSize);
@@ -52,7 +52,7 @@ PSInput VS(VSInput Input)
 
 float4 PS(PSInput Input) : SV_Target
 {
-    float4 texColor = texture.Sample(WrapLinearSampler, Input.TexCoord);
+    float4 texColor = UIImage.Sample(WrapLinearSampler, Input.TexCoord);
     return texColor * Input.Color;
 }
 

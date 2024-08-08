@@ -54,6 +54,7 @@ using namespace std;
 #include "GraphicsEngine/public/IMesh.h"
 #include "GraphicsEngine/public/IMaterial.h"
 #include "GraphicsEngine/public/IBone.h"
+#include "GraphicsEngine/public/ISprite.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -305,6 +306,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
 		eyeMaterial->SetBaseMap(eyeTexture);
+#pragma endregion
+
+#pragma region CreateSpriteUI
+		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
+		sprite->SetTexture(faceTexture);
 #pragma endregion
 
 #pragma region CreateLight

@@ -144,6 +144,11 @@ void Ideal::IdealSkinnedMeshObject::SetAnimation(const std::string& AnimationNam
 	}
 }
 
+uint32 Ideal::IdealSkinnedMeshObject::GetCurrentAnimationMaxFrame()
+{
+	return m_currentAnimation->GetFrameCount();
+}
+
 void Ideal::IdealSkinnedMeshObject::AnimationDeltaTime(const float& DeltaTime)
 {
 	m_sumTime += DeltaTime;

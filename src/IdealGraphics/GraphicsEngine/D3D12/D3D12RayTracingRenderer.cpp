@@ -39,13 +39,14 @@
 #include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
+#include "GraphicsEngine/Resource/UI/IdealCanvas.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 #include "GraphicsEngine/Resource/IdealMaterial.h"
-
+#include "GraphicsEngine/Resource/IdealSprite.h"
 
 #include "GraphicsEngine/D3D12/TestShader.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
@@ -338,6 +339,10 @@ finishAdapter:
 	CreateFence();
 	CreatePools();
 
+	//------------------UI-------------------//
+	CreateUIDescriptorHeap();
+	CreateCanvas();
+
 	//---------------Create Managers---------------//
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
 
@@ -481,11 +486,18 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 	CopyRaytracingOutputToBackBuffer();
 
+	//-----------UI-----------//
+	DrawCanvas();
+	//m_renderTargets[m_frameIndex];
+	//m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_uiDescriptorHeap, m_cbAllocator[m_currentContextIndex]);
+
 	if (m_isEditor)
 	{
 		ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
 		//std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
-		ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
+		//ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
+		ComPtr<ID3D12Resource> raytracingOutput = m_renderTargets[m_frameIndex]->GetResource();
+
 
 		CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
 		preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -495,7 +507,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		);
 		preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
 			raytracingOutput.Get(),
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_COPY_SOURCE
 		);
 		commandlist->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
@@ -510,7 +522,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
 			raytracingOutput.Get(),
 			D3D12_RESOURCE_STATE_COPY_SOURCE,
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+			D3D12_RESOURCE_STATE_RENDER_TARGET
 		);
 
 		commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
@@ -787,6 +799,21 @@ void Ideal::D3D12RayTracingRenderer::DeleteMaterial(std::shared_ptr<Ideal::IMate
 	m_deferredDeleteManager->AddMaterialToDefferedDelete(std::static_pointer_cast<Ideal::IdealMaterial>(Material));
 }
 
+std::shared_ptr<Ideal::ISprite> Ideal::D3D12RayTracingRenderer::CreateSprite()
+{
+	// TODO : Canvas에 UI를 추가해야 할 것이다.
+	std::shared_ptr<Ideal::IdealSprite> ret = std::make_shared<Ideal::IdealSprite>();
+	ret->SetMesh(m_resourceManager->GetDefaultQuadMesh());
+	ret->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
+	m_UICanvas->AddSprite(ret);
+	return ret;
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteSprite()
+{
+
+}
+
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -1042,6 +1069,8 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	m_cbAllocator[nextContextIndex]->Reset();
 	//m_BLASInstancePool[nextContextIndex]->Reset();
 	m_descriptorManager->ResetPool(nextContextIndex);
+	// ui
+	m_uiDescriptorHeaps[nextContextIndex]->Reset();
 
 	// deferred resource Delete And Set Next Context Index
 	m_deferredDeleteManager->DeleteDeferredResources(m_currentContextIndex);
@@ -1278,9 +1307,31 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
 {
 	//------UI Descriptor Heap------//
-	m_uiDescriptorHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	m_uiDescriptorHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_UI_DESCRIPTOR_COUNT);
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		m_uiDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
+		m_uiDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_UI_DESCRIPTOR_COUNT);
+	}
+}
 
+void Ideal::D3D12RayTracingRenderer::CreateCanvas()
+{
+	m_UICanvas = std::make_shared<Ideal::IdealCanvas>();
+	m_UICanvas->Init(m_device);
+}
+
+void Ideal::D3D12RayTracingRenderer::DrawCanvas()
+{
+	ID3D12DescriptorHeap* descriptorHeap[] = { m_uiDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get()};
+	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
+
+	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
+
+	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
+	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, nullptr);
+
+	m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_uiDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex]);
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()

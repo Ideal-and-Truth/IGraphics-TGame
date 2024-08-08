@@ -54,6 +54,7 @@ namespace Ideal
 	class IdealDirectionalLight;
 	class IdealSpotLight;
 	class IdealPointLight;
+	class IdealCanvas;
 
 	struct ConstantBufferContainer;
 	// Manager
@@ -137,6 +138,10 @@ namespace Ideal
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
 		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) override;
+
+		// Sprite
+		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
+		virtual void DeleteSprite() override;
 
 	private:
 		void CreateCommandlists();
@@ -261,8 +266,10 @@ namespace Ideal
 		// UI
 	private:
 		void CreateUIDescriptorHeap();
-
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_uiDescriptorHeap;
+		void CreateCanvas();
+		void DrawCanvas();
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uiDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
+		std::shared_ptr<Ideal::IdealCanvas> m_UICanvas;
 
 
 		// EDITOR 
