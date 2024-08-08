@@ -10,7 +10,7 @@ Player::Player()
 	, m_maxTP(100.f)
 	, m_maxCP(100.f)
 	, m_currentDamage(30.f)
-	, m_currentTP(100.f)
+	, m_currentTP(0.f)
 	, m_currentCP(0.f)
 	, m_chargingCP(10.f)
 	, m_isDecreaseCP(false)
@@ -26,6 +26,11 @@ Player::~Player()
 void Player::Awake()
 {
 
+}
+
+void Player::Start()
+{
+	m_currentTP = m_maxTP;
 }
 
 void Player::Update()

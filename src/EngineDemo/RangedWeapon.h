@@ -12,7 +12,6 @@ class RangedWeapon :
 {
 	GENERATE_CLASS_TYPE_INFO(RangedWeapon);
 private:
-private:
 	friend class boost::serialization::access;
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 	template<class Archive>
@@ -31,9 +30,9 @@ private:
 	std::shared_ptr<Enemy> m_enemy;
 	std::shared_ptr<EnemyAnimator> m_enemyAnimator;
 
-	std::vector<std::shared_ptr<Truth::Entity>> m_onHitEnemys;
 
 	bool m_isAttacking;
+	bool m_isShot;
 public:
 	RangedWeapon();
 	virtual ~RangedWeapon();
@@ -47,11 +46,6 @@ public:
 	METHOD(Update);
 	void Update();
 
-	METHOD(OnTriggerEnter);
-	void OnTriggerEnter(Truth::Collider* _other);
-
-	METHOD(OnTriggerExit);
-	void OnTriggerExit(Truth::Collider* _other);
 };
 
 template<class Archive>

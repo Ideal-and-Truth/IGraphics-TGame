@@ -5,7 +5,6 @@ class ComponentBase :
 {
 	GENERATE_CLASS_TYPE_INFO(ComponentBase);
 private:
-private:
 	friend class boost::serialization::access;
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 	template<class Archive>

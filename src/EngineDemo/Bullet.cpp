@@ -1,15 +1,14 @@
 #include "Bullet.h"
-#include "RigidBody.h"
-#include "BoxCollider.h"
-#include "BulletMove.h"
-#include "CapsuleCollider.h"
-#include "SphereCollider.h"
-#include "Mesh.h"
+#include "Player.h"
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Bullet)
+
 
 Bullet::Bullet()
+	: m_bulletDamage(0.f)
+	, m_isHit(false)
 {
 	m_name = "Bullet";
-	m_layer = 2;
 }
 
 Bullet::~Bullet()
@@ -17,13 +16,25 @@ Bullet::~Bullet()
 
 }
 
-void Bullet::Initialize()
+void Bullet::Awake()
 {
-	__super::Initialize();
-	AddComponent<BulletMove>();
-	AddComponent<Truth::RigidBody>();
-	AddComponent<Truth::SphereCollider>(2.0f, false);
-	AddComponent<Truth::Mesh>(L"debugCube/debugCube");
-	SetPosition(Vector3{ 0.0f, 50.0f, 50.0f });
-	SetScale(Vector3(4.0f, 4.0f, 4.0f));
+
 }
+
+void Bullet::Update()
+{
+
+}
+
+void Bullet::OnCollisionEnter(Truth::Collider* _other)
+{
+	if (_other->GetOwner().lock()->m_name == "Player" && !m_isHit)
+	{
+		auto player = _other->GetOwner().lock()->GetComponent<Player>().lock();
+		float playerHp = player->GetTypeInfo().GetProperty("currentTP")->Get<float>(player.get()).Get();
+
+		player->GetTypeInfo().GetProperty("currentTP")->Set(player.get(), playerHp - m_bulletDamage);
+		m_isHit = true;
+	}
+}
+

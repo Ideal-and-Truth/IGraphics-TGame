@@ -9,8 +9,9 @@ Enemy::Enemy()
 	, m_maxTP(100.f)
 	, m_maxCP(0.f)
 	, m_currentDamage(20.f)
-	, m_currentTP(100.f)
+	, m_currentTP(0.f)
 	, m_currentCP(0.f)
+	, m_attackRange(5.f)
 	, m_isTargetIn(false)
 {
 	m_name = "Enemy";
@@ -28,7 +29,7 @@ void Enemy::Awake()
 
 void Enemy::Start()
 {
-	
+	m_currentTP = m_maxTP;
 }
 
 void Enemy::Update()

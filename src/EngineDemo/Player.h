@@ -8,8 +8,11 @@ class Player :
 	GENERATE_CLASS_TYPE_INFO(Player);
 private:
 	friend class boost::serialization::access;
+	BOOST_SERIALIZATION_SPLIT_MEMBER();
 	template<class Archive>
-	void serialize(Archive& _ar, const unsigned int _file_version);
+	void save(Archive& ar, const unsigned int file_version) const;
+	template<class Archive>
+	void load(Archive& ar, const unsigned int file_version);
 
 private:
 	PROPERTY(moveSpeed);
@@ -49,6 +52,9 @@ public:
 	METHOD(Awake);
 	void Awake();
 
+	METHOD(Start);
+	void Start();
+
 	METHOD(Update);
 	void Update();
 
@@ -56,9 +62,39 @@ private:
 };
 
 template<class Archive>
-void Player::serialize(Archive& _ar, const unsigned int _file_version)
+void Player::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
+
+	if (file_version >= 1)
+	{
+		_ar& m_moveSpeed;
+		_ar& m_lookRotationDampFactor;
+		_ar& m_stopTiming;
+		_ar& m_maxTP;
+		_ar& m_maxCP;
+		_ar& m_currentDamage;
+		_ar& m_currentTP;
+		_ar& m_currentCP;
+		_ar& m_chargingCP;
+	}
+}
+
+template<class Archive>
+void Player::save(Archive& _ar, const unsigned int file_version) const
+{
+	_ar& boost::serialization::base_object<Component>(*this);
+
+	_ar& m_moveSpeed;
+	_ar& m_lookRotationDampFactor;
+	_ar& m_stopTiming;
+	_ar& m_maxTP;
+	_ar& m_maxCP;
+	_ar& m_currentDamage;
+	_ar& m_currentTP;
+	_ar& m_currentCP;
+	_ar& m_chargingCP;
 }
 
 BOOST_CLASS_EXPORT_KEY(Player)
+BOOST_CLASS_VERSION(Player, 1)

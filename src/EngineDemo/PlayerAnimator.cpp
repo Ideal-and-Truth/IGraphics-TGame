@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "PlayerController.h"
 #include "EnemyAnimator.h"
+#include "Bullet.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 
@@ -134,11 +135,11 @@ void PlayerAnimator::Update()
 		m_passingTime = 0.f;
 	}
 
-// 	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
-// 	{
-// 		m_isHit = true;
-// 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-// 	}
+	// 	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
+	// 	{
+	// 		m_isHit = true;
+	// 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+	// 	}
 
 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
 	{
@@ -170,7 +171,7 @@ void PlayerAnimator::Update()
 
 	m_currentState->OnStateUpdate();
 
-	if (!m_isAttacking && !m_isGuard)
+	if (!m_isAttacking && !m_isGuard && !m_isHit)
 	{
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
 	}
@@ -189,6 +190,7 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 	if (enemy)
 	{
 		auto enemyAnim = enemy->GetComponent<EnemyAnimator>().lock();
+
 		if (enemyAnim)
 		{
 			m_isHit = true;
@@ -199,6 +201,15 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 				enemyAnim->GetTypeInfo().GetProperty("isParried")->Set(enemyAnim.get(), true);
 			}
 		}
+	}
+}
+
+void PlayerAnimator::OnCollisionEnter(Truth::Collider* _other)
+{
+	if (_other->GetOwner().lock()->GetComponent<Bullet>().lock())
+	{
+		m_isHit = true;
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 }
 

@@ -45,6 +45,7 @@ void MeleeWeapon::Start()
 
 void MeleeWeapon::Update()
 {
+	/// TODO : 근접공격 완전해지면 다단히트 예외처리 만들기
 	/// 이거좀 치워라
 	if (m_isAttacking)
 	{
