@@ -43,7 +43,6 @@ void Truth::Managers::Update() const
 	}
 	else
 	{
-		m_sceneManager->m_currentScene->EditorUpdate();
 		m_editorCamera->SetMainCamera();
 		m_editorCamera->Update(m_timeManager->GetDT());
 	}
