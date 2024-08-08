@@ -30,7 +30,7 @@ Truth::Entity::~Entity()
 	m_children.clear();
 }
 
-void Truth::Entity::Initailize()
+void Truth::Entity::Initialize()
 {
 	m_transform = GetComponent<Transform>().lock();
 	int32 index = 0;

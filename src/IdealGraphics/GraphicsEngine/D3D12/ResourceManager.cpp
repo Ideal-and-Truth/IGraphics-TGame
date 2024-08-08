@@ -11,7 +11,6 @@
 #include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 
-#include "GraphicsEngine/VertexInfo.h"
 
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
@@ -1153,9 +1152,9 @@ void ResourceManager::DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture
 
 void ResourceManager::CreateDefaultTextures()
 {
-	CreateTexture(m_defaultAlbedo,	L"../Resources/DefaultData/DefaultAlbedo.png");
-	CreateTexture(m_defaultNormal,	L"../Resources/DefaultData/DefaultNormalMap.png");
-	CreateTexture(m_defaultMask,	L"../Resources/DefaultData/DefaultBlack.png");
+	CreateTexture(m_defaultAlbedo, L"../Resources/DefaultData/DefaultAlbedo.png");
+	CreateTexture(m_defaultNormal, L"../Resources/DefaultData/DefaultNormalMap.png");
+	CreateTexture(m_defaultMask, L"../Resources/DefaultData/DefaultBlack.png");
 }
 
 std::shared_ptr<Ideal::IdealMaterial> ResourceManager::CreateMaterial()
@@ -1282,4 +1281,31 @@ void ResourceManager::CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& Ou
 
 	// Final Insert Key
 	m_animations[key] = OutAnimation;
+}
+
+void ResourceManager::CreateDefaultQuadMesh()
+{
+	std::vector<SimpleVertex> vertices =
+	{
+		{ { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
+		{ { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
+		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } },
+		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
+	};
+
+	std::vector<uint32> Indices =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	m_defaultQuadMesh = std::make_shared<Ideal::IdealMesh<SimpleVertex>>();
+	m_defaultQuadMesh->AddVertices(vertices);
+	m_defaultQuadMesh->AddIndices(Indices);
+	m_defaultQuadMesh->Create(shared_from_this());
+}
+
+std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> ResourceManager::GetDefaultQuadMesh()
+{
+	return m_defaultQuadMesh;
 }

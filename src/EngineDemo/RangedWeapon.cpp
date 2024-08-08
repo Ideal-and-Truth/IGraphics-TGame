@@ -86,13 +86,13 @@ void RangedWeapon::Update()
 	if (GetKeyDown(KEY::SPACE))
 	{
 		std::shared_ptr<Truth::Entity> bullet = std::make_shared<Truth::Entity>(m_managers.lock());
+		bullet->Initialize();
 		bullet->m_layer = 1;
 		bullet->AddComponent<Truth::RigidBody>();
 		bullet->AddComponent<Truth::BoxCollider>(false);
 		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugSphere");
 		bullet->m_name = "bullet";
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
-		bullet->Initailize();
 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
 
 		bullet->Awake();

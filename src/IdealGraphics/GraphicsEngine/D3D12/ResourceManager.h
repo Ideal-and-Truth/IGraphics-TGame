@@ -1,6 +1,9 @@
 #pragma once
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include <winnt.h>
+
+#include "GraphicsEngine/VertexInfo.h"
+
 // 따로 GPU에 메모리를 업로드 하는 command list를 파서 여기서 사용한다.
 
 namespace Ideal
@@ -26,19 +29,19 @@ namespace Ideal
 namespace Ideal
 {
 	typedef
-	enum IdealTextureTypeFlag
+		enum IdealTextureTypeFlag
 	{
-		IDEAL_TEXTURE_NONE	= 0,
-		IDEAL_TEXTURE_SRV	= 0x1,
-		IDEAL_TEXTURE_RTV	= 0x2,
-		IDEAL_TEXTURE_DSV	= 0x4,
+		IDEAL_TEXTURE_NONE = 0,
+		IDEAL_TEXTURE_SRV = 0x1,
+		IDEAL_TEXTURE_RTV = 0x2,
+		IDEAL_TEXTURE_DSV = 0x4,
 		// 0x1,0x2,0x4,0x8
 		// 0x10,0x20,0x40,0x80
 	} IdealTextureTypeFlag;
 	DEFINE_ENUM_FLAG_OPERATORS(IdealTextureTypeFlag);
 
 	typedef
-	enum IdealAllocateTypeFlag
+		enum IdealAllocateTypeFlag
 	{
 		IDEAL_BUFFER_ALLOCATE_DEFAULT = 0,
 		IDEAL_BUFFER_ALLOCATE_SRV = 0x1,
@@ -179,5 +182,12 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Texture> m_defaultMask;
 
 		std::shared_ptr<Ideal::IdealMaterial> m_defaultMaterial;
+
+	public:
+		void CreateDefaultQuadMesh();
+		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> GetDefaultQuadMesh();
+
+	private:
+		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_defaultQuadMesh;
 	};
 }
