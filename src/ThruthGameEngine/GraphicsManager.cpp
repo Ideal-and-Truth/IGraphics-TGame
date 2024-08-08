@@ -4,7 +4,7 @@
 #include "imgui.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "Matarial.h"
+#include "Material.h"
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
@@ -195,11 +195,11 @@ void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 	}
 }
 
-std::shared_ptr<Truth::Matarial> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
+std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
 {
 	if (m_matarialMap.find(_name) == m_matarialMap.end() || m_matarialMap[_name]->m_useCount <= 0)
 	{
-		std::shared_ptr<Matarial> mat = std::make_shared<Matarial>();
+		std::shared_ptr<Material> mat = std::make_shared<Material>();
 		mat->m_material = m_renderer->CreateMaterial();
 		mat->m_name = _name;
 		mat->m_baseMap = nullptr;
@@ -210,13 +210,18 @@ std::shared_ptr<Truth::Matarial> Truth::GraphicsManager::CraeteMatarial(const st
 	return m_matarialMap[_name];
 }
 
-void Truth::GraphicsManager::DeleteMaterial(std::shared_ptr<Matarial> _material)
+void Truth::GraphicsManager::DeleteMaterial(std::shared_ptr<Material> _material)
 {
 	_material->m_useCount--;
 	if (_material->m_useCount <= 0)
 	{
 		m_renderer->DeleteMaterial(_material->m_material);
 	}
+}
+
+std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::string& _name)
+{
+	return m_matarialMap[_name];
 }
 
 #ifdef EDITOR_MODE

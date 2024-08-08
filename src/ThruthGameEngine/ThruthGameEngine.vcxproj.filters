@@ -251,7 +251,7 @@
     <ClCompile Include="SkinnedMesh.cpp">
       <Filter>Component\Mesh\SkindedMesh</Filter>
     </ClCompile>
-    <ClCompile Include="Matarial.cpp">
+    <ClCompile Include="Material.cpp">
       <Filter>Component\Mesh\Matarial</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
@@ -398,7 +398,7 @@
     <ClInclude Include="SkinnedMesh.h">
       <Filter>Component\Mesh\SkindedMesh</Filter>
     </ClInclude>
-    <ClInclude Include="Matarial.h">
+    <ClInclude Include="Material.h">
       <Filter>Component\Mesh\Matarial</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">

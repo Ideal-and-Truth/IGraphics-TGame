@@ -7,7 +7,7 @@
 #include "PhysicsManager.h"
 #include "FileUtils.h"
 #include "ISpotLight.h"
-#include "Matarial.h"
+#include "Material.h"
 #include "IMesh.h"
 
 /// <summary>
@@ -357,7 +357,7 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		std::shared_ptr<Texture> normalTex = gp->CreateTexture(A2W(normalMap.c_str()));
 		std::shared_ptr<Texture> maskTex = gp->CreateTexture(A2W(maskMap.c_str()));
 
-		std::shared_ptr<Matarial> mat = gp->CraeteMatarial(name);
+		std::shared_ptr<Material> mat = gp->CraeteMatarial(name);
 		mat->m_baseMap = baseTex;
 		mat->m_normalMap = normalTex;
 		mat->m_maskMap = maskTex;
@@ -398,7 +398,7 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 
 		if (matCount > 0)
 		{
-			auto mesh = m_mapMesh.back();
+			auto& mesh = m_mapMesh.back();
 			uint32 meshSize = mesh->GetMeshesSize();
 			for (uint32 i = 0; i < mesh->GetMeshesSize(); i++)
 			{

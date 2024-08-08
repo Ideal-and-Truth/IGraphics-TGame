@@ -34,7 +34,7 @@
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="DirectionLight.h" />
-    <ClInclude Include="Matarial.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="MathConverter.h" />
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="NavGeom.h" />
@@ -86,7 +86,7 @@
     <ClCompile Include="EditorUI.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="DirectionLight.cpp" />
-    <ClCompile Include="Matarial.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MathConverter.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="NavGeom.cpp" />

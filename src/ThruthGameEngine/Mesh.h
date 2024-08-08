@@ -3,9 +3,13 @@
 
 namespace Ideal
 {
-	class IMaterial;
+	class IMeshObject;
+	class IMesh;
 }
 
+/// <summary>
+/// Static Mehs Class
+/// </summary>
 namespace Truth
 {
 	class Mesh :
@@ -22,14 +26,13 @@ namespace Truth
 
 	private:
 		std::shared_ptr<Ideal::IMeshObject> m_mesh;
+		std::vector<std::shared_ptr<Ideal::IMesh>> m_subMesh;
 
 		PROPERTY(path);
 		std::wstring m_path;
 
 		PROPERTY(isRendering);
 		bool m_isRendering;
-
-		std::vector<std::weak_ptr<Ideal::IMaterial>> m_material;
 
 	public:
 		Mesh();
@@ -47,10 +50,12 @@ namespace Truth
 
 		void DeleteMesh();
 
+		void SetMaterialByIndex(uint32 _index, std::string _material);
+		std::vector<uint64> GetMaterialImagesIDByIndex(uint32 _index);
+
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE
-
 	};
 
 	template<class Archive>

@@ -12,7 +12,7 @@ namespace Ideal
 
 namespace Truth
 {
-	struct Matarial
+	struct Material
 	{
 		std::string m_name; 
 
