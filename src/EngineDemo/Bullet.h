@@ -10,6 +10,6 @@ class Bullet
 public:
 	Bullet();
 	virtual ~Bullet();
-	virtual void Initailize() override;
+	virtual void Initialize() override;
 };
 

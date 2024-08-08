@@ -57,6 +57,10 @@ void Truth::SceneManager::Finalize()
 void Truth::SceneManager::Update() const
 {
 	m_currentScene->Update();
+#ifdef EDITOR_MODE
+	m_currentScene->EditorUpdate();
+#endif // EDITOR_MODE
+
 }
 
 void Truth::SceneManager::FixedUpdate() const
