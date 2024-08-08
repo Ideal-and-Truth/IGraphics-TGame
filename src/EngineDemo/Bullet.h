@@ -18,6 +18,7 @@ private:
 	PROPERTY(bulletDamage);
 	float m_bulletDamage;
 
+	PROPERTY(isHit);
 	bool m_isHit;
 
 public:

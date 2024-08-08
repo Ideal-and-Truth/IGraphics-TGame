@@ -102,18 +102,16 @@ void RangedWeapon::Update()
 	{
 		e.second += GetDeltaTime();
 
+		if (e.first->GetComponent<Bullet>().lock()->GetTypeInfo().GetProperty("isHit")->Get<bool>(e.first->GetComponent<Bullet>().lock().get()).Get())
+		{
+			e.second += 3.f;
+		}
+
 		if (e.second > 2.f)
 		{
 			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 			m_bullets.erase(m_bullets.begin());
 		}
-
-		/// TODO : 충돌하면 사라지게
-// 		else if (e.first->GetComponent<Bullet>().lock())
-// 		{
-// 			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-// 			m_bullets.erase(m_bullets.begin());
-// 		}
 	}
 }
 

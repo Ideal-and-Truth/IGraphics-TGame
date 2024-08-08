@@ -119,7 +119,7 @@ void Truth::SkinnedMesh::Update()
 
 	if (m_animation != nullptr)
 	{
-		m_animationMaxFrame = m_animation->GetFrameCount();
+		m_animationMaxFrame = m_skinnedMesh->GetCurrentAnimationMaxFrame();
 		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
 
 
