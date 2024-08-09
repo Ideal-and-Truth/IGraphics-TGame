@@ -1,5 +1,7 @@
 #pragma once
-#include "Headers.h"
+#include <memory>
+#include <string>
+#include "ITexture.h"
 
 namespace Ideal
 {
@@ -14,7 +16,12 @@ namespace Truth
 		std::wstring m_path; 
 		std::shared_ptr<Ideal::ITexture> m_texture;
 
-		uint32 m_useCount;
+		unsigned long long GetImageID()
+		{
+			return m_texture->GetImageID();
+		}
+
+		unsigned int m_useCount;
 	};
 }
 

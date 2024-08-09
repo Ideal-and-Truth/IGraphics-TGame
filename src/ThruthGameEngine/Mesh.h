@@ -7,6 +7,11 @@ namespace Ideal
 	class IMesh;
 }
 
+namespace Truth
+{
+	struct Material;
+}
+
 /// <summary>
 /// Static Mehs Class
 /// </summary>
@@ -27,6 +32,9 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::IMeshObject> m_mesh;
 		std::vector<std::shared_ptr<Ideal::IMesh>> m_subMesh;
+
+		PROPERTY(mat);
+		std::vector<std::shared_ptr<Material>> m_mat;
 
 		PROPERTY(path);
 		std::wstring m_path;

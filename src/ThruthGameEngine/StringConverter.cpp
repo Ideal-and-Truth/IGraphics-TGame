@@ -84,6 +84,12 @@ std::string StringConverter::ToString(std::wstring _val, int _indent)
 	return "wstring Data";
 }
 
+template<>
+std::string StringConverter::ToString(std::shared_ptr<Truth::Material> _val, int _indent)
+{
+	return "mat";
+}
+
 std::vector<std::string> StringConverter::split(std::string _str, char _delimiter)
 {
 	std::istringstream iss(_str);            

@@ -26,6 +26,15 @@ Truth::GraphicsManager::GraphicsManager()
 /// </summary>
 Truth::GraphicsManager::~GraphicsManager()
 {
+	for (auto& mat : m_matarialMap)
+	{
+		m_renderer->DeleteMaterial(mat.second->m_material);
+	}
+
+	for (auto& tex : m_textureMap)
+	{
+		m_renderer->DeleteTexture(tex.second->m_texture);
+	}
 	DEBUG_PRINT("Finalize GraphicsManager\n");
 }
 

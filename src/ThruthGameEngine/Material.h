@@ -1,5 +1,7 @@
 #pragma once
-#include "Headers.h"
+#include <memory>
+#include <string>
+#include "TypeInfo.h"
 
 namespace Truth
 {
@@ -16,7 +18,7 @@ namespace Truth
 	{
 		std::string m_name; 
 
-		uint32 m_useCount;
+		unsigned int m_useCount;
 
 		std::shared_ptr<Ideal::IMaterial> m_material;
 

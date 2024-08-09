@@ -1,4 +1,4 @@
-#include "Processor.h"
+ #include "Processor.h"
 #include "Managers.h"
 #include "SceneManager.h"
 // #include "TestScene.h"
@@ -52,7 +52,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
-	g_Renderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk2.fbx");// -> Assimp Converter에서 FLAG 해제
+	// g_Renderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk2.fbx");// -> Assimp Converter에서 FLAG 해제
 	// g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx");
 
 	Truth::UnityParser up(m_manager->Graphics().get());
@@ -60,8 +60,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// 	std::string buffer = "Type:Mesh->Sprite__3_0";
 	// 	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
 	// 	int64 temp = static_cast<int64>(hash);
-	up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
-	up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
+	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
+	// up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 }
