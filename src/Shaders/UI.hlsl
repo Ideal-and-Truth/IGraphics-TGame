@@ -7,6 +7,7 @@ SamplerState WrapLinearSampler : register(s0);
 
 cbuffer CB_Sprite : register(b0)
 {
+    float4 g_Color;
     float2 g_ScreenRes;
     float2 g_Pos;
     float2 g_Scale;
@@ -22,7 +23,6 @@ cbuffer CB_Sprite : register(b0)
 struct VSInput
 {
     float4 Pos : POSITION;
-    float4 Color : COLOR;
     float2 TexCoord : TEXCOORD;
 };
 
@@ -46,14 +46,22 @@ PSInput VS(VSInput Input)
     float2 texOffset = (g_TexSamplePos / g_TexSize);
     result.TexCoord = Input.TexCoord * texScale + texOffset;
     
-    result.Color = Input.Color;
+    //result.Color = Input.Color;
+    result.Color = g_Color;
     return result;
 }
 
 float4 PS(PSInput Input) : SV_Target
 {
     float4 texColor = UIImage.Sample(WrapLinearSampler, Input.TexCoord);
-    return texColor * Input.Color;
+    texColor.a *= g_Alpha;
+
+    // Input.Color의 RGB 값만 곱하고 알파 값은 texColor의 알파 값을 사용
+    float4 outputColor;
+    outputColor.rgb = texColor.rgb * Input.Color.rgb;
+    outputColor.a = texColor.a;
+
+    return outputColor;
 }
 
 #endif

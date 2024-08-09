@@ -20,8 +20,12 @@ Ideal::IdealSprite::~IdealSprite()
 
 }
 
-void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const Vector2& ScreenSize)
 {
+	SetScreenPosition(ScreenSize);
+	//m_cbSprite.ScreenSize = ScreenSize;
+
+
 	// TODO :
 	// Set Descriptor Heap
 	// 
@@ -60,14 +64,37 @@ void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12Gr
 	CommandList->DrawIndexedInstanced(m_mesh.lock()->GetElementCount(), 1, 0, 0, 0);
 }
 
+void Ideal::IdealSprite::SetActive(bool IsActive)
+{
+	m_isActive = IsActive;
+}
+
+bool Ideal::IdealSprite::GetActive()
+{
+	return m_isActive;
+}
+
+void Ideal::IdealSprite::SetSampleRect(const SpriteRectArea& Rect)
+{
+	SetTextureSamplePosition(Vector2(Rect.x, Rect.y));
+	SetTextureSampleSize(Vector2(Rect.width, Rect.height));
+	//m_cbSprite.TexSamplePos = Vector2(Rect.left, Rect.top);
+	//m_cbSprite.TexSampleSize = Vector2(Rect.right, Rect.bottom);
+}
+
 void Ideal::IdealSprite::SetScreenPosition(const Vector2& ScreenPos)
 {
-	m_cbSprite.ScreenPos = ScreenPos;
+	m_cbSprite.ScreenSize = ScreenPos;
 }
 
 void Ideal::IdealSprite::SetPosition(const Vector2& Position)
 {
 	m_cbSprite.Pos = Position;
+}
+
+void Ideal::IdealSprite::SetScale(const DirectX::SimpleMath::Vector2& Scale)
+{
+	m_cbSprite.Scale = Scale;
 }
 
 void Ideal::IdealSprite::SetTextureSize(const Vector2& TextureSize)
@@ -77,12 +104,12 @@ void Ideal::IdealSprite::SetTextureSize(const Vector2& TextureSize)
 
 void Ideal::IdealSprite::SetTextureSamplePosition(const Vector2& TextureSamplePosition)
 {
-	m_cbSprite.TexSamplePos;
+	m_cbSprite.TexSamplePos = TextureSamplePosition;
 }
 
 void Ideal::IdealSprite::SetTextureSampleSize(const Vector2& TextureSampleSize)
 {
-	m_cbSprite.TexSampleSize;
+	m_cbSprite.TexSampleSize = TextureSampleSize;
 }
 
 void Ideal::IdealSprite::SetZ(float Z)
@@ -95,9 +122,21 @@ void Ideal::IdealSprite::SetAlpha(float Alpha)
 	m_cbSprite.Alpha = Alpha;
 }
 
+void Ideal::IdealSprite::SetColor(const DirectX::SimpleMath::Color& Color)
+{
+	m_cbSprite.SpriteColor = Color;
+}
+
 void Ideal::IdealSprite::SetTexture(std::weak_ptr<Ideal::ITexture> Texture)
 {
 	m_texture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture.lock());
+	uint32 width = (uint32)m_texture.lock()->GetResource()->GetDesc().Width;
+	uint32 height = (uint32)m_texture.lock()->GetResource()->GetDesc().Height;
+
+	SetTextureSize(Vector2(width, height));
+	// Default
+	SetTextureSamplePosition(Vector2(0, 0));
+	SetTextureSampleSize(Vector2(width, height));
 }
 
 void Ideal::IdealSprite::SetMesh(std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> Mesh)

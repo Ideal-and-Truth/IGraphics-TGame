@@ -1,4 +1,5 @@
 #pragma once
+#include "Core/Core.h"
 #include "ISprite.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
@@ -27,25 +28,34 @@ namespace Ideal
 
 	public:
 		// device, cb pool, commandlist 필요
-		void DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
+		void DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const Vector2& ScreenSize);
 		// ComPtr<ID3D12Device> Device, ComPtr<ID3D12CommandList> CommandList, std::shared_ptr<Ideal::D3D12ConstantBufferPool> ConstantBufferPool
 	public:
 		//---Interface---//
+		virtual void SetActive(bool IsActive) override;
+		virtual bool GetActive() override;
+
 		virtual Vector2 const& GetPosition() override { return m_cbSprite.Pos; }
-		virtual Vector2 const& GetSamplePosition() override { return m_cbSprite.TexSamplePos; }
-		virtual Vector2 const& GetSampleSize() override { return m_cbSprite.TexSampleSize; }
 		virtual float GetZ() override { return m_cbSprite.Z; }
 		virtual float GetAlpha() override { return m_cbSprite.Alpha; }
+		virtual Color const& GetColor() override { return m_cbSprite.SpriteColor; }
 
-		virtual void SetScreenPosition(const Vector2& ScreenPos) override;
+		virtual void SetSampleRect(const SpriteRectArea& Rect) override;
 		virtual void SetPosition(const Vector2& Position) override;
-		virtual void SetTextureSize(const Vector2& TextureSize) override;
-		virtual void SetTextureSamplePosition(const Vector2& TextureSamplePosition) override;
-		virtual void SetTextureSampleSize(const Vector2& TextureSampleSize) override;
+		virtual void SetScale(const DirectX::SimpleMath::Vector2& Scale) override;
 		virtual void SetZ(float Z) override;
 		virtual void SetAlpha(float Alpha) override;
+		virtual void SetColor(const DirectX::SimpleMath::Color& Color) override;
 
 		virtual void SetTexture(std::weak_ptr<Ideal::ITexture> Texture) override;
+
+		Vector2 const& GetSamplePosition() { return m_cbSprite.TexSamplePos; }
+		Vector2 const& GetSampleSize() { return m_cbSprite.TexSampleSize; }
+
+		void SetScreenPosition(const Vector2& ScreenPos);
+		void SetTextureSize(const Vector2& TextureSize);
+		void SetTextureSamplePosition(const Vector2& TextureSamplePosition);
+		void SetTextureSampleSize(const Vector2& TextureSampleSize);
 
 	public:
 		// default mesh를 넣어줄 것
@@ -59,5 +69,6 @@ namespace Ideal
 		std::weak_ptr<Ideal::D3D12Texture> m_texture;
 		// 스프라이트 정보!
 		CB_Sprite m_cbSprite;
+		bool m_isActive = true;
 	};
 }

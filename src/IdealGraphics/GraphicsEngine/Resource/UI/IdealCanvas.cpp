@@ -32,9 +32,34 @@ void Ideal::IdealCanvas::DrawCanvas(ComPtr<ID3D12Device> Device, ComPtr<ID3D12Gr
 	CommandList->SetPipelineState(m_rectPSO.Get());
 	CommandList->SetGraphicsRootSignature(m_rectRootSignature.Get());
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	std::vector<std::weak_ptr<Ideal::IdealSprite>> transparentSprites;
 	for (auto& sprite : m_sprites)
 	{
-		sprite.lock()->DrawSprite(Device, CommandList, UIDescriptorHeap, CBPool);
+		// Draw Off
+		if (sprite.lock()->GetActive() == false)
+		{
+			continue;
+		}
+
+		// Transparent
+		float alpha = sprite.lock()->GetAlpha();
+		if (alpha < 1.f)
+		{
+			transparentSprites.push_back(sprite);
+			continue;
+		}
+		sprite.lock()->DrawSprite(Device, CommandList, UIDescriptorHeap, CBPool, Vector2(m_uiCanvasWidth, m_uiCanvasHeight));
+	}
+	// 투명
+	for (auto& sprite : transparentSprites)
+	{
+		// Draw Off
+		if (sprite.lock()->GetActive() == false)
+		{
+			continue;
+		}
+		sprite.lock()->DrawSprite(Device, CommandList, UIDescriptorHeap, CBPool, Vector2(m_uiCanvasWidth, m_uiCanvasHeight));
 	}
 }
 
@@ -45,7 +70,26 @@ void Ideal::IdealCanvas::AddSprite(std::weak_ptr<Ideal::IdealSprite> Sprite)
 
 void Ideal::IdealCanvas::DeleteSprite(std::weak_ptr<Ideal::IdealSprite> Sprite)
 {
-	// TODO
+	if (auto lockedSprite = Sprite.lock())
+	{
+		auto it = std::find_if(m_sprites.begin(), m_sprites.end(), 
+			[&lockedSprite](const std::weak_ptr<Ideal::IdealSprite>& s) 
+			{
+				return s.lock() == lockedSprite; 
+			}
+		);
+		if (it != m_sprites.end())
+		{
+			std::swap(*it, m_sprites.back());
+			m_sprites.pop_back();
+		}
+	}
+}
+
+void Ideal::IdealCanvas::SetCanvasSize(uint32 Width, uint32 Height)
+{
+	m_uiCanvasWidth = Width;
+	m_uiCanvasHeight = Height;
 }
 
 void Ideal::IdealCanvas::CreateRootSignature(ComPtr<ID3D12Device> Device)
@@ -100,8 +144,25 @@ void Ideal::IdealCanvas::CreatePSO(ComPtr<ID3D12Device> Device)
 	psoDesc.VS = vs->GetShaderByteCode();
 	psoDesc.PS = ps->GetShaderByteCode();
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	{
+		// https://codingfarm.tistory.com/609
+		// 설정된 블렌드 상태
+		D3D12_BLEND_DESC blendDesc = {};
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		psoDesc.BlendState = blendDesc;
+	}
+	//psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	//psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
 	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
