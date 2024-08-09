@@ -7,6 +7,7 @@
 #include "Material.h"
 #include "ITexture.h"
 #include "Texture.h"
+#include "IMaterial.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Mesh)
 
@@ -64,6 +65,7 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 	for (uint32 i = 0; i < meshSize; i++)
 	{
 		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
+		m_mat.push_back(m_subMesh[i]->GetMaterialObject().lock());
 	}
 }
 

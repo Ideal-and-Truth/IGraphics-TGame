@@ -85,9 +85,9 @@ std::string StringConverter::ToString(std::wstring _val, int _indent)
 }
 
 template<>
-std::string StringConverter::ToString(std::shared_ptr<Truth::Material> _val, int _indent)
+std::string StringConverter::ToString(std::shared_ptr<Ideal::IMaterial> _val, int _indent)
 {
-	return "mat";
+	return "wstring Data";
 }
 
 std::vector<std::string> StringConverter::split(std::string _str, char _delimiter)

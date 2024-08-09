@@ -62,6 +62,11 @@ namespace Truth
 	struct Material;
 }
 
+namespace Ideal
+{
+	class IMaterial;
+}
+
 /// <summary>
 /// 템플릿 특수화를 통한 다양한 타입의 문자열화
 /// 필요한 타입이 있다면 직접 수정하여도 됨
@@ -148,8 +153,7 @@ namespace StringConverter
 	std::string ToString(std::shared_ptr<Truth::Entity> _val, int _indent);
 
 	template<>
-	std::string ToString(std::shared_ptr<Truth::Material> _val, int _indent);
-
+	std::string ToString(std::shared_ptr<Ideal::IMaterial> _val, int _indent);
 
 
 	std::vector<std::string> split(std::string _str, char _delimiter);

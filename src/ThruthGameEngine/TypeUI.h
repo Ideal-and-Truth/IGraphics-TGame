@@ -11,6 +11,7 @@
 #include "Material.h"
 #include "Texture.h"
 #include "ITexture.h"
+#include "IMaterial.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -139,17 +140,16 @@ namespace TypeUI
 			}
 			return isSelect;
 		}
-		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Truth::Material>>>)
+		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Ideal::IMaterial>>>)
 		{
 			const ImVec2 size(100, 100);
 			for (auto& mat : _val)
 			{
 				ImGui::Begin("Image Test");
-				ImGui::Image((ImTextureID)(mat->m_baseMap->GetImageID()), size);
-				ImGui::Image((ImTextureID)(mat->m_normalMap->GetImageID()), size);
-				ImGui::Image((ImTextureID)(mat->m_maskMap->GetImageID()), size);
+				ImGui::Image((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
+				ImGui::Image((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
+				ImGui::Image((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
 				ImGui::End();
-
 			}
 			return false;
 		}
