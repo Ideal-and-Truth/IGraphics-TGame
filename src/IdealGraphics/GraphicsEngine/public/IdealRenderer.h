@@ -63,7 +63,7 @@ namespace Ideal
 
 		// Sprite : UI에 만들어진다.
 		virtual std::shared_ptr<Ideal::ISprite>				CreateSprite() abstract;
-		virtual void DeleteSprite() abstract;
+		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>&) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

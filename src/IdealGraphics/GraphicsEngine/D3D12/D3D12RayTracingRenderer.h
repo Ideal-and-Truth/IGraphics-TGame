@@ -141,7 +141,7 @@ namespace Ideal
 
 		// Sprite
 		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
-		virtual void DeleteSprite() override;
+		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 
 	private:
 		void CreateCommandlists();
@@ -268,9 +268,9 @@ namespace Ideal
 		void CreateUIDescriptorHeap();
 		void CreateCanvas();
 		void DrawCanvas();
+		void SetCanvasSize(uint32 Width, uint32 Height);
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uiDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::IdealCanvas> m_UICanvas;
-
 
 		// EDITOR 
 	private:

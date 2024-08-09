@@ -1295,10 +1295,10 @@ void ResourceManager::CreateDefaultQuadMesh()
 {
 	std::vector<SimpleVertex> vertices =
 	{
-		{ { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
-		{ { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
-		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } },
-		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
+		{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
+		{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
+		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
+		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },
 	};
 
 	std::vector<uint32> Indices =

@@ -557,6 +557,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 {
+	// TODO : Ui canvas size
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
@@ -809,9 +810,11 @@ std::shared_ptr<Ideal::ISprite> Ideal::D3D12RayTracingRenderer::CreateSprite()
 	return ret;
 }
 
-void Ideal::D3D12RayTracingRenderer::DeleteSprite()
+void Ideal::D3D12RayTracingRenderer::DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite)
 {
-
+	auto s = std::static_pointer_cast<Ideal::IdealSprite>(Sprite);
+	m_UICanvas->DeleteSprite(s);
+	Sprite.reset();
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
@@ -901,13 +904,13 @@ void Ideal::D3D12RayTracingRenderer::CreateDSVHeap()
 void Ideal::D3D12RayTracingRenderer::CreateDSV(uint32 Width, uint32 Height)
 {
 	D3D12_CLEAR_VALUE depthClearValue = {};
-	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 	depthClearValue.DepthStencil.Depth = 1.0f;
 	depthClearValue.DepthStencil.Stencil = 0;
 
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		DXGI_FORMAT_D32_FLOAT,
 		Width,
 		Height,
 		1,
@@ -928,7 +931,7 @@ void Ideal::D3D12RayTracingRenderer::CreateDSV(uint32 Width, uint32 Height)
 
 	// create dsv
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
 
@@ -1027,7 +1030,9 @@ void Ideal::D3D12RayTracingRenderer::BeginRender()
 
 	commandList->RSSetViewports(1, &m_viewport->GetViewport());
 	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
+	
+	//commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
+	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, nullptr);
 }
 
 void Ideal::D3D12RayTracingRenderer::EndRender()
@@ -1318,6 +1323,7 @@ void Ideal::D3D12RayTracingRenderer::CreateCanvas()
 {
 	m_UICanvas = std::make_shared<Ideal::IdealCanvas>();
 	m_UICanvas->Init(m_device);
+	m_UICanvas->SetCanvasSize(m_width, m_height);
 }
 
 void Ideal::D3D12RayTracingRenderer::DrawCanvas()
@@ -1329,9 +1335,15 @@ void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 
 	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
 	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, nullptr);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, &dsvHandle);
 
 	m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_uiDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::SetCanvasSize(uint32 Width, uint32 Height)
+{
+	m_UICanvas->SetCanvasSize(Width, Height);
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()
@@ -1362,7 +1374,7 @@ void Ideal::D3D12RayTracingRenderer::InitImGui()
 
 void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 {
-	ImGui::Begin("MAIN SCREEN");                          // Create a window called "Hello, world!" and append into it.
+	ImGui::Begin("MAIN SCREEN", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav);		// Create a window called "Hello, world!" and append into it.
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 size(windowSize.x, windowSize.y);
@@ -1373,6 +1385,8 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 	m_aspectRatio = float(windowSize.x) / windowSize.y;
 	m_mainCamera->SetAspectRatio(m_aspectRatio);
 
+	// TEMP : 임시로 매번 Set Size를 해주겠음
+	SetCanvasSize(windowSize.x, windowSize.y);
 
 	// to srv
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(

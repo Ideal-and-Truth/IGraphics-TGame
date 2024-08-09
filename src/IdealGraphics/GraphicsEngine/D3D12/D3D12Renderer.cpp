@@ -559,9 +559,9 @@ std::shared_ptr<Ideal::ISprite> Ideal::D3D12Renderer::CreateSprite()
 	return nullptr;
 }
 
-void Ideal::D3D12Renderer::DeleteSprite()
+void Ideal::D3D12Renderer::DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite)
 {
-
+	__debugbreak();
 }
 
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter/* = false*/)

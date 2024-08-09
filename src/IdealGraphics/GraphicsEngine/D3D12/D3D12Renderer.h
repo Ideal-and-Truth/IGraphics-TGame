@@ -105,7 +105,7 @@ namespace Ideal
 
 		// Sprite
 		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
-		virtual void DeleteSprite() override;
+		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }

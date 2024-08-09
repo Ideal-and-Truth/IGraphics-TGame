@@ -50,6 +50,8 @@ namespace Ideal
 		void AddSprite(std::weak_ptr<Ideal::IdealSprite> Sprite);
 		void DeleteSprite(std::weak_ptr<Ideal::IdealSprite> Sprite);
 
+		void SetCanvasSize(uint32 Width, uint32 Height);
+
 	private:
 		void CreateRootSignature(ComPtr<ID3D12Device> Device);
 		void CreatePSO(ComPtr<ID3D12Device> Device);
@@ -60,5 +62,7 @@ namespace Ideal
 
 	private:
 		std::vector<std::weak_ptr<Ideal::IdealSprite>> m_sprites;
+		uint32 m_uiCanvasWidth;
+		uint32 m_uiCanvasHeight;
 	};
 }
