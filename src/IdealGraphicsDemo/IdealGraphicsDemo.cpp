@@ -54,6 +54,7 @@ using namespace std;
 #include "GraphicsEngine/public/IMesh.h"
 #include "GraphicsEngine/public/IMaterial.h"
 #include "GraphicsEngine/public/IBone.h"
+#include "GraphicsEngine/public/ISprite.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -106,6 +107,7 @@ void ImageTest(std::shared_ptr<Ideal::ITexture> Texture);
 void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
 void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 = nullptr, std::shared_ptr<Ideal::ITexture> Texture = nullptr, std::shared_ptr<Ideal::ITexture> Texture2 = nullptr);
+void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite);
 
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
@@ -307,6 +309,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		eyeMaterial->SetBaseMap(eyeTexture);
 #pragma endregion
 
+#pragma region CreateSpriteUI
+		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
+		sprite->SetTexture(faceTexture);
+		//sprite->SetTextureSamplePosition(Vector2(0, 0));
+		sprite->SetScale(Vector2(0.1, 0.1));
+		sprite->SetPosition(Vector2(0, 0));
+		sprite->SetAlpha(0.8f);
+		sprite->SetZ(0.2);
+		// 아래의 값은 기본으로 적용되어 있음. (Set Texture 할 때 Texture의 사이즈로 아래의 작업을 함)
+		sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight()});	
+		
+		//sprite->SetTextureSize(Vector2(512, 512));
+		//sprite->SetTextureSamplePosition(Vector2(0, 0));
+		//sprite->SetTextureSampleSize(Vector2(2048, 2048));
+
+		std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
+		sprite2->SetTexture(skirtBottomTexture);
+		sprite2->SetScale(Vector2(0.1, 0.1));
+		sprite2->SetPosition(Vector2(50, 50));
+		sprite2->SetZ(0.1);
+
+		std::shared_ptr<Ideal::ISprite> sprite3 = gRenderer->CreateSprite();
+		sprite3->SetScale(Vector2(0.3, 0.3));
+		sprite3->SetPosition(Vector2(200, 0));
+		sprite3->SetZ(0);
+		
+
+#pragma endregion
+
 #pragma region CreateLight
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
@@ -387,7 +418,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-
+					if (sprite)
+						gRenderer->DeleteSprite(sprite);
 				}
 
 				if (GetAsyncKeyState('C') & 0x8000)
@@ -485,6 +517,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 							SkinnedMeshObjectBoneInfoTest(playerRe);
 							SkinnedMeshObjectGetMeshTest(playerRe, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+						}
+						//if (sprite)
+						//{
+						//	SpriteTest(sprite);
+						//}
+						if (sprite3)
+						{
+							SpriteTest(sprite3);
 						}
 					}
 					//once++;
@@ -1008,5 +1048,27 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 			SkinnedMeshObject->GetMeshByIndex(4).lock()->SetMaterialObject(Material2);
 		}
 	}
+	ImGui::End();
+}
+
+void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite)
+{
+	ImGui::Begin("Sprite Test");
+	float a = Sprite->GetAlpha();
+	ImGui::SliderFloat("Alpha", &a, 0.f, 1.f);
+	Sprite->SetAlpha(a);
+
+	float c[4];
+	c[0] = Sprite->GetColor().R();
+	c[1] = Sprite->GetColor().G();
+	c[2] = Sprite->GetColor().B();
+	c[3] = 1;
+	ImGui::ColorEdit3("Sprite Color", c);
+	Sprite->SetColor(Color(c[0], c[1], c[2], c[3]));
+
+	bool b = Sprite->GetActive();
+	ImGui::Checkbox("Active", &b);
+	Sprite->SetActive(b);
+
 	ImGui::End();
 }

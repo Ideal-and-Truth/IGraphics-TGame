@@ -57,6 +57,21 @@ void Ideal::IdealMaterial::SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture)
 	m_cbMaterialInfo.bUseRoughnessMap = true;
 }
 
+std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetBaseMap()
+{
+	return m_diffuseTexture;
+}
+
+std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetNomralMap()
+{
+	return m_normalTexture;
+}
+
+std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetMaskMap()
+{
+	return m_maskTexture;
+}
+
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
 	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(ResourceManager);
@@ -155,7 +170,6 @@ void Ideal::IdealMaterial::BindToShader(std::shared_ptr<Ideal::IdealRenderer> Re
 	{
 		Ideal::D3D12DescriptorHandle normalHandle = m_normalTexture.lock()->GetSRV();
 		D3D12_CPU_DESCRIPTOR_HANDLE normalCPUAddress = normalHandle.GetCpuHandle();
-		
 
 		//auto handle = descriptorHeap->Allocate(1);
 		CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_SRV_NORMAL, incrementSize);

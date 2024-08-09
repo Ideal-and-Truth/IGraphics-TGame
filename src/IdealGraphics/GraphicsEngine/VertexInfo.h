@@ -95,12 +95,11 @@ public:
 struct SimpleVertex
 {
 	Vector3 Position;
-	Vector4 Color;
 	Vector2 TexCoord;
 
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
 
 public:
-	static const int32 InputElementCount = 3;
+	static const int32 InputElementCount = 2;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };

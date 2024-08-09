@@ -454,6 +454,9 @@ void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& Out
 	//----------------------Final Create---------------------//
 	OutTexture->Create(resource, m_deferredDeleteManager);
 	OutTexture->EmplaceSRV(srvHandle);
+
+	// default resource
+	CreateDefaultQuadMesh();
 }
 
 void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name)
@@ -1130,6 +1133,11 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 	m_dynamicMeshes[key] = skinnedMesh;
 }
 
+std::shared_ptr<Ideal::D3D12Texture> ResourceManager::GetDefaultAlbedoTexture()
+{
+	return m_defaultAlbedo;
+}
+
 std::shared_ptr<Ideal::IdealMaterial> ResourceManager::GetDefaultMaterial()
 {
 	return m_defaultMaterial;
@@ -1287,10 +1295,10 @@ void ResourceManager::CreateDefaultQuadMesh()
 {
 	std::vector<SimpleVertex> vertices =
 	{
-		{ { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
-		{ { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
-		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } },
-		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
+		{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
+		{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
+		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
+		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },
 	};
 
 	std::vector<uint32> Indices =

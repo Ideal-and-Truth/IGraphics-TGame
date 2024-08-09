@@ -110,7 +110,22 @@ struct CB_LightList
 //----Sprite----//
 struct CB_Sprite
 {
-	Vector2 ScreenPos;
+	CB_Sprite()
+	{
+		SpriteColor = Color(1, 1, 1, 1);
+		ScreenSize = Vector2(0, 0);
+		Pos = Vector2(0, 0);
+		Scale = Vector2(1, 1);
+		TexSize = Vector2(1, 1);
+		TexSamplePos = Vector2(0, 0);
+		TexSampleSize = Vector2(0, 0);
+		Z = 0;
+		Alpha = 1.f;
+		pad0 = 0;
+		pad1 = 0;
+	}
+	Color SpriteColor;
+	Vector2 ScreenSize;
 	Vector2 Pos;
 	Vector2 Scale;
 	Vector2 TexSize;

@@ -17,6 +17,7 @@ namespace Ideal
 	class ITexture;
 	class IMaterial;
 	class IMesh;
+	class ISprite;
 }
 
 namespace Ideal
@@ -60,8 +61,9 @@ namespace Ideal
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) abstract;
 
-		// Sprite
-		// virtual std::shared_ptr<
+		// Sprite : UI에 만들어진다.
+		virtual std::shared_ptr<Ideal::ISprite>				CreateSprite() abstract;
+		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>&) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

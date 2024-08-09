@@ -123,6 +123,7 @@ namespace Ideal
 		virtual void AddAnimation(const std::string& AnimationName, std::shared_ptr<Ideal::IAnimation> Animation) override;
 		virtual void SetAnimation(const std::string& AnimationName, bool WhenCurrentAnimationFinished = true) override;
 		virtual uint32 GetCurrentAnimationIndex() override { return m_currentFrame; };
+		virtual uint32 GetCurrentAnimationMaxFrame() override;
 		virtual void SetAnimationSpeed(float Speed) override { m_animSpeed = Speed; }
 		virtual void AnimationDeltaTime(const float& DeltaTime) override;
 		virtual void SetPlayAnimation(bool Play) override { m_playAnimation = Play; }

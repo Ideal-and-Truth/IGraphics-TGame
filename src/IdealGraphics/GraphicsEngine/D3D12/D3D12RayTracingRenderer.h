@@ -54,6 +54,7 @@ namespace Ideal
 	class IdealDirectionalLight;
 	class IdealSpotLight;
 	class IdealPointLight;
+	class IdealCanvas;
 
 	struct ConstantBufferContainer;
 	// Manager
@@ -107,6 +108,7 @@ namespace Ideal
 		void Tick() override;
 		void Render() override;
 		void Resize(UINT Width, UINT Height) override;
+		void ToggleFullScreenWindow();
 
 		std::shared_ptr<ICamera> CreateCamera() override;
 		void SetMainCamera(std::shared_ptr<ICamera> Camera) override;
@@ -137,6 +139,10 @@ namespace Ideal
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
 		virtual void DeleteMaterial(std::shared_ptr<Ideal::IMaterial> Material) override;
+
+		// Sprite
+		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
+		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 
 	private:
 		void CreateCommandlists();
@@ -184,6 +190,10 @@ namespace Ideal
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
 		UINT m_swapChainFlags;
 		uint32 m_frameIndex = 0;
+		BOOL m_windowMode = TRUE;
+		bool m_tearingSupport = true;
+		bool m_fullScreenMode = false;
+
 		// RTV
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
@@ -261,9 +271,11 @@ namespace Ideal
 		// UI
 	private:
 		void CreateUIDescriptorHeap();
-
-		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_uiDescriptorHeap;
-
+		void CreateCanvas();
+		void DrawCanvas();
+		void SetCanvasSize(uint32 Width, uint32 Height);
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uiDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
+		std::shared_ptr<Ideal::IdealCanvas> m_UICanvas;
 
 		// EDITOR 
 	private:
