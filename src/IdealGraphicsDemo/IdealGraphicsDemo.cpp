@@ -108,7 +108,7 @@ void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
 void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 = nullptr, std::shared_ptr<Ideal::ITexture> Texture = nullptr, std::shared_ptr<Ideal::ITexture> Texture2 = nullptr);
 void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite);
-
+void RendererSizeTest();
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
 float lightAngleY = 0.f;
@@ -485,6 +485,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//static int once = 0;
 					//if (once != 0)
 					{
+						RendererSizeTest();
 						CameraWindow(camera);
 						AnimationTest(slashAnim);
 						//SkinnedMeshObjectAnimationTest(ka);
@@ -1070,5 +1071,18 @@ void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite)
 	ImGui::Checkbox("Active", &b);
 	Sprite->SetActive(b);
 
+	ImGui::End();
+}
+
+void RendererSizeTest()
+{
+	ImGui::Begin("Window Size Test");
+	bool b = gRenderer->IsFullScreen();
+	ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::CalcTextSize("FullScreenMode").x - ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.x);
+	ImGui::Checkbox("FullScreenMode", &b);
+	if (b != gRenderer->IsFullScreen())
+	{
+		gRenderer->ToggleFullScreenWindow();
+	}
 	ImGui::End();
 }

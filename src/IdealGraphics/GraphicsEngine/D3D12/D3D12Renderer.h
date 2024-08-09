@@ -76,6 +76,8 @@ namespace Ideal
 		virtual void Tick() override;
 		virtual void Render() override;
 		virtual void Resize(UINT Width, UINT Height) override;
+		virtual void ToggleFullScreenWindow() override;
+		virtual bool IsFullScreen() override;
 
 		virtual std::shared_ptr<Ideal::ICamera> CreateCamera() override;
 		virtual void SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera) override;

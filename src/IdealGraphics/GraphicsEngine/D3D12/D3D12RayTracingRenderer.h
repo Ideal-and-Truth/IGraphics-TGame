@@ -108,7 +108,8 @@ namespace Ideal
 		void Tick() override;
 		void Render() override;
 		void Resize(UINT Width, UINT Height) override;
-		void ToggleFullScreenWindow();
+		void ToggleFullScreenWindow() override;
+		bool IsFullScreen() override;
 
 		std::shared_ptr<ICamera> CreateCamera() override;
 		void SetMainCamera(std::shared_ptr<ICamera> Camera) override;
@@ -193,6 +194,7 @@ namespace Ideal
 		BOOL m_windowMode = TRUE;
 		bool m_tearingSupport = true;
 		bool m_fullScreenMode = false;
+		RECT m_windowRect;
 
 		// RTV
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;

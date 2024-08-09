@@ -429,6 +429,16 @@ void Ideal::D3D12Renderer::Resize(UINT Width, UINT Height)
 #endif
 }
 
+void Ideal::D3D12Renderer::ToggleFullScreenWindow()
+{
+
+}
+
+bool Ideal::D3D12Renderer::IsFullScreen()
+{
+	return false;
+}
+
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12Renderer::CreateCamera()
 {
 	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
