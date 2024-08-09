@@ -33,6 +33,8 @@ namespace Ideal
 		virtual void Tick() abstract;
 		virtual void Render() abstract;
 		virtual void Resize(UINT Width, UINT Height) abstract;
+		virtual void ToggleFullScreenWindow() abstract;
+		virtual bool IsFullScreen() abstract;
 
 	public:
 		virtual std::shared_ptr<ICamera>					CreateCamera() abstract;

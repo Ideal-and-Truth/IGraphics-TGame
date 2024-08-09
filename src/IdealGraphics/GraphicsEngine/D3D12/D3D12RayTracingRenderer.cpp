@@ -227,7 +227,7 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
 
 	Fence();
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;	++i)
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 		m_deferredDeleteManager->DeleteDeferredResources(i);
@@ -410,6 +410,28 @@ finishAdapter:
 
 		CreateEditorRTV(m_width, m_height);
 		InitImGui();
+
+		if (m_isEditor)
+		{
+			{
+				auto srv = m_resourceManager->GetDefaultAlbedoTexture()->GetSRV();
+				auto dest = m_imguiSRVHeap->Allocate();
+				m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				m_resourceManager->GetDefaultAlbedoTexture()->EmplaceSRVInEditor(dest);
+			}
+			{
+				auto srv = m_resourceManager->GetDefaultNormalTexture()->GetSRV();
+				auto dest = m_imguiSRVHeap->Allocate();
+				m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				m_resourceManager->GetDefaultNormalTexture()->EmplaceSRVInEditor(dest);
+			}
+			{
+				auto srv = m_resourceManager->GetDefaultMaskTexture()->GetSRV();
+				auto dest = m_imguiSRVHeap->Allocate();
+				m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				m_resourceManager->GetDefaultMaskTexture()->EmplaceSRVInEditor(dest);
+			}
+		}
 	}
 	m_sceneCB.CameraPos = Vector4(0.f);
 
@@ -625,15 +647,66 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 
 void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 {
-	//if (m_fullScreenMode)
-	//{
-	//	SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-	//	SetWindowPos(
-	//		m_hwnd,
-	//		HWND_NOTOPMOST,
-	//
-	//	)
-	//}
+	if (m_fullScreenMode)
+	{
+		SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+		SetWindowPos(
+			m_hwnd,
+			HWND_NOTOPMOST,
+			m_windowRect.left, m_windowRect.top, m_windowRect.right - m_windowRect.left, m_windowRect.bottom - m_windowRect.top, SWP_FRAMECHANGED | SWP_NOACTIVATE
+		);
+		ShowWindow(m_hwnd, SW_NORMAL);
+	}
+	else
+	{
+		// 기존 윈도우의 Rect를 저장하여 전체화면 모드를 빠져나올 때 돌아올 수 있다.
+		GetWindowRect(m_hwnd, &m_windowRect);
+
+		// 윈도우를 경계없이 만들어서 클라이언트가 화면 전체를 채울 수 있게 한다.
+		SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME));
+
+		RECT fullScreenWindowRect;
+		if (m_swapChain)
+		{
+			ComPtr<IDXGIOutput> output;
+			Check(m_swapChain->GetContainingOutput(&output));
+			DXGI_OUTPUT_DESC Desc;
+			Check(output->GetDesc(&Desc));
+			fullScreenWindowRect = Desc.DesktopCoordinates;
+		}
+		else
+		{
+			DEVMODE devMode = {};
+			devMode.dmSize = sizeof(DEVMODE);
+			EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
+
+			fullScreenWindowRect =
+			{
+				devMode.dmPosition.x,
+				devMode.dmPosition.y,
+				devMode.dmPosition.x + static_cast<LONG>(devMode.dmPelsWidth),
+				devMode.dmPosition.y + static_cast<LONG>(devMode.dmPelsHeight)
+			};
+		}
+
+		SetWindowPos(
+			m_hwnd,
+			HWND_TOPMOST,
+			fullScreenWindowRect.left,
+			fullScreenWindowRect.top,
+			fullScreenWindowRect.right,
+			fullScreenWindowRect.bottom,
+			SWP_FRAMECHANGED | SWP_NOACTIVATE);
+		
+		ShowWindow(m_hwnd, SW_MAXIMIZE);
+	}
+
+	m_fullScreenMode = !m_fullScreenMode;
+}
+
+bool Ideal::D3D12RayTracingRenderer::IsFullScreen()
+{
+	return m_fullScreenMode;
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
@@ -1111,7 +1184,7 @@ void Ideal::D3D12RayTracingRenderer::BeginRender()
 
 	commandList->RSSetViewports(1, &m_viewport->GetViewport());
 	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-	
+
 	//commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
 	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, nullptr);
 }
@@ -1409,7 +1482,7 @@ void Ideal::D3D12RayTracingRenderer::CreateCanvas()
 
 void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 {
-	ID3D12DescriptorHeap* descriptorHeap[] = { m_uiDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get()};
+	ID3D12DescriptorHeap* descriptorHeap[] = { m_uiDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
 	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 
 	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
