@@ -232,6 +232,12 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 		WaitForFenceValue(m_lastFenceValues[i]);
 		m_deferredDeleteManager->DeleteDeferredResources(i);
 	}
+
+	if (m_tearingSupport)
+	{
+		Check(m_swapChain->SetFullscreenState(FALSE, nullptr));
+	}
+
 	m_skyBoxTexture.reset();
 
 	if (m_isEditor)
@@ -557,7 +563,77 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 {
-	// TODO : Ui canvas size
+	if (!(Width * Height))
+		return;
+	if (m_width == Width && m_height == Height)
+		return;
+
+	// Wait For All Commands
+	Fence();
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+	DXGI_SWAP_CHAIN_DESC1 desc;
+	HRESULT hr = m_swapChain->GetDesc1(&desc);
+	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+	{
+		m_renderTargets[i]->Release();
+	}
+	m_depthStencil.Reset();
+
+	// ResizeBuffers
+	Check(m_swapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, Width, Height, DXGI_FORMAT_R8G8B8A8_UNORM, m_swapChainFlags));
+
+	BOOL isFullScreenState = false;
+	Check(m_swapChain->GetFullscreenState(&isFullScreenState, nullptr));
+	m_windowMode = !isFullScreenState;
+
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+	{
+		auto handle = m_renderTargets[i]->GetRTV();
+		ComPtr<ID3D12Resource> resource = m_renderTargets[i]->GetResource();
+		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
+		m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
+
+		m_renderTargets[i]->Create(resource, m_deferredDeleteManager);
+		m_renderTargets[i]->EmplaceRTV(handle);
+	}
+
+	// CreateDepthStencil
+	CreateDSV(Width, Height);
+
+	m_width = Width;
+	m_height = Height;
+
+	// Viewport Reize
+	m_viewport->ReSize(Width, Height);
+
+	m_mainCamera->SetAspectRatio(float(Width) / Height);
+
+	if (m_isEditor)
+	{
+		CreateEditorRTV(Width, Height);
+	}
+
+	// ray tracing / UI //
+	m_raytracingManager->Resize(m_device, Width, Height);
+	m_UICanvas->SetCanvasSize(Width, Height);
+}
+
+void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
+{
+	//if (m_fullScreenMode)
+	//{
+	//	SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+	//	SetWindowPos(
+	//		m_hwnd,
+	//		HWND_NOTOPMOST,
+	//
+	//	)
+	//}
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
@@ -829,15 +905,16 @@ void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Fact
 	swapChainDesc.SampleDesc.Count = 1;
 
 
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
-	fullScreenDesc.RefreshRate.Numerator = 60;
-	fullScreenDesc.RefreshRate.Denominator = 1;
-	fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	//DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
+	//fullScreenDesc.RefreshRate.Numerator = 60;
+	//fullScreenDesc.RefreshRate.Denominator = 1;
+	//fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	//fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	//fullScreenDesc.Windowed = true;
 	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	swapChainDesc.Stereo = FALSE;
-	swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-	fullScreenDesc.Windowed = true;
+	//swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+	swapChainDesc.Flags = m_tearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
 	m_swapChainFlags = swapChainDesc.Flags;
 
@@ -846,12 +923,16 @@ void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Fact
 		m_commandQueue.Get(),
 		m_hwnd,
 		&swapChainDesc,
-		&fullScreenDesc,
+		nullptr,
 		nullptr,
 		swapChain.GetAddressOf()
 	));
 
-	Check(Factory->MakeWindowAssociation(m_hwnd, DXGI_MWA_NO_ALT_ENTER), L"Failed to make window association");
+	if (m_tearingSupport)
+	{
+		Check(Factory->MakeWindowAssociation(m_hwnd, DXGI_MWA_NO_ALT_ENTER), L"Failed to make window association");
+	}
+	//Check(Factory->MakeWindowAssociation(m_hwnd, NULL), L"Failed to make window association");
 	Check(swapChain.As(&m_swapChain), L"Failed to change swapchain version");
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
@@ -1060,7 +1141,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	uint32 SyncInterval = 0;
 	uint32 PresentFlags = 0;
 	PresentFlags = DXGI_PRESENT_ALLOW_TEARING;
-
+	PresentFlags = (m_tearingSupport && m_windowMode) ? DXGI_PRESENT_ALLOW_TEARING : 0;
 	hr = m_swapChain->Present(0, PresentFlags);
 	//hr = m_swapChain->Present(1, 0);
 	//hr = m_swapChain->Present(0, 0);

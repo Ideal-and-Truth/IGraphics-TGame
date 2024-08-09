@@ -108,6 +108,7 @@ namespace Ideal
 		void Tick() override;
 		void Render() override;
 		void Resize(UINT Width, UINT Height) override;
+		void ToggleFullScreenWindow();
 
 		std::shared_ptr<ICamera> CreateCamera() override;
 		void SetMainCamera(std::shared_ptr<ICamera> Camera) override;
@@ -189,6 +190,10 @@ namespace Ideal
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
 		UINT m_swapChainFlags;
 		uint32 m_frameIndex = 0;
+		BOOL m_windowMode = TRUE;
+		bool m_tearingSupport = true;
+		bool m_fullScreenMode = false;
+
 		// RTV
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_rtvHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_renderTargets[SWAP_CHAIN_FRAME_COUNT];
