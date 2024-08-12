@@ -99,7 +99,7 @@ namespace TypeUI
 		else if constexpr (std::is_same_v<T, Quaternion>)
 		{
 			float value[3] = {};
-			
+
 			Vector3 delta;
 
 			Vector3 temp = _val.ToEuler();
@@ -143,13 +143,14 @@ namespace TypeUI
 		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Ideal::IMaterial>>>)
 		{
 			const ImVec2 size(100, 100);
+			ImGui::Text("Texture");
 			for (auto& mat : _val)
 			{
-				ImGui::Begin("Image Test");
-				ImGui::Image((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
-				ImGui::Image((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
-				ImGui::Image((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
-				ImGui::End();
+				ImGui::ImageButton((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
+				ImGui::SameLine();
+				ImGui::ImageButton((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
+				ImGui::SameLine();
+				ImGui::ImageButton((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
 			}
 			return false;
 		}
