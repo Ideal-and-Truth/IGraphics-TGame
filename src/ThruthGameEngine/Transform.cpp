@@ -31,7 +31,11 @@ void Truth::Transform::ApplyTransform()
 
 	m_localTM = scaleMT * rotationMT * traslationMT;
 
-	if (HasParent())
+	if (HasParent() && IsLinked())
+	{
+		m_globalTM = m_localTM * GetParentLinkedMatrix() * GetParentMatrix();
+	}
+	else if (HasParent())
 	{
 		m_globalTM = m_localTM * GetParentMatrix();
 	}

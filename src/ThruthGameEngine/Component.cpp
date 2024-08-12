@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "Transform.h"
+#include "IBone.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Component)
 
@@ -99,7 +100,17 @@ bool Truth::Component::HasParent()
 	return m_owner.lock()->HasParent();
 }
 
+bool Truth::Component::IsLinked()
+{
+	return m_owner.lock()->IsLinked();
+}
+
 const DirectX::SimpleMath::Matrix& Truth::Component::GetParentMatrix()
 {
 	return m_owner.lock()->GetParentMatrix();
+}
+
+const DirectX::SimpleMath::Matrix& Truth::Component::GetParentLinkedMatrix()
+{
+	return m_owner.lock()->m_linkedBone.lock()->GetTransform();
 }

@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Transform.h"
+#include "SkinnedMesh.h"
 
 uint32 Truth::Entity::m_entityCount = 0;
 
@@ -234,6 +235,24 @@ void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
 			return;
 		}
 	}
+}
+
+void Truth::Entity::LinkBone(const std::string& _boneName)
+{
+	if (m_parent.expired() || 
+		m_parent.lock()->GetComponent<SkinnedMesh>().expired())
+	{
+		return;
+	}
+
+	auto sm = m_parent.lock()->GetComponent<SkinnedMesh>();
+
+	if (sm.expired())
+	{
+		return;
+	}
+
+	m_linkedBone = sm.lock()->GetBone(_boneName);
 }
 
 const DirectX::SimpleMath::Matrix& Truth::Entity::GetWorldTM() const

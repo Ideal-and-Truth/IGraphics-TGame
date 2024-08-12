@@ -14,6 +14,11 @@ namespace Truth
 	class Collider;
 }
 
+namespace Ideal
+{
+	class IBone;
+}
+
 namespace Truth
 {
 	class Entity final
@@ -58,6 +63,7 @@ namespace Truth
 		std::vector<std::shared_ptr<Entity>> m_children;
 
 		std::weak_ptr<Entity> m_parent;
+		std::weak_ptr<Ideal::IBone> m_linkedBone;
 
 		bool m_isDead = false;
 
@@ -104,6 +110,7 @@ namespace Truth
 
 		bool HasParent() const { return !m_parent.expired(); };
 		bool HasChildren() const { return !m_children.empty(); }
+		bool IsLinked() const { return !m_linkedBone.expired(); };
 
 		const Matrix& GetParentMatrix() const
 		{
@@ -156,6 +163,8 @@ namespace Truth
 
 		void AddChild(std::shared_ptr<Entity> _entity);
 		void DeleteChild(std::shared_ptr<Entity> _entity);
+
+		void LinkBone(const std::string& _boneName);
 
 	private:
 		void ApplyComponent(std::shared_ptr<Component> _c);

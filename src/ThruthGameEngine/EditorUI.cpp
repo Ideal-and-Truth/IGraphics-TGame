@@ -461,7 +461,7 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	}
 
 	static float step = 1.0f;
-	static float dtdis = 1.0f; 
+	static float dtdis = 1.0f;
 	ImGui::Text("frame : %.2f\t", 1 / dtdis);
 	if (step < 0.0f)
 	{
@@ -815,6 +815,35 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 			auto child = std::make_shared<Truth::Entity>(m_manager);
 			_entity.lock()->AddChild(child);
 			m_createdEntity.push(child);
+		}
+		if (ImGui::Selectable("Link Bone"))
+		{
+			if (!_entity.lock()->m_parent.expired() && !_entity.lock()->m_linkedBone.expired())
+			{
+				ImGui::OpenPopup("Input String");
+				if (ImGui::BeginPopupModal("Input String", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					char input[256] = {};
+
+					ImGui::Text("Enter your text below:");
+					ImGui::InputText("##input", input, IM_ARRAYSIZE(input));
+
+					if (ImGui::Button("OK", ImVec2(120, 0)))
+					{
+						_entity.lock()->LinkBone(input);
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::SameLine();
+
+					if (ImGui::Button("Cancel", ImVec2(120, 0)))
+					{
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndPopup();
+				}
+			}
 		}
 
 		if (ImGui::Selectable("Set Root"))
