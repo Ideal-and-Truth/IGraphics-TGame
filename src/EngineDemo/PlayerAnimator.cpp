@@ -99,13 +99,13 @@ void PlayerAnimator::Update()
 		m_isAttack = false;
 	}
 
-	if (GetKeyDown(KEY::LBTN))
+	if (GetKeyDown(MOUSE::LMOUSE))
 	{
 		m_isAttack = true;
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 
-	if (GetKey(KEY::LBTN))
+	if (GetKey(MOUSE::LMOUSE))
 	{
 		m_isCharged += GetDeltaTime();
 
@@ -120,7 +120,7 @@ void PlayerAnimator::Update()
 		m_isCharged = 0.f;
 	}
 
-	if (GetKey(KEY::RBTN))
+	if (GetKey(MOUSE::RMOUSE))
 	{
 		m_passingTime += GetDeltaTime();
 		m_isGuard = true;

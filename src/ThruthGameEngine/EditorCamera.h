@@ -18,6 +18,7 @@ namespace Truth
 		void Update(float _dt);
 
 		bool GetKey(KEY _key);
+		bool GetKey(MOUSE _key);
 		float MouseDy();
 		float MouseDx();
 

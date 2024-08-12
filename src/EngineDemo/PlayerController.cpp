@@ -129,7 +129,7 @@ void PlayerController::PlayerMove(const void*)
 
 void PlayerController::PlayerBattle()
 {
-	if (GetKey(KEY::LBTN))
+	if (GetKey(MOUSE::LMOUSE))
 	{
 		m_attackInput += GetDeltaTime();
 	}

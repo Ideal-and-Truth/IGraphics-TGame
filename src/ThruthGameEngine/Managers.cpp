@@ -18,10 +18,10 @@ Truth::Managers::~Managers()
 	DEBUG_PRINT("Finalize Managers\n");
 }
 
-void Truth::Managers::Initialize(HWND _hwnd, uint32 _width, uint32 _height)
+void Truth::Managers::Initialize(HINSTANCE _hinstance, HWND _hwnd, uint32 _width, uint32 _height)
 {
 	CreateManagers();
-	InitlizeManagers(_hwnd, _width, _height);
+	InitlizeManagers(_hinstance, _hwnd, _width, _height);
 	m_componentFactory = std::make_unique<ComponentFactory>();
 #ifdef EDITOR_MODE
 	m_editorCamera = std::make_shared<EditorCamera>(this);
@@ -153,11 +153,11 @@ void Truth::Managers::CreateManagers()
 	m_graphicsManager = std::make_shared<GraphicsManager>();
 }
 
-void Truth::Managers::InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height)
+void Truth::Managers::InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 _width, uint32 _height)
 {
 	m_eventManager->Initialize(m_timeManager, m_physXManager);
 	m_timeManager->Initalize(shared_from_this());
-	m_inputManager->Initalize(_hwnd, m_eventManager);
+	m_inputManager->Initalize(_hinstance, _hwnd, m_eventManager);
 	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();
 	m_graphicsManager->Initalize(_hwnd, _width, _height);

@@ -26,6 +26,7 @@ Processor::Processor()
 	, m_wight(0)
 	, m_height(0)
 	, m_editor(nullptr)
+	, m_hinstance()
 {
 	DEBUG_PRINT("start process\n");
 }
@@ -42,6 +43,7 @@ Processor::~Processor()
 /// <param name="_hInstance"></param>
 void Processor::Initialize(HINSTANCE _hInstance)
 {
+	m_hinstance = _hInstance;
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
@@ -111,10 +113,6 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	{
 		g_Renderer->SetImGuiWin32WndProcHandler(hWnd, message, wParam, lParam);
 	}
-	if (g_inputmanager)
-	{
-		g_inputmanager->ResetMouseMovement();
-	}
 	switch (message)
 	{
 	case WM_PAINT:
@@ -138,16 +136,6 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		}
 		break;
 	}
-
-	case WM_MOUSEWHEEL:
-	{
-		if (g_inputmanager)
-		{
-			g_inputmanager->m_deltaWheel = GET_WHEEL_DELTA_WPARAM(wParam);
-		}
-		break;
-	}
-
 	default:
 		if (g_inputmanager)
 		{
@@ -261,7 +249,7 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 void Processor::InitializeManager()
 {
 	m_manager = std::make_shared<Truth::Managers>();
-	m_manager->Initialize(m_hwnd, m_wight, m_height);
+	m_manager->Initialize(m_hinstance, m_hwnd, m_wight, m_height);
 	g_Renderer = m_manager->Graphics()->GetRenderer().get();
 	// g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
 }

@@ -33,6 +33,7 @@ private:
 	std::shared_ptr<Ideal::IAnimation> m_walkAnim;
 	// 윈도우 생성을 위한 변수
 	HWND m_hwnd;
+	HINSTANCE m_hinstance;
 	MSG m_msg;
 
 	static Ideal::IdealRenderer* g_Renderer;
