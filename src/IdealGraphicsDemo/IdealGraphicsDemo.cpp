@@ -149,8 +149,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region EditorInitialize
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,
@@ -172,6 +172,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ICamera> camera = gRenderer->CreateCamera();
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
+
+		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+
 #pragma endregion
 
 #pragma region FBXConvert
@@ -515,7 +518,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (playerRe)
 						{
-
 							SkinnedMeshObjectBoneInfoTest(playerRe);
 							SkinnedMeshObjectGetMeshTest(playerRe, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 						}
@@ -651,6 +653,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 		case WM_SIZE:
 		{
+			break;
 			if (gRenderer)
 			{
 				RECT rect;
@@ -1005,6 +1008,11 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 	ImGui::Begin("SkinnedMesh Get Mesh Test");
 	auto meshSize = SkinnedMeshObject->GetMeshesSize();
 	ImGui::Separator();
+
+	//ImVec2 s(100, 100);
+	//ImGui::Image(ImTextureID(SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->GetBaseMap().lock()->GetImageID()), s);
+
+
 	// 매쉬 정보
 	ImGui::Text("Mesh Info");
 	for (int i = 0; i < meshSize; ++i)
@@ -1076,7 +1084,7 @@ void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite)
 
 void RendererSizeTest()
 {
-	ImGui::Begin("Window Size Test");
+	ImGui::Begin("Window Size Test", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav);
 	bool b = gRenderer->IsFullScreen();
 	ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::CalcTextSize("FullScreenMode").x - ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.x);
 	ImGui::Checkbox("FullScreenMode", &b);
@@ -1084,5 +1092,20 @@ void RendererSizeTest()
 	{
 		gRenderer->ToggleFullScreenWindow();
 	}
+
+	static int val = 0;
+	static const char* items[] =
+	{
+		"800x600",
+		"1200x900",
+		"1280x720",
+		"1920x1080",
+		"1920x1200",
+		"2560x1440",
+		"3440x1440",
+		"3840x2160"
+	};
+	ImGui::Combo("Display Resolution", &val, items, IM_ARRAYSIZE(items));
+	gRenderer->SetDisplayResolutionOption((Ideal::Resolution::EDisplayResolutionOption)val);
 	ImGui::End();
 }

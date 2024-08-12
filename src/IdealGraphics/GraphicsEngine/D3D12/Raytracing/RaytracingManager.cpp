@@ -78,6 +78,8 @@ Ideal::RaytracingManager::RaytracingManager()
 Ideal::RaytracingManager::~RaytracingManager()
 {
 	m_materialMapInFixedDescriptorTable.clear();
+	m_raytracingOutputSRV.Free();
+	m_raytracingOutputRTV.Free();
 }
 
 void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
@@ -85,10 +87,13 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	m_width = Width;
 	m_height = Height;
 	m_ASManager = std::make_unique<DXRAccelerationStructureManager>();
-	m_uavSingleDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
-	m_uavSingleDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+	m_raytracingOutputDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_raytracingOutputDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 2);
 
-	CreateUAVRenderTarget(Device, Width, Height);	//device, width, height
+	m_RTV_raytracingOutputDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
+	m_RTV_raytracingOutputDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+
+	CreateRenderTarget(Device, Width, Height);	//device, width, height
 	CreateRootSignature(Device);	//device
 	CreateRaytracingPipelineStateObject(Device, RaytracingShader); // device, shader
 	BuildShaderTables(Device, nullptr); // Device, ResourceManager
@@ -164,14 +169,15 @@ void Ideal::RaytracingManager::Resize(ComPtr<ID3D12Device5> Device, uint32 Width
 {
 	m_width = Width;
 	m_height = Height;
-	m_uavSingleDescriptorHeap->Reset();
-	CreateUAVRenderTarget(Device, Width, Height);
+	m_raytracingOutputDescriptorHeap->Reset();
+	m_RTV_raytracingOutputDescriptorHeap->Reset();
+	CreateRenderTarget(Device, Width, Height);
 }
 
-void Ideal::RaytracingManager::CreateUAVRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height)
+void Ideal::RaytracingManager::CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height)
 {
 	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, Width, Height, 1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, Width, Height, 1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS | D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	Check(
 		Device->CreateCommittedResource(
@@ -186,16 +192,45 @@ void Ideal::RaytracingManager::CreateUAVRenderTarget(ComPtr<ID3D12Device5> Devic
 	);
 	m_raytracingOutput->SetName(L"RaytracingOutput");
 
-	auto handle = m_uavSingleDescriptorHeap->Allocate();
-	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-	Device->CreateUnorderedAccessView(m_raytracingOutput.Get(), nullptr, &uavDesc, handle.GetCpuHandle());
-	m_raytacingOutputResourceUAVCpuDescriptorHandle = handle.GetCpuHandle();
+	{
+		auto handle = m_raytracingOutputDescriptorHeap->Allocate();
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		Device->CreateUnorderedAccessView(m_raytracingOutput.Get(), nullptr, &uavDesc, handle.GetCpuHandle());
+		m_raytacingOutputResourceUAVCpuDescriptorHandle = handle.GetCpuHandle();
+	}
+	{
+		m_raytracingOutputSRV = m_raytracingOutputDescriptorHeap->Allocate();
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+		Device->CreateShaderResourceView(m_raytracingOutput.Get(), &srvDesc, m_raytracingOutputSRV.GetCpuHandle());
+	}
+	{
+		m_raytracingOutputRTV = m_RTV_raytracingOutputDescriptorHeap->Allocate();
+		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D.MipSlice = 0;
+		Device->CreateRenderTargetView(m_raytracingOutput.Get(), &rtvDesc, m_raytracingOutputRTV.GetCpuHandle());
+	}
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOutputResource()
 {
 	return m_raytracingOutput;
+}
+
+Ideal::D3D12DescriptorHandle Ideal::RaytracingManager::GetRaytracingOutputRTVHandle()
+{
+	return m_raytracingOutputRTV;
+}
+
+Ideal::D3D12DescriptorHandle Ideal::RaytracingManager::GetRaytracingOutputSRVHandle()
+{
+	return m_raytracingOutputSRV;
 }
 
 std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::GetBLASByName(const std::wstring& Name)

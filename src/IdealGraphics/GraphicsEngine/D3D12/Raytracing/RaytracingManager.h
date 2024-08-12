@@ -154,8 +154,11 @@ namespace Ideal
 		void Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
 
 		//---UAV Render Target---//
-		void CreateUAVRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height);
+		void CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height);
 		ComPtr<ID3D12Resource> GetRaytracingOutputResource();
+
+		Ideal::D3D12DescriptorHandle GetRaytracingOutputRTVHandle();
+		Ideal::D3D12DescriptorHandle GetRaytracingOutputSRVHandle();
 
 		//---AS---//
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLASByName(const std::wstring& Name);
@@ -197,7 +200,13 @@ namespace Ideal
 		//---UAV Render Target---//
 		ComPtr<ID3D12Resource> m_raytracingOutput = nullptr;
 		D3D12_CPU_DESCRIPTOR_HANDLE m_raytacingOutputResourceUAVCpuDescriptorHandle;
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uavSingleDescriptorHeap = nullptr;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_raytracingOutputDescriptorHeap = nullptr;
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_RTV_raytracingOutputDescriptorHeap = nullptr;
+		Ideal::D3D12DescriptorHandle m_raytracingOutputSRV;
+		Ideal::D3D12DescriptorHandle m_raytracingOutputRTV;
+
+		// 2024.08.12 Render Target //
+		std::shared_ptr<Ideal::D3D12Texture> m_raytracingOutput2 = nullptr;
 
 		//---Root Signature---//
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature = nullptr;

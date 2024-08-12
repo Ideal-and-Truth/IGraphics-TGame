@@ -78,4 +78,16 @@ namespace Ideal
 			};
 		}
 	}
+
+	namespace PostScreenRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Scene = 0,
+				Count
+			};
+		}
+	}
 }

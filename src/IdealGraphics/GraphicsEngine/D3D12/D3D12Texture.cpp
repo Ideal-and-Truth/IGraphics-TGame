@@ -69,6 +69,11 @@ void Ideal::D3D12Texture::EmplaceDSV(Ideal::D3D12DescriptorHandle DSVHandle)
 	m_dsvHandle = DSVHandle;
 }
 
+void Ideal::D3D12Texture::EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle)
+{
+	m_uavHandle = UAVHandle;
+}
+
 Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetSRV()
 {
 	if(m_srvHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
@@ -94,6 +99,15 @@ Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetDSV()
 		__debugbreak();
 	}
 	return m_dsvHandle;
+}
+
+Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetUAV()
+{
+	if (m_uavHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+	{
+		__debugbreak();
+	}
+	return m_uavHandle;
 }
 
 void Ideal::D3D12Texture::EmplaceSRVInEditor(Ideal::D3D12DescriptorHandle SRVHandle)
