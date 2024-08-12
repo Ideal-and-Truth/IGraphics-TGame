@@ -1,10 +1,13 @@
 #pragma once
 #include "Component.h"
+#include "Collider.h"
 
 namespace Truth
 {
 	class Camera;
 }
+
+class PlayerController;
 
 class PlayerCamera :
 	public Truth::Component
@@ -18,16 +21,25 @@ private:
 private:
 	std::weak_ptr<Truth::Camera> m_camera;
 
-	std::weak_ptr<Truth::Transform> m_target;
+	std::weak_ptr<Truth::Entity> m_player;
 
-	float4 m_cameraDistance;
+	std::vector<std::shared_ptr<Truth::Entity>> m_enemys;
+
+	std::shared_ptr<PlayerController> m_playerController;
+
+	float m_cameraDistance;
 	PROPERTY(elevation);
-	float4 m_elevation;
+	float m_elevation;
 	PROPERTY(azimuth);
-	float4 m_azimuth;
-	float4 m_cameraSpeed;
+	float m_azimuth;
+	float m_cameraSpeed;
 
+	PROPERTY(isLockOn);
 	bool m_isLockOn;
+
+	int m_enemyCount;
+
+	float m_passingTime;
 
 public:
 	PlayerCamera();
@@ -42,11 +54,18 @@ public:
 	METHOD(LateUpdate);
 	void LateUpdate();
 
+	METHOD(OnTriggerEnter);
+	void OnTriggerEnter(Truth::Collider* _other);
+
+	METHOD(OnTriggerExit);
+	void OnTriggerExit(Truth::Collider* _other);
+
 	std::weak_ptr<Truth::Camera> GetCamera() { return m_camera; };
 
 private:
 	void FreeCamera();
 	void LockOnCamera();
+	void SortEnemy();
 };
 
 template<class Archive>

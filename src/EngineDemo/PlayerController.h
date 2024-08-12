@@ -28,8 +28,6 @@ private:
 	PROPERTY(sideInput);
 	float m_sideInput;
 
-	float4 m_attackInput;
-
 	PROPERTY(faceDirection);
 	Vector3 m_faceDirection;
 
@@ -57,7 +55,6 @@ public:
 
 private:
 	void PlayerMove(const void*);
-	void PlayerBattle();
 
 };
 

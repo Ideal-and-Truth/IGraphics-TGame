@@ -3,13 +3,13 @@
 #include "Camera.h"
 #include "Controller.h"
 #include "Player.h"
+#include "PlayerCamera.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 
 PlayerController::PlayerController()
 	: m_forwardInput(0.f)
 	, m_sideInput(0.f)
-	, m_attackInput(0.f)
 	, m_canMove(true)
 {
 	m_name = "PlayerController";
@@ -36,9 +36,6 @@ void PlayerController::Start()
 void PlayerController::Update()
 {
 	PlayerMove(nullptr);
-	// 플레이어 전투
-	PlayerBattle();
-
 }
 
 void PlayerController::PlayerMove(const void*)
@@ -113,46 +110,28 @@ void PlayerController::PlayerMove(const void*)
 	Vector3 finalMovement = disp + disp2 + gravity;
 	m_controller.lock()->Move(finalMovement);
 
-
 	// 플레이어 회전
-	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
-	m_faceDirection = { playerDir.x ,0, playerDir.z };
-	if (m_faceDirection == Vector3::Zero)
+	if (m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_camera.lock()->GetComponent<PlayerCamera>().lock().get()).Get())
 	{
-		return;
-	}
-	m_playerDirection = playerDir;
-	Quaternion lookRot;
-	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
-	auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float4>(m_player.lock().get()).Get();
-	m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
-}
-
-void PlayerController::PlayerBattle()
-{
-	if (GetKey(KEY::LBTN))
-	{
-		m_attackInput += GetDeltaTime();
+		Vector3 playerDir = direction;
+		m_playerDirection = playerDir;
+		Quaternion lookRot;
+		Quaternion::LookRotation(playerDir, Vector3::Up, lookRot);
+		auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+		m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
 	}
 	else
 	{
-		if (m_attackInput > 1.f)
+		Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
+		m_faceDirection = { playerDir.x ,0, playerDir.z };
+		if (m_faceDirection == Vector3::Zero)
 		{
-			// 강공격
-
-			m_attackInput = 0.f;
+			return;
 		}
-		else if (m_attackInput < 1.f && m_attackInput > 0.f)
-		{
-			// 약공격
-
-			m_attackInput = 0.f;
-		}
-		else
-		{
-			m_attackInput = 0.f;
-		}
+		m_playerDirection = playerDir;
+		Quaternion lookRot;
+		Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
+		auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+		m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
 	}
-
-
 }

@@ -574,6 +574,11 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 
 physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags)
 {
+	if (shape->getFlags().isSet(physx::PxShapeFlag::eTRIGGER_SHAPE))
+	{
+		return physx::PxQueryHitType::Enum::eNONE;
+	}
+	
 	if (physx::m_collsionTable[filterData.word0] & 1 << shape->getQueryFilterData().word0)
 	{
 		return physx::PxQueryHitType::Enum::eBLOCK;

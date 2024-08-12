@@ -110,7 +110,8 @@ void RangedWeapon::Update()
 		if (e.second > 2.f)
 		{
 			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-			m_bullets.erase(m_bullets.begin());
+			// m_bullets.erase(m_bullets.begin());
+			m_bullets.erase(remove(m_bullets.begin(), m_bullets.end(), e));
 		}
 	}
 }

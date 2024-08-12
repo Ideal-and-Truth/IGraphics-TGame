@@ -193,12 +193,15 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 
 		if (enemyAnim)
 		{
-			m_isHit = true;
-			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-
-			if ((m_passingTime > 0.f && m_passingTime < 0.2f) && enemyAnim->GetTypeInfo().GetProperty("isParryAttack")->Get<bool>(enemyAnim.get()).Get())
+			if (enemyAnim->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(enemyAnim.get()).Get())
 			{
-				enemyAnim->GetTypeInfo().GetProperty("isParried")->Set(enemyAnim.get(), true);
+				m_isHit = true;
+				m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+
+				if ((m_passingTime > 0.f && m_passingTime < 0.2f) && enemyAnim->GetTypeInfo().GetProperty("isParryAttack")->Get<bool>(enemyAnim.get()).Get())
+				{
+					enemyAnim->GetTypeInfo().GetProperty("isParried")->Set(enemyAnim.get(), true);
+				}
 			}
 		}
 	}
