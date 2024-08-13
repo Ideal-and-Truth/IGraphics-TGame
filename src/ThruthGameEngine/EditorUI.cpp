@@ -853,7 +853,7 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 				}
 
 				int selected = -1;
-				if (ImGui::ListBox("bone", &selected, boneNames.data(), boneNames.size(), 10))
+				if (ImGui::ListBox("bone", &selected, boneNames.data(), static_cast<int>(boneNames.size()), 10))
 				{
 					input = boneNames[selected];
 				}

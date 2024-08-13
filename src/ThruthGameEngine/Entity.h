@@ -65,6 +65,8 @@ namespace Truth
 		std::weak_ptr<Entity> m_parent;
 		std::weak_ptr<Ideal::IBone> m_linkedBone;
 
+		std::string m_linkBoneName;
+
 		bool m_isDead = false;
 
 		ComponentMethod m_onCollisionEnter;
@@ -181,6 +183,7 @@ namespace Truth
 		_ar& m_layer;
 		_ar& m_components;
 		_ar& m_children;
+		_ar& m_linkBoneName;
 	}
 
 	template<class Archive>
@@ -196,6 +199,10 @@ namespace Truth
 		if (_file_version >= 2)
 		{
 			_ar& m_children;
+		}
+		if (_file_version >= 3)
+		{
+			_ar& m_linkBoneName;
 		}
 	}
 
@@ -288,4 +295,4 @@ namespace Truth
 		return result;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Entity, 2)
+BOOST_CLASS_VERSION(Truth::Entity, 3)

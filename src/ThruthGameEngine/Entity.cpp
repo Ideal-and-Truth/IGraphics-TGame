@@ -12,6 +12,7 @@ Truth::Entity::Entity(std::shared_ptr<Managers> _mangers)
 	, m_tag("None")
 	, m_index(-1)
 	, m_parent(std::weak_ptr<Entity>())
+	, m_linkBoneName("")
 {
 	m_transform = std::make_shared<Transform>();
 	m_components.push_back(m_transform);
@@ -43,6 +44,16 @@ void Truth::Entity::Initialize()
 		// c->Initalize();
 		ApplyComponent(c);
 		c->m_index = index++;
+	}
+
+	for (auto& c : m_children)
+	{
+		c->m_parent = shared_from_this();
+	}
+
+	if (m_linkBoneName != "")
+	{
+		LinkBone(m_linkBoneName);
 	}
 }
 
@@ -242,6 +253,7 @@ void Truth::Entity::LinkBone(const std::string& _boneName)
 	if (m_parent.expired() || 
 		m_parent.lock()->GetComponent<SkinnedMesh>().expired())
 	{
+		m_linkBoneName = "";
 		return;
 	}
 
@@ -249,10 +261,12 @@ void Truth::Entity::LinkBone(const std::string& _boneName)
 
 	if (sm.expired())
 	{
+		m_linkBoneName = "";
 		return;
 	}
 
 	m_linkedBone = sm.lock()->GetBone(_boneName);
+	m_linkBoneName = _boneName;
 }
 
 const DirectX::SimpleMath::Matrix& Truth::Entity::GetWorldTM() const
