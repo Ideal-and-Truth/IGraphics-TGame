@@ -118,7 +118,7 @@ namespace Ideal
 			std::vector<uint16>& Indices);
 
 		// 파일 로드하여 srv로 만든다.
-		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
+		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB= false);
 
 		void CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
