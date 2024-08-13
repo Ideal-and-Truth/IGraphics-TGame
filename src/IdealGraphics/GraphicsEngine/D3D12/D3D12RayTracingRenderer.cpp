@@ -213,8 +213,8 @@ inline void AllocateUAVBuffer(ID3D12Device* pDevice, UINT64 bufferSize, ID3D12Re
 
 const Ideal::DisplayResolution Ideal::D3D12RayTracingRenderer::m_resolutionOptions[] =
 {
-	//{ 800u, 600u },
-	{ 1280u, 960u },
+	{ 800u, 600u },
+	//{ 1280u, 960u },
 	{ 1200u, 900u },
 	{ 1280u, 720u },
 	{ 1920u, 1080u },
@@ -549,12 +549,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	if (m_isEditor)
 	{
 		ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
-		//std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
-#ifdef BeforeRefactor
 		ComPtr<ID3D12Resource> raytracingOutput = m_renderTargets[m_frameIndex]->GetResource();
-#else
-		ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
-#endif
 
 
 		CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
@@ -565,11 +560,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		);
 		preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
 			raytracingOutput.Get(),
-#ifdef BeforeRefactor
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
-#else
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-#endif
 			D3D12_RESOURCE_STATE_COPY_SOURCE
 		);
 		commandlist->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
@@ -584,11 +575,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
 			raytracingOutput.Get(),
 			D3D12_RESOURCE_STATE_COPY_SOURCE,
-#ifdef BeforeRefactor
 			D3D12_RESOURCE_STATE_RENDER_TARGET
-#else
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-#endif
 		);
 
 		commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
@@ -640,7 +627,6 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 	{
 		m_renderTargets[i]->Release();
 	}
-	m_depthStencil.Reset();
 
 	// ResizeBuffers
 	Check(m_swapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, Width, Height, DXGI_FORMAT_R8G8B8A8_UNORM, m_swapChainFlags));
@@ -663,30 +649,37 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 	}
 
 	// CreateDepthStencil
-	CreateDSV(Width, Height);
+	//CreateDSV(Width, Height);
 
 	m_width = Width;
 	m_height = Height;
 
 	// Viewport Reize
 	m_viewport->ReSize(Width, Height);
+	m_postViewport->ReSize(Width, Height);
+	{
+		auto r = m_resolutionOptions[m_displayResolutionIndex];
+		m_postViewport->UpdatePostViewAndScissor(r.Width, r.Height);
+	}
 	//m_postViewport->UpdatePostViewAndScissor(Width, Height);
 
 	if (m_mainCamera)
 	{
-		m_mainCamera->SetAspectRatio(float(Width) / Height);
+		auto r = m_resolutionOptions[m_displayResolutionIndex];
+		m_mainCamera->SetAspectRatio(float(r.Width) / r.Height);
 	}
 
 	if (m_isEditor)
 	{
-		CreateEditorRTV(Width, Height);
+		//auto r = m_resolutionOptions[m_displayResolutionIndex];
+		CreateEditorRTV(Width,Height);
 	}
 
 	// ray tracing / UI //
-	m_raytracingManager->Resize(m_device, Width, Height);
+	//m_raytracingManager->Resize(m_device, Width, Height);
 	m_UICanvas->SetCanvasSize(Width, Height);
+	//
 }
-
 void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 {
 	if (m_fullScreenMode)
@@ -753,6 +746,7 @@ bool Ideal::D3D12RayTracingRenderer::IsFullScreen()
 
 void Ideal::D3D12RayTracingRenderer::SetDisplayResolutionOption(const Resolution::EDisplayResolutionOption& Resolution)
 {
+	m_displayResolutionIndex = Resolution;
 	// Wait For All Commands
 	Fence();
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
@@ -760,26 +754,27 @@ void Ideal::D3D12RayTracingRenderer::SetDisplayResolutionOption(const Resolution
 		WaitForFenceValue(m_lastFenceValues[i]);
 	}
 
-	uint32 width = m_resolutionOptions[Resolution].Width;
-	uint32 height = m_resolutionOptions[Resolution].Height;
+	uint32 resolutionWidth = m_resolutionOptions[Resolution].Width;
+	uint32 resolutionHeight = m_resolutionOptions[Resolution].Height;
 
-	m_viewport->ReSize(width, height);
-	m_postViewport->UpdatePostViewAndScissor(width, height);
+	m_viewport->ReSize(resolutionWidth, resolutionHeight);
+	m_postViewport->UpdatePostViewAndScissor(resolutionWidth, resolutionHeight);
 
 	if (m_mainCamera)
 	{
-		m_mainCamera->SetAspectRatio(float(width) / height);
+		m_mainCamera->SetAspectRatio(float(resolutionWidth) / resolutionHeight);
 	}
 
 	if (m_isEditor)
 	{
-		CreateEditorRTV(width, height);
+		//CreateEditorRTV(resolutionWidth, resolutionHeight);
 	}
 
 	// ray tracing / UI //
-	CreateDSV(width, height);
-	m_raytracingManager->Resize(m_device, width, height);
-	m_UICanvas->SetCanvasSize(width, height);
+	//m_depthStencil.Reset();
+	CreateDSV(resolutionWidth, resolutionHeight);
+	m_raytracingManager->Resize(m_device, resolutionWidth, resolutionHeight);
+	m_UICanvas->SetCanvasSize(resolutionWidth, resolutionHeight);
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
@@ -1130,6 +1125,10 @@ void Ideal::D3D12RayTracingRenderer::CreateDSVHeap()
 
 void Ideal::D3D12RayTracingRenderer::CreateDSV(uint32 Width, uint32 Height)
 {
+	if (m_depthStencil)
+	{
+		m_depthStencil->Release();
+	}
 	D3D12_CLEAR_VALUE depthClearValue = {};
 	depthClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 	depthClearValue.DepthStencil.Depth = 1.0f;
@@ -1793,33 +1792,29 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 size(windowSize.x, windowSize.y);
-	//ImVec2 size(m_width/4, m_height/4);
 
-	//m_width = windowSize.x;
-	//m_height = windowSize.y;
-	m_aspectRatio = float(windowSize.x) / windowSize.y;
-	m_mainCamera->SetAspectRatio(m_aspectRatio);
-
-	// TEMP : 임시로 매번 Set Size를 해주겠음
-	SetCanvasSize(windowSize.x, windowSize.y);
-
-	//// to srv
-	//CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-	//	m_editorTexture->GetResource(),
-	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
-	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	//);
-	//m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
-
+	float viewWidthRatio = static_cast<float>(m_width) / windowSize.x;
+	float viewHeightRatio = static_cast<float>(m_height) / windowSize.y;
+	
+	float x = 1.0f;
+	float y = 1.0f;
+	
+	if (viewWidthRatio < viewHeightRatio)
+	{
+		// The scaled image's height will fit to the viewport's height and 
+		// its width will be smaller than the viewport's width.
+		x = viewWidthRatio / viewHeightRatio;
+	}
+	else
+	{
+		// The scaled image's width will fit to the viewport's width and 
+		// its height may be smaller than the viewport's height.
+		y = viewHeightRatio / viewWidthRatio;
+	}
+	size.x = x * windowSize.x;
+	size.y = y * windowSize.y;
+	
 	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
-	// to present
-	/*barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_editorRenderTarget->GetResource(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);*/
-
 	ImGui::End();
 }
 

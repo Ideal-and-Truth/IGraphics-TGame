@@ -117,6 +117,18 @@ float g_cameraSpeed = 0.04f;
 bool g_CameraMove = true;
 void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera);
 
+static const char* items[] =
+{
+	"800x600",
+	"1200x900",
+	"1280x720",
+	"1920x1080",
+	"1920x1200",
+	"2560x1440",
+	"3440x1440",
+	"3840x2160"
+};
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
@@ -1094,18 +1106,11 @@ void RendererSizeTest()
 	}
 
 	static int val = 0;
-	static const char* items[] =
-	{
-		"800x600",
-		"1200x900",
-		"1280x720",
-		"1920x1080",
-		"1920x1200",
-		"2560x1440",
-		"3440x1440",
-		"3840x2160"
-	};
+	int beforeVal = val;
 	ImGui::Combo("Display Resolution", &val, items, IM_ARRAYSIZE(items));
-	gRenderer->SetDisplayResolutionOption((Ideal::Resolution::EDisplayResolutionOption)val);
+	if (val != beforeVal)
+	{
+		gRenderer->SetDisplayResolutionOption((Ideal::Resolution::EDisplayResolutionOption)val);
+	}
 	ImGui::End();
 }

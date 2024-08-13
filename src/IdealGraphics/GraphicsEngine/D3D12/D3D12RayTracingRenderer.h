@@ -191,6 +191,7 @@ namespace Ideal
 		uint32 m_height = 0;
 		//uint32 m_postWindowWidth = 0;
 		//uint32 m_postWindowHeight = 0;
+		Ideal::Resolution::EDisplayResolutionOption m_displayResolutionIndex = Ideal::Resolution::EDisplayResolutionOption::R_800_600;
 		HWND m_hwnd;
 
 		std::shared_ptr<Ideal::D3D12Viewport> m_viewport = nullptr;
