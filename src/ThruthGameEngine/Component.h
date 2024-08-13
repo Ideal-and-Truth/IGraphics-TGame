@@ -161,8 +161,9 @@ namespace Truth
 		void AddEntity(std::shared_ptr<Entity> _entity);
 
 		bool HasParent();
-
+		bool IsLinked();
 		const Matrix& GetParentMatrix();
+		const Matrix& GetParentLinkedMatrix();
 
 #pragma endregion inline
 	};

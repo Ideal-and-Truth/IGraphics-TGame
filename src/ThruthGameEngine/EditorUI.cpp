@@ -18,6 +18,7 @@
 #include "StringConverter.h"
 #include "Animator.h"
 #include <commdlg.h>
+#include "SkinnedMesh.h"
 
 
 EditorUI::EditorUI(std::shared_ptr<Truth::Managers> Manager, HWND _hwnd)
@@ -461,7 +462,7 @@ void EditorUI::ShowMenuBar(bool* p_open)
 	}
 
 	static float step = 1.0f;
-	static float dtdis = 1.0f; 
+	static float dtdis = 1.0f;
 	ImGui::Text("frame : %.2f\t", 1 / dtdis);
 	if (step < 0.0f)
 	{
@@ -693,7 +694,7 @@ void EditorUI::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 	if (ImGui::CollapsingHeader("Add Component"))
 	{
 		int selectedItem = -1;
-		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), static_cast<int32>(m_componentList.size()), 4))
+		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), static_cast<int32>(m_componentList.size()), 6))
 		{
 			SelectedEntity->AddComponent(TypeInfo::g_factory->Create(m_componentList[selectedItem]));
 		}
@@ -758,6 +759,8 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 		flag |= ImGuiTreeNodeFlags_Leaf;
 	}
 
+	static bool linkBone = false;
+
 	bool isOpen = ImGui::TreeNodeEx(("##" + entityName).c_str(), flag);
 	ImGui::SameLine();
 
@@ -816,6 +819,10 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 			_entity.lock()->AddChild(child);
 			m_createdEntity.push(child);
 		}
+		if (ImGui::Selectable("Link Bone"))
+		{
+			linkBone = true;
+		}
 
 		if (ImGui::Selectable("Set Root"))
 		{
@@ -823,7 +830,54 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 			_entity.lock()->m_parent.reset();
 		}
 
+
 		ImGui::EndPopup();
+	}
+	if (linkBone)
+	{
+		if (!_entity.lock()->m_parent.expired())
+		{
+			ImGui::OpenPopup("Input String");
+			if (ImGui::BeginPopupModal("Input String", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				static std::string input;
+
+				ImGui::Text("Choose Bone");
+				auto boneMap = _entity.lock()->m_parent.lock()->GetComponent<Truth::SkinnedMesh>().lock()->GetBoneMap();
+
+				std::vector<const char*> boneNames;
+
+				for (auto& b : boneMap)
+				{
+					boneNames.push_back(b.first.c_str());
+				}
+
+				int selected = -1;
+				if (ImGui::ListBox("bone", &selected, boneNames.data(), static_cast<int>(boneNames.size()), 10))
+				{
+					input = boneNames[selected];
+				}
+
+				ImGui::Text(input.c_str());
+
+				if (ImGui::Button("OK", ImVec2(120, 0)))
+				{
+					_entity.lock()->LinkBone(input);
+					ImGui::CloseCurrentPopup();
+					linkBone = false;
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::Button("Cancel", ImVec2(120, 0)))
+				{
+					ImGui::CloseCurrentPopup();
+					linkBone = false;
+				}
+
+				ImGui::EndPopup();
+			}
+		}
 	}
 
 	if (isOpen)
