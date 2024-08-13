@@ -1350,16 +1350,16 @@ void ResourceManager::CreateDefaultQuadMesh2()
 {
 	std::vector<SimpleVertex> vertices =
 	{
-		{ { -1.0f, -1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },    // Bottom left.
-		{ { -1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } },    // Top left.
-		{ { 1.0f, -1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } },    // Bottom right.
-		{ { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }        // Top right.
+		{ { -1.0f, -1.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } },    // Bottom left -> Top left.
+		{ { -1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },    // Top left -> Bottom left.
+		{ { 1.0f, -1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },    // Bottom right -> Top right.
+		{ { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }      // Top right -> Bottom right.
 	};
 
 	std::vector<uint32> Indices =
 	{
 		0, 1, 2,
-		0, 2, 3
+		1, 3, 2
 	};
 
 	m_defaultQuadMesh2 = std::make_shared<Ideal::IdealMesh<SimpleVertex>>();

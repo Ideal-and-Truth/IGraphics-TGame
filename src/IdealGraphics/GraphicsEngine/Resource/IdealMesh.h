@@ -51,9 +51,11 @@ namespace Ideal
 			ResourceManager->CreateVertexBuffer<TVertexType>(m_vertexBuffer, m_vertices);
 
 			//-------------IB-------------//
-			m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
-			ResourceManager->CreateIndexBuffer(m_indexBuffer, m_indices);
-
+			if (m_indices.size())
+			{
+				m_indexBuffer = std::make_shared<Ideal::D3D12IndexBuffer>();
+				ResourceManager->CreateIndexBuffer(m_indexBuffer, m_indices);
+			}
 			//------------Clear-----------//
 			m_vertices.clear();
 			m_indices.clear();
