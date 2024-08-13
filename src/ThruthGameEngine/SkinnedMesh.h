@@ -77,7 +77,7 @@ namespace Truth
 		void DeleteMesh();
 
 		std::weak_ptr<Ideal::IBone> GetBone(const std::string& _name);
-
+		const std::map<std::string, std::weak_ptr<Ideal::IBone>>& GetBoneMap() { return m_boneMap; }
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE

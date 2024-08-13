@@ -45,7 +45,7 @@ void Truth::EditorCamera::Update(float _dt)
 		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, -_dt * m_speed, 0.0f));
 	}
 
-	if (GetKey(MOUSE::LMOUSE))
+	if (GetKey(MOUSE::RMOUSE))
 	{
 		m_camera->Pitch(MouseDy() * 0.003f);
 		m_camera->RotateY(MouseDx() * 0.003f);
