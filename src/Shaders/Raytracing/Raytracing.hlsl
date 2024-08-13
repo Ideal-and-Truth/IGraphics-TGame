@@ -18,8 +18,6 @@
 
 #define SHADOW_ON
 
-#define BeforeRefactor
-
 #define MAX_POINT_LIGHT_NUM 16
 #define MAX_SPOT_LIGHT_NUM 16
 
@@ -470,10 +468,8 @@ float3 Shade(
     }
 
     
-#ifdef BeforeRefactor
     // Temp : 0.2는 임시 값
     L += 0.2f * Kd;
-#endif
     //return L;
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);
@@ -634,9 +630,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     //if(l_materialInfo.bUseNormalMap == false)
     if(l_materialInfo.bUseNormalMap == true)
     {
-#ifdef BeforeRefactor
-    normal = NormalMap(normal, uv, vertexInfo, attr);
-#endif
+        normal = NormalMap(normal, uv, vertexInfo, attr);
     }
     if(dot(-WorldRayDirection(), normal) < 0)
     {

@@ -1042,9 +1042,8 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 			// 예시로 GetMaterialObject를 사용함. -> 이는 기본 머테리얼을 가져와서 사용하므로 가급적 사용X
 			// 차라리 Material을 새로 만들어서 SetMaterialObject를 해주셈
 			// 이건 그냥 SetBaseMap의 예시
-			SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetBaseMap(Texture);
-			SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetNormalMap(Texture2);
-			int a = 3;
+			//SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetBaseMap(Texture);
+			//SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->SetNormalMap(Texture2);
 		}
 	}
 
