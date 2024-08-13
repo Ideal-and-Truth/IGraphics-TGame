@@ -78,6 +78,7 @@ namespace Ideal
 		virtual void Resize(UINT Width, UINT Height) override;
 		virtual void ToggleFullScreenWindow() override;
 		virtual bool IsFullScreen() override;
+		virtual void SetDisplayResolutionOption(const Resolution::EDisplayResolutionOption& Resolution) override;
 
 		virtual std::shared_ptr<Ideal::ICamera> CreateCamera() override;
 		virtual void SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera) override;

@@ -117,6 +117,18 @@ float g_cameraSpeed = 0.04f;
 bool g_CameraMove = true;
 void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera);
 
+static const char* items[] =
+{
+	"800x600",
+	"1200x900",
+	"1280x720",
+	"1920x1080",
+	"1920x1200",
+	"2560x1440",
+	"3440x1440",
+	"3840x2160"
+};
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
@@ -172,6 +184,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ICamera> camera = gRenderer->CreateCamera();
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
+
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
+
 #pragma endregion
 
 #pragma region FBXConvert
@@ -515,7 +531,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (playerRe)
 						{
-
 							SkinnedMeshObjectBoneInfoTest(playerRe);
 							SkinnedMeshObjectGetMeshTest(playerRe, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 						}
@@ -1005,6 +1020,11 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 	ImGui::Begin("SkinnedMesh Get Mesh Test");
 	auto meshSize = SkinnedMeshObject->GetMeshesSize();
 	ImGui::Separator();
+
+	//ImVec2 s(100, 100);
+	//ImGui::Image(ImTextureID(SkinnedMeshObject->GetMeshByIndex(5).lock()->GetMaterialObject().lock()->GetBaseMap().lock()->GetImageID()), s);
+
+
 	// 매쉬 정보
 	ImGui::Text("Mesh Info");
 	for (int i = 0; i < meshSize; ++i)
@@ -1076,13 +1096,21 @@ void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite)
 
 void RendererSizeTest()
 {
-	ImGui::Begin("Window Size Test");
+	ImGui::Begin("Window Size Test", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav);
 	bool b = gRenderer->IsFullScreen();
 	ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::CalcTextSize("FullScreenMode").x - ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.x);
 	ImGui::Checkbox("FullScreenMode", &b);
 	if (b != gRenderer->IsFullScreen())
 	{
 		gRenderer->ToggleFullScreenWindow();
+	}
+
+	static int val = 0;
+	int beforeVal = val;
+	ImGui::Combo("Display Resolution", &val, items, IM_ARRAYSIZE(items));
+	if (val != beforeVal)
+	{
+		gRenderer->SetDisplayResolutionOption((Ideal::Resolution::EDisplayResolutionOption)val);
 	}
 	ImGui::End();
 }

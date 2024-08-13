@@ -35,6 +35,7 @@ namespace Ideal
 		IDEAL_TEXTURE_SRV = 0x1,
 		IDEAL_TEXTURE_RTV = 0x2,
 		IDEAL_TEXTURE_DSV = 0x4,
+		IDEAL_TEXTURE_UAV = 0x8,
 		// 0x1,0x2,0x4,0x8
 		// 0x10,0x20,0x40,0x80
 	} IdealTextureTypeFlag;
@@ -189,8 +190,11 @@ namespace Ideal
 	public:
 		void CreateDefaultQuadMesh();
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> GetDefaultQuadMesh();
+		void CreateDefaultQuadMesh2(); // 시작 위치가 다르다
+		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> GetDefaultQuadMesh2();
 
 	private:
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_defaultQuadMesh;
+		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_defaultQuadMesh2;
 	};
 }

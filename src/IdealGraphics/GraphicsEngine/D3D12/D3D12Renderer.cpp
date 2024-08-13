@@ -113,7 +113,7 @@ void Ideal::D3D12Renderer::Init()
 #endif
 
 	//---------------------Viewport Init-------------------------//
-	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_hwnd, m_width, m_height);
+	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_width, m_height);
 	m_viewport->Init();
 
 	//---------------------Create Device-------------------------//
@@ -437,6 +437,11 @@ void Ideal::D3D12Renderer::ToggleFullScreenWindow()
 bool Ideal::D3D12Renderer::IsFullScreen()
 {
 	return false;
+}
+
+void Ideal::D3D12Renderer::SetDisplayResolutionOption(const Resolution::EDisplayResolutionOption& Resolution)
+{
+
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12Renderer::CreateCamera()
