@@ -158,6 +158,7 @@
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HitStop.h" />
     <ClInclude Include="MeleeWeapon.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAnimator.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="RangedWeapon.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shooter.h" />
+    <ClInclude Include="SkillTree.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestMovement.h" />
   </ItemGroup>
@@ -183,6 +185,7 @@
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
+    <ClCompile Include="HitStop.cpp" />
     <ClCompile Include="MeleeWeapon.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAnimator.cpp" />
@@ -190,6 +193,7 @@
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="RangedWeapon.cpp" />
     <ClCompile Include="Shooter.cpp" />
+    <ClCompile Include="SkillTree.cpp" />
     <ClCompile Include="TestMovement.cpp" />
   </ItemGroup>
   <ItemGroup>

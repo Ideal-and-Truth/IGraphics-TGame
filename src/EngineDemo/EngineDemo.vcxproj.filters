@@ -52,6 +52,12 @@
     <Filter Include="Component\Base">
       <UniqueIdentifier>{d9d0c37b-ef3a-4df1-b394-6d03770b4328}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\BattleSystem\SkillTree">
+      <UniqueIdentifier>{d45d343d-5751-4eed-9a90-3b77d9d5ff69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\HitStop">
+      <UniqueIdentifier>{dc233b34-fe3e-47d2-a8f6-bcad2b8aedbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -117,6 +123,12 @@
     <ClInclude Include="Bullet.h">
       <Filter>Component\BattleSystem\Weapon</Filter>
     </ClInclude>
+    <ClInclude Include="SkillTree.h">
+      <Filter>Component\BattleSystem\SkillTree</Filter>
+    </ClInclude>
+    <ClInclude Include="HitStop.h">
+      <Filter>Component\HitStop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -172,6 +184,12 @@
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Component\BattleSystem\Weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillTree.cpp">
+      <Filter>Component\BattleSystem\SkillTree</Filter>
+    </ClCompile>
+    <ClCompile Include="HitStop.cpp">
+      <Filter>Component\HitStop</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

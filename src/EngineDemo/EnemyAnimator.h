@@ -254,6 +254,9 @@ private:
 	PROPERTY(currentFrame);
 	int m_currentFrame;
 
+	PROPERTY(hitStopTime);
+	float m_hitStopTime;
+
 private:
 	int RandomNumber(int _min, int _max);
 

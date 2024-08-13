@@ -25,6 +25,9 @@ namespace Truth
 		// 절대 프레임 시간
 		float4 m_absDeltaTime;
 
+		float4 m_waitUntilTime;
+		float4 m_waitingTime;
+
 		LARGE_INTEGER m_currentCount;
 		LARGE_INTEGER m_prevCount;
 		LARGE_INTEGER m_frequency;
@@ -43,6 +46,7 @@ namespace Truth
 		float4 GetDT() const { return m_deltaTime; }
 		float4 GetFDT() const { return m_fixedDeltaTime; }
 		float4 GetADT() const { return m_absDeltaTime; }
+		void WaitForSecondsRealtime(float time);
 	};
 
 }

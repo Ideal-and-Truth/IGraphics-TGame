@@ -11,6 +11,7 @@ PlayerAnimator::PlayerAnimator()
 	: m_isAnimationEnd(false)
 	, m_currentFrame(0)
 	, m_lastHp(0.f)
+	, m_hitStopTime(0.f)
 	, m_passingTime(0.f)
 	, m_currentState(nullptr)
 	, m_isWalk(false)
@@ -350,6 +351,7 @@ void NormalAttack1::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack1", false);
 	/// TODO : 플레이어 데미지 세팅 여기서 (각 공격마다 세팅해줘야 될 수도)
 	///dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(1.f);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -375,6 +377,7 @@ void NormalAttack1::OnStateExit()
 void NormalAttack2::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack2", false);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -399,6 +402,7 @@ void NormalAttack2::OnStateExit()
 void NormalAttack3::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack3", false);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -423,6 +427,7 @@ void NormalAttack3::OnStateExit()
 void NormalAttack4::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack4", false);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 

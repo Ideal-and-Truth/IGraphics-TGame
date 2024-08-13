@@ -10,7 +10,6 @@ BOOST_CLASS_EXPORT_IMPLEMENT(MeleeWeapon)
 
 MeleeWeapon::MeleeWeapon()
 	: m_collider(nullptr)
-	, m_playerAnimator(nullptr)
 	, m_isAttacking(false)
 {
 	m_name = "MeleeWeapon";
@@ -102,6 +101,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 				if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 				{
 					m_onHitEnemys.push_back(_other->GetOwner().lock());
+					WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
 				}
 			}
 		}
@@ -112,6 +112,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 				if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 				{
 					m_onHitEnemys.push_back(_other->GetOwner().lock());
+					WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
 				}
 			}
 		}

@@ -13,6 +13,8 @@ Truth::TimeManager::TimeManager()
 	, m_eventManager()
 	, m_managers()
 	, m_absDeltaTime(0.0f)
+	, m_waitUntilTime(0.0f)
+	, m_waitingTime(0.0f)
 {
 	DEBUG_PRINT("Create TimeManager\n");
 
@@ -39,6 +41,17 @@ void Truth::TimeManager::Initalize(std::shared_ptr<Managers> _managers)
 /// </summary>
 void Truth::TimeManager::Update()
 {
+	if (m_waitUntilTime > 0.f)
+	{
+		m_waitingTime += m_absDeltaTime;
+	}
+	if (m_waitUntilTime < m_waitingTime)
+	{
+		m_timeScale = 1.0f;
+		m_waitUntilTime = 0.0f;
+		m_waitingTime = 0.0f;
+	}
+
 	// 이전 프레임의 카운팅과 현재 프레임 카운팅 값의 차이를 구한다.
 	QueryPerformanceCounter(&m_currentCount);
 	float delta = static_cast<float4>(m_currentCount.QuadPart - m_prevCount.QuadPart) /
@@ -85,4 +98,15 @@ void Truth::TimeManager::Update()
 void Truth::TimeManager::Finalize()
 {
 
+}
+
+void Truth::TimeManager::WaitForSecondsRealtime(float time)
+{
+	if (time > 0.f && m_waitUntilTime == 0.f)
+	{
+		m_waitUntilTime = time;
+		m_timeScale = 0.0f;
+		m_waitingTime = 0.0f;
+	}
+	
 }

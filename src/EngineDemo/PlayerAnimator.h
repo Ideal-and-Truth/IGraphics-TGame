@@ -269,6 +269,9 @@ private:
 
 	float m_passingTime;
 
+	PROPERTY(hitStopTime);
+	float m_hitStopTime;
+
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
 
