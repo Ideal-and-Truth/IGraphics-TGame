@@ -99,6 +99,10 @@ const DirectX::SimpleMath::Vector3& Truth::Entity::GetWorldScale() const
 
 void Truth::Entity::ApplyTransform()
 {
+	if (m_transform == nullptr)
+	{
+		return;
+	}
 	m_transform->ApplyTransform();
 	for (auto p = m_applyTransform.begin(); p != m_applyTransform.end() ; p++)
 	{
@@ -117,6 +121,7 @@ void Truth::Entity::ApplyTransform()
 			{
 				return;
 			}
+			continue;
 		}
 
 		if (p->first.lock()->m_name == "Transform")
@@ -233,6 +238,7 @@ void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
 void Truth::Entity::AddChild(std::shared_ptr<Entity> _entity)
 {
 	m_children.push_back(_entity);
+	auto temp = shared_from_this();
 	_entity->m_parent = shared_from_this();
 }
 

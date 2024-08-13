@@ -878,6 +878,10 @@ void EditorUI::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 				ImGui::EndPopup();
 			}
 		}
+		else
+		{
+			linkBone = false;
+		}
 	}
 
 	if (isOpen)
