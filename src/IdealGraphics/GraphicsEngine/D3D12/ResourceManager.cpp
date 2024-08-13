@@ -283,7 +283,7 @@ uint64 ResourceManager::AllocateMaterialID()
 	return ret;
 }
 
-void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
+void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB/*= false*/)
 {
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
@@ -313,14 +313,30 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 
 	std::unique_ptr<uint8_t[]> decodeData;
 	D3D12_SUBRESOURCE_DATA subResource;
-	Check(DirectX::LoadWICTextureFromFile(
-		m_device.Get(),
-		Path.c_str(),
-		resource.ReleaseAndGetAddressOf(),
-		decodeData,
-		subResource
-	));
-
+	
+	if (IgnoreSRGB)
+	{
+		Check(DirectX::LoadWICTextureFromFileEx(
+			m_device.Get(),
+			Path.c_str(),
+			0,
+			D3D12_RESOURCE_FLAG_NONE,
+			WIC_LOADER_IGNORE_SRGB,
+			resource.ReleaseAndGetAddressOf(),
+			decodeData,
+			subResource
+		));
+	}
+	else
+	{
+		Check(DirectX::LoadWICTextureFromFile(
+			m_device.Get(),
+			Path.c_str(),
+			resource.ReleaseAndGetAddressOf(),
+			decodeData,
+			subResource
+		));
+	}
 	//----------------------Upload Buffer--------------------------//
 
 	uint64 bufferSize = GetRequiredIntermediateSize(resource.Get(), 0, 1);
@@ -362,6 +378,10 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = resource->GetDesc().Format;
+	//if (IgnoreSRGB)
+	//{
+	//	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//}
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 
@@ -1189,7 +1209,8 @@ void ResourceManager::DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture
 void ResourceManager::CreateDefaultTextures()
 {
 	CreateTexture(m_defaultAlbedo, L"../Resources/DefaultData/DefaultAlbedo.png");
-	CreateTexture(m_defaultNormal, L"../Resources/DefaultData/DefaultNormalMap.png");
+	//CreateTexture(m_defaultNormal, L"../Resources/DefaultData/DefaultNormalMap.png", true, DXGI_FORMAT_R8G8B8A8_UNORM);
+	CreateTexture(m_defaultNormal, L"../Resources/DefaultData/DefaultNormalMap.png", true);
 	CreateTexture(m_defaultMask, L"../Resources/DefaultData/DefaultBlack.png");
 }
 
