@@ -57,6 +57,21 @@ void Ideal::IdealMaterial::SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture)
 	m_cbMaterialInfo.bUseRoughnessMap = true;
 }
 
+std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetBaseMap()
+{
+	return m_diffuseTexture;
+}
+
+std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetNomralMap()
+{
+	return m_normalTexture;
+}
+
+std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetMaskMap()
+{
+	return m_maskTexture;
+}
+
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
 	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(ResourceManager);

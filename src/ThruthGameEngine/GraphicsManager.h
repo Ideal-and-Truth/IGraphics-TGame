@@ -5,10 +5,18 @@ namespace Truth
 {
 	class Mesh;
 	class Camera;
+	struct Material;
+	struct Texture;
 #ifdef EDITOR_MODE
 	class EditorCamera;
 #endif // EDITOR_MODE
 
+}
+
+namespace Ideal
+{
+	class IMaterial;
+	class ITexture;
 }
 
 namespace Truth
@@ -26,6 +34,12 @@ namespace Truth
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		};
+	public:
+		// path / texture
+		std::map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
+
+		// name / matarial
+		std::map<std::string, std::shared_ptr<Material>> m_matarialMap;
 
 	public:
 		GraphicsManager();
@@ -52,6 +66,15 @@ namespace Truth
 		void DeleteDebugMeshObject(std::shared_ptr<Ideal::IMeshObject> _meshObject);
 
 		void SetMainCamera(Camera* _camera);
+
+		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path);
+		void DeleteTexture(std::shared_ptr<Texture> _texture);
+
+		std::shared_ptr<Material> CraeteMatarial(const std::string& _name);
+		void DeleteMaterial(std::shared_ptr<Material> _material);
+
+		std::shared_ptr<Material> GetMaterial(const std::string& _name);
+
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);
 #endif // EDITOR_MODE

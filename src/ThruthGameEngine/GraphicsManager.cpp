@@ -3,7 +3,8 @@
 #include "ISkinnedMeshObject.h"
 #include "imgui.h"
 #include "Camera.h"
-
+#include "Texture.h"
+#include "Material.h"
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
@@ -25,6 +26,15 @@ Truth::GraphicsManager::GraphicsManager()
 /// </summary>
 Truth::GraphicsManager::~GraphicsManager()
 {
+	for (auto& mat : m_matarialMap)
+	{
+		m_renderer->DeleteMaterial(mat.second->m_material);
+	}
+
+	for (auto& tex : m_textureMap)
+	{
+		m_renderer->DeleteTexture(tex.second->m_texture);
+	}
 	DEBUG_PRINT("Finalize GraphicsManager\n");
 }
 
@@ -170,6 +180,57 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 {
 	m_renderer->SetMainCamera(_camera->m_camera);
 	m_mainCamera = _camera;
+}
+
+std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path)
+{
+	if (m_textureMap.find(_path) == m_textureMap.end() || m_textureMap[_path]->m_useCount <= 0)
+	{
+		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
+		tex->m_texture = m_renderer->CreateTexture(_path);
+		tex->m_useCount = 1;
+		tex->m_path = _path;
+		return m_textureMap[_path] = tex;
+	}
+	return m_textureMap[_path];
+}
+
+void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
+{
+	_texture->m_useCount--;
+	if (_texture->m_useCount <= 0)
+	{
+		m_renderer->DeleteTexture(_texture->m_texture);
+	}
+}
+
+std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
+{
+	if (m_matarialMap.find(_name) == m_matarialMap.end() || m_matarialMap[_name]->m_useCount <= 0)
+	{
+		std::shared_ptr<Material> mat = std::make_shared<Material>();
+		mat->m_material = m_renderer->CreateMaterial();
+		mat->m_name = _name;
+		mat->m_baseMap = nullptr;
+		mat->m_normalMap = nullptr;
+		mat->m_maskMap = nullptr;
+		return m_matarialMap[_name] = mat;
+	}
+	return m_matarialMap[_name];
+}
+
+void Truth::GraphicsManager::DeleteMaterial(std::shared_ptr<Material> _material)
+{
+	_material->m_useCount--;
+	if (_material->m_useCount <= 0)
+	{
+		m_renderer->DeleteMaterial(_material->m_material);
+	}
+}
+
+std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::string& _name)
+{
+	return m_matarialMap[_name];
 }
 
 #ifdef EDITOR_MODE

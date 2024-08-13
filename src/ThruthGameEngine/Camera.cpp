@@ -83,7 +83,7 @@ void Truth::Camera::DefaultUpdate()
 		m_camera->Strafe(m_speed);
 	}
 
-	if (GetKey(KEY::LMOUSE))
+	if (GetKey(MOUSE::LMOUSE))
 	{
 		m_camera->Pitch(MouseDy() * 0.3f);
 		m_camera->RotateY(MouseDx() * 0.3f);

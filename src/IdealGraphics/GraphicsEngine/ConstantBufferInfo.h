@@ -112,19 +112,20 @@ struct CB_Sprite
 {
 	CB_Sprite()
 	{
-		ScreenPos = Vector2(1280, 960);
+		SpriteColor = Color(1, 1, 1, 1);
+		ScreenSize = Vector2(0, 0);
 		Pos = Vector2(0, 0);
-		Scale = Vector2(0.1, 0.1);
-		TexSize = Vector2(2048, 2048);
+		Scale = Vector2(1, 1);
+		TexSize = Vector2(1, 1);
 		TexSamplePos = Vector2(0, 0);
-		TexSampleSize = Vector2(2048, 2048);
+		TexSampleSize = Vector2(0, 0);
 		Z = 0;
 		Alpha = 1.f;
 		pad0 = 0;
 		pad1 = 0;
 	}
-
-	Vector2 ScreenPos;
+	Color SpriteColor;
+	Vector2 ScreenSize;
 	Vector2 Pos;
 	Vector2 Scale;
 	Vector2 TexSize;

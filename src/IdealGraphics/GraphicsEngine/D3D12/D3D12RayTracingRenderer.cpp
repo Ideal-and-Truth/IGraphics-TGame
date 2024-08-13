@@ -227,11 +227,17 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
 
 	Fence();
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT;	++i)
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		WaitForFenceValue(m_lastFenceValues[i]);
 		m_deferredDeleteManager->DeleteDeferredResources(i);
 	}
+
+	if (m_tearingSupport)
+	{
+		Check(m_swapChain->SetFullscreenState(FALSE, nullptr));
+	}
+
 	m_skyBoxTexture.reset();
 
 	if (m_isEditor)
@@ -404,6 +410,28 @@ finishAdapter:
 
 		CreateEditorRTV(m_width, m_height);
 		InitImGui();
+
+		if (m_isEditor)
+		{
+			{
+				auto srv = m_resourceManager->GetDefaultAlbedoTexture()->GetSRV();
+				auto dest = m_imguiSRVHeap->Allocate();
+				m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				m_resourceManager->GetDefaultAlbedoTexture()->EmplaceSRVInEditor(dest);
+			}
+			{
+				auto srv = m_resourceManager->GetDefaultNormalTexture()->GetSRV();
+				auto dest = m_imguiSRVHeap->Allocate();
+				m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				m_resourceManager->GetDefaultNormalTexture()->EmplaceSRVInEditor(dest);
+			}
+			{
+				auto srv = m_resourceManager->GetDefaultMaskTexture()->GetSRV();
+				auto dest = m_imguiSRVHeap->Allocate();
+				m_device->CopyDescriptorsSimple(1, dest.GetCpuHandle(), srv.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				m_resourceManager->GetDefaultMaskTexture()->EmplaceSRVInEditor(dest);
+			}
+		}
 	}
 	m_sceneCB.CameraPos = Vector4(0.f);
 
@@ -557,6 +585,128 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 {
+	if (!(Width * Height))
+		return;
+	if (m_width == Width && m_height == Height)
+		return;
+
+	// Wait For All Commands
+	Fence();
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+	DXGI_SWAP_CHAIN_DESC1 desc;
+	HRESULT hr = m_swapChain->GetDesc1(&desc);
+	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+	{
+		m_renderTargets[i]->Release();
+	}
+	m_depthStencil.Reset();
+
+	// ResizeBuffers
+	Check(m_swapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, Width, Height, DXGI_FORMAT_R8G8B8A8_UNORM, m_swapChainFlags));
+
+	BOOL isFullScreenState = false;
+	Check(m_swapChain->GetFullscreenState(&isFullScreenState, nullptr));
+	m_windowMode = !isFullScreenState;
+
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+	for (uint32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; ++i)
+	{
+		auto handle = m_renderTargets[i]->GetRTV();
+		ComPtr<ID3D12Resource> resource = m_renderTargets[i]->GetResource();
+		m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resource));
+		m_device->CreateRenderTargetView(resource.Get(), nullptr, handle.GetCpuHandle());
+
+		m_renderTargets[i]->Create(resource, m_deferredDeleteManager);
+		m_renderTargets[i]->EmplaceRTV(handle);
+	}
+
+	// CreateDepthStencil
+	CreateDSV(Width, Height);
+
+	m_width = Width;
+	m_height = Height;
+
+	// Viewport Reize
+	m_viewport->ReSize(Width, Height);
+
+	m_mainCamera->SetAspectRatio(float(Width) / Height);
+
+	if (m_isEditor)
+	{
+		CreateEditorRTV(Width, Height);
+	}
+
+	// ray tracing / UI //
+	m_raytracingManager->Resize(m_device, Width, Height);
+	m_UICanvas->SetCanvasSize(Width, Height);
+}
+
+void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
+{
+	if (m_fullScreenMode)
+	{
+		SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+		SetWindowPos(
+			m_hwnd,
+			HWND_NOTOPMOST,
+			m_windowRect.left, m_windowRect.top, m_windowRect.right - m_windowRect.left, m_windowRect.bottom - m_windowRect.top, SWP_FRAMECHANGED | SWP_NOACTIVATE
+		);
+		ShowWindow(m_hwnd, SW_NORMAL);
+	}
+	else
+	{
+		// 기존 윈도우의 Rect를 저장하여 전체화면 모드를 빠져나올 때 돌아올 수 있다.
+		GetWindowRect(m_hwnd, &m_windowRect);
+
+		// 윈도우를 경계없이 만들어서 클라이언트가 화면 전체를 채울 수 있게 한다.
+		SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW & ~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME));
+
+		RECT fullScreenWindowRect;
+		if (m_swapChain)
+		{
+			ComPtr<IDXGIOutput> output;
+			Check(m_swapChain->GetContainingOutput(&output));
+			DXGI_OUTPUT_DESC Desc;
+			Check(output->GetDesc(&Desc));
+			fullScreenWindowRect = Desc.DesktopCoordinates;
+		}
+		else
+		{
+			DEVMODE devMode = {};
+			devMode.dmSize = sizeof(DEVMODE);
+			EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode);
+
+			fullScreenWindowRect =
+			{
+				devMode.dmPosition.x,
+				devMode.dmPosition.y,
+				devMode.dmPosition.x + static_cast<LONG>(devMode.dmPelsWidth),
+				devMode.dmPosition.y + static_cast<LONG>(devMode.dmPelsHeight)
+			};
+		}
+
+		SetWindowPos(
+			m_hwnd,
+			HWND_TOPMOST,
+			fullScreenWindowRect.left,
+			fullScreenWindowRect.top,
+			fullScreenWindowRect.right,
+			fullScreenWindowRect.bottom,
+			SWP_FRAMECHANGED | SWP_NOACTIVATE);
+		
+		ShowWindow(m_hwnd, SW_MAXIMIZE);
+	}
+
+	m_fullScreenMode = !m_fullScreenMode;
+}
+
+bool Ideal::D3D12RayTracingRenderer::IsFullScreen()
+{
+	return m_fullScreenMode;
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
@@ -809,9 +959,11 @@ std::shared_ptr<Ideal::ISprite> Ideal::D3D12RayTracingRenderer::CreateSprite()
 	return ret;
 }
 
-void Ideal::D3D12RayTracingRenderer::DeleteSprite()
+void Ideal::D3D12RayTracingRenderer::DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite)
 {
-
+	auto s = std::static_pointer_cast<Ideal::IdealSprite>(Sprite);
+	m_UICanvas->DeleteSprite(s);
+	Sprite.reset();
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
@@ -826,15 +978,16 @@ void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Fact
 	swapChainDesc.SampleDesc.Count = 1;
 
 
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
-	fullScreenDesc.RefreshRate.Numerator = 60;
-	fullScreenDesc.RefreshRate.Denominator = 1;
-	fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	//DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
+	//fullScreenDesc.RefreshRate.Numerator = 60;
+	//fullScreenDesc.RefreshRate.Denominator = 1;
+	//fullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	//fullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	//fullScreenDesc.Windowed = true;
 	swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	swapChainDesc.Stereo = FALSE;
-	swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-	fullScreenDesc.Windowed = true;
+	//swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+	swapChainDesc.Flags = m_tearingSupport ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
 	m_swapChainFlags = swapChainDesc.Flags;
 
@@ -843,12 +996,16 @@ void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Fact
 		m_commandQueue.Get(),
 		m_hwnd,
 		&swapChainDesc,
-		&fullScreenDesc,
+		nullptr,
 		nullptr,
 		swapChain.GetAddressOf()
 	));
 
-	Check(Factory->MakeWindowAssociation(m_hwnd, DXGI_MWA_NO_ALT_ENTER), L"Failed to make window association");
+	if (m_tearingSupport)
+	{
+		Check(Factory->MakeWindowAssociation(m_hwnd, DXGI_MWA_NO_ALT_ENTER), L"Failed to make window association");
+	}
+	//Check(Factory->MakeWindowAssociation(m_hwnd, NULL), L"Failed to make window association");
 	Check(swapChain.As(&m_swapChain), L"Failed to change swapchain version");
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
@@ -901,13 +1058,13 @@ void Ideal::D3D12RayTracingRenderer::CreateDSVHeap()
 void Ideal::D3D12RayTracingRenderer::CreateDSV(uint32 Width, uint32 Height)
 {
 	D3D12_CLEAR_VALUE depthClearValue = {};
-	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 	depthClearValue.DepthStencil.Depth = 1.0f;
 	depthClearValue.DepthStencil.Stencil = 0;
 
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		DXGI_FORMAT_D32_FLOAT,
 		Width,
 		Height,
 		1,
@@ -928,7 +1085,7 @@ void Ideal::D3D12RayTracingRenderer::CreateDSV(uint32 Width, uint32 Height)
 
 	// create dsv
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
 
@@ -1027,7 +1184,9 @@ void Ideal::D3D12RayTracingRenderer::BeginRender()
 
 	commandList->RSSetViewports(1, &m_viewport->GetViewport());
 	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
+
+	//commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
+	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, nullptr);
 }
 
 void Ideal::D3D12RayTracingRenderer::EndRender()
@@ -1055,7 +1214,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	uint32 SyncInterval = 0;
 	uint32 PresentFlags = 0;
 	PresentFlags = DXGI_PRESENT_ALLOW_TEARING;
-
+	PresentFlags = (m_tearingSupport && m_windowMode) ? DXGI_PRESENT_ALLOW_TEARING : 0;
 	hr = m_swapChain->Present(0, PresentFlags);
 	//hr = m_swapChain->Present(1, 0);
 	//hr = m_swapChain->Present(0, 0);
@@ -1318,20 +1477,27 @@ void Ideal::D3D12RayTracingRenderer::CreateCanvas()
 {
 	m_UICanvas = std::make_shared<Ideal::IdealCanvas>();
 	m_UICanvas->Init(m_device);
+	m_UICanvas->SetCanvasSize(m_width, m_height);
 }
 
 void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 {
-	ID3D12DescriptorHeap* descriptorHeap[] = { m_uiDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get()};
+	ID3D12DescriptorHeap* descriptorHeap[] = { m_uiDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
 	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 
 	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
 
 	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
 	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, nullptr);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, &dsvHandle);
 
 	m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_uiDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex]);
+}
+
+void Ideal::D3D12RayTracingRenderer::SetCanvasSize(uint32 Width, uint32 Height)
+{
+	m_UICanvas->SetCanvasSize(Width, Height);
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()
@@ -1362,7 +1528,7 @@ void Ideal::D3D12RayTracingRenderer::InitImGui()
 
 void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 {
-	ImGui::Begin("MAIN SCREEN");                          // Create a window called "Hello, world!" and append into it.
+	ImGui::Begin("MAIN SCREEN", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav);		// Create a window called "Hello, world!" and append into it.
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 size(windowSize.x, windowSize.y);
@@ -1373,6 +1539,8 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 	m_aspectRatio = float(windowSize.x) / windowSize.y;
 	m_mainCamera->SetAspectRatio(m_aspectRatio);
 
+	// TEMP : 임시로 매번 Set Size를 해주겠음
+	SetCanvasSize(windowSize.x, windowSize.y);
 
 	// to srv
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(

@@ -7,6 +7,8 @@
 #include "PhysicsManager.h"
 #include "FileUtils.h"
 #include "ISpotLight.h"
+#include "Material.h"
+#include "IMesh.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -322,6 +324,8 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		return;
 	}
 
+	auto gp = m_managers.lock()->Graphics();
+
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
 
 	std::filesystem::path p(L"../Resources/MapData/" + _path);
@@ -333,6 +337,32 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 
 	m_navMesh = std::make_shared<NavMeshGenerater>();
 	m_navMesh->Initalize(mapPath + L"Data.map");
+
+	std::shared_ptr<FileUtils> matFile = std::make_shared<FileUtils>();
+	std::wstring matPath = mapPath + L"Material.mats";
+	matFile->Open(matPath, FileMode::Read);
+
+	size_t matCount = matFile->Read<size_t>();
+	for (size_t i = 0; i < matCount; i++)
+	{
+		std::string guid = matFile->Read<std::string>();
+		std::string name = matFile->Read<std::string>();
+		std::string baseMap = matFile->Read<std::string>();
+		std::string normalMap = matFile->Read<std::string>();
+		std::string maskMap = matFile->Read<std::string>();
+
+
+		USES_CONVERSION;
+		std::shared_ptr<Texture> baseTex = gp->CreateTexture(A2W(baseMap.c_str()));
+		std::shared_ptr<Texture> normalTex = gp->CreateTexture(A2W(normalMap.c_str()));
+		std::shared_ptr<Texture> maskTex = gp->CreateTexture(A2W(maskMap.c_str()));
+
+		std::shared_ptr<Material> mat = gp->CraeteMatarial(name);
+		mat->m_baseMap = baseTex;
+		mat->m_normalMap = normalTex;
+		mat->m_maskMap = maskTex;
+		mat->SetTexture();
+	}
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	std::wstring path = mapPath + L"Meshes.mList";
@@ -347,9 +377,10 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		Matrix meshTM = file->Read<Matrix>();
 
 		size_t matCount = file->Read<size_t>();
+		std::vector<std::string> matName;
 		for (uint32 i = 0; i < matCount; i++)
 		{
-			std::string mat = file->Read<std::string>();
+			matName.push_back(file->Read<std::string>());
 		}
 
 		USES_CONVERSION;
@@ -364,6 +395,18 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		flipXY.m[2][2] = -1.f;
 
 		m_mapMesh.back()->SetTransformMatrix(flipYZ * flipXY * meshTM);
+
+		if (matCount > 0)
+		{
+			auto& mesh = m_mapMesh.back();
+			uint32 meshSize = mesh->GetMeshesSize();
+			for (uint32 i = 0; i < mesh->GetMeshesSize(); i++)
+			{
+				auto submesh = mesh->GetMeshByIndex(i).lock();
+				std::string smat = submesh->GetFBXMaterialName();
+				submesh->SetMaterialObject(gp->m_matarialMap[smat]->m_material);
+			}
+		}
 	}
 
 	std::shared_ptr<FileUtils> lightFile = std::make_shared<FileUtils>();
@@ -395,14 +438,14 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		Vector3 sca;
 		Quaternion rot;
 		worldTM.Decompose(sca, rot, pos);
-		
+
 		Matrix rotMat = Matrix::CreateFromQuaternion(rot);
 
 		dir = Vector3::Transform(dir, rotMat);
 
 		switch (type)
 		{
-		// spot
+			// spot
 		case 0:
 		{
 			std::shared_ptr<Ideal::ISpotLight> spotlight
@@ -419,13 +462,13 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		// direction
 		case 1:
 		{
-// 			std::shared_ptr<Ideal::IDirectionalLight> directionlight
-// 				 = m_managers.lock()->Graphics()->CreateDirectionalLight();
-// 			directionlight->SetIntensity(intensity);
-// 			directionlight->SetDiffuseColor(color);
-// 			directionlight->SetDirection(dir);
-// 			m_mapLight.push_back(directionlight);
-//  			break;
+			// 			std::shared_ptr<Ideal::IDirectionalLight> directionlight
+			// 				 = m_managers.lock()->Graphics()->CreateDirectionalLight();
+			// 			directionlight->SetIntensity(intensity);
+			// 			directionlight->SetDiffuseColor(color);
+			// 			directionlight->SetDirection(dir);
+			// 			m_mapLight.push_back(directionlight);
+			//  			break;
 		}
 		// point
 		case 2:

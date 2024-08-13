@@ -45,7 +45,7 @@ void Truth::EditorCamera::Update(float _dt)
 		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, -_dt * m_speed, 0.0f));
 	}
 
-	if (GetKey(KEY::LMOUSE))
+	if (GetKey(MOUSE::LMOUSE))
 	{
 		m_camera->Pitch(MouseDy() * 0.003f);
 		m_camera->RotateY(MouseDx() * 0.003f);
@@ -53,6 +53,11 @@ void Truth::EditorCamera::Update(float _dt)
 }
 
 bool Truth::EditorCamera::GetKey(KEY _key)
+{
+	return m_managers->Input()->GetKeyState(_key) == KEY_STATE::HOLD;
+}
+
+bool Truth::EditorCamera::GetKey(MOUSE _key)
 {
 	return m_managers->Input()->GetKeyState(_key) == KEY_STATE::HOLD;
 }

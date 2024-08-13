@@ -8,6 +8,10 @@
 #include "SimpleMath.h"
 #include "imgui.h"
 #include <atlconv.h>
+#include "Material.h"
+#include "Texture.h"
+#include "ITexture.h"
+#include "IMaterial.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -95,7 +99,7 @@ namespace TypeUI
 		else if constexpr (std::is_same_v<T, Quaternion>)
 		{
 			float value[3] = {};
-			
+
 			Vector3 delta;
 
 			Vector3 temp = _val.ToEuler();
@@ -136,7 +140,20 @@ namespace TypeUI
 			}
 			return isSelect;
 		}
-
+		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Ideal::IMaterial>>>)
+		{
+			const ImVec2 size(100, 100);
+			ImGui::Text("Texture");
+			for (auto& mat : _val)
+			{
+				ImGui::ImageButton((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
+				ImGui::SameLine();
+				ImGui::ImageButton((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
+				ImGui::SameLine();
+				ImGui::ImageButton((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
+			}
+			return false;
+		}
 		return false;
 	}
 };

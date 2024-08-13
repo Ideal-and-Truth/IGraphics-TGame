@@ -109,6 +109,20 @@ namespace Truth
 			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::HOLD);
 		}
 
+		// 입력 관련 함수
+		inline bool GetKeyDown(MOUSE _key) const
+		{
+			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::DOWN);
+		}
+		inline bool GetKeyUp(MOUSE _key) const
+		{
+			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::UP);
+		}
+		inline bool GetKey(MOUSE _key) const
+		{
+			return (m_managers.lock()->Input()->GetKeyState(_key) == KEY_STATE::HOLD);
+		}
+
 		inline int16 MouseDx()
 		{
 			return m_managers.lock()->Input()->GetMouseMoveX();

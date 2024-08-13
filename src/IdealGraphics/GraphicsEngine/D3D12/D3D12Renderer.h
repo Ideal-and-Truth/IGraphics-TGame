@@ -76,6 +76,8 @@ namespace Ideal
 		virtual void Tick() override;
 		virtual void Render() override;
 		virtual void Resize(UINT Width, UINT Height) override;
+		virtual void ToggleFullScreenWindow() override;
+		virtual bool IsFullScreen() override;
 
 		virtual std::shared_ptr<Ideal::ICamera> CreateCamera() override;
 		virtual void SetMainCamera(std::shared_ptr<Ideal::ICamera> Camera) override;
@@ -105,7 +107,7 @@ namespace Ideal
 
 		// Sprite
 		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
-		virtual void DeleteSprite() override;
+		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }

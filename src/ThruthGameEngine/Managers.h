@@ -40,7 +40,7 @@ namespace Truth
 		~Managers();
 
 	public:
-		void Initialize(HWND _hwnd, uint32 _width, uint32 _height);
+		void Initialize(HINSTANCE _hinstance, HWND _hwnd, uint32 _width, uint32 _height);
 		void Update() const;
 		void LateUpdate() const;
 		void FixedUpdate() const;
@@ -65,7 +65,7 @@ namespace Truth
 
 	private:
 		void CreateManagers();
-		void InitlizeManagers(HWND _hwnd, uint32 _width, uint32 _height);
+		void InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 _width, uint32 _height);
 	};
 }
 

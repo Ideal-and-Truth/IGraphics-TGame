@@ -33,6 +33,8 @@ namespace Ideal
 		virtual void Tick() abstract;
 		virtual void Render() abstract;
 		virtual void Resize(UINT Width, UINT Height) abstract;
+		virtual void ToggleFullScreenWindow() abstract;
+		virtual bool IsFullScreen() abstract;
 
 	public:
 		virtual std::shared_ptr<ICamera>					CreateCamera() abstract;
@@ -63,7 +65,7 @@ namespace Ideal
 
 		// Sprite : UI에 만들어진다.
 		virtual std::shared_ptr<Ideal::ISprite>				CreateSprite() abstract;
-		virtual void DeleteSprite() abstract;
+		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>&) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

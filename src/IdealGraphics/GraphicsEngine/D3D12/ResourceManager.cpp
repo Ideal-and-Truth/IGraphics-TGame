@@ -1133,6 +1133,16 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 	m_dynamicMeshes[key] = skinnedMesh;
 }
 
+std::shared_ptr<Ideal::D3D12Texture> ResourceManager::GetDefaultMaskTexture()
+{
+	return m_defaultMask;
+}
+
+std::shared_ptr<Ideal::D3D12Texture> ResourceManager::GetDefaultNormalTexture()
+{
+	return m_defaultNormal;
+}
+
 std::shared_ptr<Ideal::D3D12Texture> ResourceManager::GetDefaultAlbedoTexture()
 {
 	return m_defaultAlbedo;
@@ -1295,10 +1305,10 @@ void ResourceManager::CreateDefaultQuadMesh()
 {
 	std::vector<SimpleVertex> vertices =
 	{
-		{ { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
-		{ { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
-		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f } },
-		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
+		{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
+		{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
+		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
+		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },
 	};
 
 	std::vector<uint32> Indices =

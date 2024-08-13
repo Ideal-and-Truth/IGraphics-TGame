@@ -34,6 +34,7 @@
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="DirectionLight.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="MathConverter.h" />
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="NavGeom.h" />
@@ -62,6 +63,7 @@
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="StringConverter.h" />
     <ClInclude Include="TestComponent.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="Transform.h" />
@@ -84,6 +86,7 @@
     <ClCompile Include="EditorUI.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="DirectionLight.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MathConverter.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="NavGeom.cpp" />
@@ -107,6 +110,7 @@
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="StringConverter.cpp" />
     <ClCompile Include="TestComponent.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TypeInfo.cpp">

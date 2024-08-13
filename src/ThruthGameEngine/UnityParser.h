@@ -64,7 +64,7 @@ namespace Truth
 			// Mesh Filter Info
 			bool m_isMesh = false;
 			std::string m_meshPath = "";
-			std::vector<std::string> m_matarialsGuid;
+			std::vector<std::string> m_matarialsName;
 
 			bool m_isLight = false;
 			uint32 m_type;
@@ -169,6 +169,8 @@ namespace Truth
 
 		void WriteMapMeshData(fs::path _path);
 		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);
+
+		void WriteMaterialData();
 
 		void ConvertUnloadedMesh();
 	};

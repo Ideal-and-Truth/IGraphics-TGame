@@ -1,5 +1,21 @@
 #pragma once
 #include "Component.h"
+
+namespace Ideal
+{
+	class IMeshObject;
+	class IMesh;
+	class IMaterial;
+}
+
+namespace Truth
+{
+	struct Material;
+}
+
+/// <summary>
+/// Static Mehs Class
+/// </summary>
 namespace Truth
 {
 	class Mesh :
@@ -16,6 +32,10 @@ namespace Truth
 
 	private:
 		std::shared_ptr<Ideal::IMeshObject> m_mesh;
+		std::vector<std::shared_ptr<Ideal::IMesh>> m_subMesh;
+
+		PROPERTY(mat);
+		std::vector<std::shared_ptr<Ideal::IMaterial>> m_mat;
 
 		PROPERTY(path);
 		std::wstring m_path;
@@ -39,10 +59,12 @@ namespace Truth
 
 		void DeleteMesh();
 
+		void SetMaterialByIndex(uint32 _index, std::string _material);
+		std::vector<uint64> GetMaterialImagesIDByIndex(uint32 _index);
+
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE
-
 	};
 
 	template<class Archive>

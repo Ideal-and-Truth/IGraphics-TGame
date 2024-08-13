@@ -27,6 +27,10 @@ namespace Ideal
 		// R : Metallic, A : Smoothness
 		virtual void SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture) override;
 
+		virtual std::weak_ptr<Ideal::ITexture> GetBaseMap() override;
+		virtual std::weak_ptr<Ideal::ITexture> GetNomralMap() override;
+		virtual std::weak_ptr<Ideal::ITexture> GetMaskMap() override;
+
 	public:
 		void SetAmbient(Color c) { m_ambient = c; }
 		void SetDiffuse(Color c) { m_diffuse = c; }
