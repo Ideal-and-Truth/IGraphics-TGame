@@ -270,7 +270,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//
 		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
-		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		Matrix floorMat = Matrix::CreateRotationY(3.14);
 		//mesh->SetTransformMatrix(floorMat);
 		//std::shared_ptr<Ideal::IMeshObject> sphere = gRenderer->CreateStaticMeshObject(L"UVSphere/UVSphere");
@@ -560,8 +560,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		meshes.clear();
 
-		//gRenderer->DeleteMeshObject(mesh);
-		//mesh.reset();
+		gRenderer->DeleteMeshObject(mesh);
+		mesh.reset();
 		//
 		//gRenderer->DeleteMeshObject(cat);
 		//cat.reset();

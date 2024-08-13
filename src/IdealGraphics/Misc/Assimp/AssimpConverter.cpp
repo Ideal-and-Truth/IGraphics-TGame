@@ -727,7 +727,6 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 		return;
 	}
 
-
 	// submesh
 	for (uint32 i = 0; i < node->mNumMeshes; ++i)
 	{
@@ -753,9 +752,14 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 			BasicVertex vertex;
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
-				/*vertex.Position.x *= 0.01;
-				vertex.Position.y *= 0.01;
-				vertex.Position.z *= 0.01;*/
+				//2024.08.13 본의 위치를 곱해준다.
+				Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
+				vertex.Position = result;
+
+				//Vector4 result = Vector4::Transform(v4, m_bones[bone]->transform);
+				//vertex.Position.x = result.x;
+				//vertex.Position.y = result.y;
+				//vertex.Position.z = result.z;
 			}
 
 			// UV
