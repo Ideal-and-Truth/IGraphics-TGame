@@ -33,7 +33,7 @@ void Truth::Transform::ApplyTransform()
 
 	if (HasParent() && IsLinked())
 	{
-		m_globalTM = GetParentLinkedMatrix() * GetParentMatrix();
+		m_globalTM = m_localTM * GetParentLinkedMatrix() * GetParentMatrix();
 	}
 	else if (HasParent())
 	{

@@ -276,7 +276,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::
 		m_cbBoneData.transforms[boneIdx] = finalMatrix.Transpose();
 
 		// SkinnedMesh"Object"가 가지고 있는 본의 정보
-		m_bones[boneIdx]->SetTransform(finalMatrix);
+		m_bones[boneIdx]->SetTransform(resultFrame);
 	}
 }
 
