@@ -51,6 +51,8 @@
 #include "GraphicsEngine/D3D12/TestShader.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 
+#include "GraphicsEngine/D2D/D2DTextManager.h"
+
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
 
@@ -415,6 +417,8 @@ finishAdapter:
 		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.shader", m_animationShader);
 	}
 
+	m_textManager = std::make_shared<Ideal::D2DTextManager>();
+	m_textManager->Init(m_device, m_commandQueue);
 
 	//---------------Editor---------------//
 	if (m_isEditor)

@@ -161,7 +161,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region EditorInitialize
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
-		// EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
@@ -186,7 +186,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->SetMainCamera(camera);
 
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
-		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
+		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
 
 #pragma endregion
 
@@ -195,7 +195,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
-		gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);

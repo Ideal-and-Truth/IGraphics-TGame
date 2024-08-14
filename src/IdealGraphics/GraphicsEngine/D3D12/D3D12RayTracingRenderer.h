@@ -82,6 +82,8 @@ namespace Ideal
 	class DXRAccelerationStructureManager;
 	class RaytracingManager;
 	class D3D12DescriptorManager;
+
+	class D2DTextManager;
 }
 
 namespace Ideal
@@ -239,6 +241,9 @@ namespace Ideal
 		// Manager
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager = nullptr;
+
+		// Text
+		std::shared_ptr<Ideal::D2DTextManager> m_textManager;
 
 		// Light
 		void UpdateLightListCBData();
