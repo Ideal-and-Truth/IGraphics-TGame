@@ -130,6 +130,27 @@
     <Filter Include="Component\Mesh\Texture">
       <UniqueIdentifier>{bc9727cb-6a5d-4d2d-ae5d-93620a72ff4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EditorUI\Context">
+      <UniqueIdentifier>{2a7ebf82-cfa0-43cb-b031-51218f8e4cf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EditorUI\Context\Hierachy">
+      <UniqueIdentifier>{6971012c-d0c3-44b9-807d-7dd014c4c4c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EditorUI\Context\inspector">
+      <UniqueIdentifier>{fbccc527-8442-4ea3-9f62-c7cceda4207d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EditorUI\Context\Menu">
+      <UniqueIdentifier>{19f468ce-976b-49ba-a81c-935309f0306e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EditorUI\Context\Menu\NewScene">
+      <UniqueIdentifier>{cd64fe51-384a-4bbd-9de7-4bdd7057719c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EditorUI\Context\Menu\Load Map Data">
+      <UniqueIdentifier>{496e62cc-d6f2-4619-9648-ea91333e3945}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EditorUI\Context\Hierachy\LinkBone">
+      <UniqueIdentifier>{49cc263a-f52b-4ec2-a4cb-840e21b094d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -257,6 +278,25 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Component\Mesh\Texture</Filter>
     </ClCompile>
+    <ClCompile Include="EntityHierarchy.cpp">
+      <Filter>EditorUI\Context\Hierachy</Filter>
+    </ClCompile>
+    <ClCompile Include="Inspector.cpp">
+      <Filter>EditorUI\Context\inspector</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorContext.cpp">
+      <Filter>EditorUI\Context</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuBar.cpp">
+      <Filter>EditorUI\Context\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="NewScenePopup.cpp">
+      <Filter>EditorUI\Context\Menu\NewScene</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadMapDataPopup.cpp">
+      <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkBonePopup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -404,6 +444,25 @@
     <ClInclude Include="Texture.h">
       <Filter>Component\Mesh\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="EntityHierarchy.h">
+      <Filter>EditorUI\Context\Hierachy</Filter>
+    </ClInclude>
+    <ClInclude Include="Inspector.h">
+      <Filter>EditorUI\Context\inspector</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorContext.h">
+      <Filter>EditorUI\Context</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuBar.h">
+      <Filter>EditorUI\Context\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="NewScenePopup.h">
+      <Filter>EditorUI\Context\Menu\NewScene</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadMapDataPopup.h">
+      <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkBonePopup.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
