@@ -37,7 +37,7 @@ namespace Ideal
 	{
 	public:
 		ISprite() {}
-		~ISprite() {}
+		virtual ~ISprite() {}
 
 	public:
 		// Draw On Off

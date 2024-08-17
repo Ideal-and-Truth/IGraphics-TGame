@@ -75,7 +75,8 @@ bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHe
 		m_d2dDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 		// 텍스트 렌더링
 		m_d2dDeviceContext->BeginDraw();
-		m_d2dDeviceContext->Clear(D2D1::ColorF(D2D1::ColorF::Black));	// 검은색으로 클리어. 여기서 바꾸면 투명도 될 것 같음
+		//m_d2dDeviceContext->Clear(D2D1::ColorF(D2D1::ColorF::Black));	// 검은색으로 클리어. 여기서 바꾸면 투명도 될 것 같음
+		m_d2dDeviceContext->Clear(D2D1::ColorF(0,0,0,0));	// 검은색으로 클리어. 여기서 바꾸면 투명도 될 것 같음
 		m_d2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
 		m_d2dDeviceContext->DrawTextLayout(D2D1::Point2F(0.f, 0.f), textLayout.Get(), m_whiteBrush.Get());
 		// We ignore D2DERR_RECREATE_TARGET here. This error indicates that the device
@@ -174,7 +175,8 @@ std::shared_ptr<Ideal::FontHandle> Ideal::D2DTextManager::CreateTextObject(const
 		Check(m_dwriteFactory->CreateTextFormat(
 			FontFamilyName,
 			fontCollection.Get(),
-			DWRITE_FONT_WEIGHT_REGULAR,
+			//DWRITE_FONT_WEIGHT_REGULAR,
+			DWRITE_FONT_WEIGHT_NORMAL,
 			DWRITE_FONT_STYLE_NORMAL,
 			DWRITE_FONT_STRETCH_NORMAL,
 			FontSize,

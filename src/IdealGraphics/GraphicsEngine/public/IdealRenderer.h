@@ -90,6 +90,7 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISprite>				CreateSprite() abstract;
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>&) abstract;
 
+		
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;

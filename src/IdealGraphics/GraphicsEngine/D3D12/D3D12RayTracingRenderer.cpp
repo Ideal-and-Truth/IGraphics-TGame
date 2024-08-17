@@ -46,7 +46,7 @@
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 #include "GraphicsEngine/Resource/IdealMaterial.h"
-#include "GraphicsEngine/Resource/IdealSprite.h"
+#include "GraphicsEngine/Resource/UI/IdealSprite.h"
 
 #include "GraphicsEngine/D3D12/TestShader.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"

@@ -4,11 +4,10 @@
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/VertexInfo.h"
-#include "GraphicsEngine/Resource/IdealSprite.h"
+#include "GraphicsEngine/Resource/UI/IdealSprite.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
-#include "GraphicsEngine/Resource/IdealSprite.h"
 
 Ideal::IdealCanvas::IdealCanvas()
 {
