@@ -32,13 +32,13 @@ namespace Ideal
 	public:
 		void Init(ComPtr<ID3D12Device> D3D12Device, ComPtr<ID3D12CommandQueue> D3D12CommandQueue);
 
-		void WriteTextToBitmap(BYTE* DestImage, uint32 DestWidth, uint32 DestHeight, uint32 DestPitch, std::shared_ptr<Ideal::FontHandle> FontHandle, std::wstring& Text);
-		bool CreateBitmapFromText(uint32* OutWidth, uint32* OutHeight, ComPtr<IDWriteTextFormat> TextFormat, std::wstring& Text);
+		void WriteTextToBitmap(BYTE* DestImage, uint32 DestWidth, uint32 DestHeight, uint32 DestPitch, std::shared_ptr<Ideal::FontHandle> FontHandle, const std::wstring& Text);
+		bool CreateBitmapFromText(uint32* OutWidth, uint32* OutHeight, ComPtr<IDWriteTextFormat> TextFormat, const std::wstring& Text);
 
+		std::shared_ptr<Ideal::FontHandle> CreateTextObject(const wchar_t* FontFamilyName, float FontSize);
 	private:
 		void CreateD2D(ComPtr<ID3D12Device> D3D12Device, ComPtr<ID3D12CommandQueue> D3D12CommandQueue);
 		void CreateDWrite(uint32 TexWidth, uint32 TexHeight, float DPI);
-		std::shared_ptr<Ideal::FontHandle> CreateTextObject(const wchar_t* FontFamilyName, float FontSize);
 
 	private:
 		// D2D

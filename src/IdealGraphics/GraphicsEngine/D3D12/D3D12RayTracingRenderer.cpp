@@ -476,6 +476,16 @@ finishAdapter:
 
 	RaytracingManagerInit();
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
+
+	// TEST: Create Text
+	m_textSprite = std::static_pointer_cast<Ideal::IdealSprite>(CreateSprite());
+	m_fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
+	gTextImage = new BYTE[512 * 256 * 4];
+	m_resourceManager->CreateDynamicTexture(m_dynamicTexture, 512, 256);
+	m_textSprite->SetTexture(m_dynamicTexture);
+	m_textManager->WriteTextToBitmap(gTextImage, 512, 256, 512 * 4, m_fontHandle, L"HELLO WORLD");
+	UpdateTextureWithImage(m_dynamicTexture, gTextImage, 512, 256);
+	int a = 3;
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -541,6 +551,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	TransitionRayTracingOutputToRTV();
 #endif
 	//-----------UI-----------//
+	// Update Text Or Dynamic Texture 
+	// Draw Text and Texture
 	DrawCanvas();
 #ifndef BeforeRefactor
 	TransitionRayTracingOutputToSRV();
@@ -1762,6 +1774,40 @@ void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 void Ideal::D3D12RayTracingRenderer::SetCanvasSize(uint32 Width, uint32 Height)
 {
 	m_UICanvas->SetCanvasSize(Width, Height);
+}
+
+void Ideal::D3D12RayTracingRenderer::UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight)
+{
+	if (SrcWidth > Texture->GetWidth())
+	{
+		__debugbreak();
+	}
+	if (SrcHeight > Texture->GetHeight())
+	{
+		__debugbreak();
+	}
+	D3D12_RESOURCE_DESC desc = Texture->GetResource()->GetDesc();
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT Footprint;
+	uint32 rows = 0;
+	uint64 rowSize = 0;
+	uint64 TotalBytes = 0;
+	m_device->GetCopyableFootprints(&desc, 0, 1, 0, &Footprint, &rows, &rowSize, &TotalBytes);
+
+	BYTE* mappedPtr = nullptr;
+	CD3DX12_RANGE writeRange(0, 0);
+	HRESULT hr = Texture->GetUploadBuffer()->Map(0, &writeRange, reinterpret_cast<void**>(&mappedPtr));
+	Check(hr);
+
+	BYTE* pSrc = SrcBits;
+	BYTE* pDest = mappedPtr;
+	for (uint32 y = 0; y < SrcHeight; ++y)
+	{
+		memcpy(pDest, pSrc, SrcWidth * 4);
+		pSrc += (SrcWidth * 4);
+		pDest += Footprint.Footprint.RowPitch;
+	}
+	Texture->GetUploadBuffer()->Unmap(0, nullptr);
+	Texture->SetUpdated();
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()

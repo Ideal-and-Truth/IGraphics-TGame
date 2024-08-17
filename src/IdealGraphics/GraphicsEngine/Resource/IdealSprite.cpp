@@ -25,6 +25,8 @@ void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12Gr
 	SetScreenPosition(ScreenSize);
 	//m_cbSprite.ScreenSize = ScreenSize;
 
+	//-------------DynamicTexture-------------//
+	m_texture.lock()->UpdateTexture(Device, CommandList);
 
 	// TODO :
 	// Set Descriptor Heap

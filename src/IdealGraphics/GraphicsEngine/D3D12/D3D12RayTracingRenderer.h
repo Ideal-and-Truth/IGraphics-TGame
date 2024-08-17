@@ -55,6 +55,7 @@ namespace Ideal
 	class IdealSpotLight;
 	class IdealPointLight;
 	class IdealCanvas;
+	class IdealSprite;
 
 	struct ConstantBufferContainer;
 	// Manager
@@ -84,6 +85,7 @@ namespace Ideal
 	class D3D12DescriptorManager;
 
 	class D2DTextManager;
+	struct FontHandle;
 }
 
 namespace Ideal
@@ -302,6 +304,13 @@ namespace Ideal
 		void SetCanvasSize(uint32 Width, uint32 Height);
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_mainDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::IdealCanvas> m_UICanvas;
+
+		std::shared_ptr<Ideal::FontHandle> m_fontHandle;
+		BYTE* gTextImage;
+		std::shared_ptr<Ideal::D3D12Texture> m_dynamicTexture;
+		std::shared_ptr<Ideal::IdealSprite> m_textSprite;
+
+		void UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight);
 
 		// EDITOR 
 	private:

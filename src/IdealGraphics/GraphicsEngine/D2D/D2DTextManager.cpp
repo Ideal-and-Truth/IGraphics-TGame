@@ -19,7 +19,7 @@ void Ideal::D2DTextManager::Init(ComPtr<ID3D12Device> D3D12Device, ComPtr<ID3D12
 	CreateDWrite(1024, 256, 96.f);	// Temp
 }
 
-void Ideal::D2DTextManager::WriteTextToBitmap(BYTE* pDestImage, uint32 DestWidth, uint32 DestHeight, uint32 DestPitch, std::shared_ptr<Ideal::FontHandle> FontHandle, std::wstring& Text)
+void Ideal::D2DTextManager::WriteTextToBitmap(BYTE* pDestImage, uint32 DestWidth, uint32 DestHeight, uint32 DestPitch, std::shared_ptr<Ideal::FontHandle> FontHandle, const std::wstring& Text)
 {
 	uint32 textWidth = 0;
 	uint32 textHeight = 0;
@@ -41,7 +41,7 @@ void Ideal::D2DTextManager::WriteTextToBitmap(BYTE* pDestImage, uint32 DestWidth
 
 		BYTE* pDest = pDestImage;
 		char* pSrc = (char*)mappedRect.bits;
-
+			
 		for (uint32 y = 0; y < textHeight; ++y)
 		{
 			memcpy(pDest, pSrc, textWidth * 4);
@@ -52,7 +52,7 @@ void Ideal::D2DTextManager::WriteTextToBitmap(BYTE* pDestImage, uint32 DestWidth
 	}
 }
 
-bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHeight, ComPtr<IDWriteTextFormat> TextFormat, std::wstring& Text)
+bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHeight, ComPtr<IDWriteTextFormat> TextFormat, const std::wstring& Text)
 {
 	bool result = false;
 
