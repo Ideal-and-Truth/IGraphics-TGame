@@ -1078,13 +1078,13 @@ void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite)
 	ImGui::SliderFloat("Alpha", &a, 0.f, 1.f);
 	Sprite->SetAlpha(a);
 
-	float c[4];
-	c[0] = Sprite->GetColor().R();
-	c[1] = Sprite->GetColor().G();
-	c[2] = Sprite->GetColor().B();
-	c[3] = 1;
-	ImGui::ColorEdit3("Sprite Color", c);
-	Sprite->SetColor(Color(c[0], c[1], c[2], c[3]));
+	//float c[4];
+	//c[0] = Sprite->GetColor().R();
+	//c[1] = Sprite->GetColor().G();
+	//c[2] = Sprite->GetColor().B();
+	//c[3] = 1;
+	//ImGui::ColorEdit3("Sprite Color", c);
+	//Sprite->SetColor(Color(c[0], c[1], c[2], c[3]));
 
 	bool b = Sprite->GetActive();
 	ImGui::Checkbox("Active", &b);

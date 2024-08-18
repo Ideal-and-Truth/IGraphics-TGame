@@ -1,6 +1,6 @@
 #pragma once
-#include "Core/Core.h"
 #include "ISprite.h"
+#include "Core/Core.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
 #include <memory>
@@ -38,7 +38,7 @@ namespace Ideal
 		virtual Vector2 const& GetPosition() override { return m_cbSprite.Pos; }
 		virtual float GetZ() override { return m_cbSprite.Z; }
 		virtual float GetAlpha() override { return m_cbSprite.Alpha; }
-		virtual Color const& GetColor() override { return m_cbSprite.SpriteColor; }
+		//virtual Color const& GetColor() override { return m_cbSprite.SpriteColor; }
 
 		virtual void SetSampleRect(const SpriteRectArea& Rect) override;
 		virtual void SetPosition(const Vector2& Position) override;
@@ -60,6 +60,7 @@ namespace Ideal
 	public:
 		// default mesh를 넣어줄 것
 		void SetMesh(std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> Mesh);
+		std::weak_ptr<Ideal::D3D12Texture> GetTexture() { return m_texture; }
 
 	private:
 		// 어차피 default mesh를 쓸건데 weak ptr이면 될 것 같음

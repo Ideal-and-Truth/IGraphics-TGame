@@ -5,6 +5,7 @@
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/Resource/UI/IdealSprite.h"
+#include "GraphicsEngine/Resource/UI/IdealText.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
@@ -50,6 +51,30 @@ void Ideal::IdealCanvas::DrawCanvas(ComPtr<ID3D12Device> Device, ComPtr<ID3D12Gr
 		}
 		sprite.lock()->DrawSprite(Device, CommandList, UIDescriptorHeap, CBPool, Vector2(m_uiCanvasWidth, m_uiCanvasHeight));
 	}
+
+	for (auto& text : m_texts)
+	{
+		text.lock()->UpdateDynamicTextureWithImage(Device);
+
+		auto sprite = text.lock()->GetSprite();
+		// Draw Off
+		if (sprite->GetActive() == false)
+		{
+			continue;
+		}
+
+		// Transparent
+		float alpha = sprite->GetAlpha();
+		//if (alpha < 1.f)ㅜ
+		{
+			// 일단 글자 배경이 투명이라 그냥 투명오브젝트로 넣어준다.
+			transparentSprites.push_back(sprite);
+			continue;
+		}
+		//sprite->DrawSprite(Device, CommandList, UIDescriptorHeap, CBPool, Vector2(m_uiCanvasWidth, m_uiCanvasHeight));
+
+	}
+
 	// 투명
 	for (auto& sprite : transparentSprites)
 	{
@@ -81,6 +106,29 @@ void Ideal::IdealCanvas::DeleteSprite(std::weak_ptr<Ideal::IdealSprite> Sprite)
 		{
 			std::swap(*it, m_sprites.back());
 			m_sprites.pop_back();
+		}
+	}
+}
+
+void Ideal::IdealCanvas::AddText(std::weak_ptr<Ideal::IdealText> Text)
+{
+	m_texts.push_back(Text);
+}
+
+void Ideal::IdealCanvas::DeleteText(std::weak_ptr<Ideal::IdealText> Text)
+{
+	if (auto lockedText = Text.lock())
+	{
+		auto it = std::find_if(m_texts.begin(), m_texts.end(),
+			[&lockedText](const std::weak_ptr<Ideal::IdealText>& s)
+			{
+				return s.lock() == lockedText;
+			}
+		);
+		if (it != m_texts.end())
+		{
+			std::swap(*it, m_texts.back());
+			m_texts.pop_back();
 		}
 	}
 }

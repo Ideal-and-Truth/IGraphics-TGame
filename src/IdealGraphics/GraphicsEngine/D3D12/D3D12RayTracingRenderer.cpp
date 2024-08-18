@@ -40,6 +40,7 @@
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
 #include "GraphicsEngine/Resource/UI/IdealCanvas.h"
+#include "GraphicsEngine/Resource/UI/IdealText.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
@@ -478,14 +479,16 @@ finishAdapter:
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
 
 	// TEST: Create Text
-	m_textSprite = std::static_pointer_cast<Ideal::IdealSprite>(CreateSprite());
-	m_fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
-	gTextImage = new BYTE[512 * 256 * 4];
-	m_resourceManager->CreateDynamicTexture(m_dynamicTexture, 512, 256);
-	m_textSprite->SetTexture(m_dynamicTexture);
-	m_textManager->WriteTextToBitmap(gTextImage, 512, 256, 512 * 4, m_fontHandle, L"HELLO WORLD");
-	UpdateTextureWithImage(m_dynamicTexture, gTextImage, 512, 256);
-	int a = 3;
+	//m_textSprite = std::static_pointer_cast<Ideal::IdealSprite>(CreateSprite());
+	//m_fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
+	//
+	//gTextImage = new BYTE[m_textwidth * m_textheight * 4];
+	//
+	//m_resourceManager->CreateDynamicTexture(m_dynamicTexture, m_textwidth, m_textheight);
+	//m_textSprite->SetTexture(m_dynamicTexture);
+	//m_textManager->WriteTextToBitmap(gTextImage, m_textwidth, m_textheight, m_textwidth * 4, m_fontHandle, L"HELLO WORLD");
+	//UpdateTextureWithImage(m_dynamicTexture, gTextImage, m_textwidth, m_textheight);
+	m_idealText = CreateText(512, 256);
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -1048,6 +1051,31 @@ void Ideal::D3D12RayTracingRenderer::DeleteSprite(std::shared_ptr<Ideal::ISprite
 	auto s = std::static_pointer_cast<Ideal::IdealSprite>(Sprite);
 	m_UICanvas->DeleteSprite(s);
 	Sprite.reset();
+}
+
+std::shared_ptr<Ideal::IdealText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 Width, uint32 Height)
+{
+	auto fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
+	auto text = std::make_shared<Ideal::IdealText>(m_textManager, fontHandle);
+	std::shared_ptr<Ideal::D3D12Texture> dynamicTexture;
+	m_resourceManager->CreateDynamicTexture(dynamicTexture, Width, Height);
+	{
+		//Sprite
+		std::shared_ptr<Ideal::IdealSprite> sprite = std::make_shared<Ideal::IdealSprite>();
+		sprite->SetMesh(m_resourceManager->GetDefaultQuadMesh());
+		sprite->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
+		text->SetSprite(sprite);
+	}
+	text->SetTexture(dynamicTexture);
+	text->ChangeText(L"Text : ÅØ½ºÆ®");
+	text->UpdateDynamicTextureWithImage(m_device);
+	m_UICanvas->AddText(text);
+	return text;
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
+{
+	m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)

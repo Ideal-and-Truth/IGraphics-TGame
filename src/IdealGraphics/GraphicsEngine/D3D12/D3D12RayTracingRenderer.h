@@ -70,6 +70,9 @@ namespace Ideal
 	class IMeshObject;
 	class ISkinnedMeshObject;
 	class IRenderScene;
+	class IText;
+	class ISprite;
+	
 
 	// TEST : DELETE
 	template<typename>
@@ -86,6 +89,7 @@ namespace Ideal
 
 	class D2DTextManager;
 	struct FontHandle;
+	class IdealText;
 }
 
 namespace Ideal
@@ -152,6 +156,9 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 
+		// Text
+		std::shared_ptr<Ideal::IdealText> CreateText(uint32 Width, uint32 Height);
+		void DeleteText(std::shared_ptr<Ideal::IText>& Text);
 	private:
 		void CreateCommandlists();
 		void CreatePools();
@@ -309,6 +316,10 @@ namespace Ideal
 		BYTE* gTextImage;
 		std::shared_ptr<Ideal::D3D12Texture> m_dynamicTexture;
 		std::shared_ptr<Ideal::IdealSprite> m_textSprite;
+		std::shared_ptr<Ideal::IdealText> m_idealText;
+
+		uint32 m_textwidth = 200;
+		uint32 m_textheight = 100;
 
 		void UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight);
 

@@ -119,6 +119,7 @@ void Ideal::D3D12Texture::UpdateTexture(ComPtr<ID3D12Device> Device, ComPtr<ID3D
 {
 	if (GetIsUpdated() == true)
 	{
+		m_updated = false;
 		if (m_uploadBuffer == nullptr) return;	// Is Not Dynamic Texture
 
 		const DWORD MAX_SUB_RESOURCE_NUM = 32;
