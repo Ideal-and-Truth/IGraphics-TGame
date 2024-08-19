@@ -847,7 +847,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 	{
 		auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(MeshObject);
 		RaytracingManagerDeleteObject(mesh);
-
+		m_resourceManager->DeleteStaticMeshObject(mesh);
 		auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), mesh);
 		{
 			*it = std::move(m_staticMeshObject.back());
@@ -859,7 +859,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 	{
 		auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject);
 		RaytracingManagerDeleteObject(mesh);
-
+		m_resourceManager->DeleteSkinnedMeshObject(mesh);
 		auto it = std::find(m_skinnedMeshObject.begin(), m_skinnedMeshObject.end(), mesh);
 		{
 			*it = std::move(m_skinnedMeshObject.back());
@@ -1034,6 +1034,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteMaterial(std::shared_ptr<Ideal::IMate
 {
 	if (!Material) return;
 	m_deferredDeleteManager->AddMaterialToDefferedDelete(std::static_pointer_cast<Ideal::IdealMaterial>(Material));
+	m_raytracingManager->DeleteMaterialInRayTracing(Material);
 }
 
 std::shared_ptr<Ideal::ISprite> Ideal::D3D12RayTracingRenderer::CreateSprite()

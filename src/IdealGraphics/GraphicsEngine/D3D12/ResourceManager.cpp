@@ -695,13 +695,15 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 	std::string key = StringUtils::ConvertWStringToString(filename);
 	std::shared_ptr<Ideal::IdealStaticMesh> staticMesh = m_staticMeshes[key];
 
+
 	if (staticMesh != nullptr)
 	{
+		staticMesh->AddRefCount();
 		OutMesh->SetStaticMesh(staticMesh);
 		return;
 	}
 	staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
-
+	staticMesh->AddRefCount();
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
 	{
 		std::wstring fullPath = m_modelPath + filename + L".mesh";
@@ -961,15 +963,16 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);
-	std::shared_ptr<Ideal::IdealSkinnedMesh> skinnedMesh = m_dynamicMeshes[key];
+	std::shared_ptr<Ideal::IdealSkinnedMesh> skinnedMesh = m_skinnedMeshes[key];
 
 	if (skinnedMesh != nullptr)
 	{
+		skinnedMesh->AddRefCount();
 		OutMesh->SetSkinnedMesh(skinnedMesh);
 		return;
 	}
 	skinnedMesh = std::make_shared<Ideal::IdealSkinnedMesh>();
-
+	skinnedMesh->AddRefCount();
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
 	{
 		std::wstring fullPath = m_modelPath + filename + L".dmesh";
@@ -1224,7 +1227,41 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 	OutMesh->SetSkinnedMesh(skinnedMesh);
 
 	// KeyBinding
-	m_dynamicMeshes[key] = skinnedMesh;
+	m_skinnedMeshes[key] = skinnedMesh;
+}
+
+void ResourceManager::DeleteStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> Mesh)
+{
+	std::wstring name = Mesh->GetName();
+	std::string key = StringUtils::ConvertWStringToString(name);
+	m_staticMeshes[key]->SubRefCount();
+
+	if (m_staticMeshes[key]->GetRefCount() == 0)
+	{
+		// todo : delete
+		auto it = m_staticMeshes.find(key);
+		if (it != m_staticMeshes.end())
+		{
+			m_staticMeshes.erase(it);
+		}
+	}
+}
+
+void ResourceManager::DeleteSkinnedMeshObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> Mesh)
+{
+	std::wstring name = Mesh->GetName();
+	std::string key = StringUtils::ConvertWStringToString(name);
+	m_skinnedMeshes[key]->SubRefCount();
+
+	if (m_skinnedMeshes[key]->GetRefCount() == 0)
+	{
+		// todo : delete
+		auto it = m_skinnedMeshes.find(key);
+		if (it != m_skinnedMeshes.end())
+		{
+			m_skinnedMeshes.erase(it);
+		}
+	}
 }
 
 std::shared_ptr<Ideal::D3D12Texture> ResourceManager::GetDefaultMaskTexture()
