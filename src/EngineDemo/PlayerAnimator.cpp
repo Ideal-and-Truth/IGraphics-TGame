@@ -66,7 +66,7 @@ void PlayerAnimator::Start()
 	m_playerController = m_owner.lock().get()->GetComponent<PlayerController>().lock();
 	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 
-	m_skinnedMesh->AddAnimation("Idle", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("Idle", L"AsciiAniTest/ani_com_3");
 	m_skinnedMesh->AddAnimation("Walk", L"AsciiAniTest/animation_ka_walk");
 
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3{ 1.5f, 0.0f, 0.0f });

@@ -50,10 +50,10 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-	g_Renderer->ConvertAssetToMyFormat(L"AsciiAniTest/animation_ka_walk.fbx", true);
+	// g_Renderer->ConvertAssetToMyFormat(L"AsciiAniTest/ani_com_3.fbx", true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
-	g_Renderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/asciiFbxAni.fbx");
+	// g_Renderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/ani_com_3.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 	// g_Renderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk2.fbx");// -> Assimp Converter에서 FLAG 해제
@@ -183,6 +183,16 @@ void Processor::Render()
 		m_editor->RenderUI(&show_demo_window);
 	}
 #endif // EDITOR_MODE
+
+// 	if (m_manager->Input()->GetKeyState(KEY::P) == KEY_STATE::DOWN)
+// 	{
+// 		m_manager->EditToGame();
+// 	}
+// 
+// 	if (m_manager->Input()->GetKeyState(KEY::O) == KEY_STATE::DOWN)
+// 	{
+// 		m_manager->GameToEdit();
+// 	}
 
 	m_manager->Render();
 }
