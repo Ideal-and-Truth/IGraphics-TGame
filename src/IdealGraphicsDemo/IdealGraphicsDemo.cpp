@@ -418,7 +418,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//---Text---//
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
-		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30);
+		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30);	// 기본 tahoma 글꼴임
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30, L"times new roman");
 		text->ChangeText(L"HI EVERYONE\n Hi2");
 #pragma endregion
 
@@ -428,7 +429,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
 
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
-
+		 
 		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		spotLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		spotLight->SetRange(6.f);
