@@ -40,16 +40,19 @@
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
 #include "GraphicsEngine/Resource/UI/IdealCanvas.h"
+#include "GraphicsEngine/Resource/UI/IdealText.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 #include "GraphicsEngine/Resource/IdealMaterial.h"
-#include "GraphicsEngine/Resource/IdealSprite.h"
+#include "GraphicsEngine/Resource/UI/IdealSprite.h"
 
 #include "GraphicsEngine/D3D12/TestShader.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
+
+#include "GraphicsEngine/D2D/D2DTextManager.h"
 
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
@@ -415,6 +418,8 @@ finishAdapter:
 		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.shader", m_animationShader);
 	}
 
+	m_textManager = std::make_shared<Ideal::D2DTextManager>();
+	m_textManager->Init(m_device, m_commandQueue);
 
 	//---------------Editor---------------//
 	if (m_isEditor)
@@ -472,6 +477,18 @@ finishAdapter:
 
 	RaytracingManagerInit();
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
+
+	// TEST: Create Text
+	//m_textSprite = std::static_pointer_cast<Ideal::IdealSprite>(CreateSprite());
+	//m_fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
+	//
+	//gTextImage = new BYTE[m_textwidth * m_textheight * 4];
+	//
+	//m_resourceManager->CreateDynamicTexture(m_dynamicTexture, m_textwidth, m_textheight);
+	//m_textSprite->SetTexture(m_dynamicTexture);
+	//m_textManager->WriteTextToBitmap(gTextImage, m_textwidth, m_textheight, m_textwidth * 4, m_fontHandle, L"HELLO WORLD");
+	//UpdateTextureWithImage(m_dynamicTexture, gTextImage, m_textwidth, m_textheight);
+	//m_idealText = CreateText(512, 256, TODO);
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -537,6 +554,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	TransitionRayTracingOutputToRTV();
 #endif
 	//-----------UI-----------//
+	// Update Text Or Dynamic Texture 
+	// Draw Text and Texture
 	DrawCanvas();
 #ifndef BeforeRefactor
 	TransitionRayTracingOutputToSRV();
@@ -1032,6 +1051,32 @@ void Ideal::D3D12RayTracingRenderer::DeleteSprite(std::shared_ptr<Ideal::ISprite
 	auto s = std::static_pointer_cast<Ideal::IdealSprite>(Sprite);
 	m_UICanvas->DeleteSprite(s);
 	Sprite.reset();
+}
+
+std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font /*= L"Tahoma"*/)
+{
+	auto fontHandle = m_textManager->CreateTextObject(Font.c_str(), FontSize);
+	auto text = std::make_shared<Ideal::IdealText>(m_textManager, fontHandle);
+	std::shared_ptr<Ideal::D3D12Texture> dynamicTexture;
+	m_resourceManager->CreateDynamicTexture(dynamicTexture, Width, Height);
+	{
+		//Sprite
+		std::shared_ptr<Ideal::IdealSprite> sprite = std::make_shared<Ideal::IdealSprite>();
+		sprite->SetMesh(m_resourceManager->GetDefaultQuadMesh());
+		sprite->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
+		text->SetSprite(sprite);
+	}
+	text->SetTexture(dynamicTexture);
+	text->ChangeText(L"Text : ÅØ½ºÆ®");
+	text->UpdateDynamicTextureWithImage(m_device);
+	m_UICanvas->AddText(text);
+	return text;
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
+{
+	if(Text)
+		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
@@ -1758,6 +1803,40 @@ void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 void Ideal::D3D12RayTracingRenderer::SetCanvasSize(uint32 Width, uint32 Height)
 {
 	m_UICanvas->SetCanvasSize(Width, Height);
+}
+
+void Ideal::D3D12RayTracingRenderer::UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight)
+{
+	if (SrcWidth > Texture->GetWidth())
+	{
+		__debugbreak();
+	}
+	if (SrcHeight > Texture->GetHeight())
+	{
+		__debugbreak();
+	}
+	D3D12_RESOURCE_DESC desc = Texture->GetResource()->GetDesc();
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT Footprint;
+	uint32 rows = 0;
+	uint64 rowSize = 0;
+	uint64 TotalBytes = 0;
+	m_device->GetCopyableFootprints(&desc, 0, 1, 0, &Footprint, &rows, &rowSize, &TotalBytes);
+
+	BYTE* mappedPtr = nullptr;
+	CD3DX12_RANGE writeRange(0, 0);
+	HRESULT hr = Texture->GetUploadBuffer()->Map(0, &writeRange, reinterpret_cast<void**>(&mappedPtr));
+	Check(hr);
+
+	BYTE* pSrc = SrcBits;
+	BYTE* pDest = mappedPtr;
+	for (uint32 y = 0; y < SrcHeight; ++y)
+	{
+		memcpy(pDest, pSrc, SrcWidth * 4);
+		pSrc += (SrcWidth * 4);
+		pDest += Footprint.Footprint.RowPitch;
+	}
+	Texture->GetUploadBuffer()->Unmap(0, nullptr);
+	Texture->SetUpdated();
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()

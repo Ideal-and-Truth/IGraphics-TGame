@@ -55,6 +55,7 @@ using namespace std;
 #include "GraphicsEngine/public/IMaterial.h"
 #include "GraphicsEngine/public/IBone.h"
 #include "GraphicsEngine/public/ISprite.h"
+#include "GraphicsEngine/public/IText.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -161,7 +162,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region EditorInitialize
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
-		// EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
 		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
@@ -186,7 +187,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->SetMainCamera(camera);
 
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
-		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
+		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
 
 #pragma endregion
 
@@ -195,7 +196,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
-		gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
@@ -325,7 +326,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		eyeMaterial->SetBaseMap(eyeTexture);
 #pragma endregion
 
-#pragma region CreateSpriteUI
+#pragma region CreateUI
 		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
 		sprite->SetTexture(faceTexture);
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
@@ -350,8 +351,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sprite3->SetScale(Vector2(0.3, 0.3));
 		sprite3->SetPosition(Vector2(200, 0));
 		sprite3->SetZ(0);
-		
 
+		//---Text---//
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
+		text->ChangeText(L"HI");
 #pragma endregion
 
 #pragma region CreateLight
@@ -434,8 +437,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-					if (sprite)
-						gRenderer->DeleteSprite(sprite);
+					//if (sprite)
+						//gRenderer->DeleteSprite(sprite);
+					if (text)
+						gRenderer->DeleteText(text);
 				}
 
 				if (GetAsyncKeyState('C') & 0x8000)
@@ -587,6 +592,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		skirtBottomTexture.reset();
 		gRenderer->DeleteTexture(skirtBottomNormalTexture);
 		skirtBottomNormalTexture.reset();
+
+		gRenderer->DeleteText(text);
+		text.reset();
+
 		gRenderer.reset();
 	}
 
@@ -1078,13 +1087,13 @@ void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite)
 	ImGui::SliderFloat("Alpha", &a, 0.f, 1.f);
 	Sprite->SetAlpha(a);
 
-	float c[4];
-	c[0] = Sprite->GetColor().R();
-	c[1] = Sprite->GetColor().G();
-	c[2] = Sprite->GetColor().B();
-	c[3] = 1;
-	ImGui::ColorEdit3("Sprite Color", c);
-	Sprite->SetColor(Color(c[0], c[1], c[2], c[3]));
+	//float c[4];
+	//c[0] = Sprite->GetColor().R();
+	//c[1] = Sprite->GetColor().G();
+	//c[2] = Sprite->GetColor().B();
+	//c[3] = 1;
+	//ImGui::ColorEdit3("Sprite Color", c);
+	//Sprite->SetColor(Color(c[0], c[1], c[2], c[3]));
 
 	bool b = Sprite->GetActive();
 	ImGui::Checkbox("Active", &b);

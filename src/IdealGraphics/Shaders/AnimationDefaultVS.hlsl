@@ -1,6 +1,6 @@
 // bone 연결시키기 위한 simple Mesh Shaderr
 
-#define MAX_BONE_TRANSFORMS 250
+#define MAX_BONE_TRANSFORMS 350
 
 struct VSInput
 {

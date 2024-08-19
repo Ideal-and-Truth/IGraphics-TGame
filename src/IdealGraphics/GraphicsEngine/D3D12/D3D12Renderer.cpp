@@ -579,6 +579,16 @@ void Ideal::D3D12Renderer::DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite)
 	__debugbreak();
 }
 
+std::shared_ptr<Ideal::IText> Ideal::D3D12Renderer::CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font /*= L"Tahoma"*/)
+{
+	return nullptr;
+}
+
+void Ideal::D3D12Renderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
+{
+
+}
+
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter/* = false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
