@@ -285,13 +285,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
 		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
-		DebugPlayer2->AddAnimation("Debug1", DebugPlayerAnim2);
-
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer3 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/asciiFbxAni");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim3 = gRenderer->CreateAnimation(L"DebugPlayer/asciiFbxAni");
-		DebugPlayer3->AddAnimation("Debug2", DebugPlayerAnim3);
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
+		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
+		//DebugPlayer2->AddAnimation("Debug1", DebugPlayerAnim2);
+		//
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer3 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/asciiFbxAni");
+		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim3 = gRenderer->CreateAnimation(L"DebugPlayer/asciiFbxAni");
+		//DebugPlayer3->AddAnimation("Debug2", DebugPlayerAnim3);
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> playerRe = gRenderer->CreateSkinnedMeshObject(L"PlayerRe/SM_chronos.Main_tPose");
 		//std::shared_ptr<Ideal::IAnimation> swordAnim = gRenderer->CreateAnimation(L"PlayerRe/Sword And Shield Slash");
@@ -514,41 +514,66 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('C') & 0x8000)
 				{
-					std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-					ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-					ka->AddAnimation("Walk", walkAnim);
+					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+					//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+					//ka->AddAnimation("Walk", walkAnim);
+					//
+					//Matrix mat2 = Matrix::Identity;
+					//mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
+					//
+					//meshes.push_back(ka);
+					//ka->SetTransformMatrix(mat2);
+					//tX++;
+					//
+					//std::shared_ptr<Ideal::IMeshObject> mesh;
+					//mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+					//
+					//meshes.push_back(mesh);
+					//mesh->SetTransformMatrix(mat2);
+					//tX++;
+				}
 
-					Matrix mat2 = Matrix::Identity;
-					mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
-
-					meshes.push_back(ka);
-					ka->SetTransformMatrix(mat2);
-					tX++;
-
-					std::shared_ptr<Ideal::IMeshObject> mesh;
-					mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-					
-					meshes.push_back(mesh);
-					mesh->SetTransformMatrix(mat2);
-					tX++;
+				if (GetAsyncKeyState('U') & 0x8000)
+				{
+					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+					//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+					//ka->AddAnimation("Walk", walkAnim);
+					//
+					//gRenderer->DeleteMeshObject(ka);
+					if (DebugPlayer)
+					{
+						gRenderer->DeleteMeshObject(DebugPlayer);
+						DebugPlayer = nullptr;
+					}
+				}
+				if (GetAsyncKeyState('Y') & 0x8000)
+				{
+					if (!DebugPlayer)
+					{
+						DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
+						DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+					}
 				}
 
 				if (GetAsyncKeyState('X') & 0x8000)
 				{
-					std::shared_ptr<Ideal::IMeshObject> mesh;
-					mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+					if (tX < 1)
+					{
+						std::shared_ptr<Ideal::IMeshObject> mesh;
+						mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 
-					Matrix mat2 = Matrix::Identity;
-					mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
+						Matrix mat2 = Matrix::Identity;
+						mat2.Translation(Vector3(tX * 1.f, 0.f, 0.f));
 
-					meshes.push_back(mesh);
-					mesh->SetTransformMatrix(mat2);
-					tX++;
+						meshes.push_back(mesh);
+						mesh->SetTransformMatrix(mat2);
+						tX++;
+					}
 				}
 
 				if (GetAsyncKeyState('M') & 0x8000)
 				{
-					for (int i = 0; i < 3; i++)
+					for (int i = 0; i < 1; i++)
 					{
 						if (meshes.size())
 						{
@@ -567,9 +592,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
-				DebugPlayer->AnimationDeltaTime(0.002f);
-				DebugPlayer2->AnimationDeltaTime(0.002f);
-				DebugPlayer3->AnimationDeltaTime(0.002f);
+				if (DebugPlayer)
+				{
+					DebugPlayer->AnimationDeltaTime(0.002f);
+				}
+				//DebugPlayer2->AnimationDeltaTime(0.002f);
+				//DebugPlayer3->AnimationDeltaTime(0.002f);
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				//if (isEditor)
@@ -609,9 +637,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//if (playerRe)
 						//{
 						//	//SkinnedMeshObjectBoneInfoTest(playerRe);
-						//	SkinnedMeshObjectGetMeshTest(playerRe, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+						//SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+						
+						if(DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
-						SkinnedMeshObjectBoneInfoTest(DebugPlayer2);
+						//SkinnedMeshObjectBoneInfoTest(DebugPlayer2);
 						//if (sprite)
 						//{
 						//	SpriteTest(sprite);
@@ -622,7 +652,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (text)
 						{
-							TextTest(text);
+							//TextTest(text);
 						}
 					}
 					//once++;
@@ -654,11 +684,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 		gRenderer->DeleteMeshObject(DebugPlayer);
-		gRenderer->DeleteMeshObject(DebugPlayer2);
-		gRenderer->DeleteMeshObject(DebugPlayer3);
+		//gRenderer->DeleteMeshObject(DebugPlayer2);
+		//gRenderer->DeleteMeshObject(DebugPlayer3);
 		DebugPlayer.reset();
-		DebugPlayer2.reset();
-		DebugPlayer3.reset();
+		//DebugPlayer2.reset();
+		//DebugPlayer3.reset();
 		//gRenderer->DeleteMeshObject(playerRe);
 		//playerRe.reset();
 		gRenderer->DeleteMaterial(skirtMaterial);
@@ -1147,7 +1177,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		if (once >= 1000)
 		{
 			once = 1;
-			SkinnedMeshObject->GetMeshByIndex(0).lock()->SetMaterialObject(Material);
+			//SkinnedMeshObject->GetMeshByIndex(0).lock()->SetMaterialObject(Material);
 		}
 	}
 	if (Material2)
@@ -1157,7 +1187,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 		if (once >= 1000)
 		{
 			once = 1;
-			SkinnedMeshObject->GetMeshByIndex(4).lock()->SetMaterialObject(Material2);
+			//SkinnedMeshObject->GetMeshByIndex(4).lock()->SetMaterialObject(Material2);
 		}
 	}
 	ImGui::End();

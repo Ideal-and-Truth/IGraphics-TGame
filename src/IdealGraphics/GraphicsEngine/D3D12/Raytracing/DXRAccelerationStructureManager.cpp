@@ -92,8 +92,8 @@ void Ideal::DXRAccelerationStructureManager::DeleteBLASInstance(std::shared_ptr<
 	auto it = std::find(m_blasInstanceDescs.begin(), m_blasInstanceDescs.end(), Instance);
 	if (it != m_blasInstanceDescs.end())
 	{
-		//*it = std::move(m_blasInstanceDescs.back());
-		std::swap(*it, m_blasInstanceDescs.back());
+		*it = std::move(m_blasInstanceDescs.back());
+		//std::swap(*it, m_blasInstanceDescs.back());
 		m_blasInstanceDescs.pop_back();
 	}
 }
