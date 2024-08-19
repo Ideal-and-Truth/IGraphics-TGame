@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/Core.h"
 
-#define MAX_BONE_TRANSFORMS 250
+#define MAX_BONE_TRANSFORMS 350
 #define MAX_MODEL_KEYFRAMES 500
 
 
