@@ -10,7 +10,6 @@ BOOST_CLASS_EXPORT_IMPLEMENT(MeleeWeapon)
 
 MeleeWeapon::MeleeWeapon()
 	: m_collider(nullptr)
-	, m_playerAnimator(nullptr)
 	, m_isAttacking(false)
 {
 	m_name = "MeleeWeapon";
@@ -45,6 +44,7 @@ void MeleeWeapon::Start()
 
 void MeleeWeapon::Update()
 {
+	/// TODO : 근접공격 완전해지면 다단히트 예외처리 만들기
 	/// 이거좀 치워라
 	if (m_isAttacking)
 	{
@@ -96,21 +96,29 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 	{
 		if (m_player)
 		{
-			if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
+			if (!_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock().get()).Get())
 			{
-				if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
+				if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
 				{
-					m_onHitEnemys.push_back(_other->GetOwner().lock());
+					if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
+					{
+						m_onHitEnemys.push_back(_other->GetOwner().lock());
+						WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
+					}
 				}
 			}
 		}
 		else if (m_enemy)
 		{
-			if (_other->GetOwner().lock()->GetComponent<Player>().lock())
+			if (!_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock().get()).Get())
 			{
-				if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
+				if (_other->GetOwner().lock()->GetComponent<Player>().lock())
 				{
-					m_onHitEnemys.push_back(_other->GetOwner().lock());
+					if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
+					{
+						m_onHitEnemys.push_back(_other->GetOwner().lock());
+						WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
+					}
 				}
 			}
 		}

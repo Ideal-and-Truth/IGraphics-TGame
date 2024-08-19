@@ -269,6 +269,9 @@ private:
 
 	float m_passingTime;
 
+	PROPERTY(hitStopTime);
+	float m_hitStopTime;
+
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
 
@@ -295,6 +298,9 @@ public:
 
 	METHOD(OnTriggerEnter);
 	void OnTriggerEnter(Truth::Collider* _other);
+
+	METHOD(OnCollisionEnter);
+	void OnCollisionEnter(Truth::Collider* _other);
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 

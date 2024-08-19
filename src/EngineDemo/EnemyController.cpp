@@ -68,9 +68,10 @@ void EnemyController::FollowTarget()
 
 		Vector3 dir = targetPos - pos;
 		float distance = sqrt(pow(dir.x, 2.f) + pow(dir.z, 2.f));
+		float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
 
 		// 일정거리까지 추적 후 멈춤
-		if (distance > 5.f)
+		if (distance > attackRange)
 		{
 			m_isBackStep = false;
 			m_isAttackReady = false;
@@ -82,7 +83,7 @@ void EnemyController::FollowTarget()
 
 		}
 		// 뒷걸음질
-		else if (distance < 4.f)
+		else if (distance < attackRange - 1.f)
 		{
 			m_isBackStep = true;
 			m_isAttackReady = false;

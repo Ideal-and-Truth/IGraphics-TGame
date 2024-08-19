@@ -37,6 +37,9 @@ private:
 	PROPERTY(currentCP);
 	float m_currentCP;
 
+	PROPERTY(attackRange);
+	float m_attackRange;
+
 	PROPERTY(target);
 	std::weak_ptr<Truth::Entity> m_target;
 
@@ -62,7 +65,18 @@ void Enemy::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 
-
+	if (file_version >= 1)
+	{
+		_ar& m_speed;
+		_ar& m_attackCoefficient;
+		_ar& m_moveCoefficient;
+		_ar& m_maxTP;
+		_ar& m_maxCP;
+		_ar& m_currentDamage;
+		_ar& m_currentTP;
+		_ar& m_currentCP;
+		_ar& m_attackRange;
+	}
 }
 
 template<class Archive>
@@ -70,9 +84,17 @@ void Enemy::save(Archive& _ar, const unsigned int file_version) const
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 
-	
+	_ar& m_speed;
+	_ar& m_attackCoefficient;
+	_ar& m_moveCoefficient;
+	_ar& m_maxTP;
+	_ar& m_maxCP;
+	_ar& m_currentDamage;
+	_ar& m_currentTP;
+	_ar& m_currentCP;
+	_ar& m_attackRange;
 }
 
 
 BOOST_CLASS_EXPORT_KEY(Enemy)
-BOOST_CLASS_VERSION(Enemy, 0)
+BOOST_CLASS_VERSION(Enemy, 1)

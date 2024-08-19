@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "PlayerController.h"
 #include "EnemyAnimator.h"
+#include "Bullet.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 
@@ -10,6 +11,7 @@ PlayerAnimator::PlayerAnimator()
 	: m_isAnimationEnd(false)
 	, m_currentFrame(0)
 	, m_lastHp(0.f)
+	, m_hitStopTime(0.f)
 	, m_passingTime(0.f)
 	, m_currentState(nullptr)
 	, m_isWalk(false)
@@ -146,11 +148,11 @@ void PlayerAnimator::Update()
 		m_passingTime = 0.f;
 	}
 
-// 	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
-// 	{
-// 		m_isHit = true;
-// 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-// 	}
+	// 	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
+	// 	{
+	// 		m_isHit = true;
+	// 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+	// 	}
 
 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
 	{
@@ -182,7 +184,7 @@ void PlayerAnimator::Update()
 
 	m_currentState->OnStateUpdate();
 
-	if (!m_isAttacking && !m_isGuard)
+	if (!m_isAttacking && !m_isGuard && !m_isHit)
 	{
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
 	}
@@ -201,16 +203,29 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 	if (enemy)
 	{
 		auto enemyAnim = enemy->GetComponent<EnemyAnimator>().lock();
+
 		if (enemyAnim)
 		{
-			m_isHit = true;
-			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-
-			if ((m_passingTime > 0.f && m_passingTime < 0.2f) && enemyAnim->GetTypeInfo().GetProperty("isParryAttack")->Get<bool>(enemyAnim.get()).Get())
+			if (enemyAnim->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(enemyAnim.get()).Get())
 			{
-				enemyAnim->GetTypeInfo().GetProperty("isParried")->Set(enemyAnim.get(), true);
+				m_isHit = true;
+				m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+
+				if ((m_passingTime > 0.f && m_passingTime < 0.2f) && enemyAnim->GetTypeInfo().GetProperty("isParryAttack")->Get<bool>(enemyAnim.get()).Get())
+				{
+					enemyAnim->GetTypeInfo().GetProperty("isParried")->Set(enemyAnim.get(), true);
+				}
 			}
 		}
+	}
+}
+
+void PlayerAnimator::OnCollisionEnter(Truth::Collider* _other)
+{
+	if (_other->GetOwner().lock()->GetComponent<Bullet>().lock())
+	{
+		m_isHit = true;
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 }
 
@@ -348,6 +363,7 @@ void NormalAttack1::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack1", false);
 	/// TODO : 플레이어 데미지 세팅 여기서 (각 공격마다 세팅해줘야 될 수도)
 	///dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(1.f);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -373,6 +389,7 @@ void NormalAttack1::OnStateExit()
 void NormalAttack2::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack2", false);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -397,6 +414,7 @@ void NormalAttack2::OnStateExit()
 void NormalAttack3::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack3", false);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -421,6 +439,7 @@ void NormalAttack3::OnStateExit()
 void NormalAttack4::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack4", false);
+	GetProperty("hitStopTime")->Set(m_animator, 0.2f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 

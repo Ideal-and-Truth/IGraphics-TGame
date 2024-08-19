@@ -1,7 +1,10 @@
 #include "PlayerCamera.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "Enemy.h"
 #include "PhysicsManager.h"
+#include "PlayerController.h"
+#include "EnemyAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 
@@ -11,7 +14,9 @@ PlayerCamera::PlayerCamera()
 	//, m_cameraDistance(15.f)
 	, m_cameraDistance(25.f)
 	, m_cameraSpeed(0.003f)
+	, m_passingTime(0.f)
 	, m_isLockOn(false)
+	, m_enemyCount(0)
 {
 	m_name = "PlayerCamera";
 }
@@ -29,21 +34,21 @@ void PlayerCamera::Awake()
 void PlayerCamera::Start()
 {
 	m_camera = m_owner.lock().get()->GetComponent<Truth::Camera>();
-	m_target = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player").lock()->GetComponent<Truth::Transform>();
-	Vector3 targetPos = m_target.lock()->m_position;
+	m_player = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player");
+	Vector3 targetPos = m_player.lock()->m_transform->m_position;
 	targetPos.z -= m_cameraDistance;
 
 	m_owner.lock()->m_transform->m_position = targetPos;
 
+	m_playerController = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player").lock()->GetComponent<PlayerController>().lock();
+
+	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
+	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Enemy").lock());
 }
 
 void PlayerCamera::LateUpdate()
 {
-	if (!m_isLockOn == GetKeyDown(KEY::Q))
-	{
-		m_isLockOn = true;
-	}
-	else if (m_isLockOn == GetKeyDown(KEY::Q))
+	if (m_enemys.empty())
 	{
 		m_isLockOn = false;
 	}
@@ -51,18 +56,70 @@ void PlayerCamera::LateUpdate()
 	if (m_isLockOn)
 	{
 		LockOnCamera();
-		return;
+	}
+	else
+	{
+		FreeCamera();
 	}
 
-	FreeCamera();
+	if (!m_enemys.empty())
+	{
+		if (GetKeyDown(KEY::Q))
+		{
+			m_isLockOn = true;
+		}
+		if (GetKey(KEY::Q) && m_isLockOn)
+		{
+			m_passingTime += GetDeltaTime();
+			if (m_isLockOn && m_passingTime > 1.5f)
+			{
+				m_isLockOn = false;
+				m_passingTime = 0.f;
+				m_enemyCount = 0;
+			}
+		}
+		else
+		{
+			m_passingTime = 0.f;
+		}
+	}
 
+
+	for (auto& e : m_enemys)
+	{
+		if (e->GetComponent<EnemyAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(e->GetComponent<EnemyAnimator>().lock().get()).Get())
+		{
+			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+			break;
+		}
+	}
+
+}
+
+void PlayerCamera::OnTriggerEnter(Truth::Collider* _other)
+{
+	if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
+	{
+		m_enemys.push_back(_other->GetOwner().lock());
+	}
+}
+
+void PlayerCamera::OnTriggerExit(Truth::Collider* _other)
+{
+	for (auto& e : m_enemys)
+	{
+		if (e == _other->GetOwner().lock())
+		{
+			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+		}
+	}
 }
 
 void PlayerCamera::FreeCamera()
 {
 	// 자유시점 카메라
-	Vector3 cameraPos = m_owner.lock()->m_transform->m_position ;
-	Vector3 targetPos = m_target.lock()->m_position + Vector3{ 0.0f, 2.0f, 0.0f };
+	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
+	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 2.0f, 0.0f };
 
 	m_elevation += MouseDy() * m_cameraSpeed;
 	m_azimuth -= MouseDx() * m_cameraSpeed;
@@ -104,16 +161,67 @@ void PlayerCamera::FreeCamera()
 	m_owner.lock()->m_transform->m_position = cameraPos;
 	m_camera.lock()->m_look = look;
 
-	look.Normalize();
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0;
 
 	// m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);
-	m_camera.lock()->m_look = look;
 }
 
 void PlayerCamera::LockOnCamera()
 {
+	SortEnemy();
+
 	// 락온 카메라
+	if (GetKeyDown(KEY::Q))
+	{
+		m_enemyCount++;
+	}
+	if (m_enemys.size() <= m_enemyCount)
+	{
+		m_enemyCount = 0;
+	}
+
+
+	Vector3 enemyPos = m_enemys[m_enemyCount]->m_transform->m_position;
+	Vector3 playerPos = m_player.lock()->m_transform->m_position;
+	Vector3 targetPos = playerPos + Vector3{ 0.0f, 2.0f, 0.0f };
+	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
+
+
+	Vector3 look = enemyPos - playerPos - Vector3{ 0.0f, 5.0f, 0.0f };
+	look.Normalize(look);
+	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance);
+
+	m_owner.lock()->m_transform->m_position = cameraPos;
+	m_camera.lock()->m_look = look;
+
+	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
+	m_owner.lock()->m_transform->m_rotation.z = 0;
 
 }
+
+void PlayerCamera::SortEnemy()
+{
+	for (int i = 0; i < m_enemys.size(); i++)
+	{
+		for (int j = 0; j < m_enemys.size(); j++)
+		{
+			if (i == j || i > j)
+			{
+				continue;
+			}
+			Vector3 playerPos = m_player.lock()->m_transform->m_position;
+			Vector3 enemyPos1 = playerPos - m_enemys[i]->m_transform->m_position;
+			Vector3 enemyPos2 = playerPos - m_enemys[j]->m_transform->m_position;
+
+			float enemyDistance1 = (float)sqrt(pow(enemyPos1.x, 2) + pow(enemyPos1.y, 2));
+			float enemyDistance2 = (float)sqrt(pow(enemyPos2.x, 2) + pow(enemyPos2.y, 2));
+
+			if (enemyDistance1 > enemyDistance2)
+			{
+				m_enemys[j].swap(m_enemys[i]);
+			}
+		}
+	}
+}
+

@@ -1,10 +1,16 @@
 #pragma once
 #include "Component.h"
+#include "Collider.h"
+
+class Player;
+class PlayerAnimator;
+class Enemy;
+class EnemyAnimator;
+
 class RangedWeapon :
 	public Truth::Component
 {
 	GENERATE_CLASS_TYPE_INFO(RangedWeapon);
-private:
 private:
 	friend class boost::serialization::access;
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -14,8 +20,19 @@ private:
 	void load(Archive& ar, const unsigned int file_version);
 
 private:
+	std::vector<std::pair<std::shared_ptr<Truth::Entity>, float>> m_bullets;
+
+	std::shared_ptr<Truth::Collider> m_collider;
+
+	std::shared_ptr<Player> m_player;
+	std::shared_ptr<PlayerAnimator> m_playerAnimator;
+
+	std::shared_ptr<Enemy> m_enemy;
+	std::shared_ptr<EnemyAnimator> m_enemyAnimator;
 
 
+	bool m_isAttacking;
+	bool m_isShot;
 public:
 	RangedWeapon();
 	virtual ~RangedWeapon();
@@ -23,8 +40,12 @@ public:
 	METHOD(Awake);
 	void Awake();
 
+	METHOD(Start);
+	void Start();
+
 	METHOD(Update);
 	void Update();
+
 };
 
 template<class Archive>

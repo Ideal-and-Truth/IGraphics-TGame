@@ -141,6 +141,11 @@ namespace Truth
 		{
 			return m_managers.lock()->Time()->GetFDT();
 		}
+
+		inline void WaitForSecondsRealtime(float time)
+		{
+			m_managers.lock()->Time()->WaitForSecondsRealtime(time);
+		}
 	public:
 		void Translate(Vector3& _val);
 
