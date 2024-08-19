@@ -2,8 +2,12 @@
 #include "Headers.h"
 #include "Managers.h"
 #include "SceneManager.h"
+#include <thread>
+#include <mutex>
 
 
+#define CONVERT_DATA
+#define MAX_THREAD_COUNT 16
 namespace Truth
 {
 	class Managers;
@@ -25,6 +29,53 @@ namespace Ideal
 class Processor
 {
 private:
+
+#ifdef CONVERT_DATA
+	const std::vector<std::wstring> m_aniData =
+	{
+		/// Player animation List
+		L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1.FBX",
+		L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_2.FBX",
+		L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_3.FBX",
+		L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_7Combo_7.FBX",
+		L"PlayerAnimations/ChargedAttack/M_katana_Blade@Skill_H.FBX",
+		L"PlayerAnimations/ComboAttackReady/Buff_01.fbx",
+		L"PlayerAnimations/Dodge/roll_front.fbx",
+		L"PlayerAnimations/Fall/unitychan_Fall.fbx",
+		L"PlayerAnimations/Guard/defence.fbx",
+		L"PlayerAnimations/Hit/hit01.fbx",
+		L"PlayerAnimations/Idle/idle.fbx",
+		L"PlayerAnimations/Move/BackStep/M_katana_Blade@Walk_ver_A_Back.fbx",
+		L"PlayerAnimations/Move/BackStep/M_katana_Blade@Walk_ver_A_Back_L45.fbx",
+		L"PlayerAnimations/Move/BackStep/M_katana_Blade@Walk_ver_A_Back_R45.fbx",
+		L"PlayerAnimations/Move/Front/M_katana_Blade@Walk_ver_A_Front_L90.fbx",
+		L"PlayerAnimations/Move/Front/M_katana_Blade@Walk_ver_A_Front_R90.fbx",
+		L"PlayerAnimations/Move/FrontWalk/M_katana_Blade@Walk_ver_A_Front.fbx",
+		L"PlayerAnimations/Move/FrontWalk/M_katana_Blade@Walk_ver_A_Front_L45.fbx",
+		L"PlayerAnimations/Move/FrontWalk/M_katana_Blade@Walk_ver_A_Front_R45.fbx",
+		L"PlayerAnimations/Move/Run/run_strafe_front.fbx",
+		L"PlayerAnimations/Move/Run/run_strafe_frontleft.fbx",
+		L"PlayerAnimations/Move/Run/run_strafe_frontright.fbx",
+		L"PlayerAnimations/NormalAttack/Combo_01_1.fbx",
+		L"PlayerAnimations/NormalAttack/Combo_01_2.fbx",
+		L"PlayerAnimations/NormalAttack/Combo_01_3.fbx",
+		L"PlayerAnimations/NormalAttack/Combo_02_3.fbx",
+		L"PlayerAnimations/NormalAttack/Combo_03_3.fbx",
+		L"PlayerAnimations/NormalAttack/Combo_04_4.fbx"
+	};
+
+	const std::vector<std::wstring> m_skelMeshdata =
+	{
+		L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1.FBX"
+	};
+
+	const std::vector<std::wstring> m_staticMeshData =
+	{
+	};
+
+#endif // CONVERT_DATA
+
+
 	std::unique_ptr<EditorUI> m_editor;
 	std::shared_ptr<Truth::Managers> m_manager;
 
@@ -76,7 +127,14 @@ private:
 
 	void CreateMainWindow(HINSTANCE _hInstance, uint32 _width = 1920, uint32 _height = 1080, const wchar_t szAppName[] = L"Truth Engine");
 	void InitializeManager();
+
+#ifdef CONVERT_DATA
+	void ConvertData();
+
+	static void ConvertAniFbxData(const std::wstring& _path);
+	static void ConvertSkelFbxData(const std::wstring& _path);
+	static void ConvertStaticFbxData(const std::wstring& _path);
+#endif // CONVERT_DATA
+
 };
-
-
 
