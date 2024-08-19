@@ -129,6 +129,9 @@
     <ClInclude Include="HitStop.h">
       <Filter>Component\HitStop</Filter>
     </ClInclude>
+    <ClInclude Include="Skill.h">
+      <Filter>Component\BattleSystem\SkillTree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="HitStop.cpp">
       <Filter>Component\HitStop</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill.cpp">
+      <Filter>Component\BattleSystem\SkillTree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

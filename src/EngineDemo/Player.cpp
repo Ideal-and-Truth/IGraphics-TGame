@@ -14,6 +14,7 @@ Player::Player()
 	, m_currentCP(0.f)
 	, m_chargingCP(10.f)
 	, m_isDecreaseCP(false)
+	, m_unlockSkill1(false)
 {
 	m_name = "Player";
 }

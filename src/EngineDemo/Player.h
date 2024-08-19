@@ -45,6 +45,10 @@ private:
 	PROPERTY(isDecreaseCP);
 	bool m_isDecreaseCP;
 
+	PROPERTY(unlockSkill1);
+	bool m_unlockSkill1;
+
+
 public:
 	Player();
 	virtual ~Player();

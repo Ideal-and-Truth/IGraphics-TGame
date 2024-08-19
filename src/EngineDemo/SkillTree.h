@@ -1,26 +1,9 @@
 #pragma once
 #include "Component.h"
 
-class Skill
-{
-private:
-	int m_id;
-	std::string m_name;
-	std::string m_description;
-	// 해금됐는지
-	bool m_isUnlocked;
-	// 활성화됐는지
-	bool m_isDisabled;
-	std::vector<Skill> m_prevSkills;
-
-public:
-	Skill();
-	~Skill();
 
 
-
-};
-
+class Player;
 
 class SkillTree :
 	public Truth::Component
@@ -35,7 +18,7 @@ private:
 	void load(Archive& ar, const unsigned int file_version);
 
 private:
-
+	std::weak_ptr<Truth::Entity> m_playerEntity;
 
 public:
 	SkillTree();
