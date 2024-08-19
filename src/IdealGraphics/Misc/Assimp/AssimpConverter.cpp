@@ -149,7 +149,7 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 		//flag |= aiProcess_OptimizeMeshes;
 		//flag |= aiProcess_PreTransformVertices;
 	}
-	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, true);
+	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
 	bool s = m_importer->GetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS);
 

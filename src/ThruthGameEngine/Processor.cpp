@@ -16,6 +16,8 @@
 
 #include <xxhash.h>
 
+#include "IdealRenderer.h"
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -48,10 +50,10 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-	// g_Renderer->ConvertAssetToMyFormat(L"AsciiAniTest/asciiFbxAni.fbx", true);
+	g_Renderer->ConvertAssetToMyFormat(L"AsciiAniTest/animation_ka_walk.fbx", true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
-	// g_Renderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/asciiFbxAni.fbx");
+	g_Renderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/asciiFbxAni.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 	// g_Renderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk2.fbx");// -> Assimp Converter에서 FLAG 해제

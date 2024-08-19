@@ -57,7 +57,7 @@ void EnemyAnimator::Start()
 	m_enemyController = m_owner.lock().get()->GetComponent<EnemyController>().lock();
 	m_enemy = m_owner.lock().get()->GetComponent<Enemy>().lock();
 
-	m_skinnedMesh->AddAnimation("EnemyIdle", L"Kachujin/Idle");
+	m_skinnedMesh->AddAnimation("EnemyIdle", L"Kachujin/animation_ka_walk_ori");
 	m_skinnedMesh->AddAnimation("EnemyWalk", L"Kachujin/Sword And Shield Walk");
 	m_skinnedMesh->AddAnimation("EnemyLeftWalk", L"Kachujin/Left Strafe Walking");
 	m_skinnedMesh->AddAnimation("EnemyRightWalk", L"Kachujin/Right Strafe Walking");

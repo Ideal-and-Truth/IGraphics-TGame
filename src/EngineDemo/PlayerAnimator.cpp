@@ -65,7 +65,7 @@ void PlayerAnimator::Start()
 	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 
 	m_skinnedMesh->AddAnimation("Idle", L"AsciiAniTest/asciiFbxAni");
-	m_skinnedMesh->AddAnimation("Walk", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("Walk", L"AsciiAniTest/animation_ka_walk");
 
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3{ 1.5f, 0.0f, 0.0f });
 	Matrix t = Matrix::CreateFromQuaternion(q);
@@ -84,7 +84,7 @@ void PlayerAnimator::Start()
 // 	m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations1/Hit/Sword And Shield Impact");
 // 	m_skinnedMesh->AddAnimation("Dodge", L"PlayerAnimations1/Dodge/Stand To Roll");
 
-	m_skinnedMesh->AddAnimation("Run", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("Run", L"AsciiAniTest/animation_ka_walk");
 	m_skinnedMesh->AddAnimation("NormalAttack1", L"AsciiAniTest/asciiFbxAni");
 	m_skinnedMesh->AddAnimation("NormalAttack2", L"AsciiAniTest/asciiFbxAni");
 	m_skinnedMesh->AddAnimation("NormalAttack3", L"AsciiAniTest/asciiFbxAni");
