@@ -271,9 +271,15 @@ void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::
 		Matrix resultFrame = Matrix::Identity;
 		Matrix::Lerp(currentFrame, nextFrame, m_ratio, resultFrame);
 		
+
 		Matrix finalMatrix = bones[boneIdx]->GetOffsetMatrix() * resultFrame;
 
 		m_cbBoneData.transforms[boneIdx] = finalMatrix.Transpose();
+
+		//if (bones[boneIdx]->GetName() == "Sword")
+		//{
+		//	m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
+		//}
 
 		// SkinnedMesh"Object"가 가지고 있는 본의 정보
 		m_bones[boneIdx]->SetTransform(resultFrame);

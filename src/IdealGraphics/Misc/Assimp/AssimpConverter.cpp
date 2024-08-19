@@ -143,13 +143,8 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	//flag |= aiProcess_SortByPType;
 	//flag |= aiProcess_LimitBoneWeights;
 	//flag |= aiProcess_JoinIdenticalVertices;
-	if (!isSkinnedData)
-	{
-		// TODO : 모델 FBX안에 애니메이션이 있을 경우 아래 FLAG 넣어주면 안됨. EX) CatWalk.
-		//flag |= aiProcess_OptimizeMeshes;
-		//flag |= aiProcess_PreTransformVertices;
-	}
-	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, true);
+	
+	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
 	bool s = m_importer->GetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS);
 
@@ -182,36 +177,36 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 
 		//Write CSV File
 		{
-			//FILE* file;
-			//fopen_s(&file, "../Vertices.csv", "w");
-			//
-			//for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
-			//{
-			//	std::string name = bone->name;
-			//	::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
-			//}
-			//
-			//fprintf(file, "\n");
-			//
-			//for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
-			//{
-			//	std::string name = mesh->name;
-			//	//::printf("%s\n", name.c_str());
-			//	::fprintf(file, "name : %s\n", name.c_str());
-			//
-			//	for (UINT i = 0; i < mesh->vertices.size(); i++)
-			//	{
-			//		Vector3 p = mesh->vertices[i].Position;
-			//		Vector4 indices = mesh->vertices[i].BlendIndices;
-			//		Vector4 weights = mesh->vertices[i].BlendWeights;
-			//
-			//		::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
-			//		::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
-			//		::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
-			//	}
-			//}
-			//
-			//fclose(file);
+			FILE* file;
+			fopen_s(&file, "../Vertices.csv", "w");
+			
+			for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
+			{
+				std::string name = bone->name;
+				::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
+			}
+			
+			fprintf(file, "\n");
+			
+			for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
+			{
+				std::string name = mesh->name;
+				//::printf("%s\n", name.c_str());
+				::fprintf(file, "name : %s\n", name.c_str());
+			
+				for (UINT i = 0; i < mesh->vertices.size(); i++)
+				{
+					Vector3 p = mesh->vertices[i].Position;
+					Vector4 indices = mesh->vertices[i].BlendIndices;
+					Vector4 weights = mesh->vertices[i].BlendWeights;
+			
+					::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
+					::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
+					::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
+				}
+			}
+			
+			fclose(file);
 		}
 	}
 	else
@@ -489,7 +484,7 @@ void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 pare
 	bone->index = index;
 	bone->parent = parent;
 	bone->name = node->mName.C_Str();
-	
+
 	/// Relative Transform
 	// float 첫번째 주소 값으로 matrix 복사
 	Matrix transform(node->mTransformation[0]);
@@ -704,8 +699,15 @@ void AssimpConverter::ReadSkinData()
 			if (hasNotBone)
 			{
 				// 만약 본이 없을 경우 그냥 부모 본에 붙어있게하고 계산안한다.
-				uint32 parentBoneIndex = mesh->parentIndexIfHaveNotBone;
-				mesh->vertices[v].BlendIndices = Vector4(parentBoneIndex, 0, 0, 0);
+				//uint32 parentBoneIndex = mesh->parentIndexIfHaveNotBone;
+				//mesh->vertices[v].BlendIndices = Vector4(parentBoneIndex, 0, 0, 0);
+				////mesh->vertices[v].BlendIndices = Vector4(1, 0, 0, 0);
+				//mesh->vertices[v].BlendWeights = Vector4(1, 0, 0, 0);
+				//continue;
+
+				// 만약 본이 없을 경우 나의 본을 붙힌다.
+				AssimpConvert::BlendWeight blendWeight = tempVertexBoneWeights[v].GetBlendWeights();
+				mesh->vertices[v].BlendIndices = Vector4(mesh->boneIndex,0,0,0);
 				mesh->vertices[v].BlendWeights = Vector4(1, 0, 0, 0);
 				continue;
 			}
