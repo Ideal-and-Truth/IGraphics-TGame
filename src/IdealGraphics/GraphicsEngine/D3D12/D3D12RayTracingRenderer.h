@@ -55,6 +55,7 @@ namespace Ideal
 	class IdealSpotLight;
 	class IdealPointLight;
 	class IdealCanvas;
+	class IdealSprite;
 
 	struct ConstantBufferContainer;
 	// Manager
@@ -69,6 +70,9 @@ namespace Ideal
 	class IMeshObject;
 	class ISkinnedMeshObject;
 	class IRenderScene;
+	class IText;
+	class ISprite;
+	
 
 	// TEST : DELETE
 	template<typename>
@@ -82,6 +86,10 @@ namespace Ideal
 	class DXRAccelerationStructureManager;
 	class RaytracingManager;
 	class D3D12DescriptorManager;
+
+	class D2DTextManager;
+	struct FontHandle;
+	class IdealText;
 }
 
 namespace Ideal
@@ -147,6 +155,10 @@ namespace Ideal
 		// Sprite
 		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
+
+		// Text
+		virtual std::shared_ptr<Ideal::IText> CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font = L"Tahoma") override;
+		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
 
 	private:
 		void CreateCommandlists();
@@ -240,6 +252,9 @@ namespace Ideal
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager = nullptr;
 
+		// Text
+		std::shared_ptr<Ideal::D2DTextManager> m_textManager;
+
 		// Light
 		void UpdateLightListCBData();
 
@@ -297,6 +312,17 @@ namespace Ideal
 		void SetCanvasSize(uint32 Width, uint32 Height);
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_mainDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::IdealCanvas> m_UICanvas;
+
+		std::shared_ptr<Ideal::FontHandle> m_fontHandle;
+		BYTE* gTextImage;
+		std::shared_ptr<Ideal::D3D12Texture> m_dynamicTexture;
+		std::shared_ptr<Ideal::IdealSprite> m_textSprite;
+		std::shared_ptr<Ideal::IdealText> m_idealText;
+
+		uint32 m_textwidth = 200;
+		uint32 m_textheight = 100;
+
+		void UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight);
 
 		// EDITOR 
 	private:

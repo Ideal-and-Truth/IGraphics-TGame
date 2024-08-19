@@ -1,7 +1,7 @@
 #ifndef CS_SKINNED_VERTEX_HLSL
 #define CS_SKINNED_VERTEX_HLSL
 
-#define MAX_BONE_TRANSFORMS 250
+#define MAX_BONE_TRANSFORMS 350
 
 struct SkinnedVertex
 {

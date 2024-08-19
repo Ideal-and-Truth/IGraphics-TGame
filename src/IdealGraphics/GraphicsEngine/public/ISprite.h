@@ -37,7 +37,7 @@ namespace Ideal
 	{
 	public:
 		ISprite() {}
-		~ISprite() {}
+		virtual ~ISprite() {}
 
 	public:
 		// Draw On Off
@@ -48,7 +48,7 @@ namespace Ideal
 		virtual DirectX::SimpleMath::Vector2 const& GetPosition() abstract;
 		virtual float GetZ() abstract;
 		virtual float GetAlpha() abstract;
-		virtual Color const& GetColor() abstract;
+		//virtual Color const& GetColor() abstract;
 		// 텍스쳐에서 지정한 사각형(영역)만 뽑을 경우
 		virtual void SetSampleRect(const SpriteRectArea&) abstract;
 		virtual void SetPosition(const DirectX::SimpleMath::Vector2&) abstract;

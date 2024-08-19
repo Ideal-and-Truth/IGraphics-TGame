@@ -174,6 +174,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="GraphicsEngine\D2D\D2DTextManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Editor\imguizmo\GraphEditor.h" />
     <ClInclude Include="Editor\imguizmo\ImApp.h" />
     <ClInclude Include="Editor\imguizmo\ImCurveEdit.h" />
@@ -231,6 +236,7 @@
     <ClInclude Include="GraphicsEngine\public\IRenderScene.h" />
     <ClInclude Include="GraphicsEngine\public\ISpotLight.h" />
     <ClInclude Include="GraphicsEngine\public\ISprite.h" />
+    <ClInclude Include="GraphicsEngine\public\IText.h" />
     <ClInclude Include="GraphicsEngine\public\ITexture.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealCamera.h" />
     <ClInclude Include="GraphicsEngine\D3D12\ResourceManager.h" />
@@ -253,8 +259,13 @@
     <ClInclude Include="GraphicsEngine\public\IDirectionalLight.h" />
     <ClInclude Include="GraphicsEngine\Resource\UI\IdealCanvas.h" />
     <ClInclude Include="GraphicsEngine\Resource\UI\IdealImage.h" />
-    <ClInclude Include="GraphicsEngine\Resource\IdealSprite.h" />
+    <ClInclude Include="GraphicsEngine\Resource\UI\IdealSprite.h" />
     <ClInclude Include="GraphicsEngine\Resource\UI\UIResourceBase.h" />
+    <ClInclude Include="GraphicsEngine\Resource\UI\IdealText.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Misc\ThirdParty\Utils\IndexCreator.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\FileUtils.h" />
     <ClInclude Include="Misc\Assimp\AssimpConverter.h" />
@@ -290,6 +301,11 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\D2D\D2DTextManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Editor\imguizmo\GraphEditor.cpp" />
     <ClCompile Include="Editor\imguizmo\ImCurveEdit.cpp" />
     <ClCompile Include="Editor\imguizmo\ImGradient.cpp" />
@@ -345,7 +361,12 @@
     <ClCompile Include="GraphicsEngine\Resource\Light\IdealDirectionalLight.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\UI\IdealCanvas.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\UI\IdealImage.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\IdealSprite.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\UI\IdealSprite.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\UI\IdealText.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Misc\ThirdParty\Utils\IndexCreator.cpp" />
     <ClCompile Include="Misc\Assimp\AssimpConvertType.h" />
     <ClCompile Include="Misc\ThirdParty\Utils\FileUtils.cpp" />
