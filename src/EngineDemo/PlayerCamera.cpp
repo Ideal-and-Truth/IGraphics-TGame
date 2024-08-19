@@ -9,9 +9,8 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 
 PlayerCamera::PlayerCamera()
-	: m_elevation(0.1f)
+	: m_elevation(3.3f)
 	, m_azimuth(0.1f)
-	//, m_cameraDistance(15.f)
 	, m_cameraDistance(25.f)
 	, m_cameraSpeed(0.003f)
 	, m_passingTime(0.f)
@@ -133,27 +132,26 @@ void PlayerCamera::FreeCamera()
 		m_elevation = 0.5f;
 	}
 
+	if (m_azimuth > 3.14f)
+	{
+		m_azimuth = -3.14f;
+	}
+	if (m_azimuth < -3.14f)
+	{
+		m_azimuth = 3.14f;
+	}
+
 
 	m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
 
-	// 	if (GetKey(KEY::LEFT))
-	// 	{
-	// 		m_elevation += m_cameraSpeed;
-	// 	}
-	// 	if (GetKey(KEY::RIGHT))
-	// 	{
-	// 		m_azimuth -= m_cameraSpeed;
-	// 	}
 
-	cameraPos.x = m_cameraDistance * sin(m_elevation) * cos(m_azimuth);
-	cameraPos.y = m_cameraDistance * cos(m_elevation);
-	cameraPos.z = m_cameraDistance * sin(m_elevation) * sin(m_azimuth);
 
-	cameraPos.x += targetPos.x;
-	cameraPos.y += targetPos.y;
-	cameraPos.z += targetPos.z;
+	cameraPos.x = sin(m_elevation) * cos(m_azimuth);
+	cameraPos.y = cos(m_elevation);
+	cameraPos.z = sin(m_elevation) * sin(m_azimuth);
 
-	Vector3 look = targetPos - cameraPos;
+
+	Vector3 look = cameraPos;
 	look.Normalize(look);
 	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance);
 	// look = targetPos - cameraPos;
@@ -187,6 +185,13 @@ void PlayerCamera::LockOnCamera()
 	Vector3 targetPos = playerPos + Vector3{ 0.0f, 2.0f, 0.0f };
 	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
 
+	// 락온 중일때 각도 계산
+	m_elevation = acos(m_camera.lock()->m_look.y);
+	m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
+	if (m_camera.lock()->m_look.z < 0)
+	{
+		m_azimuth *= -1.f;
+	}
 
 	Vector3 look = enemyPos - playerPos - Vector3{ 0.0f, 5.0f, 0.0f };
 	look.Normalize(look);
@@ -197,6 +202,7 @@ void PlayerCamera::LockOnCamera()
 
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0;
+
 
 }
 
@@ -219,7 +225,9 @@ void PlayerCamera::SortEnemy()
 
 			if (enemyDistance1 > enemyDistance2)
 			{
+				std::shared_ptr<Truth::Entity> lastLocked = m_enemys[m_enemyCount];
 				m_enemys[j].swap(m_enemys[i]);
+				m_enemyCount = find(m_enemys.begin(), m_enemys.end(), lastLocked) - m_enemys.begin();
 			}
 		}
 	}
