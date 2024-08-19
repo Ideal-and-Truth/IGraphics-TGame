@@ -157,8 +157,9 @@ namespace Ideal
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 
 		// Text
-		std::shared_ptr<Ideal::IdealText> CreateText(uint32 Width, uint32 Height);
-		void DeleteText(std::shared_ptr<Ideal::IText>& Text);
+		virtual std::shared_ptr<Ideal::IText> CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font = L"Tahoma") override;
+		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
+
 	private:
 		void CreateCommandlists();
 		void CreatePools();

@@ -55,6 +55,7 @@ using namespace std;
 #include "GraphicsEngine/public/IMaterial.h"
 #include "GraphicsEngine/public/IBone.h"
 #include "GraphicsEngine/public/ISprite.h"
+#include "GraphicsEngine/public/IText.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -325,7 +326,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		eyeMaterial->SetBaseMap(eyeTexture);
 #pragma endregion
 
-#pragma region CreateSpriteUI
+#pragma region CreateUI
 		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
 		sprite->SetTexture(faceTexture);
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
@@ -350,8 +351,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sprite3->SetScale(Vector2(0.3, 0.3));
 		sprite3->SetPosition(Vector2(200, 0));
 		sprite3->SetZ(0);
-		
 
+		//---Text---//
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
+		text->ChangeText(L"HI");
 #pragma endregion
 
 #pragma region CreateLight
@@ -434,8 +437,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
-					if (sprite)
-						gRenderer->DeleteSprite(sprite);
+					//if (sprite)
+						//gRenderer->DeleteSprite(sprite);
+					if (text)
+						gRenderer->DeleteText(text);
 				}
 
 				if (GetAsyncKeyState('C') & 0x8000)
@@ -587,6 +592,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		skirtBottomTexture.reset();
 		gRenderer->DeleteTexture(skirtBottomNormalTexture);
 		skirtBottomNormalTexture.reset();
+
+		gRenderer->DeleteText(text);
+		text.reset();
+
 		gRenderer.reset();
 	}
 

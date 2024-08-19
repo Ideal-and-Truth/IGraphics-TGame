@@ -488,7 +488,7 @@ finishAdapter:
 	//m_textSprite->SetTexture(m_dynamicTexture);
 	//m_textManager->WriteTextToBitmap(gTextImage, m_textwidth, m_textheight, m_textwidth * 4, m_fontHandle, L"HELLO WORLD");
 	//UpdateTextureWithImage(m_dynamicTexture, gTextImage, m_textwidth, m_textheight);
-	m_idealText = CreateText(512, 256);
+	//m_idealText = CreateText(512, 256, TODO);
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -1053,9 +1053,9 @@ void Ideal::D3D12RayTracingRenderer::DeleteSprite(std::shared_ptr<Ideal::ISprite
 	Sprite.reset();
 }
 
-std::shared_ptr<Ideal::IdealText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 Width, uint32 Height)
+std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font /*= L"Tahoma"*/)
 {
-	auto fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
+	auto fontHandle = m_textManager->CreateTextObject(Font.c_str(), FontSize);
 	auto text = std::make_shared<Ideal::IdealText>(m_textManager, fontHandle);
 	std::shared_ptr<Ideal::D3D12Texture> dynamicTexture;
 	m_resourceManager->CreateDynamicTexture(dynamicTexture, Width, Height);
@@ -1075,7 +1075,8 @@ std::shared_ptr<Ideal::IdealText> Ideal::D3D12RayTracingRenderer::CreateText(uin
 
 void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
 {
-	m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
+	if(Text)
+		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)

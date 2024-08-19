@@ -52,6 +52,7 @@ namespace Ideal
 	class ISkinnedMeshObject;
 	class IRenderScene;
 	class IMaterial;
+	class IText;
 }
 
 namespace Ideal
@@ -109,7 +110,8 @@ namespace Ideal
 		// Sprite
 		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
-
+		virtual std::shared_ptr<Ideal::IText> CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font = L"Tahoma") override;
+		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }

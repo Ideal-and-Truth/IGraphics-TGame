@@ -18,6 +18,7 @@ namespace Ideal
 	class IMaterial;
 	class IMesh;
 	class ISprite;
+	class IText;
 }
 
 namespace Ideal
@@ -90,7 +91,10 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISprite>				CreateSprite() abstract;
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>&) abstract;
 
-		
+		// Text
+		virtual std::shared_ptr<Ideal::IText> CreateText(unsigned int Width, unsigned int Height, float FontSize, std::wstring Font = L"Tahoma") abstract;
+		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) abstract;
+
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;
