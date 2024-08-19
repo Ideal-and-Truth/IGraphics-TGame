@@ -18,10 +18,33 @@ namespace Ideal
 	class IMaterial;
 	class IMesh;
 	class ISprite;
+	class IText;
 }
 
 namespace Ideal
 {
+	struct DisplayResolution
+	{
+		unsigned int Width;
+		unsigned int Height;
+	};
+
+	namespace Resolution
+	{
+		enum EDisplayResolutionOption
+		{
+			R_800_600,
+			R_1200_900,
+			R_1280_720,
+			R_1920_1080,
+			R_1920_1200,
+			R_2560_1440,
+			R_3440_1440,
+			R_3840_2160,
+			Count
+		};
+	}
+
 	class IdealRenderer
 	{
 	public:
@@ -35,6 +58,7 @@ namespace Ideal
 		virtual void Resize(UINT Width, UINT Height) abstract;
 		virtual void ToggleFullScreenWindow() abstract;
 		virtual bool IsFullScreen() abstract;
+		virtual void SetDisplayResolutionOption(const Resolution::EDisplayResolutionOption&) abstract;
 
 	public:
 		virtual std::shared_ptr<ICamera>					CreateCamera() abstract;
@@ -66,6 +90,10 @@ namespace Ideal
 		// Sprite : UI에 만들어진다.
 		virtual std::shared_ptr<Ideal::ISprite>				CreateSprite() abstract;
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>&) abstract;
+
+		// Text
+		virtual std::shared_ptr<Ideal::IText> CreateText(unsigned int Width, unsigned int Height, float FontSize, std::wstring Font = L"Tahoma") abstract;
+		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

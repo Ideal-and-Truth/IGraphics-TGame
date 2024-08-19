@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props" Condition="Exists('..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props')" />
   <ItemGroup Label="ProjectConfigurations">
@@ -31,14 +31,21 @@
     <ClInclude Include="ComponentFactory.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="EditorCamera.h" />
+    <ClInclude Include="EditorContext.h" />
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="DirectionLight.h" />
+    <ClInclude Include="EntityHierarchy.h" />
+    <ClInclude Include="Inspector.h" />
+    <ClInclude Include="LinkBonePopup.h" />
+    <ClInclude Include="LoadMapDataPopup.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MathConverter.h" />
+    <ClInclude Include="MenuBar.h" />
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="NavGeom.h" />
     <ClInclude Include="NavMeshGenerater.h" />
+    <ClInclude Include="NewScenePopup.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PxEventCallback.h" />
     <ClInclude Include="RigidBody.h" />
@@ -83,14 +90,21 @@
     <ClCompile Include="ComponentFactory.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="EditorCamera.cpp" />
+    <ClCompile Include="EditorContext.cpp" />
     <ClCompile Include="EditorUI.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="DirectionLight.cpp" />
+    <ClCompile Include="EntityHierarchy.cpp" />
+    <ClCompile Include="Inspector.cpp" />
+    <ClCompile Include="LinkBonePopup.cpp" />
+    <ClCompile Include="LoadMapDataPopup.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MathConverter.cpp" />
+    <ClCompile Include="MenuBar.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="NavGeom.cpp" />
     <ClCompile Include="NavMeshGenerater.cpp" />
+    <ClCompile Include="NewScenePopup.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PxEventCallback.cpp" />
     <ClCompile Include="RigidBody.cpp" />

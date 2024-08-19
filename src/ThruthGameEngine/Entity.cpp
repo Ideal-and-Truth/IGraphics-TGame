@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Transform.h"
+#include "SkinnedMesh.h"
 
 uint32 Truth::Entity::m_entityCount = 0;
 
@@ -11,6 +12,7 @@ Truth::Entity::Entity(std::shared_ptr<Managers> _mangers)
 	, m_tag("None")
 	, m_index(-1)
 	, m_parent(std::weak_ptr<Entity>())
+	, m_linkBoneName("")
 {
 	m_transform = std::make_shared<Transform>();
 	m_components.push_back(m_transform);
@@ -42,6 +44,16 @@ void Truth::Entity::Initialize()
 		// c->Initalize();
 		ApplyComponent(c);
 		c->m_index = index++;
+	}
+
+	for (auto& c : m_children)
+	{
+		c->m_parent = shared_from_this();
+	}
+
+	if (m_linkBoneName != "")
+	{
+		LinkBone(m_linkBoneName);
 	}
 }
 
@@ -87,6 +99,10 @@ const DirectX::SimpleMath::Vector3& Truth::Entity::GetWorldScale() const
 
 void Truth::Entity::ApplyTransform()
 {
+	if (m_transform == nullptr)
+	{
+		return;
+	}
 	m_transform->ApplyTransform();
 	for (auto p = m_applyTransform.begin(); p != m_applyTransform.end() ; p++)
 	{
@@ -105,6 +121,7 @@ void Truth::Entity::ApplyTransform()
 			{
 				return;
 			}
+			continue;
 		}
 
 		if (p->first.lock()->m_name == "Transform")
@@ -221,6 +238,7 @@ void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
 void Truth::Entity::AddChild(std::shared_ptr<Entity> _entity)
 {
 	m_children.push_back(_entity);
+	auto temp = shared_from_this();
 	_entity->m_parent = shared_from_this();
 }
 
@@ -234,6 +252,27 @@ void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
 			return;
 		}
 	}
+}
+
+void Truth::Entity::LinkBone(const std::string& _boneName)
+{
+	if (m_parent.expired() || 
+		m_parent.lock()->GetComponent<SkinnedMesh>().expired())
+	{
+		m_linkBoneName = "";
+		return;
+	}
+
+	auto sm = m_parent.lock()->GetComponent<SkinnedMesh>();
+
+	if (sm.expired())
+	{
+		m_linkBoneName = "";
+		return;
+	}
+
+	m_linkedBone = sm.lock()->GetBone(_boneName);
+	m_linkBoneName = _boneName;
 }
 
 const DirectX::SimpleMath::Matrix& Truth::Entity::GetWorldTM() const

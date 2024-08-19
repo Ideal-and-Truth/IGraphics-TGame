@@ -64,12 +64,5 @@ namespace Ideal
 		std::vector<std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure>> m_tlasToDelete[MAX_PENDING_FRAMES];
 		std::vector<std::shared_ptr<Ideal::D3D12Texture>> m_textureToDelete[MAX_PENDING_FRAMES];
 		std::vector<std::shared_ptr<Ideal::IdealMaterial>> m_materialToDelete[MAX_PENDING_FRAMES];
-
-		// ver3
-		uint64 m_frameCount = 0;
-		std::queue<DeferredDeleteResource<ComPtr<ID3D12Resource>>> m_resourcesToDelete2;
-		std::queue<DeferredDeleteResource<std::shared_ptr<IMeshObject>>> m_meshObjectsToDelete2;
-		std::queue<DeferredDeleteResource<std::shared_ptr<DXRBottomLevelAccelerationStructure>>> m_blasToDelete2;
-		std::queue<DeferredDeleteResource<std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure>>> m_tlasToDelete2;
 	};
 }

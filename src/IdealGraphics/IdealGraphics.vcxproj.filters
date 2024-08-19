@@ -182,8 +182,11 @@
     <ClInclude Include="Editor\imguizmo\ImZoomSlider.h" />
     <ClInclude Include="GraphicsEngine\public\IImage.h" />
     <ClInclude Include="GraphicsEngine\public\ISprite.h" />
-    <ClInclude Include="GraphicsEngine\Resource\IdealSprite.h" />
+    <ClInclude Include="GraphicsEngine\Resource\UI\IdealSprite.h" />
     <ClInclude Include="GraphicsEngine\Resource\UI\UIResourceBase.h" />
+    <ClInclude Include="GraphicsEngine\D2D\D2DTextManager.h" />
+    <ClInclude Include="GraphicsEngine\Resource\UI\IdealText.h" />
+    <ClInclude Include="GraphicsEngine\public\IText.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -281,7 +284,9 @@
     <ClCompile Include="Editor\imguizmo\ImGradient.cpp" />
     <ClCompile Include="Editor\imguizmo\ImGuizmo.cpp" />
     <ClCompile Include="Editor\imguizmo\ImSequencer.cpp" />
-    <ClCompile Include="GraphicsEngine\Resource\IdealSprite.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\UI\IdealSprite.cpp" />
+    <ClCompile Include="GraphicsEngine\D2D\D2DTextManager.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\UI\IdealText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -319,6 +324,7 @@
     <FxCompile Include="Shaders\Raytracing\CS_ComputeAnimationVertexBuffer.hlsl" />
     <FxCompile Include="..\Shaders\Raytracing\CS_ComputeAnimationVertexBuffer.hlsl" />
     <FxCompile Include="..\Shaders\UI.hlsl" />
+    <FxCompile Include="..\Shaders\Screen\Screen.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

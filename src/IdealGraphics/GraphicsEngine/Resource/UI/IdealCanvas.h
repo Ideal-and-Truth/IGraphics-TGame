@@ -11,6 +11,7 @@ namespace Ideal
 {
 	class D3D12PipelineStateObject;
 	class IdealSprite;
+	class IdealText;
 	class D3D12DynamicDescriptorHeap;
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12DescriptorHeap;
@@ -50,6 +51,9 @@ namespace Ideal
 		void AddSprite(std::weak_ptr<Ideal::IdealSprite> Sprite);
 		void DeleteSprite(std::weak_ptr<Ideal::IdealSprite> Sprite);
 
+		void AddText(std::weak_ptr<Ideal::IdealText> Text);
+		void DeleteText(std::weak_ptr<Ideal::IdealText> Text);
+
 		void SetCanvasSize(uint32 Width, uint32 Height);
 
 	private:
@@ -62,6 +66,8 @@ namespace Ideal
 
 	private:
 		std::vector<std::weak_ptr<Ideal::IdealSprite>> m_sprites;
+		std::vector<std::weak_ptr<Ideal::IdealText>> m_texts;
+
 		uint32 m_uiCanvasWidth;
 		uint32 m_uiCanvasHeight;
 	};

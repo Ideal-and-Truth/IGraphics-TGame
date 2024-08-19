@@ -1,5 +1,11 @@
 #pragma once
 #include "Component.h"
+
+namespace Ideal
+{
+	class IBone;
+}
+
 namespace Truth
 {
 	class SkinnedMesh :
@@ -18,6 +24,8 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::ISkinnedMeshObject> m_skinnedMesh;
 		std::shared_ptr<Ideal::IAnimation> m_animation;
+
+		std::map<std::string, std::weak_ptr<Ideal::IBone>> m_boneMap;
 
 	private:
 		PROPERTY(path);
@@ -68,6 +76,8 @@ namespace Truth
 
 		void DeleteMesh();
 
+		std::weak_ptr<Ideal::IBone> GetBone(const std::string& _name);
+		const std::map<std::string, std::weak_ptr<Ideal::IBone>>& GetBoneMap() { return m_boneMap; }
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE

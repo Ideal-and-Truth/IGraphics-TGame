@@ -184,7 +184,7 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 
 std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path)
 {
-	if (m_textureMap.find(_path) == m_textureMap.end() || m_textureMap[_path]->m_useCount <= 0)
+	if (m_textureMap.find(_path) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
 		tex->m_texture = m_renderer->CreateTexture(_path);
@@ -197,16 +197,13 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 
 void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 {
-	_texture->m_useCount--;
-	if (_texture->m_useCount <= 0)
-	{
-		m_renderer->DeleteTexture(_texture->m_texture);
-	}
+	m_renderer->DeleteTexture(_texture->m_texture);
+	
 }
 
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
 {
-	if (m_matarialMap.find(_name) == m_matarialMap.end() || m_matarialMap[_name]->m_useCount <= 0)
+	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
 		std::shared_ptr<Material> mat = std::make_shared<Material>();
 		mat->m_material = m_renderer->CreateMaterial();
@@ -221,11 +218,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 
 void Truth::GraphicsManager::DeleteMaterial(std::shared_ptr<Material> _material)
 {
-	_material->m_useCount--;
-	if (_material->m_useCount <= 0)
-	{
-		m_renderer->DeleteMaterial(_material->m_material);
-	}
+	m_renderer->DeleteMaterial(_material->m_material);
 }
 
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::string& _name)

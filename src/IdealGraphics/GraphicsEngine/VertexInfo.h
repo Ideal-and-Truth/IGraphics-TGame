@@ -94,7 +94,7 @@ public:
 
 struct SimpleVertex
 {
-	Vector3 Position;
+	Vector4 Position;
 	Vector2 TexCoord;
 
 	static const D3D12_INPUT_LAYOUT_DESC InputLayout;

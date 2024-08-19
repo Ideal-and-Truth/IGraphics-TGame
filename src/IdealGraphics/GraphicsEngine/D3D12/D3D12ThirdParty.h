@@ -10,11 +10,21 @@
 #include <d3dx12.h>
 #include <dxcapi.h>
 
+// d3d11, d2d
+#include <d3d11on12.h>
+#include <d2d1_3.h>
+#include <dwrite_3.h>
+
+
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxguid.lib")
 
 #include "../Utils/SimpleMath.h"
 
@@ -25,7 +35,6 @@
 #endif
 
 using namespace DirectX::SimpleMath;
-
 inline void GetErrorBlob(ID3DBlob* ErrorBlob)
 {
 	if (ErrorBlob != nullptr)

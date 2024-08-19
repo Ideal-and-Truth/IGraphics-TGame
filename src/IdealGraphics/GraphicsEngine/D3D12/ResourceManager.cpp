@@ -93,6 +93,10 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	//-----------DSV Heap------------//
 	m_dsvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+
+	// default resource
+	CreateDefaultQuadMesh();
+	CreateDefaultQuadMesh2();
 }
 
 void ResourceManager::Fence()
@@ -279,7 +283,7 @@ uint64 ResourceManager::AllocateMaterialID()
 	return ret;
 }
 
-void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
+void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB/*= false*/)
 {
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
@@ -309,14 +313,30 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 
 	std::unique_ptr<uint8_t[]> decodeData;
 	D3D12_SUBRESOURCE_DATA subResource;
-	Check(DirectX::LoadWICTextureFromFile(
-		m_device.Get(),
-		Path.c_str(),
-		resource.ReleaseAndGetAddressOf(),
-		decodeData,
-		subResource
-	));
-
+	
+	if (IgnoreSRGB)
+	{
+		Check(DirectX::LoadWICTextureFromFileEx(
+			m_device.Get(),
+			Path.c_str(),
+			0,
+			D3D12_RESOURCE_FLAG_NONE,
+			WIC_LOADER_IGNORE_SRGB,
+			resource.ReleaseAndGetAddressOf(),
+			decodeData,
+			subResource
+		));
+	}
+	else
+	{
+		Check(DirectX::LoadWICTextureFromFile(
+			m_device.Get(),
+			Path.c_str(),
+			resource.ReleaseAndGetAddressOf(),
+			decodeData,
+			subResource
+		));
+	}
 	//----------------------Upload Buffer--------------------------//
 
 	uint64 bufferSize = GetRequiredIntermediateSize(resource.Get(), 0, 1);
@@ -358,6 +378,10 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = resource->GetDesc().Format;
+	//if (IgnoreSRGB)
+	//{
+	//	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//}
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 
@@ -369,6 +393,62 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	//----------------------Final Create---------------------//
 	OutTexture->Create(resource, m_deferredDeleteManager);
 	OutTexture->EmplaceSRV(srvHandle);
+}
+
+void ResourceManager::CreateDynamicTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, uint32 Width, uint32 Height)
+{
+	ComPtr<ID3D12Resource> TextureResource;
+	ComPtr<ID3D12Resource> UploadBuffer;
+
+	D3D12_RESOURCE_DESC textureDesc = {};
+	textureDesc.MipLevels = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// ex) DXGI_FORMAT_R8G8B8A8_UNORM, etc...
+	textureDesc.Width = Width;
+	textureDesc.Height = Height;
+	textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	textureDesc.DepthOrArraySize = 1;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+
+	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	Check(m_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE,
+		nullptr,
+		IID_PPV_ARGS(TextureResource.GetAddressOf())
+	));
+
+	uint64 uploadBufferSize = GetRequiredIntermediateSize(TextureResource.Get(), 0, 1);
+
+	CD3DX12_HEAP_PROPERTIES heapPropUpload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+	Check(m_device->CreateCommittedResource(
+		&heapPropUpload,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(UploadBuffer.GetAddressOf())
+	));
+	OutTexture = std::make_shared<Ideal::D3D12Texture>();
+	OutTexture->Create(TextureResource, m_deferredDeleteManager);
+	OutTexture->SetUploadBuffer(UploadBuffer);
+
+	// srv
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	auto handle = m_cbv_srv_uavHeap->Allocate();
+	m_device->CreateShaderResourceView(TextureResource.Get(), &srvDesc, handle.GetCpuHandle());
+
+	OutTexture->EmplaceSRV(handle);
 }
 
 void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path)
@@ -455,19 +535,21 @@ void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& Out
 	OutTexture->Create(resource, m_deferredDeleteManager);
 	OutTexture->EmplaceSRV(srvHandle);
 
-	// default resource
-	CreateDefaultQuadMesh();
+	
 }
 
 void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name)
 {
 	bool makeRTV = false;
 	bool makeSRV = false;
+	bool makeUAV = false;
 
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_RTV)
 		makeRTV = true;
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_SRV)
 		makeSRV = true;
+	if (TextureFlags & Ideal::IDEAL_TEXTURE_UAV)
+		makeUAV = true;
 
 	if (!OutTexture)
 	{
@@ -485,6 +567,8 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 
 	if (makeRTV)
 		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+	if (makeUAV)
+		resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	Check(m_device->CreateCommittedResource(
 		&heapProp,
@@ -523,6 +607,16 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 		m_device->CreateRenderTargetView(resource.Get(), &rtvDesc, rtvHandle.GetCpuHandle());
 
 		OutTexture->EmplaceRTV(rtvHandle);
+	}
+
+	if (makeUAV)
+	{
+		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		Ideal::D3D12DescriptorHandle uavHandle = m_cbv_srv_uavHeap->Allocate();
+		m_device->CreateUnorderedAccessView(resource.Get(), nullptr, &uavDesc, uavHandle.GetCpuHandle());
+
+		OutTexture->EmplaceUAV(uavHandle);
 	}
 }
 
@@ -1171,7 +1265,8 @@ void ResourceManager::DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture
 void ResourceManager::CreateDefaultTextures()
 {
 	CreateTexture(m_defaultAlbedo, L"../Resources/DefaultData/DefaultAlbedo.png");
-	CreateTexture(m_defaultNormal, L"../Resources/DefaultData/DefaultNormalMap.png");
+	//CreateTexture(m_defaultNormal, L"../Resources/DefaultData/DefaultNormalMap.png", true, DXGI_FORMAT_R8G8B8A8_UNORM);
+	CreateTexture(m_defaultNormal, L"../Resources/DefaultData/DefaultNormalMap.png", true);
 	CreateTexture(m_defaultMask, L"../Resources/DefaultData/DefaultBlack.png");
 }
 
@@ -1305,10 +1400,10 @@ void ResourceManager::CreateDefaultQuadMesh()
 {
 	std::vector<SimpleVertex> vertices =
 	{
-		{ { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } },
-		{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
-		{ { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
-		{ { 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } },
+		{ { 0.0f, 1.0f, 0.0f, 1.f }, { 0.0f, 1.0f } },
+		{ { 0.0f, 0.0f, 0.0f, 1.f }, { 0.0f, 0.0f } },
+		{ { 1.0f, 0.0f, 0.0f, 1.f }, { 1.0f, 0.0f } },
+		{ { 1.0f, 1.0f, 0.0f, 1.f }, { 1.0f, 1.0f } },
 	};
 
 	std::vector<uint32> Indices =
@@ -1326,4 +1421,31 @@ void ResourceManager::CreateDefaultQuadMesh()
 std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> ResourceManager::GetDefaultQuadMesh()
 {
 	return m_defaultQuadMesh;
+}
+
+void ResourceManager::CreateDefaultQuadMesh2()
+{
+	std::vector<SimpleVertex> vertices =
+	{
+		{ { -1.0f, -1.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } },    // Bottom left -> Top left.
+		{ { -1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },    // Top left -> Bottom left.
+		{ { 1.0f, -1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },    // Bottom right -> Top right.
+		{ { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }      // Top right -> Bottom right.
+	};
+
+	std::vector<uint32> Indices =
+	{
+		0, 1, 2,
+		1, 3, 2
+	};
+
+	m_defaultQuadMesh2 = std::make_shared<Ideal::IdealMesh<SimpleVertex>>();
+	m_defaultQuadMesh2->AddVertices(vertices);
+	m_defaultQuadMesh2->AddIndices(Indices);
+	m_defaultQuadMesh2->Create(shared_from_this());
+}
+
+std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> ResourceManager::GetDefaultQuadMesh2()
+{
+	return m_defaultQuadMesh2;
 }

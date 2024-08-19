@@ -113,7 +113,7 @@ void Ideal::D3D12Renderer::Init()
 #endif
 
 	//---------------------Viewport Init-------------------------//
-	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_hwnd, m_width, m_height);
+	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_width, m_height);
 	m_viewport->Init();
 
 	//---------------------Create Device-------------------------//
@@ -439,6 +439,11 @@ bool Ideal::D3D12Renderer::IsFullScreen()
 	return false;
 }
 
+void Ideal::D3D12Renderer::SetDisplayResolutionOption(const Resolution::EDisplayResolutionOption& Resolution)
+{
+
+}
+
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12Renderer::CreateCamera()
 {
 	std::shared_ptr<Ideal::IdealCamera> newCamera = std::make_shared<Ideal::IdealCamera>();
@@ -572,6 +577,16 @@ std::shared_ptr<Ideal::ISprite> Ideal::D3D12Renderer::CreateSprite()
 void Ideal::D3D12Renderer::DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite)
 {
 	__debugbreak();
+}
+
+std::shared_ptr<Ideal::IText> Ideal::D3D12Renderer::CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font /*= L"Tahoma"*/)
+{
+	return nullptr;
+}
+
+void Ideal::D3D12Renderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
+{
+
 }
 
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter/* = false*/)

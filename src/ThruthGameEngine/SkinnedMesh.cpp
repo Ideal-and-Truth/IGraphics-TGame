@@ -4,6 +4,7 @@
 #include "ISkinnedMeshObject.h"
 #include "IAnimation.h"
 #include "Entity.h"
+#include "IBone.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::SkinnedMesh)
 
@@ -53,6 +54,15 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 	}
 
 	m_skinnedMesh = m_managers.lock()->Graphics()->CreateSkinnedMesh(_path);
+
+	m_boneMap.clear();
+	uint32 boneSize = m_skinnedMesh->GetBonesSize();
+
+	for (uint32 i = 0; i < boneSize ; i++)
+	{
+		std::weak_ptr<Ideal::IBone> bone = m_skinnedMesh->GetBoneByIndex(i);
+		m_boneMap[bone.lock()->GetName()] = bone;
+	}
 }
 
 void Truth::SkinnedMesh::AddAnimation(std::string _name, std::wstring _path, const Matrix& _offset /*= Matrix::Identity*/)
@@ -151,6 +161,15 @@ void Truth::SkinnedMesh::ApplyTransform()
 void Truth::SkinnedMesh::DeleteMesh()
 {
 	m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
+}
+
+std::weak_ptr<Ideal::IBone> Truth::SkinnedMesh::GetBone(const std::string& _name)
+{
+	if (m_boneMap.find(_name) == m_boneMap.end())
+	{
+		return std::weak_ptr<Ideal::IBone>();
+	}
+	return m_boneMap[_name];
 }
 
 #ifdef EDITOR_MODE

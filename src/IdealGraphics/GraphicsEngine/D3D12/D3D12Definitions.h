@@ -4,7 +4,7 @@
 #define D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN   ((D3D12_GPU_VIRTUAL_ADDRESS)-1)
 
 // Test
-#define BeforeRefactor
+//#define BeforeRefactor
 
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
@@ -74,6 +74,18 @@ namespace Ideal
 			{
 				SRV_Sprite = 0,
 				CBV_RectInfo,
+				Count
+			};
+		}
+	}
+
+	namespace PostScreenRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Scene = 0,
 				Count
 			};
 		}

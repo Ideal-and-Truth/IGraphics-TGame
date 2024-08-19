@@ -45,27 +45,33 @@ namespace Ideal
 
 		void EmplaceDSV(Ideal::D3D12DescriptorHandle DSVHandle);
 
+		void EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle);
 		// 2024.04.21 : 디스크립터가 할당된 위치를 가져온다.
 		//D3D12_CPU_DESCRIPTOR_HANDLE GetSRV() { return m_srvHandle.GetCpuHandle(); }
 		Ideal::D3D12DescriptorHandle GetSRV();
 		Ideal::D3D12DescriptorHandle GetRTV();
 		Ideal::D3D12DescriptorHandle GetDSV();
+		Ideal::D3D12DescriptorHandle GetUAV();
+
+		void SetUploadBuffer(ComPtr<ID3D12Resource> UploadBuffer);
+		ComPtr<ID3D12Resource> GetUploadBuffer() { return m_uploadBuffer; }
+		void SetUpdated() { m_updated = true; }
+		bool GetIsUpdated() { return m_updated; }
+
+		void UpdateTexture(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList);
 
 	public:
 		void EmplaceSRVInEditor(Ideal::D3D12DescriptorHandle SRVHandle);
 
 	private:
-		// 2024.04.21
-		// Texture가 descriptor heap에 할당된 주소를 가지고 있는다.
 		Ideal::D3D12DescriptorHandle m_srvHandle;
-		// 2024.05.14
-		// RTV
 		Ideal::D3D12DescriptorHandle m_rtvHandle;
-
 		Ideal::D3D12DescriptorHandle m_dsvHandle;
+		Ideal::D3D12DescriptorHandle m_uavHandle;
 
 		Ideal::D3D12DescriptorHandle m_srvHandleInEditor;
 
+		ComPtr<ID3D12Resource> m_uploadBuffer;
 
 		std::weak_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager;
 
@@ -79,6 +85,7 @@ namespace Ideal
 
 	private:
 		uint32 m_refCount = 0;
+		bool m_updated = false;
 	};
 }
 

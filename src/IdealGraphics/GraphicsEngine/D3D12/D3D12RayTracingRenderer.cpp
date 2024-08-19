@@ -40,16 +40,19 @@
 #include "GraphicsEngine/Resource/IdealScreenQuad.h"
 #include "GraphicsEngine/Resource/IdealRenderScene.h"
 #include "GraphicsEngine/Resource/UI/IdealCanvas.h"
+#include "GraphicsEngine/Resource/UI/IdealText.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
 
 #include "GraphicsEngine/Resource/IdealMaterial.h"
-#include "GraphicsEngine/Resource/IdealSprite.h"
+#include "GraphicsEngine/Resource/UI/IdealSprite.h"
 
 #include "GraphicsEngine/D3D12/TestShader.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
+
+#include "GraphicsEngine/D2D/D2DTextManager.h"
 
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
@@ -211,6 +214,19 @@ inline void AllocateUAVBuffer(ID3D12Device* pDevice, UINT64 bufferSize, ID3D12Re
 	}
 }
 
+const Ideal::DisplayResolution Ideal::D3D12RayTracingRenderer::m_resolutionOptions[] =
+{
+	{ 800u, 600u },
+	//{ 1280u, 960u },
+	{ 1200u, 900u },
+	{ 1280u, 720u },
+	{ 1920u, 1080u },
+	{ 1920u, 1200u },
+	{ 2560u, 1440u },
+	{ 3440u, 1440u },
+	{ 3840u, 2160u }
+};
+
 Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width, uint32 Height, bool EditorMode)
 	: m_hwnd(hwnd),
 	m_width(Width),
@@ -287,8 +303,11 @@ void Ideal::D3D12RayTracingRenderer::Init()
 #endif
 
 	//---------------------Viewport Init-------------------------//
-	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_hwnd, m_width, m_height);
+	m_viewport = std::make_shared<Ideal::D3D12Viewport>(m_width, m_height);
 	m_viewport->Init();
+
+	m_postViewport = std::make_shared<Ideal::D3D12Viewport>(m_width, m_height);
+	m_postViewport->Init();
 
 	//---------------------Create Device-------------------------//
 	ComPtr<IDXGIFactory6> factory;
@@ -345,6 +364,9 @@ finishAdapter:
 	CreateFence();
 	CreatePools();
 
+	CreatePostScreenRootSignature();
+	CreatePostScreenPipelineState();
+
 	//------------------UI-------------------//
 	CreateUIDescriptorHeap();
 	CreateCanvas();
@@ -396,6 +418,8 @@ finishAdapter:
 		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.shader", m_animationShader);
 	}
 
+	m_textManager = std::make_shared<Ideal::D2DTextManager>();
+	m_textManager->Init(m_device, m_commandQueue);
 
 	//---------------Editor---------------//
 	if (m_isEditor)
@@ -453,6 +477,18 @@ finishAdapter:
 
 	RaytracingManagerInit();
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
+
+	// TEST: Create Text
+	//m_textSprite = std::static_pointer_cast<Ideal::IdealSprite>(CreateSprite());
+	//m_fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
+	//
+	//gTextImage = new BYTE[m_textwidth * m_textheight * 4];
+	//
+	//m_resourceManager->CreateDynamicTexture(m_dynamicTexture, m_textwidth, m_textheight);
+	//m_textSprite->SetTexture(m_dynamicTexture);
+	//m_textManager->WriteTextToBitmap(gTextImage, m_textwidth, m_textheight, m_textwidth * 4, m_fontHandle, L"HELLO WORLD");
+	//UpdateTextureWithImage(m_dynamicTexture, gTextImage, m_textwidth, m_textheight);
+	//m_idealText = CreateText(512, 256, TODO);
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -512,18 +548,26 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_cbAllocator[m_currentContextIndex],
 		m_sceneCB, m_lightListCB, m_skyBoxTexture);
 
+#ifdef BeforeRefactor
 	CopyRaytracingOutputToBackBuffer();
-
+#else
+	TransitionRayTracingOutputToRTV();
+#endif
 	//-----------UI-----------//
+	// Update Text Or Dynamic Texture 
+	// Draw Text and Texture
 	DrawCanvas();
-	//m_renderTargets[m_frameIndex];
-	//m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_uiDescriptorHeap, m_cbAllocator[m_currentContextIndex]);
+#ifndef BeforeRefactor
+	TransitionRayTracingOutputToSRV();
+	// Final
+	DrawPostScreen();
+#endif
+	//TransitionRayTracingOutputToUAV();
+	//CopyRaytracingOutputToBackBuffer();
 
 	if (m_isEditor)
 	{
 		ComPtr<ID3D12GraphicsCommandList4> commandlist = m_commandLists[m_currentContextIndex];
-		//std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
-		//ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
 		ComPtr<ID3D12Resource> raytracingOutput = m_renderTargets[m_frameIndex]->GetResource();
 
 
@@ -545,7 +589,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
 			m_editorTexture->GetResource(),
 			D3D12_RESOURCE_STATE_COPY_DEST,
-			D3D12_RESOURCE_STATE_RENDER_TARGET
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 		);
 		postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
 			raytracingOutput.Get(),
@@ -602,7 +646,6 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 	{
 		m_renderTargets[i]->Release();
 	}
-	m_depthStencil.Reset();
 
 	// ResizeBuffers
 	Check(m_swapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, Width, Height, DXGI_FORMAT_R8G8B8A8_UNORM, m_swapChainFlags));
@@ -625,26 +668,37 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 	}
 
 	// CreateDepthStencil
-	CreateDSV(Width, Height);
+	//CreateDSV(Width, Height);
 
 	m_width = Width;
 	m_height = Height;
 
 	// Viewport Reize
 	m_viewport->ReSize(Width, Height);
+	m_postViewport->ReSize(Width, Height);
+	{
+		auto r = m_resolutionOptions[m_displayResolutionIndex];
+		m_postViewport->UpdatePostViewAndScissor(r.Width, r.Height);
+	}
+	//m_postViewport->UpdatePostViewAndScissor(Width, Height);
 
-	m_mainCamera->SetAspectRatio(float(Width) / Height);
+	if (m_mainCamera)
+	{
+		auto r = m_resolutionOptions[m_displayResolutionIndex];
+		m_mainCamera->SetAspectRatio(float(r.Width) / r.Height);
+	}
 
 	if (m_isEditor)
 	{
-		CreateEditorRTV(Width, Height);
+		//auto r = m_resolutionOptions[m_displayResolutionIndex];
+		CreateEditorRTV(Width,Height);
 	}
 
 	// ray tracing / UI //
-	m_raytracingManager->Resize(m_device, Width, Height);
+	//m_raytracingManager->Resize(m_device, Width, Height);
 	m_UICanvas->SetCanvasSize(Width, Height);
+	//
 }
-
 void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 {
 	if (m_fullScreenMode)
@@ -707,6 +761,39 @@ void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 bool Ideal::D3D12RayTracingRenderer::IsFullScreen()
 {
 	return m_fullScreenMode;
+}
+
+void Ideal::D3D12RayTracingRenderer::SetDisplayResolutionOption(const Resolution::EDisplayResolutionOption& Resolution)
+{
+	m_displayResolutionIndex = Resolution;
+	// Wait For All Commands
+	Fence();
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		WaitForFenceValue(m_lastFenceValues[i]);
+	}
+
+	uint32 resolutionWidth = m_resolutionOptions[Resolution].Width;
+	uint32 resolutionHeight = m_resolutionOptions[Resolution].Height;
+
+	m_viewport->ReSize(resolutionWidth, resolutionHeight);
+	m_postViewport->UpdatePostViewAndScissor(resolutionWidth, resolutionHeight);
+
+	if (m_mainCamera)
+	{
+		m_mainCamera->SetAspectRatio(float(resolutionWidth) / resolutionHeight);
+	}
+
+	if (m_isEditor)
+	{
+		//CreateEditorRTV(resolutionWidth, resolutionHeight);
+	}
+
+	// ray tracing / UI //
+	//m_depthStencil.Reset();
+	CreateDSV(resolutionWidth, resolutionHeight);
+	m_raytracingManager->Resize(m_device, resolutionWidth, resolutionHeight);
+	m_UICanvas->SetCanvasSize(resolutionWidth, resolutionHeight);
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
@@ -966,6 +1053,32 @@ void Ideal::D3D12RayTracingRenderer::DeleteSprite(std::shared_ptr<Ideal::ISprite
 	Sprite.reset();
 }
 
+std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font /*= L"Tahoma"*/)
+{
+	auto fontHandle = m_textManager->CreateTextObject(Font.c_str(), FontSize);
+	auto text = std::make_shared<Ideal::IdealText>(m_textManager, fontHandle);
+	std::shared_ptr<Ideal::D3D12Texture> dynamicTexture;
+	m_resourceManager->CreateDynamicTexture(dynamicTexture, Width, Height);
+	{
+		//Sprite
+		std::shared_ptr<Ideal::IdealSprite> sprite = std::make_shared<Ideal::IdealSprite>();
+		sprite->SetMesh(m_resourceManager->GetDefaultQuadMesh());
+		sprite->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
+		text->SetSprite(sprite);
+	}
+	text->SetTexture(dynamicTexture);
+	text->ChangeText(L"Text : 텍스트");
+	text->UpdateDynamicTextureWithImage(m_device);
+	m_UICanvas->AddText(text);
+	return text;
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
+{
+	if(Text)
+		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
+}
+
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
 {
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -1057,6 +1170,10 @@ void Ideal::D3D12RayTracingRenderer::CreateDSVHeap()
 
 void Ideal::D3D12RayTracingRenderer::CreateDSV(uint32 Width, uint32 Height)
 {
+	if (m_depthStencil)
+	{
+		m_depthStencil->Release();
+	}
 	D3D12_CLEAR_VALUE depthClearValue = {};
 	depthClearValue.Format = DXGI_FORMAT_D32_FLOAT;
 	depthClearValue.DepthStencil.Depth = 1.0f;
@@ -1154,6 +1271,41 @@ void Ideal::D3D12RayTracingRenderer::CreateDefaultCamera()
 	camera->SetLens(0.25f * 3.141592f, m_aspectRatio, 1.f, 3000.f);
 }
 
+void Ideal::D3D12RayTracingRenderer::UpdatePostViewAndScissor(uint32 Width, uint32 Height)
+{
+	//float viewWidthRatio = static_cast<float>(Width) / m_width;
+	//float viewHeightRatio = static_cast<float>(Height) / m_height;
+	//
+	//float x = 1.0f;
+	//float y = 1.0f;
+	//
+	//if (viewWidthRatio < viewHeightRatio)
+	//{
+	//	// The scaled image's height will fit to the viewport's height and 
+	//	// its width will be smaller than the viewport's width.
+	//	x = viewWidthRatio / viewHeightRatio;
+	//}
+	//else
+	//{
+	//	// The scaled image's width will fit to the viewport's width and 
+	//	// its height may be smaller than the viewport's height.
+	//	y = viewHeightRatio / viewWidthRatio;
+	//}
+	//
+	//m_viewport->ReSize()
+	//
+	//
+	//m_postViewport.TopLeftX = m_width * (1.0f - x) / 2.0f;
+	//m_postViewport.TopLeftY = m_height * (1.0f - y) / 2.0f;
+	//m_postViewport.Width = x * m_width;
+	//m_postViewport.Height = y * m_height;
+	//
+	//m_postScissorRect.left = static_cast<LONG>(m_postViewport.TopLeftX);
+	//m_postScissorRect.right = static_cast<LONG>(m_postViewport.TopLeftX + m_postViewport.Width);
+	//m_postScissorRect.top = static_cast<LONG>(m_postViewport.TopLeftY);
+	//m_postScissorRect.bottom = static_cast<LONG>(m_postViewport.TopLeftY + m_postViewport.Height);
+}
+
 void Ideal::D3D12RayTracingRenderer::ResetCommandList()
 {
 	ComPtr<ID3D12CommandAllocator> commandAllocator = m_commandAllocators[m_currentContextIndex];
@@ -1229,7 +1381,7 @@ void Ideal::D3D12RayTracingRenderer::Present()
 	//m_BLASInstancePool[nextContextIndex]->Reset();
 	m_descriptorManager->ResetPool(nextContextIndex);
 	// ui
-	m_uiDescriptorHeaps[nextContextIndex]->Reset();
+	m_mainDescriptorHeaps[nextContextIndex]->Reset();
 
 	// deferred resource Delete And Set Next Context Index
 	m_deferredDeleteManager->DeleteDeferredResources(m_currentContextIndex);
@@ -1256,7 +1408,121 @@ void Ideal::D3D12RayTracingRenderer::WaitForFenceValue(uint64 ExpectedFenceValue
 		WaitForSingleObject(m_fenceEvent, INFINITE);
 	}
 	uint64 completedValue1 = m_fence->GetCompletedValue();
-	int a = 3;
+}
+
+void Ideal::D3D12RayTracingRenderer::CreatePostScreenRootSignature()
+{
+	CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::PostScreenRootSignature::Slot::Count];
+	CD3DX12_ROOT_PARAMETER1 rootParameters[Ideal::PostScreenRootSignature::Slot::Count];
+
+	ranges[Ideal::PostScreenRootSignature::Slot::SRV_Scene].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	rootParameters[Ideal::PostScreenRootSignature::Slot::SRV_Scene].InitAsDescriptorTable(1, &ranges[Ideal::PostScreenRootSignature::Slot::SRV_Scene], D3D12_SHADER_VISIBILITY_PIXEL);
+
+	D3D12_ROOT_SIGNATURE_FLAGS rootSigantureFlags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+
+	// Create a sampler.
+	D3D12_STATIC_SAMPLER_DESC sampler = {};
+	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	sampler.MipLODBias = 0;
+	sampler.MaxAnisotropy = 0;
+	sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+	sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+	sampler.MinLOD = 0.0f;
+	sampler.MaxLOD = D3D12_FLOAT32_MAX;
+	sampler.ShaderRegister = 0;
+	sampler.RegisterSpace = 0;
+	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSigantureFlags);
+
+	ComPtr<ID3DBlob> signature;
+	ComPtr<ID3DBlob> error;
+	D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+	if (error)
+	{
+		MyMessageBox((char*)error->GetBufferPointer());
+	}
+	Check(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_postScreenRootSignature)));
+}
+
+void Ideal::D3D12RayTracingRenderer::CreatePostScreenPipelineState()
+{
+	// TEMP : shader compile
+#if defined(_DEBUG)
+	// Enable better shader debugging with the graphics debugging tools.
+	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+	UINT compileFlags = 0;
+#endif
+	ComPtr<ID3DBlob> error;
+	ComPtr<ID3DBlob> postVertexShader;
+	ComPtr<ID3DBlob> postPixelShader;
+	Check(D3DCompileFromFile(L"../Shaders/Screen/Screen.hlsl", nullptr, nullptr, "VS", "vs_5_0", compileFlags, 0, &postVertexShader, &error));
+	if (error)
+	{
+		MyMessageBox((char*)error->GetBufferPointer());
+	}
+	Check(D3DCompileFromFile(L"../Shaders/Screen/Screen.hlsl", nullptr, nullptr, "PS", "ps_5_0", compileFlags, 0, &postPixelShader, &error));
+	if (error)
+	{
+		MyMessageBox((char*)error->GetBufferPointer());
+	}
+	
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.InputLayout = { SimpleVertex::InputElements, SimpleVertex::InputElementCount };
+	psoDesc.pRootSignature = m_postScreenRootSignature.Get();
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(postVertexShader.Get());
+	psoDesc.PS = CD3DX12_SHADER_BYTECODE(postPixelShader.Get());
+	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState.DepthEnable = FALSE;
+	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.SampleDesc.Count = 1;
+	Check(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_postScreenPipelineState)));
+}
+
+void Ideal::D3D12RayTracingRenderer::DrawPostScreen()
+{
+	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
+	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_postViewport->GetViewport());
+	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_postViewport->GetScissorRect());
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, nullptr);
+
+	m_commandLists[m_currentContextIndex]->SetPipelineState(m_postScreenPipelineState.Get());
+	m_commandLists[m_currentContextIndex]->SetGraphicsRootSignature(m_postScreenRootSignature.Get());
+	m_commandLists[m_currentContextIndex]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	auto defaultQuadMesh = m_resourceManager->GetDefaultQuadMesh2();
+
+	m_commandLists[m_currentContextIndex]->IASetVertexBuffers(0, 1, &defaultQuadMesh->GetVertexBufferView());
+	m_commandLists[m_currentContextIndex]->IASetIndexBuffer(&defaultQuadMesh->GetIndexBufferView());
+	auto handle = m_mainDescriptorHeaps[m_currentContextIndex]->Allocate();
+	m_device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), m_raytracingManager->GetRaytracingOutputSRVHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	m_commandLists[m_currentContextIndex]->SetGraphicsRootDescriptorTable(Ideal::PostScreenRootSignature::Slot::SRV_Scene, handle.GetGpuHandle());
+	m_commandLists[m_currentContextIndex]->DrawIndexedInstanced(defaultQuadMesh->GetElementCount(), 1, 0, 0, 0);
+	//m_commandLists[m_currentContextIndex]->DrawInstanced(4, 1, 0, 0);
+
+	auto raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
+
+	CD3DX12_RESOURCE_BARRIER postCopyBarriers = CD3DX12_RESOURCE_BARRIER::Transition(
+		raytracingOutput.Get(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &postCopyBarriers);
 }
 
 void Ideal::D3D12RayTracingRenderer::UpdateLightListCBData()
@@ -1378,6 +1644,42 @@ void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
 	commandlist->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
 }
 
+void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToRTV()
+{
+	ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		raytracingOutput.Get(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+
+}
+
+void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToSRV()
+{
+	ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		raytracingOutput.Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+
+}
+
+void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToUAV()
+{
+	return;
+	ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		raytracingOutput.Get(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
+}
+
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
@@ -1468,8 +1770,8 @@ void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
 	//------UI Descriptor Heap------//
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
-		m_uiDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
-		m_uiDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_UI_DESCRIPTOR_COUNT);
+		m_mainDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
+		m_mainDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 	}
 }
 
@@ -1482,7 +1784,7 @@ void Ideal::D3D12RayTracingRenderer::CreateCanvas()
 
 void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 {
-	ID3D12DescriptorHeap* descriptorHeap[] = { m_uiDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
+	ID3D12DescriptorHeap* descriptorHeap[] = { m_mainDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
 	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 
 	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
@@ -1490,14 +1792,51 @@ void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
 	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+#ifdef BeforeRefactor
 	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, &dsvHandle);
-
-	m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_uiDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex]);
+#else
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &dsvHandle);
+#endif
+	m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex]);
 }
 
 void Ideal::D3D12RayTracingRenderer::SetCanvasSize(uint32 Width, uint32 Height)
 {
 	m_UICanvas->SetCanvasSize(Width, Height);
+}
+
+void Ideal::D3D12RayTracingRenderer::UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight)
+{
+	if (SrcWidth > Texture->GetWidth())
+	{
+		__debugbreak();
+	}
+	if (SrcHeight > Texture->GetHeight())
+	{
+		__debugbreak();
+	}
+	D3D12_RESOURCE_DESC desc = Texture->GetResource()->GetDesc();
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT Footprint;
+	uint32 rows = 0;
+	uint64 rowSize = 0;
+	uint64 TotalBytes = 0;
+	m_device->GetCopyableFootprints(&desc, 0, 1, 0, &Footprint, &rows, &rowSize, &TotalBytes);
+
+	BYTE* mappedPtr = nullptr;
+	CD3DX12_RANGE writeRange(0, 0);
+	HRESULT hr = Texture->GetUploadBuffer()->Map(0, &writeRange, reinterpret_cast<void**>(&mappedPtr));
+	Check(hr);
+
+	BYTE* pSrc = SrcBits;
+	BYTE* pDest = mappedPtr;
+	for (uint32 y = 0; y < SrcHeight; ++y)
+	{
+		memcpy(pDest, pSrc, SrcWidth * 4);
+		pSrc += (SrcWidth * 4);
+		pDest += Footprint.Footprint.RowPitch;
+	}
+	Texture->GetUploadBuffer()->Unmap(0, nullptr);
+	Texture->SetUpdated();
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()
@@ -1532,33 +1871,29 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 size(windowSize.x, windowSize.y);
-	//ImVec2 size(m_width/4, m_height/4);
 
-	//m_width = windowSize.x;
-	//m_height = windowSize.y;
-	m_aspectRatio = float(windowSize.x) / windowSize.y;
-	m_mainCamera->SetAspectRatio(m_aspectRatio);
-
-	// TEMP : 임시로 매번 Set Size를 해주겠음
-	SetCanvasSize(windowSize.x, windowSize.y);
-
-	// to srv
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_editorTexture->GetResource(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	);
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
-
+	float viewWidthRatio = static_cast<float>(m_width) / windowSize.x;
+	float viewHeightRatio = static_cast<float>(m_height) / windowSize.y;
+	
+	float x = 1.0f;
+	float y = 1.0f;
+	
+	if (viewWidthRatio < viewHeightRatio)
+	{
+		// The scaled image's height will fit to the viewport's height and 
+		// its width will be smaller than the viewport's width.
+		x = viewWidthRatio / viewHeightRatio;
+	}
+	else
+	{
+		// The scaled image's width will fit to the viewport's width and 
+		// its height may be smaller than the viewport's height.
+		y = viewHeightRatio / viewWidthRatio;
+	}
+	size.x = x * windowSize.x;
+	size.y = y * windowSize.y;
+	
 	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
-	// to present
-	/*barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_editorRenderTarget->GetResource(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);*/
-
 	ImGui::End();
 }
 
@@ -1584,6 +1919,8 @@ void Ideal::D3D12RayTracingRenderer::SetImGuiCameraRenderTarget()
 
 	commandList->RSSetViewports(1, &m_viewport->GetViewport());
 	commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+	//commandList->RSSetViewports(1, &m_postViewport->GetViewport());
+	//commandList->RSSetScissorRects(1, &m_viewport->GetScissorRect());
 	commandList->OMSetRenderTargets(1, &rtvHandle.GetCpuHandle(), FALSE, &dsvHandle);
 }
 

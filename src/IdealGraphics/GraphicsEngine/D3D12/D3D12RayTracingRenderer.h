@@ -55,6 +55,7 @@ namespace Ideal
 	class IdealSpotLight;
 	class IdealPointLight;
 	class IdealCanvas;
+	class IdealSprite;
 
 	struct ConstantBufferContainer;
 	// Manager
@@ -69,6 +70,9 @@ namespace Ideal
 	class IMeshObject;
 	class ISkinnedMeshObject;
 	class IRenderScene;
+	class IText;
+	class ISprite;
+	
 
 	// TEST : DELETE
 	template<typename>
@@ -82,6 +86,10 @@ namespace Ideal
 	class DXRAccelerationStructureManager;
 	class RaytracingManager;
 	class D3D12DescriptorManager;
+
+	class D2DTextManager;
+	struct FontHandle;
+	class IdealText;
 }
 
 namespace Ideal
@@ -96,8 +104,10 @@ namespace Ideal
 		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 1024;
 		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
 		static const uint32	MAX_UI_DESCRIPTOR_COUNT = 256;
-
 		static const uint32 MAX_EDITOR_SRV_COUNT = 256;
+
+		// Display Resolution
+		static const DisplayResolution m_resolutionOptions[];
 
 	public:
 		D3D12RayTracingRenderer(HWND hwnd, uint32 Width, uint32 Height, bool EditorMode);
@@ -110,6 +120,7 @@ namespace Ideal
 		void Resize(UINT Width, UINT Height) override;
 		void ToggleFullScreenWindow() override;
 		bool IsFullScreen() override;
+		void SetDisplayResolutionOption(const Resolution::EDisplayResolutionOption& Resolution) override;
 
 		std::shared_ptr<ICamera> CreateCamera() override;
 		void SetMainCamera(std::shared_ptr<ICamera> Camera) override;
@@ -145,6 +156,10 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ISprite> CreateSprite() override;
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 
+		// Text
+		virtual std::shared_ptr<Ideal::IText> CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font = L"Tahoma") override;
+		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
+
 	private:
 		void CreateCommandlists();
 		void CreatePools();
@@ -156,6 +171,7 @@ namespace Ideal
 
 	private:
 		void CreateDefaultCamera();
+		void UpdatePostViewAndScissor(uint32 Width, uint32 Height);
 
 	private:
 		void ResetCommandList();
@@ -168,12 +184,6 @@ namespace Ideal
 		void WaitForFenceValue(uint64 ExpectedFenceValue);
 
 	private:
-		uint32 m_width = 0;
-		uint32 m_height = 0;
-		HWND m_hwnd;
-
-		std::shared_ptr<Ideal::D3D12Viewport> m_viewport = nullptr;
-
 		ComPtr<ID3D12Device5> m_device;
 		ComPtr<ID3D12CommandQueue> m_commandQueue;
 
@@ -182,6 +192,24 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_BLASInstancePool[MAX_PENDING_FRAME_COUNT] = {};
+		
+	private:
+		void CreatePostScreenRootSignature();
+		void CreatePostScreenPipelineState();
+		void DrawPostScreen();
+
+	private:
+		uint32 m_width = 0;
+		uint32 m_height = 0;
+		//uint32 m_postWindowWidth = 0;
+		//uint32 m_postWindowHeight = 0;
+		Ideal::Resolution::EDisplayResolutionOption m_displayResolutionIndex = Ideal::Resolution::EDisplayResolutionOption::R_800_600;
+		HWND m_hwnd;
+
+		std::shared_ptr<Ideal::D3D12Viewport> m_viewport = nullptr;
+		std::shared_ptr<Ideal::D3D12Viewport> m_postViewport = nullptr;
+		ComPtr<ID3D12RootSignature> m_postScreenRootSignature;
+		ComPtr<ID3D12PipelineState> m_postScreenPipelineState;
 
 	public:
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
@@ -224,6 +252,9 @@ namespace Ideal
 		std::shared_ptr<Ideal::ResourceManager> m_resourceManager = nullptr;
 		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager = nullptr;
 
+		// Text
+		std::shared_ptr<Ideal::D2DTextManager> m_textManager;
+
 		// Light
 		void UpdateLightListCBData();
 
@@ -252,6 +283,9 @@ namespace Ideal
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();
+		void TransitionRayTracingOutputToRTV();
+		void TransitionRayTracingOutputToSRV();
+		void TransitionRayTracingOutputToUAV();
 
 		// AS Manager
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
@@ -276,8 +310,19 @@ namespace Ideal
 		void CreateCanvas();
 		void DrawCanvas();
 		void SetCanvasSize(uint32 Width, uint32 Height);
-		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_uiDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
+		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_mainDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::IdealCanvas> m_UICanvas;
+
+		std::shared_ptr<Ideal::FontHandle> m_fontHandle;
+		BYTE* gTextImage;
+		std::shared_ptr<Ideal::D3D12Texture> m_dynamicTexture;
+		std::shared_ptr<Ideal::IdealSprite> m_textSprite;
+		std::shared_ptr<Ideal::IdealText> m_idealText;
+
+		uint32 m_textwidth = 200;
+		uint32 m_textheight = 100;
+
+		void UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight);
 
 		// EDITOR 
 	private:

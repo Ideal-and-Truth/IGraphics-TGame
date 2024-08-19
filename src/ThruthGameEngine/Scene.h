@@ -25,7 +25,7 @@ namespace Truth
 
 	private:
 		friend class boost::serialization::access;
-		friend class EditorUI;
+		friend class LoadMapDataPopup;
 
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>

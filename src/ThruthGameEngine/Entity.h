@@ -14,6 +14,11 @@ namespace Truth
 	class Collider;
 }
 
+namespace Ideal
+{
+	class IBone;
+}
+
 namespace Truth
 {
 	class Entity final
@@ -58,6 +63,9 @@ namespace Truth
 		std::vector<std::shared_ptr<Entity>> m_children;
 
 		std::weak_ptr<Entity> m_parent;
+		std::weak_ptr<Ideal::IBone> m_linkedBone;
+
+		std::string m_linkBoneName;
 
 		bool m_isDead = false;
 
@@ -104,6 +112,7 @@ namespace Truth
 
 		bool HasParent() const { return !m_parent.expired(); };
 		bool HasChildren() const { return !m_children.empty(); }
+		bool IsLinked() const { return !m_linkedBone.expired(); };
 
 		const Matrix& GetParentMatrix() const
 		{
@@ -157,6 +166,8 @@ namespace Truth
 		void AddChild(std::shared_ptr<Entity> _entity);
 		void DeleteChild(std::shared_ptr<Entity> _entity);
 
+		void LinkBone(const std::string& _boneName);
+
 	private:
 		void ApplyComponent(std::shared_ptr<Component> _c);
 
@@ -172,6 +183,7 @@ namespace Truth
 		_ar& m_layer;
 		_ar& m_components;
 		_ar& m_children;
+		_ar& m_linkBoneName;
 	}
 
 	template<class Archive>
@@ -187,6 +199,10 @@ namespace Truth
 		if (_file_version >= 2)
 		{
 			_ar& m_children;
+		}
+		if (_file_version >= 3)
+		{
+			_ar& m_linkBoneName;
 		}
 	}
 
@@ -279,4 +295,4 @@ namespace Truth
 		return result;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Entity, 2)
+BOOST_CLASS_VERSION(Truth::Entity, 3)

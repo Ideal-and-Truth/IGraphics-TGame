@@ -82,6 +82,10 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 	{
 		DeleteEntity(child);
 	}
+	if (!_p->m_parent.expired())
+	{
+		_p->m_parent.lock()->DeleteChild(_p);
+	}
 #ifdef EDITOR_MODE
 	if (m_managers.lock()->m_isEdit)
 	{
@@ -94,6 +98,7 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 	{
 		m_beginDestroy.push(_p);
 	}
+	EditorUpdate();
 #else
 	m_beginDestroy.push(_p);
 #endif // EDITOR_MODE
@@ -162,7 +167,7 @@ void Truth::Scene::EditorUpdate()
 	m_rootEntities.clear();
 	for (auto& e : m_entities)
 	{
-		if (e->m_parent.expired())
+		if (e->m_parent.expired() && !e->m_isDead)
 		{
 			m_rootEntities.push_back(e);
 		}
