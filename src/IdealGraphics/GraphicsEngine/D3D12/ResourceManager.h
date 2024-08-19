@@ -137,6 +137,9 @@ namespace Ideal
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
 		void CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename, const Matrix& offset = Matrix::Identity);
 
+		void DeleteStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> Mesh);
+		void DeleteSkinnedMeshObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> Mesh);
+
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHeap() { return m_rtvHeap->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(); };
 
 		std::shared_ptr<Ideal::IdealMaterial> CreateMaterial();
@@ -170,7 +173,7 @@ namespace Ideal
 		std::wstring m_texturePath;
 
 		std::map<std::string, std::shared_ptr<Ideal::IdealStaticMesh>> m_staticMeshes;
-		std::map<std::string, std::shared_ptr<Ideal::IdealSkinnedMesh>> m_dynamicMeshes;
+		std::map<std::string, std::shared_ptr<Ideal::IdealSkinnedMesh>> m_skinnedMeshes;
 		std::map<std::string, std::shared_ptr<Ideal::IdealAnimation>> m_animations;
 		std::map<std::string, std::shared_ptr<Ideal::D3D12Texture>> m_textures;
 

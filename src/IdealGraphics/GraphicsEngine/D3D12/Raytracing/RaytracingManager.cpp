@@ -716,6 +716,16 @@ void Ideal::RaytracingManager::CreateMaterialInRayTracing(ComPtr<ID3D12Device5> 
 	}
 }
 
+void Ideal::RaytracingManager::DeleteMaterialInRayTracing(std::shared_ptr<Ideal::IMaterial> Material)
+{
+	auto deleteMaterial = std::static_pointer_cast<Ideal::IdealMaterial>(Material);
+	auto it = m_materialMapInFixedDescriptorTable.find(deleteMaterial->GetID());
+	if (it != m_materialMapInFixedDescriptorTable.end())
+	{
+		m_materialMapInFixedDescriptorTable.erase(it);
+	}
+}
+
 void Ideal::RaytracingManager::CreateAnimationRootSignature(ComPtr<ID3D12Device5> Device)
 {
 	CD3DX12_DESCRIPTOR_RANGE ranges[AnimationRootSignature::Slot::Count];

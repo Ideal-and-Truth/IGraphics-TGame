@@ -235,7 +235,7 @@ namespace Ideal
 		// Material의 텍스쳐가 바뀌었는지를 검사한다.
 		void UpdateTexture(ComPtr<ID3D12Device5> Device);
 		void CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::weak_ptr<Ideal::IdealMaterial> NewMaterial);
-
+		void DeleteMaterialInRayTracing(std::shared_ptr<Ideal::IMaterial> Material);
 	private:
 		// 중복되는 Material 관리..?
 		std::unordered_map<uint64,std::weak_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
