@@ -416,7 +416,7 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 	if (hitCheck)
 	{
 		int a = 1;
-		return MathConverter::Convert(rayCastBuffer.block.position);
+		return MathConverter::Convert(rayCastBuffer.block.position) - _direction * 2;
 		// return _start + (_direction * _range);
 	}
 	else
