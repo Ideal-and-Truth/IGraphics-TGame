@@ -41,7 +41,7 @@ void PlayerCamera::Start()
 
 	m_playerController = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player").lock()->GetComponent<PlayerController>().lock();
 
-	// m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
+	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Enemy").lock());
 }
 
@@ -227,7 +227,7 @@ void PlayerCamera::SortEnemy()
 			{
 				std::shared_ptr<Truth::Entity> lastLocked = m_enemys[m_enemyCount];
 				m_enemys[j].swap(m_enemys[i]);
-				m_enemyCount = find(m_enemys.begin(), m_enemys.end(), lastLocked) - m_enemys.begin();
+				m_enemyCount = (int)(find(m_enemys.begin(), m_enemys.end(), lastLocked) - m_enemys.begin());
 			}
 		}
 	}

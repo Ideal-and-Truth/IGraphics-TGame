@@ -71,6 +71,7 @@ class NormalAttack1
 	: public AnimationState
 {
 private:
+	bool isReset = false;
 
 public:
 	NormalAttack1(Truth::Component* animator)
@@ -89,6 +90,7 @@ class NormalAttack2
 	: public AnimationState
 {
 private:
+	bool isReset = false;
 
 public:
 	NormalAttack2(Truth::Component* animator)
@@ -107,6 +109,7 @@ class NormalAttack3
 	: public AnimationState
 {
 private:
+	bool isReset = false;
 
 public:
 	NormalAttack3(Truth::Component* animator)
@@ -125,6 +128,7 @@ class NormalAttack4
 	: public AnimationState
 {
 private:
+	bool isReset = false;
 
 public:
 	NormalAttack4(Truth::Component* animator)
@@ -139,13 +143,146 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class ChargedAttack1
+class NormalAttack5
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	NormalAttack5(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class NormalAttack6
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	NormalAttack6(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class ComboReady
 	: public AnimationState
 {
 private:
 
 public:
+	ComboReady(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+
+};
+class ChargedAttack1
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
 	ChargedAttack1(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class ChargedAttack2
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	ChargedAttack2(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class ChargedAttack3
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	ChargedAttack3(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class ChargedAttack4
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	ChargedAttack4(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class ChargedAttack5
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	ChargedAttack5(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -202,7 +339,7 @@ public:
 	PlayerDodge(Truth::Component* animator)
 		: AnimationState(animator)
 	{
-		 
+
 	}
 
 public:
@@ -243,6 +380,9 @@ private:
 	PROPERTY(isAttack);
 	bool m_isAttack;
 
+	PROPERTY(isNormalAttack);
+	bool m_isNormalAttack;
+
 	PROPERTY(isChargedAttack);
 	bool m_isChargedAttack;
 
@@ -263,6 +403,12 @@ private:
 
 	PROPERTY(isLockOn);
 	bool m_isLockOn;
+
+	PROPERTY(isComboReady);
+	bool m_isComboReady;
+
+	PROPERTY(isDead);
+	bool m_isDead;
 
 	/// ----------------------------------------
 	float m_lastHp;
