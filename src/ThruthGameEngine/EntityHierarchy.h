@@ -1,4 +1,7 @@
 #pragma once
+#ifdef EDITOR_MODE
+
+
 #include "EditorContext.h"
 
 namespace Truth
@@ -25,3 +28,4 @@ private:
 	void DisplayEntity(std::weak_ptr<Truth::Entity> _entity);
 };
 
+#endif // EDITOR_MODE

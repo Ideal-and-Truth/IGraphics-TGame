@@ -200,9 +200,9 @@
     <IntDir>..\Libraries\Debuglib\GameEngine\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
     <VcpkgEnabled>true</VcpkgEnabled>
-    <VcpkgManifestInstall>true</VcpkgManifestInstall>
+    <VcpkgManifestInstall>false</VcpkgManifestInstall>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

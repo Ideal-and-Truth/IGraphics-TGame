@@ -1,7 +1,7 @@
+#ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #include "Managers.h"
 #include "GraphicsManager.h"
-
 Truth::EditorCamera::EditorCamera(Managers* _managers)
 	: m_camera(nullptr)
 	, m_speed(50.0f)
@@ -76,3 +76,4 @@ void Truth::EditorCamera::SetMainCamera()
 {
 	m_managers->Graphics()->SetMainCamera(this);
 }
+#endif // EDITOR_MODE

@@ -1,4 +1,5 @@
 #pragma once
+#ifdef EDITOR_MODE
 #include "EditorContext.h"
 class MenuBar :
     public EditorContext
@@ -10,4 +11,5 @@ public:
     void ShowContext(bool* p_open) override;
 
 };
+#endif // EDITOR_MODE
 

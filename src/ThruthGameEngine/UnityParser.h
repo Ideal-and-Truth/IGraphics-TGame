@@ -1,4 +1,7 @@
 #pragma once
+#ifdef EDITOR_MODE
+
+
 #include "Headers.h"
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
@@ -176,3 +179,4 @@ namespace Truth
 	};
 }
 
+#endif // EDITOR_MODE

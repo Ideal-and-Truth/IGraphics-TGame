@@ -1,4 +1,5 @@
 #pragma once
+#ifdef EDITOR_MODE
 #include "Headers.h"
 #include "InputManager.h"
 
@@ -32,4 +33,5 @@ namespace Truth
 		Managers* m_managers;
 	};
 }
+#endif // EDITOR_MODE
 

@@ -1,3 +1,4 @@
+#ifdef EDITOR_MODE
 #include "Inspector.h"
 #include "imgui.h"
 #include "Entity.h"
@@ -171,3 +172,4 @@ void Inspector::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 		}
 	}
 }
+#endif // EDITOR_MODE
