@@ -379,6 +379,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
 		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
 		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
 
@@ -388,9 +389,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
 
 		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
-		eyeMaterial->SetBaseMap(eyeTexture);
+		std::shared_ptr<Ideal::IMaterial> kaMaterial = gRenderer->CreateMaterial();
+		kaMaterial->SetBaseMap(kaTexture);
 
-		DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(eyeMaterial);
+		//DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 
 #pragma endregion
 
@@ -556,7 +558,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
 						DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
-						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(eyeMaterial);
+						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+					}
+					else
+					{
+						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 					}
 				}
 
@@ -599,7 +605,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				if (DebugPlayer)
 				{
-					DebugPlayer->AnimationDeltaTime(0.002f);
+					//DebugPlayer->AnimationDeltaTime(0.002f);
 				}
 				//DebugPlayer2->AnimationDeltaTime(0.002f);
 				//DebugPlayer3->AnimationDeltaTime(0.002f);
@@ -696,12 +702,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//DebugPlayer3.reset();
 		//gRenderer->DeleteMeshObject(playerRe);
 		//playerRe.reset();
+		gRenderer->DeleteMaterial(kaMaterial);
+		kaMaterial.reset();
 		gRenderer->DeleteMaterial(skirtMaterial);
 		skirtMaterial.reset();
 		gRenderer->DeleteMaterial(eyeMaterial);
 		eyeMaterial.reset();
 		gRenderer->DeleteTexture(faceTexture);
 		faceTexture.reset();
+		gRenderer->DeleteTexture(kaTexture);
+		kaTexture.reset();
 		gRenderer->DeleteTexture(faceNormalTexture);
 		faceNormalTexture.reset();
 		gRenderer->DeleteTexture(eyeTexture);

@@ -156,6 +156,9 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 
 		DXRInstanceDesc* ptr = (DXRInstanceDesc*)container->SystemMemoryAddress;
 		*ptr = m_blasInstanceDescs[i]->InstanceDesc;
+
+		// 2024.08.20 ContributionToHitGroupIndex를 갱신을 다시 해준다.	// 이거떄매 GPU 메모리 잘못 접근하는 오류가 생겼었다. 이거 찾기 졸라 힘들었다.
+		ptr->InstanceContributionToHitGroupIndex = m_blasInstanceDescs[i]->BLAS->GetInstanceContributionToHitGroupIndex();	
 	}
 
 	// Build BLAS

@@ -1763,7 +1763,9 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 		{
 			m_deferredDeleteManager->AddBLASToDeferredDelete(blas);
 			m_raytracingManager->DeleteBLAS(blas, name, false);
-			//m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
+			m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
+			// HitContributionToIndex 이거 갱신해줘야 한다.
+
 		}
 	}
 	//obj.reset();
@@ -1784,7 +1786,9 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 		{
 			m_deferredDeleteManager->AddBLASToDeferredDelete(blas);
 			m_raytracingManager->DeleteBLAS(blas, name, true);
-			//m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
+			m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
+
+			//obj->GetBLASInstanceDesc()->InstanceDesc.InstanceContributionToHitGroupIndex = obj->GetBLAS()->GetInstanceContributionToHitGroupIndex();
 		}
 	}
 	//obj.reset();
