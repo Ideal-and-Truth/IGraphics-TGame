@@ -850,9 +850,12 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 		m_resourceManager->DeleteStaticMeshObject(mesh);
 		auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), mesh);
 		{
-			*it = std::move(m_staticMeshObject.back());
-			m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
-			m_staticMeshObject.pop_back();
+			if (it != m_staticMeshObject.end())
+			{
+				*it = std::move(m_staticMeshObject.back());
+				m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
+				m_staticMeshObject.pop_back();
+			}
 		}
 	}
 	else if (MeshObject->GetMeshType() == Ideal::Skinned)
@@ -862,9 +865,12 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 		m_resourceManager->DeleteSkinnedMeshObject(mesh);
 		auto it = std::find(m_skinnedMeshObject.begin(), m_skinnedMeshObject.end(), mesh);
 		{
-			*it = std::move(m_skinnedMeshObject.back());
-			m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
-			m_skinnedMeshObject.pop_back();
+			if (it != m_skinnedMeshObject.end())
+			{
+				*it = std::move(m_skinnedMeshObject.back());
+				m_deferredDeleteManager->AddMeshObjectToDeferredDelete(MeshObject);
+				m_skinnedMeshObject.pop_back();
+			}
 		}
 	}
 }
@@ -885,7 +891,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteDebugMeshObject(std::shared_ptr<Ideal
 
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateDebugMeshObject(const std::wstring& FileName)
 {
-	// 작동안함
+	// 투명 작동안함
 	return CreateStaticMeshObject(FileName);
 }
 
@@ -1755,15 +1761,37 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 		bool ShouldDeleteBLAS = blas->SubRefCount();
 		if (ShouldDeleteBLAS)
 		{
-			//m_deferredDeleteManager->AddD3D12ResourceToDelete(blas->GetResource());
 			m_deferredDeleteManager->AddBLASToDeferredDelete(blas);
 			m_raytracingManager->DeleteBLAS(blas, name, false);
+			m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
+			// HitContributionToIndex 이거 갱신해줘야 한다.
 
-			//m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 		}
 	}
 	//obj.reset();
 
+}
+
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
+{
+	const std::wstring& name = obj->GetName();
+	auto blas = obj->GetBLAS();
+	//auto blas = m_raytracingManager->GetBLASByName(name);
+	auto blasInstance = obj->GetBLASInstanceDesc();
+	m_raytracingManager->DeleteBLASInstance(blasInstance);
+	if (blas != nullptr)
+	{
+		bool ShouldDeleteBLAS = blas->SubRefCount();
+		if (ShouldDeleteBLAS)
+		{
+			m_deferredDeleteManager->AddBLASToDeferredDelete(blas);
+			m_raytracingManager->DeleteBLAS(blas, name, true);
+			m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
+
+			//obj->GetBLASInstanceDesc()->InstanceDesc.InstanceContributionToHitGroupIndex = obj->GetBLAS()->GetInstanceContributionToHitGroupIndex();
+		}
+	}
+	//obj.reset();
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
@@ -1976,25 +2004,4 @@ void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height
 			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
 	}
-}
-
-void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
-{
-	const std::wstring& name = obj->GetName();
-	auto blas = obj->GetBLAS();
-	//auto blas = m_raytracingManager->GetBLASByName(name);
-	auto blasInstance = obj->GetBLASInstanceDesc();
-	m_raytracingManager->DeleteBLASInstance(blasInstance);
-	if (blas != nullptr)
-	{
-		bool ShouldDeleteBLAS = blas->SubRefCount();
-		if (ShouldDeleteBLAS)
-		{
-			//m_deferredDeleteManager->AddD3D12ResourceToDelete(blas->GetResource());
-			m_deferredDeleteManager->AddBLASToDeferredDelete(blas);
-			m_raytracingManager->DeleteBLAS(blas, name, true);
-		}
-	}
-	//obj.reset();
-	//m_raytracingManager->BuildShaderTables(m_device, m_resourceManager, m_descriptorManager, m_deferredDeleteManager);
 }
