@@ -1,4 +1,6 @@
 #include "EntityHierarchy.h"
+#ifdef EDITOR_MODE
+
 #include "imgui.h"
 #include "Scene.h"
 #include "Managers.h"
@@ -218,3 +220,4 @@ void EntityHierarchy::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 		ImGui::TreePop();
 	}
 }
+#endif // EDITOR_MODE

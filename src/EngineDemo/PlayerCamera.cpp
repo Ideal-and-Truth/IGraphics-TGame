@@ -118,7 +118,7 @@ void PlayerCamera::FreeCamera()
 {
 	// 자유시점 카메라
 	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
-	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 2.0f, 0.0f };
+	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 4.5f, 0.0f };
 
 	m_elevation += MouseDy() * m_cameraSpeed;
 	m_azimuth -= MouseDx() * m_cameraSpeed;
@@ -155,7 +155,6 @@ void PlayerCamera::FreeCamera()
 	look.Normalize(look);
 	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance);
 	// look = targetPos - cameraPos;
-
 	m_owner.lock()->m_transform->m_position = cameraPos;
 	m_camera.lock()->m_look = look;
 

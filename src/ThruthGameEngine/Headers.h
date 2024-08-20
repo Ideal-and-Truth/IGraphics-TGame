@@ -1,6 +1,6 @@
 #pragma once
 
-#define EDITOR_MODE
+#include "EditorDefine.h"
 
 // extern library
 #include "SimpleMath.h"

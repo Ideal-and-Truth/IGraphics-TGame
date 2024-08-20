@@ -1,4 +1,5 @@
 #include "EditorUI.h"
+#ifdef EDITOR_MODE
 
 #include "EntityHierarchy.h"
 #include "Inspector.h"
@@ -142,5 +143,6 @@ void EditorUI::AddContext(std::shared_ptr<EditorContext> _context)
 // 	ImGui::PopItemWidth();
 // 	ImGui::End();
 // }
+#endif // EDITOR_MODE
 
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "EditorDefine.h"
+#ifdef EDITOR_MODE
 #include <memory>
 #include <queue>
 #include <windows.h>
@@ -28,4 +30,4 @@ public:
 private:
 	// void ShowAnimator(bool* p_open);
 };
-
+#endif // EDITOR_MODE

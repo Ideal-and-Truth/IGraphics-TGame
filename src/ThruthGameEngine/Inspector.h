@@ -1,6 +1,9 @@
 #pragma once
-#include "EditorContext.h"
+#include "EditorDefine.h"
 
+#ifdef EDITOR_MODE
+
+#include "EditorContext.h"
 namespace Truth
 {
 	class Entity;
@@ -26,4 +29,5 @@ private:
 	void TranslateComponent(std::shared_ptr<Truth::Component> EntityComponent);
 	void AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity);
 };
+#endif // EDITOR_MODE
 

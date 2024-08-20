@@ -1,4 +1,6 @@
 #include "UnityParser.h"
+#ifdef EDITOR_MODE
+
 #include <fstream>
 #include <iostream>
 #include "FileUtils.h"
@@ -1092,3 +1094,4 @@ std::vector<std::vector<DirectX::SimpleMath::Vector3>> Truth::UnityParser::GetSt
 {
 	return std::vector<std::vector<Vector3>>();
 }
+#endif // EDITOR_MODE

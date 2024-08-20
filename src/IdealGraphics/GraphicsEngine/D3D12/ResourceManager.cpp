@@ -1251,15 +1251,17 @@ void ResourceManager::DeleteSkinnedMeshObject(std::shared_ptr<Ideal::IdealSkinne
 {
 	std::wstring name = Mesh->GetName();
 	std::string key = StringUtils::ConvertWStringToString(name);
-	m_skinnedMeshes[key]->SubRefCount();
-
-	if (m_skinnedMeshes[key]->GetRefCount() == 0)
+	if (m_skinnedMeshes[key])
 	{
-		// todo : delete
-		auto it = m_skinnedMeshes.find(key);
-		if (it != m_skinnedMeshes.end())
+		m_skinnedMeshes[key]->SubRefCount();
+		if (m_skinnedMeshes[key]->GetRefCount() == 0)
 		{
-			m_skinnedMeshes.erase(it);
+			// todo : delete
+			auto it = m_skinnedMeshes.find(key);
+			if (it != m_skinnedMeshes.end())
+			{
+				m_skinnedMeshes.erase(it);
+			}
 		}
 	}
 }

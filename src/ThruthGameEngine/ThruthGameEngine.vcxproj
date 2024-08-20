@@ -32,6 +32,7 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorContext.h" />
+    <ClInclude Include="EditorDefine.h" />
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="DirectionLight.h" />

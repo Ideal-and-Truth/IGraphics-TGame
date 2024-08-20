@@ -1,4 +1,5 @@
 #include "MenuBar.h"
+#ifdef EDITOR_MODE
 #include "imgui.h"
 #include "Scene.h"
 #include "Managers.h"
@@ -130,3 +131,4 @@ void MenuBar::ShowContext(bool* p_open)
 
 	ImGui::EndMainMenuBar();
 }
+#endif // EDITOR_MODE

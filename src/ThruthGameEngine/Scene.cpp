@@ -304,6 +304,9 @@ void Truth::Scene::Enter()
 	{
 		e->m_index = index++;
 	}
+#ifndef EDITOR_MODE
+	Start();
+#endif // EDITOR_MODE
 }
 
 /// <summary>

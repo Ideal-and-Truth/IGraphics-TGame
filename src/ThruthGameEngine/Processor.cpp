@@ -1,23 +1,19 @@
 #include "Processor.h"
 #include "Managers.h"
 #include "SceneManager.h"
-// #include "TestScene.h"
-// #include "TestScene2.h"
 #include "ISkinnedMeshObject.h"
 #include "IRenderScene.h"
 #include "IAnimation.h"
 #include "GraphicsManager.h"
-#include "imgui.h"
 #include "InputManager.h"
-//#include "../IdealGraphics/Misc/Utils/FileUtils.h"
+
+#ifdef EDITOR_MODE
+#include "imgui.h"
 #include "EditorUI.h"
-
 #include "UnityParser.h"
-
-#include <xxhash.h>
+#endif // EDITOR_MODE
 
 #include "IdealRenderer.h"
-
 #include "ThreadPool.h"
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
@@ -29,7 +25,9 @@ Processor::Processor()
 	, m_manager(nullptr)
 	, m_wight(0)
 	, m_height(0)
+#ifdef EDITOR_MODE
 	, m_editor(nullptr)
+#endif // EDITOR_MODE
 	, m_hinstance()
 {
 	DEBUG_PRINT("start process\n");
@@ -47,8 +45,6 @@ Processor::~Processor()
 /// <param name="_hInstance"></param>
 void Processor::Initialize(HINSTANCE _hInstance)
 {
-
-
 	m_hinstance = _hInstance;
 	CreateMainWindow(_hInstance);
 	InitializeManager();
@@ -59,25 +55,12 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
-	// g_Renderer->ConvertAssetToMyFormat(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1.FBX", true);
-	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
-	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
-	//	g_Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-	// g_Renderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/ani_com_3.fbx");
-	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
-	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations/Guard/Revenge_Guard_Loop.fbx");
-	// g_Renderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk2.fbx");// -> Assimp Converter에서 FLAG 해제
-	// g_Renderer->ConvertAssetToMyFormat(L"TestMap/Map2.fbx");
-
+#ifdef EDITOR_MODE
 	Truth::UnityParser up(m_manager->Graphics().get());
-
-	// 	std::string buffer = "Type:Mesh->Sprite__3_0";
-	// 	XXH64_hash_t hash = XXH64(buffer.c_str(), buffer.length(), 0);
-	// 	int64 temp = static_cast<int64>(hash);
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	// up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
-
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
+#endif // EDITOR_MODE
 }
 
 void Processor::Finalize()

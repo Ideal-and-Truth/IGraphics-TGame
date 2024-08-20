@@ -5,7 +5,6 @@
 #include <thread>
 #include <mutex>
 
-
 // #define CONVERT_DATA
 #define MAX_THREAD_COUNT 16
 namespace Truth
@@ -75,8 +74,10 @@ private:
 
 #endif // CONVERT_DATA
 
-
+#ifdef EDITOR_MODE
 	std::unique_ptr<EditorUI> m_editor;
+#endif // EDITOR_MODE
+
 	std::shared_ptr<Truth::Managers> m_manager;
 
 	std::shared_ptr<Ideal::IMeshObject> mesh;
