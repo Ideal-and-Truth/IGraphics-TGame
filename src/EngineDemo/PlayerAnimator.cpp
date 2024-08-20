@@ -66,25 +66,37 @@ void PlayerAnimator::Start()
 	m_playerController = m_owner.lock().get()->GetComponent<PlayerController>().lock();
 	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 
-	m_skinnedMesh->AddAnimation("Idle", L"PlayerAnimations1/Idle/Idle");
-	m_skinnedMesh->AddAnimation("Walk", L"PlayerAnimations1/Move/FrontWalk/Sword And Shield Walk");
+	m_skinnedMesh->AddAnimation("Idle", L"AsciiAniTest/ani_com_3");
+	m_skinnedMesh->AddAnimation("Walk", L"AsciiAniTest/animation_ka_walk");
 
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3{ 1.5f, 0.0f, 0.0f });
 	Matrix t = Matrix::CreateFromQuaternion(q);
 	t *= Matrix::CreateTranslation(Vector3{ 0.0f, 0.02f, 0.0f });
 
 	//m_skinnedMesh->AddAnimation("Walk", L"test2/testWalk2", t);
-	m_skinnedMesh->AddAnimation("Run", L"PlayerAnimations1/Move/Run/Sword And Shield Run");
-	m_skinnedMesh->AddAnimation("NormalAttack1", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1");
-	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2");
-	m_skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3");
-	m_skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4");
-	m_skinnedMesh->AddAnimation("Guard", L"PlayerAnimations1/Guard/Sword And Shield Block");
-	m_skinnedMesh->AddAnimation("GuardIdle", L"PlayerAnimations1/Guard/Sword And Shield Block Idle");
-	m_skinnedMesh->AddAnimation("GuardHit", L"PlayerAnimations1/Guard/Sword And Shield Block Impact");
-	m_skinnedMesh->AddAnimation("GuardEnd", L"PlayerAnimations1/Guard/Sword And Shield Block End");
-	m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations1/Hit/Sword And Shield Impact");
-	m_skinnedMesh->AddAnimation("Dodge", L"PlayerAnimations1/Dodge/Stand To Roll");
+// 	m_skinnedMesh->AddAnimation("Run", L"PlayerAnimations1/Move/Run/Sword And Shield Run");
+// 	m_skinnedMesh->AddAnimation("NormalAttack1", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1");
+// 	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash2");
+// 	m_skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash3");
+// 	m_skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash4");
+// 	m_skinnedMesh->AddAnimation("Guard", L"PlayerAnimations1/Guard/Sword And Shield Block");
+// 	m_skinnedMesh->AddAnimation("GuardIdle", L"PlayerAnimations1/Guard/Sword And Shield Block Idle");
+// 	m_skinnedMesh->AddAnimation("GuardHit", L"PlayerAnimations1/Guard/Sword And Shield Block Impact");
+// 	m_skinnedMesh->AddAnimation("GuardEnd", L"PlayerAnimations1/Guard/Sword And Shield Block End");
+// 	m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations1/Hit/Sword And Shield Impact");
+// 	m_skinnedMesh->AddAnimation("Dodge", L"PlayerAnimations1/Dodge/Stand To Roll");
+
+	m_skinnedMesh->AddAnimation("Run", L"AsciiAniTest/animation_ka_walk");
+	m_skinnedMesh->AddAnimation("NormalAttack1", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("NormalAttack2", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("NormalAttack3", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("NormalAttack4", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("Guard", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("GuardIdle", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("GuardHit", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("GuardEnd", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("Hit", L"AsciiAniTest/asciiFbxAni");
+	m_skinnedMesh->AddAnimation("Dodge", L"AsciiAniTest/asciiFbxAni");
 
 	m_currentState->OnStateEnter();
 }

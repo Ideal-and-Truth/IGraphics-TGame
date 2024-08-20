@@ -71,6 +71,7 @@
     <ClInclude Include="StringConverter.h" />
     <ClInclude Include="TestComponent.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="Transform.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="StringConverter.cpp" />
     <ClCompile Include="TestComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TypeInfo.cpp">

@@ -1,4 +1,4 @@
- #include "Processor.h"
+#include "Processor.h"
 #include "Managers.h"
 #include "SceneManager.h"
 // #include "TestScene.h"
@@ -15,6 +15,10 @@
 #include "UnityParser.h"
 
 #include <xxhash.h>
+
+#include "IdealRenderer.h"
+
+#include "ThreadPool.h"
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
@@ -43,15 +47,22 @@ Processor::~Processor()
 /// <param name="_hInstance"></param>
 void Processor::Initialize(HINSTANCE _hInstance)
 {
+
+
 	m_hinstance = _hInstance;
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 
-	// 	g_Renderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+#ifdef CONVERT_DATA
+	ConvertData();
+	// ConvertDataUseTrhead();
+#endif // CONVERT_DATA
+
+	// g_Renderer->ConvertAssetToMyFormat(L"AsciiAniTest/ani_com_3.fbx", true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugCube.fbx", false, true);
 	// 	g_Renderer->ConvertAssetToMyFormat(L"debugObject/debugSphere.fbx", false, true);
-	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Run.fbx");
+	// g_Renderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/ani_com_3.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Idle.fbx");
 	// 	g_Renderer->ConvertAnimationAssetToMyFormat(L"Kachujin/Slash.fbx");
 	// g_Renderer->ConvertAnimationAssetToMyFormat(L"test2/testWalk2.fbx");// -> Assimp Converter에서 FLAG 해제
@@ -182,6 +193,16 @@ void Processor::Render()
 	}
 #endif // EDITOR_MODE
 
+	// 	if (m_manager->Input()->GetKeyState(KEY::P) == KEY_STATE::DOWN)
+	// 	{
+	// 		m_manager->EditToGame();
+	// 	}
+	// 
+	// 	if (m_manager->Input()->GetKeyState(KEY::O) == KEY_STATE::DOWN)
+	// 	{
+	// 		m_manager->GameToEdit();
+	// 	}
+
 	m_manager->Render();
 }
 
@@ -254,3 +275,58 @@ void Processor::InitializeManager()
 	// g_Renderer->ConvertAssetToMyFormat(L"debugCube/debugCube.fbx");
 }
 
+#ifdef CONVERT_DATA
+void Processor::ConvertDataUseTrhead()
+{
+	ThreadPool th(MAX_THREAD_COUNT);
+
+	std::function<void(const std::wstring&)> fAni = Processor::ConvertAniFbxData;
+	std::function<void(const std::wstring&)> fSkel = Processor::ConvertSkelFbxData;
+	std::function<void(const std::wstring&)> fStatic = Processor::ConvertStaticFbxData;
+	std::vector<std::future<void>> futures;
+
+	for (auto& path : m_aniData)
+	{
+		futures.emplace_back(th.EnqueueJob(fAni, path));
+	}
+	for (auto& path : m_skelMeshdata)
+	{
+		futures.emplace_back(th.EnqueueJob(fSkel, path));
+	}
+	for (auto& path : m_staticMeshData)
+	{
+		futures.emplace_back(th.EnqueueJob(fStatic, path));
+	}
+}
+
+void Processor::ConvertData()
+{
+	for (auto& path : m_aniData)
+	{
+		ConvertAniFbxData(path);
+	}
+	for (auto& path : m_skelMeshdata)
+	{
+		ConvertAniFbxData(path);
+	}
+	for (auto& path : m_staticMeshData)
+	{
+		ConvertAniFbxData(path);
+	}
+}
+
+void Processor::ConvertAniFbxData(const std::wstring& _path)
+{
+	g_Renderer->ConvertAnimationAssetToMyFormat(_path);
+}
+
+void Processor::ConvertSkelFbxData(const std::wstring& _path)
+{
+	g_Renderer->ConvertAssetToMyFormat(_path, true);
+}
+
+void Processor::ConvertStaticFbxData(const std::wstring& _path)
+{
+	g_Renderer->ConvertAssetToMyFormat(_path, false);
+}
+#endif // CONVERT_DATA

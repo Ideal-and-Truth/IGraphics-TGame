@@ -38,7 +38,7 @@ namespace Ideal
 		virtual Vector2 const& GetPosition() override { return m_cbSprite.Pos; }
 		virtual float GetZ() override { return m_cbSprite.Z; }
 		virtual float GetAlpha() override { return m_cbSprite.Alpha; }
-		//virtual Color const& GetColor() override { return m_cbSprite.SpriteColor; }
+		virtual Color const& GetColor() override { return m_cbSprite.SpriteColor; }
 
 		virtual void SetSampleRect(const SpriteRectArea& Rect) override;
 		virtual void SetPosition(const Vector2& Position) override;

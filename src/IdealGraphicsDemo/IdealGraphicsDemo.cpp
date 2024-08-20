@@ -65,6 +65,49 @@ using namespace std;
 #include "../Utils/SimpleMath.h"
 #include "Test.h"
 
+
+std::string wstring_to_utf8Func(const std::wstring& wstr) {
+	std::string utf8str;
+	utf8str.reserve(wstr.size() * 4); // 최대 크기로 예약
+
+	for (wchar_t wc : wstr) {
+		if (wc <= 0x7F) {
+			// 1바이트 (ASCII)
+			utf8str.push_back(static_cast<char>(wc));
+		}
+		else if (wc <= 0x7FF) {
+			// 2바이트
+			utf8str.push_back(static_cast<char>(0xC0 | ((wc >> 6) & 0x1F)));
+			utf8str.push_back(static_cast<char>(0x80 | (wc & 0x3F)));
+		}
+		else if (wc <= 0xFFFF) {
+			// 3바이트
+			utf8str.push_back(static_cast<char>(0xE0 | ((wc >> 12) & 0x0F)));
+			utf8str.push_back(static_cast<char>(0x80 | ((wc >> 6) & 0x3F)));
+			utf8str.push_back(static_cast<char>(0x80 | (wc & 0x3F)));
+		}
+		else if (wc <= 0x10FFFF) {
+			// 4바이트
+			utf8str.push_back(static_cast<char>(0xF0 | ((wc >> 18) & 0x07)));
+			utf8str.push_back(static_cast<char>(0x80 | ((wc >> 12) & 0x3F)));
+			utf8str.push_back(static_cast<char>(0x80 | ((wc >> 6) & 0x3F)));
+			utf8str.push_back(static_cast<char>(0x80 | (wc & 0x3F)));
+		}
+	}
+	return utf8str;
+}
+
+// 유틸리티 함수: UTF-8 문자열을 wstring으로 변환
+std::wstring utf8_to_wstringFunc(const std::string& utf8Str) {
+	if (utf8Str.empty()) return std::wstring();
+
+	int wideCharLength = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, NULL, 0);
+	std::wstring wideStr(wideCharLength, 0);
+	MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, &wideStr[0], wideCharLength);
+
+	return wideStr;
+}
+
 using namespace DirectX::SimpleMath;
 
 #define MAX_LOADSTRING 100
@@ -109,6 +152,7 @@ void SpotLightInspector(std::shared_ptr<Ideal::ISpotLight> PointLight);
 void SkinnedMeshObjectBoneInfoTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject);
 void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> SkinnedMeshObject, std::shared_ptr<Ideal::IMaterial> Material, std::shared_ptr<Ideal::IMaterial> Material2 = nullptr, std::shared_ptr<Ideal::ITexture> Texture = nullptr, std::shared_ptr<Ideal::ITexture> Texture2 = nullptr);
 void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite);
+void TextTest(std::shared_ptr<Ideal::IText> Text);
 void RendererSizeTest();
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
@@ -193,12 +237,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region FBXConvert
 		//-------------------Convert FBX(Model, Animation)-------------------//
-		gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
-		gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx", true);
-		gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
-		gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx");
 		
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
@@ -373,8 +417,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sprite3->SetZ(0);
 
 		//---Text---//
-		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
-		text->ChangeText(L"HI");
+		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
+		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30);	// 기본 tahoma 글꼴임
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30, L"times new roman");
+		text->ChangeText(L"HI EVERYONE\n Hi2");
 #pragma endregion
 
 #pragma region CreateLight
@@ -383,7 +429,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
 
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
-
+		 
 		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		spotLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		spotLight->SetRange(6.f);
@@ -460,7 +506,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//if (sprite)
 						//gRenderer->DeleteSprite(sprite);
 					if (text)
-						gRenderer->DeleteText(text);
+					{
+						text->ChangeText(L"HELLO WORLDasdf");
+						//gRenderer->DeleteText(text);
+					}
 				}
 
 				if (GetAsyncKeyState('C') & 0x8000)
@@ -570,6 +619,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						if (sprite3)
 						{
 							SpriteTest(sprite3);
+						}
+						if (text)
+						{
+							TextTest(text);
 						}
 					}
 					//once++;
@@ -1129,6 +1182,65 @@ void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite)
 	ImGui::Checkbox("Active", &b);
 	Sprite->SetActive(b);
 
+	ImGui::End();
+}
+
+
+bool InputTextW(const char* label, std::wstring& wstr) {
+	// wstring을 utf-8 string으로 변환
+	std::string utf8Str = wstring_to_utf8Func(wstr);
+
+	// 버퍼 크기를 확인
+	char buffer[256]; // 임시로 256바이트 버퍼 사용
+	strncpy_s(buffer, utf8Str.c_str(), sizeof(buffer));
+	buffer[sizeof(buffer) - 1] = 0; // null-terminate
+
+	// ImGui InputText 호출
+	bool result = ImGui::InputText(label, buffer, sizeof(buffer));
+
+	// 입력이 변경되었으면 utf-8 -> wstring 변환
+	if (result) {
+		wstr = utf8_to_wstringFunc(std::string(buffer));
+	}
+
+	return result;
+}
+
+
+bool InputTextMultilineW(const char* label, std::wstring& wstr, const ImVec2& size = ImVec2(0, 0)) {
+	// wstring을 utf-8 string으로 변환
+	std::string utf8Str = wstring_to_utf8Func(wstr);
+
+	// 버퍼 크기를 확인하고 적절한 메모리를 할당
+	std::vector<char> buffer(utf8Str.begin(), utf8Str.end());
+	buffer.resize(1024); // 임의로 1024바이트로 버퍼 크기 설정
+
+	// ImGui InputTextMultiline 호출
+	bool result = ImGui::InputTextMultiline(label, buffer.data(), buffer.size(), size);
+
+	// 입력이 변경되었으면 utf-8 -> wstring 변환
+	if (result) {
+		wstr = utf8_to_wstringFunc(std::string(buffer.data()));
+	}
+
+	return result;
+}
+
+
+
+std::wstring finalStr;
+void TextTest(std::shared_ptr<Ideal::IText> Text)
+{
+	ImGui::Begin("Text test");
+	float a = Text->GetAlpha();
+	ImGui::SliderFloat("Alpha", &a, 0.f, 1.f);
+	Text->SetAlpha(a);
+	bool b = Text->GetActive();
+	ImGui::Checkbox("Active", &b);
+	Text->SetActive(b);
+	//InputTextW("Label", finalStr);
+	InputTextMultilineW("Label", finalStr);	// <- 이거 기능 진짜 개쩌는듯 ㅋㅋ 엔터치면 다음줄로감 
+	Text->ChangeText(finalStr);	// 변경이 안됐는데 매 프레임 호출하지 말 것. 이전 string과 비교해서 다를경우에만 넣어줄 것
 	ImGui::End();
 }
 

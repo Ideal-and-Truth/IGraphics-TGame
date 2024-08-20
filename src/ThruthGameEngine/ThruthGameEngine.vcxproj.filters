@@ -151,6 +151,9 @@
     <Filter Include="EditorUI\Context\Hierachy\LinkBone">
       <UniqueIdentifier>{49cc263a-f52b-4ec2-a4cb-840e21b094d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils\ThreadPool">
+      <UniqueIdentifier>{b6dbf41d-e363-4ab9-b664-db41768b869d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -297,6 +300,7 @@
       <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
     </ClCompile>
     <ClCompile Include="LinkBonePopup.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -463,6 +467,7 @@
       <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
     </ClInclude>
     <ClInclude Include="LinkBonePopup.h" />
+    <ClInclude Include="ThreadPool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

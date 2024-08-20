@@ -41,7 +41,7 @@ void PlayerCamera::Start()
 
 	m_playerController = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player").lock()->GetComponent<PlayerController>().lock();
 
-	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
+	// m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Enemy").lock());
 }
 
