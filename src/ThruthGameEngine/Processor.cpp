@@ -56,6 +56,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 
 #ifdef CONVERT_DATA
 	ConvertData();
+	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
 	// g_Renderer->ConvertAssetToMyFormat(L"AsciiAniTest/ani_com_3.fbx", true);
@@ -275,7 +276,7 @@ void Processor::InitializeManager()
 }
 
 #ifdef CONVERT_DATA
-void Processor::ConvertData()
+void Processor::ConvertDataUseTrhead()
 {
 	ThreadPool th(MAX_THREAD_COUNT);
 
@@ -295,6 +296,22 @@ void Processor::ConvertData()
 	for (auto& path : m_staticMeshData)
 	{
 		futures.emplace_back(th.EnqueueJob(fStatic, path));
+	}
+}
+
+void Processor::ConvertData()
+{
+	for (auto& path : m_aniData)
+	{
+		ConvertAniFbxData(path);
+	}
+	for (auto& path : m_skelMeshdata)
+	{
+		ConvertAniFbxData(path);
+	}
+	for (auto& path : m_staticMeshData)
+	{
+		ConvertAniFbxData(path);
 	}
 }
 

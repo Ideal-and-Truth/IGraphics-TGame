@@ -61,7 +61,7 @@ private:
 		L"PlayerAnimations/NormalAttack/Combo_01_3.fbx",
 		L"PlayerAnimations/NormalAttack/Combo_02_3.fbx",
 		L"PlayerAnimations/NormalAttack/Combo_03_3.fbx",
-		L"PlayerAnimations/NormalAttack/Combo_04_4.fbx"
+		L"PlayerAnimations/NormalAttack/Combo_03_4.fbx"
 	};
 
 	const std::vector<std::wstring> m_skelMeshdata =
@@ -129,6 +129,7 @@ private:
 	void InitializeManager();
 
 #ifdef CONVERT_DATA
+	void ConvertDataUseTrhead();
 	void ConvertData();
 
 	static void ConvertAniFbxData(const std::wstring& _path);
