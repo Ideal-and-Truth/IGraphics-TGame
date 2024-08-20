@@ -285,6 +285,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
 		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 
+
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
 		//DebugPlayer2->AddAnimation("Debug1", DebugPlayerAnim2);
@@ -388,6 +389,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
 		eyeMaterial->SetBaseMap(eyeTexture);
+
+		DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(eyeMaterial);
+
 #pragma endregion
 
 #pragma region CreateUI
@@ -552,6 +556,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
 						DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(eyeMaterial);
 					}
 				}
 
