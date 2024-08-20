@@ -90,11 +90,11 @@ void Truth::Collider::Destroy()
 	}
 
 #ifdef EDITOR_MODE
-// 	if (m_debugMesh != nullptr)
-// 	{
-// 		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
-// 		m_debugMesh = nullptr;
-// 	}
+	// 	if (m_debugMesh != nullptr)
+	// 	{
+	// 		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
+	// 		m_debugMesh = nullptr;
+	// 	}
 #endif // EDITOR_MODE
 }
 
@@ -112,11 +112,17 @@ void Truth::Collider::Awake()
 	Vector3 finalPos = {};
 	Quaternion temp = {};
 
-	(m_owner.lock()->GetWorldTM() * m_localTM).Decompose(finalSize, temp, finalPos);
+
+
+	bool isSRT = (m_owner.lock()->GetWorldTM() * m_localTM).Decompose(finalSize, temp, finalPos);
+
+	if (!isSRT)
+	{
+		MathConverter::DecomposeNonSRT(finalSize, temp, finalPos, (m_owner.lock()->GetWorldTM() * m_localTM));
+	}
 
 	Vector3 onwerSize = m_owner.lock()->GetWorldScale();
 	m_collider = CreateCollider(m_shape, (finalSize) / 2);
-
 	m_collider->userData = this;
 
 	m_collider->setLocalPose(physx::PxTransform(
@@ -127,7 +133,7 @@ void Truth::Collider::Awake()
 
 	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-	
+
 	m_rigidbody = m_owner.lock()->GetComponent<RigidBody>();
 	auto con = m_owner.lock()->GetComponent<Controller>();
 

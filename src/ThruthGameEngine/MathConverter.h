@@ -16,5 +16,7 @@ namespace MathConverter
 
 	Matrix Convert(const physx::PxTransform& _val);
 	physx::PxTransform Convert(Matrix _val);
+
+	bool DecomposeNonSRT(Vector3& _outScale, Quaternion& _outRot, Vector3& _outPos, const Matrix& _mat);
 };
 

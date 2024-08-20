@@ -255,7 +255,6 @@
     <ClCompile Include="MathConverter.cpp">
       <Filter>Utils\Math</Filter>
     </ClCompile>
-    <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="PointLight.cpp">
       <Filter>Component\Light</Filter>
     </ClCompile>
@@ -298,12 +297,17 @@
     <ClCompile Include="LoadMapDataPopup.cpp">
       <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="LinkBonePopup.cpp">
       <Filter>EditorUI\Context\Hierachy\LinkBone</Filter>
     </ClCompile>
     <ClCompile Include="SpotLight.cpp">
       <Filter>Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>Utils\ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -426,7 +430,6 @@
     <ClInclude Include="MathConverter.h">
       <Filter>Utils\Math</Filter>
     </ClInclude>
-    <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="PointLight.h">
       <Filter>Component\Light</Filter>
     </ClInclude>
@@ -469,7 +472,6 @@
     <ClInclude Include="LoadMapDataPopup.h">
       <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="LinkBonePopup.h">
       <Filter>EditorUI\Context\Hierachy\LinkBone</Filter>
     </ClInclude>
@@ -477,6 +479,12 @@
       <Filter>Component\Light</Filter>
     </ClInclude>
     <ClInclude Include="EditorDefine.h" />
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Utils\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>Component\Collider\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
