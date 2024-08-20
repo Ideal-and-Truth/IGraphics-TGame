@@ -32,6 +32,7 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorContext.h" />
+    <ClInclude Include="EditorDefine.h" />
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="DirectionLight.h" />
@@ -200,9 +201,9 @@
     <IntDir>..\Libraries\Debuglib\GameEngine\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgEnabled>true</VcpkgEnabled>
-    <VcpkgManifestInstall>false</VcpkgManifestInstall>
+    <VcpkgManifestInstall>true</VcpkgManifestInstall>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

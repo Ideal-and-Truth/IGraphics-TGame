@@ -1,5 +1,5 @@
-#ifdef EDITOR_MODE
 #include "EditorCamera.h"
+#ifdef EDITOR_MODE
 #include "Managers.h"
 #include "GraphicsManager.h"
 Truth::EditorCamera::EditorCamera(Managers* _managers)

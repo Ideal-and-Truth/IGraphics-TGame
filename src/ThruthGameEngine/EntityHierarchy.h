@@ -1,4 +1,6 @@
 #pragma once
+#include "EditorDefine.h"
+
 #ifdef EDITOR_MODE
 
 

@@ -268,7 +268,6 @@
     <ClCompile Include="NavMeshGenerater.cpp">
       <Filter>navMesh</Filter>
     </ClCompile>
-    <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="Mesh.cpp">
       <Filter>Component\Mesh\StaticMesh</Filter>
     </ClCompile>
@@ -299,8 +298,13 @@
     <ClCompile Include="LoadMapDataPopup.cpp">
       <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
     </ClCompile>
-    <ClCompile Include="LinkBonePopup.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
+    <ClCompile Include="LinkBonePopup.cpp">
+      <Filter>EditorUI\Context\Hierachy\LinkBone</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Component\Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -435,7 +439,6 @@
     <ClInclude Include="NavMeshGenerater.h">
       <Filter>navMesh</Filter>
     </ClInclude>
-    <ClInclude Include="SpotLight.h" />
     <ClInclude Include="Mesh.h">
       <Filter>Component\Mesh\StaticMesh</Filter>
     </ClInclude>
@@ -466,8 +469,14 @@
     <ClInclude Include="LoadMapDataPopup.h">
       <Filter>EditorUI\Context\Menu\Load Map Data</Filter>
     </ClInclude>
-    <ClInclude Include="LinkBonePopup.h" />
     <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="LinkBonePopup.h">
+      <Filter>EditorUI\Context\Hierachy\LinkBone</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Component\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorDefine.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

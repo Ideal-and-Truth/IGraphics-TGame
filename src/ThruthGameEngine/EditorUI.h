@@ -1,6 +1,6 @@
 #pragma once
+#include "EditorDefine.h"
 #ifdef EDITOR_MODE
-
 #include <memory>
 #include <queue>
 #include <windows.h>

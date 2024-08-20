@@ -1,5 +1,5 @@
-#ifdef EDITOR_MODE
 #include "Inspector.h"
+#ifdef EDITOR_MODE
 #include "imgui.h"
 #include "Entity.h"
 

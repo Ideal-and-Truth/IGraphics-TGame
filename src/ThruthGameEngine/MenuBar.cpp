@@ -1,5 +1,5 @@
-#ifdef EDITOR_MODE
 #include "MenuBar.h"
+#ifdef EDITOR_MODE
 #include "imgui.h"
 #include "Scene.h"
 #include "Managers.h"

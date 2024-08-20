@@ -1,6 +1,5 @@
-#ifdef EDITOR_MODE
-
 #include "EditorUI.h"
+#ifdef EDITOR_MODE
 
 #include "EntityHierarchy.h"
 #include "Inspector.h"

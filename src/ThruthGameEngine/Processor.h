@@ -5,7 +5,6 @@
 #include <thread>
 #include <mutex>
 
-
 // #define CONVERT_DATA
 #define MAX_THREAD_COUNT 16
 namespace Truth

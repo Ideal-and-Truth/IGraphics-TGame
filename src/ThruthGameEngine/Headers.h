@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EditorDefine.h"
+
 // extern library
 #include "SimpleMath.h"
 #include "Types.h"

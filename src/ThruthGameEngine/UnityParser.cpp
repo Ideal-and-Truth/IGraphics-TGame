@@ -1,6 +1,6 @@
+#include "UnityParser.h"
 #ifdef EDITOR_MODE
 
-#include "UnityParser.h"
 #include <fstream>
 #include <iostream>
 #include "FileUtils.h"

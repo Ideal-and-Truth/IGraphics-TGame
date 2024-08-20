@@ -1,6 +1,6 @@
+#include "EntityHierarchy.h"
 #ifdef EDITOR_MODE
 
-#include "EntityHierarchy.h"
 #include "imgui.h"
 #include "Scene.h"
 #include "Managers.h"
