@@ -1050,6 +1050,7 @@ std::shared_ptr<Ideal::ISprite> Ideal::D3D12RayTracingRenderer::CreateSprite()
 {
 	// TODO : Canvas에 UI를 추가해야 할 것이다.
 	std::shared_ptr<Ideal::IdealSprite> ret = std::make_shared<Ideal::IdealSprite>();
+	ret->SetScreenSize(Vector2(m_width, m_height));
 	ret->SetMesh(m_resourceManager->GetDefaultQuadMesh());
 	ret->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
 	m_UICanvas->AddSprite(ret);
