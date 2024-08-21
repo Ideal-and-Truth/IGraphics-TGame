@@ -506,9 +506,12 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
 	UpdateLightListCBData();
-	m_sceneCB.color = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
-	//m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
-	m_sceneCB.lightDiffuse = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
+	if (m_directionalLight)
+	{
+		m_sceneCB.color = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
+		//m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
+		m_sceneCB.lightDiffuse = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
+	}
 	ResetCommandList();
 
 #ifdef _DEBUG
