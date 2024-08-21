@@ -19,9 +19,12 @@ private:
 	std::string m_name;
 	// 설명
 	std::string m_description;
-	// 해금됐는지
+	// 버튼 눌렀는지
 	bool m_isUnlocked;
-	// 활성화됐는지
+	// 스킬이 활성화됐는지
+	PROPERTY(isSkillActivated);
+	bool m_isSkillActivated;
+	// 해금됐는지
 	bool m_isActivated;
 	// 비용
 	float m_unlockCost;

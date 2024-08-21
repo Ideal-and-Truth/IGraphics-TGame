@@ -41,6 +41,7 @@ private:
 
 	float m_passingTime;
 
+
 public:
 	PlayerCamera();
 	virtual ~PlayerCamera();

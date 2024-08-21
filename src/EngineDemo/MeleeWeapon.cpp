@@ -46,12 +46,12 @@ void MeleeWeapon::Update()
 {
 	/// TODO : 근접공격 완전해지면 다단히트 예외처리 만들기
 	/// 이거좀 치워라
-	if (m_isAttacking)
-	{
-		Vector3 angle = m_owner.lock()->m_parent.lock().get()->m_transform->m_rotation.ToEuler();
-		angle.y += 3.55f * GetDeltaTime();
-		m_owner.lock()->m_parent.lock().get()->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(angle);
-	}
+// 	if (m_isAttacking)
+// 	{
+// 		Vector3 angle = m_owner.lock()->m_parent.lock().get()->m_transform->m_rotation.ToEuler();
+// 		angle.y += 3.55f * GetDeltaTime();
+// 		m_owner.lock()->m_parent.lock().get()->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(angle);
+// 	}
 
 	if (m_player)
 	{
@@ -94,7 +94,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 {
 	if (m_isAttacking)
 	{
-		if (m_player)
+		if (m_player && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 		{
 			if (!_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock().get()).Get())
 			{
@@ -108,7 +108,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 				}
 			}
 		}
-		else if (m_enemy)
+		else if (m_enemy && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 		{
 			if (!_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock().get()).Get())
 			{

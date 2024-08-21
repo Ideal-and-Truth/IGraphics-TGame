@@ -121,6 +121,11 @@ void Truth::Collider::Awake()
 		MathConverter::DecomposeNonSRT(finalSize, temp, finalPos, (m_owner.lock()->GetWorldTM() * m_localTM));
 	}
 
+// 	if (finalSize == Vector3::Zero)
+// 	{
+// 		(m_owner.lock()->GetWorldTM() * m_localTM * Matrix::CreateScale(Vector3{0.1f, 0.1f, 0.1f})).Decompose(finalSize, temp, finalPos);
+// 	}
+
 	Vector3 onwerSize = m_owner.lock()->GetWorldScale();
 	m_collider = CreateCollider(m_shape, (finalSize) / 2);
 	m_collider->userData = this;

@@ -59,36 +59,36 @@ void RangedWeapon::Update()
 
 	if (m_isAttacking && !m_isShot)
 	{
-// 		std::shared_ptr<Truth::Entity> bullet = std::make_shared<Truth::Entity>(m_managers.lock());
-// 		bullet->Initialize();
-// 		bullet->m_layer = 1;
-// 		bullet->AddComponent<Truth::RigidBody>();
-// 		bullet->AddComponent<Truth::BoxCollider>(false);
-// 		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
-// 
-// 		auto bulletComponent = bullet->AddComponent<Bullet>();
-// 		float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
-// 		bulletComponent->GetTypeInfo().GetProperty("bulletDamage")->Set(bulletComponent.get(), enemyDamage);
-// 
-// 		bullet->m_name = "bullet";
-// 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
-// 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
-// 
-// 		bullet->Awake();
-// 		bullet->Start();
-// 		auto r = bullet->GetComponent<Truth::RigidBody>().lock().get();
-// 
-// 		Vector3 targetPos = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock()->m_transform->m_worldPosition;
-// 		Vector3 myPos = m_owner.lock()->m_parent.lock()->m_transform->m_worldPosition;
-// 		Vector3 direction = targetPos - myPos;
-// 		direction.y = 0;
-// 		direction.Normalize();
-// 
-// 		Vector3 power(direction);
-// 		power *= 100000.f;
-// 		r->AddImpulse(power);
-// 
-// 		m_bullets.push_back(std::make_pair(bullet, 0.f));
+		std::shared_ptr<Truth::Entity> bullet = std::make_shared<Truth::Entity>(m_managers.lock());
+		bullet->Initialize();
+		bullet->m_layer = 1;
+		bullet->AddComponent<Truth::RigidBody>();
+		bullet->AddComponent<Truth::BoxCollider>(false);
+		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
+
+		auto bulletComponent = bullet->AddComponent<Bullet>();
+		float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
+		bulletComponent->GetTypeInfo().GetProperty("bulletDamage")->Set(bulletComponent.get(), enemyDamage);
+
+		bullet->m_name = "bullet";
+		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
+		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
+
+		bullet->Awake();
+		bullet->Start();
+		auto r = bullet->GetComponent<Truth::RigidBody>().lock().get();
+
+		Vector3 targetPos = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock()->m_transform->m_worldPosition;
+		Vector3 myPos = m_owner.lock()->m_parent.lock()->m_transform->m_worldPosition;
+		Vector3 direction = targetPos - myPos;
+		direction.y = 0;
+		direction.Normalize();
+
+		Vector3 power(direction);
+		power *= 100000.f;
+		r->AddImpulse(power);
+
+		m_bullets.push_back(std::make_pair(bullet, 0.f));
 
 		m_isShot = true;
 	}
