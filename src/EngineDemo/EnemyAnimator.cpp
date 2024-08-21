@@ -102,10 +102,10 @@ void EnemyAnimator::Update()
 			int random = RandomNumber(1, 5);
 			if (random >= 1 && random <= 2)
 			{
-				m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-				m_isParryAttack = true;
+				//m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+				//m_isParryAttack = true;
 			}
-			else if (random >= 3 && random <= 5)
+			else if (random >= 1 && random <= 5)
 			{
 				m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 				m_isAttack = true;

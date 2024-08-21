@@ -410,6 +410,9 @@ private:
 	PROPERTY(isDead);
 	bool m_isDead;
 
+	PROPERTY(canMove);
+	bool m_canMove;
+
 	/// ----------------------------------------
 	float m_lastHp;
 

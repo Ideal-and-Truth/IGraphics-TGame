@@ -73,11 +73,11 @@ void Truth::PxEventCallback::onTrigger(physx::PxTriggerPair* _pairs, physx::PxU3
 		}
 		else if (triggerPair.status & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST))
 		{
-			if (a && b)
-			{
-  				a->GetOwner().lock()->OnTriggerExit(b);
-				b->GetOwner().lock()->OnTriggerExit(a);
-			}
+// 			if (a && b)
+// 			{
+//   				a->GetOwner().lock()->OnTriggerExit(b);
+// 				b->GetOwner().lock()->OnTriggerExit(a);
+// 			}
 		}
 		else
 		{
