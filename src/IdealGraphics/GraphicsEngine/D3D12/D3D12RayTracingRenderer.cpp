@@ -861,7 +861,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteMeshObject(std::shared_ptr<Ideal::IMe
 	else if (MeshObject->GetMeshType() == Ideal::Skinned)
 	{
 		auto mesh = std::static_pointer_cast<Ideal::IdealSkinnedMeshObject>(MeshObject);
-		// RaytracingManagerDeleteObject(mesh);
+		RaytracingManagerDeleteObject(mesh);
 		m_resourceManager->DeleteSkinnedMeshObject(mesh);
 		auto it = std::find(m_skinnedMeshObject.begin(), m_skinnedMeshObject.end(), mesh);
 		{
