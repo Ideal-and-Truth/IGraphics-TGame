@@ -57,8 +57,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 
 #ifdef EDITOR_MODE
 	Truth::UnityParser up(m_manager->Graphics().get());
-	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
-	// up.ParseSceneFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
+	up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	up.ParseSceneFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\1st_test bake.unity");
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 #endif // EDITOR_MODE
 }

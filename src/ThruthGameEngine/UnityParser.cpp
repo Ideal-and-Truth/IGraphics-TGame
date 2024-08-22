@@ -353,18 +353,22 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParsePrefabNode(const YAML::
 	const std::string& prefabGuid = _node["m_SourcePrefab"]["guid"].as<std::string>();
 	GO->m_guid = prefabGuid;
 
-	const fs::path& prefabPath = m_guidMap[prefabGuid]->m_filePath;
-
-	if (prefabPath.extension() == ".prefab")
+	if (m_guidMap.find(prefabGuid) != m_guidMap.end())
 	{
-		ReadPrefabFile(prefabPath, GO);
-	}
-	else if (prefabPath.extension() == ".fbx")
-	{
-		GO->m_isMesh = true;
-		GO->m_meshPath = prefabPath.generic_string();
-	}
+		const fs::path& prefabPath = m_guidMap[prefabGuid]->m_filePath;
 
+		if (prefabPath.extension() == ".prefab")
+		{
+			ReadPrefabFile(prefabPath, GO);
+		}
+		else if (prefabPath.extension() == ".fbx")
+		{
+			GO->m_isMesh = true;
+			GO->m_meshPath = prefabPath.generic_string();
+		}
+
+		return GO;
+	}
 	return GO;
 }
 
@@ -427,10 +431,18 @@ void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _o
 	{
 		_owner->m_meshPath = m_debugCubePath.generic_string();
 	}
+	else if (_node["m_Mesh"]["fileID"].as<std::string>() == "10209")
+	{
+		// _owner->m_meshPath = m_debugCubePath.generic_string();
+	}
 	else
 	{
-		std::string fbxGuid = _node["m_Mesh"]["guid"].as<std::string>();
-		fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
+		if (_node["m_Mesh"]["guid"].IsDefined())
+		{
+			std::string fbxGuid = _node["m_Mesh"]["guid"].as<std::string>();
+			fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
+		}
+
 	}
 }
 
@@ -738,7 +750,7 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 	fs::path modelPath = m_modelPath / m_sceneName;
 	modelPath += "/";
 	fs::create_directories(modelPath);
-	fs::create_directories(m_texturePath / m_sceneName);
+	fs::create_directories((m_texturePath / m_sceneName) / "/");
 
 	std::set<std::wstring> convertingPath;
 
@@ -775,6 +787,15 @@ void Truth::UnityParser::WriteMapMeshData(GameObject* _node, std::shared_ptr<Fil
 			fs::path origin = _node->m_meshPath;
 			fs::path filePath = assetPath;
 			fs::path copiedfile = filePath / origin.filename();
+
+			if (origin.empty())
+			{
+				for (auto* c : _node->m_children)
+				{
+					WriteMapMeshData(c, _file);
+				}
+				return;
+			}
 
 			if (!fs::exists(copiedfile))
 			{
@@ -893,7 +914,7 @@ void Truth::UnityParser::ParseSceneFile(const std::string& _path)
 void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _parent)
 {
 	/// fbx file
-	if (_path.extension() == ".fbx")
+	if (_path.extension() == ".fbx" || _path.extension() == ".FBX")
 	{
 		m_meshFilterCount++;
 		_parent->m_isMesh = true;
@@ -947,7 +968,7 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 											fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 											if (!fs::exists(p))
 											{
-												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName);
+												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
 											}
 											matdata.m_normal = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 										}
@@ -957,7 +978,7 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 											fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 											if (!fs::exists(p))
 											{
-												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName);
+												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
 											}
 											matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 										}
@@ -967,7 +988,7 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 											fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 											if (!fs::exists(p))
 											{
-												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName);
+												fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
 											}
 											matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 										}

@@ -400,7 +400,7 @@ void NormalAttack1::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack1", false);
 	/// TODO : 플레이어 데미지 세팅 여기서 (각 공격마다 세팅해줘야 될 수도)
 	///dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(1.f);
-	GetProperty("hitStopTime")->Set(m_animator, 0.05f);
+	GetProperty("hitStopTime")->Set(m_animator, 0.1f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
 }

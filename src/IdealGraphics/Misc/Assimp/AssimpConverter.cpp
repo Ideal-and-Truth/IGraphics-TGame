@@ -288,7 +288,7 @@ void AssimpConverter::WriteMaterialData(std::wstring FilePath)
 {
 	auto path = std::filesystem::path(FilePath);
 
-	std::filesystem::create_directory(path.parent_path());
+	std::filesystem::create_directories(path.parent_path());
 
 	std::string folder = path.parent_path().string();
 	//folder += "/";
@@ -380,7 +380,7 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 {
 	auto path = std::filesystem::path(filePath);
 
-	std::filesystem::create_directory(path.parent_path());
+	std::filesystem::create_directories(path.parent_path());
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(filePath, FileMode::Write);
@@ -416,7 +416,7 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 {
 	auto path = std::filesystem::path(filePath);
 
-	std::filesystem::create_directory(path.parent_path());
+	std::filesystem::create_directories(path.parent_path());
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(filePath, FileMode::Write);
@@ -1020,7 +1020,7 @@ void AssimpConverter::WriteAnimationData(std::shared_ptr<AssimpConvert::Animatio
 {
 	auto path = std::filesystem::path(finalPath);
 
-	std::filesystem::create_directory(path.parent_path());
+	std::filesystem::create_directories(path.parent_path());
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(finalPath, FileMode::Write);
@@ -1069,7 +1069,7 @@ void AssimpConverter::WriteVertexPositionFile(const std::wstring& filePath)
 {
 	auto path = std::filesystem::path(filePath);
 
-	std::filesystem::create_directory(path.parent_path());
+	std::filesystem::create_directories(path.parent_path());
 
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(filePath, FileMode::Write);

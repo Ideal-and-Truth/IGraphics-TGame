@@ -118,7 +118,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 
 
 	//CreateMap(m_mapPath);
-	CreateMap(L"SampleScene");
+	CreateMap(L"1st_test bake");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)

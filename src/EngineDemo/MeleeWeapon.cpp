@@ -96,29 +96,23 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 	{
 		if (m_player && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 		{
-			if (!_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock().get()).Get())
+			if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
 			{
-				if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
+				if (!_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock().get()).Get())
 				{
-					if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
-					{
-						m_onHitEnemys.push_back(_other->GetOwner().lock());
-						WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
-					}
+					m_onHitEnemys.push_back(_other->GetOwner().lock());
+					WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
 				}
 			}
 		}
 		else if (m_enemy && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 		{
-			if (!_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock().get()).Get())
+			if (_other->GetOwner().lock()->GetComponent<Player>().lock())
 			{
-				if (_other->GetOwner().lock()->GetComponent<Player>().lock())
+				if (!_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock().get()).Get())
 				{
-					if (m_isAttacking && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
-					{
-						m_onHitEnemys.push_back(_other->GetOwner().lock());
-						WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
-					}
+					m_onHitEnemys.push_back(_other->GetOwner().lock());
+					WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
 				}
 			}
 		}
