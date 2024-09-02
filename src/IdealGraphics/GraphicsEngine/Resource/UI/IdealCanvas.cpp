@@ -137,6 +137,15 @@ void Ideal::IdealCanvas::SetCanvasSize(uint32 Width, uint32 Height)
 {
 	m_uiCanvasWidth = Width;
 	m_uiCanvasHeight = Height;
+
+	for (auto sprite : m_sprites)
+	{
+		sprite.lock()->ReSize(Width, Height);
+	}
+	for (auto text : m_texts)
+	{
+		//text.lock()->Resize
+	}
 }
 
 void Ideal::IdealCanvas::CreateRootSignature(ComPtr<ID3D12Device> Device)

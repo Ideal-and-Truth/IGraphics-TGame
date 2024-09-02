@@ -52,7 +52,7 @@ namespace Ideal
 		Vector2 const& GetSamplePosition() { return m_cbSprite.TexSamplePos; }
 		Vector2 const& GetSampleSize() { return m_cbSprite.TexSampleSize; }
 
-		void SetScreenPosition(const Vector2& ScreenPos);
+		void SetScreenSize(const Vector2& ScreenPos);
 		void SetTextureSize(const Vector2& TextureSize);
 		void SetTextureSamplePosition(const Vector2& TextureSamplePosition);
 		void SetTextureSampleSize(const Vector2& TextureSampleSize);
@@ -61,6 +61,9 @@ namespace Ideal
 		// default mesh를 넣어줄 것
 		void SetMesh(std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> Mesh);
 		std::weak_ptr<Ideal::D3D12Texture> GetTexture() { return m_texture; }
+
+		void CalculatePositionOffset();
+		void ReSize(uint32 Width, uint32 Height);
 
 	private:
 		// 어차피 default mesh를 쓸건데 weak ptr이면 될 것 같음

@@ -380,6 +380,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
 		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png");
 		std::shared_ptr<Ideal::ITexture> kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");
+		//std::shared_ptr<Ideal::ITexture> normalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
 
@@ -398,7 +399,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateUI
 		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
-		sprite->SetTexture(faceTexture);
+		sprite->SetTexture(eyeTexture);
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		sprite->SetScale(Vector2(0.1, 0.1));
 		sprite->SetPosition(Vector2(0, 0));
@@ -412,21 +413,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sprite->SetTextureSampleSize(Vector2(2048, 2048));
 
 		std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
-		sprite2->SetTexture(skirtBottomTexture);
+		sprite2->SetTexture(eyeTexture);
 		sprite2->SetScale(Vector2(0.1, 0.1));
-		sprite2->SetPosition(Vector2(50, 50));
+		sprite2->SetPosition(Vector2(400, 50));
 		sprite2->SetZ(0.1);
 
 		std::shared_ptr<Ideal::ISprite> sprite3 = gRenderer->CreateSprite();
 		sprite3->SetScale(Vector2(0.3, 0.3));
-		sprite3->SetPosition(Vector2(200, 0));
+		sprite3->SetPosition(Vector2(1180, 860));
 		sprite3->SetZ(0);
 
 		//---Text---//
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30);	// 기본 tahoma 글꼴임
-		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30, L"times new roman");
-		text->ChangeText(L"HI EVERYONE\n Hi2");
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(55, 65, 30, L"times new roman");
+		text->ChangeText(L"UI\n Test");
+		text->SetPosition(Vector2(0, 500));
 #pragma endregion
 
 #pragma region CreateLight
@@ -680,7 +682,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			gRenderer->DeleteMeshObject(meshes[i]);
 			meshes[i].reset();
-		}
+		} 
 		meshes.clear();
 
 		//gRenderer->DeleteMeshObject(mesh);
@@ -712,6 +714,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		faceTexture.reset();
 		gRenderer->DeleteTexture(kaTexture);
 		kaTexture.reset();
+		//gRenderer->DeleteTexture(normalTexture);
+		//normalTexture.reset();
 		gRenderer->DeleteTexture(faceNormalTexture);
 		faceNormalTexture.reset();
 		gRenderer->DeleteTexture(eyeTexture);

@@ -16,8 +16,7 @@ cbuffer CB_Sprite : register(b0)
     float2 g_TexSampleSize;
     float g_Z;
     float g_Alpha;
-    float pad0;
-    float pad1;
+    float2 g_PosOffset; // 화면 비율에 따른 Pos. -> cpu에서 해준다.
 }
 
 struct VSInput
@@ -38,7 +37,8 @@ PSInput VS(VSInput Input)
     PSInput result = (PSInput)0;
     
     float2 scale = (g_TexSize / g_ScreenRes) * g_Scale;
-    float2 offset = (g_Pos / g_ScreenRes);  // float 좌표계 기준 지정한 위치
+    //float2 offset = (g_Pos / g_ScreenRes);  // float 좌표계 기준 지정한 위치
+    float2 offset = g_PosOffset; // float 좌표계 기준 지정한 위치
     float2 Pos = Input.Pos.xy * scale + offset;
     result.Pos = float4(Pos.xy * float2(2, -2) + float2(-1, 1), g_Z, 1); // 정규 좌표계로 변환
 
