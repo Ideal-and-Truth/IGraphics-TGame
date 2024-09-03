@@ -562,7 +562,7 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 		Format,
 		Width,
 		Height,
-		1, 0
+		1, 1, 1, 0
 	);
 
 	if (makeRTV)

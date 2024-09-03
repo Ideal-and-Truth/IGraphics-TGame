@@ -30,10 +30,17 @@ namespace Ideal
 
 namespace Ideal
 {
+	struct GBuffer
+	{
+		float tHit;
+		Vector3 hitPosition;
+	};
+
 	struct RayPayload
 	{
 		uint32 rayRecursionDepth;
 		Vector3 radiance;
+		GBuffer gBuffer;
 	};
 
 	struct ShadowRayPayload
@@ -62,6 +69,10 @@ namespace Ideal
 				CBV_Global,
 				SRV_SkyBox,
 				CBV_LightList,
+
+				UAV_GBufferPosition,
+				UAV_GBufferDepth,
+
 				Count
 			};
 		}
@@ -141,8 +152,8 @@ namespace Ideal
 		static const uint32 MAX_RAY_RECURSION_DEPTH = G_MAX_RAY_RECURSION_DEPTH;
 		const wchar_t* c_raygenShaderName = L"MyRaygenShader";
 		const wchar_t* c_closestHitShaderName[2] = { L"MyClosestHitShader", L"MyClosestHitShader_ShadowRay" };
-		const wchar_t* c_missShaderName[2] = { L"MyMissShader", L"MyMissShader_ShadowRay"};
-		const wchar_t* c_hitGroupName[2] = { L"MyHitGroup", L"MyHitGroup_ShadowRay"};
+		const wchar_t* c_missShaderName[2] = { L"MyMissShader", L"MyMissShader_ShadowRay" };
+		const wchar_t* c_hitGroupName[2] = { L"MyHitGroup", L"MyHitGroup_ShadowRay" };
 
 	public:
 		RaytracingManager();
@@ -151,7 +162,7 @@ namespace Ideal
 	public:
 		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
 		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, CB_LightList LightCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture);
-		void Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
+		void Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
 
 		//---UAV Render Target---//
 		void CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height);
@@ -238,14 +249,14 @@ namespace Ideal
 		void DeleteMaterialInRayTracing(std::shared_ptr<Ideal::IMaterial> Material);
 	private:
 		// 중복되는 Material 관리..?
-		std::unordered_map<uint64,std::weak_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
+		std::unordered_map<uint64, std::weak_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
 
 
 		//---Animation Compute Shader---//
 	public:
 		void CreateAnimationRootSignature(ComPtr<ID3D12Device5> Device);
 		void CreateAnimationCSPipelineState(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12Shader> AnimationShader);
-		
+
 		void DispatchAnimationComputeShader(
 			ComPtr<ID3D12Device5> Device,
 			ComPtr<ID3D12GraphicsCommandList4> CommandList,
@@ -261,5 +272,13 @@ namespace Ideal
 	private:
 		ComPtr<ID3D12RootSignature> m_animationRootSignature;
 		ComPtr<ID3D12PipelineState> m_animationPipelineState;
+
+		//---GBuffer Texture---//
+	public:
+		void CreateGBufferTexture(std::shared_ptr<Ideal::ResourceManager> ResourceManager, uint32 Width, uint32 Height);
+
+	private:
+		std::shared_ptr<Ideal::D3D12Texture> m_gBufferPosition;
+		std::shared_ptr<Ideal::D3D12Texture> m_gBufferDepth;
 	};
 }

@@ -21,8 +21,13 @@
 #define MAX_POINT_LIGHT_NUM 16
 #define MAX_SPOT_LIGHT_NUM 16
 
+#define HitDistanceOnMiss 0
+
 //-----------GLOBAL-----------//
 RWTexture2D<float4> g_renderTarget : register(u0);
+RWTexture2D<float4> g_rtGBufferPosition : register(u1);
+RWTexture2D<float> g_rtGBufferDepth : register(u2);
+
 RaytracingAccelerationStructure g_scene : register(t0, space0);
 TextureCube<float4> g_texEnvironmentMap : register(t1);
 SamplerState LinearWrapSampler : register(s0);
@@ -46,12 +51,17 @@ typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 
 // Light
 
-
+struct GBuffer
+{
+    float tHit;
+    float3 hitPosition;
+};
 
 struct RayPayload
 {
     unsigned int rayRecursionDepth;
     float3 radiance;
+    GBuffer gBuffer;
 };
 
 struct ShadowRayPayload
@@ -68,6 +78,15 @@ struct SafeSpawnPointParameters
     float3x4 o2w;
     float3x4 w2o;
 };
+
+inline float3 GenerateForwardCameraRayDirection(in float4x4 projectionToWorld)
+{
+    float2 screenPos = float2(0, 0);
+	
+	// Unproject the pixel coordinate into a world positon.
+	float4 world = mul(float4(screenPos, 0, 1), projectionToWorld);
+	return normalize(world.xyz);
+}
 
 // Retrieve hit world position.
 float3 HitWorldPosition()
@@ -123,6 +142,8 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     RayPayload payload;
     payload.rayRecursionDepth = currentRayRecursionDepth + 1;
     payload.radiance = float3(0, 0, 0);
+    payload.gBuffer.tHit = HitDistanceOnMiss;
+    payload.gBuffer.hitPosition = 0;
     
     if (currentRayRecursionDepth >= g_sceneCB.maxRadianceRayRecursionDepth)
     {
@@ -364,16 +385,6 @@ float3 Shade(
   
     if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
-        float3 wi = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
-
-//#ifdef SHADOW_ON
-//        // Raytraced shadows
-//        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
-//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, isInShadow, roughness, N, V, wi);
-//#else
-//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
-//#endif
-
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
         //int pointLightNum = 0;
@@ -534,33 +545,38 @@ inline Ray GenerateCameraRay(uint2 index, out float3 origin, out float3 directio
     return ray;
 }
 
-// Diffuse lighting calculation.
-float4 CalculateDiffuseLighting(float3 hitPosition, float3 normal)
-{
-    float3 pixelToLight = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
-
-    // Diffuse contribution.
-    float fNDotL = max(0.0f, dot(pixelToLight, normal));
-
-    //return g_cubeCB[1].albedo * g_sceneCB.lightDiffuseColor * fNDotL;
-    return g_sceneCB.lightDiffuseColor * fNDotL;
-    //float4 diffuseTextureColor = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
-    //return diffuseTextureColor;
-}
-
 [shader("raygeneration")]
 void MyRaygenShader()
 {
     float3 rayDir;
     float3 origin;
     
+    uint2 dispatchRayIndex = DispatchRaysIndex().xy;
     // Generate a ray for a camera pixel corresponding to an index from the dispatched 2D grid.
-    Ray ray = GenerateCameraRay(DispatchRaysIndex().xy, origin, rayDir);
+    Ray ray = GenerateCameraRay(dispatchRayIndex, origin, rayDir);
     
     UINT currentRayRecursionDepth = 0;
     RayPayload rayPayload = TraceRadianceRay(ray, currentRayRecursionDepth);
 
     g_renderTarget[DispatchRaysIndex().xy] = float4(rayPayload.radiance, 1);
+
+    //--- GBuffer ---//
+    
+    g_rtGBufferPosition[dispatchRayIndex] = float4(rayPayload.gBuffer.hitPosition, 1);
+    
+    bool hasCameraRayHitGeometry = rayPayload.gBuffer.tHit != HitDistanceOnMiss;
+    float rayLength = HitDistanceOnMiss;
+    if(hasCameraRayHitGeometry)
+    {
+        float4 clipSpacePos = mul(g_sceneCB.Proj, mul(g_sceneCB.View, float4(rayPayload.gBuffer.hitPosition, 1.0f)));
+        float3 ndcPos = clipSpacePos.xyz / clipSpacePos.w;
+        float depth = (ndcPos.z * 0.5) + 0.5;
+        g_rtGBufferDepth[dispatchRayIndex] = depth;
+    }
+    else
+    {
+        g_rtGBufferDepth[dispatchRayIndex] = 1;
+    }
     return;
 }
 
@@ -647,6 +663,10 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     spawn.o2w = ObjectToWorld3x4();
     spawn.w2o = WorldToObject3x4();
     
+    // GBuffer
+    payload.gBuffer.tHit = RayTCurrent();
+    payload.gBuffer.hitPosition = hitPosition;
+
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, spawn);
 }
 
@@ -666,7 +686,7 @@ void MyMissShader(inout RayPayload payload)
 [shader("miss")]
 void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
 {
-    rayPayload.tHit = 0;
+    rayPayload.tHit = HitDistanceOnMiss;
 }
 
 #endif // RAYTRACING_HLSL

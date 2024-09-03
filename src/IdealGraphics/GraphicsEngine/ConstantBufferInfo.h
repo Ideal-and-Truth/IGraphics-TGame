@@ -7,16 +7,15 @@
 
 struct SceneConstantBuffer
 {
+	Matrix View;
+	Matrix Proj;
 	Matrix ProjToWorld;
 	DirectX::XMVECTOR CameraPos;
-	DirectX::XMVECTOR lightPos;
-	DirectX::XMVECTOR lightAmbient;
-	DirectX::XMVECTOR lightDiffuse;
 
 	uint32 maxRadianceRayRecursionDepth;
 	uint32 maxShadowRayRecursionDepth;
-	DirectX::XMVECTOR color;
-	float padding[2];
+	float nearZ;
+	float farZ;
 };
 
 struct CB_MaterialInfo
