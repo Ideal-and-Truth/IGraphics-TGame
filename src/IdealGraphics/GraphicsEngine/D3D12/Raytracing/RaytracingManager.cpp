@@ -708,7 +708,7 @@ void Ideal::RaytracingManager::UpdateTexture(ComPtr<ID3D12Device5> Device)
 	bool textureChanged = Ideal::Singleton::RayTracingFlagManger::GetInstance().GetTextureChangedAndOffFlag();
 	if (textureChanged)
 	{
-		std::vector<std::shared_ptr<Ideal::IdealMaterial>> materials;
+		//std::vector<std::shared_ptr<Ideal::IdealMaterial>> materials;
 		for (auto m : m_materialMapInFixedDescriptorTable)
 		{
 			if (m.second.lock()->IsTextureChanged())

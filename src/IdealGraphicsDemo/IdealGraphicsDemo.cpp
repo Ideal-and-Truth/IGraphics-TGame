@@ -239,8 +239,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx", true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", true);
+		gRenderer->ConvertAnimationAssetToMyFormat(L"EnemyTest/idelTest.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx");
 		
@@ -285,6 +286,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
 		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugEnemy = gRenderer->CreateSkinnedMeshObject(L"EnemyTest/idelTest");
+		std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
+		DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
+
+		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"EnemyTest/idelTest");
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
@@ -390,8 +396,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
 
 		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
-		std::shared_ptr<Ideal::IMaterial> kaMaterial = gRenderer->CreateMaterial();
-		kaMaterial->SetBaseMap(kaTexture);
+		std::shared_ptr<Ideal::IMaterial> kaMaterial;// = gRenderer->CreateMaterial();
+		//kaMaterial->SetBaseMap(kaTexture);
 
 		//DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 
@@ -522,6 +528,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('C') & 0x8000)
 				{
+					if (!kaMaterial)
+					{
+						kaMaterial = gRenderer->CreateMaterial();
+						kaMaterial->SetBaseMap(kaTexture);
+						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+						//meshes[0]->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+					}
 					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
 					//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 					//ka->AddAnimation("Walk", walkAnim);
@@ -570,6 +583,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('X') & 0x8000)
 				{
+					
 					if (tX < 1)
 					{
 						std::shared_ptr<Ideal::IMeshObject> mesh;
@@ -605,6 +619,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
+				DebugEnemy->AnimationDeltaTime(0.002f);
 				if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -696,6 +711,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
+		gRenderer->DeleteMeshObject(DebugStaticEnemy);
+		DebugStaticEnemy.reset();
+		gRenderer->DeleteMeshObject(DebugEnemy);
+		DebugEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugPlayer);
 		//gRenderer->DeleteMeshObject(DebugPlayer2);
 		//gRenderer->DeleteMeshObject(DebugPlayer3);

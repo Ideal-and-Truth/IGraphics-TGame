@@ -287,6 +287,9 @@
     <ClInclude Include="Misc\ThirdParty\Utils\Utils.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RayTracingFlagManger.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystem.h" />
+    <ClInclude Include="GraphicsEngine\D3D12\RenderPass.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleMaterial.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMesh.h" />
@@ -386,6 +389,9 @@
     <ClCompile Include="GraphicsEngine\Resource\ShaderManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RayTracingFlagManger.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystem.cpp" />
+    <ClCompile Include="GraphicsEngine\D3D12\RenderPass.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleMaterial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />
