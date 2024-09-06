@@ -495,8 +495,15 @@ void AssimpConverter::ReadSkinnedModelData(aiNode* node, int32 index, int32 pare
 	if (parent >= 0)
 		matParent = m_bones[parent]->transform;
 
+	Vector3 pos, scale, rote;
+	Quaternion rot;
+
+	bone->transform.Decompose(scale, rot, pos);
+	rote = rot.ToEuler();
+
 	// Local Transform
 	bone->transform = bone->transform * matParent;
+
 
 	m_bones.push_back(bone);
 

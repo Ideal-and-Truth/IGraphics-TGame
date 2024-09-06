@@ -285,6 +285,11 @@ void Truth::Entity::SetWorldTM(const Matrix& _tm) const
 	m_transform->m_globalTM = _tm;
 }
 
+void Truth::Entity::SetLocalTM(const Matrix& _tm) const
+{
+	m_transform->SetLocalTM(_tm);
+}
+
 void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 {
 	_c->SetOwner(shared_from_this());

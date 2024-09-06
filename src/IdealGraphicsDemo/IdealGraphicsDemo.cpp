@@ -237,9 +237,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region FBXConvert
 		//-------------------Convert FBX(Model, Animation)-------------------//
-		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"AsciiAniTest/idelTest.fbx", true);
+		// gRenderer->ConvertAssetToMyFormat(L"AsciiAniTest/idelTest.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/idelTest.fbx");
+		// gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/Idle/idle.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx");
@@ -281,9 +282,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateMeshObjectAndAnimation
 		//-------------------Create Mesh Object-------------------//
 		
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer= gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
-		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer= gRenderer->CreateSkinnedMeshObject(L"AsciiAniTest/idelTest");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"AsciiAniTest/idelTest");
+		// DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
@@ -330,7 +331,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		////std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		////
-		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"Boss/bosshall");
+		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"AsciiAniTest/idelTest");
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
@@ -534,9 +535,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//std::shared_ptr<Ideal::IMeshObject> mesh;
 					//mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 					//
-					//meshes.push_back(mesh);
-					//mesh->SetTransformMatrix(mat2);
-					//tX++;
+					meshes.push_back(mesh);
+					mesh->SetTransformMatrix(Matrix::Identity);
+					tX++;
 				}
 
 				if (GetAsyncKeyState('U') & 0x8000)
@@ -605,7 +606,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				if (DebugPlayer)
 				{
-					//DebugPlayer->AnimationDeltaTime(0.002f);
+					// DebugPlayer->AnimationDeltaTime(0.002f);
 				}
 				//DebugPlayer2->AnimationDeltaTime(0.002f);
 				//DebugPlayer3->AnimationDeltaTime(0.002f);
@@ -652,7 +653,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						
 						if(DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
-						//SkinnedMeshObjectBoneInfoTest(DebugPlayer2);
+						SkinnedMeshObjectBoneInfoTest(DebugPlayer);
 						//if (sprite)
 						//{
 						//	SpriteTest(sprite);

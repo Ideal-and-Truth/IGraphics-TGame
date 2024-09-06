@@ -43,6 +43,7 @@ namespace Truth
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
 		std::vector<std::shared_ptr<Ideal::ILight>> m_mapLight;
+		std::vector<std::shared_ptr<Entity>> m_mapEntity;
 
 	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;

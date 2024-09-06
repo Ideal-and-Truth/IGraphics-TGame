@@ -767,190 +767,190 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 	}
 
 	// Material
-	{
-		std::wstring fullPath = m_texturePath + filename + L".xml";
-
-		std::filesystem::path parentPath = std::filesystem::path(fullPath).parent_path();
-
-		//tinyxml2::XMLDocument* document = new tinyxml2::XMLDocument();
-		std::shared_ptr<tinyxml2::XMLDocument> document = std::make_shared<tinyxml2::XMLDocument>();
-		tinyxml2::XMLError error = document->LoadFile(StringUtils::ConvertWStringToString(fullPath).c_str());
-		assert(error == tinyxml2::XML_SUCCESS);
-		if (error != tinyxml2::XML_SUCCESS)
-		{
-			MessageBox(NULL, fullPath.c_str(), L"read material", MB_OK);
-		}
-
-		tinyxml2::XMLElement* root = document->FirstChildElement();
-		tinyxml2::XMLElement* materialNode = root->FirstChildElement();
-
-		while (materialNode)
-		{
-			std::shared_ptr<Ideal::IdealMaterial> material = std::make_shared<Ideal::IdealMaterial>();
-
-			tinyxml2::XMLElement* node = nullptr;
-
-			node = materialNode->FirstChildElement();
-			material->SetName((node->GetText()));
-
-			// DiffuseTexture
-			node = node->NextSiblingElement();
-			if (node->GetText())
-			{
-				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
-				if (textureStr.length() > 0)
-				{
-					// Temp 2024.04.20
-					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
-
-					material->SetDiffuseTextureFile(finalTextureStr);
-				}
-			}
-
-			// Specular Texture
-			node = node->NextSiblingElement();
-			if (node->GetText())
-			{
-				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
-				if (textureStr.length() > 0)
-				{
-					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
-					material->SetSpecularTextureFile(finalTextureStr);
-					// TODO : Texture만들기
-					//auto texture
-				}
-			}
-
-			// Normal Texture
-			node = node->NextSiblingElement();
-			if (node->GetText())
-			{
-				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
-				if (textureStr.length() > 0)
-				{
-					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
-					material->SetNormalTextureFile(finalTextureStr);
-					// TODO : Texture만들기
-					//auto texture
-				}
-			}
-
-			// Metalic Texture
-			node = node->NextSiblingElement();
-			if (node->GetText())
-			{
-				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
-				if (textureStr.length() > 0)
-				{
-					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
-					material->SetMetallicTextureFile(finalTextureStr);
-				}
-			}
-
-			// Roughness Texture
-			node = node->NextSiblingElement();
-			if (node->GetText())
-			{
-				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
-				if (textureStr.length() > 0)
-				{
-					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
-					material->SetRoughnessTextureFile(finalTextureStr);
-				}
-			}
-
-			// Ambient
-			{
-				node = node->NextSiblingElement();
-
-				Color color;
-				color.x = node->FloatAttribute("R");
-				color.y = node->FloatAttribute("G");
-				color.z = node->FloatAttribute("B");
-				color.w = node->FloatAttribute("A");
-				material->SetAmbient(color);
-			}
-
-			// Diffuse
-			{
-				node = node->NextSiblingElement();
-
-				Color color;
-				color.x = node->FloatAttribute("R");
-				color.y = node->FloatAttribute("G");
-				color.z = node->FloatAttribute("B");
-				color.w = node->FloatAttribute("A");
-				material->SetDiffuse(color);
-			}
-
-			// Specular
-			{
-				node = node->NextSiblingElement();
-
-				Color color;
-				color.x = node->FloatAttribute("R");
-				color.y = node->FloatAttribute("G");
-				color.z = node->FloatAttribute("B");
-				color.w = node->FloatAttribute("A");
-				material->SetSpecular(color);
-			}
-
-			// Emissive
-			{
-				node = node->NextSiblingElement();
-
-				Color color;
-				color.x = node->FloatAttribute("R");
-				color.y = node->FloatAttribute("G");
-				color.z = node->FloatAttribute("B");
-				color.w = node->FloatAttribute("A");
-				material->SetEmissive(color);
-			}
-
-			// Metallic
-			{
-				node = node->NextSiblingElement();
-				float MetallicFactor = node->FloatAttribute("Factor");
-				material->SetMetallicFactor(MetallicFactor);
-			}
-
-			// Roughness
-			{
-				node = node->NextSiblingElement();
-				float RoughnessFactor = node->FloatAttribute("Factor");
-				material->SetRoughnessFactor(RoughnessFactor);
-			}
-
-			// UseTextureInfo
-			{
-				node = node->NextSiblingElement();
-				bool diffuse = node->BoolAttribute("Diffuse");
-				bool normal = node->BoolAttribute("Normal");
-				bool metallic = node->BoolAttribute("Metallic");
-				bool roughness = node->BoolAttribute("Roughness");
-				material->SetIsUseDiffuse(diffuse);
-				material->SetIsUseNormal(normal);
-				material->SetIsUseMetallic(metallic);
-				material->SetIsUseRoughness(roughness);
-				//material->SetIsUseDiffuse(true);
-				//material->SetIsUseNormal(true);
-				//material->SetIsUseMetallic(true);
-				//material->SetIsUseRoughness(true);
-			}
-
-			{
-				// Material Id Allocate
-				//material->SetID(AllocateMaterialID());
-				//
-				//material->SetBaseMap(m_defaultAlbedo);
-				//material->SetNormalMap(m_defaultNormal);
-				//material->SetMaskMap(m_defaultMask);
-
-				//staticMesh->AddMaterial(m_defaultMaterial);
-			}
-			materialNode = materialNode->NextSiblingElement();
-		}
-	}
+// 	{
+// 		std::wstring fullPath = m_texturePath + filename + L".xml";
+// 
+// 		std::filesystem::path parentPath = std::filesystem::path(fullPath).parent_path();
+// 
+// 		//tinyxml2::XMLDocument* document = new tinyxml2::XMLDocument();
+// 		std::shared_ptr<tinyxml2::XMLDocument> document = std::make_shared<tinyxml2::XMLDocument>();
+// 		tinyxml2::XMLError error = document->LoadFile(StringUtils::ConvertWStringToString(fullPath).c_str());
+// 		assert(error == tinyxml2::XML_SUCCESS);
+// 		if (error != tinyxml2::XML_SUCCESS)
+// 		{
+// 			MessageBox(NULL, fullPath.c_str(), L"read material", MB_OK);
+// 		}
+// 
+// 		tinyxml2::XMLElement* root = document->FirstChildElement();
+// 		tinyxml2::XMLElement* materialNode = root->FirstChildElement();
+// 
+// 		while (materialNode)
+// 		{
+// 			std::shared_ptr<Ideal::IdealMaterial> material = std::make_shared<Ideal::IdealMaterial>();
+// 
+// 			tinyxml2::XMLElement* node = nullptr;
+// 
+// 			node = materialNode->FirstChildElement();
+// 			material->SetName((node->GetText()));
+// 
+// 			// DiffuseTexture
+// 			node = node->NextSiblingElement();
+// 			if (node->GetText())
+// 			{
+// 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+// 				if (textureStr.length() > 0)
+// 				{
+// 					// Temp 2024.04.20
+// 					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+// 
+// 					material->SetDiffuseTextureFile(finalTextureStr);
+// 				}
+// 			}
+// 
+// 			// Specular Texture
+// 			node = node->NextSiblingElement();
+// 			if (node->GetText())
+// 			{
+// 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+// 				if (textureStr.length() > 0)
+// 				{
+// 					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+// 					material->SetSpecularTextureFile(finalTextureStr);
+// 					// TODO : Texture만들기
+// 					//auto texture
+// 				}
+// 			}
+// 
+// 			// Normal Texture
+// 			node = node->NextSiblingElement();
+// 			if (node->GetText())
+// 			{
+// 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+// 				if (textureStr.length() > 0)
+// 				{
+// 					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+// 					material->SetNormalTextureFile(finalTextureStr);
+// 					// TODO : Texture만들기
+// 					//auto texture
+// 				}
+// 			}
+// 
+// 			// Metalic Texture
+// 			node = node->NextSiblingElement();
+// 			if (node->GetText())
+// 			{
+// 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+// 				if (textureStr.length() > 0)
+// 				{
+// 					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+// 					material->SetMetallicTextureFile(finalTextureStr);
+// 				}
+// 			}
+// 
+// 			// Roughness Texture
+// 			node = node->NextSiblingElement();
+// 			if (node->GetText())
+// 			{
+// 				std::wstring textureStr = StringUtils::ConvertStringToWString(node->GetText());
+// 				if (textureStr.length() > 0)
+// 				{
+// 					std::wstring finalTextureStr = parentPath.wstring() + L"/" + textureStr;
+// 					material->SetRoughnessTextureFile(finalTextureStr);
+// 				}
+// 			}
+// 
+// 			// Ambient
+// 			{
+// 				node = node->NextSiblingElement();
+// 
+// 				Color color;
+// 				color.x = node->FloatAttribute("R");
+// 				color.y = node->FloatAttribute("G");
+// 				color.z = node->FloatAttribute("B");
+// 				color.w = node->FloatAttribute("A");
+// 				material->SetAmbient(color);
+// 			}
+// 
+// 			// Diffuse
+// 			{
+// 				node = node->NextSiblingElement();
+// 
+// 				Color color;
+// 				color.x = node->FloatAttribute("R");
+// 				color.y = node->FloatAttribute("G");
+// 				color.z = node->FloatAttribute("B");
+// 				color.w = node->FloatAttribute("A");
+// 				material->SetDiffuse(color);
+// 			}
+// 
+// 			// Specular
+// 			{
+// 				node = node->NextSiblingElement();
+// 
+// 				Color color;
+// 				color.x = node->FloatAttribute("R");
+// 				color.y = node->FloatAttribute("G");
+// 				color.z = node->FloatAttribute("B");
+// 				color.w = node->FloatAttribute("A");
+// 				material->SetSpecular(color);
+// 			}
+// 
+// 			// Emissive
+// 			{
+// 				node = node->NextSiblingElement();
+// 
+// 				Color color;
+// 				color.x = node->FloatAttribute("R");
+// 				color.y = node->FloatAttribute("G");
+// 				color.z = node->FloatAttribute("B");
+// 				color.w = node->FloatAttribute("A");
+// 				material->SetEmissive(color);
+// 			}
+// 
+// 			// Metallic
+// 			{
+// 				node = node->NextSiblingElement();
+// 				float MetallicFactor = node->FloatAttribute("Factor");
+// 				material->SetMetallicFactor(MetallicFactor);
+// 			}
+// 
+// 			// Roughness
+// 			{
+// 				node = node->NextSiblingElement();
+// 				float RoughnessFactor = node->FloatAttribute("Factor");
+// 				material->SetRoughnessFactor(RoughnessFactor);
+// 			}
+// 
+// 			// UseTextureInfo
+// 			{
+// 				node = node->NextSiblingElement();
+// 				bool diffuse = node->BoolAttribute("Diffuse");
+// 				bool normal = node->BoolAttribute("Normal");
+// 				bool metallic = node->BoolAttribute("Metallic");
+// 				bool roughness = node->BoolAttribute("Roughness");
+// 				material->SetIsUseDiffuse(diffuse);
+// 				material->SetIsUseNormal(normal);
+// 				material->SetIsUseMetallic(metallic);
+// 				material->SetIsUseRoughness(roughness);
+// 				//material->SetIsUseDiffuse(true);
+// 				//material->SetIsUseNormal(true);
+// 				//material->SetIsUseMetallic(true);
+// 				//material->SetIsUseRoughness(true);
+// 			}
+// 
+// 			{
+// 				// Material Id Allocate
+// 				//material->SetID(AllocateMaterialID());
+// 				//
+// 				//material->SetBaseMap(m_defaultAlbedo);
+// 				//material->SetNormalMap(m_defaultNormal);
+// 				//material->SetMaskMap(m_defaultMask);
+// 
+// 				//staticMesh->AddMaterial(m_defaultMaterial);
+// 			}
+// 			materialNode = materialNode->NextSiblingElement();
+// 		}
+// 	}
 
 	// Binding info
 	staticMesh->FinalCreate(shared_from_this());

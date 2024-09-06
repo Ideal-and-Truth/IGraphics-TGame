@@ -108,7 +108,9 @@ namespace Truth
 		const Vector3& GetWorldScale() const;
 
 		const Matrix& GetWorldTM() const;
+
 		void SetWorldTM(const Matrix& _tm) const;
+		void SetLocalTM(const Matrix& _tm) const;
 
 		bool HasParent() const { return !m_parent.expired(); };
 		bool HasChildren() const { return !m_children.empty(); }

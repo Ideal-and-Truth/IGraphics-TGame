@@ -51,14 +51,23 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	g_inputmanager = m_manager->Input().get();
 
 #ifdef CONVERT_DATA
-	ConvertData();
+	// ConvertData();
+	// ConvertSkelFbxData(L"AsciiAniTest/idelTest.fbx");
+	// ConvertSkelFbxData(L"AsciiAniTest/idelTest.fbx");
+	// ConvertSkelFbxData(L"AsciiAniTest/FieldMob.fbx");
+	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
+	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
 #ifdef EDITOR_MODE
+
+
 	Truth::UnityParser up(m_manager->Graphics().get());
-	up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
-	up.ParseSceneFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\1st_test bake.unity");
+	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
+	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
+	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	// up.ParseSceneFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\1st_test bake.unity");
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 #endif // EDITOR_MODE
 }
@@ -291,11 +300,11 @@ void Processor::ConvertData()
 	}
 	for (auto& path : m_skelMeshdata)
 	{
-		ConvertAniFbxData(path);
+		ConvertSkelFbxData(path);
 	}
 	for (auto& path : m_staticMeshData)
 	{
-		ConvertAniFbxData(path);
+		ConvertStaticFbxData(path);
 	}
 }
 

@@ -69,6 +69,11 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 	}
 }
 
+void Truth::Mesh::SetMesh()
+{
+	SetMesh(m_path);
+}
+
 void Truth::Mesh::SetRenderable(bool _isRenderable)
 {
 }

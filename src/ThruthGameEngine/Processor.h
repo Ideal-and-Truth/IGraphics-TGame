@@ -5,7 +5,7 @@
 #include <thread>
 #include <mutex>
 
-// #define CONVERT_DATA
+#define CONVERT_DATA
 #define MAX_THREAD_COUNT 16
 namespace Truth
 {
@@ -41,7 +41,7 @@ private:
 		L"PlayerAnimations/ComboAttackReady/Buff_01.fbx",
 		L"PlayerAnimations/Dodge/roll_front.fbx",
 		L"PlayerAnimations/Fall/unitychan_Fall.fbx",
-		L"PlayerAnimations/Guard/defence.fbx",
+		L"PlayerAnimations/Guard/Revenge_Guard_Loop.fbx",
 		L"PlayerAnimations/Hit/hit01.fbx",
 		L"PlayerAnimations/Idle/idle.fbx",
 		L"PlayerAnimations/Move/BackStep/M_katana_Blade@Walk_ver_A_Back.fbx",
