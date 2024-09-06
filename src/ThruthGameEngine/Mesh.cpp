@@ -52,16 +52,17 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 {
 	m_path = _path;
 
-	if (m_mesh != nullptr)
-	{
-		DeleteMesh();
-	}
+// 	if (m_mesh != nullptr)
+// 	{
+// 		DeleteMesh();
+// 	}
 
 	m_mesh = m_managers.lock()->Graphics()->CreateMesh(_path);
 
 	uint32 meshSize = m_mesh->GetMeshesSize();
 	m_subMesh.clear();
 	m_subMesh.resize(meshSize);
+	m_mat.clear();
 	for (uint32 i = 0; i < meshSize; i++)
 	{
 		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();

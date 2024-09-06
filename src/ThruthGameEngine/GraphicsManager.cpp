@@ -230,7 +230,6 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::
 void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 {
 	m_renderer->SetMainCamera(_camera->m_camera);
-	// m_mainCamera = _camera;
 }
 #endif // EDITOR_MODE
 

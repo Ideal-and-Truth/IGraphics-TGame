@@ -143,7 +143,7 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	//flag |= aiProcess_SortByPType;
 	//flag |= aiProcess_LimitBoneWeights;
 	//flag |= aiProcess_JoinIdenticalVertices;
-	
+
 	m_importer->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
 	m_importer->SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.f);
 	bool s = m_importer->GetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS);
@@ -179,33 +179,33 @@ void AssimpConverter::ExportModelData(std::wstring savePath, bool IsSkinnedData 
 		{
 			FILE* file;
 			fopen_s(&file, "../Vertices.csv", "w");
-			
+
 			for (std::shared_ptr<AssimpConvert::Bone>& bone : m_bones)
 			{
 				std::string name = bone->name;
 				::fprintf(file, "%d,%s\n", bone->index, bone->name.c_str());
 			}
-			
+
 			fprintf(file, "\n");
-			
+
 			for (std::shared_ptr<AssimpConvert::SkinnedMesh>& mesh : m_skinnedMeshes)
 			{
 				std::string name = mesh->name;
 				//::printf("%s\n", name.c_str());
 				::fprintf(file, "name : %s\n", name.c_str());
-			
+
 				for (UINT i = 0; i < mesh->vertices.size(); i++)
 				{
 					Vector3 p = mesh->vertices[i].Position;
 					Vector4 indices = mesh->vertices[i].BlendIndices;
 					Vector4 weights = mesh->vertices[i].BlendWeights;
-			
+
 					::fprintf(file, "%f,%f,%f,", p.x, p.y, p.z);
 					::fprintf(file, "%f,%f,%f,%f,", indices.x, indices.y, indices.z, indices.w);
 					::fprintf(file, "%f,%f,%f,%f\n", weights.x, weights.y, weights.z, weights.w);
 				}
 			}
-			
+
 			fclose(file);
 		}
 	}
@@ -465,12 +465,15 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, boo
 	if (parent >= 0)
 		matParent = m_bones[parent]->transform;
 
-	// Local Transform
-	bone->transform = bone->transform * matParent;
-
 	m_bones.push_back(bone);
 
-	ReadMeshData(node, index, convertCenter);
+	// Local Transform
+	bone->transform = bone->transform * matParent;
+	Vector3 scale;
+
+	bone->transform.Decompose(scale, Quaternion(), Vector3());
+
+	ReadMeshData(node, index, scale, convertCenter);
 
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
@@ -710,7 +713,7 @@ void AssimpConverter::ReadSkinData()
 
 				// 만약 본이 없을 경우 나의 본을 붙힌다.
 				AssimpConvert::BlendWeight blendWeight = tempVertexBoneWeights[v].GetBlendWeights();
-				mesh->vertices[v].BlendIndices = Vector4(mesh->boneIndex,0,0,0);
+				mesh->vertices[v].BlendIndices = Vector4(mesh->boneIndex, 0, 0, 0);
 				mesh->vertices[v].BlendWeights = Vector4(1, 0, 0, 0);
 				continue;
 			}
@@ -724,7 +727,7 @@ void AssimpConverter::ReadSkinData()
 	}
 }
 
-void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter /*= false*/)
+void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool convertCenter /*= false*/)
 {
 	// 마지막 노드는 정보를 들고 있다.
 	if (node->mNumMeshes < 1)
@@ -777,12 +780,19 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 			if (srcMesh->HasNormals())
 			{
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
+
+				//Vector3 normal = Vector3::Transform(vertex.Normal, m_bones[bone]->transform.Invert());
+				Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
+				vertex.Normal = normal;
 			}
 
 			// Tangent
 			if (srcMesh->HasTangentsAndBitangents())
 			{
 				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
+				Vector3 tangent = Vector3::TransformNormal(vertex.Tangent, m_bones[bone]->transform);
+				//tangent.Normalize();
+				vertex.Tangent = tangent;
 			}
 
 			mesh->vertices.push_back(vertex);
@@ -796,6 +806,15 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, bool convertCenter 
 			for (uint32 k = 0; k < face.mNumIndices; ++k)
 			{
 				mesh->indices.push_back(face.mIndices[k]);
+			}
+		}
+		if (scale.x < 0)
+		{
+			for (uint32 k = 0; k < mesh->indices.size(); k += 3)
+			{
+				auto temp = mesh->indices[k];
+				mesh->indices[k] = mesh->indices[k + 2];
+				mesh->indices[k + 2] = temp;
 			}
 		}
 		m_meshes.push_back(mesh);

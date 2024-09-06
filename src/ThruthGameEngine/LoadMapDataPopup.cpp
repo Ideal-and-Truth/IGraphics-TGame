@@ -29,7 +29,7 @@ void LoadMapDataPopup::ShowContext(bool* p_open)
 			auto& s = m_manager.lock()->Scene()->m_currentScene;
 			s->ResetMapData();
 			s->m_mapPath = A2W(m_inputTextBuffer);
-			s->CreateMap(s->m_mapPath);
+			s->LoadUnityData(s->m_mapPath);
 			ImGui::CloseCurrentPopup();
 			m_isActive = false;
 		}

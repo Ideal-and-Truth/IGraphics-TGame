@@ -120,15 +120,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-
-
-	//CreateMap(m_mapPath);
-	// CreateMap(L"1st_test bake");
-	CreateMap(L"SampleScene");
-	for (auto& e : m_mapEntity)
-	{
-		LoadEntity(e);
-	}
+	// LoadUnityData(L"SampleScene");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -180,13 +172,6 @@ void Truth::Scene::EditorUpdate()
 {
 	m_rootEntities.clear();
 	for (auto& e : m_entities)
-	{
-		if (e->m_parent.expired() && !e->m_isDead)
-		{
-			m_rootEntities.push_back(e);
-		}
-	}
-	for (auto& e : m_mapEntity)
 	{
 		if (e->m_parent.expired() && !e->m_isDead)
 		{
@@ -252,18 +237,6 @@ void Truth::Scene::Update()
 			m_beginDestroy.push(e);
 		}
 	}
-
-	for (auto& e : m_mapEntity)
-	{
-		if (!e->m_isDead)
-		{
-			e->Update();
-		}
-		else
-		{
-			m_beginDestroy.push(e);
-		}
-	}
 }
 
 void Truth::Scene::FixedUpdate()
@@ -305,10 +278,6 @@ void Truth::Scene::ApplyTransform()
 	{
 		e->ApplyTransform();
 	}
-	for (auto& e : m_mapEntity)
-	{
-		e->ApplyTransform();
-	}
 }
 
 /// <summary>
@@ -322,12 +291,6 @@ void Truth::Scene::Start()
 		m_startedEntity.push(e);
 		e->Awake();
 		m_awakedEntity.pop();
-	}
-	while (!m_startedEntity.empty())
-	{
-		auto& e = m_startedEntity.front();
-		e->Start();
-		m_startedEntity.pop();
 	}
 }
 
@@ -362,7 +325,7 @@ void Truth::Scene::ClearEntity()
 	m_entities.clear();
 }
 
-void Truth::Scene::CreateMap(const std::wstring& _path)
+void Truth::Scene::LoadUnityData(const std::wstring& _path)
 {
 	if (_path.empty())
 	{
@@ -507,6 +470,11 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 			file->Read<float>();
 			file->Read<float>();
 		}
+	}
+
+	for (auto& e : m_mapEntity)
+	{
+		AddEntity(e);
 	}
 }
 

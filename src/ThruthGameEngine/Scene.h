@@ -99,7 +99,7 @@ namespace Truth
 		void ClearEntity();
 
 	private:
-		void CreateMap(const std::wstring& _path);
+		void LoadUnityData(const std::wstring& _path);
 		void ResetMapData();
 
 	};

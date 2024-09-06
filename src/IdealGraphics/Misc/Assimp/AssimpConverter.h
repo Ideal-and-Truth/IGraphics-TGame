@@ -49,7 +49,7 @@ private:
 	void ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData = true, bool converCenter = false);
 	void ReadMaterialData();
 	void ReadSkinData();
-	void ReadMeshData(aiNode* node, int32 bone, bool convertCenter = false);
+	void ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool convertCenter = false);
 	void ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parentBone = -1);
 
 	std::shared_ptr<AssimpConvert::Animation> ReadAnimationData(aiAnimation* srcAnimation);

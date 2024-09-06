@@ -154,6 +154,9 @@
     <Filter Include="Utils\ThreadPool">
       <UniqueIdentifier>{b6dbf41d-e363-4ab9-b664-db41768b869d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EditorUI\Context\Menu\UnityDataLoad">
+      <UniqueIdentifier>{1d893df8-34dc-4983-979f-4ee92b67bc95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
