@@ -80,6 +80,9 @@ Ideal::RaytracingManager::~RaytracingManager()
 	m_materialMapInFixedDescriptorTable.clear();
 	m_raytracingOutputSRV.Free();
 	m_raytracingOutputRTV.Free();
+
+	m_gBufferPosition->Free();
+	m_gBufferDepth->Free();
 }
 
 void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
@@ -94,6 +97,7 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	m_RTV_raytracingOutputDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
 
 	CreateRenderTarget(Device, Width, Height);	//device, width, height
+	CreateGBufferTexture(ResourceManager, Width, Height);
 	CreateRootSignature(Device);	//device
 	CreateRaytracingPipelineStateObject(Device, RaytracingShader); // device, shader
 	BuildShaderTables(Device, nullptr); // Device, ResourceManager
@@ -143,6 +147,16 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	Device->CopyDescriptorsSimple(1, handle4.GetCpuHandle(), lightListHandle->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::CBV_LightList, handle4.GetGpuHandle());
 
+	// Parameter 5
+	auto handle5 = DescriptorManager->Allocate(CurrentFrameIndex);
+	Device->CopyDescriptorsSimple(1, handle5.GetCpuHandle(), m_gBufferPosition->GetUAV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_GBufferPosition, handle5.GetGpuHandle());
+
+	auto handle6 = DescriptorManager->Allocate(CurrentFrameIndex);
+	Device->CopyDescriptorsSimple(1, handle6.GetCpuHandle(), m_gBufferDepth->GetUAV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_GBufferDepth, handle6.GetGpuHandle());
+
+
 	//-----------------Dispatch Rays----------------//
 
 	D3D12_DISPATCH_RAYS_DESC dispatchRayDesc = {};
@@ -165,13 +179,14 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	CommandList->DispatchRays(&dispatchRayDesc);
 }
 
-void Ideal::RaytracingManager::Resize(ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height)
+void Ideal::RaytracingManager::Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height)
 {
 	m_width = Width;
 	m_height = Height;
 	m_raytracingOutputDescriptorHeap->Reset();
 	m_RTV_raytracingOutputDescriptorHeap->Reset();
 	CreateRenderTarget(Device, Width, Height);
+	CreateGBufferTexture(ResourceManager, Width, Height);
 }
 
 void Ideal::RaytracingManager::CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height)
@@ -438,6 +453,9 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		ranges[GlobalRootSignature::Slot::SRV_SkyBox].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1 : SkyBox
 		ranges[GlobalRootSignature::Slot::CBV_LightList].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // b1 : LightList
 
+		ranges[GlobalRootSignature::Slot::UAV_GBufferPosition].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 1);	// u1 : GBuffer Position
+		ranges[GlobalRootSignature::Slot::UAV_GBufferDepth].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 2);	// u2 : GBuffer Depth
+		
 		// binding
 		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignature::Slot::Count];
 		rootParameters[GlobalRootSignature::Slot::UAV_Output].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_Output]);
@@ -445,6 +463,9 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		rootParameters[GlobalRootSignature::Slot::SRV_SkyBox].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::SRV_SkyBox]);
 		rootParameters[GlobalRootSignature::Slot::CBV_LightList].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::CBV_LightList]);
 
+		rootParameters[GlobalRootSignature::Slot::UAV_GBufferPosition].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_GBufferPosition]);
+		rootParameters[GlobalRootSignature::Slot::UAV_GBufferDepth].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_GBufferDepth]);
+		
 		// init as
 		rootParameters[GlobalRootSignature::Slot::SRV_AccelerationStructure].InitAsShaderResourceView(0);	// t0
 
@@ -687,7 +708,7 @@ void Ideal::RaytracingManager::UpdateTexture(ComPtr<ID3D12Device5> Device)
 	bool textureChanged = Ideal::Singleton::RayTracingFlagManger::GetInstance().GetTextureChangedAndOffFlag();
 	if (textureChanged)
 	{
-		std::vector<std::shared_ptr<Ideal::IdealMaterial>> materials;
+		//std::vector<std::shared_ptr<Ideal::IdealMaterial>> materials;
 		for (auto m : m_materialMapInFixedDescriptorTable)
 		{
 			if (m.second.lock()->IsTextureChanged())
@@ -820,4 +841,21 @@ void Ideal::RaytracingManager::DispatchAnimationComputeShader(ComPtr<ID3D12Devic
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
 	);
 	CommandList->ResourceBarrier(1, &barrier);
+}
+
+void Ideal::RaytracingManager::CreateGBufferTexture(std::shared_ptr<Ideal::ResourceManager> ResourceManager, uint32 Width, uint32 Height)
+{
+	if (m_gBufferPosition)
+	{
+		m_gBufferPosition->Free();
+	}
+	if (m_gBufferDepth)
+	{
+		m_gBufferDepth->Free();
+	}
+
+	auto readWriteFlag = Ideal::IDEAL_TEXTURE_SRV | Ideal::IDEAL_TEXTURE_UAV;
+	ResourceManager->CreateEmptyTexture2D(m_gBufferPosition, Width, Height, DXGI_FORMAT_R32G32B32A32_FLOAT, readWriteFlag, L"GBufferPosition");
+	//ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_R16_FLOAT, readWriteFlag, L"GBufferDepth");
+	ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_R32_FLOAT, readWriteFlag, L"GBufferDepth");
 }

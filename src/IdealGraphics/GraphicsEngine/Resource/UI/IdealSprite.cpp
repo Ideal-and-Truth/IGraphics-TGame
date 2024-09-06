@@ -22,7 +22,7 @@ Ideal::IdealSprite::~IdealSprite()
 
 void Ideal::IdealSprite::DrawSprite(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, const Vector2& ScreenSize)
 {
-	SetScreenPosition(ScreenSize);
+	SetScreenSize(ScreenSize);
 	//m_cbSprite.ScreenSize = ScreenSize;
 
 	//-------------DynamicTexture-------------//
@@ -84,7 +84,7 @@ void Ideal::IdealSprite::SetSampleRect(const SpriteRectArea& Rect)
 	//m_cbSprite.TexSampleSize = Vector2(Rect.right, Rect.bottom);
 }
 
-void Ideal::IdealSprite::SetScreenPosition(const Vector2& ScreenPos)
+void Ideal::IdealSprite::SetScreenSize(const Vector2& ScreenPos)
 {
 	m_cbSprite.ScreenSize = ScreenPos;
 }
@@ -92,6 +92,7 @@ void Ideal::IdealSprite::SetScreenPosition(const Vector2& ScreenPos)
 void Ideal::IdealSprite::SetPosition(const Vector2& Position)
 {
 	m_cbSprite.Pos = Position;
+	CalculatePositionOffset();
 }
 
 void Ideal::IdealSprite::SetScale(const DirectX::SimpleMath::Vector2& Scale)
@@ -144,4 +145,19 @@ void Ideal::IdealSprite::SetTexture(std::weak_ptr<Ideal::ITexture> Texture)
 void Ideal::IdealSprite::SetMesh(std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> Mesh)
 {
 	m_mesh = Mesh;
+}
+
+void Ideal::IdealSprite::CalculatePositionOffset()
+{
+	m_cbSprite.PosOffset = m_cbSprite.Pos / m_cbSprite.ScreenSize;
+}
+
+void Ideal::IdealSprite::ReSize(uint32 Width, uint32 Height)
+{
+	m_cbSprite.ScreenSize.x = Width;
+	m_cbSprite.ScreenSize.y = Height;
+
+	// 생각해보니 offset 계산을 Resize때 다시 안할려고 한건데 
+	// 그래서 삭제. 
+	//CalculatePositionOffset();
 }

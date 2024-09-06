@@ -237,11 +237,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region FBXConvert
 		//-------------------Convert FBX(Model, Animation)-------------------//
-		gRenderer->ConvertAssetToMyFormat(L"AsciiAniTest/idelTest.fbx", true);
-		// gRenderer->ConvertAssetToMyFormat(L"AsciiAniTest/idelTest.fbx");
-		gRenderer->ConvertAnimationAssetToMyFormat(L"AsciiAniTest/idelTest.fbx");
-		// gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/Idle/idle.fbx", true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk_ori.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", true);
+		gRenderer->ConvertAnimationAssetToMyFormat(L"EnemyTest/idelTest.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx");
 		
@@ -282,10 +282,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateMeshObjectAndAnimation
 		//-------------------Create Mesh Object-------------------//
 		
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer= gRenderer->CreateSkinnedMeshObject(L"AsciiAniTest/idelTest");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"AsciiAniTest/idelTest");
-		// DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer= gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
+		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugEnemy = gRenderer->CreateSkinnedMeshObject(L"EnemyTest/idelTest");
+		std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
+		DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
+
+		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"EnemyTest/idelTest");
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
@@ -331,7 +336,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		////std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		////std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		////
-		std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"AsciiAniTest/idelTest");
+		//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"Boss/bosshall");
 		//std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 		//std::shared_ptr<Ideal::IMeshObject> mesh3 = gRenderer->CreateStaticMeshObject(L"Tower/Tower");
 		////std::shared_ptr<Ideal::IMeshObject> mesh2 = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
@@ -381,6 +386,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
 		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png");
 		std::shared_ptr<Ideal::ITexture> kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");
+		//std::shared_ptr<Ideal::ITexture> normalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
 
@@ -390,8 +396,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
 
 		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
-		std::shared_ptr<Ideal::IMaterial> kaMaterial = gRenderer->CreateMaterial();
-		kaMaterial->SetBaseMap(kaTexture);
+		std::shared_ptr<Ideal::IMaterial> kaMaterial;// = gRenderer->CreateMaterial();
+		//kaMaterial->SetBaseMap(kaTexture);
 
 		//DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 
@@ -399,7 +405,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateUI
 		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
-		sprite->SetTexture(faceTexture);
+		sprite->SetTexture(eyeTexture);
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		sprite->SetScale(Vector2(0.1, 0.1));
 		sprite->SetPosition(Vector2(0, 0));
@@ -413,21 +419,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sprite->SetTextureSampleSize(Vector2(2048, 2048));
 
 		std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
-		sprite2->SetTexture(skirtBottomTexture);
+		sprite2->SetTexture(eyeTexture);
 		sprite2->SetScale(Vector2(0.1, 0.1));
-		sprite2->SetPosition(Vector2(50, 50));
+		sprite2->SetPosition(Vector2(400, 50));
 		sprite2->SetZ(0.1);
 
 		std::shared_ptr<Ideal::ISprite> sprite3 = gRenderer->CreateSprite();
 		sprite3->SetScale(Vector2(0.3, 0.3));
-		sprite3->SetPosition(Vector2(200, 0));
+		sprite3->SetPosition(Vector2(1180, 860));
 		sprite3->SetZ(0);
 
 		//---Text---//
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30);	// 기본 tahoma 글꼴임
-		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30, L"times new roman");
-		text->ChangeText(L"HI EVERYONE\n Hi2");
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(55, 65, 30, L"times new roman");
+		text->ChangeText(L"UI\n Test");
+		text->SetPosition(Vector2(0, 500));
 #pragma endregion
 
 #pragma region CreateLight
@@ -521,6 +528,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('C') & 0x8000)
 				{
+					if (!kaMaterial)
+					{
+						kaMaterial = gRenderer->CreateMaterial();
+						kaMaterial->SetBaseMap(kaTexture);
+						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+						//meshes[0]->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+					}
 					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
 					//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 					//ka->AddAnimation("Walk", walkAnim);
@@ -535,9 +549,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//std::shared_ptr<Ideal::IMeshObject> mesh;
 					//mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
 					//
-					meshes.push_back(mesh);
-					mesh->SetTransformMatrix(Matrix::Identity);
-					tX++;
+					//meshes.push_back(mesh);
+					//mesh->SetTransformMatrix(mat2);
+					//tX++;
 				}
 
 				if (GetAsyncKeyState('U') & 0x8000)
@@ -569,6 +583,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('X') & 0x8000)
 				{
+					
 					if (tX < 1)
 					{
 						std::shared_ptr<Ideal::IMeshObject> mesh;
@@ -604,9 +619,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
+				DebugEnemy->AnimationDeltaTime(0.002f);
 				if (DebugPlayer)
 				{
-					// DebugPlayer->AnimationDeltaTime(0.002f);
+					//DebugPlayer->AnimationDeltaTime(0.002f);
 				}
 				//DebugPlayer2->AnimationDeltaTime(0.002f);
 				//DebugPlayer3->AnimationDeltaTime(0.002f);
@@ -653,7 +669,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						
 						if(DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
-						SkinnedMeshObjectBoneInfoTest(DebugPlayer);
+						//SkinnedMeshObjectBoneInfoTest(DebugPlayer2);
 						//if (sprite)
 						//{
 						//	SpriteTest(sprite);
@@ -681,7 +697,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			gRenderer->DeleteMeshObject(meshes[i]);
 			meshes[i].reset();
-		}
+		} 
 		meshes.clear();
 
 		//gRenderer->DeleteMeshObject(mesh);
@@ -695,6 +711,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
+		gRenderer->DeleteMeshObject(DebugStaticEnemy);
+		DebugStaticEnemy.reset();
+		gRenderer->DeleteMeshObject(DebugEnemy);
+		DebugEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugPlayer);
 		//gRenderer->DeleteMeshObject(DebugPlayer2);
 		//gRenderer->DeleteMeshObject(DebugPlayer3);
@@ -713,6 +733,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		faceTexture.reset();
 		gRenderer->DeleteTexture(kaTexture);
 		kaTexture.reset();
+		//gRenderer->DeleteTexture(normalTexture);
+		//normalTexture.reset();
 		gRenderer->DeleteTexture(faceNormalTexture);
 		faceNormalTexture.reset();
 		gRenderer->DeleteTexture(eyeTexture);
@@ -830,6 +852,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	//float aspectRatio = float(1296) / 999.f;
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
 	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 10000.f);
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
 	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }

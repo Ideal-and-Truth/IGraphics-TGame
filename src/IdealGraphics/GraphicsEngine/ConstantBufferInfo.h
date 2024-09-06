@@ -7,16 +7,15 @@
 
 struct SceneConstantBuffer
 {
+	Matrix View;
+	Matrix Proj;
 	Matrix ProjToWorld;
 	DirectX::XMVECTOR CameraPos;
-	DirectX::XMVECTOR lightPos;
-	DirectX::XMVECTOR lightAmbient;
-	DirectX::XMVECTOR lightDiffuse;
 
 	uint32 maxRadianceRayRecursionDepth;
 	uint32 maxShadowRayRecursionDepth;
-	DirectX::XMVECTOR color;
-	float padding[2];
+	float nearZ;
+	float farZ;
 };
 
 struct CB_MaterialInfo
@@ -121,8 +120,9 @@ struct CB_Sprite
 		TexSampleSize = Vector2(0, 0);
 		Z = 0;
 		Alpha = 1.f;
-		pad0 = 0;
-		pad1 = 0;
+		PosOffset = Vector2(0, 0);
+		//pad0 = 0;
+		//pad1 = 0;
 	}
 	Color SpriteColor;
 	Vector2 ScreenSize;
@@ -133,6 +133,7 @@ struct CB_Sprite
 	Vector2 TexSampleSize;
 	float Z;
 	float Alpha;
-	float pad0;
-	float pad1;
+	Vector2 PosOffset;
+	//float pad0;
+	//float pad1;
 };

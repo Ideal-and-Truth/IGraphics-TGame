@@ -46,12 +46,12 @@ void Ideal::D3D12Texture::Create(ComPtr<ID3D12Resource> Resource, std::shared_pt
 
 void Ideal::D3D12Texture::Free()
 {
-	//m_refCount--;
-	//if (m_refCount <= 0)
-	//{
-	//	m_refCount = 0;
-	//	m_deferredDeleteManager.lock()->AddTextureToDeferredDelete(shared_from_this());
-	//}
+	m_srvHandle.Free();
+	m_rtvHandle.Free();
+	m_dsvHandle.Free();
+	m_uavHandle.Free();
+
+	m_srvHandleInEditor.Free();
 }
 
 void Ideal::D3D12Texture::EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle)

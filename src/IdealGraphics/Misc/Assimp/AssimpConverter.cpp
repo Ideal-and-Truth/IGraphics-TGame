@@ -665,10 +665,6 @@ void AssimpConverter::ReadSkinData()
 	{
 		const aiMesh* srcMesh = m_scene->mMeshes[i];
 		//srcMesh = m_aiMeshes[i];
-		if (i == 28)
-		{
-			int a = 3;
-		}
 		bool hasNotBone = false;
 		if (srcMesh->HasBones() == false)
 		{
@@ -837,10 +833,12 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parent
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 		{
+			//m_bones[bone]->transform;
 			SkinnedVertex vertex;
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
-				//vertex.Position *= 0.01;
+				Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
+				vertex.Position = result;
 			}
 
 			// UV

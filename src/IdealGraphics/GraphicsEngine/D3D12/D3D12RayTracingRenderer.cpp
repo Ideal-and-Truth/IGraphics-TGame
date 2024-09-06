@@ -459,16 +459,13 @@ finishAdapter:
 	}
 	m_sceneCB.CameraPos = Vector4(0.f);
 
-	m_sceneCB.lightPos = Vector4(3.f, 1.8f, -3.f, 0.f);
-	//m_sceneCB.lightAmbient = Vector4(0.5f, 0.5f, 0.5f, 1.f);
-	m_sceneCB.lightAmbient = Vector4(0.2f, 0.2f, 0.2f, 1.f);
-	//m_sceneCB.lightDiffuse = Vector4(0.5f, 0.f, 0.f, 1.f);
-	m_sceneCB.lightDiffuse = Vector4(1.f, 1.f, 1.f, 1.f);
-
 	m_sceneCB.maxRadianceRayRecursionDepth = G_MAX_RAY_RECURSION_DEPTH;
 	m_sceneCB.maxShadowRayRecursionDepth = G_MAX_RAY_RECURSION_DEPTH;
 
-	m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
+	m_sceneCB.nearZ = 0;
+	m_sceneCB.farZ = 0;
+	//m_sceneCB.nearZ = m_mainCamera->GetNearZ();
+	//m_sceneCB.farZ = m_mainCamera->GetFarZ();
 
 	// load image
 
@@ -505,12 +502,17 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
+	m_sceneCB.View = m_mainCamera->GetView();
+	m_sceneCB.Proj = m_mainCamera->GetProj();
+	m_sceneCB.nearZ = m_mainCamera->GetNearZ();
+	m_sceneCB.farZ = m_mainCamera->GetFarZ();
+
 	UpdateLightListCBData();
 	if (m_directionalLight)
 	{
-		m_sceneCB.color = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
+		//m_sceneCB.color = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
 		//m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
-		m_sceneCB.lightDiffuse = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
+		//m_sceneCB.lightDiffuse = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
 	}
 	ResetCommandList();
 
@@ -795,7 +797,7 @@ void Ideal::D3D12RayTracingRenderer::SetDisplayResolutionOption(const Resolution
 	// ray tracing / UI //
 	//m_depthStencil.Reset();
 	CreateDSV(resolutionWidth, resolutionHeight);
-	m_raytracingManager->Resize(m_device, resolutionWidth, resolutionHeight);
+	m_raytracingManager->Resize(m_resourceManager, m_device, resolutionWidth, resolutionHeight);
 	m_UICanvas->SetCanvasSize(resolutionWidth, resolutionHeight);
 }
 
@@ -1050,6 +1052,7 @@ std::shared_ptr<Ideal::ISprite> Ideal::D3D12RayTracingRenderer::CreateSprite()
 {
 	// TODO : Canvas에 UI를 추가해야 할 것이다.
 	std::shared_ptr<Ideal::IdealSprite> ret = std::make_shared<Ideal::IdealSprite>();
+	ret->SetScreenSize(Vector2(m_width, m_height));
 	ret->SetMesh(m_resourceManager->GetDefaultQuadMesh());
 	ret->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
 	m_UICanvas->AddSprite(ret);

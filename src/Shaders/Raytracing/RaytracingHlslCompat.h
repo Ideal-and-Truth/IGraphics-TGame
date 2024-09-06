@@ -30,17 +30,15 @@ struct Ray
 
 struct SceneConstantBuffer
 {
+    XMMATRIX View;
+    XMMATRIX Proj;
     XMMATRIX projectionToWorld;
     XMVECTOR cameraPosition;
-    XMVECTOR lightPosition;
-    XMVECTOR lightAmbientColor;
-    XMVECTOR lightDiffuseColor;
 
     unsigned int maxRadianceRayRecursionDepth;
     unsigned int maxShadowRayRecursionDepth;
-
-    XMVECTOR Color;
-    float padding[2];
+    float nearZ;
+    float farZ;
 };
 
 struct MaterialInfoConstantBuffer
