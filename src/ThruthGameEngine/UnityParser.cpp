@@ -265,12 +265,15 @@ fs::path Truth::UnityParser::OrganizeUnityFile(fs::path& _path)
 /// <param name="_guid">guid</param>
 /// <param name="_parent">부모 (root의 경우 null)</param>
 /// <returns>현 노드에 해당하는 game Object 구조체</returns>
-Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent)
+void Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent)
 {
 	GameObject* GO = new GameObject;
-	GO->m_isCollider = false;
+	GO->m_mine = m_gameObjects.size();
 	GO->m_parent = _parent;
+	m_gameObjects.push_back(GO);
+	GO->m_isCollider = false;
 	GO->m_guid = _guid;
+
 
 	// get transform data
 	Vector3 pos = {
@@ -316,20 +319,24 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParseTranfomrNode(const YAML
 		std::string childFid = (*it)["fileID"].as<std::string>();
 		if (m_nodeMap[_guid][childFid]->m_node["Transform"].IsDefined())
 		{
-			m_gameObjects.push_back(ParseTranfomrNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, m_gameObjects.size()));
+			ParseTranfomrNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, GO->m_mine);
 		}
-		else if (m_nodeMap[_guid][childFid]->m_node["PrefabInstance"].IsDefined())
+		else if (m_nodeMap[_guid][childFid]->m_node["STransform"].IsDefined())
 		{
-			m_gameObjects.push_back(ParsePrefabNode(m_nodeMap[_guid][childFid]->m_node["Transform"], _guid, m_gameObjects.size()));
+			std::string prefabFID = m_nodeMap[_guid][childFid]->m_node["STransform"]["m_PrefabInstance"]["fileID"].as<std::string>();
+			ParsePrefabNode(m_nodeMap[_guid][prefabFID]->m_node["PrefabInstance"], _guid, GO->m_mine);
 		}
+
 	}
-	return GO;
+	return;
 }
 
-Truth::UnityParser::GameObject* Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent)
+void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent)
 {
 	GameObject* GO = new GameObject;
 	GO->m_parent = _parent;
+	GO->m_mine = m_gameObjects.size();
+	m_gameObjects.push_back(GO);
 
 	// get transform data
 	GO->m_localTM = GetPrefabMatrix(_node["m_Modification"]["m_Modifications"]);
@@ -351,12 +358,9 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParsePrefabNode(const YAML::
 		{
 			ParseFbxMetaFile(GO, prefabPath);
 		}
-
-
-
-		return GO;
+		return;
 	}
-	return GO;
+	return;
 }
 
 void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner)
@@ -429,6 +433,9 @@ void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _o
 		{
 			std::string fbxGuid = _node["m_Mesh"]["guid"].as<std::string>();
 			fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
+			_owner->m_meshPath = fbxFilePath.generic_string();
+
+			m_unLoadMesh.insert(fbxFilePath);
 		}
 
 	}
@@ -593,9 +600,9 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 		{
 			for (auto& texmap : texNode)
 			{
-				if (texmap["_BumpMap"].IsDefined())
+				if (texmap["_NormalMap"].IsDefined())
 				{
-					std::string texGuid = texmap["_BumpMap"]["m_Texture"]["guid"].as<std::string>();
+					std::string texGuid = texmap["_NormalMap"]["m_Texture"]["guid"].as<std::string>();
 					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 					if (!fs::exists(p))
 					{
@@ -613,9 +620,9 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 					}
 					matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 				}
-				else if (texmap["_MetallicGlossMap"].IsDefined())
+				else if (texmap["_MaskMap"].IsDefined())
 				{
-					std::string texGuid = texmap["_MetallicGlossMap"]["m_Texture"]["guid"].as<std::string>();
+					std::string texGuid = texmap["_MaskMap"]["m_Texture"]["guid"].as<std::string>();
 					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 					if (!fs::exists(p))
 					{
@@ -724,6 +731,11 @@ void Truth::UnityParser::WriteMeshData(std::shared_ptr<FileUtils> _file, GameObj
 	{
 		_file->Write<std::string>(_GO->m_meshPath);
 
+		if (_GO->m_meshPath.empty())
+		{
+			int a = 1;
+		}
+
 		_file->Write<size_t>(_GO->m_matarialsName.size());
 		for (size_t i = 0; i < _GO->m_matarialsName.size(); ++i)
 		{
@@ -781,7 +793,7 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 			std::string parentFid = p->m_node["Transform"]["m_Father"]["fileID"].as<std::string>();
 			if (parentFid == "0")
 			{
-				m_gameObjects.push_back(ParseTranfomrNode(p->m_node["Transform"], guid, m_gameObjects.size()));
+				ParseTranfomrNode(p->m_node["Transform"], guid, m_gameObjects.size());
 			}
 		}
 	}
@@ -789,7 +801,7 @@ void Truth::UnityParser::ReadPrefabFile(const fs::path& _path, GameObject* _pare
 	// get prefab node ( 1001 = prefab class at unity scene file )
 	for (auto& p : m_classMap[guid]["1001"])
 	{
-		m_gameObjects.push_back(ParsePrefabNode(p->m_node["PrefabInstance"], guid, m_gameObjects.size()));
+		ParsePrefabNode(p->m_node["PrefabInstance"], guid, _parent->m_mine);
 	}
 
 }
@@ -823,11 +835,11 @@ void Truth::UnityParser::ParseUnityFile(const std::string& _path)
 
 		if (node["Transform"].IsDefined())
 		{
-			m_gameObjects.push_back(ParseTranfomrNode(node["Transform"], guid, -1));
+			ParseTranfomrNode(node["Transform"], guid, -1);
 		}
 		else if (node["PrefabInstance"].IsDefined())
 		{
-			m_gameObjects.push_back(ParsePrefabNode(node["PrefabInstance"], guid, -1));
+			ParsePrefabNode(node["PrefabInstance"], guid, -1);
 		}
 	}
 

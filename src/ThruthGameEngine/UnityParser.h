@@ -88,7 +88,7 @@ namespace Truth
 			std::string m_fileID = "";
 
 			int32 m_parent = -1;
-
+			int32 m_mine = -1;
 			std::string m_name;
 		};
 
@@ -146,8 +146,8 @@ namespace Truth
 
 		fs::path OrganizeUnityFile(fs::path& _path);
 
-		GameObject* ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent);
-		GameObject* ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent);
+		void ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent);
+		void ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent);
 		
 		void ReadPrefabFile(const fs::path& _path, GameObject* _parent);
 
