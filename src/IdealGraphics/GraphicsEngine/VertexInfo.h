@@ -103,3 +103,32 @@ public:
 	static const int32 InputElementCount = 2;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };
+
+//struct ParticleVertex
+//{
+//	Vector3 Position;
+//	Vector3 Normal;
+//	Vector4 UV0;
+//	Vector4 UV1;
+//	Vector4 UV2;
+//	Vector4 Color;
+//
+//	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+//
+//public:
+//	static const int32 InputElementCount = 6;
+//	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+//};
+
+struct ParticleVertexTest
+{
+	Vector3 Position;
+	Vector3 Normal;
+	Vector2 UV;
+
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+
+public:
+	static const int32 InputElementCount = 3;
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+};

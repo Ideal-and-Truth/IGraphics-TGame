@@ -112,6 +112,20 @@ namespace Ideal
 		virtual void DeleteSprite(std::shared_ptr<Ideal::ISprite>& Sprite) override;
 		virtual std::shared_ptr<Ideal::IText> CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font = L"Tahoma") override;
 		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
+
+		// Shader
+		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") override;
+		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) override;
+
+		// Particle
+		virtual std::shared_ptr<Ideal::IParticleSystem> CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) override;
+		virtual void DeleteParticleSystem(std::shared_ptr<Ideal::IParticleSystem>& ParticleSystem) override;
+
+		// ParticleMaterial
+		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() override;
+		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) override;
+
+	public:
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
 		virtual void SetModelPath(const std::wstring& ModelPath) override { m_modelPath = ModelPath; }

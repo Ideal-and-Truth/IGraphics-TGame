@@ -50,4 +50,5 @@ const CD3DX12_SHADER_BYTECODE& Ideal::D3D12Shader::GetShaderByteCode()
 void Ideal::D3D12Shader::AddShaderData(const std::vector<unsigned char>& byteCodes)
 {
 	m_shaderCodes.insert(m_shaderCodes.end(), byteCodes.begin(), byteCodes.end());
+	m_shaderByteCode = CD3DX12_SHADER_BYTECODE(m_shaderCodes.data(), m_shaderCodes.size());
 }

@@ -174,6 +174,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
+    <ClInclude Include="GraphicsEngine\public\IParticleSystem.h" />
+    <ClInclude Include="GraphicsEngine\public\IShader.h" />
+    <ClInclude Include="Misc\Utils\BitUtils.h" />
     <ClInclude Include="GraphicsEngine\D2D\D2DTextManager.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
@@ -290,6 +294,7 @@
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystem.h" />
     <ClInclude Include="GraphicsEngine\D3D12\RenderPass.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleMaterial.h" />
+    <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMesh.h" />
@@ -304,6 +309,7 @@
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Misc\Utils\BitUtils.cpp" />
     <ClCompile Include="GraphicsEngine\D2D\D2DTextManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">false</ExcludedFromBuild>
@@ -392,6 +398,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystem.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\RenderPass.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleMaterial.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />

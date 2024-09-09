@@ -137,3 +137,12 @@ struct CB_Sprite
 	//float pad0;
 	//float pad1;
 };
+
+//----Particle----//
+struct CB_ParticleSystem
+{
+	float Time;
+
+	float CustomData1[4];
+	float CustomData2[4];
+};

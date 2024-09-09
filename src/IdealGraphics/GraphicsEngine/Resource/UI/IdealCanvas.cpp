@@ -233,8 +233,6 @@ void Ideal::IdealCanvas::CreatePSO(ComPtr<ID3D12Device> Device)
 	Check(Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_rectPSO.GetAddressOf())));
 	return;
 
-
-
 	//m_rectPSO = std::make_shared<Ideal::D3D12PipelineStateObject>();
 	//m_rectPSO->SetInputLayout(SimpleVertex::InputElements, SimpleVertex::InputElementCount);
 	//

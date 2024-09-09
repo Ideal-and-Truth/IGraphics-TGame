@@ -57,6 +57,9 @@ using namespace std;
 #include "GraphicsEngine/public/ISprite.h"
 #include "GraphicsEngine/public/IText.h"
 
+#include "GraphicsEngine/public/IParticleMaterial.h"
+#include "GraphicsEngine/public/IParticleSystem.h"
+
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
 
@@ -239,12 +242,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"MapData/SampleScene/SM_BankJoin.fbx", false);
-		// gRenderer->ConvertAssetToMyFormat(L"Enem/Test/idelTest.fbx", true);
-		// gRenderer->ConvertAnimationAssetToMyFormat(L"EnemyTest/idelTest.fbx");
+		//gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", true);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"EnemyTest/idelTest.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx");
-		
+
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
@@ -281,8 +284,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateMeshObjectAndAnimation
 		//-------------------Create Mesh Object-------------------//
-		
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer= gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
+
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
 		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
 		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 
@@ -290,7 +293,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
 		DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
-		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"MapData/SampleScene/SM_BankJoin");
+		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"EnemyTest/idelTest");
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
@@ -385,7 +388,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
 		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
 		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png");
-		std::shared_ptr<Ideal::ITexture> kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");
+		std::shared_ptr<Ideal::ITexture> kaTexture;// = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");
 		//std::shared_ptr<Ideal::ITexture> normalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
@@ -412,8 +415,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sprite->SetAlpha(0.8f);
 		sprite->SetZ(0.2);
 		// 아래의 값은 기본으로 적용되어 있음. (Set Texture 할 때 Texture의 사이즈로 아래의 작업을 함)
-		sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight()});	
-		
+		sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight() });
+
 		//sprite->SetTextureSize(Vector2(512, 512));
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		//sprite->SetTextureSampleSize(Vector2(2048, 2048));
@@ -443,7 +446,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
 
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
-		 
+
 		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
 		spotLight->SetPosition(Vector3(0.f, 3.f, 3.f));
 		spotLight->SetRange(6.f);
@@ -458,6 +461,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pointLight->SetIntensity(0.f);
 
 #pragma endregion
+
+#pragma region CompileShader
+		// 아래는 셰이더를 컴파일하여 저장한다.
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/TestCustomParticle.hlsl",
+			L"../Shaders/Particle/",
+			L"TestCustomParticle",
+			L"ps_6_3",
+			L"Main",
+			L"../Shaders/Particle/"
+		);
+		// 아래는 컴파일 된 셰이더를 가져온다.
+		std::shared_ptr<Ideal::IShader> particleCustomShader = gRenderer->CreateAndLoadParticleShader(L"TestCustomParticle");
+#pragma endregion
+
+#pragma region CreateParticle
+		//------------------------Create Particle---------------------------//
+		//std::shared_ptr<Ideal::IParticleMaterial> particleMaterial = gRenderer->CreateParticleMaterial();
+		//particleMaterial->SetShader(particleCustomShader);
+		//
+		//std::shared_ptr<Ideal::ITexture> particleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Slash_1_Slashfx.png");
+		//particleMaterial->SetTexture(particleTexture);
+		//
+		//std::shared_ptr<Ideal::IParticleSystem> particleSystem = gRenderer->CreateParticleSystem(particleMaterial);
+
+#pragma endregion
+
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -530,6 +560,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					if (!kaMaterial)
 					{
+						kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");;
 						kaMaterial = gRenderer->CreateMaterial();
 						kaMaterial->SetBaseMap(kaTexture);
 						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
@@ -546,10 +577,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//ka->SetTransformMatrix(mat2);
 					//tX++;
 					//
-					//std::shared_ptr<Ideal::IMeshObject> mesh;
-					//mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+					for (int i = 0; i < 10; i++)
+					{
+						std::shared_ptr<Ideal::IMeshObject> mesh;
+						mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+						meshes.push_back(mesh);
+						if (i == 0)
+						{
+							mesh->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+						}
+						if (i == 1)
+						{
+							mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(10, 0, 0)));
+							//mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
+						}
+
+					}
 					//
-					//meshes.push_back(mesh);
 					//mesh->SetTransformMatrix(mat2);
 					//tX++;
 				}
@@ -583,7 +627,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('X') & 0x8000)
 				{
-					
+
 					if (tX < 1)
 					{
 						std::shared_ptr<Ideal::IMeshObject> mesh;
@@ -666,8 +710,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//{
 						//	//SkinnedMeshObjectBoneInfoTest(playerRe);
 						//SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
-						
-						if(DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
+
+						if (DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
 						//SkinnedMeshObjectBoneInfoTest(DebugPlayer2);
 						//if (sprite)
@@ -697,7 +741,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			gRenderer->DeleteMeshObject(meshes[i]);
 			meshes[i].reset();
-		} 
+		}
 		meshes.clear();
 
 		//gRenderer->DeleteMeshObject(mesh);

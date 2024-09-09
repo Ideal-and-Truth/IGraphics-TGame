@@ -90,4 +90,18 @@ namespace Ideal
 			};
 		}
 	}
+
+	namespace ParticleSystemRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				CBV_Global = 0,
+				CBV_Transform,
+				CBV_ParticleSystemData,
+				Count
+			};
+		}
+	}
 }

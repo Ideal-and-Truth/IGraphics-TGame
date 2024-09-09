@@ -42,6 +42,10 @@
 #include "GraphicsEngine/Resource/UI/IdealCanvas.h"
 #include "GraphicsEngine/Resource/UI/IdealText.h"
 
+#include "GraphicsEngine/Resource/Particle/ParticleSystemManager.h"
+#include "GraphicsEngine/Resource/Particle/ParticleSystem.h"
+#include "GraphicsEngine/Resource/Particle/ParticleMaterial.h"
+
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
@@ -371,6 +375,9 @@ finishAdapter:
 	CreateUIDescriptorHeap();
 	CreateCanvas();
 
+	//------------------Particle System Manager-------------------//
+	CreateParticleSystemManager();
+
 	//---------------Create Managers---------------//
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
 
@@ -696,7 +703,7 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 	if (m_isEditor)
 	{
 		//auto r = m_resolutionOptions[m_displayResolutionIndex];
-		CreateEditorRTV(Width,Height);
+		CreateEditorRTV(Width, Height);
 	}
 
 	// ray tracing / UI //
@@ -756,7 +763,7 @@ void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 			fullScreenWindowRect.right,
 			fullScreenWindowRect.bottom,
 			SWP_FRAMECHANGED | SWP_NOACTIVATE);
-		
+
 		ShowWindow(m_hwnd, SW_MAXIMIZE);
 	}
 
@@ -1088,8 +1095,65 @@ std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 
 
 void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
 {
-	if(Text)
+	if (Text)
 		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
+}
+
+void Ideal::D3D12RayTracingRenderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/)
+{
+	ComPtr<IDxcBlob> blob;
+	// TODO : 쉐이더를 컴파일 해야 한다.
+	std::shared_ptr<Ideal::ShaderManager> shaderManager = std::make_shared<Ideal::ShaderManager>();
+	shaderManager->Init();
+	shaderManager->AddIncludeDirectories(IncludeFilePath);
+	shaderManager->CompileShaderAndSave(
+		FilePath.c_str(),
+		SavePath,
+		SaveName.c_str(),
+		ShaderVersion,
+		blob,
+		EntryPoint, //entry
+		true
+	);
+}
+
+std::shared_ptr<Ideal::IShader> Ideal::D3D12RayTracingRenderer::CreateAndLoadParticleShader(const std::wstring& Name)
+{
+	std::shared_ptr<Ideal::ShaderManager> shaderManager = std::make_shared<Ideal::ShaderManager>();
+	std::shared_ptr<Ideal::D3D12Shader> shader = std::make_shared<Ideal::D3D12Shader>();
+	shaderManager->Init();
+
+	// TODO : 경로와 Name을 더해주어야 한다.
+	std::wstring FilePath = L"../Shaders/Particle/" + Name + L".shader";
+
+	shaderManager->LoadShaderFile(FilePath, shader);
+	return std::static_pointer_cast<Ideal::IShader>(shader);
+}
+
+std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial)
+{
+	std::shared_ptr<Ideal::ParticleSystem> NewParticleSystem = std::make_shared<Ideal::ParticleSystem>();
+	std::shared_ptr<Ideal::ParticleMaterial> GetParticleMaterial = std::static_pointer_cast<Ideal::ParticleMaterial>(ParticleMaterial);
+	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), m_particleSystemManager->GetVS(), GetParticleMaterial);
+
+
+	return std::static_pointer_cast<Ideal::IParticleSystem>(NewParticleSystem);
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteParticleSystem(std::shared_ptr<Ideal::IParticleSystem>& ParticleSystem)
+{
+
+}
+
+std::shared_ptr<Ideal::IParticleMaterial> Ideal::D3D12RayTracingRenderer::CreateParticleMaterial()
+{
+	std::shared_ptr<Ideal::ParticleMaterial> NewParticleMaterial = std::make_shared<Ideal::ParticleMaterial>();
+	return std::static_pointer_cast<Ideal::IParticleMaterial>(NewParticleMaterial);
+}
+
+void Ideal::D3D12RayTracingRenderer::DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial)
+{
+
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
@@ -1488,7 +1552,7 @@ void Ideal::D3D12RayTracingRenderer::CreatePostScreenPipelineState()
 	{
 		MyMessageBox((char*)error->GetBufferPointer());
 	}
-	
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { SimpleVertex::InputElements, SimpleVertex::InputElementCount };
 	psoDesc.pRootSignature = m_postScreenRootSignature.Get();
@@ -1806,7 +1870,7 @@ void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		m_mainDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
-		m_mainDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
+		m_mainDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_UI_DESCRIPTOR_COUNT);
 	}
 }
 
@@ -1874,6 +1938,26 @@ void Ideal::D3D12RayTracingRenderer::UpdateTextureWithImage(std::shared_ptr<Idea
 	Texture->SetUpdated();
 }
 
+void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
+{
+	m_particleSystemManager = std::make_shared<Ideal::ParticleSystemManager>();
+
+	//---VertexShader---//
+	// TEMP: 일단 그냥 여기서 컴파일 한다.
+	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	auto shader = CreateAndLoadParticleShader(L"DefaultParticleVS");
+
+	//---Init---//
+	m_particleSystemManager->Init(m_device, std::static_pointer_cast<Ideal::D3D12Shader>(shader));
+}
+
+void Ideal::D3D12RayTracingRenderer::DrawParticle()
+{
+
+}
+
 void Ideal::D3D12RayTracingRenderer::InitImGui()
 {
 	IMGUI_CHECKVERSION();
@@ -1909,10 +1993,10 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 
 	float viewWidthRatio = static_cast<float>(m_width) / windowSize.x;
 	float viewHeightRatio = static_cast<float>(m_height) / windowSize.y;
-	
+
 	float x = 1.0f;
 	float y = 1.0f;
-	
+
 	if (viewWidthRatio < viewHeightRatio)
 	{
 		// The scaled image's height will fit to the viewport's height and 
@@ -1927,7 +2011,7 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 	}
 	size.x = x * windowSize.x;
 	size.y = y * windowSize.y;
-	
+
 	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
 	ImGui::End();
 }

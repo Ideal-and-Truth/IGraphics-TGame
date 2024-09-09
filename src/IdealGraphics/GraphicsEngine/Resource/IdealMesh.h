@@ -44,7 +44,7 @@ namespace Ideal
 		virtual std::weak_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
 		virtual std::string GetFBXMaterialName() override { return m_materialName; }
 	public:
-		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
+		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager, bool Particle = false)
 		{
 			//-------------VB-------------//
 			m_vertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
@@ -57,6 +57,12 @@ namespace Ideal
 				ResourceManager->CreateIndexBuffer(m_indexBuffer, m_indices);
 			}
 			//------------Clear-----------//
+			//// 2024.09.05 Particle일 때는 Vertex를 지우지 않는다.
+			//// -> Custom Data로 채워넣기 위함
+			//if (!Particle)
+			//{
+			//	m_vertices.clear();
+			//}
 			m_vertices.clear();
 			m_indices.clear();
 
@@ -76,6 +82,10 @@ namespace Ideal
 		void AddVertices(const std::vector<TVertexType>& vertices)
 		{
 			m_vertices.insert(m_vertices.end(), vertices.begin(), vertices.end());
+		}
+		std::vector<TVertexType>& GetVerticesRef()
+		{
+			return m_vertices;
 		}
 		void AddIndices(const std::vector<uint32>& indices)
 		{
