@@ -103,11 +103,16 @@ namespace TypeUI
 			Vector3 delta;
 
 			Vector3 temp = _val.ToEuler();
+
+			temp.x = temp.x * RadToDeg;
+			temp.y = temp.y * RadToDeg;
+			temp.z = temp.z * RadToDeg;
+
 			value[0] = temp.x;
 			value[1] = temp.y;
 			value[2] = temp.z;
 
-			bool isSelect = ImGui::DragFloat3(_name, value, 0.01f);
+			bool isSelect = ImGui::DragFloat3(_name, value, 0.1f);
 			if (isSelect)
 			{
 				delta = {
@@ -116,6 +121,11 @@ namespace TypeUI
 					temp.z - value[2]
 				};
 			}
+
+			delta.x = delta.x * DegToRad;
+			delta.y = delta.y * DegToRad;
+			delta.z = delta.z * DegToRad;
+
 			_val = _val * Quaternion::CreateFromYawPitchRoll(delta);
 			return isSelect;
 		}

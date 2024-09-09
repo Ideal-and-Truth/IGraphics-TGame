@@ -380,6 +380,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	{
 		m_mapEntity[i] = std::make_shared<Entity>(m_managers.lock());
 		int32 parent = file->Read<int32>();
+		std::string name = file->Read<std::string>();
+		m_mapEntity[i]->m_name = name;
 		if (parent != -1)
 		{
 			m_mapEntity[parent]->AddChild(m_mapEntity[i]);

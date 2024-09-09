@@ -334,6 +334,8 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParsePrefabNode(const YAML::
 	// get transform data
 	GO->m_localTM = GetPrefabMatrix(_node["m_Modification"]["m_Modifications"]);
 	GetPrefabMatarial(GO, _node["m_Modification"]["m_Modifications"]);
+
+
 	const std::string& prefabGuid = _node["m_SourcePrefab"]["guid"].as<std::string>();
 	GO->m_guid = prefabGuid;
 
@@ -351,7 +353,7 @@ Truth::UnityParser::GameObject* Truth::UnityParser::ParsePrefabNode(const YAML::
 		}
 
 
-			
+
 		return GO;
 	}
 	return GO;
@@ -361,13 +363,13 @@ void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::N
 {
 	// get component list
 	YAML::Node comList = _node["m_Component"];
+	_owner->m_name = _node["m_Name"].as<std::string>();
 	for (YAML::iterator it = comList.begin(); it != comList.end(); ++it)
 	{
 		// get component list
 		const YAML::Node& comp = *it;
 		std::string compFid = comp["component"]["fileID"].as<std::string>();
 
-		_owner->m_name;
 
 		/// find box collider
 		const YAML::Node& collider = m_nodeMap[_guid][compFid]->m_node["BoxCollider"];
@@ -521,6 +523,11 @@ void Truth::UnityParser::GetPrefabMatarial(GameObject* _GO, const YAML::Node& _n
 				continue;
 			}
 			ParseMatarialFile(_GO, matGuid);
+		}
+
+		else if (propertyPath == "m_Name")
+		{
+			_GO->m_name = (*itr)["value"].as<std::string>();
 		}
 	}
 
@@ -689,6 +696,7 @@ void Truth::UnityParser::WriteData()
 	for (auto g : m_gameObjects)
 	{
 		file->Write<int32>(g->m_parent);
+		file->Write<std::string>(g->m_name);
 		WriteLocalTMData(file, g);
 		WriteColliderData(file, g);
 		WriteMeshData(file, g);
