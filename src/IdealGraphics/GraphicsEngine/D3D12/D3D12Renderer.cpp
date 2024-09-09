@@ -589,6 +589,36 @@ void Ideal::D3D12Renderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
 
 }
 
+void Ideal::D3D12Renderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/)
+{
+
+}
+
+std::shared_ptr<Ideal::IShader> Ideal::D3D12Renderer::CreateAndLoadParticleShader(const std::wstring& Name)
+{
+	return nullptr;
+}
+
+std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12Renderer::CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial)
+{
+	return nullptr;
+}
+
+void Ideal::D3D12Renderer::DeleteParticleSystem(std::shared_ptr<Ideal::IParticleSystem>& ParticleSystem)
+{
+
+}
+
+std::shared_ptr<Ideal::IParticleMaterial> Ideal::D3D12Renderer::CreateParticleMaterial()
+{
+	return nullptr;
+}
+
+void Ideal::D3D12Renderer::DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial)
+{
+
+}
+
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter/* = false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();

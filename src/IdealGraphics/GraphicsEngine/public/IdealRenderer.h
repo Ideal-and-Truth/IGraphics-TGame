@@ -19,6 +19,9 @@ namespace Ideal
 	class IMesh;
 	class ISprite;
 	class IText;
+	class IShader;
+	class IParticleSystem;
+	class IParticleMaterial;
 }
 
 namespace Ideal
@@ -94,6 +97,22 @@ namespace Ideal
 		// Text
 		virtual std::shared_ptr<Ideal::IText> CreateText(unsigned int Width, unsigned int Height, float FontSize, std::wstring Font = L"Tahoma") abstract;
 		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) abstract;
+
+		// Shader
+		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") abstract;	// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
+		// 이름으로 컴파일 된 셰이더를 불러와 Shader 객체를 반환한다.
+		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) abstract;	// 이름을 파일 경로로 할까
+
+		// Particle
+		virtual std::shared_ptr<Ideal::IParticleSystem> CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) abstract;
+		virtual void DeleteParticleSystem(std::shared_ptr<Ideal::IParticleSystem>& ParticleSystem) abstract;
+
+		// ParticleMaterial
+		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() abstract;
+		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) abstract;
+
+		// IMesh
+		// virtual std::shared_ptr<Ideal::IMesh> CreateMesh()
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;

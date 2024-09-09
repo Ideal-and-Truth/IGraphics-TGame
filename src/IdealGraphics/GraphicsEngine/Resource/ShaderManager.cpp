@@ -129,7 +129,6 @@ void ShaderManager::CompileShader(const std::wstring& FilePath, const std::wstri
 
 void Ideal::ShaderManager::CompileShaderAndSave(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderModel, ComPtr<IDxcBlob>& OutBlob, const std::wstring& EntryPoint /*= L""*/, bool HasEntry /*= false*/)
 {
-
 	if (HasEntry)
 		CompileShader(FilePath, ShaderModel, EntryPoint, OutBlob);
 	else

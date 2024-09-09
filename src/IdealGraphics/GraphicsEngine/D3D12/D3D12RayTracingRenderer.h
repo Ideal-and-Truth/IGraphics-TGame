@@ -57,6 +57,10 @@ namespace Ideal
 	class IdealCanvas;
 	class IdealSprite;
 
+	class ParticleSystemManager;
+	class ParticleSystem;
+	class ParticleMaterial;
+
 	struct ConstantBufferContainer;
 	// Manager
 	class D3D12ConstantBufferPool;
@@ -72,7 +76,7 @@ namespace Ideal
 	class IRenderScene;
 	class IText;
 	class ISprite;
-	
+
 
 	// TEST : DELETE
 	template<typename>
@@ -101,8 +105,8 @@ namespace Ideal
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
-		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 1024;
-		static const uint32	MAX_DESCRIPTOR_COUNT = 4096;
+		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 8192;
+		static const uint32	MAX_DESCRIPTOR_COUNT = 16384;
 		static const uint32	MAX_UI_DESCRIPTOR_COUNT = 256;
 		static const uint32 MAX_EDITOR_SRV_COUNT = 256;
 
@@ -160,6 +164,18 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IText> CreateText(uint32 Width, uint32 Height, float FontSize, std::wstring Font = L"Tahoma") override;
 		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
 
+		// Shader
+		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") override;	// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
+		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) override;
+
+		// Particle
+		virtual std::shared_ptr<Ideal::IParticleSystem> CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) override;
+		virtual void DeleteParticleSystem(std::shared_ptr<Ideal::IParticleSystem>& ParticleSystem) override;
+
+		// ParticleMaterial
+		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() override;
+		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) override;
+
 	private:
 		void CreateCommandlists();
 		void CreatePools();
@@ -192,7 +208,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_descriptorHeaps[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> m_cbAllocator[MAX_PENDING_FRAME_COUNT] = {};
 		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_BLASInstancePool[MAX_PENDING_FRAME_COUNT] = {};
-		
+
 	private:
 		void CreatePostScreenRootSignature();
 		void CreatePostScreenPipelineState();
@@ -323,6 +339,13 @@ namespace Ideal
 		uint32 m_textheight = 100;
 
 		void UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight);
+
+		// Particle
+	private:
+		void CreateParticleSystemManager();
+		void DrawParticle();
+
+		std::shared_ptr<Ideal::ParticleSystemManager> m_particleSystemManager;
 
 		// EDITOR 
 	private:
