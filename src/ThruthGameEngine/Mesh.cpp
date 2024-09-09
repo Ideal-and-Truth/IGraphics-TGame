@@ -50,12 +50,17 @@ Truth::Mesh::~Mesh()
 /// <param name="_path">°æ·Î</param>
 void Truth::Mesh::SetMesh(std::wstring _path)
 {
+	if (m_path == _path)
+	{
+		return;
+	}
+
 	m_path = _path;
 
-// 	if (m_mesh != nullptr)
-// 	{
-// 		DeleteMesh();
-// 	}
+	if (m_mesh != nullptr)
+	{
+		DeleteMesh();
+	}
 
 	m_mesh = m_managers.lock()->Graphics()->CreateMesh(_path);
 
@@ -72,7 +77,22 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 
 void Truth::Mesh::SetMesh()
 {
-	SetMesh(m_path);
+	if (m_mesh != nullptr)
+	{
+		return;
+	}
+
+	m_mesh = m_managers.lock()->Graphics()->CreateMesh(m_path);
+
+	uint32 meshSize = m_mesh->GetMeshesSize();
+	m_subMesh.clear();
+	m_subMesh.resize(meshSize);
+	m_mat.clear();
+	for (uint32 i = 0; i < meshSize; i++)
+	{
+		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
+		m_mat.push_back(m_subMesh[i]->GetMaterialObject().lock());
+	}
 }
 
 void Truth::Mesh::SetRenderable(bool _isRenderable)
@@ -81,7 +101,7 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 
 void Truth::Mesh::Initalize()
 {
-	SetMesh(m_path);
+	SetMesh();
 }
 
 void Truth::Mesh::ApplyTransform()
