@@ -125,6 +125,9 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() override;
 		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) override;
 
+		// ParticleMesh
+		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) override;
+
 	public:
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
@@ -133,6 +136,7 @@ namespace Ideal
 
 		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) override;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
+		virtual void ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale = false, Vector3 Scale = Vector3(1.f)) override;
 
 		//--------ImGui--------//
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;

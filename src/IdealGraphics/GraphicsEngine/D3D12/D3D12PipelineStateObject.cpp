@@ -81,5 +81,7 @@ void Ideal::D3D12PipelineStateObject::Create(ID3D12Device* Device)
 	//m_psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	m_psoDesc.SampleDesc.Count = 1;
 
-	Check(Device->CreateGraphicsPipelineState(&m_psoDesc, IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf())));
+	//Check(Device->CreateGraphicsPipelineState(&m_psoDesc, IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf())));
+	HRESULT hr = Device->CreateGraphicsPipelineState(&m_psoDesc, IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf()));
+	Check(hr);
 }

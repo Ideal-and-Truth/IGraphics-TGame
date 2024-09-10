@@ -195,6 +195,7 @@
     <ClInclude Include="GraphicsEngine\public\IParticleSystem.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.h" />
+    <ClInclude Include="GraphicsEngine\public\IParticleMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">

@@ -44,12 +44,14 @@ VSOutput Main(VSInput input)
     VSOutput output;
     
     float4 worldPos = mul(float4(input.Pos,1), World);
-    worldPos = mul(worldPos, ViewProj);
-    
     output.Pos = worldPos.xyz;
+    worldPos = mul(worldPos, ViewProj);
+    output.PosH = worldPos;
     output.Normal = normalize(mul(input.Normal, (float3x3)World));
-    output.UV = input.UV;
-
+    //output.UV = input.UV;
+    //output.Pos = float3(0,0,0);
+    //output.Normal = float3(1,0,0);
+    //output.UV = input.UV;
     return output;
 }
 #endif

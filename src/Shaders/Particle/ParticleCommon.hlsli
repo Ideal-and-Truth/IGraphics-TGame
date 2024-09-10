@@ -1,5 +1,5 @@
-#ifndef PARTICLE_COMMON_HLSL
-#define PARTICLE_COMMON_HLSL
+//#ifndef PARTICLE_COMMON_HLSLI
+//#define PARTICLE_COMMON_HLSLI
 
 cbuffer Global : register(b0)
 {
@@ -16,9 +16,10 @@ cbuffer Transform : register(b1)
 cbuffer ParticleSystemData : register(b2)
 {
     // Time
-    float g_Time;
     float4 g_CustomData1;
     float4 g_CustomData2;
+    float g_Time;
+    float3 pad;
 };
 
 // Noise Texture?
@@ -32,9 +33,10 @@ struct VSInput
 
 struct VSOutput
 {
+    float4 PosH : SV_POSITION;
     float3 Pos : POSITION;
     float3 Normal : NORMAL;
     float2 UV : TEXCOORD;
 };
 
-#endif
+//#endif

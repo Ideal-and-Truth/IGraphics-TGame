@@ -251,6 +251,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
+		//gRenderer->ConvertAssetToMyFormat(L"0_Particle/Slash.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
@@ -463,13 +464,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 
 #pragma region CompileShader
+		//------------------------Compile Shader---------------------------//
 		// 아래는 셰이더를 컴파일하여 저장한다.
 		gRenderer->CompileShader(
 			L"../Shaders/Particle/TestCustomParticle.hlsl",
 			L"../Shaders/Particle/",
 			L"TestCustomParticle",
 			L"ps_6_3",
-			L"Main",
+			L"PSMain",
 			L"../Shaders/Particle/"
 		);
 		// 아래는 컴파일 된 셰이더를 가져온다.
@@ -478,13 +480,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateParticle
 		//------------------------Create Particle---------------------------//
-		//std::shared_ptr<Ideal::IParticleMaterial> particleMaterial = gRenderer->CreateParticleMaterial();
-		//particleMaterial->SetShader(particleCustomShader);
-		//
-		//std::shared_ptr<Ideal::ITexture> particleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Slash_1_Slashfx.png");
-		//particleMaterial->SetTexture(particleTexture);
-		//
-		//std::shared_ptr<Ideal::IParticleSystem> particleSystem = gRenderer->CreateParticleSystem(particleMaterial);
+		std::shared_ptr<Ideal::IParticleMaterial> particleMaterial = gRenderer->CreateParticleMaterial();
+		particleMaterial->SetShader(particleCustomShader);
+
+		std::shared_ptr<Ideal::ITexture> particleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Slash_1_Slashfx.png");
+		particleMaterial->SetTexture(particleTexture);
+
+		std::shared_ptr<Ideal::IParticleSystem> particleSystem = gRenderer->CreateParticleSystem(particleMaterial);
+		
+		//std::shared_ptr<Ideal::IMeshObject> ParticleMeshTest = gRenderer->CreateStaticMeshObject(L"0_Particle/Slash");
+		//ParticleMeshTest->SetTransformMatrix(Matrix::CreateScale(100.f));
+
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Slash.fbx", true, Vector3(100.f));
+		std::shared_ptr<Ideal::IMesh> particleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Slash");
+
+		particleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		particleSystem->SetRenderMesh(particleMesh);
 
 #pragma endregion
 

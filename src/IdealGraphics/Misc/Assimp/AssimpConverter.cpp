@@ -240,6 +240,14 @@ void AssimpConverter::ExportVertexPositionData(const std::wstring& savePath)
 	WriteVertexPositionFile(finalPath);
 }
 
+void AssimpConverter::ExportParticleData(std::wstring savePath, bool SetScale /*= false*/, Vector3 Scale /*= Vector3(1.f)*/)
+{
+	ReadParticleModelData(m_scene->mRootNode, -1, -1, SetScale, Scale);
+	// Write
+	std::wstring finalPath = m_modelPath + savePath + L".pmesh";
+	WriteParticleModelData(finalPath);
+}
+
 std::string AssimpConverter::WriteTexture(std::string SaveFolder, std::string File)
 {
 	std::wstring fileP = StringUtils::ConvertStringToWString(File);
@@ -870,6 +878,96 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parent
 		}
 		mesh->parentIndexIfHaveNotBone = parentBone;
 		m_skinnedMeshes.push_back(mesh);
+	}
+}
+
+void AssimpConverter::ReadParticleModelData(aiNode* node, int32 index, int32 parent, bool SetScale, Vector3 Scale /*= Vector3(1.f)*/)
+{
+	std::shared_ptr<AssimpConvert::ParticleMesh> mesh = std::make_shared<AssimpConvert::ParticleMesh>();
+	mesh->name = node->mName.C_Str();
+	
+	// 하나밖에 없다고 가정한다.
+	const aiMesh* srcMesh = m_scene->mMeshes[0];
+
+	// Vertex
+	for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
+	{
+		ParticleVertexTest vertex;
+		{
+			memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
+			
+			if (SetScale)
+			{
+				Vector3 result = Vector3::Transform(vertex.Position, Matrix::CreateScale(Scale));
+				vertex.Position = result;
+			}
+		}
+
+		// UV
+		if (srcMesh->HasTextureCoords(0))
+		{
+			memcpy(&vertex.UV, &srcMesh->mTextureCoords[0][v], sizeof(Vector2));
+		}
+
+		// Normal
+		if (srcMesh->HasNormals())
+		{
+			memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
+			if (SetScale)
+			{
+				Vector3 normal = Vector3::TransformNormal(vertex.Normal, Matrix::CreateScale(Scale));
+				normal.Normalize();
+				vertex.Normal = normal;
+			}
+		}
+
+		//// Tangent
+		//if (srcMesh->HasTangentsAndBitangents())
+		//{
+		//	memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
+		//	if (SetScale)
+		//	{
+		//		Vector3 tangent = Vector3::TransformNormal(vertex.Tangent, Matrix::CreateScale(Scale));
+		//		vertex.Tangent = tangent;
+		//	}
+		//}
+
+		mesh->vertices.push_back(vertex);
+	}
+
+	// Index
+	for (uint32 f = 0; f < srcMesh->mNumFaces; ++f)
+	{
+		aiFace& face = srcMesh->mFaces[f];
+
+		for (uint32 k = 0; k < face.mNumIndices; ++k)
+		{
+			mesh->indices.push_back(face.mIndices[k]);
+		}
+	}
+	m_particleMeshes.push_back(mesh);
+}
+
+void AssimpConverter::WriteParticleModelData(const std::wstring& filePath)
+{
+	auto path = std::filesystem::path(filePath);
+
+	std::filesystem::create_directories(path.parent_path());
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(filePath, FileMode::Write);
+
+	for (auto& mesh : m_particleMeshes)
+	{
+		file->Write<std::string>(mesh->name);
+
+		// vertex
+		file->Write<uint32>((uint32)mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(ParticleVertexTest) * (uint32)mesh->vertices.size());
+
+		// index
+		file->Write<uint32>((uint32)mesh->indices.size());
+		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
 	}
 }
 

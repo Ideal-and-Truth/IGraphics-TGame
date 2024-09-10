@@ -175,6 +175,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
+    <ClInclude Include="GraphicsEngine\public\IParticleMesh.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleSystem.h" />
     <ClInclude Include="GraphicsEngine\public\IShader.h" />
     <ClInclude Include="Misc\Utils\BitUtils.h" />

@@ -3,7 +3,7 @@
 
 #include "ParticleCommon.hlsli" // necessary
 
-float4 Main(VSOutput input) : SV_TARGET
+float4 PSMain(VSOutput input) : SV_TARGET
 {
     VSOutput output;
     output.Pos = input.Pos;    // Pos, Normal 등 필요한 값 설정

@@ -2,6 +2,10 @@
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include <d3d12.h>
 #include <d3dx12.h>
+#include "GraphicsEngine/Resource/Particle/ParticleSystem.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 Ideal::ParticleSystemManager::ParticleSystemManager()
 {
@@ -31,6 +35,7 @@ std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetVS()
 
 void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Device)
 {
+	//CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::ParticleSystemRootSignature::Slot::Count];
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::ParticleSystemRootSignature::Slot::Count];
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Transform].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
@@ -54,7 +59,7 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 	HRESULT hr = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error);
 	Check(hr, L"Failed to serialize root signature in particle system manager");
 
-	hr = Device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+	hr = Device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(m_rootSignature.GetAddressOf()));
 	Check(hr, L"Failed to create RootSignature in particle system manager");
 
 	m_rootSignature->SetName(L"ParticleSystemRootSignature");
@@ -67,10 +72,29 @@ void Ideal::ParticleSystemManager::SetVS(std::shared_ptr<Ideal::D3D12Shader> Sha
 
 void Ideal::ParticleSystemManager::AddParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)
 {
-	
+	m_particles.push_back(ParticleSystem);
 }
 
 void Ideal::ParticleSystemManager::DeleteParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)
 {
+	// TODO: Delete
+}
 
+void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData)
+{
+	/// Bind To Shader
+	{
+		// Global Data 
+		auto cb0 = CBPool->Allocate(Device.Get(), sizeof(CB_Global));
+		memcpy(cb0->SystemMemAddr, CB_GlobalData, sizeof(CB_Global));
+		auto handle0 = DescriptorHeap->Allocate();
+		Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), cb0->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_Global, handle0.GetGpuHandle());
+	}
+
+	//for (auto& p : m_particles)
+	//{
+	//	// TODO: DRAW
+	//	p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
+	//}
 }

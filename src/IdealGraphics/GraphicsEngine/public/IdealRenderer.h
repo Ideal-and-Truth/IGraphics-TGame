@@ -111,8 +111,8 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() abstract;
 		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) abstract;
 
-		// IMesh
-		// virtual std::shared_ptr<Ideal::IMesh> CreateMesh()
+		// ParticleMesh
+		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
@@ -121,6 +121,8 @@ namespace Ideal
 
 		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) abstract;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) abstract;
+
+		virtual void ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale = false, DirectX::SimpleMath::Vector3 Scale = DirectX::SimpleMath::Vector3(1.f)) abstract;
 
 	public:
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) abstract;
