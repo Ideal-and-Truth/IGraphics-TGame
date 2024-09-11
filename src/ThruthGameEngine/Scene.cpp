@@ -342,33 +342,6 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		return;
 	}
 
-	/// read matarial data
-	std::shared_ptr<FileUtils> matfile = std::make_shared<FileUtils>();
-	matfile->Open(mapPath + L"Material.mats", FileMode::Read);
-	size_t matCount = matfile->Read<size_t>();
-
-	for (size_t i = 0; i < matCount; ++i)
-	{
-		std::string matGuid = matfile->Read<std::string>();
-		std::string matName = matfile->Read<std::string>();
-		std::filesystem::path albedo(matfile->Read<std::string>());
-		std::filesystem::path normal(matfile->Read<std::string>());
-		std::filesystem::path metalicRoughness(matfile->Read<std::string>());
-
-		std::shared_ptr<GraphicsManager> gp = m_managers.lock()->Graphics();
-
-		std::shared_ptr<Texture> albedoTexture = gp->CreateTexture(albedo);
-		std::shared_ptr<Texture> normalTexture = gp->CreateTexture(normal);
-		std::shared_ptr<Texture> metalicRoughnessTexture = gp->CreateTexture(metalicRoughness);
-
-		std::shared_ptr<Material> mat = gp->CraeteMatarial(matName);
-
-		mat->m_baseMap = albedoTexture;
-		mat->m_normalMap = normalTexture;
-		mat->m_maskMap = metalicRoughnessTexture;
-		mat->SetTexture();
-	}
-
 	/// read map data
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
 	file->Open(mapPath + L"Data.map", FileMode::Read);
@@ -412,7 +385,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 			case 1:
 			{
-				coll = std::make_shared<BoxCollider>(size, center);
+				coll = std::make_shared<BoxCollider>(center, size);
 				break;
 			}
 			// 			case 2:
@@ -452,11 +425,11 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
-			for (size_t j = 0; j < matCount; ++j)
-			{
-				std::string matName = file->Read<std::string>();
-				mesh->SetMaterialByIndex(j, matName);
-			}
+// 			for (size_t j = 0; j < matCount; ++j)
+// 			{
+// 				std::string matName = file->Read<std::string>();
+// 				mesh->SetMaterialByIndex(j, matName);
+// 			}
 		}
 
 		// read Light Data

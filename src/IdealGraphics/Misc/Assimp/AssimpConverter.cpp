@@ -448,7 +448,7 @@ void AssimpConverter::WriteSkinnedModelFile(const std::wstring& filePath)
 	}
 }
 
-void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, bool convertCenter /*= false*/)
+void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, bool isNegative /*= false*/)
 {
 	std::shared_ptr<AssimpConvert::Bone> bone = std::make_shared<AssimpConvert::Bone>();
 	bone->index = index;
@@ -467,17 +467,22 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, boo
 
 	m_bones.push_back(bone);
 
+	Vector3 scale;
+	bone->transform.Decompose(scale, Quaternion(), Vector3());
+	if (scale.x < 0)
+	{
+		bone->isNegative = true;
+	}
 	// Local Transform
 	bone->transform = bone->transform * matParent;
-	Vector3 scale;
 
-	bone->transform.Decompose(scale, Quaternion(), Vector3());
+	isNegative = bone->isNegative != isNegative;
 
-	ReadMeshData(node, index, scale, convertCenter);
+	ReadMeshData(node, index, scale, isNegative);
 
 	for (uint32 i = 0; i < node->mNumChildren; ++i)
 	{
-		ReadModelData(node->mChildren[i], (uint32)m_bones.size(), index);
+		ReadModelData(node->mChildren[i], (uint32)m_bones.size(), index, isNegative);
 	}
 }
 
@@ -727,7 +732,7 @@ void AssimpConverter::ReadSkinData()
 	}
 }
 
-void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool convertCenter /*= false*/)
+void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool isNegative /*= false*/)
 {
 	// 마지막 노드는 정보를 들고 있다.
 	if (node->mNumMeshes < 1)
@@ -800,7 +805,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 				mesh->indices.push_back(face.mIndices[k]);
 			}
 		}
-		if (scale.x < 0)
+		if (isNegative)
 		{
 			for (uint32 k = 0; k < mesh->indices.size(); k += 3)
 			{

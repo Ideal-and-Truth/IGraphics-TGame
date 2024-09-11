@@ -115,11 +115,13 @@ namespace Truth
 		std::map<std::string, std::map<std::string, std::vector<UnityNodeFormat*>>> m_classMap;
 		// guid, matarialdata
 		std::map<std::string, MatarialData> m_matarialMap;
+		std::map<std::string, MatarialData> m_copiedMatarialMap;
 
 		const fs::path m_defaultPath = "../Resources/MapData/";
 		const fs::path m_assetPath = "../Resources/Assets/MapData/";
 		const fs::path m_modelPath = "../Resources/Models/MapData/";
 		const fs::path m_texturePath = "../Resources/Textures/MapData/";
+		const fs::path m_matSavePath = "../Resources/Matarial/";
 		const fs::path m_debugCubePath = "DebugObject/debugCube";
 		fs::path m_sceneName;
 		
@@ -137,6 +139,8 @@ namespace Truth
 		void ParseUnityFile(const std::string& _path);
 
 		void Reset();
+
+		void ParseMatarialData();
 
 	private:
 		void ParseFile(fs::path& _path);
@@ -162,6 +166,7 @@ namespace Truth
 		void ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxPath);
 
 		void ParseMatarialFile(GameObject* _GO, const std::string& _matGuid);
+		void ParseOnlyMatarialFile(const fs::path& _matGuid);
 
 		void WriteMaterialData();
 

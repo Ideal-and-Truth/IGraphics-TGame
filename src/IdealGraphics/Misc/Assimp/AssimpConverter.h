@@ -45,7 +45,7 @@ private:
 	void WriteMaterialData(std::wstring FilePath);
 	void WriteModelFile(const std::wstring& filePath);
 	void WriteSkinnedModelFile(const std::wstring& filePath);
-	void ReadModelData(aiNode* node, int32 index, int32 parent, bool convertCenter = false);
+	void ReadModelData(aiNode* node, int32 index, int32 parent, bool isNegative = false);
 	void ReadSkinnedModelData(aiNode* node, int32 index, int32 parent, bool readMeshData = true, bool converCenter = false);
 	void ReadMaterialData();
 	void ReadSkinData();

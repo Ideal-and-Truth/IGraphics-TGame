@@ -35,6 +35,8 @@ namespace AssimpConvert
 		int32 parent = -1;
 		Matrix transform;
 		Matrix offset;
+
+		bool isNegative;
 	};
 
 	struct Model

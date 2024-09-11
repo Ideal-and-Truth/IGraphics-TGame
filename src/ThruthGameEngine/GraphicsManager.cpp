@@ -5,9 +5,12 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "Material.h"
+#include <filesystem>
+
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
+#include "FileUtils.h"
 
 
 /// <summary>
@@ -187,6 +190,15 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 	if (m_textureMap.find(_path) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
+		std::filesystem::path p(_path);
+		if (_path.empty())
+		{
+			return nullptr;
+		}
+		else if (p.extension() == ".tga" || p.extension() == ".TGA")
+		{
+			return nullptr;
+		}
 		tex->m_texture = m_renderer->CreateTexture(_path);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
@@ -198,19 +210,33 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 {
 	m_renderer->DeleteTexture(_texture->m_texture);
-	
 }
 
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
 {
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
+		std::filesystem::path matp = m_matSavePath + _name + ".matData";
 		std::shared_ptr<Material> mat = std::make_shared<Material>();
 		mat->m_material = m_renderer->CreateMaterial();
 		mat->m_name = _name;
 		mat->m_baseMap = nullptr;
 		mat->m_normalMap = nullptr;
 		mat->m_maskMap = nullptr;
+
+		if (std::filesystem::exists(matp))
+		{
+			std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
+			f->Open(matp, Read);
+			std::filesystem::path albedo(f->Read<std::string>());
+			std::filesystem::path normal(f->Read<std::string>());
+			std::filesystem::path metalicRoughness(f->Read<std::string>());
+			mat->m_baseMap = CreateTexture(albedo);
+			mat->m_normalMap = CreateTexture(normal);
+			mat->m_maskMap = CreateTexture(metalicRoughness);
+			mat->SetTexture();
+		}
+
 		return m_matarialMap[_name] = mat;
 	}
 	return m_matarialMap[_name];
