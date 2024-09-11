@@ -231,7 +231,6 @@ void Truth::Entity::AddComponent(std::shared_ptr<Component> _component)
 	_component->SetOwner(shared_from_this());
 	_component->m_index = static_cast<int32>(m_components.size());
 	m_components.push_back(_component);
-	_component->Initalize();
 	ApplyComponent(_component);
 }
 
@@ -283,6 +282,11 @@ const DirectX::SimpleMath::Matrix& Truth::Entity::GetWorldTM() const
 void Truth::Entity::SetWorldTM(const Matrix& _tm) const
 {
 	m_transform->m_globalTM = _tm;
+}
+
+void Truth::Entity::SetLocalTM(const Matrix& _tm) const
+{
+	m_transform->SetLocalTM(_tm);
 }
 
 void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)

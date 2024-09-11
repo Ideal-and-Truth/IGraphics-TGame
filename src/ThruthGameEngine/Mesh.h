@@ -49,6 +49,7 @@ namespace Truth
 		virtual ~Mesh();
 
 		void SetMesh(std::wstring _path);
+		void SetMesh();
 		void SetRenderable(bool _isRenderable);
 
 		METHOD(Initalize);

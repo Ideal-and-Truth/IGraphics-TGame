@@ -89,7 +89,7 @@ void Truth::TimeManager::Update()
 	}
 
 	// 전체 시간
-	m_time += delta * m_timeScale;
+	m_time += delta;
 
 	// 이전카운트 값을 현재값으로 갱신 (다음번에 계산을 위해서)
 	m_prevCount = m_currentCount;

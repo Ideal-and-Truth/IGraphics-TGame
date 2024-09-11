@@ -28,6 +28,8 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
+		const std::string m_matSavePath = "../Resources/Matarial/";
+
 		const wchar_t* m_assetPath[3] =
 		{
 			L"../Resources/Assets/",

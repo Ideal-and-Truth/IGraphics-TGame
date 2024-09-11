@@ -50,6 +50,11 @@ Truth::Mesh::~Mesh()
 /// <param name="_path">°æ·Î</param>
 void Truth::Mesh::SetMesh(std::wstring _path)
 {
+	if (m_path == _path)
+	{
+		return;
+	}
+
 	m_path = _path;
 
 	if (m_mesh != nullptr)
@@ -62,10 +67,39 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 	uint32 meshSize = m_mesh->GetMeshesSize();
 	m_subMesh.clear();
 	m_subMesh.resize(meshSize);
+	m_mat.clear();
 	for (uint32 i = 0; i < meshSize; i++)
 	{
 		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
-		m_mat.push_back(m_subMesh[i]->GetMaterialObject().lock());
+		std::string s = m_subMesh[i]->GetFBXMaterialName();
+		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
+		mat->SetTexture();
+		m_mat.push_back(mat->m_material);
+		m_subMesh[i]->SetMaterialObject(mat->m_material);
+	}
+}
+
+void Truth::Mesh::SetMesh()
+{
+	if (m_mesh != nullptr)
+	{
+		return;
+	}
+
+	m_mesh = m_managers.lock()->Graphics()->CreateMesh(m_path);
+
+	uint32 meshSize = m_mesh->GetMeshesSize();
+	m_subMesh.clear();
+	m_subMesh.resize(meshSize);
+	m_mat.clear();
+	for (uint32 i = 0; i < meshSize; i++)
+	{
+		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
+		std::string s = m_subMesh[i]->GetFBXMaterialName();
+		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
+		mat->SetTexture();
+		m_mat.push_back(mat->m_material);
+		m_subMesh[i]->SetMaterialObject(mat->m_material);
 	}
 }
 
@@ -75,7 +109,7 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 
 void Truth::Mesh::Initalize()
 {
-	SetMesh(m_path);
+	SetMesh();
 }
 
 void Truth::Mesh::ApplyTransform()

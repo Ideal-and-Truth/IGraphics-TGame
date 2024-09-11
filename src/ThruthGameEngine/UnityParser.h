@@ -62,9 +62,10 @@ namespace Truth
 		struct GameObject
 		{
 			// Collider Info
-			bool m_isBoxCollider = false;
+			bool m_isCollider = false;
+			int32 m_shape = 0;
 			std::vector<Vector3> m_size;
-			std::vector<Vector3> m_Center;
+			std::vector<Vector3> m_center;
 			
 			// Mesh Filter Info
 			bool m_isMesh = false;
@@ -82,21 +83,21 @@ namespace Truth
 
 			// Transform Info
 			Matrix m_localTM = Matrix::Identity;
-			Matrix m_worldTM = Matrix::Identity;
 
 			std::string m_guid = "";
 			std::string m_fileID = "";
 
-			GameObject* m_parent = nullptr;
-			std::vector<GameObject*> m_children;
-
+			int32 m_parent = -1;
+			int32 m_mine = -1;
 			std::string m_name;
 		};
 
 		uint32 m_meshFilterCount = 0;
 		uint32 m_lightCount = 0;
 
-		std::vector<GameObject*> m_rootGameObject;
+		std::vector<GameObject*> m_gameObjects;
+
+		std::set <fs::path> m_unLoadMesh;
 
 		std::vector<Vector3> m_boxVertex;
 		std::vector<uint32> m_boxindx;
@@ -114,14 +115,16 @@ namespace Truth
 		std::map<std::string, std::map<std::string, std::vector<UnityNodeFormat*>>> m_classMap;
 		// guid, matarialdata
 		std::map<std::string, MatarialData> m_matarialMap;
+		std::map<std::string, MatarialData> m_copiedMatarialMap;
 
 		const fs::path m_defaultPath = "../Resources/MapData/";
 		const fs::path m_assetPath = "../Resources/Assets/MapData/";
 		const fs::path m_modelPath = "../Resources/Models/MapData/";
 		const fs::path m_texturePath = "../Resources/Textures/MapData/";
+		const fs::path m_matSavePath = "../Resources/Matarial/";
 		const fs::path m_debugCubePath = "DebugObject/debugCube";
 		fs::path m_sceneName;
-
+		
 		const std::wstring m_convertPath = L"MapData/";
 		const std::string m_sconvertPath = "MapData/";
 		
@@ -133,13 +136,11 @@ namespace Truth
 		~UnityParser();
 
 		void SetRootDir(const std::string& _path);
-		void ParseSceneFile(const std::string& _path);
-
 		void ParseUnityFile(const std::string& _path);
 
 		void Reset();
 
-		std::vector<std::vector<Vector3>> GetStaticMapPoint();
+		void ParseMatarialData();
 
 	private:
 		void ParseFile(fs::path& _path);
@@ -147,12 +148,10 @@ namespace Truth
 
 		void ParseYAMLFile(YAML::Node& _node, const std::string& _guid);
 
-		void ResetGameObjectTree(GameObject* _node);
-
 		fs::path OrganizeUnityFile(fs::path& _path);
 
-		GameObject* ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
-		GameObject* ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, GameObject* _parent);
+		void ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent);
+		void ParsePrefabNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent);
 		
 		void ReadPrefabFile(const fs::path& _path, GameObject* _parent);
 
@@ -162,22 +161,22 @@ namespace Truth
 		void ParseLight(const YAML::Node& _node, GameObject* _owner);
 
 		Matrix GetPrefabMatrix(const YAML::Node& _node);
+		void GetPrefabMatarial(GameObject* _GO, const YAML::Node& _node);
 
-		void CalculateWorldTM(GameObject* _node);
-		void CreateBoxData();
+		void ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxPath);
 
-		void WriteMapData();
-		void GetColliderVertexes(GameObject* _node, std::vector<std::vector<Vector3>>& _vers, std::vector<std::vector<uint32>>& _inds);
-
-		void WriteLightData(fs::path _path);
-		void WriteLightData(GameObject* _node, std::shared_ptr<FileUtils> _file);
-
-		void WriteMapMeshData(fs::path _path);
-		void WriteMapMeshData(GameObject* _node, std::shared_ptr<FileUtils> _file);
+		void ParseMatarialFile(GameObject* _GO, const std::string& _matGuid);
+		void ParseOnlyMatarialFile(const fs::path& _matGuid);
 
 		void WriteMaterialData();
 
 		void ConvertUnloadedMesh();
+
+		void WriteData();
+		void WriteColliderData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
+		void WriteMeshData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
+		void WriteLightData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
+		void WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
 	};
 }
 

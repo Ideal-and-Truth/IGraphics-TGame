@@ -96,6 +96,7 @@ void Truth::Camera::Initalize()
 	//m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
 	m_position = { 0.f, 0.f, 0.f };
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
+	SetMainCamera();
 }
 
 void Truth::Camera::CompleteCamera()

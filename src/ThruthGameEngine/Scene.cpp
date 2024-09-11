@@ -9,6 +9,11 @@
 #include "ISpotLight.h"
 #include "Material.h"
 #include "IMesh.h"
+#include "BoxCollider.h"
+#include "SphereCollider.h"
+#include "CapsuleCollider.h"
+#include "MeshCollider.h"
+#include "Mesh.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -115,10 +120,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-
-
-	//CreateMap(m_mapPath);
-	CreateMap(L"1st_test bake");
+	// LoadUnityData(L"SampleScene");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -137,7 +139,11 @@ void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 
 DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const
 {
-	return m_navMesh->FindPath(_start, _end, _size);
+	if (m_navMesh)
+	{
+		return m_navMesh->FindPath(_start, _end, _size);
+	}
+	return Vector3::Zero;
 }
 
 std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
@@ -211,7 +217,7 @@ void Truth::Scene::Update()
 		m_rootEntities.push_back(e);
 #endif // EDITOR_MODE
 		m_startedEntity.push(e);
-		e->Awake();  
+		e->Awake();
 		m_awakedEntity.pop();
 	}
 	while (!m_startedEntity.empty())
@@ -286,12 +292,6 @@ void Truth::Scene::Start()
 		e->Awake();
 		m_awakedEntity.pop();
 	}
-	while (!m_startedEntity.empty())
-	{
-		auto& e = m_startedEntity.front();
-		e->Start();
-		m_startedEntity.pop();
-	}
 }
 
 /// <summary>
@@ -325,7 +325,7 @@ void Truth::Scene::ClearEntity()
 	m_entities.clear();
 }
 
-void Truth::Scene::CreateMap(const std::wstring& _path)
+void Truth::Scene::LoadUnityData(const std::wstring& _path)
 {
 	if (_path.empty())
 	{
@@ -335,66 +335,33 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 	auto gp = m_managers.lock()->Graphics();
 
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
-
-	std::filesystem::path p(L"../Resources/MapData/" + _path);
+	std::wstring assetPath = L"MapData/" + _path + L"/";
+	std::filesystem::path p(mapPath);
 	if (!std::filesystem::exists(p))
 	{
 		return;
 	}
-	m_managers.lock()->Physics()->CreateMapCollider(mapPath + L"Data.map");
 
-	m_navMesh = std::make_shared<NavMeshGenerater>();
-	m_navMesh->Initalize(mapPath + L"Data.map");
-
-	std::shared_ptr<FileUtils> matFile = std::make_shared<FileUtils>();
-	std::wstring matPath = mapPath + L"Material.mats";
-	matFile->Open(matPath, FileMode::Read);
-
-	size_t matCount = matFile->Read<size_t>();
-	for (size_t i = 0; i < matCount; i++)
-	{
-		std::string guid = matFile->Read<std::string>();
-		std::string name = matFile->Read<std::string>();
-		std::string baseMap = matFile->Read<std::string>();
-		std::string normalMap = matFile->Read<std::string>();
-		std::string maskMap = matFile->Read<std::string>();
-
-
-		USES_CONVERSION;
-		std::shared_ptr<Texture> baseTex = gp->CreateTexture(A2W(baseMap.c_str()));
-		std::shared_ptr<Texture> normalTex = gp->CreateTexture(A2W(normalMap.c_str()));
-		std::shared_ptr<Texture> maskTex = gp->CreateTexture(A2W(maskMap.c_str()));
-
-		std::shared_ptr<Material> mat = gp->CraeteMatarial(name);
-		mat->m_baseMap = baseTex;
-		mat->m_normalMap = normalTex;
-		mat->m_maskMap = maskTex;
-		mat->SetTexture();
-	}
-
+	/// read map data
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	std::wstring path = mapPath + L"Meshes.mList";
-	file->Open(path, FileMode::Read);
+	file->Open(mapPath + L"Data.map", FileMode::Read);
+	size_t objCount = file->Read<size_t>();
 
-	uint32 meshCount = file->Read<uint32>();
-	m_mapMesh.resize(meshCount);
+	m_mapEntity.resize(objCount);
 
-	for (uint32 i = 0; i < meshCount; i++)
+	for (size_t i = 0; i < objCount; ++i)
 	{
-		std::string meshpath = file->Read<std::string>();
-		Matrix meshTM = file->Read<Matrix>();
-
-		size_t matCount = file->Read<size_t>();
-		std::vector<std::string> matName;
-		for (uint32 i = 0; i < matCount; i++)
+		m_mapEntity[i] = std::make_shared<Entity>(m_managers.lock());
+		int32 parent = file->Read<int32>();
+		std::string name = file->Read<std::string>();
+		m_mapEntity[i]->m_name = name;
+		if (parent != -1)
 		{
-			matName.push_back(file->Read<std::string>());
+			m_mapEntity[parent]->AddChild(m_mapEntity[i]);
+			m_mapEntity[i]->m_parent = m_mapEntity[parent];
 		}
 
-		USES_CONVERSION;
-		std::wstring wsval(A2W(meshpath.c_str()));
-
-		m_mapMesh.push_back(m_managers.lock()->Graphics()->CreateMesh(wsval));
+		Matrix ltm = file->Read<Matrix>();
 
 		Matrix flipYZ = Matrix::Identity;
 		flipYZ.m[0][0] = -1.f;
@@ -402,97 +369,87 @@ void Truth::Scene::CreateMap(const std::wstring& _path)
 		Matrix flipXY = Matrix::Identity;
 		flipXY.m[2][2] = -1.f;
 
-		m_mapMesh.back()->SetTransformMatrix(flipYZ * flipXY * meshTM);
+		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
 
-		if (matCount > 0)
+		// read Collider Data
+		bool isCollider = file->Read<bool>();
+		if (isCollider)
 		{
-			auto& mesh = m_mapMesh.back();
-			uint32 meshSize = mesh->GetMeshesSize();
-			for (uint32 i = 0; i < mesh->GetMeshesSize(); i++)
+			int32 type = file->Read<int32>();
+			Vector3 size = file->Read<Vector3>();
+			Vector3 center = file->Read<Vector3>();
+
+			std::shared_ptr<Collider> coll;
+
+			switch (type)
 			{
-				auto submesh = mesh->GetMeshByIndex(i).lock();
-				std::string smat = submesh->GetFBXMaterialName();
-				submesh->SetMaterialObject(gp->m_matarialMap[smat]->m_material);
+			case 1:
+			{
+				coll = std::make_shared<BoxCollider>(center, size);
+				break;
 			}
+			// 			case 2:
+			// 			{
+			// 				coll = std::make_shared<SphereCollider>(size, center);
+			// 				break;
+			// 			}
+			// 			case 3:
+			// 			{
+			// 				coll = std::make_shared<CapsuleCollider>(size, center);
+			// 				break;
+			// 			}
+			// 			case 4:
+			// 			{
+			// 				coll = std::make_shared<MeshCollider>(size, center);
+			// 				break;
+			// 			}
+			default:
+				break;
+			}
+
+			if (coll)
+			{
+				m_mapEntity[i]->AddComponent(coll);
+			}
+		}
+
+		// read Mesh Data
+		bool isMesh = file->Read<bool>();
+		if (isMesh)
+		{
+			std::string meshpath = file->Read<std::string>();
+
+			std::filesystem::path mp(meshpath);
+
+			size_t matCount = file->Read<size_t>();
+			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
+			m_mapEntity[i]->AddComponent(mesh);
+			mesh->SetMesh();
+// 			for (size_t j = 0; j < matCount; ++j)
+// 			{
+// 				std::string matName = file->Read<std::string>();
+// 				mesh->SetMaterialByIndex(j, matName);
+// 			}
+		}
+
+		// read Light Data
+		bool isLight = file->Read<bool>();
+		if (isLight)
+		{
+			file->Read<uint32>();
+			file->Read<float>();
+			file->Read<float>();
+			file->Read<float>();
+			file->Read<float>();
+			file->Read<float>();
+			file->Read<float>();
+			file->Read<float>();
 		}
 	}
 
-	std::shared_ptr<FileUtils> lightFile = std::make_shared<FileUtils>();
-	std::wstring lightpath = mapPath + L"Lights.lList";
-	lightFile->Open(lightpath, FileMode::Read);
-
-	uint32 lightCount = lightFile->Read<uint32>();
-	for (uint32 i = 0; i < lightCount; i++)
+	for (auto& e : m_mapEntity)
 	{
-		uint32 type = lightFile->Read<uint32>();
-
-		float intensity = lightFile->Read<float>();
-		Color color =
-		{
-			lightFile->Read<float>(),
-			lightFile->Read<float>(),
-			lightFile->Read<float>(),
-			lightFile->Read<float>()
-		};
-
-		float range = lightFile->Read<float>();
-		float angle = lightFile->Read<float>();
-
-		Matrix worldTM = lightFile->Read<Matrix>();
-
-		Vector3 dir = { 0.0f, 0.0f, 1.0f };
-
-		Vector3 pos;
-		Vector3 sca;
-		Quaternion rot;
-		worldTM.Decompose(sca, rot, pos);
-
-		Matrix rotMat = Matrix::CreateFromQuaternion(rot);
-
-		dir = Vector3::Transform(dir, rotMat);
-
-		switch (type)
-		{
-			// spot
-		case 0:
-		{
-			std::shared_ptr<Ideal::ISpotLight> spotlight
-				= m_managers.lock()->Graphics()->CreateSpotLight();
-			spotlight->SetIntensity(intensity);
-			spotlight->SetLightColor(color);
-			spotlight->SetDirection(dir);
-			spotlight->SetRange(range);
-			spotlight->SetPosition(pos);
-			spotlight->SetSpotAngle(angle);
-			m_mapLight.push_back(spotlight);
-			break;
-		}
-		// direction
-		case 1:
-		{
-			// 			std::shared_ptr<Ideal::IDirectionalLight> directionlight
-			// 				 = m_managers.lock()->Graphics()->CreateDirectionalLight();
-			// 			directionlight->SetIntensity(intensity);
-			// 			directionlight->SetDiffuseColor(color);
-			// 			directionlight->SetDirection(dir);
-			// 			m_mapLight.push_back(directionlight);
-			//  			break;
-		}
-		// point
-		case 2:
-		{
-			std::shared_ptr<Ideal::IPointLight> pointLight
-				= m_managers.lock()->Graphics()->CreatePointLight();
-			pointLight->SetIntensity(intensity);
-			pointLight->SetLightColor(color);
-			pointLight->SetRange(range);
-			pointLight->SetPosition(pos);
-			m_mapLight.push_back(pointLight);
-			break;
-		}
-		default:
-			break;
-		}
+		AddEntity(e);
 	}
 }
 
