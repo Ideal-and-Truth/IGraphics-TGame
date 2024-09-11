@@ -42,6 +42,9 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 {
 	// Transform Data
 	{
+		m_cbTransform.World = Matrix::Identity;
+		m_cbTransform.WorldInvTranspose = Matrix::Identity;
+
 		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
 		memcpy(cb1->SystemMemAddr, &m_cbTransform, sizeof(CB_Transform));
 		auto handle1 = DescriptorHeap->Allocate();
@@ -54,7 +57,7 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 		case Ideal::ParticleMenu::ERendererMode::Billboard:
 			break;
 		case Ideal::ParticleMenu::ERendererMode::Mesh:
-			// DrawRenderMesh();
+			DrawRenderMesh(Device, CommandList, DescriptorHeap, CBPool);
 			break;
 		default:
 			break;
@@ -205,7 +208,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 {
 	//Draw Mesh
 	CommandList->SetPipelineState(m_pso->GetPipelineState().Get());
-	CommandList->SetGraphicsRootSignature(m_rootSignature.Get());	// 이거 위에서 해도 되지 않을까? 위에서 하면 루트 시그니쳐는 같으니까 한 번만 해도 되지 않을까?
+	//CommandList->SetGraphicsRootSignature(m_rootSignature.Get());	// 이거 위에서 해도 되지 않을까? 위에서 하면 루트 시그니쳐는 같으니까 한 번만 해도 되지 않을까?
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = m_Renderer_Mesh.lock()->GetVertexBufferView();

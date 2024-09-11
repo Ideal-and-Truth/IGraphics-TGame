@@ -144,11 +144,28 @@ namespace BxDF
                 if (!IsBlack(Albedo))
                 {
                     directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                    //if(directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    //{
+                    //    directDiffuse = Albedo;
+                    //}
+                    //if (IsBlack(directDiffuse))
+                    //{
+                    //    directDiffuse = Albedo;
+                    //}
+                    //if (directDiffuse.x > float3(1.f, 1.f, 1.f))
+                    //{
+                    //    directDiffuse = Albedo.xyz;
+                    //}
+
                 }
                 
                 float3 directSpecular = 0;
                 directSpecular = BxDF::Specular::GGX::F(Roughness, N, V, L, Fo);
                 directLighting = NoL * Radiance * (directDiffuse + directSpecular);
+                //if(IsBlack(directLighting))
+                //{
+                //    directLighting = Albedo;
+                //}
             }
             return directLighting;
         }
@@ -216,6 +233,11 @@ namespace Ideal
                 {
                     directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
                     //directDiffuse = BxDF::Diffuse::Lambert::F(Albedo);
+                    if(directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    //if (BxDF::IsBlack(directDiffuse))
+                    {
+                        directDiffuse = Albedo;
+                    }
                 }
                 
                 float3 directSpecular = 0;

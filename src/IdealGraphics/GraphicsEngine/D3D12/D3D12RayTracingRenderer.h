@@ -301,6 +301,7 @@ namespace Ideal
 		// AS
 		SceneConstantBuffer m_sceneCB;
 		CB_LightList m_lightListCB;
+		CB_Global m_globalCB;
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();

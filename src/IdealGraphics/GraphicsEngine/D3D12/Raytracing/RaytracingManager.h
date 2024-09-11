@@ -276,7 +276,9 @@ namespace Ideal
 		//---GBuffer Texture---//
 	public:
 		void CreateGBufferTexture(std::shared_ptr<Ideal::ResourceManager> ResourceManager, uint32 Width, uint32 Height);
-		std::shared_ptr<Ideal::D3D12Texture> GetGBufferDepth();
+		std::shared_ptr<Ideal::D3D12Texture> GetDepthBuffer();
+
+		void CopyDepthBuffer( ComPtr<ID3D12GraphicsCommandList4> CommandList);
 
 	private:
 		std::shared_ptr<Ideal::D3D12Texture> m_gBufferPosition;

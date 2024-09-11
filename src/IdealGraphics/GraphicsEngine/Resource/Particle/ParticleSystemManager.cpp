@@ -82,6 +82,8 @@ void Ideal::ParticleSystemManager::DeleteParticleSystem(std::shared_ptr<Ideal::P
 
 void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData)
 {
+
+	CommandList->SetGraphicsRootSignature(m_rootSignature.Get());
 	/// Bind To Shader
 	{
 		// Global Data 
@@ -92,9 +94,9 @@ void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, Co
 		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_Global, handle0.GetGpuHandle());
 	}
 
-	//for (auto& p : m_particles)
-	//{
-	//	// TODO: DRAW
-	//	p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
-	//}
+	for (auto& p : m_particles)
+	{
+		// TODO: DRAW
+		p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
+	}
 }
