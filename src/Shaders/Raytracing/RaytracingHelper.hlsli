@@ -40,8 +40,9 @@ namespace BxDF
                 float multi = 0.3641 * a; // 0.3641 = PI * 0.1159
 
                 diffuse = Albedo * (single + Albedo * multi);
+                return diffuse;
             }
-            return diffuse;
+            return Albedo * 0.5;
         }
     }
     // Fresnel reflectance - schlick approximation.
@@ -215,6 +216,10 @@ namespace Ideal
                 if (!BxDF::IsBlack(Albedo))
                 {
                     directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                    if (directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    {
+                        directDiffuse = Albedo;
+                    }
                     //directDiffuse = BxDF::Diffuse::Lambert::F(Albedo);
                 }
                 
