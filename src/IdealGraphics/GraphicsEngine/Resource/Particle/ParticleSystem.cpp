@@ -220,12 +220,17 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 	CommandList->IASetIndexBuffer(&indexBufferView);
 
 	// CB_ParticleSystem
-	auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
-	memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
-	auto handle2 = DescriptorHeap->Allocate();
-	Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData, handle2.GetGpuHandle());
+	{
+		// TEMP: time
+		m_cbParticleSystem.Time += 0.001f;
+		if (m_cbParticleSystem.Time >= 1.f) m_cbParticleSystem.Time = 0.f;
 
+		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
+		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
+		auto handle2 = DescriptorHeap->Allocate();
+		Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData, handle2.GetGpuHandle());
+	}
 	// SRV
 	if (m_particleMaterial.lock())
 	{

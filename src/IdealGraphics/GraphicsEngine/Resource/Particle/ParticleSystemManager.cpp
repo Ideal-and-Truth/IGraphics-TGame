@@ -50,14 +50,19 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
 	{
-		CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC)
+		CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC),
+		CD3DX12_STATIC_SAMPLER_DESC(1, D3D12_FILTER_ANISOTROPIC
+		, D3D12_TEXTURE_ADDRESS_MODE_CLAMP
+		, D3D12_TEXTURE_ADDRESS_MODE_CLAMP
+		, D3D12_TEXTURE_ADDRESS_MODE_CLAMP
+		)
 	};
 
 	ComPtr<ID3DBlob> blob;
 	ComPtr<ID3DBlob> error;
 	D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, staticSamplers, rootSignatureFlags);
+	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 2, staticSamplers, rootSignatureFlags);
 	HRESULT hr = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error);
 	Check(hr, L"Failed to serialize root signature in particle system manager");
 

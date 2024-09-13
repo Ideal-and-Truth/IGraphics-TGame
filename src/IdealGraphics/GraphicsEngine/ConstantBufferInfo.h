@@ -143,6 +143,6 @@ struct CB_ParticleSystem
 {
 	float CustomData1[4];
 	float CustomData2[4];
-	float Time;
+	float Time = 0.f;
 	Vector3 pad;
 };
