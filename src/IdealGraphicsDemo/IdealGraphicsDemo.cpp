@@ -242,7 +242,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
-		//gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"MapData/1_HN_Scene2/brick_base.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"EnemyTest/idelTest.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);

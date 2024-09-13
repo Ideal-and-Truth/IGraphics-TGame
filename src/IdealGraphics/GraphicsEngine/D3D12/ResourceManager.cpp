@@ -732,7 +732,8 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 			for (uint32 i = 0; i < count; ++i)
 			{
 				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> mesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
-
+				mesh->SetLocalTM(file->Read<Matrix>());
+			
 				mesh->SetName(file->Read<std::string>());
 				mesh->SetBoneIndex(file->Read<int32>());
 
@@ -1002,6 +1003,7 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 			for (uint32 i = 0; i < count; ++i)
 			{
 				std::shared_ptr <Ideal::IdealMesh<SkinnedVertex>> mesh = std::make_shared<Ideal::IdealMesh<SkinnedVertex>>();
+				// mesh->SetLocalTM(file->Read<Matrix>());
 
 				mesh->SetName(file->Read<std::string>());
 				mesh->SetBoneIndex(file->Read<int32>());

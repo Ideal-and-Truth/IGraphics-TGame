@@ -362,17 +362,32 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 		{
 			ParseFbxMetaFile(GO, prefabPath);
 		}
-		return;
 	}
-	return;
+
+	const YAML::Node& components = _node["m_Modification"]["m_AddedComponents"];
+	if (components.IsDefined() && components.IsSequence())
+	{
+		for (YAML::const_iterator it = components.begin(); it != components.end(); ++it)
+		{
+			const YAML::Node& component = *it;
+			std::string cFid = component["addedObject"]["fileID"].as<std::string>();
+
+			const YAML::Node& c = m_nodeMap[_guid][cFid]->m_node["BoxCollider"];
+			/// find box collider
+			if (c.IsDefined())
+			{
+				ParseBoxCollider(c, GO);
+			}
+		}
+	}
 }
 
 void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner)
 {
 	// get component list
-	YAML::Node comList = _node["m_Component"];
+	const YAML::Node& comList = _node["m_Component"];
 	_owner->m_name = _node["m_Name"].as<std::string>();
-	for (YAML::iterator it = comList.begin(); it != comList.end(); ++it)
+	for (YAML::const_iterator it = comList.begin(); it != comList.end(); ++it)
 	{
 		// get component list
 		const YAML::Node& comp = *it;

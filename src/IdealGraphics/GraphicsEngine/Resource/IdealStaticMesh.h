@@ -26,7 +26,7 @@ namespace Ideal
 		virtual ~IdealStaticMesh();
 
 	public:
-		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer, const Matrix& WorldTM);
 
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh);

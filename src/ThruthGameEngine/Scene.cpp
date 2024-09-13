@@ -425,11 +425,11 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
-// 			for (size_t j = 0; j < matCount; ++j)
-// 			{
-// 				std::string matName = file->Read<std::string>();
-// 				mesh->SetMaterialByIndex(j, matName);
-// 			}
+			for (size_t j = 0; j < matCount; ++j)
+			{
+				std::string matName = file->Read<std::string>();
+				mesh->SetMaterialByIndex(j, matName);
+			}
 		}
 
 		// read Light Data
