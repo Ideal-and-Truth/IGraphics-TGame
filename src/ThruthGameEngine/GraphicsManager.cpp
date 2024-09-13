@@ -252,6 +252,16 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::
 	return m_matarialMap[_name];
 }
 
+void Truth::GraphicsManager::ToggleFullScreen()
+{
+	m_renderer->ToggleFullScreenWindow();
+}
+
+void Truth::GraphicsManager::ResizeWindow(uint32 _w, uint32 _h)
+{
+	m_renderer->Resize(_w, _h);
+}
+
 #ifdef EDITOR_MODE
 void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 {

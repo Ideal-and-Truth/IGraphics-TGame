@@ -77,6 +77,10 @@ namespace Truth
 
 		std::shared_ptr<Material> GetMaterial(const std::string& _name);
 
+		void ToggleFullScreen();
+
+		void ResizeWindow(uint32 _w, uint32 _h);
+
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);
 #endif // EDITOR_MODE
