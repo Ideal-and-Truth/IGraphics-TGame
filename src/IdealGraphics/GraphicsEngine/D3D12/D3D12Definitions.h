@@ -100,6 +100,7 @@ namespace Ideal
 				CBV_Global = 0,
 				CBV_Transform,
 				CBV_ParticleSystemData,
+				SRV_ParticleTexture,
 				Count
 			};
 		}

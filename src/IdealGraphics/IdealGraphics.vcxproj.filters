@@ -339,6 +339,8 @@
     <FxCompile Include="..\Shaders\Raytracing\CS_ComputeAnimationVertexBuffer.hlsl" />
     <FxCompile Include="..\Shaders\UI.hlsl" />
     <FxCompile Include="..\Shaders\Screen\Screen.hlsl" />
+    <FxCompile Include="..\Shaders\Particle\TestCustomParticle.hlsl" />
+    <FxCompile Include="..\Shaders\Particle\DefaultParticleVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">
@@ -348,5 +350,6 @@
     <None Include="packages.config" />
     <None Include="..\Shaders\Raytracing\RaytracingHelper.hlsli" />
     <None Include="..\Shaders\Raytracing\DisneyBSDF.hlsli" />
+    <None Include="..\Shaders\Particle\ParticleCommon.hlsli" />
   </ItemGroup>
 </Project>

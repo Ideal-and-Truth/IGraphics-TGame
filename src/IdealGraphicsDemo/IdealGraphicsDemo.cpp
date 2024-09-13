@@ -589,22 +589,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//ka->SetTransformMatrix(mat2);
 					//tX++;
 					//
-					for (int i = 0; i < 10; i++)
-					{
-						std::shared_ptr<Ideal::IMeshObject> mesh;
-						mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-						meshes.push_back(mesh);
-						if (i == 0)
-						{
-							mesh->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
-						}
-						if (i == 1)
-						{
-							mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(10, 0, 0)));
-							//mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
-						}
-
-					}
+					//for (int i = 0; i < 10; i++)
+					//{
+					//	std::shared_ptr<Ideal::IMeshObject> mesh;
+					//	mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+					//	meshes.push_back(mesh);
+					//	if (i == 0)
+					//	{
+					//		mesh->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+					//	}
+					//	if (i == 1)
+					//	{
+					//		mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(10, 0, 0)));
+					//		//mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
+					//	}
+					//
+					//}
 					//
 					//mesh->SetTransformMatrix(mat2);
 					//tX++;

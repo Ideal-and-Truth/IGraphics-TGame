@@ -26,3 +26,8 @@ std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleMaterial::GetShader()
 {
 	return m_shader;
 }
+
+std::weak_ptr<Ideal::D3D12Texture> Ideal::ParticleMaterial::GetTexture()
+{
+	return m_texture;
+}

@@ -45,6 +45,7 @@ namespace Ideal
 
 	public:
 		std::shared_ptr<Ideal::D3D12Shader> GetShader();
+		std::weak_ptr<Ideal::D3D12Texture> GetTexture();
 
 	private:
 		std::shared_ptr<Ideal::D3D12Shader> m_shader;	// 셰이더 시스템
