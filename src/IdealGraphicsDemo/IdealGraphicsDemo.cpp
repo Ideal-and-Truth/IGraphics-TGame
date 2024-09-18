@@ -495,6 +495,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Slash.fbx", true, Vector3(100.f));
 		std::shared_ptr<Ideal::IMesh> particleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Slash");
 
+		particleSystem->SetStartColor(DirectX::SimpleMath::Color(1.5, 0.7, 1.2, 1));
+		particleSystem->SetStartColor(DirectX::SimpleMath::Color(2, 0.5, 0.5, 1));
 		particleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		particleSystem->SetRenderMesh(particleMesh);
 

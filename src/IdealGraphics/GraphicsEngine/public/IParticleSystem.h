@@ -59,8 +59,12 @@ namespace Ideal
 		// ON, OFF ±â´Éµµ
 	public:
 		virtual void SetMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) abstract;
+		virtual void SetTransformMatrix(const DirectX::SimpleMath::Matrix& Transform) abstract;
+		virtual const DirectX::SimpleMath::Matrix& GetTransformMatrix() const abstract;
 
 	public:
+		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
+
 		//---------Renderer---------//
 		virtual void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) abstract;
 		virtual void SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh) abstract;

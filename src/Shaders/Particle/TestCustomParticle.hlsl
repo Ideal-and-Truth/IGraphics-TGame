@@ -41,7 +41,8 @@ float4 PSMain(VSOutput input) : SV_TARGET
     //result.a *= color.a;
     result *= float4(1, 1, 1, 1);
     //float4 color = float4(0.9245, 0.3968, 0.7052, 1);
-    float4 color = float4(1.5, 0.7, 1.2, 1);
+    //float4 color = float4(1.5, 0.7, 1.2, 1);
+    float4 color = g_startColor;
     result *= color;
     result *= 2.0;
     return result;

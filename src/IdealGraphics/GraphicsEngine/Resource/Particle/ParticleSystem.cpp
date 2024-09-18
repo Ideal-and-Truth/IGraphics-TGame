@@ -16,7 +16,8 @@
 
 Ideal::ParticleSystem::ParticleSystem()
 {
-
+	m_cbTransform.World = Matrix::Identity;
+	m_cbTransform.WorldInvTranspose = Matrix::Identity;
 }
 
 Ideal::ParticleSystem::~ParticleSystem()
@@ -27,6 +28,16 @@ Ideal::ParticleSystem::~ParticleSystem()
 void Ideal::ParticleSystem::SetMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial)
 {
 	__debugbreak();
+}
+
+void Ideal::ParticleSystem::SetTransformMatrix(const Matrix& Transform)
+{
+	m_transform = Transform;
+}
+
+const DirectX::SimpleMath::Matrix& Ideal::ParticleSystem::GetTransformMatrix() const
+{
+	return m_transform;
 }
 
 void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
@@ -42,8 +53,11 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 {
 	// Transform Data
 	{
-		m_cbTransform.World = Matrix::Identity;
-		m_cbTransform.WorldInvTranspose = Matrix::Identity;
+		//m_cbTransform.World = Matrix::Identity;
+		//m_cbTransform.WorldInvTranspose = Matrix::Identity;
+
+		m_cbTransform.World = m_transform;
+		m_cbTransform.World = m_transform.Invert().Transpose();
 
 		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
 		memcpy(cb1->SystemMemAddr, &m_cbTransform, sizeof(CB_Transform));
@@ -145,6 +159,11 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_pipelineState.GetAddressOf()));
 	Check(hr, L"Faild to Create Pipeline State");
 	return;
+}
+
+void Ideal::ParticleSystem::SetStartColor(const DirectX::SimpleMath::Color& StartColor)
+{
+	m_cbParticleSystem.StartColor = StartColor;
 }
 
 void Ideal::ParticleSystem::SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode)

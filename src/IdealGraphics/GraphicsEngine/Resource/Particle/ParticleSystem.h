@@ -33,6 +33,8 @@ namespace Ideal
 
 	public:
 		virtual void SetMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) override;
+		virtual void SetTransformMatrix(const Matrix& Transform) override;
+		virtual const Matrix& GetTransformMatrix() const override;
 
 	public:
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
@@ -50,6 +52,8 @@ namespace Ideal
 
 		//----------------------------Interface---------------------------//
 	public:
+		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) override;
+
 		//--------Renderer---------//
 		// 랜더 모드를 설정 : 매쉬 형태 Or 빌보드 형태인지
 		void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) override;
@@ -73,5 +77,6 @@ namespace Ideal
 	private:
 		CB_ParticleSystem m_cbParticleSystem;
 		CB_Transform m_cbTransform;
+		Matrix m_transform;
 	};
 }

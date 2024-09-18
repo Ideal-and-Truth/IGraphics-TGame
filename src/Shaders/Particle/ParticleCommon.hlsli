@@ -20,6 +20,7 @@
         float4 g_CustomData2;
         float g_Time;
         float3 pad;
+        float4 g_startColor;
     };
 
     Texture2D ParticleTexture : register(t0);
