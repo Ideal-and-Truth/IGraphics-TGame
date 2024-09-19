@@ -44,6 +44,7 @@
         float3 Normal : NORMAL;
         float2 UV : TEXCOORD;
     };
+
     //https://docs.unity3d.com/Packages/com.unity.shadergraph@6.9/manual/Simple-Noise-Node.html
     void Ideal_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
     {

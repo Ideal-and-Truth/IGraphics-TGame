@@ -36,6 +36,11 @@ namespace Ideal
 		virtual void SetTransformMatrix(const Matrix& Transform) override;
 		virtual const Matrix& GetTransformMatrix() const override;
 
+		virtual void SetActive(bool IsActive) override;
+		virtual bool GetActive() override;
+
+		virtual void SetDeltaTime(float DT) override;
+		
 	public:
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
@@ -53,12 +58,36 @@ namespace Ideal
 		//----------------------------Interface---------------------------//
 	public:
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) override;
+		virtual DirectX::SimpleMath::Color& GetStartColor() override;
+
+		virtual void SetDuration(float Time) override;
+		virtual float GetDuration() override;
+
+		virtual void SetLoop(bool Loop) override;
+		virtual bool GetLoop() override;
+
+		//----Rotation Over Lifetime----//
+		virtual void SetRotationOverLifetime(bool Active) override;
+		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisX() override;
+		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisY() override;
+		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisZ() override;
+
+		//----------Custom Data---------//
+		virtual Ideal::IBezierCurve& GetCustomData1X() override;
+		virtual Ideal::IBezierCurve& GetCustomData1Y() override;
+		virtual Ideal::IBezierCurve& GetCustomData1Z() override;
+		virtual Ideal::IBezierCurve& GetCustomData1W() override;
+
+		virtual Ideal::IBezierCurve& GetCustomData2X() override;
+		virtual Ideal::IBezierCurve& GetCustomData2Y() override;
+		virtual Ideal::IBezierCurve& GetCustomData2Z() override;
+		virtual Ideal::IBezierCurve& GetCustomData2W() override;
 
 		//--------Renderer---------//
 		// 랜더 모드를 설정 : 매쉬 형태 Or 빌보드 형태인지
-		void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) override;
-		void SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh) override;
-		void SetRenderMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleRendererMaterial) override;
+		virtual void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) override;
+		virtual void SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh) override;
+		virtual void SetRenderMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleRendererMaterial) override;
 
 		// 만약 두 개의 데이터가 필요하지 않을 경우 앞의 값만 입력
 		void SetCustomData(Ideal::ParticleMenu::ECustomData CustomData, Ideal::ParticleMenu::ECustomDataParameter CustomDataParameter, Ideal::ParticleMenu::ERangeMode RangeMode, float CustomDataFloat, float CustomDataFloat2 = 0.f);
@@ -66,8 +95,33 @@ namespace Ideal
 	private:
 		void DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
-		//------Renderer Menu------//
+		void UpdateCustomData();
+
 	private:
+		float m_deltaTime = 0.f;
+		bool m_isActive = true;
+		bool m_isLoop = true;
+		float m_duration = 1.f;
+		float m_currentTime = 0.f;
+
+		//----Rotation Over Lifetime----//
+		bool m_isRotationOverLifetime = false;
+		Ideal::BezierCurve m_RotationOverLifetimeAxisX;
+		Ideal::BezierCurve m_RotationOverLifetimeAxisY;
+		Ideal::BezierCurve m_RotationOverLifetimeAxisZ;
+
+		//----------Custom Data---------//
+		Ideal::BezierCurve m_CustomData1_X;
+		Ideal::BezierCurve m_CustomData1_Y;
+		Ideal::BezierCurve m_CustomData1_Z;
+		Ideal::BezierCurve m_CustomData1_W;
+
+		Ideal::BezierCurve m_CustomData2_X;
+		Ideal::BezierCurve m_CustomData2_Y;
+		Ideal::BezierCurve m_CustomData2_Z;
+		Ideal::BezierCurve m_CustomData2_W;
+
+		//------Renderer Menu------//
 		Ideal::ParticleMenu::ERendererMode m_Renderer_Mode;
 		// 만약 아래의 Mesh가 ERendererMode가 Mesh가 아닐 경우 사각형 고정이 될 것이다. 사각형에 띄워야 하니까
 		std::weak_ptr<Ideal::IdealMesh<ParticleVertexTest>> m_Renderer_Mesh;

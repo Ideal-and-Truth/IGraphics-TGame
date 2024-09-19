@@ -38,7 +38,7 @@ namespace Ideal
 
 	public:
 		void AddParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem);
-		void DeleteParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem);
+		void DeleteParticleSystem(std::shared_ptr<Ideal::ParticleSystem>& ParticleSystem);
 
 		void DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GloablData);
 

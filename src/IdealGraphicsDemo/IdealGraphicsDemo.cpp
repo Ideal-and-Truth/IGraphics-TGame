@@ -59,6 +59,7 @@ using namespace std;
 
 #include "GraphicsEngine/public/IParticleMaterial.h"
 #include "GraphicsEngine/public/IParticleSystem.h"
+#include "GraphicsEngine/public/IGraph.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -496,9 +497,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IMesh> particleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Slash");
 
 		particleSystem->SetStartColor(DirectX::SimpleMath::Color(1.5, 0.7, 1.2, 1));
-		particleSystem->SetStartColor(DirectX::SimpleMath::Color(2, 0.5, 0.5, 1));
+		particleSystem->SetLoop(true);
+		particleSystem->SetDuration(2.f);
+
 		particleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		particleSystem->SetRenderMesh(particleMesh);
+
+		particleSystem->SetRotationOverLifetime(true);
+		auto& graphX = particleSystem->GetRotationOverLifetimeAxisX();
+		graphX.AddControlPoint({ 0,0 });
+
+		auto& graphY = particleSystem->GetRotationOverLifetimeAxisY();
+		graphY.AddControlPoint({ 0,1 });
+		graphY.AddControlPoint({ 0.5, 0 });
+		graphY.AddControlPoint({ 1,0 });
+
+		auto& graphZ = particleSystem->GetRotationOverLifetimeAxisZ();
+		graphZ.AddControlPoint({ 0,0 });
+
+		auto& custom1X = particleSystem->GetCustomData1X();
+		custom1X.AddControlPoint({ 0,1 });
+		custom1X.AddControlPoint({ 1,0 });
 
 #pragma endregion
 
@@ -677,7 +696,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
-				DebugEnemy->AnimationDeltaTime(0.002f);
+				DebugEnemy->AnimationDeltaTime(0.003f);
+				particleSystem->SetDeltaTime(0.003f);
 				if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -769,6 +789,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
+		gRenderer->DeleteTexture(particleTexture);
+		particleTexture.reset();
+		gRenderer->DeleteMeshObject(cart);
+		cart.reset();
 		gRenderer->DeleteMeshObject(DebugStaticEnemy);
 		DebugStaticEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugEnemy);

@@ -21,9 +21,9 @@ float4 PSMain(VSOutput input) : SV_TARGET
     // Step 함수 적용
     float stepData;
     {
-      
-        float tempTime = 1 - g_Time;
-        float s = step(noise, tempTime);
+        //float tempTime = 1 - g_Time;
+        //float s = step(noise, tempTime);
+        float s = step(noise, g_CustomData1.x);
         stepData = s;
     }
 
@@ -36,20 +36,11 @@ float4 PSMain(VSOutput input) : SV_TARGET
     //float4 SampleTexture = ParticleTexture.Sample(LinearClampSampler, outValue);
     float4 SampleTexture = ParticleTexture.Sample(LinearClampSampler, input.UV);
     float4 result = SampleTexture * stepData;
-    //result *= float4(1, 1, 1, 1);
-    //result = mul(float4(1, 1, 0, 0), result);
-    //result.a *= color.a;
-    result *= float4(1, 1, 1, 1);
-    //float4 color = float4(0.9245, 0.3968, 0.7052, 1);
-    //float4 color = float4(1.5, 0.7, 1.2, 1);
+
     float4 color = g_startColor;
     result *= color;
-    result *= 2.0;
+    result *= 4.0;
     return result;
-    
-    //float4 data = mul(stepData, SampleTexture);
-    //data = mul(float4(1, 1, 1, 0), data);
-    //data = mul(float4(0.9245, 0.3968, 0.7052, 0), data);
 }
 
 #endif

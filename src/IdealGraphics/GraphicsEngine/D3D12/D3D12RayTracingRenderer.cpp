@@ -493,6 +493,15 @@ finishAdapter:
 	//m_textManager->WriteTextToBitmap(gTextImage, m_textwidth, m_textheight, m_textwidth * 4, m_fontHandle, L"HELLO WORLD");
 	//UpdateTextureWithImage(m_dynamicTexture, gTextImage, m_textwidth, m_textheight);
 	//m_idealText = CreateText(512, 256, TODO);
+
+	BezierCurve b;
+	b.AddControlPoint({ 1, 0 });
+	b.AddControlPoint({ 0, 1 });
+	b.AddControlPoint({ 0,1 });
+	b.AddControlPoint({ 0.4, 0 });
+	auto p = b.GetPoint(0);
+
+	int k = 3;
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -1167,7 +1176,7 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 
 void Ideal::D3D12RayTracingRenderer::DeleteParticleSystem(std::shared_ptr<Ideal::IParticleSystem>& ParticleSystem)
 {
-
+	m_particleSystemManager->DeleteParticleSystem(std::static_pointer_cast<Ideal::ParticleSystem>(ParticleSystem));
 }
 
 std::shared_ptr<Ideal::IParticleMaterial> Ideal::D3D12RayTracingRenderer::CreateParticleMaterial()

@@ -196,6 +196,8 @@
     <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleMesh.h" />
+    <ClInclude Include="Misc\Utils\Graph.h" />
+    <ClInclude Include="GraphicsEngine\public\IGraph.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -301,6 +303,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleMaterial.cpp" />
     <ClCompile Include="Misc\Utils\BitUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
+    <ClCompile Include="Misc\Utils\Graph.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

@@ -82,9 +82,14 @@ void Ideal::ParticleSystemManager::AddParticleSystem(std::shared_ptr<Ideal::Part
 	m_particles.push_back(ParticleSystem);
 }
 
-void Ideal::ParticleSystemManager::DeleteParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)
+void Ideal::ParticleSystemManager::DeleteParticleSystem(std::shared_ptr<Ideal::ParticleSystem>& ParticleSystem)
 {
-	// TODO: Delete
+	auto it = std::find_if(m_particles.begin(), m_particles.end(), [&ParticleSystem](const std::shared_ptr<Ideal::ParticleSystem>& p) {return p == ParticleSystem; });
+	if (it != m_particles.end()) 
+	{
+		std::swap(*it, m_particles.back());
+		m_particles.pop_back();
+	}
 }
 
 void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData)
@@ -104,6 +109,9 @@ void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, Co
 	for (auto& p : m_particles)
 	{
 		// TODO: DRAW
-		p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
+		if (p->GetActive())
+		{
+			p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
+		}
 	}
 }
