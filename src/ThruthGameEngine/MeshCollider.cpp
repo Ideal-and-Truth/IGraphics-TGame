@@ -1,7 +1,7 @@
 #include "MeshCollider.h"
 #include "FileUtils.h"
 #include "PhysicsManager.h"
-#include "MathConverter.h"
+#include "MathUtil.h"
 #include "RigidBody.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::MeshCollider)
@@ -42,7 +42,7 @@ void Truth::MeshCollider::Awake()
 		mc->userData = this;
 
 		mc->setLocalPose(physx::PxTransform(
-			MathConverter::Convert(m_center)
+			MathUtil::Convert(m_center)
 		));
 
 		mc->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
@@ -60,8 +60,8 @@ void Truth::MeshCollider::Awake()
 			m_body->attachShape(*mc);
 		}
 		physx::PxTransform t(
-			MathConverter::Convert(m_owner.lock()->GetLocalPosition()),
-			MathConverter::Convert(m_owner.lock()->GetLocalRotation())
+			MathUtil::Convert(m_owner.lock()->GetLocalPosition()),
+			MathUtil::Convert(m_owner.lock()->GetLocalRotation())
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);

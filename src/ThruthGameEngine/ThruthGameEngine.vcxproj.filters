@@ -255,7 +255,7 @@
     <ClCompile Include="EditorCamera.cpp">
       <Filter>EditorUI\EditorCamera</Filter>
     </ClCompile>
-    <ClCompile Include="MathConverter.cpp">
+    <ClCompile Include="MathUtil.cpp">
       <Filter>Utils\Math</Filter>
     </ClCompile>
     <ClCompile Include="PointLight.cpp">
@@ -430,7 +430,7 @@
     <ClInclude Include="EditorCamera.h">
       <Filter>EditorUI\EditorCamera</Filter>
     </ClInclude>
-    <ClInclude Include="MathConverter.h">
+    <ClInclude Include="MathUtil.h">
       <Filter>Utils\Math</Filter>
     </ClInclude>
     <ClInclude Include="PointLight.h">

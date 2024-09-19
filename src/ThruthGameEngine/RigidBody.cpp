@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include "PhysicsManager.h"
 #include "Collider.h"
-#include "MathConverter.h"
+#include "MathUtil.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::RigidBody)
 
@@ -66,8 +66,8 @@ void Truth::RigidBody::ApplyTransform()
 	Quaternion rot = m_owner.lock()->GetWorldRotation();
 
 	m_body->setGlobalPose(physx::PxTransform(
-		MathConverter::Convert(pos),
-		MathConverter::Convert(rot)
+		MathUtil::Convert(pos),
+		MathUtil::Convert(rot)
 	), false);
 }
 
@@ -109,7 +109,7 @@ void Truth::RigidBody::CalculateMassCenter()
 	pos /= static_cast<float>(m_colliders.size());
 
 	m_body->setCMassLocalPose(
-		physx::PxTransform(MathConverter::Convert(pos)));
+		physx::PxTransform(MathUtil::Convert(pos)));
 }
 
 /// <summary>
@@ -140,7 +140,7 @@ void Truth::RigidBody::Update()
 /// <param name="_force">Èû</param>
 void Truth::RigidBody::AddImpulse(Vector3& _force)
 {
-	m_body->addForce(MathConverter::Convert(_force), physx::PxForceMode::eIMPULSE);
+	m_body->addForce(MathUtil::Convert(_force), physx::PxForceMode::eIMPULSE);
 }
 
 /// <summary>
@@ -149,7 +149,7 @@ void Truth::RigidBody::AddImpulse(Vector3& _force)
 /// <param name="_val">¼Óµµ</param>
 void Truth::RigidBody::SetLinearVelocity(Vector3& _val)
 {
-	m_body->setLinearVelocity(MathConverter::Convert(_val));
+	m_body->setLinearVelocity(MathUtil::Convert(_val));
 }
 
 /// <summary>
@@ -158,7 +158,7 @@ void Truth::RigidBody::SetLinearVelocity(Vector3& _val)
 /// <returns></returns>
 DirectX::SimpleMath::Vector3 Truth::RigidBody::GetLinearVelocity() const
 {
-	return MathConverter::Convert(m_body->getLinearVelocity());
+	return MathUtil::Convert(m_body->getLinearVelocity());
 }
 
 /// <summary>
@@ -194,7 +194,7 @@ void Truth::RigidBody::Awake()
 
 	CalculateMassCenter();
 	m_globalTM = m_localTM * m_owner.lock()->GetWorldTM();
-	m_body->setGlobalPose(MathConverter::Convert(m_globalTM));
+	m_body->setGlobalPose(MathUtil::Convert(m_globalTM));
 
 	m_managers.lock()->Physics()->AddScene(m_body);
 }

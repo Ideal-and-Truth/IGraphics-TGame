@@ -1,6 +1,6 @@
 #include "Controller.h"
 #include "PhysicsManager.h"
-#include "MathConverter.h"
+#include "MathUtil.h"
 #include "RigidBody.h"
 #include "Entity.h"
 #include "Transform.h"
@@ -45,10 +45,10 @@ void Truth::Controller::Awake()
 	decs.contactOffset = m_contactOffset;
 	decs.stepOffset = m_stepOffset;
 	decs.radius = m_radius;
-	decs.upDirection = MathConverter::Convert(m_upDirection);
+	decs.upDirection = MathUtil::Convert(m_upDirection);
 	decs.material = m_managers.lock()->Physics()->CreateMaterial(m_material);
 	decs.climbingMode = static_cast<physx::PxCapsuleClimbingMode::Enum>(m_climbingmode);
-	decs.position = MathConverter::ConvertEx(m_owner.lock()->GetLocalPosition() + Vector3{0.0f, m_height, 0.0f});
+	decs.position = MathUtil::ConvertEx(m_owner.lock()->GetLocalPosition() + Vector3{0.0f, m_height, 0.0f});
 	
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
 
@@ -98,7 +98,7 @@ void Truth::Controller::Move(Vector3& _disp)
 		static_cast<uint32>(
 			m_controller->move
 		(
-			MathConverter::Convert(_disp),
+			MathUtil::Convert(_disp),
 			m_minmumDistance,
 			1.0f / 60.0f, 
 			physx::PxControllerFilters()

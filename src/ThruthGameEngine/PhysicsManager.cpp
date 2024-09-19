@@ -1,7 +1,7 @@
 #include "PhysicsManager.h"
 #include "PxEventCallback.h"
 #include "Collider.h"
-#include "MathConverter.h"
+#include "MathUtil.h"
 #include "RigidBody.h"
 #include "FileUtils.h"
 
@@ -128,14 +128,14 @@ void Truth::PhysicsManager::FixedUpdate()
 
 				if (rigidbody->IsController())
 				{
-					pos = MathConverter::Convert(rigidbody->GetController()->getFootPosition());
+					pos = MathUtil::Convert(rigidbody->GetController()->getFootPosition());
 					rot = rigidbody->GetRotation();
 				}
 				else
 				{
 					physx::PxTransform physxTM = rigidActor->getGlobalPose();
-					pos = MathConverter::Convert(physxTM.p);
-					rot = MathConverter::Convert(physxTM.q);
+					pos = MathUtil::Convert(physxTM.p);
+					rot = MathUtil::Convert(physxTM.q);
 				}
 				scale = rigidbody->GetScale();
 
@@ -403,8 +403,8 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 	// queryFilterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	queryFilterData.data.word0 = 0;
 	bool hitCheck = m_scene->raycast(
-		MathConverter::Convert(_start),
-		MathConverter::Convert(_direction),
+		MathUtil::Convert(_start),
+		MathUtil::Convert(_direction),
 		_range,
 		rayCastBuffer,
 		physx::PxHitFlags(physx::PxHitFlag::ePOSITION),
@@ -416,7 +416,7 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 	if (hitCheck)
 	{
 		int a = 1;
-		return MathConverter::Convert(rayCastBuffer.block.position) - _direction * 2;
+		return MathUtil::Convert(rayCastBuffer.block.position) - _direction * 2;
 		// return _start + (_direction * _range);
 	}
 	else

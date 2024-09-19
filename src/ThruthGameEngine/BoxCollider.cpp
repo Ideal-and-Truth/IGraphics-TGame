@@ -3,7 +3,7 @@
 #include "Component.h"
 #include "Entity.h"
 #include "PhysicsManager.h"
-#include "MathConverter.h"
+#include "MathUtil.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::BoxCollider)
 

@@ -1,6 +1,6 @@
 #include "Collider.h"
 #include "PhysicsManager.h"
-#include "MathConverter.h"
+#include "MathUtil.h"
 #include "RigidBody.h"
 #include "Component.h"
 #include "GraphicsManager.h"
@@ -118,7 +118,7 @@ void Truth::Collider::Awake()
 
 	if (!isSRT)
 	{
-		MathConverter::DecomposeNonSRT(finalSize, temp, finalPos, (m_owner.lock()->GetWorldTM() * m_localTM));
+		MathUtil::DecomposeNonSRT(finalSize, temp, finalPos, (m_owner.lock()->GetWorldTM() * m_localTM));
 	}
 
 // 	if (finalSize == Vector3::Zero)
@@ -131,7 +131,7 @@ void Truth::Collider::Awake()
 	m_collider->userData = this;
 
 	m_collider->setLocalPose(physx::PxTransform(
-		MathConverter::Convert(m_center)
+		MathUtil::Convert(m_center)
 	));
 
 	SetUpFiltering(m_owner.lock()->m_layer);
@@ -159,8 +159,8 @@ void Truth::Collider::Awake()
 		m_body = m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 		m_body->attachShape(*m_collider);
 		physx::PxTransform t(
-			MathConverter::Convert(m_owner.lock()->GetWorldPosition()),
-			MathConverter::Convert(m_owner.lock()->GetWorldRotation())
+			MathUtil::Convert(m_owner.lock()->GetWorldPosition()),
+			MathUtil::Convert(m_owner.lock()->GetWorldRotation())
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
@@ -173,8 +173,8 @@ void Truth::Collider::Awake()
 void Truth::Collider::FixedUpdate()
 {
 	physx::PxTransform t(
-		MathConverter::Convert(m_owner.lock()->GetWorldPosition()),
-		MathConverter::Convert(m_owner.lock()->GetWorldRotation())
+		MathUtil::Convert(m_owner.lock()->GetWorldPosition()),
+		MathUtil::Convert(m_owner.lock()->GetWorldRotation())
 	);
 	m_body->setGlobalPose(t);
 }
