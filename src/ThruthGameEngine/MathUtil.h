@@ -20,5 +20,7 @@ namespace MathUtil
 	bool DecomposeNonSRT(Vector3& _outScale, Quaternion& _outRot, Vector3& _outPos, const Matrix& _mat);
 
 	Vector3 GetBezjePoint(std::vector<Vector3>& _controlPoints, float _ratio);
+	Vector3 GetCatmullPoint(std::vector<Vector3>& _controlPoints, float _ratio);
+	Vector3 GetHermitePoint3(std::vector<Vector3>& _controlPoints, float _ratio);
 };
 

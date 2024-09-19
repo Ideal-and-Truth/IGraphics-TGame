@@ -156,11 +156,11 @@ namespace TypeUI
 			ImGui::Text("Texture");
 			for (auto& mat : _val)
 			{
- 				ImGui::ImageButton((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
- 				ImGui::SameLine();
- 				ImGui::ImageButton((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
- 				ImGui::SameLine();
- 				ImGui::ImageButton((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
+ 				// ImGui::ImageButton((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
+ 				// ImGui::SameLine();
+ 				// ImGui::ImageButton((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
+ 				// ImGui::SameLine();
+ 				// ImGui::ImageButton((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
 			}
 			return false;
 		}

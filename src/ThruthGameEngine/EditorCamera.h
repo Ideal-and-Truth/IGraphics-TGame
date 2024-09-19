@@ -18,6 +18,7 @@ namespace Truth
 		EditorCamera(Managers* _managers);
 		~EditorCamera();
 
+
 		void Update(float _dt);
 
 		bool GetKey(KEY _key);

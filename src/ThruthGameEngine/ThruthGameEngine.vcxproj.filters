@@ -312,6 +312,7 @@
     <ClCompile Include="MeshCollider.cpp">
       <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="FreeCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -488,6 +489,7 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Component\Collider\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="FreeCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

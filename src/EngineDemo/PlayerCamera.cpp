@@ -93,6 +93,8 @@ void PlayerCamera::LateUpdate()
 		}
 	}
 
+	m_camera.lock()->CompleteCamera();
+
 }
 
 void PlayerCamera::OnTriggerEnter(Truth::Collider* _other)

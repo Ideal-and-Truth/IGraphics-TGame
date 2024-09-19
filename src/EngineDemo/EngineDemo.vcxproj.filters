@@ -13,23 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Entity">
-      <UniqueIdentifier>{82be83b1-c6ef-4185-add1-daae83ea1cb0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{3c8b76da-e1da-4357-9c74-ed361c957f4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Entity\Wall">
-      <UniqueIdentifier>{a6ba6c50-0002-4bce-a342-68d2b1c3e05c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Component">
       <UniqueIdentifier>{e172fa2e-c0eb-4ecb-b2f9-5ad87389de9b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Component\Bullet">
       <UniqueIdentifier>{8a6966f1-adc0-47d9-8eaa-1a998d8e63ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Entity\BulletSpowner">
-      <UniqueIdentifier>{7bdae6a6-f93c-4e5d-9fef-b4e72e114ab3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Component\DebugComponent">
       <UniqueIdentifier>{efe874c3-c70a-4af3-ad04-09ed6df054f7}</UniqueIdentifier>
@@ -57,6 +48,12 @@
     </Filter>
     <Filter Include="Component\HitStop">
       <UniqueIdentifier>{dc233b34-fe3e-47d2-a8f6-bcad2b8aedbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestEntity">
+      <UniqueIdentifier>{82be83b1-c6ef-4185-add1-daae83ea1cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestEntity\BejieTest">
+      <UniqueIdentifier>{4c7c6d36-d005-4f29-b10a-509ff47229de}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +129,9 @@
     <ClInclude Include="Skill.h">
       <Filter>Component\BattleSystem\SkillTree</Filter>
     </ClInclude>
+    <ClInclude Include="BezierShooter.h">
+      <Filter>TestEntity\BejieTest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -196,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="Skill.cpp">
       <Filter>Component\BattleSystem\SkillTree</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierShooter.cpp">
+      <Filter>TestEntity\BejieTest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -22,6 +22,7 @@
 #include "Mesh.h"
 #include "Shooter.h"
 #include "Camera.h"
+#include "FreeCamera.h"
 
 #include "Transform.h"
 #include "TestComponent.h"

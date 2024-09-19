@@ -86,7 +86,7 @@ void Truth::Managers::Render() const
 	}
 	else
 	{
-		m_graphicsManager->CompleteCamera();
+		// m_graphicsManager->CompleteCamera();
 		m_graphicsManager->Render();
 	}
 #else

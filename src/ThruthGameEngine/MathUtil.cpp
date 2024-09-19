@@ -105,21 +105,65 @@ DirectX::SimpleMath::Vector3 MathUtil::GetBezjePoint(std::vector<Vector3>& _cont
 
 	if (_controlPoints.size() == 2)
 	{
-		Vector3 dist = _controlPoints[1] - _controlPoints[0];
-
-		dist = dist / _ratio;
-		return _controlPoints[0] + dist;
+		return  Vector3::Lerp(_controlPoints[0], _controlPoints[1], _ratio);
 	}
 	else
 	{
 		std::vector<Vector3> midterms(_controlPoints.size() - 1);
-		for (size_t i = 0; i < _controlPoints.size() - 1 ; ++i)
+		for (size_t i = 0; i < _controlPoints.size() - 1; ++i)
 		{
-			Vector3 dist = _controlPoints[i + 1] - _controlPoints[i];
-
-			dist = dist / _ratio;
-			midterms[i] = dist / _ratio;
+			midterms[i] = Vector3::Lerp(_controlPoints[i], _controlPoints[i + 1], _ratio);
 		}
 		return GetBezjePoint(midterms, _ratio);
 	}
 }
+
+DirectX::SimpleMath::Vector3 MathUtil::GetCatmullPoint(std::vector<Vector3>& _controlPoints, float _ratio)
+{
+	if (_controlPoints.size() < 3)
+	{
+		assert(false && "cannot get Catmull point. need more control point");
+		return Vector3::Zero;
+	}
+
+	float framCount = 1.0f / static_cast<float>(_controlPoints.size() - 1);
+
+	float realRatio = _ratio / framCount;
+
+	int32 panel = static_cast<int32>(realRatio);
+	realRatio = realRatio - panel;
+
+	std::vector<Vector3> midterms(4, Vector3::Zero);
+	midterms[0] = _controlPoints[panel];
+
+	// 시작점이 0이 아니면
+	if (panel != 0)
+	{
+		midterms[1] = (_controlPoints[panel + 1] - _controlPoints[panel - 1]) / 2;
+	}
+	// 끝점이 -2가 아니면
+	if (panel != _controlPoints.size() - 2)
+	{
+		midterms[2] = (_controlPoints[panel + 2] - _controlPoints[panel]) / 2;
+	}
+
+	midterms[3] = _controlPoints[panel + 1];
+
+	midterms[1] = midterms[1] + midterms[0];
+	midterms[2] = midterms[3] - midterms[2];
+
+	return GetHermitePoint3(midterms, realRatio);
+}
+
+DirectX::SimpleMath::Vector3 MathUtil::GetHermitePoint3(std::vector<Vector3>& _controlPoints, float _ratio)
+{
+	if (_controlPoints.size() != 4)
+	{
+		assert(false && "cannot get Hermite 3 point. point count error");
+		return Vector3::Zero;
+	}
+
+	return GetBezjePoint(_controlPoints, _ratio);
+}
+
+

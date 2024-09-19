@@ -16,8 +16,10 @@ namespace Truth
 	private:
 		friend class GraphicsManager;
 
+	protected:
 		std::shared_ptr<Ideal::ICamera> m_camera;
 
+	private:
 		friend class boost::serialization::access;
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 		template<class Archive>

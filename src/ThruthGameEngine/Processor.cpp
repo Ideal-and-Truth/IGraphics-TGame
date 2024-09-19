@@ -57,6 +57,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/FieldMob.fbx");
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
+	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
