@@ -97,43 +97,58 @@ physx::PxVec2 MathUtil::Convert(const Vector2& _val)
 
 DirectX::SimpleMath::Vector3 MathUtil::GetBezjePoint(std::vector<Vector3>& _controlPoints, float _ratio)
 {
+	// 점 2개 미만이면 선이 되지 않는다.
 	if (_controlPoints.size() < 2)
 	{
 		assert(false && "cannot get bezje point. need more control point");
 		return Vector3::Zero;
 	}
 
+	// 점이 단 2개라면 곡선이 되지 않는다.
 	if (_controlPoints.size() == 2)
 	{
 		return  Vector3::Lerp(_controlPoints[0], _controlPoints[1], _ratio);
 	}
 	else
 	{
+		// 모든 직선에 대한 보간을 한다.
 		std::vector<Vector3> midterms(_controlPoints.size() - 1);
 		for (size_t i = 0; i < _controlPoints.size() - 1; ++i)
 		{
 			midterms[i] = Vector3::Lerp(_controlPoints[i], _controlPoints[i + 1], _ratio);
 		}
+		// 보간된 점을 새로은 변환점으로 삼아 곡선을 구한다.
 		return GetBezjePoint(midterms, _ratio);
 	}
 }
 
 DirectX::SimpleMath::Vector3 MathUtil::GetCatmullPoint(std::vector<Vector3>& _controlPoints, float _ratio)
 {
-	if (_controlPoints.size() < 3)
+	// 점 2개 미만이면 선이 되지 않는다.
+	if (_controlPoints.size() < 2)
 	{
 		assert(false && "cannot get Catmull point. need more control point");
 		return Vector3::Zero;
 	}
 
+	// 점이 단 2개라면 곡선이 되지 않는다.
+	if (_controlPoints.size() == 2)
+	{
+		return  Vector3::Lerp(_controlPoints[0], _controlPoints[1], _ratio);
+	}
+
+	// 모든 점을 구할 필요 없다. 현재 어느 점이 시작점인지 구한다.
 	float framCount = 1.0f / static_cast<float>(_controlPoints.size() - 1);
-
+	// 현재 점에서 다음 점까지의 보간값
 	float realRatio = _ratio / framCount;
-
+	// 현재점
 	int32 panel = static_cast<int32>(realRatio);
 	realRatio = realRatio - panel;
 
+	// 켓멀 곡선을 구하기 위한 변환점 4개
 	std::vector<Vector3> midterms(4, Vector3::Zero);
+
+	// 현재 점이 시작점
 	midterms[0] = _controlPoints[panel];
 
 	// 시작점이 0이 아니면
@@ -147,12 +162,15 @@ DirectX::SimpleMath::Vector3 MathUtil::GetCatmullPoint(std::vector<Vector3>& _co
 		midterms[2] = (_controlPoints[panel + 2] - _controlPoints[panel]) / 2;
 	}
 
+	// 끝점
 	midterms[3] = _controlPoints[panel + 1];
 
+	// 벡터를 점으로 표현
 	midterms[1] = midterms[1] + midterms[0];
 	midterms[2] = midterms[3] - midterms[2];
 
-	return GetHermitePoint3(midterms, realRatio);
+	// 허밋 곡선 구하기
+	return GetBezjePoint(midterms, realRatio);
 }
 
 DirectX::SimpleMath::Vector3 MathUtil::GetHermitePoint3(std::vector<Vector3>& _controlPoints, float _ratio)
