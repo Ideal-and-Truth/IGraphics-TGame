@@ -16,6 +16,8 @@
 #include "IdealRenderer.h"
 #include "ThreadPool.h"
 
+#include <windowsx.h>
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -142,6 +144,14 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		}
 		break;
 	}
+	case WM_SYSCOMMAND:
+	{
+		if (SC_KEYMENU == (wParam & 0xFFF0) && (lParam == 13))
+		{
+			g_Renderer->ToggleFullScreenWindow();
+		}
+		[[fallthrough]];
+	}
 	default:
 		if (g_inputmanager)
 		{
@@ -238,28 +248,6 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 
 	ShowWindow(m_hwnd, SW_SHOWNORMAL);
 	UpdateWindow(m_hwnd);
-
-	RECT nowRect;
-	DWORD _style = (DWORD)GetWindowLong(m_hwnd, GWL_STYLE);
-	DWORD _exstyle = (DWORD)GetWindowLong(m_hwnd, GWL_EXSTYLE);
-
-	GetWindowRect(m_hwnd, &nowRect);
-
-	// 	RECT newRect = {};
-	// 	newRect.left = 0;
-	// 	newRect.top = 0;
-	// 	newRect.right = _width;
-	// 	newRect.bottom = _height;
-	// 
-	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
-	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
-	// 
-	// 	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
-	// 	int _newWidth = (newRect.right - newRect.left);
-	// 	int _newHeight = (newRect.bottom - newRect.top);
-	// 
-	// 	SetWindowPos(m_hwnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
-	// 		_newWidth, _newHeight, SWP_SHOWWINDOW);
 }
 
 void Processor::InitializeManager()
