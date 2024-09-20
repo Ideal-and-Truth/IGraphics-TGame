@@ -369,7 +369,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		Matrix flipXY = Matrix::Identity;
 		flipXY.m[2][2] = -1.f;
 
-		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
+		m_mapEntity[i]->SetLocalTM(ltm);
 
 		// read Collider Data
 		bool isCollider = file->Read<bool>();

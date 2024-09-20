@@ -528,10 +528,19 @@ DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node
 		}
 	}
 
+	// rot *= Quaternion::CreateFromYawPitchRoll({ 0.0f, -1.5f, 0.0f });
+
 	result = Matrix::CreateScale(scale);
 	result *= Matrix::CreateFromQuaternion(rot);
 	result *= Matrix::CreateTranslation(pos);
 
+	Matrix flipYZ = Matrix::Identity;
+	flipYZ.m[0][0] = -1.f;
+
+	Matrix flipXY = Matrix::Identity;
+	flipXY.m[2][2] = -1.f;
+
+	// result = flipYZ * flipXY * result;
 	return result;
 }
 
