@@ -66,6 +66,9 @@ namespace Ideal
 
 		virtual void SetDeltaTime(float DT) abstract;
 
+		virtual void Play() abstract;
+		virtual void SetStopWhenFinished(bool StopWhenFinished) abstract;
+
 	public:
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
 		virtual DirectX::SimpleMath::Color& GetStartColor() abstract;
@@ -75,6 +78,10 @@ namespace Ideal
 
 		virtual void SetLoop(bool Loop) abstract;
 		virtual bool GetLoop() abstract;
+
+		//------Color Over Lifetime------//
+		virtual void SetColorOverLifetime(bool Active) abstract;
+		virtual Ideal::IGradient& GetColorOverLifetimeGradientGraph() abstract;
 
 		//----Rotation Over Lifetime----//
 		virtual void SetRotationOverLifetime(bool Active) abstract;

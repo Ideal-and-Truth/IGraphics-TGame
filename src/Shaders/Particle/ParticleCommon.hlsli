@@ -23,7 +23,9 @@
         float4 g_startColor;
     };
 
-    Texture2D ParticleTexture : register(t0);
+    Texture2D ParticleTexture0 : register(t0);
+    Texture2D ParticleTexture1 : register(t1);
+    Texture2D ParticleTexture2 : register(t2);
 
     SamplerState LinearWrapSampler : register(s0);
     SamplerState LinearClampSampler : register(s1);
@@ -52,6 +54,28 @@
     }
 
     //--------------------MATH-------------------//
+    // Comparison
+    void Ideal_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
+    {
+        Out = A >= B ? 1 : 0;
+    }
+    // Range
+        //One Minus
+    void Ideal_OneMinus_float4(float4 In, out float4 Out)
+    {
+        Out = 1 - In;
+    }
+
+    // Range
+        // Remap
+    void Ideal_Remap_float4(float4 In, float2 InMinMax, float2 OutMinMax, out float4 Out)
+    {
+        Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+    }
+    void Ideal_Remap_float3(float3 In, float2 InMinMax, float2 OutMinMax, out float3 Out)
+    {
+        Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+    }   
     // SimpleNoise
     inline float Noise_RandomValue(float2 UV)
     {
@@ -133,5 +157,69 @@
     {
         Out = step(Edge, In);
     }
+    
+    // Artistic
+        // Adjustment
+            // Hue
+    void Ideal_Hue_Degrees_float(float3 In, float Offset, out float3 Out)
+    {
+        float4 K = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+        float4 P = lerp(float4(In.bg, K.wz), float4(In.gb, K.xy), step(In.b, In.g));
+        float4 Q = lerp(float4(P.xyw, In.r), float4(In.r, P.yzx), step(P.x, In.r));
+        float D = Q.x - min(Q.w, Q.y);
+        float E = 1e-10;
+        float3 hsv = float3(abs(Q.z + (Q.w - Q.y) / (6.0 * D + E)), D / (Q.x + E), Q.x);
+        
+        float hue = hsv.x + Offset / 360;
+        hsv.x = (hue < 0) ? hue + 1
+                            : (hue > 1) ? hue - 1
+                                        : hue;
+        float4 K2 = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+        float3 P2 = abs(frac(hsv.xxx + K2.xyz) * 6.0 - K2.www);
+        Out = hsv.z * lerp(K2.xxx, saturate(P2 - K2.xxx), hsv.y);
+    }
+    
+    void Ideal_Hue_Radians_float(float3 In, float Offset, out float3 Out)
+    {
+        float4 K = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+        float4 P = lerp(float4(In.bg, K.wz), float4(In.gb, K.xy), step(In.b, In.g));
+        float4 Q = lerp(float4(P.xyw, In.r), float4(In.r, P.yzx), step(P.x, In.r));
+        float D = Q.x - min(Q.w, Q.y);
+        float E = 1e-10;
+        float3 hsv = float3(abs(Q.z + (Q.w - Q.y) / (6.0 * D + E)), D / (Q.x + E), Q.x);
+    
+        float hue = hsv.x + Offset;
+        hsv.x = (hue < 0)
+                ? hue + 1
+                : (hue > 1)
+                    ? hue - 1
+                    : hue;
+    
+        // HSV to RGB
+        float4 K2 = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+        float3 P2 = abs(frac(hsv.xxx + K2.xyz) * 6.0 - K2.www);
+        Out = hsv.z * lerp(K2.xxx, saturate(P2 - K2.xxx), hsv.y);
+    }
 
-    #endif
+    // Artistic
+        // Adjustment
+            // Saturation
+    void Ideal_Saturation_float(float3 In, float Saturation, out float3 Out)
+    {
+        float luma = dot(In, float3(0.2126729, 0.7151522, 0.0721750));
+        Out = luma.xxx + Saturation.xxx * (In - luma.xxx);
+    }
+
+    // Procedural
+           // Utility
+               // Logic
+                   // Branch
+    void Ideal_Branch_float4(float Predicate, float4 True, float4 False, out float4 Out)
+    {
+        Out = Predicate ? True : False;
+    }
+    void Ideal_Branch_float(float Predicate, float True, float False, out float Out)
+    {
+        Out = Predicate ? True : False;
+    }
+    #endif  

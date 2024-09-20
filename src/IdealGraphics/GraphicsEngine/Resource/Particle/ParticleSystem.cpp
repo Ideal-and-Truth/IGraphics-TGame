@@ -55,6 +55,16 @@ void Ideal::ParticleSystem::SetDeltaTime(float DT)
 	m_deltaTime = DT;
 }
 
+void Ideal::ParticleSystem::Play()
+{
+	m_currentTime = 0;
+}
+
+void Ideal::ParticleSystem::SetStopWhenFinished(bool StopWhenFinished)
+{
+	m_stopWhenFinished = StopWhenFinished;
+}
+
 void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
 {
 	m_particleMaterial = ParticleMaterial;
@@ -66,6 +76,22 @@ void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootS
 
 void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
+	// Time; // TEMP
+	//m_currentTime += 0.003f;
+	m_currentTime += m_deltaTime;
+	//m_currentTime += 0.001f;
+	if (m_currentTime >= m_duration)
+	{
+		if (!m_isLoop || m_stopWhenFinished)
+		{
+			// 반복이 아닐때 그냥 나간다.
+			// 또는 한 번만 재생을 원하면 나간다.
+			return;
+		}
+		m_currentTime = 0.f;
+	}
+
+
 	switch (m_Renderer_Mode)
 	{
 		case Ideal::ParticleMenu::ERendererMode::Billboard:
@@ -81,51 +107,10 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 
 void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 {
-
-	//std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
-	//vs->CompileFromFile(L"../Shaders/Particle/TestCustomParticle2.hlsl", nullptr, nullptr, "VSMain", "vs_5_0");
-	//// TODO : shader
-	//std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
-	//ps->CompileFromFile(L"../Shaders/Particle/TestCustomParticle2.hlsl", nullptr, nullptr, "PSMain", "ps_5_0");
-
-
-	//m_pso = std::make_shared<Ideal::D3D12PipelineStateObject>();
-	//// Root Signature
-	//m_pso->SetRootSignature(m_rootSignature.Get());
-	//// Set IA
-	//m_pso->SetInputLayout(ParticleVertexTest::InputElements, ParticleVertexTest::InputElementCount);
-	//// VS
-	//m_pso->SetVertexShader(m_vs);
-	//// PS
-	//m_pso->SetPixelShader(m_ps);
-	//// RS
-	//m_pso->SetRasterizerState();
-	//// BS
-	//m_pso->SetBlendState();
-	//
-	//// RTV
-	//DXGI_FORMAT rtvFormat[1] = { DXGI_FORMAT_R8G8B8A8_UNORM };
-	//// DSV 
-	//DXGI_FORMAT dsvFormat = DXGI_FORMAT_D32_FLOAT;
-	//m_pso->SetTargetFormat(1, rtvFormat, dsvFormat);
-	//
-	//m_pso->Create(Device.Get());
-	//return;
-
-	//std::shared_ptr<Ideal::D3D12Shader> vs = std::make_shared<Ideal::D3D12Shader>();
-	//vs->CompileFromFile(L"../Shaders/Particle/TestCustomParticle2.hlsl", nullptr, nullptr, "VSMain", "vs_5_0");
-	//// TODO : shader
-	//std::shared_ptr<Ideal::D3D12Shader> ps = std::make_shared<Ideal::D3D12Shader>();
-	//ps->CompileFromFile(L"../Shaders/Particle/TestCustomParticle2.hlsl", nullptr, nullptr, "PSMain", "ps_5_0");
-
-
-	// TODO : Shader Binding
-
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { ParticleVertexTest::InputElements, ParticleVertexTest::InputElementCount };
 	psoDesc.pRootSignature = m_rootSignature.Get();
 	psoDesc.VS = m_vs->GetShaderByteCode();
-	//psoDesc.PS = m_particleMaterial.lock()->GetShader()->GetShaderByteCode();
 	psoDesc.PS = m_ps->GetShaderByteCode();
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	//psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -137,8 +122,37 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ZERO;
-		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
+		// --- blending mode ---//
+		Ideal::ParticleMaterialMenu::EBlendingMode BlendMode = m_particleMaterial.lock()->GetBlendingMode();
+		switch (BlendMode)
+		{
+			case Ideal::ParticleMaterialMenu::EBlendingMode::Additive:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ZERO;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
+			}
+				break;
+			case Ideal::ParticleMaterialMenu::EBlendingMode::Alpha:
+			{
+				//blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				//blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_ALPHA;
+				
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
+			}
+				break;
+			default:
+				break;
+		}
+		
+
+	
 		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
 		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;	// one // zero 일경우 검은색으로 바뀌어간다.
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
@@ -163,12 +177,13 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 
 void Ideal::ParticleSystem::SetStartColor(const DirectX::SimpleMath::Color& StartColor)
 {
-	m_cbParticleSystem.StartColor = StartColor;
+	m_startColor = StartColor;
 }
 
 DirectX::SimpleMath::Color& Ideal::ParticleSystem::GetStartColor()
 {
-	return m_cbParticleSystem.StartColor;
+	//return m_cbParticleSystem.StartColor;
+	return m_startColor;
 }
 
 void Ideal::ParticleSystem::SetDuration(float Time)
@@ -189,6 +204,30 @@ void Ideal::ParticleSystem::SetLoop(bool Loop)
 bool Ideal::ParticleSystem::GetLoop()
 {
 	return m_isLoop;
+}
+
+void Ideal::ParticleSystem::SetColorOverLifetime(bool Active)
+{
+	m_isUseColorOverLifetime = Active;
+}
+
+Ideal::IGradient& Ideal::ParticleSystem::GetColorOverLifetimeGradientGraph()
+{
+	return m_ColorOverLifetimeGradientGraph;
+}
+
+void Ideal::ParticleSystem::UpdateColorOverLifetime()
+{
+	if (m_isUseColorOverLifetime)
+	{
+		// 현재 그래프의 색상을 불러온다.
+		Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentTime);
+		m_cbParticleSystem.StartColor = colorAtCurrentTime;
+	}
+	else
+	{
+		m_cbParticleSystem.StartColor = m_startColor;
+	}
 }
 
 void Ideal::ParticleSystem::SetRotationOverLifetime(bool Active)
@@ -312,21 +351,7 @@ void Ideal::ParticleSystem::SetCustomData(Ideal::ParticleMenu::ECustomData Custo
 
 void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
-	// Time; // TEMP
-	//m_currentTime += 0.003f;
-	m_currentTime += m_deltaTime;
-	//m_currentTime += 0.001f;
-	if (m_currentTime >= m_duration)
-	{
-		if (!m_isLoop)
-		{
-			// 반복이 아닐때 그냥 나간다.
-			return;
-		}
-		m_currentTime = 0.f;
-	}
-
-
+	
 	// Transform Data
 	{
 		// RotationOverLifetime
@@ -368,7 +393,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 	// CB_ParticleSystem
 	{
 		UpdateCustomData();
-
+		UpdateColorOverLifetime();
 		m_cbParticleSystem.Time = m_currentTime;
 		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
 		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
@@ -379,12 +404,35 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 	// SRV
 	if (m_particleMaterial.lock())
 	{
-		auto texture = m_particleMaterial.lock()->GetTexture().lock();
-		if (texture)
+		// Texture0
 		{
-			auto handle3 = DescriptorHeap->Allocate();
-			Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture, handle3.GetGpuHandle());
+			auto texture = m_particleMaterial.lock()->GetTexture0().lock();
+			if (texture)
+			{
+				auto handle3 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0, handle3.GetGpuHandle());
+			}
+		}
+		// Texture1
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture1().lock();
+			if (texture)
+			{
+				auto handle4 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle4.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1, handle4.GetGpuHandle());
+			}
+		}
+		// Texture0
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture2().lock();
+			if (texture)
+			{
+				auto handle5 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle5.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2, handle5.GetGpuHandle());
+			}
 		}
 	}
 	CommandList->DrawIndexedInstanced(m_Renderer_Mesh.lock()->GetElementCount(), 1, 0, 0, 0);

@@ -34,7 +34,7 @@ float4 PSMain(VSOutput input) : SV_TARGET
     //float2 outValue = lerp(input.UV, float2(gradientNoise, gradientNoise), dis_amount);
     float2 outValue = lerp(scrolledUV, gradientNoise, dis_amount);
     //float4 SampleTexture = ParticleTexture.Sample(LinearClampSampler, outValue);
-    float4 SampleTexture = ParticleTexture.Sample(LinearClampSampler, input.UV);
+    float4 SampleTexture = ParticleTexture0.Sample(LinearClampSampler, input.UV);
     float4 result = SampleTexture * stepData;
 
     float4 color = g_startColor;

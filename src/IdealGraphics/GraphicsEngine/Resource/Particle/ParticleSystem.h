@@ -41,6 +41,9 @@ namespace Ideal
 
 		virtual void SetDeltaTime(float DT) override;
 		
+		virtual void Play() override;
+		virtual void SetStopWhenFinished(bool StopWhenFinished) override;
+
 	public:
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
@@ -65,6 +68,11 @@ namespace Ideal
 
 		virtual void SetLoop(bool Loop) override;
 		virtual bool GetLoop() override;
+
+		//------Color Over Lifetime------//
+		virtual void SetColorOverLifetime(bool Active) override;
+		virtual Ideal::IGradient& GetColorOverLifetimeGradientGraph() override;
+		void UpdateColorOverLifetime();
 
 		//----Rotation Over Lifetime----//
 		virtual void SetRotationOverLifetime(bool Active) override;
@@ -99,10 +107,15 @@ namespace Ideal
 
 	private:
 		float m_deltaTime = 0.f;
+		bool m_stopWhenFinished = false;
 		bool m_isActive = true;
 		bool m_isLoop = true;
 		float m_duration = 1.f;
 		float m_currentTime = 0.f;
+		Color m_startColor = Color(1, 1, 1, 1);
+		//------Color Over Lifetime------//
+		bool m_isUseColorOverLifetime = false;
+		Ideal::Gradient m_ColorOverLifetimeGradientGraph;
 
 		//----Rotation Over Lifetime----//
 		bool m_isRotationOverLifetime = false;

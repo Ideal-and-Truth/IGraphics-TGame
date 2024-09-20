@@ -40,13 +40,17 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Transform].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
-	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
 	
 	CD3DX12_ROOT_PARAMETER1	rootParameters[Ideal::ParticleSystemRootSignature::Slot::Count];
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::CBV_Global].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Global]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::CBV_Transform].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Transform]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData]);
-	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture]);
+	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0]);
+	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1]);
+	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2]);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
 	{

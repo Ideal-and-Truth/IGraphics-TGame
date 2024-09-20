@@ -196,7 +196,7 @@
     <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleMesh.h" />
-    <ClInclude Include="Misc\Utils\Graph.h" />
+    <ClInclude Include="Misc\ThirdParty\Utils\Graph.h" />
     <ClInclude Include="GraphicsEngine\public\IGraph.h" />
   </ItemGroup>
   <ItemGroup>
@@ -303,7 +303,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleMaterial.cpp" />
     <ClCompile Include="Misc\Utils\BitUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
-    <ClCompile Include="Misc\Utils\Graph.cpp" />
+    <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -344,6 +344,7 @@
     <FxCompile Include="..\Shaders\Screen\Screen.hlsl" />
     <FxCompile Include="..\Shaders\Particle\TestCustomParticle.hlsl" />
     <FxCompile Include="..\Shaders\Particle\DefaultParticleVS.hlsl" />
+    <FxCompile Include="..\Shaders\Particle\SwordSlash.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

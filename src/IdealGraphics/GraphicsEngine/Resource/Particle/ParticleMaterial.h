@@ -39,16 +39,25 @@ namespace Ideal
 		virtual ~ParticleMaterial() {};
 
 	public:
+		virtual void SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode BlendingMode) override;
 		virtual void SetShader(std::shared_ptr<Ideal::IShader> Shader) override;
 		virtual void SetShaderByPath(const std::wstring& FilePath) override;
-		virtual void SetTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void SetTexture0(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void SetTexture1(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void SetTexture2(std::shared_ptr<Ideal::ITexture> Texture) override;
 
 	public:
+		Ideal::ParticleMaterialMenu::EBlendingMode GetBlendingMode();
 		std::shared_ptr<Ideal::D3D12Shader> GetShader();
-		std::weak_ptr<Ideal::D3D12Texture> GetTexture();
+		std::weak_ptr<Ideal::D3D12Texture> GetTexture0();
+		std::weak_ptr<Ideal::D3D12Texture> GetTexture1();
+		std::weak_ptr<Ideal::D3D12Texture> GetTexture2();
 
 	private:
+		Ideal::ParticleMaterialMenu::EBlendingMode m_blendingMode;
 		std::shared_ptr<Ideal::D3D12Shader> m_shader;	// 셰이더 시스템
-		std::weak_ptr<Ideal::D3D12Texture> m_texture;	
+		std::weak_ptr<Ideal::D3D12Texture> m_texture0;	
+		std::weak_ptr<Ideal::D3D12Texture> m_texture1;	
+		std::weak_ptr<Ideal::D3D12Texture> m_texture2;	
 	};
 }

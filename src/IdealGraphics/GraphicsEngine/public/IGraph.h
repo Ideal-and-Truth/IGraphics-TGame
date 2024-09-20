@@ -1,4 +1,5 @@
 #pragma once
+#include "../Utils/SimpleMath.h"
 namespace Ideal
 {
 	struct Point
@@ -24,7 +25,12 @@ namespace Ideal
 		virtual void AddControlPoint(Point p) abstract;
 		virtual Point GetPoint(float t) abstract;
 
-	private:
-		virtual Point Bezier(float t) abstract;
+	};
+
+	class IGradient
+	{
+	public:
+		virtual void AddPoint(DirectX::SimpleMath::Color color, float position) abstract;
+		virtual DirectX::SimpleMath::Color GetColorAtPosition(float t) abstract;
 	};
 }
