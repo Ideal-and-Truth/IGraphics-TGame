@@ -39,6 +39,8 @@
 #include "DirectionLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+
+#include "UI.h"
 #pragma endregion test Scene
 
 // #define EDITOR_MODE

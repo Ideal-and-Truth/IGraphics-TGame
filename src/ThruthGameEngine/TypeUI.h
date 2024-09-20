@@ -12,6 +12,7 @@
 #include "Texture.h"
 #include "ITexture.h"
 #include "IMaterial.h"
+#include "ISprite.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -69,7 +70,7 @@ namespace TypeUI
 			float value[3] = {};
 			value[0] = _val.x;
 			value[1] = _val.y;
-			bool isSelect = ImGui::DragFloat3(_name, value, 0.01f);
+			bool isSelect = ImGui::DragFloat2(_name, value, 0.01f);
 			if (isSelect)
 			{
 				_val.x = value[0];

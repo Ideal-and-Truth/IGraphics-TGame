@@ -152,6 +152,16 @@ std::shared_ptr<Ideal::IPointLight> Truth::GraphicsManager::CreatePointLight()
 	return m_renderer->CreatePointLight();
 }
 
+std::shared_ptr<Ideal::ISprite> Truth::GraphicsManager::CreateSprite()
+{
+	return m_renderer->CreateSprite();
+}
+
+void Truth::GraphicsManager::DeleteSprite(std::shared_ptr<Ideal::ISprite> _sprite)
+{
+	m_renderer->DeleteSprite(_sprite);
+}
+
 /// <summary>
 /// 朝五虞 持失
 /// </summary>
@@ -202,6 +212,9 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		tex->m_texture = m_renderer->CreateTexture(_path);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
+
+		tex->w = tex->m_texture->GetWidth();
+		tex->h = tex->m_texture->GetHeight();
 		return m_textureMap[_path] = tex;
 	}
 	return m_textureMap[_path];

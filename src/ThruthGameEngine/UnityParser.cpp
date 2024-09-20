@@ -272,7 +272,7 @@ fs::path Truth::UnityParser::OrganizeUnityFile(fs::path& _path)
 void Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::string& _guid, uint32 _parent)
 {
 	GameObject* GO = new GameObject;
-	GO->m_mine = m_gameObjects.size();
+	GO->m_mine = static_cast<uint32>(m_gameObjects.size());
 	GO->m_parent = _parent;
 	m_gameObjects.push_back(GO);
 	GO->m_isCollider = false;
@@ -339,7 +339,7 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 {
 	GameObject* GO = new GameObject;
 	GO->m_parent = _parent;
-	GO->m_mine = m_gameObjects.size();
+	GO->m_mine = static_cast<uint32>(m_gameObjects.size());
 	m_gameObjects.push_back(GO);
 
 	// get transform data

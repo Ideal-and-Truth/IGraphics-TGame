@@ -17,6 +17,7 @@ namespace Ideal
 {
 	class IMaterial;
 	class ITexture;
+	class ISprite;
 }
 
 namespace Truth
@@ -61,6 +62,8 @@ namespace Truth
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight();
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight();
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight();
+		std::shared_ptr<Ideal::ISprite> CreateSprite();
+		void DeleteSprite(std::shared_ptr<Ideal::ISprite> _sprite);
 
 		std::shared_ptr<Ideal::ICamera> CreateCamera();
 

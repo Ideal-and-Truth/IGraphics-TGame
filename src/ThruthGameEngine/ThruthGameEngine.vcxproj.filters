@@ -157,6 +157,9 @@
     <Filter Include="EditorUI\Context\Menu\UnityDataLoad">
       <UniqueIdentifier>{1d893df8-34dc-4983-979f-4ee92b67bc95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\UI">
+      <UniqueIdentifier>{56aa9117-ed04-4847-847d-5dbba433fa1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -313,6 +316,7 @@
       <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="FreeCamera.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -490,6 +494,7 @@
       <Filter>Component\Collider\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="FreeCamera.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

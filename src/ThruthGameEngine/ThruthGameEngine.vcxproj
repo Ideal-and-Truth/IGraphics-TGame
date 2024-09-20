@@ -80,6 +80,7 @@
     <ClInclude Include="TypeInfo.h" />
     <ClInclude Include="TypeInfoMacros.h" />
     <ClInclude Include="TypeUI.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="UnityParser.h" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +137,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="TypeUI.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="UnityParser.cpp" />
   </ItemGroup>
   <ItemGroup>
