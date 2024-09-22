@@ -63,6 +63,8 @@ namespace Ideal
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) override;
 		virtual DirectX::SimpleMath::Color& GetStartColor() override;
 
+		virtual void SetStartLifetime(float Time) override;
+
 		virtual void SetDuration(float Time) override;
 		virtual float GetDuration() override;
 
@@ -104,7 +106,7 @@ namespace Ideal
 		void DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
 		void UpdateCustomData();
-
+		void UpdateLifeTime();
 	private:
 		float m_deltaTime = 0.f;
 		bool m_stopWhenFinished = false;
@@ -113,6 +115,8 @@ namespace Ideal
 		float m_duration = 1.f;
 		float m_currentTime = 0.f;
 		Color m_startColor = Color(1, 1, 1, 1);
+		float m_startLifetime = 1.f;	//1 ю╨ юс╫ц
+			
 		//------Color Over Lifetime------//
 		bool m_isUseColorOverLifetime = false;
 		Ideal::Gradient m_ColorOverLifetimeGradientGraph;

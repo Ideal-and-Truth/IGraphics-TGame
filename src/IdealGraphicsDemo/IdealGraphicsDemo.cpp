@@ -567,9 +567,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IMesh> slashParticleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Slash3");
 		//
 		slashParticleSystem->SetLoop(false);
-		slashParticleSystem->SetDuration(1.f);
+		slashParticleSystem->SetDuration(2.f);
 		// 첫 색상
 		slashParticleSystem->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
+
+		// 라이프타임
+		slashParticleSystem->SetStartLifetime(1.f);
 
 		// Renderer 
 		slashParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
@@ -585,8 +588,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			auto& graph = slashParticleSystem->GetCustomData1X();
 			graph.AddControlPoint({ 0,0 });
-			graph.AddControlPoint({ 0.2,1 });
-			graph.AddControlPoint({ 0.7,-0.5 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
 			graph.AddControlPoint({ 1,0 });
 		}
 		{
@@ -801,7 +804,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				DebugEnemy->AnimationDeltaTime(0.003f);
 				particleSystem->SetDeltaTime(0.003f);
-				slashParticleSystem->SetDeltaTime(0.001f);
+				slashParticleSystem->SetDeltaTime(0.006f);
 				if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);

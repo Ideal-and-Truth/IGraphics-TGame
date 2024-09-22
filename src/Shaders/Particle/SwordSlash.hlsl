@@ -51,9 +51,10 @@ float4 PSMain(VSOutput input) : SV_TARGET
             float2 tiling1_0;
             float2 tiling1_1;
             Ideal_TilingAndOffset_float(input.UV, float2(1,1), mul0, tiling1_0);
-            Ideal_TilingAndOffset_float(tiling1_0, float2(1,2), float2(0,0), tiling1_1);
             tiling1_0.y += g_CustomData2.w;
-            float4 SampleDissolveTex = ParticleTexture2.Sample(LinearClampSampler, tiling1_1);
+            Ideal_TilingAndOffset_float(tiling1_0, float2(1,2), float2(0,0), tiling1_1);
+            //float4 SampleDissolveTex = ParticleTexture2.Sample(LinearClampSampler, tiling1_1);
+            float4 SampleDissolveTex = ParticleTexture2.Sample(LinearWrapSampler, tiling1_1);
             float comp0;
             {
                 float param0 = 1 - input.UV.x;
@@ -64,6 +65,8 @@ float4 PSMain(VSOutput input) : SV_TARGET
             }
             float compOut;
             Ideal_Comparison_GreaterOrEqual_float(comp0, SampleDissolveTex.x, compOut);
+            //result.xyz = float3(compOut, compOut, compOut);
+            //result.w = 1;
             float branchOut0;   
             Ideal_Branch_float(compOut, 1, 0, branchOut0);
 
@@ -71,9 +74,11 @@ float4 PSMain(VSOutput input) : SV_TARGET
             dissolveX = dissolveX - g_CustomData1.x;
             
             float satOut = saturate(dissolveX);
-            satOut = satOut * branchOut0;
-            Ideal_Branch_float(0, satOut, 0, block0);
-            block0 = branchOut0;
+            //satOut = satOut * branchOut0;
+            satOut = satOut * 0;
+            Ideal_Branch_float(0, satOut, branchOut0, block0);
+            //block0 = branchOut0;
+            //result.w = satOut;
         }
         float block1 = saturate0 * block0;
         float block1_0 = g_startColor.w * block1;

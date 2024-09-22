@@ -73,6 +73,8 @@ namespace Ideal
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
 		virtual DirectX::SimpleMath::Color& GetStartColor() abstract;
 
+		virtual void SetStartLifetime(float Time) abstract;
+
 		virtual void SetDuration(float Time) abstract;
 		virtual float GetDuration() abstract;
 

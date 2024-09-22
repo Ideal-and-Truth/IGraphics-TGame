@@ -80,6 +80,9 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 	//m_currentTime += 0.003f;
 	m_currentTime += m_deltaTime;
 	//m_currentTime += 0.001f;
+
+	
+
 	if (m_currentTime >= m_duration)
 	{
 		if (!m_isLoop || m_stopWhenFinished)
@@ -91,6 +94,10 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 		m_currentTime = 0.f;
 	}
 
+	if (m_currentTime > m_startLifetime)
+	{
+		return;
+	}
 
 	switch (m_Renderer_Mode)
 	{
@@ -137,10 +144,10 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 				break;
 			case Ideal::ParticleMaterialMenu::EBlendingMode::Alpha:
 			{
-				//blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-				//blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_SRC_ALPHA;
-				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				//blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				//blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_ALPHA;
 				
 				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
@@ -186,6 +193,11 @@ DirectX::SimpleMath::Color& Ideal::ParticleSystem::GetStartColor()
 	return m_startColor;
 }
 
+void Ideal::ParticleSystem::SetStartLifetime(float Time)
+{
+	m_startLifetime = Time;
+}
+
 void Ideal::ParticleSystem::SetDuration(float Time)
 {
 	m_duration = Time;
@@ -221,8 +233,17 @@ void Ideal::ParticleSystem::UpdateColorOverLifetime()
 	if (m_isUseColorOverLifetime)
 	{
 		// 현재 그래프의 색상을 불러온다.
-		Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentTime);
+		Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentTime/m_duration);
 		m_cbParticleSystem.StartColor = colorAtCurrentTime;
+		//Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentTime);
+		//if (m_currentTime > 0.8f)
+		//{
+		//	int a = 3;
+		//}
+		//if (m_currentTime > 1.f)
+		//{
+		//	m_cbParticleSystem.StartColor.A(0.f);
+		//}
 	}
 	else
 	{
@@ -369,7 +390,6 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 			cal *= matZ;
 			m_cbTransform.World = cal;
 		}
-
 		m_cbTransform.World *= m_transform;
 		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert().Transpose();
 
@@ -394,6 +414,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 	{
 		UpdateCustomData();
 		UpdateColorOverLifetime();
+		//if (m_currentTime > 1.0) m_currentTime = 1.0;
 		m_cbParticleSystem.Time = m_currentTime;
 		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
 		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
@@ -459,5 +480,13 @@ void Ideal::ParticleSystem::UpdateCustomData()
 		m_cbParticleSystem.CustomData2[2] = customZ;
 		float customW = m_CustomData2_W.GetPoint(m_currentTime).y;
 		m_cbParticleSystem.CustomData2[3] = customW;
+	}
+}
+
+void Ideal::ParticleSystem::UpdateLifeTime()
+{
+	if (m_currentTime > m_startLifetime)
+	{
+		
 	}
 }
