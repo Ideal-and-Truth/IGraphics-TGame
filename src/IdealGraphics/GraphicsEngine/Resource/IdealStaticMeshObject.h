@@ -10,7 +10,7 @@ namespace Ideal
 	class IdealRenderer;
 	class IdealStaticMesh;
 	class D3D12Renderer;
-	
+
 	//--raytracing--//
 	class RaytracingManager;
 	class DXRBottomLevelAccelerationStructure;
@@ -40,6 +40,8 @@ namespace Ideal
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
+
+		virtual Matrix GetLocalTransformMatrix(){ return m_staticMesh->GetLocalTM(); };
 
 		virtual Ideal::EMeshType GetMeshType() const override { return EMeshType::Static; }
 

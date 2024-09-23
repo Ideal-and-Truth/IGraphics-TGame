@@ -63,6 +63,8 @@ namespace Truth
 		void SetMaterialByIndex(uint32 _index, std::string _material);
 		std::vector<uint64> GetMaterialImagesIDByIndex(uint32 _index);
 
+		Matrix GetMeshLocalTM();
+
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE

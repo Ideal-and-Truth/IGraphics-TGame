@@ -27,6 +27,8 @@ namespace Ideal
 		virtual void SetTransformMatrix(const DirectX::SimpleMath::Matrix& Matrix) abstract;
 		virtual void SetDrawObject(bool IsDraw) abstract;
 
+		virtual DirectX::SimpleMath::Matrix GetLocalTransformMatrix() abstract;
+
 		virtual Ideal::EMeshType GetMeshType() const abstract;
 
 	public:

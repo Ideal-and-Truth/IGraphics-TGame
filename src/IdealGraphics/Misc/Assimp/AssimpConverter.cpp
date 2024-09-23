@@ -485,10 +485,9 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, boo
 //  	bone->transform *= Matrix::CreateTranslation(pos);
 
 	if (scale.x < 0)
-	{
 		bone->isNegative = true;
-	}
-	// Local Transform
+
+
 	bone->transform = bone->transform * matParent;
 
 	isNegative = bone->isNegative != isNegative;
@@ -781,8 +780,11 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
 				//2024.08.13 본의 위치를 곱해준다.
-				Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
-				vertex.Position = result;
+				if (m_bones[bone]->parent >= 0)
+				{
+					Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
+					vertex.Position = result;
+				}
 			}
 
 			// UV
@@ -795,16 +797,22 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			if (srcMesh->HasNormals())
 			{
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
-				Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
-				vertex.Normal = normal;
+				if (m_bones[bone]->parent >= 0)
+				{
+					Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
+					vertex.Normal = normal;
+				}
 			}
 
 			// Tangent
 			if (srcMesh->HasTangentsAndBitangents())
 			{
 				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
-				Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
-				vertex.Tangent = tangent;
+				if (m_bones[bone]->parent >= 0)
+				{
+					Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
+					vertex.Tangent = tangent;
+				}
 			}
 
 			mesh->vertices.push_back(vertex);

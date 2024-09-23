@@ -361,15 +361,36 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			m_mapEntity[i]->m_parent = m_mapEntity[parent];
 		}
 
-		Matrix ltm = file->Read<Matrix>();
+		Vector3 pos;
+		Vector3 sca;
+		Quaternion rot;
 
-		Matrix flipYZ = Matrix::Identity;
-		flipYZ.m[0][0] = -1.f;
+		bool localPosChange[3] = { 0, };
+		bool localScaleChange[3] = { 0, };
+		bool localRotationChange = false;
 
-		Matrix flipXY = Matrix::Identity;
-		flipXY.m[2][2] = -1.f;
+		pos.x = file->Read<float>();
+		pos.y = file->Read<float>();
+		pos.z = file->Read<float>();
 
-		m_mapEntity[i]->SetLocalTM(ltm);
+		rot.x = file->Read<float>();
+		rot.y = file->Read<float>();
+		rot.z = file->Read<float>();
+		rot.w = file->Read<float>();
+
+		sca.x = file->Read<float>();
+		sca.y = file->Read<float>();
+		sca.z = file->Read<float>();
+
+		localPosChange[0] = file->Read<bool>();
+		localPosChange[1] = file->Read<bool>();
+		localPosChange[2] = file->Read<bool>();
+
+		localScaleChange[0] = file->Read<bool>();
+		localScaleChange[1] = file->Read<bool>();
+		localScaleChange[2] = file->Read<bool>();
+
+		localRotationChange = file->Read<bool>();
 
 		// read Collider Data
 		bool isCollider = file->Read<bool>();
@@ -430,6 +451,33 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				std::string matName = file->Read<std::string>();
 				mesh->SetMaterialByIndex(j, matName);
 			}
+
+			Matrix mtm = mesh->GetMeshLocalTM();
+
+			Vector3 mPos;
+			Vector3 mSca;
+			Quaternion mRot;
+
+			mtm.Decompose(mSca, mRot, mPos);
+
+			if (!localPosChange[0])
+				pos.x = mPos.x;
+			if (!localPosChange[1])
+				pos.y = mPos.y;
+			if (!localPosChange[2])
+				pos.z = mPos.z;
+
+			if (!localScaleChange[0])
+				sca.x = mSca.x;
+			if (!localScaleChange[1])
+				sca.y = mSca.y;
+			if (!localScaleChange[2])
+				sca.z = mSca.z;
+
+			if (!localRotationChange)
+			{
+				rot = mRot;
+			}
 		}
 
 		// read Light Data
@@ -445,6 +493,18 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			file->Read<float>();
 			file->Read<float>();
 		}
+
+		Matrix ltm = Matrix::CreateScale(sca);
+		ltm *= Matrix::CreateFromQuaternion(rot);
+		ltm *= Matrix::CreateTranslation(pos);
+
+		Matrix flipYZ = Matrix::Identity;
+		flipYZ.m[0][0] = -1.f;
+
+		Matrix flipXY = Matrix::Identity;
+		flipXY.m[2][2] = -1.f;
+
+		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
 	}
 
 	for (auto& e : m_mapEntity)

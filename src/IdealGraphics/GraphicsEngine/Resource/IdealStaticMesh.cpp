@@ -98,3 +98,8 @@ void Ideal::IdealStaticMesh::FinalCreate(std::shared_ptr<Ideal::ResourceManager>
 		mesh->Create(ResourceManager);
 	}
 }
+
+DirectX::SimpleMath::Matrix Ideal::IdealStaticMesh::GetLocalTM()
+{
+	return m_meshes[0]->GetLocalTM();
+}

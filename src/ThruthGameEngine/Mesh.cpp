@@ -149,6 +149,15 @@ std::vector<uint64> Truth::Mesh::GetMaterialImagesIDByIndex(uint32 _index)
 	return result;
 }
 
+DirectX::SimpleMath::Matrix Truth::Mesh::GetMeshLocalTM()
+{
+	if (m_mesh)
+	{
+		return m_mesh->GetLocalTransformMatrix();
+	}
+	return Matrix::Identity;
+}
+
 #ifdef EDITOR_MODE
 void Truth::Mesh::EditorSetValue()
 {

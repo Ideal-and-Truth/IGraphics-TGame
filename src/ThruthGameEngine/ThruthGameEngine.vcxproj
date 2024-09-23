@@ -257,6 +257,7 @@
       <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>

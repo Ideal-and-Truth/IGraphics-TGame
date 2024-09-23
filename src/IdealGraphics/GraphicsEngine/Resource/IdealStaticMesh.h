@@ -35,6 +35,8 @@ namespace Ideal
 
 		void FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
+		Matrix GetLocalTM();
+
 	public:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>>& GetMeshes() { return m_meshes; }
 

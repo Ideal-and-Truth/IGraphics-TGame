@@ -81,8 +81,6 @@ namespace Truth
 			float m_range;
 			float m_angle;
 
-			// Transform Info
-			Matrix m_localTM = Matrix::Identity;
 
 			std::string m_guid = "";
 			std::string m_fileID = "";
@@ -90,6 +88,15 @@ namespace Truth
 			int32 m_parent = -1;
 			int32 m_mine = -1;
 			std::string m_name;
+
+			// Transform Info
+			Vector3 m_position;
+			Vector3 m_scale;
+			Quaternion m_rotation;
+
+			bool m_localPosChange[3] = {0, };
+			bool m_localScaleChange[3] = {0, };
+			bool m_localRotationChange = false;
 		};
 
 		uint32 m_meshFilterCount = 0;
@@ -160,7 +167,7 @@ namespace Truth
 		void ParseMeshFilter(const YAML::Node& _node, GameObject* _owner);
 		void ParseLight(const YAML::Node& _node, GameObject* _owner);
 
-		Matrix GetPrefabMatrix(const YAML::Node& _node);
+		void GetPrefabMatrix(const YAML::Node& _node, GameObject* _owner);
 		void GetPrefabMatarial(GameObject* _GO, const YAML::Node& _node);
 
 		void ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxPath);

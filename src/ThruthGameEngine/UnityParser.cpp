@@ -280,31 +280,32 @@ void Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::s
 
 
 	// get transform data
-	Vector3 pos = {
+	GO->m_position = {
 		_node["m_LocalPosition"]["x"].as<float>(),
 		_node["m_LocalPosition"]["y"].as<float>(),
 		_node["m_LocalPosition"]["z"].as<float>()
 	};
 
-	Quaternion rot = {
+	GO->m_rotation = {
 		_node["m_LocalRotation"]["x"].as<float>(),
 		_node["m_LocalRotation"]["y"].as<float>(),
 		_node["m_LocalRotation"]["z"].as<float>(),
 		_node["m_LocalRotation"]["w"].as<float>(),
 	};
 
-	Vector3 scale = {
+	GO->m_scale = {
 		_node["m_LocalScale"]["x"].as<float>(),
 		_node["m_LocalScale"]["y"].as<float>(),
 		_node["m_LocalScale"]["z"].as<float>()
 	};
 
-	// create Local Matrix
-	Matrix LTM = Matrix::CreateScale(scale);
-	LTM *= Matrix::CreateFromQuaternion(rot);
-	LTM *= Matrix::CreateTranslation(pos);
+	for (uint32 i = 0; i < 3; i++)
+	{
+		GO->m_localPosChange[i] = true;
+		GO->m_localScaleChange[i] = true;
+	}
 
-	GO->m_localTM = LTM;
+	GO->m_localRotationChange = true;
 
 	// get game object
 	std::string GOfid = _node["m_GameObject"]["fileID"].as<std::string>();
@@ -343,7 +344,7 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 	m_gameObjects.push_back(GO);
 
 	// get transform data
-	GO->m_localTM = GetPrefabMatrix(_node["m_Modification"]["m_Modifications"]);
+	GetPrefabMatrix(_node["m_Modification"]["m_Modifications"], GO);
 	GetPrefabMatarial(GO, _node["m_Modification"]["m_Modifications"]);
 
 
@@ -474,7 +475,7 @@ void Truth::UnityParser::ParseLight(const YAML::Node& _node, GameObject* _owner)
 	_owner->m_angle = _node["m_SpotAngle"].as<float>();
 }
 
-DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node)
+void Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node, GameObject* _owner)
 {
 	Vector3 scale = { 1.0f ,1.0f, 1.0f };
 	Vector3 pos = { 0.0f, 0.0f, 0.0f };
@@ -486,32 +487,39 @@ DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node
 	{
 		if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.x")
 		{
+			_owner->m_localScaleChange[0] = true;
 			scale.x = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.y")
 		{
+			_owner->m_localScaleChange[1] = true;
 			scale.y = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.z")
 		{
+			_owner->m_localScaleChange[2] = true;
 			scale.z = (*itr)["value"].as<float>();
 		}
 
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.x")
 		{
+			_owner->m_localPosChange[0] = true;
 			pos.x = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.y")
 		{
+			_owner->m_localPosChange[1] = true;
 			pos.y = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.z")
 		{
+			_owner->m_localPosChange[2] = true;
 			pos.z = (*itr)["value"].as<float>();
 		}
 
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.w")
 		{
+			_owner->m_localRotationChange = true;
 			rot.w = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.x")
@@ -534,14 +542,9 @@ DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node
 	result *= Matrix::CreateFromQuaternion(rot);
 	result *= Matrix::CreateTranslation(pos);
 
-	Matrix flipYZ = Matrix::Identity;
-	flipYZ.m[0][0] = -1.f;
-
-	Matrix flipXY = Matrix::Identity;
-	flipXY.m[2][2] = -1.f;
-
-	// result = flipYZ * flipXY * result;
-	return result;
+	_owner->m_scale = scale;
+	_owner->m_rotation = rot;
+	_owner->m_position = pos;
 }
 
 void Truth::UnityParser::GetPrefabMatarial(GameObject* _GO, const YAML::Node& _node)
@@ -846,7 +849,28 @@ void Truth::UnityParser::WriteLightData(std::shared_ptr<FileUtils> _file, GameOb
 
 void Truth::UnityParser::WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
 {
-	_file->Write<Matrix>(_GO->m_localTM);
+	_file->Write<float>(_GO->m_position.x);
+	_file->Write<float>(_GO->m_position.y);
+	_file->Write<float>(_GO->m_position.z);
+
+	_file->Write<float>(_GO->m_rotation.x);
+	_file->Write<float>(_GO->m_rotation.y);
+	_file->Write<float>(_GO->m_rotation.z);
+	_file->Write<float>(_GO->m_rotation.w);
+
+	_file->Write<float>(_GO->m_scale.x);
+	_file->Write<float>(_GO->m_scale.y);
+	_file->Write<float>(_GO->m_scale.z);
+
+	_file->Write<bool>(_GO->m_localPosChange[0]);
+	_file->Write<bool>(_GO->m_localPosChange[1]);
+	_file->Write<bool>(_GO->m_localPosChange[2]);
+
+	_file->Write<bool>(_GO->m_localScaleChange[0]);
+	_file->Write<bool>(_GO->m_localScaleChange[1]);
+	_file->Write<bool>(_GO->m_localScaleChange[2]);
+
+	_file->Write<bool>(_GO->m_localRotationChange);
 }
 
 /// <summary>
