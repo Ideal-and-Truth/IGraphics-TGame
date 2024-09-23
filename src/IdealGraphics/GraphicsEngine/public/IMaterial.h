@@ -24,5 +24,7 @@ namespace Ideal
 		virtual std::weak_ptr<Ideal::ITexture> GetNomralMap() abstract;
 		virtual std::weak_ptr<Ideal::ITexture> GetMaskMap() abstract;
 
+		virtual void SetTiling(float x, float y) abstract;
+		virtual void SetOffset(float x, float y) abstract;
 	};
 }

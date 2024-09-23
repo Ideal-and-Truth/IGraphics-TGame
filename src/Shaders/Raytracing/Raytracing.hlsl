@@ -621,6 +621,10 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 
     float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
     float2 uv = HitAttribute(vertexTexCoords, attr);
+    
+    float2 tiling = float2(l_materialInfo.TilingX, l_materialInfo.TilingY);
+    float2 offset = float2(l_materialInfo.OffsetX, l_materialInfo.OffsetY);
+    Ideal_TilingAndOffset_float(uv, tiling, offset, uv);
 
     // Normal
     float3 normal;
