@@ -207,10 +207,10 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		{
 			return nullptr;
 		}
-		else if (p.extension() == ".tga" || p.extension() == ".TGA")
-		{
-			return nullptr;
-		}
+// 		else if (p.extension() == ".tga" || p.extension() == ".TGA")
+// 		{
+// 			return nullptr;
+// 		}
 		tex->m_texture = m_renderer->CreateTexture(_path);
 		tex->m_useCount = 1;
 		tex->m_path = _path;

@@ -481,8 +481,6 @@ void Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node, GameObject* _o
 	Vector3 pos = { 0.0f, 0.0f, 0.0f };
 	Quaternion rot = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	Matrix result = Matrix::Identity;
-
 	for (auto itr = _node.begin(); itr != _node.end(); itr++)
 	{
 		if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.x")
@@ -535,12 +533,6 @@ void Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node, GameObject* _o
 			rot.z = (*itr)["value"].as<float>();
 		}
 	}
-
-	// rot *= Quaternion::CreateFromYawPitchRoll({ 0.0f, -1.5f, 0.0f });
-
-	result = Matrix::CreateScale(scale);
-	result *= Matrix::CreateFromQuaternion(rot);
-	result *= Matrix::CreateTranslation(pos);
 
 	_owner->m_scale = scale;
 	_owner->m_rotation = rot;

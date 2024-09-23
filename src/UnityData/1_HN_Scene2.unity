@@ -1292,6 +1292,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 0fec0945855f6e846807739094cda098, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5d5c8c468c19d774b8576f932940deb8, type: 2}
     - target: {fileID: 919132149155446097, guid: 0fec0945855f6e846807739094cda098, type: 3}
       propertyPath: m_Name
       value: SM_brokenrockstair
@@ -2543,6 +2547,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 0fec0945855f6e846807739094cda098, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5d5c8c468c19d774b8576f932940deb8, type: 2}
     - target: {fileID: 919132149155446097, guid: 0fec0945855f6e846807739094cda098, type: 3}
       propertyPath: m_Name
       value: SM_brokenrockstair (2)
@@ -3251,6 +3259,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 0fec0945855f6e846807739094cda098, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5d5c8c468c19d774b8576f932940deb8, type: 2}
     - target: {fileID: 919132149155446097, guid: 0fec0945855f6e846807739094cda098, type: 3}
       propertyPath: m_Name
       value: SM_brokenrockstair (1)
