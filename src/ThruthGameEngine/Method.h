@@ -157,7 +157,25 @@ private:
 	const char* m_name = nullptr;
 	const CallableBase& m_callable;
 
+	static std::map<std::string, const Method*> g_methodMap;
+
 public:
+
+	static const Method* GetMethod(const std::string& _name)
+	{
+		auto itr = g_methodMap.find(_name);
+		if (itr == g_methodMap.end())
+		{
+			return nullptr;
+		}
+		return (*itr).second;
+	};
+
+	static const void InsertMethod(const std::string& _name, const Method* _method)
+	{
+		g_methodMap.insert({_name, _method});
+	};
+
 	const std::string Dump(void* _object, int _indent = 0) const 
 	{
 		std::string result = "";
@@ -346,6 +364,7 @@ public:
 			TClass* forDeduction = nullptr;
 			static StaticCallable callable(forDeduction, ptr);
 			static Method method(typeInfo, ptr, name, callable);
+			Method::InsertMethod(name, &method);
 		}
 	}
 };

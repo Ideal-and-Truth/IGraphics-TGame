@@ -80,19 +80,7 @@ public:
 	{
 		if constexpr (std::is_array_v<T>)
 		{
-// 			std::string result = "";
-// 			result += "\n";
-// 
-// 			for (int i = 0; i < is_array_custom<T>::size; i++)
-// 			{
-// 				auto& obj = Get(_object, i);
-// 				result += std::string(_indent, '\t');
-// 				result += "[";
-// 				result += StringConverter::ToString(i);
-// 				result += "] : ";
-// 				result += StringConverter::ToString(obj, _indent);
-// 				result += "\n";
-// 			}
+			return TypeUI::DisplayType(Get(_object), _name, _min, _max);
 		}
 		else
 		{

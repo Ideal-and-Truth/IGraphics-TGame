@@ -160,6 +160,12 @@
     <Filter Include="Component\UI">
       <UniqueIdentifier>{56aa9117-ed04-4847-847d-5dbba433fa1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Camera\Free">
+      <UniqueIdentifier>{6205761a-064e-4459-b335-ec50cd353e68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Button">
+      <UniqueIdentifier>{2e25556e-7be8-4860-bc60-7574205a8d6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -315,8 +321,13 @@
     <ClCompile Include="MeshCollider.cpp">
       <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="FreeCamera.cpp" />
-    <ClCompile Include="UI.cpp" />
+    <ClCompile Include="UI.cpp">
+      <Filter>Component\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FreeCamera.cpp">
+      <Filter>Component\Camera\Free</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -493,8 +504,13 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Component\Collider\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="FreeCamera.h" />
-    <ClInclude Include="UI.h" />
+    <ClInclude Include="UI.h">
+      <Filter>Component\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeCamera.h">
+      <Filter>Component\Camera\Free</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
