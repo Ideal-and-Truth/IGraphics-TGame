@@ -311,6 +311,31 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="GraphicsEngine\VertexInfo.h" />
     <ClInclude Include="Misc\ThirdParty\Thirdparty.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\Audio.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\BufferHelpers.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\CommonStates.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\DDSTextureLoader.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\DescriptorHeap.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\DirectXHelpers.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\EffectPipelineStateDescription.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\Effects.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\GamePad.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\GeometricPrimitive.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\GraphicsMemory.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\Keyboard.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\Model.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\Mouse.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\PostProcess.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\PrimitiveBatch.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\RenderTargetState.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\ResourceUploadBatch.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\ScreenGrab.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\SimpleMath.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\SpriteBatch.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\SpriteFont.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\VertexTypes.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\WICTextureLoader.h" />
+    <ClInclude Include="ThirdParty\Include\DirectXTK12\XboxDDSTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
@@ -635,11 +660,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="ThirdParty\Include\DirectXTK12\SimpleMath.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Direct3D.DXC.1.8.2405.17\build\native\Microsoft.Direct3D.DXC.targets" Condition="Exists('..\packages\Microsoft.Direct3D.DXC.1.8.2405.17\build\native\Microsoft.Direct3D.DXC.targets')" />
     <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.614.0\build\native\Microsoft.Direct3D.D3D12.targets" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.614.0\build\native\Microsoft.Direct3D.D3D12.targets')" />
+    <Import Project="..\packages\directxtex_desktop_2019.2024.9.5.1\build\native\directxtex_desktop_2019.targets" Condition="Exists('..\packages\directxtex_desktop_2019.2024.9.5.1\build\native\directxtex_desktop_2019.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -649,5 +676,6 @@
     <Error Condition="!Exists('..\packages\Microsoft.Direct3D.DXC.1.8.2405.17\build\native\Microsoft.Direct3D.DXC.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.DXC.1.8.2405.17\build\native\Microsoft.Direct3D.DXC.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.614.0\build\native\Microsoft.Direct3D.D3D12.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.614.0\build\native\Microsoft.Direct3D.D3D12.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.614.0\build\native\Microsoft.Direct3D.D3D12.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.614.0\build\native\Microsoft.Direct3D.D3D12.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtex_desktop_2019.2024.9.5.1\build\native\directxtex_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_2019.2024.9.5.1\build\native\directxtex_desktop_2019.targets'))" />
   </Target>
 </Project>

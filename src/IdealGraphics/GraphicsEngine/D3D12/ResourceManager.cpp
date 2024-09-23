@@ -26,6 +26,7 @@
 
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "ThirdParty/Include/DirectXTK12/DDSTextureLoader.h"
+#include "ThirdParty/Include/DirectXTex/DirectXTex.h"
 #include "Misc/Utils/FileUtils.h"
 #include "Misc/Utils/StringUtils.h"
 #include "Misc/Utils/tinyxml2.h"
@@ -302,40 +303,83 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	// 2024.05.14 : 이 함수 Texture에 있어야 할지도// 
 	// 2024.05.15 : fence때문에 잘 모르겠다. 일단 넘어간다.
 
+
+	/// TGA 체크 ///
+	//std::filesystem::path path = name;
+	bool isTGA = false;
+	if (name.compare(name.size() - 4, 4, ".tga") == 0 || name.compare(name.size() - 4, 4, ".TGA") == 0)
+	{
+		isTGA = true;
+	}
+
+
 	//----------------------Init--------------------------//
 	m_commandAllocator->Reset();
 	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
 
 	ComPtr<ID3D12Resource> resource;
 	Ideal::D3D12DescriptorHandle srvHandle;
-
-	//----------------------Load WIC Texture From File--------------------------//
-
-	std::unique_ptr<uint8_t[]> decodeData;
 	D3D12_SUBRESOURCE_DATA subResource;
-	
-	if (IgnoreSRGB)
+
+
+	//----------------------Load TGA Texture From File---------------------//
+	DirectX::ScratchImage image;
+	const DirectX::Image* img = nullptr;
+	if (isTGA)
 	{
-		Check(DirectX::LoadWICTextureFromFileEx(
-			m_device.Get(),
-			Path.c_str(),
-			0,
-			D3D12_RESOURCE_FLAG_NONE,
-			WIC_LOADER_IGNORE_SRGB,
-			resource.ReleaseAndGetAddressOf(),
-			decodeData,
-			subResource
+		Check(DirectX::LoadFromTGAFile(Path.c_str(), nullptr, image), L"Failed To Load TGA File");
+		img = image.GetImages();
+		D3D12_RESOURCE_DESC textureDesc = {};
+		textureDesc.MipLevels = 1;
+		textureDesc.Format = img->format;
+		textureDesc.Width = img->width;
+		textureDesc.Height = img->height;
+		textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		textureDesc.DepthOrArraySize = 1;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+		textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+		subResource.pData = img->pixels;
+		subResource.RowPitch = img->rowPitch;
+		subResource.SlicePitch = img->slicePitch;
+
+		Check(m_device->CreateCommittedResource(
+			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+			D3D12_HEAP_FLAG_NONE,
+			&textureDesc,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			nullptr,
+			IID_PPV_ARGS(resource.GetAddressOf())
 		));
 	}
-	else
+	//----------------------Load WIC Texture From File--------------------------//
+	std::unique_ptr<uint8_t[]> decodeData;
+	if (!isTGA)
 	{
-		Check(DirectX::LoadWICTextureFromFile(
-			m_device.Get(),
-			Path.c_str(),
-			resource.ReleaseAndGetAddressOf(),
-			decodeData,
-			subResource
-		));
+		if (IgnoreSRGB)
+		{
+			Check(DirectX::LoadWICTextureFromFileEx(
+				m_device.Get(),
+				Path.c_str(),
+				0,
+				D3D12_RESOURCE_FLAG_NONE,
+				WIC_LOADER_IGNORE_SRGB,
+				resource.ReleaseAndGetAddressOf(),
+				decodeData,
+				subResource
+			));
+		}
+		else
+		{
+			Check(DirectX::LoadWICTextureFromFile(
+				m_device.Get(),
+				Path.c_str(),
+				resource.ReleaseAndGetAddressOf(),
+				decodeData,
+				subResource
+			));
+		}
 	}
 	//----------------------Upload Buffer--------------------------//
 
@@ -535,7 +579,7 @@ void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& Out
 	OutTexture->Create(resource, m_deferredDeleteManager);
 	OutTexture->EmplaceSRV(srvHandle);
 
-	
+
 }
 
 void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name)

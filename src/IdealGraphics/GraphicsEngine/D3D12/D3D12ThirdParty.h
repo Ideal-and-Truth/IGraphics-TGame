@@ -30,9 +30,13 @@
 
 #ifdef _DEBUG
 #pragma comment(lib, "DebugLib/DirectXTK12/DirectXTK12.lib")
+#pragma comment(lib, "DebugLib/DirectXTex/DirectXTex.lib")
 #else
 #pragma comment(lib, "ReleaseLib/DirectXTK12/DirectXTK12.lib")
+#pragma comment(lib, "ReleaseLib/DirectXTex/DirectXTex.lib")
 #endif
+
+
 
 using namespace DirectX::SimpleMath;
 inline void GetErrorBlob(ID3DBlob* ErrorBlob)
