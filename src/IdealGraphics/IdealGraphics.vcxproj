@@ -175,6 +175,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
     <ClInclude Include="GraphicsEngine\public\IGraph.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\Graph.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
@@ -338,6 +339,7 @@
     <ClInclude Include="ThirdParty\Include\DirectXTK12\XboxDDSTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
     <ClCompile Include="Misc\Utils\BitUtils.cpp" />
     <ClCompile Include="GraphicsEngine\D2D\D2DTextManager.cpp">

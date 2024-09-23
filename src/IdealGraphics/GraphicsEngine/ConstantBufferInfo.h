@@ -40,6 +40,11 @@ struct CB_Bone
 	Matrix transforms[MAX_BONE_TRANSFORMS];
 };
 
+struct CB_Color
+{
+	Color color;
+};
+
 struct CB_Transform
 {
 	Matrix World;

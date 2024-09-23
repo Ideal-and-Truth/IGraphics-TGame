@@ -66,7 +66,7 @@ namespace Ideal
 		virtual DirectX::SimpleMath::Matrix GetLocalTransformMatrix() { return m_transform; };
 
 		virtual Ideal::EMeshType GetMeshType() const override { return Ideal::EMeshType::Skinned; }
-
+		virtual void SetDebugMeshColor(DirectX::SimpleMath::Color& Color) override {};
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetSkinnedMesh(std::shared_ptr<Ideal::IdealSkinnedMesh> Mesh);

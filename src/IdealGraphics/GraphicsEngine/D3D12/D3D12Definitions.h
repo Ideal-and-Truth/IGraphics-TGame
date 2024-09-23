@@ -107,4 +107,18 @@ namespace Ideal
 			};
 		}
 	}
+
+	namespace DebugMeshRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				CBV_Global = 0,
+				CBV_Transform,
+				CBV_Color,
+				Count
+			};
+		}
+	}
 }

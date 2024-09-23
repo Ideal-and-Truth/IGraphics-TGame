@@ -27,7 +27,7 @@ namespace Ideal
 
 	public:
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer, const Matrix& WorldTM);
-
+		void DebugDraw(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList);
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh);
 		void AddMaterial(std::shared_ptr<Ideal::IdealMaterial> Material);

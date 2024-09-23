@@ -223,6 +223,7 @@
     <ClInclude Include="ThirdParty\Include\DirectXTK12\VertexTypes.h" />
     <ClInclude Include="ThirdParty\Include\DirectXTK12\WICTextureLoader.h" />
     <ClInclude Include="ThirdParty\Include\DirectXTK12\XboxDDSTextureLoader.h" />
+    <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -329,6 +330,7 @@
     <ClCompile Include="Misc\Utils\BitUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
