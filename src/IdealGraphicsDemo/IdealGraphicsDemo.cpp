@@ -804,7 +804,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				DebugEnemy->AnimationDeltaTime(0.003f);
 				particleSystem->SetDeltaTime(0.003f);
-				slashParticleSystem->SetDeltaTime(0.006f);
+				slashParticleSystem->SetDeltaTime(0.0015f);
 				if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
