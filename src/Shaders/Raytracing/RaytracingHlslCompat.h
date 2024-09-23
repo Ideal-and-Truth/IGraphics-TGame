@@ -50,6 +50,11 @@ struct MaterialInfoConstantBuffer
 
 	float metallicFactor;
 	float roughnessFactor;
+    float TilingX;
+    float TilingY;
+    float OffsetX;
+    float OffsetY;
+
     float pad0;
     float pad1;
 };
@@ -124,7 +129,5 @@ struct LightList
     DirectionalLight DirLight;
     PointLight PointLights[16];  //TEMP
     SpotLight SpotLights[16];    //TEMP
-
-
 };
 #endif // RAYTRACINGHLSLCOMPAT_H

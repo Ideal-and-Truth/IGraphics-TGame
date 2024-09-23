@@ -27,6 +27,10 @@ struct CB_MaterialInfo
 
 	float metallicFactor;
 	float roughnessFactor;
+
+	Vector2 tiling;
+	Vector2 offset;
+
 	float pad0;
 	float pad1;
 };
