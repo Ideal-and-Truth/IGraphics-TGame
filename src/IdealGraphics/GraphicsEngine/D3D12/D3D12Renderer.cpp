@@ -619,6 +619,11 @@ void Ideal::D3D12Renderer::DeleteParticleMaterial(std::shared_ptr<Ideal::IPartic
 
 }
 
+std::shared_ptr<Ideal::IMesh> Ideal::D3D12Renderer::CreateParticleMesh(const std::wstring& FileName)
+{
+	return nullptr;
+}
+
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter/* = false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
@@ -658,6 +663,12 @@ void Ideal::D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName
 	FileName.pop_back();
 
 	assimpConverter->ExportAnimationData(FileName);
+}
+
+void Ideal::D3D12Renderer::ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale /*= false*/, Vector3 Scale /*= Vector3(1.f)*/)
+{
+	__debugbreak();
+	return;
 }
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

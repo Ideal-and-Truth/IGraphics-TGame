@@ -24,6 +24,7 @@ namespace Ideal
 	class IdealAnimation;
 	class RaytracingManager;
 	class DeferredDeleteManager;
+	class IMesh;
 }
 
 namespace Ideal
@@ -51,6 +52,9 @@ namespace Ideal
 
 	class ResourceManager : public std::enable_shared_from_this<ResourceManager>
 	{
+		static const uint32 MAX_DSV_HEAP_COUNT = 5;
+		static const uint32 MAX_RTV_HEAP_COUNT = 32;
+
 	private:
 		//--resource id--//
 		uint64 AllocateMaterialID();
@@ -145,6 +149,10 @@ namespace Ideal
 		std::shared_ptr<Ideal::IdealMaterial> CreateMaterial();
 
 		void DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture);
+
+
+		// Particle
+		std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& filename);
 
 	private:
 		ComPtr<ID3D12Device5> m_device = nullptr;

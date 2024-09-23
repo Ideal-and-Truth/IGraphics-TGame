@@ -493,6 +493,15 @@ finishAdapter:
 	//m_textManager->WriteTextToBitmap(gTextImage, m_textwidth, m_textheight, m_textwidth * 4, m_fontHandle, L"HELLO WORLD");
 	//UpdateTextureWithImage(m_dynamicTexture, gTextImage, m_textwidth, m_textheight);
 	//m_idealText = CreateText(512, 256, TODO);
+
+	BezierCurve b;
+	b.AddControlPoint({ 1, 0 });
+	b.AddControlPoint({ 0, 1 });
+	b.AddControlPoint({ 0,1 });
+	b.AddControlPoint({ 0.4, 0 });
+	auto p = b.GetPoint(0);
+
+	int k = 3;
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -509,10 +518,15 @@ void Ideal::D3D12RayTracingRenderer::Render()
 
 	m_sceneCB.CameraPos = m_mainCamera->GetPosition();
 	m_sceneCB.ProjToWorld = m_mainCamera->GetViewProj().Invert().Transpose();
-	m_sceneCB.View = m_mainCamera->GetView();
-	m_sceneCB.Proj = m_mainCamera->GetProj();
+	m_sceneCB.View = m_mainCamera->GetView().Transpose();
+	m_sceneCB.Proj = m_mainCamera->GetProj().Transpose();
 	m_sceneCB.nearZ = m_mainCamera->GetNearZ();
 	m_sceneCB.farZ = m_mainCamera->GetFarZ();
+
+	m_globalCB.View = m_mainCamera->GetView().Transpose();
+	m_globalCB.Proj = m_mainCamera->GetProj().Transpose();
+	m_globalCB.ViewProj = m_mainCamera->GetViewProj().Transpose();
+	m_globalCB.eyePos = m_mainCamera->GetPosition();
 
 	UpdateLightListCBData();
 	if (m_directionalLight)
@@ -565,6 +579,9 @@ void Ideal::D3D12RayTracingRenderer::Render()
 #else
 	TransitionRayTracingOutputToRTV();
 #endif
+	//---------Particle---------//
+	DrawParticle();
+
 	//-----------UI-----------//
 	// Update Text Or Dynamic Texture 
 	// Draw Text and Texture
@@ -992,6 +1009,24 @@ void Ideal::D3D12RayTracingRenderer::ConvertAnimationAssetToMyFormat(std::wstrin
 	assimpConverter->ExportAnimationData(FileName);
 }
 
+void Ideal::D3D12RayTracingRenderer::ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale /*= false*/, Vector3 Scale /*= Vector3(1.f)*/)
+{
+	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
+	assimpConverter->SetAssetPath(m_assetPath);
+	assimpConverter->SetModelPath(m_modelPath);
+	assimpConverter->SetTexturePath(m_texturePath);
+
+	assimpConverter->ReadAssetFile(FileName, false, false);
+
+	// Temp : ".fbx" »èÁ¦
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+	FileName.pop_back();
+
+	assimpConverter->ExportParticleData(FileName, SetScale, Scale);
+}
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 bool Ideal::D3D12RayTracingRenderer::SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -1135,14 +1170,13 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 	std::shared_ptr<Ideal::ParticleSystem> NewParticleSystem = std::make_shared<Ideal::ParticleSystem>();
 	std::shared_ptr<Ideal::ParticleMaterial> GetParticleMaterial = std::static_pointer_cast<Ideal::ParticleMaterial>(ParticleMaterial);
 	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), m_particleSystemManager->GetVS(), GetParticleMaterial);
-
-
+	m_particleSystemManager->AddParticleSystem(NewParticleSystem);
 	return std::static_pointer_cast<Ideal::IParticleSystem>(NewParticleSystem);
 }
 
 void Ideal::D3D12RayTracingRenderer::DeleteParticleSystem(std::shared_ptr<Ideal::IParticleSystem>& ParticleSystem)
 {
-
+	m_particleSystemManager->DeleteParticleSystem(std::static_pointer_cast<Ideal::ParticleSystem>(ParticleSystem));
 }
 
 std::shared_ptr<Ideal::IParticleMaterial> Ideal::D3D12RayTracingRenderer::CreateParticleMaterial()
@@ -1154,6 +1188,12 @@ std::shared_ptr<Ideal::IParticleMaterial> Ideal::D3D12RayTracingRenderer::Create
 void Ideal::D3D12RayTracingRenderer::DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial)
 {
 
+}
+
+std::shared_ptr<Ideal::IMesh> Ideal::D3D12RayTracingRenderer::CreateParticleMesh(const std::wstring& FileName)
+{
+	auto mesh = m_resourceManager->CreateParticleMesh(FileName);
+	return mesh;
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)
@@ -1955,7 +1995,21 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()
 {
+	ID3D12DescriptorHeap* descriptorHeap[] = { m_mainDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
+	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 
+	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
+
+	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
+	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetGPUDescriptorHandleForHeapStart());
+	// TODO : DSV SET
+	auto depthBuffer = m_raytracingManager->GetDepthBuffer();
+	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets()
+	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
+	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, NULL);
+	m_particleSystemManager->DrawParticles(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex], &m_globalCB);
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()

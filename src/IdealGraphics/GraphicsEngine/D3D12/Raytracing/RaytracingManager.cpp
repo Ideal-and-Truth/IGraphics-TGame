@@ -147,18 +147,17 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	Device->CopyDescriptorsSimple(1, handle4.GetCpuHandle(), lightListHandle->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::CBV_LightList, handle4.GetGpuHandle());
 
-	// Parameter 5
+	// Parameter 5 GBufferPosition
 	auto handle5 = DescriptorManager->Allocate(CurrentFrameIndex);
 	Device->CopyDescriptorsSimple(1, handle5.GetCpuHandle(), m_gBufferPosition->GetUAV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_GBufferPosition, handle5.GetGpuHandle());
 
+	// Parameter 6 GBufferDepth
 	auto handle6 = DescriptorManager->Allocate(CurrentFrameIndex);
 	Device->CopyDescriptorsSimple(1, handle6.GetCpuHandle(), m_gBufferDepth->GetUAV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_GBufferDepth, handle6.GetGpuHandle());
 
-
 	//-----------------Dispatch Rays----------------//
-
 	D3D12_DISPATCH_RAYS_DESC dispatchRayDesc = {};
 	dispatchRayDesc.HitGroupTable.StartAddress = m_hitGroupShaderTable->GetGPUVirtualAddress();
 	dispatchRayDesc.HitGroupTable.SizeInBytes = m_hitGroupShaderTable->GetDesc().Width;
@@ -177,6 +176,8 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 
 	//CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->DispatchRays(&dispatchRayDesc);
+
+	CopyDepthBuffer(CommandList);
 }
 
 void Ideal::RaytracingManager::Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height)
@@ -395,7 +396,7 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingMan
 		blas = m_ASManager->AddBLAS(Renderer, Device.Get(), Geometries, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE, false, Name, IsSkinnedData);
 		meshObject->SetBLAS(blas);
 	}
-	
+
 	uint64 geometrySizeInBLAS = Geometries.size();
 	//blas->SetInstanceContributionToHitGroupIndex(m_contributionToHitGroupIndexCount);
 	m_contributionToHitGroupIndexCount += geometrySizeInBLAS;
@@ -455,7 +456,7 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 
 		ranges[GlobalRootSignature::Slot::UAV_GBufferPosition].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 1);	// u1 : GBuffer Position
 		ranges[GlobalRootSignature::Slot::UAV_GBufferDepth].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 2);	// u2 : GBuffer Depth
-		
+
 		// binding
 		CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignature::Slot::Count];
 		rootParameters[GlobalRootSignature::Slot::UAV_Output].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_Output]);
@@ -465,14 +466,21 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 
 		rootParameters[GlobalRootSignature::Slot::UAV_GBufferPosition].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_GBufferPosition]);
 		rootParameters[GlobalRootSignature::Slot::UAV_GBufferDepth].InitAsDescriptorTable(1, &ranges[GlobalRootSignature::Slot::UAV_GBufferDepth]);
-		
+
 		// init as
 		rootParameters[GlobalRootSignature::Slot::SRV_AccelerationStructure].InitAsShaderResourceView(0);	// t0
 
 		CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
 		{
 			// LinearWrapSampler
-			CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC),	// s0
+			//CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC),	// s0
+			CD3DX12_STATIC_SAMPLER_DESC(
+				0,                                  // ShaderRegister
+				D3D12_FILTER_ANISOTROPIC,           // Filter
+				D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   // AddressU
+				D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   // AddressV
+				D3D12_TEXTURE_ADDRESS_MODE_CLAMP    // AddressW
+			),
 		};
 
 		CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(
@@ -669,7 +677,7 @@ void Ideal::RaytracingManager::BuildShaderTables(ComPtr<ID3D12Device5> Device, s
 				{
 					blasGeometry.Material = blasGeometry.BasicMesh->GetMaterial();
 				}
-				if (blasGeometry.SkinnedMesh!= nullptr)
+				if (blasGeometry.SkinnedMesh != nullptr)
 				{
 					blasGeometry.Material = blasGeometry.SkinnedMesh->GetMaterial();
 				}
@@ -853,9 +861,56 @@ void Ideal::RaytracingManager::CreateGBufferTexture(std::shared_ptr<Ideal::Resou
 	{
 		m_gBufferDepth->Free();
 	}
+	if (m_CopyDepthBuffer)
+	{
+		m_CopyDepthBuffer->Free();
+	}
 
 	auto readWriteFlag = Ideal::IDEAL_TEXTURE_SRV | Ideal::IDEAL_TEXTURE_UAV;
 	ResourceManager->CreateEmptyTexture2D(m_gBufferPosition, Width, Height, DXGI_FORMAT_R32G32B32A32_FLOAT, readWriteFlag, L"GBufferPosition");
-	//ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_R16_FLOAT, readWriteFlag, L"GBufferDepth");
+
 	ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_R32_FLOAT, readWriteFlag, L"GBufferDepth");
+	//ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_R32_FLOAT, readWriteFlag, L"GBufferDepth");
+	//ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_R32_TYPELESS, readWriteFlag, L"GBufferDepth");
+	//ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_D32_FLOAT, readWriteFlag, L"GBufferDepth");
+	//ResourceManager->CreateEmptyTexture2D(m_gBufferDepth, Width, Height, DXGI_FORMAT_R32_FLOAT, DSVFlag, L"GBufferDepth");
+	ResourceManager->CreateEmptyTexture2D(m_CopyDepthBuffer, Width, Height, DXGI_FORMAT_D32_FLOAT, Ideal::IDEAL_TEXTURE_DSV, L"CopyDepthBuffer");
+
+}
+
+std::shared_ptr<Ideal::D3D12Texture> Ideal::RaytracingManager::GetDepthBuffer()
+{
+	return m_CopyDepthBuffer;
+}
+
+void Ideal::RaytracingManager::CopyDepthBuffer(ComPtr<ID3D12GraphicsCommandList4> CommandList)
+{
+	CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
+	preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_gBufferDepth->GetResource(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_COPY_SOURCE
+	);
+	preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_CopyDepthBuffer->GetResource(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_COPY_DEST
+	);
+	CommandList->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
+	CommandList->CopyResource(m_CopyDepthBuffer->GetResource(), m_gBufferDepth->GetResource());
+
+	CD3DX12_RESOURCE_BARRIER postCopyBarriers[2];
+	postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_gBufferDepth->GetResource(),
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+
+	postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_CopyDepthBuffer->GetResource(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE
+	);
+
+	CommandList->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
 }

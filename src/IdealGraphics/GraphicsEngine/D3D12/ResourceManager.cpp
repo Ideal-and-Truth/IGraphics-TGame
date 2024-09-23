@@ -88,11 +88,11 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	//------------RTV Heap-----------//
 	m_rtvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	//m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
-	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 32);
+	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_RTV_HEAP_COUNT);
 
 	//-----------DSV Heap------------//
 	m_dsvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_DSV_HEAP_COUNT);
 
 	// default resource
 	CreateDefaultQuadMesh();
@@ -540,16 +540,25 @@ void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& Out
 
 void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name)
 {
+	DXGI_FORMAT MakeFormat = Format;
 	bool makeRTV = false;
 	bool makeSRV = false;
 	bool makeUAV = false;
-
+	bool makeDSV = false;
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_RTV)
 		makeRTV = true;
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_SRV)
 		makeSRV = true;
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_UAV)
 		makeUAV = true;
+	if (TextureFlags & Ideal::IDEAL_TEXTURE_DSV)
+	{
+		makeRTV = false;
+		makeSRV = false;
+		makeUAV = false;
+		makeDSV = true;
+		MakeFormat = DXGI_FORMAT_D32_FLOAT;
+	}
 
 	if (!OutTexture)
 	{
@@ -559,16 +568,18 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 	ComPtr<ID3D12Resource> resource;
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		Format,
+		MakeFormat,
 		Width,
 		Height,
 		1, 1, 1, 0
 	);
 
 	if (makeRTV)
-		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 	if (makeUAV)
 		resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	if (makeDSV)
+		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 	Check(m_device->CreateCommittedResource(
 		&heapProp,
@@ -617,6 +628,18 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 		m_device->CreateUnorderedAccessView(resource.Get(), nullptr, &uavDesc, uavHandle.GetCpuHandle());
 
 		OutTexture->EmplaceUAV(uavHandle);
+	}
+
+	if (makeDSV)
+	{
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+		auto dsvHandle = m_dsvHeap->Allocate();
+		m_device->CreateDepthStencilView(resource.Get(), &dsvDesc, dsvHandle.GetCpuHandle());
+
+		OutTexture->EmplaceDSV(dsvHandle);
 	}
 }
 
@@ -1228,6 +1251,41 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 
 	// KeyBinding
 	m_skinnedMeshes[key] = skinnedMesh;
+}
+
+std::shared_ptr<Ideal::IMesh> ResourceManager::CreateParticleMesh(const std::wstring& filename)
+{
+	std::shared_ptr<IdealMesh<ParticleVertexTest>> mesh = std::make_shared<IdealMesh<ParticleVertexTest>>();
+
+	std::wstring fullPath = m_modelPath + filename + L".pmesh";
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(fullPath, FileMode::Read);
+
+	mesh->SetName(file->Read<std::string>());
+
+	// vertex data
+	{
+		const uint32 count = file->Read<uint32>();
+		std::vector<ParticleVertexTest> vertices;
+		vertices.resize(count);
+
+		void* data = vertices.data();
+		file->Read(&data, sizeof(ParticleVertexTest) * count);
+		mesh->AddVertices(vertices);
+	}
+
+	// index Data
+	{
+		const uint32 count = file->Read<uint32>();
+		std::vector<uint32> indices;
+		indices.resize(count);
+
+		void* data = indices.data();
+		file->Read(&data, sizeof(uint32) * count);
+		mesh->AddIndices(indices);
+	}
+	mesh->Create(shared_from_this());
+	return std::static_pointer_cast<Ideal::IMesh>(mesh);
 }
 
 void ResourceManager::DeleteStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> Mesh)

@@ -141,8 +141,9 @@ struct CB_Sprite
 //----Particle----//
 struct CB_ParticleSystem
 {
-	float Time;
-
 	float CustomData1[4];
 	float CustomData2[4];
+	float Time = 0.f;
+	Vector3 pad;
+	Color StartColor;
 };

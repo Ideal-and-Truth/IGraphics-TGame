@@ -195,6 +195,9 @@
     <ClInclude Include="GraphicsEngine\public\IParticleSystem.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.h" />
+    <ClInclude Include="GraphicsEngine\public\IParticleMesh.h" />
+    <ClInclude Include="Misc\ThirdParty\Utils\Graph.h" />
+    <ClInclude Include="GraphicsEngine\public\IGraph.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -300,6 +303,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleMaterial.cpp" />
     <ClCompile Include="Misc\Utils\BitUtils.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
+    <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -338,6 +342,9 @@
     <FxCompile Include="..\Shaders\Raytracing\CS_ComputeAnimationVertexBuffer.hlsl" />
     <FxCompile Include="..\Shaders\UI.hlsl" />
     <FxCompile Include="..\Shaders\Screen\Screen.hlsl" />
+    <FxCompile Include="..\Shaders\Particle\TestCustomParticle.hlsl" />
+    <FxCompile Include="..\Shaders\Particle\DefaultParticleVS.hlsl" />
+    <FxCompile Include="..\Shaders\Particle\SwordSlash.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">
@@ -347,5 +354,6 @@
     <None Include="packages.config" />
     <None Include="..\Shaders\Raytracing\RaytracingHelper.hlsli" />
     <None Include="..\Shaders\Raytracing\DisneyBSDF.hlsli" />
+    <None Include="..\Shaders\Particle\ParticleCommon.hlsli" />
   </ItemGroup>
 </Project>

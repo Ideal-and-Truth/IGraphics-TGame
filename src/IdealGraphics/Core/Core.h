@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <wrl.h>
 
+#include "Misc/ThirdParty/Utils/Graph.h"
 #include "Misc/ThirdParty/Thirdparty.h"
 #include "../Utils/SimpleMath.h"
 #include <cassert>

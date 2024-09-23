@@ -144,6 +144,7 @@ namespace Ideal
 		void SetTexturePath(const std::wstring& TexturePath) override;
 		void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) override;
 		void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
+		void ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale = false, Vector3 Scale = Vector3(1.f)) override;
 		bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 		void ClearImGui() override;
 
@@ -175,6 +176,10 @@ namespace Ideal
 		// ParticleMaterial
 		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() override;
 		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) override;
+
+		// ParticleMesh
+		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) override;
+
 
 	private:
 		void CreateCommandlists();
@@ -296,6 +301,7 @@ namespace Ideal
 		// AS
 		SceneConstantBuffer m_sceneCB;
 		CB_LightList m_lightListCB;
+		CB_Global m_globalCB;
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();

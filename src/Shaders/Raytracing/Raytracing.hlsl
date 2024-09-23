@@ -156,8 +156,10 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     RayDesc rayDesc;
     rayDesc.Origin = ray.origin;
     rayDesc.Direction = ray.direction;
-    rayDesc.TMin = 0.001;
-    rayDesc.TMax = 10000.0;
+    //rayDesc.TMin = 0.001;
+    //rayDesc.TMax = 10000.0;
+    rayDesc.TMin = g_sceneCB.nearZ;
+    rayDesc.TMax = g_sceneCB.farZ;
     
     UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
     rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
@@ -569,9 +571,11 @@ void MyRaygenShader()
     float rayLength = HitDistanceOnMiss;
     if(hasCameraRayHitGeometry)
     {
-        float4 clipSpacePos = mul(g_sceneCB.Proj, mul(g_sceneCB.View, float4(rayPayload.gBuffer.hitPosition, 1.0f)));
+        float4 clipSpacePos = mul(mul(float4(rayPayload.gBuffer.hitPosition, 1.0f), g_sceneCB.View), g_sceneCB.Proj);
         float3 ndcPos = clipSpacePos.xyz / clipSpacePos.w;
-        float depth = (ndcPos.z * 0.5) + 0.5;
+        //float depth = (ndcPos.z * 0.5) + 0.5;
+        //float depth = (ndcPos.z + 1.f) * 0.5;
+        float depth = ndcPos.z;
         g_rtGBufferDepth[dispatchRayIndex] = depth;
     }
     else

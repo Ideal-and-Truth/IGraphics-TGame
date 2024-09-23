@@ -59,6 +59,7 @@ using namespace std;
 
 #include "GraphicsEngine/public/IParticleMaterial.h"
 #include "GraphicsEngine/public/IParticleSystem.h"
+#include "GraphicsEngine/public/IGraph.h"
 
 //#include "Editor/imgui/imgui.h"
 #include "GraphicsEngine/public/imgui.h"
@@ -251,7 +252,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
-		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"0_Particle/Slash.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
@@ -366,6 +368,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere7->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 2.5f, 0.f)));
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
 
+		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
 		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
@@ -463,29 +466,152 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 
 #pragma region CompileShader
+		//------------------------Compile Shader---------------------------//
 		// 아래는 셰이더를 컴파일하여 저장한다.
 		gRenderer->CompileShader(
 			L"../Shaders/Particle/TestCustomParticle.hlsl",
 			L"../Shaders/Particle/",
 			L"TestCustomParticle",
 			L"ps_6_3",
-			L"Main",
+			L"PSMain",
 			L"../Shaders/Particle/"
 		);
 		// 아래는 컴파일 된 셰이더를 가져온다.
 		std::shared_ptr<Ideal::IShader> particleCustomShader = gRenderer->CreateAndLoadParticleShader(L"TestCustomParticle");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/SwordSlash.hlsl",
+			L"../Shaders/Particle/",
+			L"SwordSlash",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> swordParticleShader = gRenderer->CreateAndLoadParticleShader(L"SwordSlash");
 #pragma endregion
 
 #pragma region CreateParticle
 		//------------------------Create Particle---------------------------//
-		//std::shared_ptr<Ideal::IParticleMaterial> particleMaterial = gRenderer->CreateParticleMaterial();
-		//particleMaterial->SetShader(particleCustomShader);
-		//
-		//std::shared_ptr<Ideal::ITexture> particleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Slash_1_Slashfx.png");
-		//particleMaterial->SetTexture(particleTexture);
-		//
-		//std::shared_ptr<Ideal::IParticleSystem> particleSystem = gRenderer->CreateParticleSystem(particleMaterial);
+		std::shared_ptr<Ideal::IParticleMaterial> particleMaterial = gRenderer->CreateParticleMaterial();
+		particleMaterial->SetShader(particleCustomShader);
 
+		std::shared_ptr<Ideal::ITexture> particleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Slash_1_Slashfx.png");
+		particleMaterial->SetTexture0(particleTexture);
+
+		// --- 반드시 뺴먹지 말 것 --- Blending Mode---//
+		particleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
+		//particleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+
+		std::shared_ptr<Ideal::IParticleSystem> particleSystem = gRenderer->CreateParticleSystem(particleMaterial);
+
+		// 컨버팅
+		// 아래의 파티클 매쉬는 크기가 너무 작아 처음에 크기를 100배 키우고 있음. true-> 크기를 적용한다. Vector3(100.f) -> 크기
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Slash.fbx", true, Vector3(100.f));
+
+		// 미리 컨버팅한 매쉬를 불러온다.
+		std::shared_ptr<Ideal::IMesh> particleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Slash");
+
+		// 첫 색상
+		particleSystem->SetStartColor(DirectX::SimpleMath::Color(1.5, 0.7, 1.2, 1));
+		// 루프 설정
+		particleSystem->SetLoop(false);
+		// 총 지속 시간
+		particleSystem->SetDuration(2.f);
+		// 한 번 재생하고 끝낼지
+		particleSystem->SetStopWhenFinished(false);
+		// 일단 더 추가될 예정인 렌더 모드. 
+		// Mesh일 경우 추가한 매쉬의 모양으로 나온다.
+		// Billboard일 경우 항상 매쉬가 날 바라보게 만들 예정
+		particleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		// 렌더모드가 매쉬일 경우 아래의 SetRenderMesh를 통해 매쉬를 추가해준다.
+		particleSystem->SetRenderMesh(particleMesh);
+		// 지속시간동안 Rotation을 할지 여부
+		particleSystem->SetRotationOverLifetime(true);
+		// 아래는 X Y Z축을 기준으로 어떻게 돌지 만약 변경점이 없을 경우 AddControlPoint를 안해줘도 된다.
+		//auto& graphX = particleSystem->GetRotationOverLifetimeAxisX();
+		//graphX.AddControlPoint({ 0,0 });
+		// 아래는 커브 그래프. 순서대로 넣어주어야 한다. 2차원 좌표계. x, y 순
+		auto& graphY = particleSystem->GetRotationOverLifetimeAxisY();
+		graphY.AddControlPoint({ 0,1 });
+		graphY.AddControlPoint({ 0.5, 0 });
+		graphY.AddControlPoint({ 1,0 });
+
+		//auto& graphZ = particleSystem->GetRotationOverLifetimeAxisZ();
+		//graphZ.AddControlPoint({ 0,0 });
+
+		// 아래는 커스텀 데이터이다. 셰이더에서 커스텀 데이터를 추가하고 싶을 경우 GetCustomData[N][?] (N은 1,2 ?는 XYZW) 로 그래프를 불러와 수정 할 것
+		auto& custom1X = particleSystem->GetCustomData1X();
+		custom1X.AddControlPoint({ 0,1 });
+		custom1X.AddControlPoint({ 1,0 });
+
+		//---------------Particle Sword Slash-------------------//
+		// Shader
+		std::shared_ptr<Ideal::IParticleMaterial> slashParticleMaterial = gRenderer->CreateParticleMaterial();
+		slashParticleMaterial->SetShader(swordParticleShader);
+		//
+		std::shared_ptr<Ideal::ITexture> slashParticleTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Smoke12.png");
+		slashParticleMaterial->SetTexture0(slashParticleTexture0);
+		std::shared_ptr<Ideal::ITexture> slashParticleTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Crater62.png");
+		slashParticleMaterial->SetTexture1(slashParticleTexture1);
+		//particleMaterial->SetTexture0(slashParticleTexture1);
+		std::shared_ptr<Ideal::ITexture> slashParticleTexture2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise43b.png");
+		slashParticleMaterial->SetTexture2(slashParticleTexture2);
+		slashParticleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		//slashParticleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
+		//
+		std::shared_ptr<Ideal::IParticleSystem> slashParticleSystem = gRenderer->CreateParticleSystem(slashParticleMaterial);
+		//
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Slash3.fbx");
+		// 미리 컨버팅한 매쉬를 불러온다.
+		std::shared_ptr<Ideal::IMesh> slashParticleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Slash3");
+		//
+		slashParticleSystem->SetLoop(false);
+		slashParticleSystem->SetDuration(2.f);
+		// 첫 색상
+		slashParticleSystem->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
+
+		// 라이프타임
+		slashParticleSystem->SetStartLifetime(1.f);
+
+		// Renderer 
+		slashParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		slashParticleSystem->SetRenderMesh(slashParticleMesh);
+		//
+		slashParticleSystem->SetRotationOverLifetime(true);
+		{
+			auto& graphY = slashParticleSystem->GetRotationOverLifetimeAxisY();
+			graphY.AddControlPoint({ 0,1 });
+			graphY.AddControlPoint({ 0.5, 0 });
+			graphY.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = slashParticleSystem->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = slashParticleSystem->GetCustomData1Y();
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = slashParticleSystem->GetCustomData2Z();
+			graph.AddControlPoint({ 0,0 });
+		}
+		{
+			auto& graph = slashParticleSystem->GetCustomData2W();
+			graph.AddControlPoint({ 0,0.2 });
+		}
+
+		// use color over lifetime
+		slashParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = slashParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
+			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
+		}
+		
 #pragma endregion
 
 
@@ -544,6 +670,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//mesh2->SetTransformMatrix(world);
 
 				//----- Set Draw -----//
+
 				static int tX = 0;
 				if (GetAsyncKeyState('Z') & 0x8000)
 				{
@@ -577,41 +704,41 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//ka->SetTransformMatrix(mat2);
 					//tX++;
 					//
-					for (int i = 0; i < 10; i++)
-					{
-						std::shared_ptr<Ideal::IMeshObject> mesh;
-						mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
-						meshes.push_back(mesh);
-						if (i == 0)
-						{
-							mesh->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
-						}
-						if (i == 1)
-						{
-							mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(10, 0, 0)));
-							//mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
-						}
-
-					}
+					//for (int i = 0; i < 10; i++)
+					//{
+					//	std::shared_ptr<Ideal::IMeshObject> mesh;
+					//	mesh = gRenderer->CreateStaticMeshObject(L"statue_chronos/SMown_chronos_statue");
+					//	meshes.push_back(mesh);
+					//	if (i == 0)
+					//	{
+					//		mesh->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+					//	}
+					//	if (i == 1)
+					//	{
+					//		mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(10, 0, 0)));
+					//		//mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
+					//	}
+					//
+					//}
 					//
 					//mesh->SetTransformMatrix(mat2);
 					//tX++;
 				}
 
-				if (GetAsyncKeyState('U') & 0x8000)
-				{
-					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-					//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-					//ka->AddAnimation("Walk", walkAnim);
-					//
-					//gRenderer->DeleteMeshObject(ka);
-					if (DebugPlayer)
-					{
-						gRenderer->DeleteMeshObject(DebugPlayer);
-						DebugPlayer = nullptr;
-					}
-				}
-				if (GetAsyncKeyState('Y') & 0x8000)
+				//if (GetAsyncKeyState('U') & 0x8000)
+				//{
+				//	//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+				//	//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+				//	//ka->AddAnimation("Walk", walkAnim);
+				//	//
+				//	//gRenderer->DeleteMeshObject(ka);
+				//	if (DebugPlayer)
+				//	{
+				//		gRenderer->DeleteMeshObject(DebugPlayer);
+				//		DebugPlayer = nullptr;
+				//	}
+				//}
+				/*if (GetAsyncKeyState('Y') & 0x8000)
 				{
 					if (!DebugPlayer)
 					{
@@ -623,9 +750,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 					}
-				}
+				}*/
 
-				if (GetAsyncKeyState('X') & 0x8000)
+				/*if (GetAsyncKeyState('X') & 0x8000)
 				{
 
 					if (tX < 1)
@@ -640,7 +767,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						mesh->SetTransformMatrix(mat2);
 						tX++;
 					}
-				}
+				}*/
 
 				if (GetAsyncKeyState('M') & 0x8000)
 				{
@@ -657,13 +784,34 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 					}
 				}
+
+				if (GetAsyncKeyState('F') & 0x8000)
+				{
+					slashParticleSystem->Pause();
+				}
+				//if (GetAsyncKeyState('B') & 0x8000)
+				//{
+				//	slashParticleSystem->SetSimulationSpeed(2.f);
+				//}
+				if (GetAsyncKeyState('G') & 0x8000)
+				{
+					//particleSystem->Play();
+					slashParticleSystem->Play();
+				}
+				if (GetAsyncKeyState('H') & 0x8000)
+				{
+					particleSystem->Play();
+					//slashParticleSystem->Play();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
-				DebugEnemy->AnimationDeltaTime(0.002f);
+				DebugEnemy->AnimationDeltaTime(0.003f);
+				particleSystem->SetDeltaTime(0.003f);
+				slashParticleSystem->SetDeltaTime(0.0015f);
 				if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -755,6 +903,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
+
+		gRenderer->DeleteTexture(slashParticleTexture0);
+		slashParticleTexture0.reset();
+		gRenderer->DeleteTexture(slashParticleTexture1);
+		slashParticleTexture1.reset();
+		gRenderer->DeleteTexture(slashParticleTexture2);
+		slashParticleTexture2.reset();
+		gRenderer->DeleteParticleSystem(slashParticleSystem);
+
+
+		gRenderer->DeleteTexture(particleTexture);
+		particleTexture.reset();
+		gRenderer->DeleteParticleSystem(particleSystem);
+
+		gRenderer->DeleteMeshObject(cart);
+		cart.reset();
 		gRenderer->DeleteMeshObject(DebugStaticEnemy);
 		DebugStaticEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugEnemy);
@@ -895,7 +1059,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	float aspectRatio = float(WIDTH) / HEIGHT;
 	//float aspectRatio = float(1296) / 999.f;
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 10000.f);
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
 	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));

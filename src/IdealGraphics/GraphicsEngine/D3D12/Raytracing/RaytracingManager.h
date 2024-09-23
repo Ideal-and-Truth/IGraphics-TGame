@@ -276,9 +276,15 @@ namespace Ideal
 		//---GBuffer Texture---//
 	public:
 		void CreateGBufferTexture(std::shared_ptr<Ideal::ResourceManager> ResourceManager, uint32 Width, uint32 Height);
+		std::shared_ptr<Ideal::D3D12Texture> GetDepthBuffer();
+
+		void CopyDepthBuffer( ComPtr<ID3D12GraphicsCommandList4> CommandList);
 
 	private:
 		std::shared_ptr<Ideal::D3D12Texture> m_gBufferPosition;
 		std::shared_ptr<Ideal::D3D12Texture> m_gBufferDepth;
+
+		std::shared_ptr<Ideal::D3D12Texture> m_CopyDepthBuffer;	// raytracing으로 뽑은 depth buffer를 옮길 dsv
+																// 이유는 uav와 dsv 동시 허용하여 생성을 못한다.
 	};
 }
