@@ -72,10 +72,10 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 	{
 		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
 		std::string s = m_subMesh[i]->GetFBXMaterialName();
-		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
-		mat->SetTexture();
-		m_mat.push_back(mat->m_material);
-		m_subMesh[i]->SetMaterialObject(mat->m_material);
+// 		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
+// 		mat->SetTexture();
+ 		m_mat.push_back(m_subMesh[i]->GetMaterialObject().lock());
+// 		m_subMesh[i]->SetMaterialObject(mat->m_material);
 	}
 }
 
@@ -96,10 +96,10 @@ void Truth::Mesh::SetMesh()
 	{
 		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
 		std::string s = m_subMesh[i]->GetFBXMaterialName();
-		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
-		mat->SetTexture();
-		m_mat.push_back(mat->m_material);
-		m_subMesh[i]->SetMaterialObject(mat->m_material);
+// 		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
+// 		mat->SetTexture();
+		m_mat.push_back(m_subMesh[i]->GetMaterialObject().lock());
+// 		m_subMesh[i]->SetMaterialObject(mat->m_material);
 	}
 }
 
@@ -147,6 +147,15 @@ std::vector<uint64> Truth::Mesh::GetMaterialImagesIDByIndex(uint32 _index)
 	result.push_back(mat->m_maskMap->m_texture->GetImageID());
 
 	return result;
+}
+
+DirectX::SimpleMath::Matrix Truth::Mesh::GetMeshLocalTM()
+{
+	if (m_mesh)
+	{
+		return m_mesh->GetLocalTransformMatrix();
+	}
+	return Matrix::Identity;
 }
 
 #ifdef EDITOR_MODE

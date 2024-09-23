@@ -25,6 +25,8 @@ namespace AssimpConvert
 
 		std::vector<BasicVertex> vertices;
 		std::vector<uint32> indices;
+
+		Matrix localTM;
 	};
 
 	struct SkinnedMesh

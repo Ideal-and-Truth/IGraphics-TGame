@@ -134,7 +134,9 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	fileStr = m_assetPath + path;
 
 	uint32 flag = 0;
-	flag |= aiProcess_ConvertToLeftHanded;
+	flag |= aiProcess_MakeLeftHanded;
+	flag |= aiProcess_FlipUVs;
+	flag |= aiProcess_FlipWindingOrder;
 	flag |= aiProcess_Triangulate;
 	flag |= aiProcess_GenUVCoords;
 	flag |= aiProcess_GenNormals;
@@ -405,6 +407,8 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 	file->Write<uint32>((uint32)m_meshes.size());
 	for (auto& mesh : m_meshes)
 	{
+		file->Write<Matrix>(mesh->localTM);
+
 		file->Write<std::string>(mesh->name);
 		file->Write<int32>(mesh->boneIndex);
 		file->Write<std::string>(mesh->materialName);
@@ -476,12 +480,22 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, boo
 	m_bones.push_back(bone);
 
 	Vector3 scale;
-	bone->transform.Decompose(scale, Quaternion(), Vector3());
+	Quaternion rot;
+	Vector3 pos;
+	bone->transform.Decompose(scale, rot, pos);
+	// rot *= Quaternion::CreateFromYawPitchRoll({ 0.0f, 1.5f, 0.0f });
+
+// 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3(0.0f, 3.14f, 0.0f));
+// 	rot *= q;
+// 
+// 	bone->transform = Matrix::CreateScale(scale);
+// 	bone->transform *= Matrix::CreateFromQuaternion(rot);
+//  	bone->transform *= Matrix::CreateTranslation(pos);
+
 	if (scale.x < 0)
-	{
 		bone->isNegative = true;
-	}
-	// Local Transform
+
+
 	bone->transform = bone->transform * matParent;
 
 	isNegative = bone->isNegative != isNegative;
@@ -754,7 +768,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 		std::shared_ptr<AssimpConvert::Mesh> mesh = std::make_shared<AssimpConvert::Mesh>();
 		mesh->name = node->mName.C_Str();
 		mesh->boneIndex = bone;
-
+		mesh->localTM = m_bones[bone]->transform;
 		uint32 index = node->mMeshes[i];
 		const aiMesh* srcMesh = m_scene->mMeshes[index];
 
@@ -774,8 +788,11 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
 				//2024.08.13 본의 위치를 곱해준다.
-				Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
-				vertex.Position = result;
+				if (m_bones[bone]->parent >= 0)
+				{
+					Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
+					vertex.Position = result;
+				}
 			}
 
 			// UV
@@ -788,16 +805,22 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			if (srcMesh->HasNormals())
 			{
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
-				Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
-				vertex.Normal = normal;
+				if (m_bones[bone]->parent >= 0)
+				{
+					Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
+					vertex.Normal = normal;
+				}
 			}
 
 			// Tangent
 			if (srcMesh->HasTangentsAndBitangents())
 			{
 				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
-				Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
-				vertex.Tangent = tangent;
+				if (m_bones[bone]->parent >= 0)
+				{
+					Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
+					vertex.Tangent = tangent;
+				}
 			}
 
 			mesh->vertices.push_back(vertex);

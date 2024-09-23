@@ -97,6 +97,8 @@ namespace Ideal
 		std::weak_ptr<Ideal::IdealMaterial> GetMaterial() { return m_material; }
 		void SetMaterial(std::shared_ptr<IdealMaterial> Material) { m_material = Material; }
 		void SetBoneIndex(const int32& Index) { m_boneIndex = Index; }
+		void SetLocalTM(const Matrix& matrix) { m_localTM = matrix; }
+		Matrix GetLocalTM() { return m_localTM; }
 	private:
 		std::shared_ptr<D3D12VertexBuffer>	m_vertexBuffer;
 		std::shared_ptr<D3D12IndexBuffer>	m_indexBuffer;
@@ -109,6 +111,8 @@ namespace Ideal
 
 		std::vector<Ideal::IdealBone> m_bones;
 		int32 m_boneIndex;
+
+		Matrix m_localTM;
 
 	public:
 		Ideal::D3D12ConstantBuffer m_constantBuffer;

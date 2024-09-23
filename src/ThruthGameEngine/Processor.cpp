@@ -16,8 +16,6 @@
 #include "IdealRenderer.h"
 #include "ThreadPool.h"
 
-#include <windowsx.h>
-
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -59,7 +57,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/FieldMob.fbx");
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
-	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+	// 
+	// ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
@@ -69,8 +68,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	Truth::UnityParser up(m_manager->Graphics().get());
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
-	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
-	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
+	up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
 	// up.ParseMatarialData();
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 #endif // EDITOR_MODE
@@ -143,14 +142,6 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			g_Renderer->Resize(width, height);
 		}
 		break;
-	}
-	case WM_SYSCOMMAND:
-	{
-		if (SC_KEYMENU == (wParam & 0xFFF0) && (lParam == 13))
-		{
-			g_Renderer->ToggleFullScreenWindow();
-		}
-		[[fallthrough]];
 	}
 	default:
 		if (g_inputmanager)
@@ -248,6 +239,28 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 
 	ShowWindow(m_hwnd, SW_SHOWNORMAL);
 	UpdateWindow(m_hwnd);
+
+	RECT nowRect;
+	DWORD _style = (DWORD)GetWindowLong(m_hwnd, GWL_STYLE);
+	DWORD _exstyle = (DWORD)GetWindowLong(m_hwnd, GWL_EXSTYLE);
+
+	GetWindowRect(m_hwnd, &nowRect);
+
+	// 	RECT newRect = {};
+	// 	newRect.left = 0;
+	// 	newRect.top = 0;
+	// 	newRect.right = _width;
+	// 	newRect.bottom = _height;
+	// 
+	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+	// 
+	// 	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
+	// 	int _newWidth = (newRect.right - newRect.left);
+	// 	int _newHeight = (newRect.bottom - newRect.top);
+	// 
+	// 	SetWindowPos(m_hwnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
+	// 		_newWidth, _newHeight, SWP_SHOWWINDOW);
 }
 
 void Processor::InitializeManager()

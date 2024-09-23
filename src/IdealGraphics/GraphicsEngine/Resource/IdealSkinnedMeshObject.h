@@ -63,6 +63,8 @@ namespace Ideal
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 
+		virtual DirectX::SimpleMath::Matrix GetLocalTransformMatrix() { return m_transform; };
+
 		virtual Ideal::EMeshType GetMeshType() const override { return Ideal::EMeshType::Skinned; }
 
 

@@ -26,7 +26,7 @@ namespace Ideal
 		virtual ~IdealStaticMesh();
 
 	public:
-		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
+		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer, const Matrix& WorldTM);
 
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh);
@@ -34,6 +34,8 @@ namespace Ideal
 		void AddBone(std::shared_ptr<Ideal::IdealBone> Bone) { m_bones.push_back(Bone); }
 
 		void FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
+
+		Matrix GetLocalTM();
 
 	public:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>>& GetMeshes() { return m_meshes; }

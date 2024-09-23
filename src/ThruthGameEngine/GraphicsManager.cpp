@@ -81,6 +81,8 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	m_aspect = static_cast<float>(_wight) / static_cast<float>(_height);
 
 	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
+
+	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3840_2160);
 }
 
 void Truth::GraphicsManager::Finalize()
@@ -227,6 +229,11 @@ void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
 {
+	if (_name == "M_roof_tile")
+	{
+		int a = 1;
+	}
+
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
 		std::filesystem::path matp = m_matSavePath + _name + ".matData";
@@ -236,7 +243,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 		mat->m_baseMap = nullptr;
 		mat->m_normalMap = nullptr;
 		mat->m_maskMap = nullptr;
-
+		
 		if (std::filesystem::exists(matp))
 		{
 			std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
