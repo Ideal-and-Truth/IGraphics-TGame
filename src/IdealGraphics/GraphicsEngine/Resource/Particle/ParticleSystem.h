@@ -33,6 +33,8 @@ namespace Ideal
 
 	public:
 		virtual void SetMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) override;
+		virtual std::weak_ptr<Ideal::IParticleMaterial> GetMaterial() override;
+
 		virtual void SetTransformMatrix(const Matrix& Transform) override;
 		virtual const Matrix& GetTransformMatrix() const override;
 
@@ -42,8 +44,10 @@ namespace Ideal
 		virtual void SetDeltaTime(float DT) override;
 		
 		virtual void Play() override;
+		virtual void Pause() override;
 		virtual void SetStopWhenFinished(bool StopWhenFinished) override;
-
+		virtual void SetPlayOnWake(bool PlayOnWake) override;
+		
 	public:
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
@@ -64,6 +68,10 @@ namespace Ideal
 		virtual DirectX::SimpleMath::Color& GetStartColor() override;
 
 		virtual void SetStartLifetime(float Time) override;
+		virtual float GetStartLifetime() override;
+
+		virtual void SetSimulationSpeed(float Speed) override;
+		virtual float GetSimulationSpeed() override;
 
 		virtual void SetDuration(float Time) override;
 		virtual float GetDuration() override;
@@ -109,14 +117,18 @@ namespace Ideal
 		void UpdateLifeTime();
 	private:
 		float m_deltaTime = 0.f;
+		bool m_isPlaying = true;
 		bool m_stopWhenFinished = false;
+		bool m_playOnWake = true;
 		bool m_isActive = true;
 		bool m_isLoop = true;
 		float m_duration = 1.f;
+		float m_currentDurationTime = 0.f;
 		float m_currentTime = 0.f;
 		Color m_startColor = Color(1, 1, 1, 1);
 		float m_startLifetime = 1.f;	//1 ю╨ юс╫ц
-			
+		float m_simulationSpeed = 1.f;
+
 		//------Color Over Lifetime------//
 		bool m_isUseColorOverLifetime = false;
 		Ideal::Gradient m_ColorOverLifetimeGradientGraph;

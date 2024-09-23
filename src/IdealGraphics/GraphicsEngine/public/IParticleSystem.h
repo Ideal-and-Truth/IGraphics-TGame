@@ -58,6 +58,8 @@ namespace Ideal
 
 	public:
 		virtual void SetMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) abstract;
+		virtual std::weak_ptr<Ideal::IParticleMaterial> GetMaterial() abstract;
+
 		virtual void SetTransformMatrix(const DirectX::SimpleMath::Matrix& Transform) abstract;
 		virtual const DirectX::SimpleMath::Matrix& GetTransformMatrix() const abstract;
 
@@ -67,14 +69,24 @@ namespace Ideal
 		virtual void SetDeltaTime(float DT) abstract;
 
 		virtual void Play() abstract;
+		virtual void Pause() abstract;
+
 		virtual void SetStopWhenFinished(bool StopWhenFinished) abstract;
+		virtual void SetPlayOnWake(bool PlayOnWake) abstract;
 
 	public:
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
 		virtual DirectX::SimpleMath::Color& GetStartColor() abstract;
 
+		// 생명 시간
 		virtual void SetStartLifetime(float Time) abstract;
+		virtual float GetStartLifetime() abstract;
 
+		// 재생 속도 값
+		virtual void SetSimulationSpeed(float Speed) abstract;
+		virtual float GetSimulationSpeed() abstract;
+
+		// 총 지속 시간
 		virtual void SetDuration(float Time) abstract;
 		virtual float GetDuration() abstract;
 
@@ -82,10 +94,12 @@ namespace Ideal
 		virtual bool GetLoop() abstract;
 
 		//------Color Over Lifetime------//
+		// 생명 시간 동안 색상 값이 바뀔지를 결정. 그라디언트 그래프를 통해 조작함
 		virtual void SetColorOverLifetime(bool Active) abstract;
 		virtual Ideal::IGradient& GetColorOverLifetimeGradientGraph() abstract;
 
 		//----Rotation Over Lifetime----//
+		// 생명 시간 동안 회전 값 조절. 베지어 커브 그래프 사용
 		virtual void SetRotationOverLifetime(bool Active) abstract;
 		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisX() abstract;
 		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisY() abstract;

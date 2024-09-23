@@ -504,11 +504,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::shared_ptr<Ideal::IParticleSystem> particleSystem = gRenderer->CreateParticleSystem(particleMaterial);
 
-		//std::shared_ptr<Ideal::IMeshObject> ParticleMeshTest = gRenderer->CreateStaticMeshObject(L"0_Particle/Slash");
-		//ParticleMeshTest->SetTransformMatrix(Matrix::CreateScale(100.f));
-
+		// 컨버팅
 		// 아래의 파티클 매쉬는 크기가 너무 작아 처음에 크기를 100배 키우고 있음. true-> 크기를 적용한다. Vector3(100.f) -> 크기
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Slash.fbx", true, Vector3(100.f));
+
 		// 미리 컨버팅한 매쉬를 불러온다.
 		std::shared_ptr<Ideal::IMesh> particleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Slash");
 
@@ -726,20 +725,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					//tX++;
 				}
 
-				if (GetAsyncKeyState('U') & 0x8000)
-				{
-					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
-					//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-					//ka->AddAnimation("Walk", walkAnim);
-					//
-					//gRenderer->DeleteMeshObject(ka);
-					if (DebugPlayer)
-					{
-						gRenderer->DeleteMeshObject(DebugPlayer);
-						DebugPlayer = nullptr;
-					}
-				}
-				if (GetAsyncKeyState('Y') & 0x8000)
+				//if (GetAsyncKeyState('U') & 0x8000)
+				//{
+				//	//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
+				//	//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
+				//	//ka->AddAnimation("Walk", walkAnim);
+				//	//
+				//	//gRenderer->DeleteMeshObject(ka);
+				//	if (DebugPlayer)
+				//	{
+				//		gRenderer->DeleteMeshObject(DebugPlayer);
+				//		DebugPlayer = nullptr;
+				//	}
+				//}
+				/*if (GetAsyncKeyState('Y') & 0x8000)
 				{
 					if (!DebugPlayer)
 					{
@@ -751,9 +750,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 					}
-				}
+				}*/
 
-				if (GetAsyncKeyState('X') & 0x8000)
+				/*if (GetAsyncKeyState('X') & 0x8000)
 				{
 
 					if (tX < 1)
@@ -768,7 +767,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						mesh->SetTransformMatrix(mat2);
 						tX++;
 					}
-				}
+				}*/
 
 				if (GetAsyncKeyState('M') & 0x8000)
 				{
@@ -786,6 +785,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}
 
+				if (GetAsyncKeyState('F') & 0x8000)
+				{
+					slashParticleSystem->Pause();
+				}
+				//if (GetAsyncKeyState('B') & 0x8000)
+				//{
+				//	slashParticleSystem->SetSimulationSpeed(2.f);
+				//}
 				if (GetAsyncKeyState('G') & 0x8000)
 				{
 					//particleSystem->Play();

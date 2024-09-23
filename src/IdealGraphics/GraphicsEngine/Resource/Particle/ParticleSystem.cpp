@@ -30,6 +30,11 @@ void Ideal::ParticleSystem::SetMaterial(std::shared_ptr<Ideal::IParticleMaterial
 	__debugbreak();
 }
 
+std::weak_ptr<Ideal::IParticleMaterial> Ideal::ParticleSystem::GetMaterial()
+{
+	return m_particleMaterial;
+}
+
 void Ideal::ParticleSystem::SetTransformMatrix(const Matrix& Transform)
 {
 	m_transform = Transform;
@@ -43,6 +48,10 @@ const DirectX::SimpleMath::Matrix& Ideal::ParticleSystem::GetTransformMatrix() c
 void Ideal::ParticleSystem::SetActive(bool IsActive)
 {
 	m_isActive = IsActive;
+	if (m_playOnWake)
+	{
+		Play();
+	}
 }
 
 bool Ideal::ParticleSystem::GetActive()
@@ -57,12 +66,24 @@ void Ideal::ParticleSystem::SetDeltaTime(float DT)
 
 void Ideal::ParticleSystem::Play()
 {
+	m_isPlaying = true;
 	m_currentTime = 0;
+	m_currentDurationTime = 0;
+}
+
+void Ideal::ParticleSystem::Pause()
+{
+	m_isPlaying = false;
 }
 
 void Ideal::ParticleSystem::SetStopWhenFinished(bool StopWhenFinished)
 {
 	m_stopWhenFinished = StopWhenFinished;
+}
+
+void Ideal::ParticleSystem::SetPlayOnWake(bool PlayOnWake)
+{
+	m_playOnWake = PlayOnWake;
 }
 
 void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
@@ -76,14 +97,13 @@ void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootS
 
 void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
-	// Time; // TEMP
-	//m_currentTime += 0.003f;
 	m_currentTime += m_deltaTime;
-	//m_currentTime += 0.001f;
+	if (m_isPlaying)
+	{
+		m_currentDurationTime += (m_deltaTime * m_simulationSpeed);
+	}
 
-	
-
-	if (m_currentTime >= m_duration)
+	if (m_currentDurationTime >= m_duration)
 	{
 		if (!m_isLoop || m_stopWhenFinished)
 		{
@@ -91,10 +111,10 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 			// 또는 한 번만 재생을 원하면 나간다.
 			return;
 		}
-		m_currentTime = 0.f;
+		m_currentDurationTime = 0.f;
 	}
 
-	if (m_currentTime > m_startLifetime)
+	if (m_currentDurationTime > m_startLifetime)
 	{
 		return;
 	}
@@ -146,9 +166,6 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 			{
 				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-				//blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_INV_SRC_ALPHA;
-				//blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_ALPHA;
-				
 				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
@@ -198,6 +215,21 @@ void Ideal::ParticleSystem::SetStartLifetime(float Time)
 	m_startLifetime = Time;
 }
 
+float Ideal::ParticleSystem::GetStartLifetime()
+{
+	return m_startLifetime;
+}
+
+void Ideal::ParticleSystem::SetSimulationSpeed(float Speed)
+{
+	m_simulationSpeed = Speed;
+}
+
+float Ideal::ParticleSystem::GetSimulationSpeed()
+{
+	return m_simulationSpeed;
+}
+
 void Ideal::ParticleSystem::SetDuration(float Time)
 {
 	m_duration = Time;
@@ -233,7 +265,7 @@ void Ideal::ParticleSystem::UpdateColorOverLifetime()
 	if (m_isUseColorOverLifetime)
 	{
 		// 현재 그래프의 색상을 불러온다.
-		Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentTime/m_duration);
+		Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentDurationTime / m_duration);
 		m_cbParticleSystem.StartColor = colorAtCurrentTime;
 		//Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentTime);
 		//if (m_currentTime > 0.8f)
@@ -379,11 +411,11 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 		Matrix cal = Matrix::Identity;
 		if (m_isRotationOverLifetime)
 		{
-			float xRot = m_RotationOverLifetimeAxisX.GetPoint(m_currentTime).y;
+			float xRot = m_RotationOverLifetimeAxisX.GetPoint(m_currentDurationTime).y;
 			auto matX = Matrix::CreateRotationX(xRot * 3.14);
-			float yRot = m_RotationOverLifetimeAxisY.GetPoint(m_currentTime).y;
+			float yRot = m_RotationOverLifetimeAxisY.GetPoint(m_currentDurationTime).y;
 			auto matY = Matrix::CreateRotationY(yRot * 3.14);
-			float zRot = m_RotationOverLifetimeAxisZ.GetPoint(m_currentTime).y;
+			float zRot = m_RotationOverLifetimeAxisZ.GetPoint(m_currentDurationTime).y;
 			auto matZ = Matrix::CreateRotationZ(zRot * 3.14);
 			cal *= matX;
 			cal *= matY;
@@ -462,23 +494,23 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 void Ideal::ParticleSystem::UpdateCustomData()
 {
 	{
-		float customX = m_CustomData1_X.GetPoint(m_currentTime).y;
+		float customX = m_CustomData1_X.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData1[0] = customX;
-		float customY = m_CustomData1_Y.GetPoint(m_currentTime).y;
+		float customY = m_CustomData1_Y.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData1[1] = customY;
-		float customZ = m_CustomData1_Z.GetPoint(m_currentTime).y;
+		float customZ = m_CustomData1_Z.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData1[2] = customZ;
-		float customW = m_CustomData1_W.GetPoint(m_currentTime).y;
+		float customW = m_CustomData1_W.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData1[3] = customW;
 	}
 	{
-		float customX = m_CustomData2_X.GetPoint(m_currentTime).y;
+		float customX = m_CustomData2_X.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData2[0] = customX;
-		float customY = m_CustomData2_Y.GetPoint(m_currentTime).y;
+		float customY = m_CustomData2_Y.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData2[1] = customY;
-		float customZ = m_CustomData2_Z.GetPoint(m_currentTime).y;
+		float customZ = m_CustomData2_Z.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData2[2] = customZ;
-		float customW = m_CustomData2_W.GetPoint(m_currentTime).y;
+		float customW = m_CustomData2_W.GetPoint(m_currentDurationTime).y;
 		m_cbParticleSystem.CustomData2[3] = customW;
 	}
 }
