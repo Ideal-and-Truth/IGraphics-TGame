@@ -1,8 +1,8 @@
 #pragma once
 #include "Core/Core.h"
 
-#define MAX_BONE_TRANSFORMS 350
-#define MAX_MODEL_KEYFRAMES 500
+#define MAX_BONE_TRANSFORMS 600
+#define MAX_MODEL_KEYFRAMES 600
 
 
 struct SceneConstantBuffer

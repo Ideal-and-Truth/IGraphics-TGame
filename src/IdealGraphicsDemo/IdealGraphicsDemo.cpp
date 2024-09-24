@@ -253,7 +253,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
 		//gRenderer->ConvertAssetToMyFormat(L"0_Particle/Slash.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
@@ -368,7 +368,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere7->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 2.5f, 0.f)));
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
 
-		//std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
 		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
@@ -927,8 +927,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		particleTexture.reset();
 		gRenderer->DeleteParticleSystem(particleSystem);
 
-		//gRenderer->DeleteMeshObject(cart);
-		//cart.reset();
+		gRenderer->DeleteMeshObject(cart);
+		cart.reset();
 		gRenderer->DeleteMeshObject(DebugStaticEnemy);
 		DebugStaticEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugEnemy);
