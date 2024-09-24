@@ -223,6 +223,7 @@
     <ClInclude Include="ThirdParty\Include\DirectXTK12\WICTextureLoader.h" />
     <ClInclude Include="ThirdParty\Include\DirectXTK12\XboxDDSTextureLoader.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
+    <ClInclude Include="Misc\Utils\Grid.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -329,6 +330,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />
+    <ClCompile Include="Misc\Utils\Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

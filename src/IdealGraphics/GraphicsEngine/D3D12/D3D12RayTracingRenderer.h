@@ -17,6 +17,8 @@
 #include <dxcapi.h>
 #include <atlbase.h>
 
+#include "Misc/Utils/Grid.h"
+
 struct ID3D12Device;
 struct ID3D12CommandQueue;
 struct IDXGISwapChain3;
@@ -374,5 +376,9 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
+
+		// Optimization
+	private:
+		Ideal::Utils::Grid<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_grid;
 	};
 }

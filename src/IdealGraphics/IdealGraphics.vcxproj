@@ -177,6 +177,7 @@
     </ClInclude>
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
     <ClInclude Include="GraphicsEngine\public\IGraph.h" />
+    <ClInclude Include="Misc\Utils\Grid.h" />
     <ClInclude Include="Misc\ThirdParty\Utils\Graph.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleMaterial.h" />
     <ClInclude Include="GraphicsEngine\public\IParticleMesh.h" />
@@ -339,6 +340,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />
+    <ClCompile Include="Misc\Utils\Grid.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
     <ClCompile Include="Misc\Utils\BitUtils.cpp" />
     <ClCompile Include="GraphicsEngine\D2D\D2DTextManager.cpp">
