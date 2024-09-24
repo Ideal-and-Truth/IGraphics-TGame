@@ -73,6 +73,7 @@ void RangedWeapon::Update()
 		bullet->m_name = "bullet";
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
+		bullet->SetScale({ 1.f,1.f,1.f });
 
 		bullet->Awake();
 		bullet->Start();

@@ -267,11 +267,11 @@ void EnemyAttackReady::OnStateUpdate()
 		m_isChangePose = false;
 		if (m_sidePose > 0.f)
 		{
-			dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrafeR", false);
+			dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrafeL", false);
 		}
 		else
 		{
-			dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrafeL", false);
+			dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrafeR", false);
 		}
 	}
 
