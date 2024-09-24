@@ -156,10 +156,10 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     RayDesc rayDesc;
     rayDesc.Origin = ray.origin;
     rayDesc.Direction = ray.direction;
-    //rayDesc.TMin = 0.001;
-    //rayDesc.TMax = 10000.0;
-    rayDesc.TMin = g_sceneCB.nearZ;
-    rayDesc.TMax = g_sceneCB.farZ;
+    rayDesc.TMin = 0.001;
+    rayDesc.TMax = 10000.0;
+    //rayDesc.TMin = g_sceneCB.nearZ;
+    //rayDesc.TMax = g_sceneCB.farZ;
     
     UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
     rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
@@ -219,10 +219,10 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N
     ray.origin = adjustedHitPosition;
     ray.direction = wi;
 
-    if(dot(ray.direction, N) <= 0)
-    {
-        ray.origin += N * 0.001f;
-    }
+    //if(dot(ray.direction, N) <= 0)
+    //{
+    //    ray.origin += N * 0.001f;
+    //}
 
     float tMin = 0;
     float tMax = TMax;
@@ -351,37 +351,20 @@ float3 Shade(
     float roughness;
     if (l_materialInfo.bUseMetallicMap)
     {
-        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
-        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
         metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     else
     {
-        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
         metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
     
     if (l_materialInfo.bUseRoughnessMap)
     {
-        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
-//#ifdef BeforeRefactor
-        //roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
         roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
-//#else
-//        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
-//#endif
-        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
     }
     else
     {
-        //roughness = l_materialInfo.roughnessFactor;
-//#ifdef BeforeRefactor
-        //roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
         roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
-//#else
-//        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
-//#endif
-        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
     }
 
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
