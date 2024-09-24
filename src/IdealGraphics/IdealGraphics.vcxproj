@@ -297,7 +297,6 @@
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.h" />
     <ClInclude Include="GraphicsEngine\D3D12\Raytracing\RayTracingFlagManger.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystem.h" />
-    <ClInclude Include="GraphicsEngine\D3D12\RenderPass.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.h" />
     <ClInclude Include="Resource.h" />
@@ -428,7 +427,6 @@
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RaytracingManager.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\Raytracing\RayTracingFlagManger.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystem.cpp" />
-    <ClCompile Include="GraphicsEngine\D3D12\RenderPass.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleMaterial.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
   </ItemGroup>
