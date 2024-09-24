@@ -9,8 +9,9 @@ namespace Truth
 	class SkinnedMesh;
 }
 
-class PlayerController;
 class Player;
+class PlayerController;
+class PlayerCamera;
 
 
 class PlayerIdle
@@ -31,23 +32,25 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
-class PlayerWalk
-	: public AnimationState
-{
-private:
-
-
-public:
-	PlayerWalk(Truth::Component* animator)
-		: AnimationState(animator)
-	{
-
-	}
-
-public:
-	virtual void OnStateEnter() override;
-	virtual void OnStateUpdate() override;
-};
+// 
+// class PlayerWalk
+// 	: public AnimationState
+// {
+// private:
+// 	float m_lastForwardInput = 0.f;
+// 	float m_lastSideInput = 0.f;
+// 
+// public:
+// 	PlayerWalk(Truth::Component* animator)
+// 		: AnimationState(animator)
+// 	{
+// 
+// 	}
+// 
+// public:
+// 	virtual void OnStateEnter() override;
+// 	virtual void OnStateUpdate() override;
+// };
 
 class PlayerRun
 	: public AnimationState
@@ -348,6 +351,24 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class PlayerDodgeAttack
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerDodgeAttack(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class PlayerAnimator :
@@ -363,6 +384,7 @@ private:
 	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
 	std::shared_ptr<PlayerController> m_playerController;
 	std::shared_ptr<Player> m_player;
+	std::shared_ptr<PlayerCamera> m_playerCamera;
 
 
 	/// <summary>
@@ -371,8 +393,8 @@ private:
 	/// <param name=""></param>
 	/// 
 	/// ----------------------------------------
-	PROPERTY(isWalk);
-	bool m_isWalk;
+// 	PROPERTY(isWalk);
+// 	bool m_isWalk;
 
 	PROPERTY(isRun);
 	bool m_isRun;
@@ -410,10 +432,17 @@ private:
 	PROPERTY(isDead);
 	bool m_isDead;
 
-	PROPERTY(canMove);
-	bool m_canMove;
+	PROPERTY(downAttack);
+	bool m_downAttack;
+
+	PROPERTY(forwardInput);
+	float m_forwardInput;
+
+	PROPERTY(sideInput);
+	float m_sideInput;
 
 	/// ----------------------------------------
+
 	float m_lastHp;
 
 	float m_passingTime;

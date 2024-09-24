@@ -59,6 +59,70 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
 	// 
 	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+
+// 	ConvertStaticFbxData(L"EnemyAnimations/MeleeWarriorSword.fbx");
+// 	ConvertSkelFbxData(L"BossAnimations/boss_test_ani_V6.fbx");
+ 	ConvertSkelFbxData(L"BossAnimations/Idle/Idle.fbx");
+// 	ConvertSkelFbxData(L"EnemyAnimations/FieldMob.fbx");
+// 	ConvertSkelFbxData(L"EnemyAnimations/FieldMob.fbx");
+// 	ConvertSkelFbxData(L"PlayerAnimations/chronos.Main_tPose1.fbx");
+ 	ConvertSkelFbxData(L"EnemyAnimations/RangeEnemy/Aim/Aim.fbx");
+// 
+// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack1.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack2.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack3.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack4.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack5.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ComboAttackReady/ComboAttackReady.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Dodge/Dodge.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Dodge/DodgeAttack.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Fall/Fall.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Guard/Guard.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Hit/Hit.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Idle/idle.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Move/Run.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack1.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack2.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack3.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack4.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack5.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack6.fbx");
+// 
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Attack/Attack.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Down.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Hit/Hit.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Idle/Idle.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Pursuit/Pursuit.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Return/Return.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeL.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeR.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrongAttack/StrongAttack.fbx");
+// 
+// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Aim/Aim.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Attack/Attack.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Down/Down.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Hit/Hit.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Idle/Idle.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Pursuit Return/PursuitReturn.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Reload/Reload.fbx");
+// 
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackCharge.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackChargedCombo.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackJumpSmashGround.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackRunningSimple.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSmashGround.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSpin.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSwing.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCut.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCutMirror.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Dodge/Dodge.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Idle/Idle.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Run/Run.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeL.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeR.fbx");
+// 
+// 
+// 	int a = 0;
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
@@ -68,8 +132,8 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	Truth::UnityParser up(m_manager->Graphics().get());
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
-	up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
-	up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
+	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
 	// up.ParseMatarialData();
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 #endif // EDITOR_MODE

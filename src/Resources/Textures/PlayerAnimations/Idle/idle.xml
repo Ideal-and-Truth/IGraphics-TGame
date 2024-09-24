@@ -2,7 +2,7 @@
 <Materials>
     <Material>
         <Name>hair</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>haircard 27-color.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -13,11 +13,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>mechanicalarm</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>mechanicalarm_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -28,11 +28,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>vest</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>vest_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -43,11 +43,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>top</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>top_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -58,11 +58,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>eyes</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>eyes_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -73,11 +73,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>face</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>face1.002_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -88,11 +88,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>skirtbottom</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>skirtbottom_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -103,11 +103,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>CPback</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>CPback_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -118,11 +118,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>shoulderarmor</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>shoulderarmor_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -133,11 +133,11 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
     <Material>
         <Name>sword</Name>
-        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <DiffuseFile>sword_AlbedoTransparency.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -148,6 +148,6 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>

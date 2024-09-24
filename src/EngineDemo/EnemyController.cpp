@@ -12,6 +12,7 @@ EnemyController::EnemyController()
 	, m_isBackStep(false)
 	, m_isDead(false)
 	, m_canMove(false)
+	, m_strafeMove(false)
 	, m_passingTime(0.f)
 	, m_sideMove(1.f)
 {
@@ -42,11 +43,29 @@ void EnemyController::Update()
 	m_speed = m_enemy.lock().get()->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.lock().get()).Get();
 	m_passingTime += GetDeltaTime();
 
-	if (!isTargetIn)
+	if (isTargetIn)
+	{
+		// 적 회전
+		Vector3 pos = m_owner.lock()->GetWorldPosition();
+		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
+			pos,
+			m_target.lock()->GetWorldPosition(),
+			GetScale()
+		);
+
+		Vector3 dir = targetPos - pos;
+		dir.Normalize(dir);
+		dir.y = 0.0f;
+		Quaternion lookRot;
+		Quaternion::LookRotation(dir, Vector3::Up, lookRot);
+		m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+	}
+	else
 	{
 		ComeBackHome();
 		return;
 	}
+
 	if (m_canMove)
 	{
 		FollowTarget();
@@ -75,35 +94,32 @@ void EnemyController::FollowTarget()
 		{
 			m_isBackStep = false;
 			m_isAttackReady = false;
-			dir.y = 0.0f;
-			dir.Normalize(dir);
-			dir.y = -100.0f;
-			dir *= GetDeltaTime() * m_speed;
-			m_controller.lock()->Move(dir);
-
 		}
 		// 뒷걸음질
 		else if (distance < attackRange - 1.f)
 		{
-			m_isBackStep = true;
-			m_isAttackReady = false;
-
-			Vector3 backDir = dir;
-			backDir.y = 0.0f;
-			backDir.Normalize(backDir);
-			backDir.y = -100.0f;
-			backDir *= GetDeltaTime() * m_speed;
-
-			backDir.x *= -1.f;
-			backDir.z *= -1.f;
-			m_controller.lock()->Move(backDir);
+// 			m_isBackStep = true;
+// 			m_isAttackReady = false;
+// 
+// 			Vector3 backDir = dir;
+// 			backDir.y = 0.0f;
+// 			backDir.Normalize(backDir);
+// 			backDir.y = -100.0f;
+// 			backDir *= GetDeltaTime() * m_speed;
+// 
+// 			backDir.x *= -1.f;
+// 			backDir.z *= -1.f;
+// 			m_controller.lock()->Move(backDir);
 		}
 		// 간보기
 		else
 		{
 			m_isBackStep = false;
 			m_isAttackReady = true;
+		}
 
+		if (m_isAttackReady || m_strafeMove)
+		{
 			dir.y = 0.0f;
 			dir.Normalize(dir);
 			Vector3 right = -dir.Cross({ 0.f,1.f,0.f });
@@ -121,14 +137,16 @@ void EnemyController::FollowTarget()
 
 			m_controller.lock()->Move(right);
 		}
+		else if (!m_isAttackReady && !m_strafeMove)
+		{
+			dir.y = 0.0f;
+			dir.Normalize(dir);
+			dir.y = -100.0f;
+			dir *= GetDeltaTime() * m_speed * 2.f;
+			m_controller.lock()->Move(dir);
+		}
 
-
-		// 적 회전
-		dir.y = 0.0f;
-		Quaternion lookRot;
-		Quaternion::LookRotation(dir, Vector3::Up, lookRot);
-		m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
-
+		
 	}
 }
 

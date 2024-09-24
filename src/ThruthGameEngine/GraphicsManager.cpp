@@ -96,6 +96,10 @@ void Truth::GraphicsManager::Finalize()
 void Truth::GraphicsManager::Render()
 {
 #ifdef EDITOR_MODE
+	if (m_mainCamera)
+	{
+		m_mainCamera->CompleteCamera();
+	}
 	m_renderer->Render();
 #else
 	CompleteCamera();

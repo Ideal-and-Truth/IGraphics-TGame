@@ -7,7 +7,7 @@
 #include "Player.h"
 #include "PlayerAnimator.h"
 #include "Enemy.h"
-#include "EnemyAnimator.h"
+#include "RangerAnimator.h"
 #include "Bullet.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(RangedWeapon)
@@ -39,7 +39,7 @@ void RangedWeapon::Start()
 	else
 	{
 		m_enemy = m_owner.lock()->m_parent.lock().get()->GetComponent<Enemy>().lock();
-		m_enemyAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<EnemyAnimator>().lock();
+		m_rangerAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<RangerAnimator>().lock();
 		auto target = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
 		m_playerAnimator = target->GetComponent<PlayerAnimator>().lock();
 	}
@@ -53,7 +53,7 @@ void RangedWeapon::Update()
 	}
 	else if (m_enemy)
 	{
-		m_isAttacking = m_enemyAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_enemyAnimator.get()).Get();
+		m_isAttacking = m_rangerAnimator->GetTypeInfo().GetProperty("isShooting")->Get<bool>(m_rangerAnimator.get()).Get();
 	}
 
 
@@ -110,7 +110,6 @@ void RangedWeapon::Update()
 		if (e.second > 2.f)
 		{
 			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-			// m_bullets.erase(m_bullets.begin());
 			m_bullets.erase(remove(m_bullets.begin(), m_bullets.end(), e));
 		}
 	}
