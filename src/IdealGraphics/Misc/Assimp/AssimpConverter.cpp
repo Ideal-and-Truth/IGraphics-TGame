@@ -495,7 +495,10 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, boo
 	if (scale.x < 0)
 		bone->isNegative = true;
 
-
+	if (bone->parent < 0 || m_bones[bone->parent]->parent <= 0)
+	{
+		matParent = Matrix::Identity;
+	}
 	bone->transform = bone->transform * matParent;
 
 

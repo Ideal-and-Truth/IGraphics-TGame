@@ -101,5 +101,5 @@ void Ideal::IdealStaticMesh::FinalCreate(std::shared_ptr<Ideal::ResourceManager>
 
 DirectX::SimpleMath::Matrix Ideal::IdealStaticMesh::GetLocalTM()
 {
-	return m_meshes[0]->GetLocalTM();
+	return m_bones[1]->GetTransform();
 }
