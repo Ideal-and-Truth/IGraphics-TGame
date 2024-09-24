@@ -4,6 +4,9 @@
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
+#include "GraphicsEngine/ConstantBufferInfo.h"
+
+struct ID3D12GraphicsCommandList;
 
 namespace Ideal
 {
@@ -11,6 +14,8 @@ namespace Ideal
 	class IdealStaticMesh;
 	class D3D12Renderer;
 
+	class D3D12DescriptorHeap;
+	class D3D12DynamicConstantBufferAllocator;
 	//--raytracing--//
 	class RaytracingManager;
 	class DXRBottomLevelAccelerationStructure;
@@ -37,6 +42,8 @@ namespace Ideal
 		// 2024.05.07 Ver2
 		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
+		void DebugDraw(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
+
 	public:
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
@@ -44,7 +51,7 @@ namespace Ideal
 		virtual Matrix GetLocalTransformMatrix(){ return m_staticMesh->GetLocalTM(); };
 
 		virtual Ideal::EMeshType GetMeshType() const override { return EMeshType::Static; }
-
+		virtual void SetDebugMeshColor(DirectX::SimpleMath::Color& Color) override;
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetStaticMesh(std::shared_ptr<Ideal::IdealStaticMesh> Mesh) { m_staticMesh = Mesh; }
 		std::shared_ptr<Ideal::IdealStaticMesh> GetStaticMesh() { return m_staticMesh; }
@@ -52,7 +59,7 @@ namespace Ideal
 		std::shared_ptr<IdealStaticMesh> m_staticMesh;
 		Matrix m_transform;
 		bool m_isDraw = true;
-
+		CB_Color m_cbDebugColor;
 		//------Raytracing Info------//
 	public:
 		void UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);

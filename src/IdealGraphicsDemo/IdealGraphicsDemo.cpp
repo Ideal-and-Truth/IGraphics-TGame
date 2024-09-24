@@ -383,7 +383,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 
 #pragma endregion
+#pragma region CreateDebugMesh
+		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
+		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
 
+#pragma endregion
 #pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
 		std::shared_ptr<Ideal::ITexture> faceTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
@@ -772,18 +776,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('M') & 0x8000)
 				{
-					for (int i = 0; i < 1; i++)
+					if (debugCart)
 					{
-						if (meshes.size())
-						{
-							auto back = meshes.back();
-							meshes.pop_back();
-
-							gRenderer->DeleteMeshObject(back);
-							if (tX > 0)
-								tX--;
-						}
+						gRenderer->DeleteDebugMeshObject(debugCart);
+						debugCart.reset();
 					}
+					//for (int i = 0; i < 1; i++)
+					//{
+					//	if (meshes.size())
+					//	{
+					//		auto back = meshes.back();
+					//		meshes.pop_back();
+					//
+					//		gRenderer->DeleteMeshObject(back);
+					//		if (tX > 0)
+					//			tX--;
+					//	}
+					//}
 				}
 
 				if (GetAsyncKeyState('F') & 0x8000)

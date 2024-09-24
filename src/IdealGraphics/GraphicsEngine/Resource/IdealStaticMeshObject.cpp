@@ -3,13 +3,15 @@
 #include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
-#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "Misc/Utils/StringUtils.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
@@ -85,6 +87,33 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 // 	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ, handle.GetGpuHandle());
 
 	m_staticMesh->Draw(Renderer, m_transform);
+}
+
+void Ideal::IdealStaticMeshObject::DebugDraw(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+{
+	// Transform Data 
+	auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
+	CB_Transform* cbTransform = (CB_Transform*)cb1->SystemMemAddr;
+	cbTransform->World = m_transform.Transpose();
+	cbTransform->WorldInvTranspose = m_transform.Transpose().Invert();
+	memcpy(cb1->SystemMemAddr, cbTransform, sizeof(CB_Transform));
+	auto handle0 = DescriptorHeap->Allocate();
+	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), cb1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetGraphicsRootDescriptorTable(Ideal::DebugMeshRootSignature::Slot::CBV_Transform, handle0.GetGpuHandle());
+
+	// Color Data
+	auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_Color));
+	memcpy(cb2->SystemMemAddr, &m_cbDebugColor, sizeof(CB_Color));
+	auto handle1 = DescriptorHeap->Allocate();
+	Device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetGraphicsRootDescriptorTable(Ideal::DebugMeshRootSignature::Slot::CBV_Color, handle1.GetGpuHandle());
+
+	m_staticMesh->DebugDraw(Device, CommandList);
+}
+
+void Ideal::IdealStaticMeshObject::SetDebugMeshColor(DirectX::SimpleMath::Color& Color)
+{
+	m_cbDebugColor.color = Color;
 }
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)

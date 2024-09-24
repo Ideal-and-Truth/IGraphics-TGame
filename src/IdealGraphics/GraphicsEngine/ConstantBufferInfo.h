@@ -27,6 +27,10 @@ struct CB_MaterialInfo
 
 	float metallicFactor;
 	float roughnessFactor;
+
+	Vector2 tiling;
+	Vector2 offset;
+
 	float pad0;
 	float pad1;
 };
@@ -34,6 +38,11 @@ struct CB_MaterialInfo
 struct CB_Bone
 {
 	Matrix transforms[MAX_BONE_TRANSFORMS];
+};
+
+struct CB_Color
+{
+	Color color;
 };
 
 struct CB_Transform

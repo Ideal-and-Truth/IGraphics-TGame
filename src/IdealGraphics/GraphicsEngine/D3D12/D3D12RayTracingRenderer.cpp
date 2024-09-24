@@ -46,6 +46,8 @@
 #include "GraphicsEngine/Resource/Particle/ParticleSystem.h"
 #include "GraphicsEngine/Resource/Particle/ParticleMaterial.h"
 
+#include "GraphicsEngine/Resource/DebugMesh/DebugMeshManager.h"
+
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
@@ -378,6 +380,12 @@ finishAdapter:
 	//------------------Particle System Manager-------------------//
 	CreateParticleSystemManager();
 
+	//------------------Debug Mesh Manager-------------------//
+	if (m_isEditor)
+	{
+		CreateDebugMeshManager();
+	}
+
 	//---------------Create Managers---------------//
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
 
@@ -482,26 +490,6 @@ finishAdapter:
 	RaytracingManagerInit();
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
 
-	// TEST: Create Text
-	//m_textSprite = std::static_pointer_cast<Ideal::IdealSprite>(CreateSprite());
-	//m_fontHandle = m_textManager->CreateTextObject(L"Tahoma", 18.0f);
-	//
-	//gTextImage = new BYTE[m_textwidth * m_textheight * 4];
-	//
-	//m_resourceManager->CreateDynamicTexture(m_dynamicTexture, m_textwidth, m_textheight);
-	//m_textSprite->SetTexture(m_dynamicTexture);
-	//m_textManager->WriteTextToBitmap(gTextImage, m_textwidth, m_textheight, m_textwidth * 4, m_fontHandle, L"HELLO WORLD");
-	//UpdateTextureWithImage(m_dynamicTexture, gTextImage, m_textwidth, m_textheight);
-	//m_idealText = CreateText(512, 256, TODO);
-
-	BezierCurve b;
-	b.AddControlPoint({ 1, 0 });
-	b.AddControlPoint({ 0, 1 });
-	b.AddControlPoint({ 0,1 });
-	b.AddControlPoint({ 0.4, 0 });
-	auto p = b.GetPoint(0);
-
-	int k = 3;
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -581,6 +569,12 @@ void Ideal::D3D12RayTracingRenderer::Render()
 #endif
 	//---------Particle---------//
 	DrawParticle();
+
+	//----Debug Mesh Draw----//
+	if (m_isEditor)
+	{
+		DrawDebugMeshes();
+	}
 
 	//-----------UI-----------//
 	// Update Text Or Dynamic Texture 
@@ -908,20 +902,30 @@ void Ideal::D3D12RayTracingRenderer::DeleteDebugMeshObject(std::shared_ptr<Ideal
 {
 	// 아직 디버그 매쉬를 안만들고 static mesh에서 그냥 만드니 여기서 삭제
 	auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(DebugMeshObject);
-	RaytracingManagerDeleteObject(mesh);
-
-	auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), mesh);
-	{
-		*it = std::move(m_staticMeshObject.back());
-		m_deferredDeleteManager->AddMeshObjectToDeferredDelete(DebugMeshObject);
-		m_staticMeshObject.pop_back();
-	}
+	//RaytracingManagerDeleteObject(mesh);
+	//
+	//auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), mesh);
+	//{
+	//	*it = std::move(m_staticMeshObject.back());
+	//	m_deferredDeleteManager->AddMeshObjectToDeferredDelete(DebugMeshObject);
+	//	m_staticMeshObject.pop_back();
+	//}
+	m_debugMeshManager->DeleteDebugMesh(mesh);
 }
 
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateDebugMeshObject(const std::wstring& FileName)
 {
-	// 투명 작동안함
-	return CreateStaticMeshObject(FileName);
+	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
+	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
+	newStaticMesh->SetName(FileName);
+	auto mesh = std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newStaticMesh);
+	mesh->SetDebugMeshColor(Color(0, 1, 0, 1));
+
+	if (m_isEditor)
+	{
+		m_debugMeshManager->AddDebugMesh(mesh);
+	}
+	return mesh;
 }
 
 std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimation(const std::wstring& FileName, const Matrix& offset /*= Matrix::Identity*/)
@@ -1163,6 +1167,15 @@ std::shared_ptr<Ideal::IShader> Ideal::D3D12RayTracingRenderer::CreateAndLoadPar
 
 	shaderManager->LoadShaderFile(FilePath, shader);
 	return std::static_pointer_cast<Ideal::IShader>(shader);
+}
+
+std::shared_ptr<Ideal::D3D12Shader> Ideal::D3D12RayTracingRenderer::CreateAndLoadShader(const std::wstring& FilePath)
+{
+	std::shared_ptr<Ideal::ShaderManager> shaderManager = std::make_shared<Ideal::ShaderManager>();
+	std::shared_ptr<Ideal::D3D12Shader> shader = std::make_shared<Ideal::D3D12Shader>();
+	shaderManager->Init();
+	shaderManager->LoadShaderFile(FilePath, shader);
+	return shader;
 }
 
 std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial)
@@ -2010,6 +2023,28 @@ void Ideal::D3D12RayTracingRenderer::DrawParticle()
 	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
 	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, NULL);
 	m_particleSystemManager->DrawParticles(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex], &m_globalCB);
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateDebugMeshManager()
+{
+	m_debugMeshManager = std::make_shared<Ideal::DebugMeshManager>();
+
+	CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderVS", L"vs_6_3", L"VSMain");
+	CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderPS", L"ps_6_3", L"PSMain");
+
+	auto vs = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderVS.shader");
+	auto ps = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderPS.shader");
+	m_debugMeshManager->SetVS(vs);
+	m_debugMeshManager->SetPS(ps);
+	m_debugMeshManager->Init(m_device);
+}
+
+void Ideal::D3D12RayTracingRenderer::DrawDebugMeshes()
+{
+	if(m_isEditor)
+	{
+		m_debugMeshManager->DrawDebugMeshes(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex], &m_globalCB);
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::InitImGui()

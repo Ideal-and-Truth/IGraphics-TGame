@@ -67,6 +67,7 @@ namespace Ideal
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12UploadBufferPool;
 	class DeferredDeleteManager;
+	class DebugMeshManager;
 
 	// Interface
 	class ICamera;
@@ -168,6 +169,7 @@ namespace Ideal
 		// Shader
 		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") override;	// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
 		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) override;
+		std::shared_ptr<Ideal::D3D12Shader> CreateAndLoadShader(const std::wstring& FilePath);
 
 		// Particle
 		virtual std::shared_ptr<Ideal::IParticleSystem> CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) override;
@@ -352,6 +354,13 @@ namespace Ideal
 		void DrawParticle();
 
 		std::shared_ptr<Ideal::ParticleSystemManager> m_particleSystemManager;
+
+		// DebugMesh
+	private:
+		void CreateDebugMeshManager();
+		void DrawDebugMeshes();
+
+		std::shared_ptr<Ideal::DebugMeshManager> m_debugMeshManager;
 
 		// EDITOR 
 	private:

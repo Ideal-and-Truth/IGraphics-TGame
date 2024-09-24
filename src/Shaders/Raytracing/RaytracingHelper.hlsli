@@ -529,4 +529,8 @@ float3 CalculateTangent(in float3 v0, in float3 v1, in float3 v2, in float2 uv0,
     return (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
 }
 
+void Ideal_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 #endif

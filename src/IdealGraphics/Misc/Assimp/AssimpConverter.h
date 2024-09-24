@@ -43,6 +43,8 @@ public:
 	// 파티클 매쉬 
 	void ExportParticleData(std::wstring savePath, bool SetScale = false, Vector3 Scale = Vector3(1.f));
 
+
+
 private:
 	std::string WriteTexture(std::string SaveFolder, std::string File);
 	void WriteMaterialData(std::wstring FilePath);

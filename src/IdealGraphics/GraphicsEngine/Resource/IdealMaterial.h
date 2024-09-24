@@ -31,6 +31,9 @@ namespace Ideal
 		virtual std::weak_ptr<Ideal::ITexture> GetNomralMap() override;
 		virtual std::weak_ptr<Ideal::ITexture> GetMaskMap() override;
 
+		virtual void SetTiling(float x, float y) override;
+		virtual void SetOffset(float x, float y) override;
+
 	public:
 		void SetAmbient(Color c) { m_ambient = c; }
 		void SetDiffuse(Color c) { m_diffuse = c; }
@@ -71,6 +74,9 @@ namespace Ideal
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
 
 	private:
+		Vector2 m_Tiling;
+		Vector2 m_Offset;
+
 		Color m_ambient;
 		Color m_diffuse;
 		Color m_specular;

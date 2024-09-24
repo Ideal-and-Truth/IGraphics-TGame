@@ -68,6 +68,22 @@ void Ideal::IdealStaticMesh::Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer
 	}
 }
 
+void Ideal::IdealStaticMesh::DebugDraw(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList)
+{
+	for (auto& mesh : m_meshes)
+	{
+
+		// Mesh
+		const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = mesh->GetVertexBufferView();
+		const D3D12_INDEX_BUFFER_VIEW& indexBufferView = mesh->GetIndexBufferView();
+
+		CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+		CommandList->IASetIndexBuffer(&indexBufferView);
+
+		CommandList->DrawIndexedInstanced(mesh->GetElementCount(), 1, 0, 0, 0);
+	}
+}
+
 void Ideal::IdealStaticMesh::AddMesh(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh)
 {
 	m_meshes.push_back(Mesh);
