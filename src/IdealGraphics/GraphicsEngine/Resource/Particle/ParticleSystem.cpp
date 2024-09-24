@@ -5,7 +5,6 @@
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/Resource/IdealMesh.h"
 #include "IMesh.h"
-#include "Misc/Utils/BitUtils.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/Resource/Particle/ParticleMaterial.h"
