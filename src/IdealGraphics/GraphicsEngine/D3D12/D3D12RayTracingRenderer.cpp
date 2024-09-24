@@ -910,6 +910,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteDebugMeshObject(std::shared_ptr<Ideal
 	//	m_deferredDeleteManager->AddMeshObjectToDeferredDelete(DebugMeshObject);
 	//	m_staticMeshObject.pop_back();
 	//}
+	m_deferredDeleteManager->AddMeshObjectToDeferredDelete(DebugMeshObject);
 	m_debugMeshManager->DeleteDebugMesh(mesh);
 }
 
