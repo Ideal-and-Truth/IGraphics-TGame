@@ -834,7 +834,7 @@ void Ideal::D3D12RayTracingRenderer::SetMainCamera(std::shared_ptr<ICamera> Came
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName);
+	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName, true);
 	newStaticMesh->SetName(FileName);
 	//newStaticMesh->Init(m_device);
 
