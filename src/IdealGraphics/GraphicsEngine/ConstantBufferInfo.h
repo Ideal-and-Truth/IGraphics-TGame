@@ -67,6 +67,14 @@ struct CB_Global
 	Vector3 eyePos;
 };
 
+struct CB_DebugLine
+{
+	Vector3 startPos;
+	float pad0;
+	Vector3 endPos;
+	float pad1;
+};
+
 //------------Light-----------//
 #define MAX_POINT_LIGHT_NUM 16
 #define MAX_SPOT_LIGHT_NUM 16

@@ -386,7 +386,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-
+		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 20)));
 #pragma endregion
 #pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
@@ -828,6 +828,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				//DebugPlayer2->AnimationDeltaTime(0.002f);
 				//DebugPlayer3->AnimationDeltaTime(0.002f);
+				
+				
+				// --- Optimization Ray Tracing --- //
+				if (GetAsyncKeyState('N') & 0x8000)
+				{
+					gRenderer->BakeStaticMeshObject();
+					gRenderer->ReBuildBLAS();
+				}
+				
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				//if (isEditor)

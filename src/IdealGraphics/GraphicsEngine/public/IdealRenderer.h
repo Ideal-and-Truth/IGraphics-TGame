@@ -115,6 +115,11 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) abstract;
 
 	public:
+		// Ray Tracing Optimization
+		virtual void BakeStaticMeshObject() abstract;
+		virtual void ReBuildBLAS() abstract;
+
+	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;
 		virtual void SetTexturePath(const std::wstring& TexturePath) abstract;

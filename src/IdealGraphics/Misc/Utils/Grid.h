@@ -14,6 +14,12 @@ namespace Ideal
 		class Grid
 		{
 		public:
+			Grid()
+				: m_cellCount(0), m_offset(0)
+			{
+
+			}
+
 			Grid(uint32 CellCount)
 				:m_cellCount(CellCount)
 			{
@@ -27,7 +33,6 @@ namespace Ideal
 				int32 ny = static_cast<int32>(y) + m_offset;
 
 
-				bool isNegative = false;
 				// offset을 더해도 -일때
 				while (nx < 0 || ny < 0 || nx > m_GridCells.size() -1 || ny > m_GridCells.size() - 1)
 				{

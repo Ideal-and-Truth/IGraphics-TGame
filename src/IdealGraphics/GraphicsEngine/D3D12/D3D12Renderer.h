@@ -289,5 +289,10 @@ namespace Ideal
 		// 2024.07.08 : object 관리 수정
 		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		//std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
+
+		// Ray Tracing Optimization // Do not use In Rasterizer Renderer
+	private:
+		virtual void BakeStaticMeshObject() override;
+		virtual void ReBuildBLAS() override;
 	};
 }

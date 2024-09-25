@@ -380,11 +380,6 @@ finishAdapter:
 	//------------------Particle System Manager-------------------//
 	CreateParticleSystemManager();
 
-	//------------------Debug Mesh Manager-------------------//
-	if (m_isEditor)
-	{
-		CreateDebugMeshManager();
-	}
 
 	//---------------Create Managers---------------//
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
@@ -435,6 +430,13 @@ finishAdapter:
 
 	m_textManager = std::make_shared<Ideal::D2DTextManager>();
 	m_textManager->Init(m_device, m_commandQueue);
+
+
+	//------------------Debug Mesh Manager-------------------//
+	if (m_isEditor)
+	{
+		CreateDebugMeshManager();
+	}
 
 	//---------------Editor---------------//
 	if (m_isEditor)
@@ -2035,8 +2037,20 @@ void Ideal::D3D12RayTracingRenderer::CreateDebugMeshManager()
 
 	auto vs = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderVS.shader");
 	auto ps = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderPS.shader");
+	
 	m_debugMeshManager->SetVS(vs);
 	m_debugMeshManager->SetPS(ps);
+
+	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderVS", L"vs_6_3", L"VSMain");
+	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderPS", L"ps_6_3", L"PSMain");
+
+	auto vsLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderVS.shader");
+	auto psLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderPS.shader");
+
+	m_debugMeshManager->SetVSLine(vsLine);
+	m_debugMeshManager->SetPSLine(psLine);
+	m_debugMeshManager->SetDebugLineVB(m_resourceManager->GetDebugLineVB());
+
 	m_debugMeshManager->Init(m_device);
 }
 
@@ -2184,4 +2198,26 @@ void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height
 			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
 	}
+}
+
+void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
+{
+	m_debugMeshManager->AddDebugLine(Vector3(0, 0, 0), Vector3(0, 20, 0));
+	for (auto& object : m_staticMeshObject)
+	{
+		Vector3 position;
+		position.x = object->GetTransformMatrix()._41;
+		position.y = object->GetTransformMatrix()._42;
+		position.z = object->GetTransformMatrix()._43;
+		m_Octree.AddObject(object, position);
+	}
+	m_Octree.Bake(2.f);
+}
+
+void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
+{
+	std::vector<std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>>> nodes;
+	m_Octree.GetFinalNodes(nodes);
+
+	int a = 3;
 }

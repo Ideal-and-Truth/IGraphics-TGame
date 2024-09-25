@@ -8,6 +8,9 @@
 #include <d3dx12.h>
 
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
+
+#include "Misc/Utils/Octree/Octree.h"
+ 
 // Test
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
@@ -16,8 +19,6 @@
 
 #include <dxcapi.h>
 #include <atlbase.h>
-
-#include "Misc/Utils/Grid.h"
 
 struct ID3D12Device;
 struct ID3D12CommandQueue;
@@ -379,6 +380,9 @@ namespace Ideal
 
 		// Optimization
 	private:
-		Ideal::Utils::Grid<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_grid;
+		virtual void BakeStaticMeshObject() override;
+		virtual void ReBuildBLAS() override;
+
+		Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_Octree;
 	};
 }

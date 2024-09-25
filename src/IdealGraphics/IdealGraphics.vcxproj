@@ -175,6 +175,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
     <ClInclude Include="GraphicsEngine\public\IGraph.h" />
     <ClInclude Include="Misc\Utils\Grid.h" />
@@ -300,6 +301,7 @@
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystem.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleMaterial.h" />
     <ClInclude Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.h" />
+    <ClInclude Include="Misc\Utils\Octree\Octree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="GraphicsEngine\Resource\ResourceBase.h" />
     <ClInclude Include="GraphicsEngine\Resource\IdealStaticMesh.h" />
@@ -339,6 +341,7 @@
     <ClInclude Include="ThirdParty\Include\DirectXTK12\XboxDDSTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />
     <ClCompile Include="Misc\Utils\Grid.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
@@ -431,6 +434,7 @@
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystem.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleMaterial.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
+    <ClCompile Include="Misc\Utils\Octree\Octree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc" />
@@ -440,6 +444,11 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Shaders\DebugMesh\DebugLineShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\Shaders\Particle\DefaultParticleVS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
