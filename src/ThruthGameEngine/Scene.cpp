@@ -356,10 +356,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		std::string name = file->Read<std::string>();
 		m_mapEntity[i]->m_name = name;
 
-// 		if (name == "SM_dumpster_Prefab")
-// 		{
-// 			int a =1;
-// 		}
+		if (name == "SM_midtunnel")
+		{
+			int a =1;
+		}
 
 		if (parent != -1)
 		{
