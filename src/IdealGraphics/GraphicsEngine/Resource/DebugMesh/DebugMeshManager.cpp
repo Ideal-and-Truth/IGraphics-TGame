@@ -87,12 +87,11 @@ void Ideal::DebugMeshManager::CreateRootSignatureDebugLine(ComPtr<ID3D12Device> 
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::DebugLineRootSignature::Slot::Count];
 	ranges[Ideal::DebugLineRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
 	ranges[Ideal::DebugLineRootSignature::Slot::CBV_LineInfo].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
-	ranges[Ideal::DebugLineRootSignature::Slot::CBV_Color].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
 
 	CD3DX12_ROOT_PARAMETER1 rootParameters[Ideal::DebugLineRootSignature::Slot::Count];
 	rootParameters[Ideal::DebugLineRootSignature::Slot::CBV_Global].InitAsDescriptorTable(1, &ranges[Ideal::DebugLineRootSignature::Slot::CBV_Global]);
 	rootParameters[Ideal::DebugLineRootSignature::Slot::CBV_LineInfo].InitAsDescriptorTable(1, &ranges[Ideal::DebugLineRootSignature::Slot::CBV_LineInfo]);
-	rootParameters[Ideal::DebugLineRootSignature::Slot::CBV_Color].InitAsDescriptorTable(1, &ranges[Ideal::DebugLineRootSignature::Slot::CBV_Color]);
+	//rootParameters[Ideal::DebugLineRootSignature::Slot::CBV_LineInfo].InitAsConstants(sizeof(), );// InitAsDescriptorTable(1, &ranges[Ideal::DebugLineRootSignature::Slot::CBV_LineInfo]);
 	
 	ComPtr<ID3DBlob> blob;
 	ComPtr<ID3DBlob> error;
@@ -206,31 +205,37 @@ void Ideal::DebugMeshManager::DrawDebugMeshes(ComPtr<ID3D12Device> Device, ComPt
 		
 		CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 
+		// TODO : Instancing
 		for (auto& l : m_lines)
 		{
 			CB_DebugLine cbDebugLine;
-			cbDebugLine.startPos = l.StartPos;
-			cbDebugLine.endPos = l.EndPos;
+			cbDebugLine.startPos = l.startPos;
+			cbDebugLine.endPos = l.endPos;
+			cbDebugLine.color = l.color;
 			auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_DebugLine));
 			memcpy(cb1->SystemMemAddr, &cbDebugLine, sizeof(CB_DebugLine));
 			auto handle1 = DescriptorHeap->Allocate();
 			Device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 			CommandList->SetGraphicsRootDescriptorTable(Ideal::DebugLineRootSignature::Slot::CBV_LineInfo, handle1.GetGpuHandle());
-
-			CB_Color cbColor;
-			cbColor.color = l.Color;
-			auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_Color));
-			memcpy(cb2->SystemMemAddr, &cbColor, sizeof(CB_Color));
-			auto handle2 = DescriptorHeap->Allocate();
-			Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			CommandList->SetGraphicsRootDescriptorTable(Ideal::DebugLineRootSignature::Slot::CBV_Color, handle2.GetGpuHandle());
-
+		
 			CommandList->DrawInstanced(2, 1, 0, 0);
 		}
+		//CommandList->DrawInstanced(2, static_cast<uint32>(m_lines.size()), 0, 0);
 	}
 }
 
 void Ideal::DebugMeshManager::AddDebugLine(Vector3 start, Vector3 end, Color Color /*= Color(1,0,0)*/)
 {
-	m_lines.push_back({ start, end, Color });
+	m_lines.push_back({ start, 0, end, 0, Color });
 }
+
+//void Ideal::DebugMeshManager::DebugLineInstanceBake(ComPtr<ID3D12Device> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager)
+//{
+//	m_instanceBuffer = std::make_shared<Ideal::D3D12UploadBuffer>();
+//	m_instanceBuffer->Create(Device.Get(), sizeof(CB_DebugLine) * 3000);
+//	void* data = m_instanceBuffer->Map();
+//	memcpy(data, m_lines.data(), sizeof(CB_DebugLine) * 3000);
+//	m_instanceBuffer->UnMap();
+//
+//	// SRV로 만든다.
+//}

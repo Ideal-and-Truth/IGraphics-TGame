@@ -489,7 +489,7 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const s
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateDebugMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IMeshObject> newDebugMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newDebugMesh), FileName);
+	m_resourceManager->CreateStaticMeshObject(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newDebugMesh), FileName, true);
 	m_currentRenderScene->AddDebugObject(newDebugMesh);
 
 	return newDebugMesh;

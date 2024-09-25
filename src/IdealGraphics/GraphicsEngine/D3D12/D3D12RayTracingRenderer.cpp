@@ -836,7 +836,7 @@ void Ideal::D3D12RayTracingRenderer::SetMainCamera(std::shared_ptr<ICamera> Came
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName, true);
+	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName, false);
 	newStaticMesh->SetName(FileName);
 	//newStaticMesh->Init(m_device);
 
@@ -1926,7 +1926,7 @@ void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		m_mainDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
-		m_mainDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_UI_DESCRIPTOR_COUNT);
+		m_mainDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 	}
 }
 
@@ -2202,7 +2202,8 @@ void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height
 
 void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 {
-	m_debugMeshManager->AddDebugLine(Vector3(0, 0, 0), Vector3(0, 20, 0));
+	m_Octree = Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>>();
+	//m_debugMeshManager->AddDebugLine(Vector3(0, 0, 0), Vector3(0, 0, 20));
 	for (auto& object : m_staticMeshObject)
 	{
 		Vector3 position;
@@ -2211,7 +2212,27 @@ void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 		position.z = object->GetTransformMatrix()._43;
 		m_Octree.AddObject(object, position);
 	}
-	m_Octree.Bake(2.f);
+	m_Octree.Bake(10.f);
+
+#ifdef _DEBUG
+	{
+		// 라인 그리기
+		//std::vector<std::pair<Vector3, Vector3>> lines;
+		//m_Octree.ForeachNodeInternal(
+		//	[&](std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>> Node)
+		//	{
+		//		Bounds bound = Node->GetBounds();
+		//		auto edges = bound.GetEdges();
+		//		for (auto& e : edges)
+		//		{
+		//			m_debugMeshManager->AddDebugLine(e.first, e.second);
+		//		}
+		//	}
+		//);
+
+		int a = 3;
+	}
+#endif
 }
 
 void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()

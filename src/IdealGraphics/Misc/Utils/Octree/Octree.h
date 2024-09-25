@@ -61,6 +61,43 @@ struct Bounds
 		m_Center = min + m_Extents;
 	}
 
+	std::vector<std::pair<Vector3, Vector3>> GetEdges()
+	{
+		std::vector<std::pair<Vector3, Vector3>> edges;
+
+		// 정점 계산
+		Vector3 min = GetMin();
+		Vector3 max = GetMax();
+
+		// 정점 배열
+		Vector3 vertices[8] = {
+			min,
+			Vector3(max.x, min.y, min.z),
+			Vector3(min.x, max.y, min.z),
+			Vector3(max.x, max.y, min.z),
+			Vector3(min.x, min.y, max.z),
+			Vector3(max.x, min.y, max.z),
+			Vector3(min.x, max.y, max.z),
+			max
+		};
+
+		// 선 정의 (각 선의 시작점과 끝점)
+		edges.push_back({ vertices[0], vertices[1] }); // (0, 1)
+		edges.push_back({ vertices[0], vertices[2] }); // (0, 2)
+		edges.push_back({ vertices[0], vertices[4] }); // (0, 4)
+		edges.push_back({ vertices[1], vertices[3] }); // (1, 3)
+		edges.push_back({ vertices[1], vertices[5] }); // (1, 5)
+		edges.push_back({ vertices[2], vertices[3] }); // (2, 3)
+		edges.push_back({ vertices[2], vertices[6] }); // (2, 6)
+		edges.push_back({ vertices[3], vertices[7] }); // (3, 7)
+		edges.push_back({ vertices[4], vertices[5] }); // (4, 5)
+		edges.push_back({ vertices[4], vertices[6] }); // (4, 6)
+		edges.push_back({ vertices[5], vertices[7] }); // (5, 7)
+		edges.push_back({ vertices[6], vertices[7] }); // (6, 7)
+
+		return edges;
+	}
+
 private:
 	Vector3 m_Center;
 	Vector3 m_Extents;
@@ -96,11 +133,13 @@ public:
 		m_childBounds[7] = Bounds(m_nodeBounds.GetCenter() + Vector3(quarter, -quarter, quarter), childSize);
 	}
 
+	Bounds GetBounds() { return m_nodeBounds; }
+
 	void DivideAndAdd(T Object, Vector3 Position)
 	{
-		m_objects.push_back(Object);
 		if (m_nodeBounds.GetSize().y <= m_minSize)
 		{
+			m_objects.push_back(Object);
 			m_isFinalNode = true;
 			return;
 		}
@@ -115,11 +154,14 @@ public:
 			{
 				m_childOctreeNodes[i] = std::make_shared<OctreeNode<T>>(m_childBounds[i], m_minSize);
 			}
-
+		}
+		for (int i = 0; i < 8; ++i)
+		{
 			if (m_childBounds[i].Contains(Position))
 			{
 				dividing = true;
 				m_childOctreeNodes[i]->DivideAndAdd(Object, Position);
+				break;
 			}
 		}
 		if (dividing = false)
@@ -187,6 +229,12 @@ public:
 		{
 			m_rootNode->DivideAndAdd(o.object, o.pos);
 		}
+	}
+
+	template<typename Func>
+	void ForeachNodeInternal(Func func)
+	{
+		m_rootNode->ForeachNodeInternal(func);
 	}
 
 	void GetFinalNodes(std::vector<std::shared_ptr<OctreeNode<T>>>& nodes)

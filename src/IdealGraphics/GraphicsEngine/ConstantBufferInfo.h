@@ -73,6 +73,7 @@ struct CB_DebugLine
 	float pad0;
 	Vector3 endPos;
 	float pad1;
+	Color color;
 };
 
 //------------Light-----------//

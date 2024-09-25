@@ -130,7 +130,6 @@ namespace Ideal
 			{
 				CBV_Global = 0,
 				CBV_LineInfo,
-				CBV_Color,
 				Count
 			};
 		}

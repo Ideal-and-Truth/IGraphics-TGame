@@ -766,15 +766,14 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 	if (!IsDebugMesh)
 	{
 		staticMesh = m_staticMeshes[key];
+		if (staticMesh != nullptr)
+		{
+			staticMesh->AddRefCount();
+			OutMesh->SetStaticMesh(staticMesh);
+			return;
+		}
 	}
-
-
-	if (staticMesh != nullptr)
-	{
-		staticMesh->AddRefCount();
-		OutMesh->SetStaticMesh(staticMesh);
-		return;
-	}
+	
 	staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 	staticMesh->AddRefCount();
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다

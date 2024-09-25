@@ -14,6 +14,7 @@ namespace Ideal
 	class IdealStaticMeshObject;
 	class D3D12Shader;
 	class D3D12VertexBuffer;
+	class D3D12UploadBuffer;
 }
 
 namespace Ideal
@@ -23,7 +24,9 @@ namespace Ideal
 		struct DebugLine
 		{
 			Vector3 StartPos;
+			float pad0;
 			Vector3 EndPos;
+			float pad1;
 			Color Color;
 		};
 	public:
@@ -50,6 +53,7 @@ namespace Ideal
 		void DrawDebugMeshes(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData);
 
 		void AddDebugLine(Vector3 start, Vector3 end, Color Color = Color(1,0,0));
+		//void DebugLineInstanceBake(ComPtr<ID3D12Device> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
 	private:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
@@ -67,6 +71,7 @@ namespace Ideal
 
 	private:
 		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_meshes;
-		std::vector<DebugLine> m_lines;
+		std::vector<CB_DebugLine> m_lines;
+		std::shared_ptr<Ideal::D3D12UploadBuffer> m_instanceBuffer;
 	};
 }
