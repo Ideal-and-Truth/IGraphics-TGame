@@ -1,5 +1,6 @@
 #include "BossSkill.h"
 #include "BossAnimator.h"
+#include "Player.h"
 #include "BoxCollider.h"
 #include "Bullet.h"
 #include "Transform.h"
@@ -19,6 +20,7 @@ BossSkill::~BossSkill()
 void BossSkill::Awake()
 {
 	m_bossAnimator = m_owner.lock()->GetComponent<BossAnimator>().lock();
+	//m_player = .lock()->GetComponent<Player>().lock();
 }
 
 void BossSkill::Update()
@@ -55,22 +57,20 @@ void BossSkill::Update()
 
 void BossSkill::ShockWave()
 {
-	std::shared_ptr<Truth::Entity> bullet = std::make_shared<Truth::Entity>(m_managers.lock());
-	bullet->Initialize();
-	bullet->m_layer = 1;
-	bullet->AddComponent<Truth::BoxCollider>(false);
+	std::shared_ptr<Truth::Entity> shock = std::make_shared<Truth::Entity>(m_managers.lock());
+	shock->Initialize();
+	shock->m_layer = 1;
+	shock->AddComponent<Truth::BoxCollider>(false);
 
-	auto bulletComponent = bullet->AddComponent<Bullet>();
 	float damage = 0.f;
-	bulletComponent->GetTypeInfo().GetProperty("bulletDamage")->Set(bulletComponent.get(), damage);
 
-	bullet->m_name = "bullet";
-	m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
-	bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
-	bullet->SetScale({ 300.f,30.f,300.f });
+	shock->m_name = "ShockWave1";
+	m_managers.lock()->Scene()->m_currentScene->CreateEntity(shock);
+	shock->SetPosition({ 4.2f,0.f,0.f });
+	shock->SetScale({ 300.f,30.f,300.f });
 
-	bullet->Awake();
-	bullet->Start();
+	shock->Awake();
+	shock->Start();
 }
 
 void BossSkill::FlameSword()
@@ -89,6 +89,11 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 }
 
 void BossSkill::DistortedTimeSphere()
+{
+
+}
+
+void BossSkill::DamageforPlayer()
 {
 
 }

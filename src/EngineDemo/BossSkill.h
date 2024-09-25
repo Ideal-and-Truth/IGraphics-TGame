@@ -3,6 +3,7 @@
 
 
 class BossAnimator;
+class Player;
 
 class BossSkill :
 	public Truth::Component
@@ -18,6 +19,7 @@ private:
 
 private:
 	std::shared_ptr<BossAnimator> m_bossAnimator;
+	std::shared_ptr<Player> m_player;
 
 public:
 	BossSkill();
@@ -35,6 +37,7 @@ private:
 	void SwordShooting();
 	void LightSpeedDash(bool isThirdPhase);
 	void DistortedTimeSphere();
+	void DamageforPlayer();
 };
 
 template<class Archive>
