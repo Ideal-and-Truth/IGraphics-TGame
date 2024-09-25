@@ -144,6 +144,9 @@
     <ClInclude Include="RangerAnimator.h">
       <Filter>Component\Ranger</Filter>
     </ClInclude>
+    <ClInclude Include="BossSkill.h">
+      <Filter>Component\Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -217,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="RangerAnimator.cpp">
       <Filter>Component\Ranger</Filter>
+    </ClCompile>
+    <ClCompile Include="BossSkill.cpp">
+      <Filter>Component\Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

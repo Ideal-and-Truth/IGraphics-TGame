@@ -148,6 +148,7 @@
     <ClInclude Include="AnimationState.h" />
     <ClInclude Include="BezierShooter.h" />
     <ClInclude Include="BossAnimator.h" />
+    <ClInclude Include="BossSkill.h" />
     <ClInclude Include="Bullet.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -180,6 +181,7 @@
     <ClCompile Include="AnimationState.cpp" />
     <ClCompile Include="BezierShooter.cpp" />
     <ClCompile Include="BossAnimator.cpp" />
+    <ClCompile Include="BossSkill.cpp" />
     <ClCompile Include="Bullet.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

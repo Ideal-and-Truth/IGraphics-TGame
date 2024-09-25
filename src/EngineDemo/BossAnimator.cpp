@@ -123,7 +123,12 @@ void BossAnimator::Update()
 
 	int random = RandomNumber(1, 20);
 
-	if (!m_attackSwing && !m_attackRunning && !m_attackUpperCut && !m_attackChargeCombo && !m_attackSmashGround && !m_attackCharge && !m_attackJumpSmashGround && !m_attackSpin && !m_attackDoubleUpperCut)
+	if (GetKeyDown(KEY::Q))
+	{
+		m_attackUpperCut = true;
+	}
+	/// 이전 패턴의 죄
+	/*if (!m_attackSwing && !m_attackRunning && !m_attackUpperCut && !m_attackChargeCombo && !m_attackSmashGround && !m_attackCharge && !m_attackJumpSmashGround && !m_attackSpin && !m_attackDoubleUpperCut)
 	{
 		m_attackCoolTime += GetDeltaTime();
 	}
@@ -208,7 +213,86 @@ void BossAnimator::Update()
 	// 2페이즈
 	else if (currentTP / maxTP < 0.7f && currentTP / maxTP > 0.3f)
 	{
+		if (!m_attackSwing && !m_attackRunning && !m_attackUpperCut && !m_attackChargeCombo && !m_attackSmashGround && !m_attackCharge && !m_attackJumpSmashGround && !m_attackSpin && !m_attackDoubleUpperCut)
+		{
+			if (m_attackCoolTime < 10.f && !m_isInRange)
+			{
+				m_strafeMove = true;
+			}
+			if (m_attackCoolTime > 10.f && !m_strafeMove)
+			{
+				// 범위 안이면
+				if (m_isInRange)
+				{
+					// 50% 휘두르기
+					if (random >= 1 && random <= 10)
+					{
+						m_attackSwing = true;
+						m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+					}
+					// 25% 차지콤보
+					else if (random >= 11 && random <= 15)
+					{
+						m_attackChargeCombo = true;
+						m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+					}
+					// 25% 달리기 공격
+					else if (random >= 16 && random <= 20)
+					{
+						m_attackRunning = true;
+						m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+					}
+					m_attackCoolTime = 0.f;
+				}
+				else
+				{
+					m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
+				}
+			}
 
+			if (m_currentState == m_animationStateMap["Strafe"])
+			{
+				// 5초 배회
+				m_passingTime += GetDeltaTime();
+
+				if (m_passingTime > 5.f)
+				{
+					// 범위 안이면
+					if (m_isInRange)
+					{
+						m_strafeMove = false;
+					}
+					// 범위 밖이면
+					else
+					{
+						// 30% 돌진
+						if (random >= 1 && random <= 6)
+						{
+							m_attackCharge = true;
+							m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+						}
+						// 40% 어퍼컷
+						else if (random >= 7 && random <= 14)
+						{
+							m_attackUpperCut = true;
+							m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+						}
+						// 30% 내리찍기
+						else if (random >= 15 && random <= 20)
+						{
+							m_attackSmashGround = true;
+							m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+						}
+
+						m_strafeMove = false;
+					}
+				}
+				else
+				{
+					m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
+				}
+			}
+		}
 	}
 	// 3페이즈
 	else if (currentTP / maxTP < 0.3f)
@@ -226,7 +310,7 @@ void BossAnimator::Update()
 	if (!m_isAnimationEnd && m_currentState == m_animationStateMap["Idle"])
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-	}
+	}*/
 
 	m_currentState->OnStateUpdate();
 }

@@ -358,9 +358,6 @@ private:
 	PROPERTY(hitStopTime);
 	float m_hitStopTime;
 
-	int next=0;
-	int before=0;
-
 private:
 	int RandomNumber(int _min, int _max);
 
