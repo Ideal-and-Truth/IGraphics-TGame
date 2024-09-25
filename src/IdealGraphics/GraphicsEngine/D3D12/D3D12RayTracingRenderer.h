@@ -8,6 +8,9 @@
 #include <d3dx12.h>
 
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
+
+#include "Misc/Utils/Octree/Octree.h"
+ 
 // Test
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
@@ -106,7 +109,8 @@ namespace Ideal
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
-		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 8192;
+		//static const uint32 MAX_DRAW_COUNT_PER_FRAME = 8192;
+		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 16384;
 		static const uint32	MAX_DESCRIPTOR_COUNT = 16384;
 		static const uint32	MAX_UI_DESCRIPTOR_COUNT = 256;
 		static const uint32 MAX_EDITOR_SRV_COUNT = 16384;
@@ -374,5 +378,12 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
+
+		// Optimization
+	private:
+		virtual void BakeStaticMeshObject() override;
+		virtual void ReBuildBLAS() override;
+
+		Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_Octree;
 	};
 }

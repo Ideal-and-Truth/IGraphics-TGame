@@ -121,4 +121,17 @@ namespace Ideal
 			};
 		}
 	}
+
+	namespace DebugLineRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				CBV_Global = 0,
+				CBV_LineInfo,
+				Count
+			};
+		}
+	}
 }

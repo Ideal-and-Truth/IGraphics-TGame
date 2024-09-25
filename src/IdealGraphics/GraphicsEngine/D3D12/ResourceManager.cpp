@@ -98,6 +98,7 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	// default resource
 	CreateDefaultQuadMesh();
 	CreateDefaultQuadMesh2();
+	CreateDefaultDebugLine();
 }
 
 void ResourceManager::Fence()
@@ -765,15 +766,14 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 	if (!IsDebugMesh)
 	{
 		staticMesh = m_staticMeshes[key];
+		if (staticMesh != nullptr)
+		{
+			staticMesh->AddRefCount();
+			OutMesh->SetStaticMesh(staticMesh);
+			return;
+		}
 	}
-
-
-	if (staticMesh != nullptr)
-	{
-		staticMesh->AddRefCount();
-		OutMesh->SetStaticMesh(staticMesh);
-		return;
-	}
+	
 	staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 	staticMesh->AddRefCount();
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
@@ -1302,6 +1302,22 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 
 	// KeyBinding
 	m_skinnedMeshes[key] = skinnedMesh;
+}
+
+std::shared_ptr<Ideal::D3D12VertexBuffer> ResourceManager::GetDebugLineVB()
+{
+	return m_debugLineVertexBuffer;
+}
+
+void ResourceManager::CreateDefaultDebugLine()
+{
+	GeometryVertex g1; g1.Position = Vector3(0, 0, 0);
+	GeometryVertex g2; g2.Position = Vector3(1, 0, 0);
+	std::vector<GeometryVertex> vertices = { g1, g2 };
+
+	m_debugLineVertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+
+	CreateVertexBuffer<GeometryVertex>(m_debugLineVertexBuffer, vertices);
 }
 
 std::shared_ptr<Ideal::IMesh> ResourceManager::CreateParticleMesh(const std::wstring& filename)
