@@ -20,6 +20,14 @@ private:
 private:
 	std::shared_ptr<BossAnimator> m_bossAnimator;
 	std::shared_ptr<Player> m_player;
+	std::vector<std::shared_ptr<Truth::Entity>> m_attackColliders;
+
+	bool m_useSkill;
+	bool m_createComplete;
+	bool m_paternEnds;
+	float m_passingTime;
+	int m_count;
+	std::vector<float> m_shockWavePos;
 
 public:
 	BossSkill();
@@ -37,7 +45,7 @@ private:
 	void SwordShooting();
 	void LightSpeedDash(bool isThirdPhase);
 	void DistortedTimeSphere();
-	void DamageforPlayer();
+	void DamageforPlayer(float damage);
 };
 
 template<class Archive>
