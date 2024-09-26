@@ -223,6 +223,9 @@
     <ClInclude Include="ThirdParty\Include\DirectXTK12\WICTextureLoader.h" />
     <ClInclude Include="ThirdParty\Include\DirectXTK12\XboxDDSTextureLoader.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
+    <ClInclude Include="Misc\Utils\Grid.h" />
+    <ClInclude Include="Misc\Utils\Octree\Octree.h" />
+    <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -329,6 +332,9 @@
     <ClCompile Include="GraphicsEngine\Resource\Particle\ParticleSystemManager.cpp" />
     <ClCompile Include="Misc\ThirdParty\Utils\Graph.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />
+    <ClCompile Include="Misc\Utils\Grid.cpp" />
+    <ClCompile Include="Misc\Utils\Octree\Octree.cpp" />
+    <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
@@ -370,6 +376,7 @@
     <FxCompile Include="..\Shaders\Particle\TestCustomParticle.hlsl" />
     <FxCompile Include="..\Shaders\Particle\DefaultParticleVS.hlsl" />
     <FxCompile Include="..\Shaders\Particle\SwordSlash.hlsl" />
+    <FxCompile Include="..\Shaders\DebugMesh\DebugLineShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

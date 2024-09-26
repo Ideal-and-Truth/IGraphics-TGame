@@ -1,8 +1,8 @@
 #pragma once
 #include "Core/Core.h"
 
-#define MAX_BONE_TRANSFORMS 350
-#define MAX_MODEL_KEYFRAMES 500
+#define MAX_BONE_TRANSFORMS 600
+#define MAX_MODEL_KEYFRAMES 600
 
 
 struct SceneConstantBuffer
@@ -65,6 +65,15 @@ struct CB_Global
 	Matrix Proj;
 	Matrix ViewProj;
 	Vector3 eyePos;
+};
+
+struct CB_DebugLine
+{
+	Vector3 startPos;
+	float pad0;
+	Vector3 endPos;
+	float pad1;
+	Color color;
 };
 
 //------------Light-----------//

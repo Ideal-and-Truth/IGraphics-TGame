@@ -183,9 +183,9 @@ void EntityHierarchy::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 				std::wstring filepath = m_openFileName.lpstrFile;
 				std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
 
-				std::ofstream outputstream(f.back());
+				std::ofstream outputstream(filepath);
 				boost::archive::text_oarchive outputArchive(outputstream);
-				outputArchive << _entity;
+				outputArchive << _entity.lock();
 			}
 		}
 		if (ImGui::Selectable("Create Child"))

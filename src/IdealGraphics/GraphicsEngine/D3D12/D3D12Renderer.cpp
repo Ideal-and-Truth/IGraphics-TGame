@@ -489,7 +489,7 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const s
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateDebugMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IMeshObject> newDebugMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newDebugMesh), FileName);
+	m_resourceManager->CreateStaticMeshObject(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newDebugMesh), FileName, true);
 	m_currentRenderScene->AddDebugObject(newDebugMesh);
 
 	return newDebugMesh;
@@ -994,6 +994,16 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
 	}
+}
+
+void Ideal::D3D12Renderer::BakeStaticMeshObject()
+{
+
+}
+
+void Ideal::D3D12Renderer::ReBuildBLAS()
+{
+
 }
 
 void Ideal::D3D12Renderer::CreateAndInitRenderingResources()
