@@ -184,6 +184,11 @@ void Ideal::IdealSkinnedMeshObject::SetSkinnedMesh(std::shared_ptr<Ideal::IdealS
 	}
 }
 
+void Ideal::IdealSkinnedMeshObject::SetStaticWhenRunTime(bool Static)
+{
+
+}
+
 void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 {
 	if (m_currentAnimation == nullptr)

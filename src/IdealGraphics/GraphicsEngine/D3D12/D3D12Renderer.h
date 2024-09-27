@@ -292,7 +292,8 @@ namespace Ideal
 
 		// Ray Tracing Optimization // Do not use In Rasterizer Renderer
 	private:
+		virtual void BakeOption(int MaxBakeCount, float MinSpaceSize) override;
 		virtual void BakeStaticMeshObject() override;
-		virtual void ReBuildBLAS() override;
+		virtual void ReBuildBLASFlagOn() override;
 	};
 }

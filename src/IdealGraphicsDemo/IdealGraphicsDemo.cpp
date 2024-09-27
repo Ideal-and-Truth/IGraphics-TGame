@@ -243,7 +243,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx");
-		gRenderer->ConvertAssetToMyFormat(L"MapData/1_HN_Scene2/SM_dumpster_Prefab.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"MapData/1_HN_Scene2/brick_base.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"EnemyTest/idelTest.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"EnemyTest/idelTest.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
@@ -258,7 +258,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
-		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
@@ -295,7 +295,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
 		DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
-		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"EnemyTest/idelTest");
+		//std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"EnemyTest/idelTest");
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
@@ -369,7 +369,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
 
 		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-		std::shared_ptr<Ideal::IMeshObject> cart2 = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		//std::shared_ptr<Ideal::IMeshObject> cart2 = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
 		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
@@ -388,7 +388,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
 		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 20)));
-		cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
+		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion
 #pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
@@ -838,6 +838,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					if (once < 1)
 					{
 						once++;
+
+						//for (int i = 0; i < 32; i++)
+						//{
+						//	std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+						//	meshes.push_back(mesh);
+						//	mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(i, 0, 0)));
+						//}
+
 						for (int z = 0; z < 10; z++)
 						{
 							for (int y = 0; y < 10; y++)
@@ -845,21 +853,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 								for (int x = 0; x < 10; x++)
 								{
 									std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-									//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
+									mesh->SetStaticWhenRunTime(true);
+									mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
 									meshes.push_back(mesh);
+									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 0)));
 									mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
 									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 0.1, y * 0.1, z * 0.1)));
 								}
 							}
 						}
+						gRenderer->BakeOption(32, 20.f);
+						gRenderer->BakeStaticMeshObject();
+						gRenderer->ReBuildBLASFlagOn();
 					}
 				}
 				
 				// --- Optimization Ray Tracing --- //
 				if (GetAsyncKeyState('N') & 0x8000)
 				{
-					gRenderer->BakeStaticMeshObject();
-					gRenderer->ReBuildBLAS();
+					static int once = 0;
+					if (once < 1)
+					{
+						once++;
+
+						gRenderer->BakeOption(32, 20.f);
+						gRenderer->BakeStaticMeshObject();
+						gRenderer->ReBuildBLASFlagOn();
+					}
 				}
 				
 				//-----ImGui Test-----//
@@ -956,19 +976,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		particleTexture.reset();
 		gRenderer->DeleteParticleSystem(particleSystem);
 
-		for (int i = 0; i < meshes.size(); i++)
-		{
-			gRenderer->DeleteMeshObject(meshes[i]);
-			meshes[i].reset();
-		}
-		meshes.clear();
+		//for (int i = 0; i < meshes.size(); i++)
+		//{
+		//	gRenderer->DeleteMeshObject(meshes[i]);
+		//	meshes[i].reset();
+		//}
+		//meshes.clear();
 
 		gRenderer->DeleteMeshObject(cart);
 		cart.reset();
-		gRenderer->DeleteMeshObject(cart2);
-		cart2.reset();
-		gRenderer->DeleteMeshObject(DebugStaticEnemy);
-		DebugStaticEnemy.reset();
+		//gRenderer->DeleteMeshObject(cart2);
+		//cart2.reset();
+		//gRenderer->DeleteMeshObject(DebugStaticEnemy);
+		//DebugStaticEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugEnemy);
 		DebugEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugPlayer);

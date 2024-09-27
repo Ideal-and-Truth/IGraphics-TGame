@@ -186,8 +186,12 @@ public:
 		}
 	}
 
-private:
+	const std::vector<T>& GetObjects()
+	{
+		return m_objects;
+	}
 
+private:
 	Bounds m_nodeBounds;
 	std::vector<Bounds> m_childBounds;
 	std::vector<std::shared_ptr<OctreeNode<T>>> m_childOctreeNodes;
