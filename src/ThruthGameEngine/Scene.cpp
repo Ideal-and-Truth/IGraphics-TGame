@@ -413,7 +413,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 				Vector3 size = file->Read<Vector3>();
 				Vector3 center = file->Read<Vector3>();
-				coll = std::make_shared<BoxCollider>(center, size);
+				coll = std::make_shared<BoxCollider>(center, size, false);
+				
 				break;
 			}
 			// 			case 2:
@@ -428,7 +429,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			// 			}
 			case 4:
 			{
-				coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
+				// coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
 				break;
 			}
 			default:
@@ -513,7 +514,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		Matrix flipXY = Matrix::Identity;
 		flipXY.m[2][2] = -1.f;
 
-		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
+		m_mapEntity[i]->SetLocalTM(ltm);
 	}
 
 	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool

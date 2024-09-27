@@ -120,7 +120,7 @@ void PlayerCamera::FreeCamera()
 {
 	// 자유시점 카메라
 	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
-	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 4.5f, 0.0f };
+	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 1.0f, 0.0f };
 
 	m_elevation += MouseDy() * m_cameraSpeed;
 	m_azimuth -= MouseDx() * m_cameraSpeed;

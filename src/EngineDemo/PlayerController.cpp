@@ -106,8 +106,8 @@ void PlayerController::PlayerMove(const void*)
 
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
 	Vector3 disp2 = right * m_sideInput * playerSpeed;
-	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f) * GetDeltaTime();
-	Vector3 finalMovement = disp + disp2 + gravity;
+	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f);
+	Vector3 finalMovement = (disp + disp2 + gravity) * GetDeltaTime();
 	m_controller.lock()->Move(finalMovement);
 
 	// 플레이어 회전
