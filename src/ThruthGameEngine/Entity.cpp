@@ -247,6 +247,7 @@ void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
 	{
 		if ((*c) == _entity)
 		{
+			(*c)->m_parent.reset();
 			m_children.erase(c);
 			return;
 		}

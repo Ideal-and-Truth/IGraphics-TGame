@@ -20,14 +20,17 @@ private:
 private:
 	std::shared_ptr<BossAnimator> m_bossAnimator;
 	std::shared_ptr<Player> m_player;
-	std::vector<std::shared_ptr<Truth::Entity>> m_attackColliders;
+	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_attackColliders;
 
 	bool m_useSkill;
 	bool m_createComplete;
 	bool m_paternEnds;
 	float m_passingTime;
 	int m_count;
+	bool m_readyToShoot;
 	std::vector<float> m_shockWavePos;
+	std::vector<float> m_flamePos;
+	std::vector<Vector3> m_swordPos;
 
 public:
 	BossSkill();

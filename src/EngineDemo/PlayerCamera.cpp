@@ -172,7 +172,6 @@ void PlayerCamera::FreeCamera()
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0;
 
-	// m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);
 }
 
 void PlayerCamera::LockOnCamera()
@@ -202,7 +201,7 @@ void PlayerCamera::LockOnCamera()
 		m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
 	}
 
-	if (m_camera.lock()->m_look.z < 0)
+	if (m_camera.lock()->m_look.z < 0.f)
 	{
 		m_azimuth *= -1.f;
 	}
@@ -215,7 +214,7 @@ void PlayerCamera::LockOnCamera()
 	m_camera.lock()->m_look = look;
 
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
-	m_owner.lock()->m_transform->m_rotation.z = 0;
+	m_owner.lock()->m_transform->m_rotation.z = 0.f;
 
 
 }
