@@ -4,7 +4,7 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(Player)
 
 Player::Player()
-	: m_moveSpeed(0.03f)
+	: m_moveSpeed(3.f)
 	, m_lookRotationDampFactor(10.f)
 	, m_stopTiming(0.37f)
 	, m_maxTP(100.f)

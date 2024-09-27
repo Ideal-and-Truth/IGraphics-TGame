@@ -2,8 +2,12 @@
 #include "BossAnimator.h"
 #include "Player.h"
 #include "BoxCollider.h"
+#include "SphereCollider.h"
 #include "Bullet.h"
 #include "Transform.h"
+#include "SkinnedMesh.h"
+#include "SimpleDamager.h"
+#include "TimeDistortion.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -45,6 +49,11 @@ void BossSkill::Awake()
 	m_swordPos.push_back({ -1.1f,4.2f,0.f });
 	m_swordPos.push_back({ -2.2f,4.7f,0.f });
 
+	m_illusionPos.push_back({ 2.2f,0.f,0.f });
+	m_illusionPos.push_back({ -2.2f,0.f,0.f });
+
+
+
 }
 
 void BossSkill::Update()
@@ -85,13 +94,17 @@ void BossSkill::Update()
 	}
 	if (GetKeyDown(MOUSE::RMOUSE))
 	{
+		// 나중에 보스 애니메이터가 스킬 액티브를 넘겨줄거임
 		m_readyToShoot = true;
 	}
 	if (m_useSkill)
 	{
 		//ShockWave();
 		//FlameSword();
-		SwordShooting();
+		//SwordShooting(); //칼 회전 이상함(꼼수로 고쳤지만 짜침) + 아직 삭제 안함
+		//LightSpeedDash(false); //아직 안 만듦
+		//LightSpeedDash(true); //아직 삭제 안함
+		DistortedTimeSphere();
 	}
 }
 
@@ -105,6 +118,7 @@ void BossSkill::ShockWave()
 			shock->Initialize();
 			shock->m_layer = 1;
 			shock->AddComponent<Truth::BoxCollider>();
+			shock->AddComponent<SimpleDamager>();
 
 			shock->m_name = "ShockWave";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(shock);
@@ -181,6 +195,7 @@ void BossSkill::FlameSword()
 			flame->Initialize();
 			flame->m_layer = 1;
 			flame->AddComponent<Truth::BoxCollider>();
+			flame->AddComponent<SimpleDamager>();
 
 			flame->m_name = "Flame";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flame);
@@ -239,6 +254,7 @@ void BossSkill::SwordShooting()
 			sword->Initialize();
 			sword->m_layer = 1;
 			sword->AddComponent<Truth::BoxCollider>();
+			sword->AddComponent<SimpleDamager>();
 
 			sword->m_name = "Sword";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(sword);
@@ -246,6 +262,7 @@ void BossSkill::SwordShooting()
 
 			sword->SetPosition(m_swordPos[m_count]);
 			sword->SetScale({ 30.f,30.f,300.f });
+			//sword->SetScale({ 1.f,1.f,3.f });
 
 
 			sword->Start();
@@ -270,30 +287,22 @@ void BossSkill::SwordShooting()
 	}
 	else
 	{
-		Vector3 playerPos = m_player->GetOwner().lock()->m_transform->m_position + Vector3{ 0.0f, 4.5f, 0.0f };
+		Vector3 playerPos = m_player->GetOwner().lock()->m_transform->m_position;
 		for (int i = 0; i < m_attackColliders.size(); i++)
 		{
-			if (m_attackColliders[i].second == false)
+			if (!m_attackColliders[i].second)
 			{
-				Vector3 dir = playerPos - m_attackColliders[i].first->m_transform->m_position;
-				Vector3 angle = playerPos - m_attackColliders[i].first->m_transform->m_position;
-				angle.y = 0.f;
-				angle.Normalize(angle);
-				if (dir.z > 0.f)
-				{
-					dir.z *= -1.f;
-				}
+				Vector3 dir = playerPos - m_attackColliders[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 4.5f, 0.0f };
 				dir.Normalize(dir);
 				Quaternion lookRot;
-				Quaternion lookRot2;
+				if (playerPos.z - m_attackColliders[i].first->m_transform->m_worldPosition.z > 0.f)
+				{
+					dir *= -1.f;
+				}
 				Quaternion::LookRotation(dir, Vector3::Up, lookRot);
-				Quaternion::LookRotation(angle, Vector3::Up, lookRot2);
 				m_attackColliders[i].first->m_transform->m_rotation = Quaternion::Slerp(m_attackColliders[i].first->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
-				m_attackColliders[i].first->m_transform->m_rotation.y =  Quaternion::Slerp(m_attackColliders[i].first->m_transform->m_rotation, lookRot2, 10.f * GetDeltaTime()).y;
-				//m_attackColliders[i].first->m_transform->m_rotation.z = 0.f;
-
 			}
-			if (m_attackColliders[i].second == true)
+			if (m_attackColliders[i].second)
 			{
 				m_attackColliders[i].first->m_transform->m_position += (m_swordPos[i] - m_attackColliders[i].first->m_transform->m_position) * GetDeltaTime() * 10.f;
 			}
@@ -302,10 +311,16 @@ void BossSkill::SwordShooting()
 		if (m_readyToShoot)
 		{
 			m_passingTime += GetDeltaTime();
-			if (m_count < m_swordPos.size() && m_passingTime > 0.2f)
+			if (m_count < m_swordPos.size() && m_passingTime > 1.2f)
 			{
 				m_attackColliders[m_count].second = true;
-				m_swordPos[m_count] = playerPos- Vector3{ 0.0f, 4.5f, 0.0f };
+
+				// Vector3 worldPos = m_attackColliders[m_count].first->m_transform->m_worldPosition;
+				// m_owner.lock()->DeleteChild(m_attackColliders[m_count].first);
+				// m_owner.lock().reset();
+				// m_attackColliders[m_count].first->m_transform->m_position = worldPos;
+
+				m_swordPos[m_count] = playerPos /*- Vector3{ 0.0f, 4.5f, 0.0f }*/;
 				m_count++;
 
 				//m_paternEnds = true;
@@ -320,12 +335,126 @@ void BossSkill::SwordShooting()
 
 void BossSkill::LightSpeedDash(bool isThirdPhase)
 {
+	if (!isThirdPhase)
+	{
 
+	}
+	else
+	{
+		if (!m_createComplete)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				std::shared_ptr<Truth::Entity> illusion = std::make_shared<Truth::Entity>(m_managers.lock());
+				illusion->Initialize();
+				illusion->m_layer = 1;
+				illusion->AddComponent<Truth::BoxCollider>();
+				auto skinnedMesh = illusion->AddComponent<Truth::SkinnedMesh>();
+				illusion->AddComponent<SimpleDamager>();
+				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
+				skinnedMesh->AddAnimation("AttackCharge", L"BossAnimations/Attacks/AttackCharge");
+				illusion->m_name = "Illusion";
+				m_managers.lock()->Scene()->m_currentScene->CreateEntity(illusion);
+				m_owner.lock()->AddChild(illusion);
+
+				illusion->SetPosition(m_illusionPos[i]);
+				illusion->SetScale({ 3.f,3.f,3.f });
+
+
+				illusion->Start();
+
+				m_attackColliders.push_back(std::make_pair(illusion, false));
+			}
+			m_createComplete = true;
+
+			for (auto& e : m_attackColliders)
+			{
+				Vector3 worldPos = e.first->m_transform->m_worldPosition;
+				m_owner.lock()->DeleteChild(e.first);
+				m_owner.lock().reset();
+				e.first->m_transform->m_position = worldPos;
+			}
+		}
+		else
+		{
+			Vector3 playerPos = m_player->GetOwner().lock()->m_transform->m_position;
+			for (int i = 0; i < m_attackColliders.size(); i++)
+			{
+				if (!m_attackColliders[i].second)
+				{
+					Vector3 dir = playerPos - m_attackColliders[i].first->m_transform->m_worldPosition;
+					dir.y = 0.f;
+					dir.Normalize(dir);
+					Quaternion lookRot;
+					Quaternion::LookRotation(dir, Vector3::Up, lookRot);
+					m_attackColliders[i].first->m_transform->m_rotation = Quaternion::Slerp(m_attackColliders[i].first->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+				}
+			}
+			if (m_count < m_attackColliders.size())
+			{
+				if (m_readyToShoot)
+				{
+					m_passingTime += GetDeltaTime();
+					if (m_passingTime > 0.5f)
+					{
+						auto skinnedMesh = m_attackColliders[m_count].first->GetComponent<Truth::SkinnedMesh>().lock();
+						m_passingTime = 0.f;
+						m_attackColliders[m_count].second = true;
+						m_illusionPos[m_count] = playerPos;
+						m_count++;
+					}
+					if (m_count >= m_attackColliders.size())
+					{
+						m_readyToShoot = false;
+					}
+				}
+			}
+			for (int i = 0; i < m_attackColliders.size(); i++)
+			{
+				auto skinnedMesh = m_attackColliders[i].first->GetComponent<Truth::SkinnedMesh>().lock();
+				if (!m_attackColliders[i].second && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 122)
+				{
+					skinnedMesh->SetPlayStop(false);
+					m_readyToShoot = true;
+				}
+				if (m_attackColliders[i].second)
+				{
+					skinnedMesh->SetPlayStop(true);
+					m_attackColliders[i].first->m_transform->m_position += (m_illusionPos[i] - m_attackColliders[i].first->m_transform->m_position) * GetDeltaTime() * 10.f;
+					if (skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 142)
+					{
+						m_attackColliders[i].second = false;
+						skinnedMesh->SetPlayStop(false);
+					}
+				}
+			}
+		}
+	}
 }
 
 void BossSkill::DistortedTimeSphere()
 {
+	if (!m_createComplete)
+	{
+		std::shared_ptr<Truth::Entity> timeSphere = std::make_shared<Truth::Entity>(m_managers.lock());
+		timeSphere->Initialize();
+		timeSphere->m_layer = 1;
+		timeSphere->AddComponent<Truth::SphereCollider>();
+		timeSphere->AddComponent<TimeDistortion>();
+		timeSphere->m_name = "DistortedTimeSphere";
+		m_managers.lock()->Scene()->m_currentScene->CreateEntity(timeSphere);
 
+		timeSphere->SetPosition(m_owner.lock()->m_transform->m_position);
+		timeSphere->SetScale({ 3.f,3.f,3.f });
+
+
+		timeSphere->Start();
+
+		m_timeSpheres.push_back(std::make_pair(timeSphere, false));
+
+		m_createComplete = true;
+	}
+	
 }
 
 void BossSkill::DamageforPlayer(float damage)

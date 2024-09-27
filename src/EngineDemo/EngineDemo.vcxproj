@@ -177,6 +177,7 @@
     <ClInclude Include="SkillTree.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestMovement.h" />
+    <ClInclude Include="TimeDistortion.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationState.cpp" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="SkillTree.cpp" />
     <ClCompile Include="TestMovement.cpp" />
+    <ClCompile Include="TimeDistortion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EngineDemo.rc" />

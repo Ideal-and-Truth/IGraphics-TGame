@@ -21,6 +21,7 @@ private:
 	std::shared_ptr<BossAnimator> m_bossAnimator;
 	std::shared_ptr<Player> m_player;
 	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_attackColliders;
+	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_timeSpheres;
 
 	bool m_useSkill;
 	bool m_createComplete;
@@ -31,6 +32,7 @@ private:
 	std::vector<float> m_shockWavePos;
 	std::vector<float> m_flamePos;
 	std::vector<Vector3> m_swordPos;
+	std::vector<Vector3> m_illusionPos;
 
 public:
 	BossSkill();
