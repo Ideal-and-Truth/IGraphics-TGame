@@ -120,7 +120,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	// LoadUnityData(L"SampleScene");
+	LoadUnityData(L"1_HN_Scene2");
 }
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
@@ -436,7 +436,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 			if (coll)
 			{
-				m_mapEntity[i]->AddComponent(coll);
+				// m_mapEntity[i]->AddComponent(coll);
 			}
 		}
 
@@ -512,6 +512,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
 	}
+
+	
 
 	for (auto& e : m_mapEntity)
 	{
