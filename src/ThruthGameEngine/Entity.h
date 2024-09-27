@@ -223,7 +223,7 @@ namespace Truth
 			component->SetOwner(shared_from_this());
 			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
-			component->Initalize();
+			// component->Initalize();
 			ApplyComponent(component);
 
 			return component;
@@ -245,7 +245,7 @@ namespace Truth
 			component->SetOwner(shared_from_this());
 			component->m_index = static_cast<int32>(m_components.size());
 			m_components.push_back(component);
-			component->Initalize();
+			// component->Initalize();
 			ApplyComponent(component);
 
 			return component;

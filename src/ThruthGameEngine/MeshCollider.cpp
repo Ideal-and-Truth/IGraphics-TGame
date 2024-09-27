@@ -14,6 +14,15 @@ Truth::MeshCollider::MeshCollider()
 	m_shape = ColliderShape::MESH;
 }
 
+Truth::MeshCollider::MeshCollider(std::string _path)
+{
+	m_size = Vector3{ 1.0f, 1.0f, 1.0f };
+	USES_CONVERSION;
+	m_path = A2W(_path.c_str());
+
+	m_shape = ColliderShape::MESH;
+}
+
 Truth::MeshCollider::~MeshCollider()
 {
 

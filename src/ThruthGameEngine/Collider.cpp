@@ -233,6 +233,10 @@ void Truth::Collider::OnEnable()
 /// </summary>
 void Truth::Collider::ApplyTransform()
 {
+	if (!m_debugMesh)
+	{
+		return;
+	}
 	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
 	m_globalTM = m_localTM * ownerTM;
 	m_debugMesh->SetTransformMatrix(m_globalTM);
@@ -297,6 +301,10 @@ physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
 void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 {
 #ifdef EDITOR_MODE
+	if (m_debugMesh != nullptr)
+	{
+		return;
+	}
 	switch (m_shape)
 	{
 	case Truth::ColliderShape::BOX:
@@ -315,7 +323,7 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 	}
 	case Truth::ColliderShape::MESH:
 	{
-		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(_path);
+		// m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(_path);
 		break;
 	}
 	default:
@@ -324,7 +332,7 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 
 #endif // EDITOR_MODE
 
-	m_localTM = Matrix::CreateScale(m_size);
+	m_localTM = Matrix::CreateScale(m_size * 50);
 	m_localTM *= Matrix::CreateTranslation(m_center);
 }
 

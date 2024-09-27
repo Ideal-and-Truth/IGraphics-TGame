@@ -405,15 +405,14 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		if (isCollider)
 		{
 			int32 type = file->Read<int32>();
-			Vector3 size = file->Read<Vector3>();
-			Vector3 center = file->Read<Vector3>();
-
 			std::shared_ptr<Collider> coll;
 
 			switch (type)
 			{
 			case 1:
 			{
+				Vector3 size = file->Read<Vector3>();
+				Vector3 center = file->Read<Vector3>();
 				coll = std::make_shared<BoxCollider>(center, size);
 				break;
 			}
@@ -427,18 +426,18 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			// 				coll = std::make_shared<CapsuleCollider>(size, center);
 			// 				break;
 			// 			}
-			// 			case 4:
-			// 			{
-			// 				coll = std::make_shared<MeshCollider>(size, center);
-			// 				break;
-			// 			}
+			case 4:
+			{
+				coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
+				break;
+			}
 			default:
 				break;
 			}
 
 			if (coll)
 			{
-				// m_mapEntity[i]->AddComponent(coll);
+				m_mapEntity[i]->AddComponent(coll);
 			}
 		}
 

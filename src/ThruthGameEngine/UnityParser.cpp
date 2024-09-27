@@ -373,11 +373,16 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 			const YAML::Node& component = *it;
 			std::string cFid = component["addedObject"]["fileID"].as<std::string>();
 
-			const YAML::Node& c = m_nodeMap[_guid][cFid]->m_node["BoxCollider"];
+			const YAML::Node& boxc = m_nodeMap[_guid][cFid]->m_node["BoxCollider"];
+			const YAML::Node& meshc = m_nodeMap[_guid][cFid]->m_node["MeshCollider"];
 			/// find box collider
-			if (c.IsDefined())
+			if (boxc.IsDefined())
 			{
-				ParseBoxCollider(c, GO);
+				ParseBoxCollider(boxc, GO);
+			}
+			else if (meshc.IsDefined())
+			{
+				ParseMeshCollider(meshc, GO);
 			}
 		}
 	}
@@ -426,6 +431,12 @@ void Truth::UnityParser::ParseBoxCollider(const YAML::Node& _node, GameObject* _
 		_node["m_Center"]["y"].as<float>(),
 		_node["m_Center"]["z"].as<float>(),
 		});
+}
+
+void Truth::UnityParser::ParseMeshCollider(const YAML::Node& _node, GameObject* _owner)
+{
+	_owner->m_isCollider = true;
+	_owner->m_shape = 4;
 }
 
 void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _owner)
@@ -786,7 +797,7 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 	for (auto& path : m_unLoadMesh)
 	{
 		fs::copy(path, assetPath, fs::copy_options::skip_existing);
-		m_gp->ConvertAsset(dataPath / path.filename());
+		m_gp->ConvertAsset(dataPath / path.filename(), false, true);
 	}
 }
 
@@ -825,9 +836,12 @@ void Truth::UnityParser::WriteColliderData(std::shared_ptr<FileUtils> _file, Gam
 	{
 		_file->Write<int32>(_GO->m_shape);
 
-		_file->Write<Vector3>(_GO->m_size[0]);
+		if (_GO->m_shape == 1)
+		{
+			_file->Write<Vector3>(_GO->m_size[0]);
 
-		_file->Write<Vector3>(_GO->m_center[0]);
+			_file->Write<Vector3>(_GO->m_center[0]);
+		}
 	}
 }
 
