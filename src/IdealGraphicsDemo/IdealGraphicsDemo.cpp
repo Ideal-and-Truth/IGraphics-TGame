@@ -257,7 +257,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
-		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
@@ -369,6 +369,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
 
 		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		std::shared_ptr<Ideal::IMeshObject> cart2 = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
 		//std::shared_ptr<Ideal::IMeshObject> boss = gRenderer->CreateStaticMeshObject(L"boss/bosshall");
@@ -386,7 +387,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-
+		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 20)));
+		cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion
 #pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
@@ -828,6 +830,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				//DebugPlayer2->AnimationDeltaTime(0.002f);
 				//DebugPlayer3->AnimationDeltaTime(0.002f);
+				
+				if (GetAsyncKeyState('L') & 0x8000)
+				{
+					//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
+					static int once = 0;
+					if (once < 1)
+					{
+						once++;
+						for (int z = 0; z < 10; z++)
+						{
+							for (int y = 0; y < 10; y++)
+							{
+								for (int x = 0; x < 10; x++)
+								{
+									std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+									//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
+									meshes.push_back(mesh);
+									mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
+									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 0.1, y * 0.1, z * 0.1)));
+								}
+							}
+						}
+					}
+				}
+				
+				// --- Optimization Ray Tracing --- //
+				if (GetAsyncKeyState('N') & 0x8000)
+				{
+					gRenderer->BakeStaticMeshObject();
+					gRenderer->ReBuildBLAS();
+				}
+				
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				//if (isEditor)
@@ -895,12 +929,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				gRenderer->Render();
 			}
 		}
-		for (int i = 0; i < meshes.size(); i++)
-		{
-			gRenderer->DeleteMeshObject(meshes[i]);
-			meshes[i].reset();
-		}
-		meshes.clear();
+		
 
 		//gRenderer->DeleteMeshObject(mesh);
 		//mesh.reset();
@@ -927,8 +956,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		particleTexture.reset();
 		gRenderer->DeleteParticleSystem(particleSystem);
 
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			gRenderer->DeleteMeshObject(meshes[i]);
+			meshes[i].reset();
+		}
+		meshes.clear();
+
 		gRenderer->DeleteMeshObject(cart);
 		cart.reset();
+		gRenderer->DeleteMeshObject(cart2);
+		cart2.reset();
 		gRenderer->DeleteMeshObject(DebugStaticEnemy);
 		DebugStaticEnemy.reset();
 		gRenderer->DeleteMeshObject(DebugEnemy);
@@ -1133,7 +1171,7 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::I
 
 	if (GetAsyncKeyState('L') & 0x8000)
 	{
-		Camera->SetLook(Vector3(0.f, 1.f, 1.f));
+		//Camera->SetLook(Vector3(0.f, 1.f, 1.f));
 	}
 	if (GetAsyncKeyState('K') & 0x8000)
 	{

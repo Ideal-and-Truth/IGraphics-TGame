@@ -121,8 +121,21 @@ namespace Ideal
 		void CreateIndexBufferUint16(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer,
 			std::vector<uint16>& Indices);
 
+		//template <typename T>
+		//void CreateInstanceBuffer(std::shared_ptr<Ideal::D3D12UploadBuffer> OutInstanceBuffer, std::vector<T> InstanceData, uint32 ElementCount)
+		//{
+		//	m_commandAllocator->Reset();
+		//	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+		//
+		//	OutInstanceBuffer = std::make_shared<Ideal::D3D12UploadBuffer>();
+		//	OutInstanceBuffer->Create(m_device.Get(), sizeof(T) * ElementCount);
+		//	void* data = OutInstanceBuffer->Map();
+		//	memcpy(data, InstanceData.data(), sizeof(T) * ElementCount);
+		//	OutInstanceBuffer->UnMap();
+		//}
+
 		// 파일 로드하여 srv로 만든다.
-		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB= false);
+		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB = false);
 
 		void CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
@@ -209,5 +222,13 @@ namespace Ideal
 	private:
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_defaultQuadMesh;
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_defaultQuadMesh2;
+
+	public:
+		void CreateDefaultDebugLine();
+		std::shared_ptr<Ideal::D3D12VertexBuffer> GetDebugLineVB();
+
+	private:
+		std::shared_ptr<Ideal::D3D12VertexBuffer> m_debugLineVertexBuffer;
+		//std::shared_ptr<Ideal::D3D12VertexBuffer> GetDebugLineIB();
 	};
 }

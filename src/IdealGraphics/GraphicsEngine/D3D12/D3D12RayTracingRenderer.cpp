@@ -380,11 +380,6 @@ finishAdapter:
 	//------------------Particle System Manager-------------------//
 	CreateParticleSystemManager();
 
-	//------------------Debug Mesh Manager-------------------//
-	if (m_isEditor)
-	{
-		CreateDebugMeshManager();
-	}
 
 	//---------------Create Managers---------------//
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
@@ -435,6 +430,13 @@ finishAdapter:
 
 	m_textManager = std::make_shared<Ideal::D2DTextManager>();
 	m_textManager->Init(m_device, m_commandQueue);
+
+
+	//------------------Debug Mesh Manager-------------------//
+	if (m_isEditor)
+	{
+		CreateDebugMeshManager();
+	}
 
 	//---------------Editor---------------//
 	if (m_isEditor)
@@ -834,7 +836,7 @@ void Ideal::D3D12RayTracingRenderer::SetMainCamera(std::shared_ptr<ICamera> Came
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12RayTracingRenderer::CreateStaticMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IdealStaticMeshObject> newStaticMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName, true);
+	m_resourceManager->CreateStaticMeshObject(newStaticMesh, FileName, false);
 	newStaticMesh->SetName(FileName);
 	//newStaticMesh->Init(m_device);
 
@@ -1924,7 +1926,7 @@ void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
 		m_mainDescriptorHeaps[i] = std::make_shared<Ideal::D3D12DescriptorHeap>();
-		m_mainDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_UI_DESCRIPTOR_COUNT);
+		m_mainDescriptorHeaps[i]->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_DESCRIPTOR_COUNT);
 	}
 }
 
@@ -2035,8 +2037,20 @@ void Ideal::D3D12RayTracingRenderer::CreateDebugMeshManager()
 
 	auto vs = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderVS.shader");
 	auto ps = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderPS.shader");
+	
 	m_debugMeshManager->SetVS(vs);
 	m_debugMeshManager->SetPS(ps);
+
+	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderVS", L"vs_6_3", L"VSMain");
+	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderPS", L"ps_6_3", L"PSMain");
+
+	auto vsLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderVS.shader");
+	auto psLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderPS.shader");
+
+	m_debugMeshManager->SetVSLine(vsLine);
+	m_debugMeshManager->SetPSLine(psLine);
+	m_debugMeshManager->SetDebugLineVB(m_resourceManager->GetDebugLineVB());
+
 	m_debugMeshManager->Init(m_device);
 }
 
@@ -2184,4 +2198,47 @@ void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height
 			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
 	}
+}
+
+void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
+{
+	m_Octree = Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>>();
+	//m_debugMeshManager->AddDebugLine(Vector3(0, 0, 0), Vector3(0, 0, 20));
+	for (auto& object : m_staticMeshObject)
+	{
+		Vector3 position;
+		position.x = object->GetTransformMatrix()._41;
+		position.y = object->GetTransformMatrix()._42;
+		position.z = object->GetTransformMatrix()._43;
+		m_Octree.AddObject(object, position);
+	}
+	m_Octree.Bake(10.f);
+
+#ifdef _DEBUG
+	{
+		// 라인 그리기
+		//std::vector<std::pair<Vector3, Vector3>> lines;
+		//m_Octree.ForeachNodeInternal(
+		//	[&](std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>> Node)
+		//	{
+		//		Bounds bound = Node->GetBounds();
+		//		auto edges = bound.GetEdges();
+		//		for (auto& e : edges)
+		//		{
+		//			m_debugMeshManager->AddDebugLine(e.first, e.second);
+		//		}
+		//	}
+		//);
+
+		int a = 3;
+	}
+#endif
+}
+
+void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
+{
+	std::vector<std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>>> nodes;
+	m_Octree.GetFinalNodes(nodes);
+
+	int a = 3;
 }
