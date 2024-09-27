@@ -862,6 +862,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 								}
 							}
 						}
+						gRenderer->BakeOption(32, 20.f);
+						gRenderer->BakeStaticMeshObject();
+						gRenderer->ReBuildBLASFlagOn();
 					}
 				}
 				
