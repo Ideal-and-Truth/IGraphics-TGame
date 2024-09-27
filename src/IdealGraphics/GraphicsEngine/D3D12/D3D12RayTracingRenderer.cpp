@@ -21,6 +21,7 @@
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
+#include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/D3D12UploadBufferPool.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
@@ -437,6 +438,10 @@ finishAdapter:
 	{
 		CreateDebugMeshManager();
 	}
+	//----CompileShader----//
+	InitModifyVertexBufferShader();
+	CreateModifyVertexBufferRootSignature();
+	CreateModifyVertexBufferCSPipelineState();
 
 	//---------------Editor---------------//
 	if (m_isEditor)
@@ -536,6 +541,11 @@ void Ideal::D3D12RayTracingRenderer::Render()
 #endif
 
 	BeginRender();
+
+	if (m_ReBuildBLASFlag)
+	{
+		ReBuildBLAS();
+	}
 
 	//---------------------Raytracing-------------------------//
 	for (auto& mesh : m_staticMeshObject)
@@ -1865,6 +1875,25 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<
 	obj->SetBLASInstanceDesc(instanceDesc);
 }
 
+void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddBakedObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
+{
+	// 기존과 차이점은 이름으로 부르지 않는다.
+	//auto blas = m_raytracingManager->GetBLASByName(obj->GetName().c_str());
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas;
+	bool ShouldBuildShaderTable = true;
+
+	// 안에서 add ref count를 실행시키긴 함. ....
+	blas = m_raytracingManager->AddBLAS(shared_from_this(), m_device, m_resourceManager, m_descriptorManager, m_cbAllocator[m_currentContextIndex], obj, obj->GetName().c_str(), false);
+
+	if (ShouldBuildShaderTable)
+	{
+		m_raytracingManager->BuildShaderTables(m_device, m_deferredDeleteManager);
+	}
+
+	auto instanceDesc = m_raytracingManager->AllocateInstanceByBLAS(blas);
+	obj->SetBLASInstanceDesc(instanceDesc);
+}
+
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj)
 {
 	//ResetCommandList();
@@ -2037,7 +2066,7 @@ void Ideal::D3D12RayTracingRenderer::CreateDebugMeshManager()
 
 	auto vs = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderVS.shader");
 	auto ps = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderPS.shader");
-	
+
 	m_debugMeshManager->SetVS(vs);
 	m_debugMeshManager->SetPS(ps);
 
@@ -2056,7 +2085,7 @@ void Ideal::D3D12RayTracingRenderer::CreateDebugMeshManager()
 
 void Ideal::D3D12RayTracingRenderer::DrawDebugMeshes()
 {
-	if(m_isEditor)
+	if (m_isEditor)
 	{
 		m_debugMeshManager->DrawDebugMeshes(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex], &m_globalCB);
 	}
@@ -2235,10 +2264,221 @@ void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 #endif
 }
 
+void Ideal::D3D12RayTracingRenderer::ReBuildBLASFlagOn()
+{
+	m_ReBuildBLASFlag = true;
+}
+
 void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 {
+	m_ReBuildBLASFlag = false;
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	static int once = 0;
+	if (once > 0) return;
+	once++;
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// TODO : 기존 baked object 삭제?
+
 	std::vector<std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>>> nodes;
 	m_Octree.GetFinalNodes(nodes);
 
+	for (auto& node : nodes)
+	{
+		uint32 BlasGeometryMaxSize = 32;
+		uint32 BlasGeometryCurrentSize = 0;
+		auto& objects = node->GetObjects();
+
+		// 09.25
+		// 여기서 BLAS에 들어갈 Geometry들을 구해야 한다.
+		// 이거 ComputeShader 사용해서 Vertex Buffer를 다시 구해야 할 것 같다.
+		// 해야 하는 것이 결국 BLAS 하나를 만드는 것
+		// 기존에 걸려있던 object의 BLAS를 일단 자르고 - 삭제하고
+		// object들이 가지고 있는 Transform과 VertexBuffer를 곱해서 새로운 Vertex Buffer를 만들어서
+		// Geometry정보에 넘겨준다면?
+		//  (/^^)/  개쌉 계획은 완벽해보임	\(^^\)
+		// Root Signature 만들고 PipelineState 만들고 Compute Shader 만들고 UAV 만들고...
+		// Dispatch도 때려주고~ 졸라 계획 완벽하다.
+
+		//09.26
+		/// tlqkf 진짜 졸라안쳐되네
+		std::shared_ptr<Ideal::IdealStaticMeshObject> BakedMeshObject = std::make_shared<Ideal::IdealStaticMeshObject>();
+		std::shared_ptr<Ideal::IdealStaticMesh> BakedStaticMesh = std::make_shared<Ideal::IdealStaticMesh>();
+		BakedMeshObject->SetStaticMesh(BakedStaticMesh);
+		for (auto& obj : objects)
+		{
+			RaytracingManagerDeleteObject(obj);
+
+			auto& meshes = obj->GetStaticMesh()->GetMeshes();
+			CB_Transform transform;
+			transform.World = obj->GetTransformMatrix().Transpose();
+			transform.WorldInvTranspose = transform.World.Transpose().Invert();
+			int meshSize = meshes.size();
+
+
+			for (int i = 0; i < meshSize; ++i)
+			{
+				
+				auto& mesh = meshes[i];
+				std::shared_ptr<Ideal::D3D12UAVBuffer> newVertexBufferUAV = std::make_shared<Ideal::D3D12UAVBuffer>();
+				std::wstring name = L"UAV_ModifiedVertexBuffer";
+				uint32 vertexCount = mesh->GetElementCount();
+				uint32 size = vertexCount * sizeof(BasicVertex);
+				newVertexBufferUAV->Create(m_device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name.c_str());
+				std::shared_ptr<Ideal::D3D12UnorderedAccessView> uav = m_resourceManager->CreateUAV(newVertexBufferUAV, vertexCount, sizeof(BasicVertex));
+				newVertexBufferUAV->SetUAV(uav);
+				DispatchModifyVertexBuffer(mesh, transform, newVertexBufferUAV);
+
+				// NewMesh
+				std::shared_ptr<Ideal::D3D12VertexBuffer> newVertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+				newVertexBuffer->CreateAndCopyResource
+				(
+					m_device,
+					sizeof(BasicVertex),
+					vertexCount,
+					m_commandLists[m_currentContextIndex],
+					newVertexBufferUAV,
+					D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
+				);
+
+				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> newMesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
+				newMesh->SetName(mesh->GetName());
+				newMesh->SetMaterial(m_resourceManager->GetDefaultMaterial());
+				newMesh->SetVertexBuffer(newVertexBuffer);
+				//newMesh->SetVertexBuffer(mesh->GetVertexBuffer());
+
+				//commandlist->CopyResource(renderTarget->GetResource(), raytracingOutput.Get());
+				//m_commandLists[m_currentContextIndex]->CopyResource(
+				newMesh->SetIndexBuffer(mesh->GetIndexBuffer());
+				BakedStaticMesh->AddMesh(newMesh);
+				m_tempUAVS.push_back(newVertexBufferUAV);
+			}
+		}
+		m_tempMeshes.push_back(BakedMeshObject);
+		RaytracingManagerAddBakedObject(BakedMeshObject);
+	}
 	int a = 3;
+}
+
+void Ideal::D3D12RayTracingRenderer::InitModifyVertexBufferShader()
+{
+	CompileShader(L"../Shaders/ModifyVertexBuffer/CS_ModifyVertexBuffer.hlsl", L"../Shaders/ModifyVertexBuffer/", L"ModifyVertexBufferCS", L"cs_6_3", L"CSMain");
+	m_ModifyVertexBufferCS = CreateAndLoadShader(L"../Shaders/ModifyVertexBuffer/ModifyVertexBufferCS.shader");
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateModifyVertexBufferRootSignature()
+{
+	CD3DX12_DESCRIPTOR_RANGE ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::Count];
+	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 : vertices
+	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0 : transform
+	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // b1 : vertex Count
+	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0); // u0 : output vertices
+
+	CD3DX12_ROOT_PARAMETER rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::Count];
+	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices]);
+	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform]);
+	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount]);
+	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices]);
+
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(
+		ARRAYSIZE(rootParameters), rootParameters, 0, nullptr
+	);
+
+	ComPtr<ID3DBlob> blob;
+	ComPtr<ID3DBlob> error;
+
+	HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error);
+	if (error)
+	{
+		const wchar_t* msg = static_cast<wchar_t*>(error->GetBufferPointer());
+		Check(hr, msg);
+	}
+	Check(m_device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&m_ModifyVertexBufferRootSignature)), L"Failed To Create Modify VB CS Rootsignature");
+
+	m_ModifyVertexBufferRootSignature->SetName(L"ModifyVertexBufferRootSignature");
+}
+
+void Ideal::D3D12RayTracingRenderer::CreateModifyVertexBufferCSPipelineState()
+{
+	D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc = {};
+	computePipelineStateDesc.pRootSignature = m_ModifyVertexBufferRootSignature.Get();
+	// TODO: Shader 만들어줘야한다.
+	computePipelineStateDesc.CS = m_ModifyVertexBufferCS->GetShaderByteCode();
+
+	Check(
+		m_device->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_ModifyVertexBufferPipelineState))
+		, L"Failed To Create Modify Vertex Buffer Compute Pipeline State"
+	);
+}
+
+void Ideal::D3D12RayTracingRenderer::DispatchModifyVertexBuffer(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh, CB_Transform TransformData, std::shared_ptr<Ideal::D3D12UAVBuffer> UAVBuffer)
+{
+	//ComPtr<ID3D12CommandAllocator> CommandAllocator = m_commandAllocators[m_currentContextIndex];
+	ComPtr<ID3D12GraphicsCommandList> CommandList = m_commandLists[m_currentContextIndex];
+	//
+	//Check(CommandAllocator->Reset(), L"Failed to reset commandAllocator!");
+	//Check(CommandList->Reset(CommandAllocator.Get(), nullptr), L"Failed to reset commandList");
+
+	std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap = m_mainDescriptorHeaps[m_currentContextIndex];
+	std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool = m_cbAllocator[m_currentContextIndex];
+
+	std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer = Mesh->GetVertexBuffer();
+
+	CommandList->SetComputeRootSignature(m_ModifyVertexBufferRootSignature.Get());
+	CommandList->SetPipelineState(m_ModifyVertexBufferPipelineState.Get());
+
+	CommandList->SetDescriptorHeaps(1, DescriptorHeap->GetDescriptorHeap().GetAddressOf());
+
+	// Parameter0 : SRV_Vertices
+	auto handle0 = DescriptorHeap->Allocate();
+	auto vertexSRV = m_resourceManager->CreateSRV(VertexBuffer, VertexBuffer->GetElementCount(), VertexBuffer->GetElementSize());
+	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), vertexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices, handle0.GetGpuHandle());
+
+	// Parameter1 : CBV_Transform
+	auto handle1 = DescriptorHeap->Allocate();
+	auto cb1 = CBPool->Allocate(m_device.Get(), sizeof(CB_Transform));
+	memcpy(cb1->SystemMemAddr, &TransformData, sizeof(CB_Transform));
+	m_device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform, handle1.GetGpuHandle());
+
+	// Parameter2 : CBV_VertexCount
+	auto handle2 = DescriptorHeap->Allocate();
+	auto cb2 = CBPool->Allocate(m_device.Get(), sizeof(uint32));
+	uint32 vertexCount = VertexBuffer->GetElementCount();
+	memcpy(cb2->SystemMemAddr, &vertexCount, sizeof(uint32));
+	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount, handle2.GetGpuHandle());
+
+	// Parameter3: UAV_OutputVertices
+	auto handle3 = DescriptorHeap->Allocate();
+	auto uav = UAVBuffer->GetUAV();
+	m_device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), uav->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices, handle3.GetGpuHandle());
+
+	// Barrier0
+	CD3DX12_RESOURCE_BARRIER barrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
+		UAVBuffer->GetResource(),
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+	CommandList->ResourceBarrier(1, &barrier0);
+
+	// Dispatch
+	uint32 elementCount = VertexBuffer->GetElementCount();
+	uint32 threadsPreGroup = 1024;
+	uint32 dispatchX = (elementCount + threadsPreGroup - 1) / threadsPreGroup;
+	CommandList->Dispatch(dispatchX, 1, 1);
+
+	// Barrier1
+	CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::UAV(UAVBuffer->GetResource());
+	CommandList->ResourceBarrier(1, &barrier1);
+
+	// Barrier2
+	CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
+		UAVBuffer->GetResource(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
+	);
+	CommandList->ResourceBarrier(1, &barrier2);
 }

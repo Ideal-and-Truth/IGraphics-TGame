@@ -377,6 +377,7 @@
     <FxCompile Include="..\Shaders\Particle\DefaultParticleVS.hlsl" />
     <FxCompile Include="..\Shaders\Particle\SwordSlash.hlsl" />
     <FxCompile Include="..\Shaders\DebugMesh\DebugLineShader.hlsl" />
+    <FxCompile Include="..\Shaders\ModifyVertexBuffer\CS_ModifyVertexBuffer.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

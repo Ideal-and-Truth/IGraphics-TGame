@@ -1001,7 +1001,7 @@ void Ideal::D3D12Renderer::BakeStaticMeshObject()
 
 }
 
-void Ideal::D3D12Renderer::ReBuildBLAS()
+void Ideal::D3D12Renderer::ReBuildBLASFlagOn()
 {
 
 }

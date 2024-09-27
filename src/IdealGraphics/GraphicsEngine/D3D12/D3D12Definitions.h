@@ -134,4 +134,19 @@ namespace Ideal
 			};
 		}
 	}
+	
+	namespace ModifyVertexBufferCSRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Vertices = 0,
+				CBV_Transform,
+				CBV_VertexCount,
+				UAV_OutputVertices,
+				Count
+			};
+		}
+	}
 }

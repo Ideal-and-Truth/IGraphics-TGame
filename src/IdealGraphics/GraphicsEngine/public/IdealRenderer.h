@@ -117,7 +117,7 @@ namespace Ideal
 	public:
 		// Ray Tracing Optimization
 		virtual void BakeStaticMeshObject() abstract;
-		virtual void ReBuildBLAS() abstract;
+		virtual void ReBuildBLASFlagOn() abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
