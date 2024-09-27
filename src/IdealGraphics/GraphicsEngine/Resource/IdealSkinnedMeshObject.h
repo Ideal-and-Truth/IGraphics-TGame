@@ -71,6 +71,8 @@ namespace Ideal
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetSkinnedMesh(std::shared_ptr<Ideal::IdealSkinnedMesh> Mesh);
 		
+		// 작동 안함
+		virtual void SetStaticWhenRunTime(bool Static) override;
 
 	private:
 		bool m_isDraw = true;

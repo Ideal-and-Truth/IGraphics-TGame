@@ -900,6 +900,10 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parent
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
 				Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
 				vertex.Normal = normal;
+
+				// 역 전치를 사용하여 노멀 변환
+				//Matrix inverseTranspose = m_bones[bone]->transform.Transpose().Invert();
+				//vertex.Normal = Vector3::TransformNormal(vertex.Normal, inverseTranspose);
 			}
 
 			// Tangent
@@ -908,6 +912,8 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parent
 				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
 				Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
 				vertex.Tangent = tangent;
+				//Matrix inverseTranspose = m_bones[bone]->transform.Transpose().Invert();
+				//vertex.Tangent = Vector3::TransformNormal(vertex.Tangent, inverseTranspose);
 			}
 
 			mesh->vertices.push_back(vertex);

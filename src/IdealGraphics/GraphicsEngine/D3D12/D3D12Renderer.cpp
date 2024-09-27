@@ -996,12 +996,17 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 	}
 }
 
+void Ideal::D3D12Renderer::BakeOption(int MaxBakeCount, float MinSpaceSize)
+{
+
+}
+
 void Ideal::D3D12Renderer::BakeStaticMeshObject()
 {
 
 }
 
-void Ideal::D3D12Renderer::ReBuildBLAS()
+void Ideal::D3D12Renderer::ReBuildBLASFlagOn()
 {
 
 }
