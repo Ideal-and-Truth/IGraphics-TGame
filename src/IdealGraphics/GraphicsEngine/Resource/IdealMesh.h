@@ -102,6 +102,12 @@ namespace Ideal
 		void SetBoneIndex(const int32& Index) { m_boneIndex = Index; }
 		void SetLocalTM(const Matrix& matrix) { m_localTM = matrix; }
 		Matrix GetLocalTM() { return m_localTM; }
+
+		template <typename T>
+		void TransferMaterialInfo(std::shared_ptr<IdealMesh<T>> other)
+		{
+			m_material = other->m_material;
+		}
 	private:
 		std::shared_ptr<D3D12VertexBuffer>	m_vertexBuffer;
 		std::shared_ptr<D3D12IndexBuffer>	m_indexBuffer;

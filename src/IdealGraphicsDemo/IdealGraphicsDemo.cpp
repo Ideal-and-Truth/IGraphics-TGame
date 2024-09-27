@@ -839,35 +839,44 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						once++;
 
-						for (int i = 0; i < 32; i++)
-						{
-							std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-							meshes.push_back(mesh);
-							mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(i, 0, 0)));
-						}
-
-						//for (int z = 0; z < 10; z++)
+						//for (int i = 0; i < 32; i++)
 						//{
-						//	for (int y = 0; y < 10; y++)
-						//	{
-						//		for (int x = 0; x < 10; x++)
-						//		{
-						//			std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-						//			meshes.push_back(mesh);
-						//			mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 0)));
-						//			//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
-						//			//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 0.1, y * 0.1, z * 0.1)));
-						//		}
-						//	}
+						//	std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+						//	meshes.push_back(mesh);
+						//	mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(i, 0, 0)));
 						//}
+
+						for (int z = 0; z < 10; z++)
+						{
+							for (int y = 0; y < 10; y++)
+							{
+								for (int x = 0; x < 10; x++)
+								{
+									std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+									mesh->SetStaticWhenRunTime(true);
+									mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
+									meshes.push_back(mesh);
+									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 0)));
+									mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
+									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 0.1, y * 0.1, z * 0.1)));
+								}
+							}
+						}
 					}
 				}
 				
 				// --- Optimization Ray Tracing --- //
 				if (GetAsyncKeyState('N') & 0x8000)
 				{
-					gRenderer->BakeStaticMeshObject();
-					gRenderer->ReBuildBLASFlagOn();
+					static int once = 0;
+					if (once < 1)
+					{
+						once++;
+
+						gRenderer->BakeOption(32, 20.f);
+						gRenderer->BakeStaticMeshObject();
+						gRenderer->ReBuildBLASFlagOn();
+					}
 				}
 				
 				//-----ImGui Test-----//
@@ -964,12 +973,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		particleTexture.reset();
 		gRenderer->DeleteParticleSystem(particleSystem);
 
-		for (int i = 0; i < meshes.size(); i++)
-		{
-			gRenderer->DeleteMeshObject(meshes[i]);
-			meshes[i].reset();
-		}
-		meshes.clear();
+		//for (int i = 0; i < meshes.size(); i++)
+		//{
+		//	gRenderer->DeleteMeshObject(meshes[i]);
+		//	meshes[i].reset();
+		//}
+		//meshes.clear();
 
 		gRenderer->DeleteMeshObject(cart);
 		cart.reset();

@@ -248,6 +248,8 @@ Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width,
 
 Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
+	// 최적화 되었던 오브젝트 삭제
+	ReleaseBakedObject();
 
 	Fence();
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
@@ -2229,23 +2231,32 @@ void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height
 	}
 }
 
+void Ideal::D3D12RayTracingRenderer::BakeOption(int32 MaxBakeCount, float MinSpaceSize)
+{
+	m_maxBakeCount = MaxBakeCount;
+	m_octreeMinSpaceSize = MinSpaceSize;
+}
+
 void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 {
 	m_Octree = Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>>();
 	//m_debugMeshManager->AddDebugLine(Vector3(0, 0, 0), Vector3(0, 0, 20));
 	for (auto& object : m_staticMeshObject)
 	{
-		Vector3 position;
-		position.x = object->GetTransformMatrix()._41;
-		position.y = object->GetTransformMatrix()._42;
-		position.z = object->GetTransformMatrix()._43;
-		m_Octree.AddObject(object, position);
+		if (object->GetIsStaticWhenRunTime())
+		{
+			Vector3 position;
+			position.x = object->GetTransformMatrix()._41;
+			position.y = object->GetTransformMatrix()._42;
+			position.z = object->GetTransformMatrix()._43;
+			m_Octree.AddObject(object, position);
+		}
 	}
-	m_Octree.Bake(10.f);
+	m_Octree.Bake(m_octreeMinSpaceSize);
 
 #ifdef _DEBUG
 	{
-		// 라인 그리기
+		//// 라인 그리기
 		//std::vector<std::pair<Vector3, Vector3>> lines;
 		//m_Octree.ForeachNodeInternal(
 		//	[&](std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>> Node)
@@ -2258,8 +2269,8 @@ void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 		//		}
 		//	}
 		//);
-
-		int a = 3;
+		//
+		//int a = 3;
 	}
 #endif
 }
@@ -2274,9 +2285,9 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 	m_ReBuildBLASFlag = false;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	static int once = 0;
-	if (once > 0) return;
-	once++;
+	//static int once = 0;
+	//if (once > 0) return;
+	//once++;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO : 기존 baked object 삭제?
 
@@ -2285,7 +2296,7 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 
 	for (auto& node : nodes)
 	{
-		uint32 BlasGeometryMaxSize = 32;
+		uint32 BlasGeometryMaxSize = m_maxBakeCount;
 		uint32 BlasGeometryCurrentSize = 0;
 		auto& objects = node->GetObjects();
 
@@ -2302,6 +2313,9 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 
 		//09.26
 		/// tlqkf 진짜 졸라안쳐되네
+
+		// 09.25 
+		// 됐다. 이거 32개씩 나눠준다. 이제
 		std::shared_ptr<Ideal::IdealStaticMeshObject> BakedMeshObject = std::make_shared<Ideal::IdealStaticMeshObject>();
 		std::shared_ptr<Ideal::IdealStaticMesh> BakedStaticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 		BakedMeshObject->SetStaticMesh(BakedStaticMesh);
@@ -2318,7 +2332,6 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 
 			for (int i = 0; i < meshSize; ++i)
 			{
-				
 				auto& mesh = meshes[i];
 				std::shared_ptr<Ideal::D3D12UAVBuffer> newVertexBufferUAV = std::make_shared<Ideal::D3D12UAVBuffer>();
 				std::wstring name = L"UAV_ModifiedVertexBuffer";
@@ -2341,23 +2354,51 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 					D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
 				);
 
+				m_tempUAVS.push_back(newVertexBufferUAV);
+				uav->GetHandle().Free();
+				//m_deferredDeleteManager->AddD3D12ResourceToDelete(newVertexBufferUAV->GetResourceComPtr());
+
 				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> newMesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
 				newMesh->SetName(mesh->GetName());
-				newMesh->SetMaterial(m_resourceManager->GetDefaultMaterial());
-				newMesh->SetVertexBuffer(newVertexBuffer);
-				//newMesh->SetVertexBuffer(mesh->GetVertexBuffer());
+				// 기존은 기본 머테리얼이지만 다시
+				// newMesh->SetMaterial(m_resourceManager->GetDefaultMaterial());
+				// 
+				newMesh->TransferMaterialInfo(mesh);
 
-				//commandlist->CopyResource(renderTarget->GetResource(), raytracingOutput.Get());
-				//m_commandLists[m_currentContextIndex]->CopyResource(
+				newMesh->SetVertexBuffer(newVertexBuffer);
 				newMesh->SetIndexBuffer(mesh->GetIndexBuffer());
 				BakedStaticMesh->AddMesh(newMesh);
-				m_tempUAVS.push_back(newVertexBufferUAV);
+
+
+				BlasGeometryCurrentSize++;
+				if (BlasGeometryCurrentSize >= BlasGeometryMaxSize)
+				{
+					BlasGeometryCurrentSize = 0;
+					m_bakedMesh.push_back(BakedMeshObject);
+					RaytracingManagerAddBakedObject(BakedMeshObject);
+
+					BakedMeshObject = std::make_shared<Ideal::IdealStaticMeshObject>();
+					BakedStaticMesh = std::make_shared<Ideal::IdealStaticMesh>();
+					BakedMeshObject->SetStaticMesh(BakedStaticMesh);
+				}
+			}
+
+
+			m_resourceManager->DeleteStaticMeshObject(obj);
+			auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), obj);
+			{
+				if (it != m_staticMeshObject.end())
+				{
+					*it = std::move(m_staticMeshObject.back());
+					m_deferredDeleteManager->AddMeshObjectToDeferredDelete(obj);
+					m_staticMeshObject.pop_back();
+				}
+
 			}
 		}
-		m_tempMeshes.push_back(BakedMeshObject);
+		m_bakedMesh.push_back(BakedMeshObject);
 		RaytracingManagerAddBakedObject(BakedMeshObject);
 	}
-	int a = 3;
 }
 
 void Ideal::D3D12RayTracingRenderer::InitModifyVertexBufferShader()
@@ -2481,4 +2522,16 @@ void Ideal::D3D12RayTracingRenderer::DispatchModifyVertexBuffer(std::shared_ptr<
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
 	);
 	CommandList->ResourceBarrier(1, &barrier2);
+}
+
+void Ideal::D3D12RayTracingRenderer::ReleaseBakedObject()
+{
+	//for (auto& uav : m_tempUAVS)
+	//{
+	//	uav->GetUAV()->GetHandle().Free();
+	//}
+	for (auto& mesh : m_bakedMesh)
+	{
+		RaytracingManagerDeleteObject(mesh);
+	}
 }

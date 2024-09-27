@@ -111,6 +111,16 @@ void Ideal::IdealStaticMeshObject::DebugDraw(ComPtr<ID3D12Device> Device, ComPtr
 	m_staticMesh->DebugDraw(Device, CommandList);
 }
 
+void Ideal::IdealStaticMeshObject::SetStaticWhenRunTime(bool Static)
+{
+	m_isStaticWhenRuntime = Static;
+}
+
+bool Ideal::IdealStaticMeshObject::GetIsStaticWhenRunTime()
+{
+	return m_isStaticWhenRuntime;
+}
+
 void Ideal::IdealStaticMeshObject::SetDebugMeshColor(DirectX::SimpleMath::Color& Color)
 {
 	m_cbDebugColor.color = Color;

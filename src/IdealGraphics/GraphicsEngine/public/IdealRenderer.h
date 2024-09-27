@@ -116,6 +116,8 @@ namespace Ideal
 
 	public:
 		// Ray Tracing Optimization
+		// 최대 한번에 BLAS로 합칠 개수, 공간분할 할 때 최소 길이
+		virtual void BakeOption(int MaxBakeCount, float MinSpaceSize) abstract;
 		virtual void BakeStaticMeshObject() abstract;
 		virtual void ReBuildBLASFlagOn() abstract;
 

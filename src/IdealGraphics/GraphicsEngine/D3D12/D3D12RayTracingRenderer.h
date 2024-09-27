@@ -383,6 +383,7 @@ namespace Ideal
 
 		// Optimization
 	public:
+		virtual void BakeOption(int32 MaxBakeCount, float MinSpaceSize) override;
 		virtual void BakeStaticMeshObject() override;
 		virtual void ReBuildBLASFlagOn() override;
 
@@ -392,7 +393,7 @@ namespace Ideal
 		void CreateModifyVertexBufferRootSignature();
 		void CreateModifyVertexBufferCSPipelineState();
 		void DispatchModifyVertexBuffer(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh, CB_Transform TransformData, std::shared_ptr<Ideal::D3D12UAVBuffer> UAVBuffer);
-
+		void ReleaseBakedObject();
 		bool m_ReBuildBLASFlag = false;
 
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedObjects;
@@ -402,8 +403,11 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_ModifyVertexBufferCS;
 
 		Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_Octree;
+		
+		int32 m_maxBakeCount = 32;
+		float m_octreeMinSpaceSize = 5.f;
 
 		std::vector<std::shared_ptr<Ideal::D3D12UAVBuffer>> m_tempUAVS;
-		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_tempMeshes;
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedMesh;
 	};
 }
