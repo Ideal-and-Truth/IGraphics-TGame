@@ -282,6 +282,13 @@ void Truth::GraphicsManager::ResizeWindow(uint32 _w, uint32 _h)
 	m_renderer->Resize(_w, _h);
 }
 
+void Truth::GraphicsManager::BakeStaticMesh()
+{
+	m_renderer->BakeOption(100000, 100000.f);
+	m_renderer->BakeStaticMeshObject();
+	m_renderer->ReBuildBLASFlagOn();
+}
+
 #ifdef EDITOR_MODE
 void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 {

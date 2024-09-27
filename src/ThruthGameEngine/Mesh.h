@@ -65,6 +65,8 @@ namespace Truth
 
 		Matrix GetMeshLocalTM();
 
+		void SetStatic(bool _isStatic);
+
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE

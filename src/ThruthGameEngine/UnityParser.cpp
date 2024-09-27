@@ -528,7 +528,7 @@ void Truth::UnityParser::GetPrefabMatarial(GameObject* _GO, const YAML::Node& _n
 			std::string matGuid = (*itr)["objectReference"]["guid"].as<std::string>();
 			if (m_matarialMap.find(matGuid) != m_matarialMap.end())
 			{
-				_GO->m_matarialsName.push_back(m_matarialMap[matGuid].m_name);
+				_GO->m_matarialsName.push_back(matGuid);
 				continue;
 			}
 			ParseMatarialFile(_GO, matGuid);
@@ -599,8 +599,8 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 
 	std::ifstream matDataFile(matfile);
 
-	matdata.m_name = matfile.filename().replace_extension("").generic_string();
-	_GO->m_matarialsName.push_back(matdata.m_name);
+	matdata.m_name = _matGuid;
+	_GO->m_matarialsName.push_back(_matGuid);
 
 	auto matDoc = YAML::LoadAll(matDataFile);
 	for (auto& matNode : matDoc)

@@ -15,6 +15,8 @@
 #include "MeshCollider.h"
 #include "Mesh.h"
 
+#include <algorithm>
+
 /// <summary>
 /// »ý¼ºÀÚ
 /// </summary>
@@ -356,7 +358,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		std::string name = file->Read<std::string>();
 		m_mapEntity[i]->m_name = name;
 
-		if (name == "SM_midtunnel")
+		if (name == "61742")
 		{
 			int a =1;
 		}
@@ -452,12 +454,14 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
+
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
 				mesh->SetMaterialByIndex(j, matName);
 			}
 
+			mesh->SetStatic(true);
 			Matrix mtm = mesh->GetMeshLocalTM();
 
 			Vector3 mPos;
@@ -513,7 +517,13 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
 	}
 
-	
+	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
+		{
+			return _a->m_name > _b->m_name;
+		};
+
+	sort(m_mapEntity.begin(), m_mapEntity.end(), comp);
+	// gp->BakeStaticMesh();
 
 	for (auto& e : m_mapEntity)
 	{

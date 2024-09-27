@@ -349,20 +349,13 @@ float3 Shade(
     const float3 Kt;
     float metallic;
     float roughness;
-    if (l_materialInfo.bUseMetallicMap)
+    //if (l_materialInfo.bUseMetallicMap)
     {
         metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
     }
-    else
-    {
-        metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
-    }
+   
     
-    if (l_materialInfo.bUseRoughnessMap)
-    {
-        roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
-    }
-    else
+    //if (l_materialInfo.bUseRoughnessMap)
     {
         roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
     }
@@ -636,7 +629,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     }
    
     //if(l_materialInfo.bUseNormalMap == false)
-    if(l_materialInfo.bUseNormalMap == true)
+    //if(l_materialInfo.bUseNormalMap == true)
     {
         normal = NormalMap(normal, uv, vertexInfo, attr);
     }

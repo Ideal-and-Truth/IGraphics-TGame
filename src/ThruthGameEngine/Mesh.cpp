@@ -158,6 +158,11 @@ DirectX::SimpleMath::Matrix Truth::Mesh::GetMeshLocalTM()
 	return Matrix::Identity;
 }
 
+void Truth::Mesh::SetStatic(bool _isStatic)
+{
+	m_mesh->SetStaticWhenRunTime(_isStatic);
+}
+
 #ifdef EDITOR_MODE
 void Truth::Mesh::EditorSetValue()
 {
