@@ -47,6 +47,7 @@ namespace Ideal
 	class D3D12Texture;
 	class D3D12PipelineStateObject;
 	class D3D12Viewport;
+	class D3D12UAVBuffer;
 
 	class IdealCamera;
 	class IdealRenderScene;
@@ -327,6 +328,7 @@ namespace Ideal
 		void RaytracingManagerInit();
 		void RaytracingManagerUpdate();
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		void RaytracingManagerAddBakedObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
 
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
@@ -380,10 +382,32 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
 
 		// Optimization
-	private:
+	public:
+		virtual void BakeOption(int32 MaxBakeCount, float MinSpaceSize) override;
 		virtual void BakeStaticMeshObject() override;
-		virtual void ReBuildBLAS() override;
+		virtual void ReBuildBLASFlagOn() override;
+
+	private:
+		void ReBuildBLAS();
+		void InitModifyVertexBufferShader();
+		void CreateModifyVertexBufferRootSignature();
+		void CreateModifyVertexBufferCSPipelineState();
+		void DispatchModifyVertexBuffer(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh, CB_Transform TransformData, std::shared_ptr<Ideal::D3D12UAVBuffer> UAVBuffer);
+		void ReleaseBakedObject();
+		bool m_ReBuildBLASFlag = false;
+
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedObjects;
+
+		ComPtr<ID3D12RootSignature> m_ModifyVertexBufferRootSignature;
+		ComPtr<ID3D12PipelineState> m_ModifyVertexBufferPipelineState;
+		std::shared_ptr<Ideal::D3D12Shader> m_ModifyVertexBufferCS;
 
 		Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_Octree;
+		
+		int32 m_maxBakeCount = 32;
+		float m_octreeMinSpaceSize = 5.f;
+
+		std::vector<std::shared_ptr<Ideal::D3D12UAVBuffer>> m_tempUAVS;
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedMesh;
 	};
 }

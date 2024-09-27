@@ -6,6 +6,11 @@ struct ID3D12Device;
 
 namespace Ideal
 {
+	class D3D12UnorderedAccessView;
+	class D3D12UAVBuffer;
+}
+namespace Ideal
+{
 	class D3D12Resource
 	{
 	public:
@@ -15,7 +20,7 @@ namespace Ideal
 		void Release();
 	public:
 		ID3D12Resource* GetResource() const;
-
+		ComPtr<ID3D12Resource> GetResourceComPtr();
 	protected:
 		ComPtr<ID3D12Resource> m_resource = nullptr;
 	};
@@ -75,7 +80,8 @@ namespace Ideal
 		// Upload Buffer에 있는 데이터를 GPU Buffer에 복사한다.
 		// 내부에서 리소스 베리어를 걸어주고 Buffer View를 만든다.
 		void Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, const D3D12UploadBuffer& UploadBuffer);
-		
+		void CreateAndCopyResource(ComPtr<ID3D12Device> Device, uint32 ElementSize, uint32 ElementCount, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12Resource> Resource, D3D12_RESOURCE_STATES BeforeState);
+
 		D3D12_VERTEX_BUFFER_VIEW GetView() const;
 
 	private:
@@ -133,6 +139,7 @@ namespace Ideal
 
 	class D3D12UAVBuffer : public D3D12Resource
 	{
+		// dㅏ// 이거 만들면 안됐는데 그냥 Resource에 나중에 UAV를 추가하든 뭔가 해야한다.
 	public:
 		D3D12UAVBuffer();
 		virtual ~D3D12UAVBuffer();
@@ -140,5 +147,10 @@ namespace Ideal
 	public:
 		void Create(ID3D12Device* Device, uint32 BufferSize, D3D12_RESOURCE_STATES InitialResourceState = D3D12_RESOURCE_STATE_COMMON, const wchar_t* Name = nullptr);
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress();
+
+		void SetUAV(std::shared_ptr<Ideal::D3D12UnorderedAccessView> UAV);
+		std::shared_ptr<Ideal::D3D12UnorderedAccessView> GetUAV();
+	private:
+		std::shared_ptr<Ideal::D3D12UnorderedAccessView> m_uav;
 	};
 }
