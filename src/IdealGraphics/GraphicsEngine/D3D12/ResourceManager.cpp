@@ -833,6 +833,13 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 					file->Read(&data, sizeof(uint32) * count);
 					mesh->AddIndices(indices);
 				}
+
+				// Bounds
+				{
+					Vector3 minBound = file->Read<Vector3>();
+					Vector3 maxBound = file->Read<Vector3>();
+					mesh->SetMinMaxBound(minBound, maxBound);
+				}
 				mesh->SetMaterial(m_defaultMaterial);
 				staticMesh->AddMesh(mesh);
 			}

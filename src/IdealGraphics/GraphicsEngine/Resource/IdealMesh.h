@@ -108,6 +108,10 @@ namespace Ideal
 		{
 			m_material = other->m_material;
 		}
+
+		void SetMinMaxBound(Vector3 MinBound, Vector3 MaxBound) { m_minBound = MinBound; m_maxBound = MaxBound; }
+		Vector3 GetMinBound() { return m_minBound; }
+		Vector3 GetMaxBound() { return m_maxBound; }
 	private:
 		std::shared_ptr<D3D12VertexBuffer>	m_vertexBuffer;
 		std::shared_ptr<D3D12IndexBuffer>	m_indexBuffer;
@@ -122,6 +126,9 @@ namespace Ideal
 		int32 m_boneIndex;
 
 		Matrix m_localTM;
+
+		Vector3 m_minBound;
+		Vector3 m_maxBound;
 
 	public:
 		Ideal::D3D12ConstantBuffer m_constantBuffer;
