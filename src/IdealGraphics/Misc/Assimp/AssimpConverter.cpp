@@ -423,6 +423,9 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 		file->Write<uint32>((uint32)mesh->indices.size());
 		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
 
+		// bound
+		file->Write<Vector3>(mesh->minBounds);
+		file->Write<Vector3>(mesh->maxBounds);
 	}
 }
 
@@ -789,7 +792,9 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 		// AABB 값을 float 타입으로 저장
 		mesh->minBounds = Vector3(aabb.minBounds.x, aabb.minBounds.y, aabb.minBounds.z);
 		mesh->maxBounds = Vector3(aabb.maxBounds.x, aabb.maxBounds.y, aabb.maxBounds.z);
-
+		Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+		Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+		bool isChangeBound = false;
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 		{
@@ -799,9 +804,19 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 				//2024.08.13 본의 위치를 곱해준다.
 				if (m_bones[bone]->parent >= 0)
 				{
+					isChangeBound = true;
 					Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
 					vertex.Position = result;
+
+					minBounds.x = std::min(minBounds.x, result.x);
+					minBounds.y = std::min(minBounds.y, result.y);
+					minBounds.z = std::min(minBounds.z, result.z);
+
+					maxBounds.x = max(maxBounds.x, result.x);
+					maxBounds.y = max(maxBounds.y, result.y);
+					maxBounds.z = max(maxBounds.z, result.z);
 				}
+
 			}
 
 			// UV
@@ -835,6 +850,11 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			mesh->vertices.push_back(vertex);
 		}
 
+		if (isChangeBound)
+		{
+			mesh->minBounds = minBounds;
+			mesh->maxBounds = maxBounds;
+		}
 		// Index
 		for (uint32 f = 0; f < srcMesh->mNumFaces; ++f)
 		{

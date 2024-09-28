@@ -388,6 +388,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
 		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 20)));
+		cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion
 #pragma region CreateTextureAndMaterial
@@ -846,11 +847,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//	mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(i, 0, 0)));
 						//}
 
-						for (int z = 0; z < 10; z++)
+						for (int z = 0; z < 5; z++)
 						{
-							for (int y = 0; y < 10; y++)
+							for (int y = 0; y < 5; y++)
 							{
-								for (int x = 0; x < 10; x++)
+								for (int x = 0; x < 5; x++)
 								{
 									std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 									mesh->SetStaticWhenRunTime(true);
@@ -858,11 +859,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 									meshes.push_back(mesh);
 									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 0)));
 									mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
+									if(z == 1)
+										mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-10 + x * 0.2, -10, -10)));
 									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 0.1, y * 0.1, z * 0.1)));
 								}
 							}
 						}
-						gRenderer->BakeOption(32, 20.f);
+						gRenderer->BakeOption(3, 100.f);
 						gRenderer->BakeStaticMeshObject();
 						gRenderer->ReBuildBLASFlagOn();
 					}
