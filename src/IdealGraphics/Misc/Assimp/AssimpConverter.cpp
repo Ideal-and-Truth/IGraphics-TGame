@@ -4,7 +4,8 @@
 #include "Misc/Utils/FileUtils.h"
 #include <filesystem>
 #include "Misc/Utils/StringUtils.h"
-
+#include <limits>
+#include <algorithm>
 // 유틸리티 함수: UTF-8 문자열을 wstring으로 변환
 std::wstring utf8_to_wstring(const std::string& utf8Str) {
 	if (utf8Str.empty()) return std::wstring();
@@ -26,6 +27,7 @@ std::string wstring_to_multibyte(const std::wstring& wideStr) {
 
 	return multiByteStr;
 }
+
 
 bool IsNegative(const Matrix& m)
 {
@@ -421,6 +423,9 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 		file->Write<uint32>((uint32)mesh->indices.size());
 		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
 
+		// bound
+		file->Write<Vector3>(mesh->minBounds);
+		file->Write<Vector3>(mesh->maxBounds);
 	}
 }
 
@@ -786,6 +791,15 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 
 		const uint32 startVertex = (uint32)mesh->vertices.size();
 
+		// AABB 계산
+		AABB aabb = CalculateAABB(srcMesh);
+
+		// AABB 값을 float 타입으로 저장
+		mesh->minBounds = Vector3(aabb.minBounds.x, aabb.minBounds.y, aabb.minBounds.z);
+		mesh->maxBounds = Vector3(aabb.maxBounds.x, aabb.maxBounds.y, aabb.maxBounds.z);
+		Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+		Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+		bool isChangeBound = false;
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 		{
@@ -795,9 +809,19 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 				//2024.08.13 본의 위치를 곱해준다.
 				if (m_bones[bone]->parent > 0)
 				{
+					isChangeBound = true;
 					Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
 					vertex.Position = result;
+
+					minBounds.x = std::min(minBounds.x, result.x);
+					minBounds.y = std::min(minBounds.y, result.y);
+					minBounds.z = std::min(minBounds.z, result.z);
+
+					maxBounds.x = max(maxBounds.x, result.x);
+					maxBounds.y = max(maxBounds.y, result.y);
+					maxBounds.z = max(maxBounds.z, result.z);
 				}
+
 			}
 
 			// UV
@@ -831,6 +855,11 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			mesh->vertices.push_back(vertex);
 		}
 
+		if (isChangeBound)
+		{
+			mesh->minBounds = minBounds;
+			mesh->maxBounds = maxBounds;
+		}
 		// Index
 		for (uint32 f = 0; f < srcMesh->mNumFaces; ++f)
 		{
@@ -1253,4 +1282,29 @@ void AssimpConverter::WriteVertexPositionFile(const std::wstring& filePath)
 			file->Write<uint32>(mesh->indices[i]);
 		}
 	}
+}
+
+#undef max
+
+AssimpConverter::AABB AssimpConverter::CalculateAABB(const aiMesh* mesh)
+{
+	AABB aabb;
+	// 초기 최소값, 최대값 설정
+	aabb.minBounds = aiVector3D(std::numeric_limits<float>::max());
+	aabb.maxBounds = aiVector3D(std::numeric_limits<float>::lowest());
+
+	// 정점들을 순회하며 AABB 경계 계산
+	for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
+		const aiVector3D& vertex = mesh->mVertices[i];
+
+		aabb.minBounds.x = std::min(aabb.minBounds.x, vertex.x);
+		aabb.minBounds.y = std::min(aabb.minBounds.y, vertex.y);
+		aabb.minBounds.z = std::min(aabb.minBounds.z, vertex.z);
+
+		aabb.maxBounds.x = std::max(aabb.maxBounds.x, vertex.x);
+		aabb.maxBounds.y = std::max(aabb.maxBounds.y, vertex.y);
+		aabb.maxBounds.z = std::max(aabb.maxBounds.z, vertex.z);
+	}
+
+	return aabb;
 }

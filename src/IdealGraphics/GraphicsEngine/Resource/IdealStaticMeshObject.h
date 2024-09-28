@@ -59,6 +59,7 @@ namespace Ideal
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetStaticMesh(std::shared_ptr<Ideal::IdealStaticMesh> Mesh) { m_staticMesh = Mesh; }
 		std::shared_ptr<Ideal::IdealStaticMesh> GetStaticMesh() { return m_staticMesh; }
+	
 	private:
 		std::shared_ptr<IdealStaticMesh> m_staticMesh;
 		Matrix m_transform;

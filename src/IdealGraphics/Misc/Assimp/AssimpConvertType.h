@@ -27,6 +27,10 @@ namespace AssimpConvert
 		std::vector<uint32> indices;
 
 		Matrix localTM;
+
+		// AABB 경계 정보
+		Vector3 minBounds;  // AABB 최소 경계 (x, y, z)
+		Vector3 maxBounds;  // AABB 최대 경계 (x, y, z)
 	};
 
 	struct SkinnedMesh
