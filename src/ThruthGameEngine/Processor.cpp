@@ -58,12 +58,11 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
 	// 
-	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+	// ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
 #ifdef EDITOR_MODE
-
 
 	Truth::UnityParser up(m_manager->Graphics().get());
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
@@ -328,6 +327,6 @@ void Processor::ConvertSkelFbxData(const std::wstring& _path)
 
 void Processor::ConvertStaticFbxData(const std::wstring& _path)
 {
-	g_Renderer->ConvertAssetToMyFormat(_path, false);
+	g_Renderer->ConvertAssetToMyFormat(_path, false, true);
 }
 #endif // CONVERT_DATA

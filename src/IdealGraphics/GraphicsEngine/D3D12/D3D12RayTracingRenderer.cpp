@@ -2362,11 +2362,13 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 			auto submeshes = mesh->GetMeshes();
 			for (auto m : submeshes)
 			{
+				Vector3 offset = { 10.f, 10.f, 10.f };
 				Vector3 min = m->GetMinBound();
 				Vector3 max = m->GetMaxBound();
 				min = Vector3::Transform(min, object->GetTransformMatrix());
 				max = Vector3::Transform(max, object->GetTransformMatrix());
-
+				min += offset;
+				max += offset;
 				bounds.Encapsulate(min);
 				bounds.Encapsulate(max);
 			}
