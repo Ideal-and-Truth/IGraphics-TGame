@@ -2342,18 +2342,18 @@ void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 #ifdef _DEBUG
 	{
 		//// 라인 그리기
-		std::vector<std::pair<Vector3, Vector3>> lines;
-		m_Octree.ForeachNodeInternal(
-			[&](std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>> Node)
-			{
-				Bounds bound = Node->GetBounds();
-				auto edges = bound.GetEdges();
-				for (auto& e : edges)
-				{
-					m_debugMeshManager->AddDebugLine(e.first, e.second);
-				}
-			}
-		);
+		//std::vector<std::pair<Vector3, Vector3>> lines;
+		//m_Octree.ForeachNodeInternal(
+		//	[&](std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>> Node)
+		//	{
+		//		Bounds bound = Node->GetBounds();
+		//		auto edges = bound.GetEdges();
+		//		for (auto& e : edges)
+		//		{
+		//			m_debugMeshManager->AddDebugLine(e.first, e.second);
+		//		}
+		//	}
+		//);
 
 		//int a = 3;
 	}
