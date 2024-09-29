@@ -16,6 +16,8 @@
 #include "IdealRenderer.h"
 #include "ThreadPool.h"
 
+#include <time.h>
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -81,9 +83,29 @@ void Processor::Finalize()
 
 void Processor::Process()
 {
+	clock_t start, finish;
+	double duration;
+
+	start = clock();
 	Update();
 	LateUpdate();
+	finish = clock();
+
+	std::string temp = std::to_string(finish - start);
+	temp = std::string("update : ") + temp;
+	temp += " / ";
+	// DEBUG_PRINT(temp.c_str());
+
+	start = clock();
+
 	Render();
+	finish = clock();
+
+	temp = std::to_string(finish - start);
+	temp = std::string("render : ") + temp;
+	temp += " \n ";
+
+	// DEBUG_PRINT(temp.c_str());
 }
 
 void Processor::Loop()

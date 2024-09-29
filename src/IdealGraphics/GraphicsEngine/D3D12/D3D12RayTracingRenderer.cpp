@@ -2304,10 +2304,10 @@ void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 
 			// 바운딩 박스의 엣지를 추가합니다.
 			auto edges = bounds.GetEdges();
-			for (const auto& e : edges)
-			{
-				m_debugMeshManager->AddDebugLine(e.first, e.second);
-			}
+			// for (const auto& e : edges)
+			// {
+			// 	m_debugMeshManager->AddDebugLine(e.first, e.second);
+			// }
 
 			m_Octree.AddObject(object, bounds);
 #endif

@@ -55,7 +55,7 @@ namespace Truth
 		METHOD(Initalize);
 		void Initalize();
 
-		METHOD(ApplyTransform);
+		// METHOD(ApplyTransform);
 		void ApplyTransform();
 
 		void DeleteMesh();

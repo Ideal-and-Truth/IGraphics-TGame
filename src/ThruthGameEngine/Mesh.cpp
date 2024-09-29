@@ -8,6 +8,7 @@
 #include "ITexture.h"
 #include "Texture.h"
 #include "IMaterial.h"
+#include "Transform.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::Mesh)
 
@@ -110,10 +111,12 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 void Truth::Mesh::Initalize()
 {
 	SetMesh();
+	ApplyTransform();
 }
 
 void Truth::Mesh::ApplyTransform()
 {
+	m_owner.lock()->ApplyTransform();
 	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
 	m_mesh->SetDrawObject(m_isRendering);
 }

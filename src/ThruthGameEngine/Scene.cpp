@@ -357,10 +357,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		int32 parent = file->Read<int32>();
 		std::string name = file->Read<std::string>();
 		m_mapEntity[i]->m_name = name;
-
+		m_mapEntity[i]->Initialize();
 		if (name == "61742")
 		{
-			int a =1;
+			int a = 1;
 		}
 
 		if (parent != -1)
@@ -413,7 +413,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 				Vector3 size = file->Read<Vector3>();
 				Vector3 center = file->Read<Vector3>();
-				coll = std::make_shared<BoxCollider>(center, size);
+				// coll = std::make_shared<BoxCollider>(center, size);
 				break;
 			}
 			// 			case 2:
@@ -428,7 +428,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			// 			}
 			case 4:
 			{
-				coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
+				// coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
 				break;
 			}
 			default:

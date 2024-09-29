@@ -157,7 +157,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     rayDesc.Origin = ray.origin;
     rayDesc.Direction = ray.direction;
     rayDesc.TMin = 0.001;
-    rayDesc.TMax = 10000.0;
+    rayDesc.TMax = 3000.0;
     //rayDesc.TMin = g_sceneCB.nearZ;
     //rayDesc.TMax = g_sceneCB.farZ;
     
@@ -178,7 +178,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     return payload;
 }
 
-float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in SafeSpawnPointParameters spawn, in float TMax = 10000)
+float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in SafeSpawnPointParameters spawn, in float TMax = 3000)
 {
     // offset 과는 관계없이 똑같은 노말값 오류 현상
     float tOffset = 0.001f;

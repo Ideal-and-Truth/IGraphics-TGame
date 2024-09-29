@@ -109,6 +109,8 @@ namespace Truth
 
 		const Matrix& GetWorldTM() const;
 
+		void ApplyTransform();
+
 		void SetWorldTM(const Matrix& _tm) const;
 		void SetLocalTM(const Matrix& _tm) const;
 
@@ -127,8 +129,6 @@ namespace Truth
 				return Matrix::Identity;
 			}
 		}
-
-		void ApplyTransform();
 
 		void Awake();
 		void Destroy();
