@@ -2258,24 +2258,57 @@ void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
 			//position.x = object->GetTransformMatrix()._41;
 			//position.y = object->GetTransformMatrix()._42;
 			//position.z = object->GetTransformMatrix()._43;
-
+			
 			Bounds bounds;
+			Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+			Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+			bounds.SetMinMax(minBounds, maxBounds);
 			auto mesh = object->GetStaticMesh();
 			auto submeshes = mesh->GetMeshes();
 			for (auto m : submeshes)
 			{
 				Vector3 min = m->GetMinBound();
 				Vector3 max = m->GetMaxBound();
-				min = Vector3::Transform(min, object->GetTransformMatrix());
-				max = Vector3::Transform(max, object->GetTransformMatrix());
-				bounds.SetMinMax(min, max);
 
-				//auto edges = bounds.GetEdges();
-				//for (auto& e : edges)
-				//{
-				//	m_debugMeshManager->AddDebugLine(e.first, e.second);
-				//}
+				// 바운드의 최소 및 최대 값을 업데이트합니다.
+				minBounds = Vector3::Min(minBounds, min);
+				maxBounds = Vector3::Max(maxBounds, max);
+
+				// 8개의 코너 포인트를 계산합니다.
+				std::vector<Vector3> corners = {
+					Vector3(min.x, min.y, min.z),
+					Vector3(min.x, min.y, max.z),
+					Vector3(min.x, max.y, min.z),
+					Vector3(min.x, max.y, max.z),
+					Vector3(max.x, min.y, min.z),
+					Vector3(max.x, min.y, max.z),
+					Vector3(max.x, max.y, min.z),
+					Vector3(max.x, max.y, max.z)
+				};
+
+				// 각 코너 포인트를 변환하여 바운딩 박스에 캡슐화합니다.
+				for (auto& corner : corners)
+				{
+					corner = Vector3::Transform(corner, object->GetTransformMatrix());
+					bounds.Encapsulate(corner);
+				}
 			}
+
+			// 최소 및 최대 바운드 변환
+			Vector3 transformedMin = Vector3::Transform(minBounds, object->GetTransformMatrix());
+			Vector3 transformedMax = Vector3::Transform(maxBounds, object->GetTransformMatrix());
+
+			// 바운딩 박스에 최소 및 최대 값을 캡슐화합니다.
+			bounds.Encapsulate(transformedMin);
+			bounds.Encapsulate(transformedMax);
+
+			// 바운딩 박스의 엣지를 추가합니다.
+			auto edges = bounds.GetEdges();
+			for (const auto& e : edges)
+			{
+				m_debugMeshManager->AddDebugLine(e.first, e.second);
+			}
+
 			m_Octree.AddObject(object, bounds);
 #endif
 		}
@@ -2344,75 +2377,74 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 	//once++;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO : 기존 baked object 삭제?
-	struct Obj
-	{
-		std::shared_ptr<Ideal::IdealStaticMeshObject> staticMesh;
-		Bounds bounds;
-	};
-	std::vector<Obj> boundsVector;
-	for (auto& object : m_staticMeshObject)
-	{
-		if (object->GetIsStaticWhenRunTime())
-		{
-			Bounds bounds;
-			Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
-			Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-			bounds.SetMinMax(minBounds, maxBounds);
-			auto mesh = object->GetStaticMesh();
-			auto submeshes = mesh->GetMeshes();
-			for (auto m : submeshes)
-			{
-				Vector3 offset = { 10.f, 10.f, 10.f };
-				Vector3 min = m->GetMinBound();
-				Vector3 max = m->GetMaxBound();
-				min = Vector3::Transform(min, object->GetTransformMatrix());
-				max = Vector3::Transform(max, object->GetTransformMatrix());
-				min += offset;
-				max += offset;
-				bounds.Encapsulate(min);
-				bounds.Encapsulate(max);
-			}
-			Obj obj;
-			obj.staticMesh = object;
-			obj.bounds = bounds;
-			boundsVector.push_back(obj);
-		}
-	}
-
-	std::vector<std::vector<Obj>> mergedGroups; // 병합된 그룹 리스트
-	std::vector<bool> visited(boundsVector.size(), false);
-	for (size_t i = 0; i < boundsVector.size(); ++i) {
-		if (visited[i]) continue;
-
-		std::vector<Obj> group;
-		group.push_back(boundsVector[i]);
-		visited[i] = true;
-
-		for (size_t j = i + 1; j < boundsVector.size(); ++j) {
-			if (visited[j]) continue;
-
-			// 겹치는지 확인
-			if (boundsVector[i].bounds.Intersects(boundsVector[j].bounds)) {
-				group.push_back(boundsVector[j]);
-				visited[j] = true;
-			}
-		}
-
-		mergedGroups.push_back(group);
-	}
+	//struct Obj
+	//{
+	//	std::shared_ptr<Ideal::IdealStaticMeshObject> staticMesh;
+	//	Bounds bounds;
+	//};
+	//std::vector<Obj> boundsVector;
+	//for (auto& object : m_staticMeshObject)
+	//{
+	//	if (object->GetIsStaticWhenRunTime())
+	//	{
+	//		Bounds bounds;
+	//		Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+	//		Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	//		bounds.SetMinMax(minBounds, maxBounds);
+	//		auto mesh = object->GetStaticMesh();
+	//		auto submeshes = mesh->GetMeshes();
+	//		for (auto m : submeshes)
+	//		{
+	//			Vector3 min = m->GetMinBound();
+	//			Vector3 max = m->GetMaxBound();
+	//			min = Vector3::Transform(min, object->GetTransformMatrix());
+	//			max = Vector3::Transform(max, object->GetTransformMatrix());
+	//			bounds.Encapsulate(min);
+	//			bounds.Encapsulate(max);
+	//		}
+	//		Obj obj;
+	//		obj.staticMesh = object;
+	//		obj.bounds = bounds;
+	//		boundsVector.push_back(obj);
+	//	}
+	//}
+	//std::vector<std::vector<Obj>> mergedGroups; // 병합된 그룹 리스트
+	//std::vector<bool> visited(boundsVector.size(), false);
+	//
+	//std::shared_ptr<Ideal::IdealStaticMeshObject> current;
+	//
+	//for (size_t i = 0; i < boundsVector.size(); ++i) {
+	//	if (visited[i]) continue;
+	//
+	//	std::vector<Obj> group;
+	//	group.push_back(boundsVector[i]);
+	//	visited[i] = true;
+	//
+	//	for (size_t j = i + 1; j < boundsVector.size(); ++j) {
+	//		if (visited[j]) continue;
+	//
+	//		// 겹치는지 확인
+	//		if (boundsVector[i].bounds.Intersects(boundsVector[j].bounds)) {
+	//			group.push_back(boundsVector[j]);
+	//			visited[j] = true;
+	//		}
+	//	}
+	//
+	//	mergedGroups.push_back(group);
+	//}
 
 	int b = 3;
 
 	std::vector<std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>>> nodes;
 	m_Octree.GetFinalNodes(nodes);
 
-	//for (auto& node : nodes)
-	for (auto& groups : mergedGroups)
+	for (auto& node : nodes)
+	//for (auto& groups : mergedGroups)
 	{
 		uint32 BlasGeometryMaxSize = m_maxBakeCount;
 		uint32 BlasGeometryCurrentSize = 0;
-		//auto& objects = node->GetObjects();
-		auto& objects = groups;
+		auto& objects = node->GetObjects();
+		//auto& objects = groups;
 
 		// 09.25
 		// 여기서 BLAS에 들어갈 Geometry들을 구해야 한다.
@@ -2433,9 +2465,9 @@ void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
 		std::shared_ptr<Ideal::IdealStaticMeshObject> BakedMeshObject = std::make_shared<Ideal::IdealStaticMeshObject>();
 		std::shared_ptr<Ideal::IdealStaticMesh> BakedStaticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 		BakedMeshObject->SetStaticMesh(BakedStaticMesh);
-		for (auto& object : objects)
+		for (auto& obj : objects)
 		{
-			auto& obj = object.staticMesh;
+			//auto& obj = object.staticMesh;
 
 			RaytracingManagerDeleteObject(obj);
 
