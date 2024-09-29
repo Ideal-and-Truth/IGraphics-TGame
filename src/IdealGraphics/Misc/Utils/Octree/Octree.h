@@ -180,8 +180,8 @@ public:
 			}
 
 			// 경계가 자식 노드와 겹치면 그 자식 노드에 추가 시도
-			if (m_childBounds[i].Intersects(objectBounds))
-			//if (m_childBounds[i].IsCompletelyInside(objectBounds))
+			//if (m_childBounds[i].Intersects(objectBounds))
+			if (m_childBounds[i].IsCompletelyInside(objectBounds))
 			{
 				addedToChild = true;
 				m_childOctreeNodes[i]->DivideAndAdd(Object, objectBounds);
