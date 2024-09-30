@@ -122,7 +122,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	// LoadUnityData(L"1_HN_Scene2");
+	LoadUnityData(L"1_HN_Scene2");
 }
 
 
@@ -359,10 +359,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		std::string name = file->Read<std::string>();
 		m_mapEntity[i]->m_name = name;
 		m_mapEntity[i]->Initialize();
-		if (name == "61742")
-		{
-			int a = 1;
-		}
+
 
 		if (parent != -1)
 		{
