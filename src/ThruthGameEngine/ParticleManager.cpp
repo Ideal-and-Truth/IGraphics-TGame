@@ -16,7 +16,7 @@ Truth::ParticleManager::~ParticleManager()
 void Truth::ParticleManager::Initalize(std::shared_ptr<GraphicsManager> _grapics)
 {
 	m_grapics = _grapics;
-	ReloadAllParticle();
+	// ReloadAllParticle();
 }
 
 void Truth::ParticleManager::Finalize()
@@ -34,7 +34,7 @@ void Truth::ParticleManager::CreateEmptyParticle()
 	emitter << YAML::Key << "MatName" << YAML::Value << "defaultMat";
 
 	emitter << YAML::Key << "EBlendingMode" << YAML::Value << 0;
-	emitter << YAML::Key << "Shader" << YAML::Value << "TestCustomParticle";
+	emitter << YAML::Key << "Shader" << YAML::Value << "SwordSlash";
 	emitter << YAML::Key << "Texture0" << YAML::Value << "../Resources/Textures/0_Particle/Smoke12.png";
 	emitter << YAML::Key << "Texture1" << YAML::Value << "../Resources/Textures/0_Particle/Crater62.png";
 	emitter << YAML::Key << "Texture2" << YAML::Value << "../Resources/Textures/0_Particle/Noise43b.png";
