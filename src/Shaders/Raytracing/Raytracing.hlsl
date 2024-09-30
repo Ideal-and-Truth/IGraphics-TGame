@@ -162,7 +162,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     //rayDesc.TMax = g_sceneCB.farZ;
     
     UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
-    rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
+    //rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     
     //UINT rayFlags = 0;
     //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;

@@ -16,6 +16,11 @@ namespace AssimpConvert
 
 class AssimpConverter
 {
+	struct AABB {
+		aiVector3D minBounds;
+		aiVector3D maxBounds;
+	};
+
 public:
 	AssimpConverter();
 	~AssimpConverter();
@@ -67,6 +72,9 @@ private:
 	uint32 GetBoneIndex(const std::string& name);
 
 	void WriteVertexPositionFile(const std::wstring& filePath);
+
+public:
+	AABB CalculateAABB(const aiMesh* mesh);
 
 private:
 	
