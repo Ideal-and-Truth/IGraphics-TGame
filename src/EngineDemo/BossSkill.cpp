@@ -101,10 +101,10 @@ void BossSkill::Update()
 	{
 		//ShockWave();
 		//FlameSword();
-		//SwordShooting(); //칼 회전 이상함(꼼수로 고쳤지만 짜침) + 아직 삭제 안함
+		SwordShooting(); //칼 회전 이상함(꼼수로 고쳤지만 짜침) + 아직 삭제 안함
 		//LightSpeedDash(false); //아직 안 만듦
 		//LightSpeedDash(true); //아직 삭제 안함
-		DistortedTimeSphere();
+		//DistortedTimeSphere(); //미완
 	}
 }
 
@@ -125,7 +125,8 @@ void BossSkill::ShockWave()
 			m_owner.lock()->AddChild(shock);
 
 			shock->SetPosition({ 0.f,0.f,0.f });
-			shock->SetScale({ 3.f,1.f,3.f });
+			//shock->SetScale({ 3.f,1.f,3.f });
+			shock->SetScale({ 300.f,30.f,300.f });
 
 
 			//shock->Awake();
@@ -202,8 +203,8 @@ void BossSkill::FlameSword()
 			m_owner.lock()->AddChild(flame);
 
 			flame->SetPosition({ 0.f,0.f,0.f });
-			flame->SetScale({ 3.f,1.f,3.f });
-
+			//flame->SetScale({ 3.f,1.f,3.f });
+			flame->SetScale({ 300.f,30.f,300.f });
 
 			flame->Start();
 
