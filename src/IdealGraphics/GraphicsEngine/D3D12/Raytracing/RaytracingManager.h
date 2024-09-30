@@ -88,6 +88,8 @@ namespace Ideal
 				SRV_VertexBuffer,
 				SRV_Diffuse,
 				SRV_Normal,
+				//SRV_Metalic,
+				//SRV_Roughness,
 				SRV_Mask,
 				CBV_MaterialInfo,
 				Count
@@ -103,10 +105,10 @@ namespace Ideal
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
 			// Normal Textures
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_NormalTexture;
-			// Metalic Textures
-			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MetalicTexture;
-			// Roughness Textures
-			D3D12_GPU_DESCRIPTOR_HANDLE SRV_RoughnessTexture;
+			//// Metalic Textures
+			//D3D12_GPU_DESCRIPTOR_HANDLE SRV_MetalicTexture;
+			//// Roughness Textures
+			//D3D12_GPU_DESCRIPTOR_HANDLE SRV_RoughnessTexture;
 			// Mask Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MaskTexture;
 

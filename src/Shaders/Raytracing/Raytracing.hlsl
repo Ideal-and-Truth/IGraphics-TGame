@@ -40,7 +40,9 @@ StructuredBuffer<uint> l_indices : register(t0, space1);
 StructuredBuffer<PositionNormalUVTangentColor> l_vertices : register(t1, space1);
 Texture2D<float4> l_texDiffuse : register(t2, space1);
 Texture2D<float4> l_texNormal : register(t3, space1);
-Texture2D<float4> l_texMask : register(t4, space1);
+//Texture2D<float4> l_texMetallic : register(t4, space1);
+//Texture2D<float4> l_texRoughness : register(t5, space1);
+Texture2D<float4> l_texMask : register(t6, space1);
 ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 //StructuredBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 
