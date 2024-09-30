@@ -16,6 +16,8 @@
 #include "IdealRenderer.h"
 #include "ThreadPool.h"
 
+#include <time.h>
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -58,12 +60,11 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
 	// 
-	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+	// ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
 #ifdef EDITOR_MODE
-
 
 	Truth::UnityParser up(m_manager->Graphics().get());
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
@@ -82,9 +83,29 @@ void Processor::Finalize()
 
 void Processor::Process()
 {
+	clock_t start, finish;
+	double duration;
+
+	start = clock();
 	Update();
 	LateUpdate();
+	finish = clock();
+
+	std::string temp = std::to_string(finish - start);
+	temp = std::string("update : ") + temp;
+	temp += " / ";
+	// DEBUG_PRINT(temp.c_str());
+
+	start = clock();
+
 	Render();
+	finish = clock();
+
+	temp = std::to_string(finish - start);
+	temp = std::string("render : ") + temp;
+	temp += " \n ";
+
+	// DEBUG_PRINT(temp.c_str());
 }
 
 void Processor::Loop()
@@ -328,6 +349,6 @@ void Processor::ConvertSkelFbxData(const std::wstring& _path)
 
 void Processor::ConvertStaticFbxData(const std::wstring& _path)
 {
-	g_Renderer->ConvertAssetToMyFormat(_path, false);
+	g_Renderer->ConvertAssetToMyFormat(_path, false, true);
 }
 #endif // CONVERT_DATA

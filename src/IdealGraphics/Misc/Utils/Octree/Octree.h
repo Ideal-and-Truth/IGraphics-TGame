@@ -22,6 +22,8 @@ struct Bounds
 	Vector3 GetCenter() { return m_Center; }
 	void SetCenter(Vector3 Center) { m_Center = Center; }
 
+	Vector3 GetExtents() { return m_Extents; }
+
 	Vector3 GetMin()
 	{
 		m_min = m_Center - m_Extents;
@@ -48,11 +50,30 @@ struct Bounds
 		return b;
 	}
 
+	bool Intersects(Bounds bounds)
+	{
+		return m_min.x <= bounds.m_max.x && m_max.x >= bounds.m_min.x && m_min.y <= bounds.m_max.y && m_max.y >= bounds.m_min.y && m_min.z <= bounds.m_max.z && m_max.z >= bounds.m_min.z;
+	}
+
+	bool IsCompletelyInside(Bounds objectBounds)
+	{
+		// 오브젝트가 노드의 경계 내에 완전히 포함되는지 확인
+		return GetMin().x <= objectBounds.GetMin().x && GetMax().x >= objectBounds.GetMax().x &&
+			GetMin().y <= objectBounds.GetMin().y && GetMax().y >= objectBounds.GetMax().y &&
+			GetMin().z <= objectBounds.GetMin().z && GetMax().z >= objectBounds.GetMax().z;
+	}
+
 	void Encapsulate(Vector3 point)
 	{
 		auto min = Vector3::Min(GetMin(), point);
 		auto max = Vector3::Max(GetMax(), point);
 		SetMinMax(min, max);
+	}
+
+	void Encapsulate(Bounds bounds)
+	{
+		Encapsulate(bounds.GetCenter() - bounds.GetExtents());
+		Encapsulate(bounds.GetCenter() + bounds.GetExtents());
 	}
 
 	void SetMinMax(Vector3 min, Vector3 max)
@@ -135,6 +156,47 @@ public:
 
 	Bounds GetBounds() { return m_nodeBounds; }
 
+	void DivideAndAdd(T Object, const Bounds& objectBounds)
+	{
+		// 최소 크기 이하로 분할할 수 없으면 이 노드에 오브젝트 추가
+		if (m_nodeBounds.GetSize().y <= m_minSize)
+		{
+			m_objects.push_back(Object);
+			m_isFinalNode = true;
+			return;
+		}
+		// 자식 노드가 없다면 초기화
+		if (m_childOctreeNodes.size() == 0)
+		{
+			m_childOctreeNodes.resize(8);
+		}
+		bool addedToChild = false;
+		// 자식 노드를 순회하면서 오브젝트가 속할 자식 노드를 찾는다
+		for (int i = 0; i < 8; ++i)
+		{
+			if (m_childOctreeNodes[i] == nullptr)
+			{
+				m_childOctreeNodes[i] = std::make_shared<OctreeNode<T>>(m_childBounds[i], m_minSize);
+			}
+
+			// 경계가 자식 노드와 겹치면 그 자식 노드에 추가 시도
+			//if (m_childBounds[i].Intersects(objectBounds))
+			if (m_childBounds[i].IsCompletelyInside(objectBounds))
+			{
+				addedToChild = true;
+				m_childOctreeNodes[i]->DivideAndAdd(Object, objectBounds);
+				break;
+			}
+		}
+		// 자식노드에 추가되지 않으면 상위 노드에 추가
+		if (!addedToChild)
+		{
+			//m_childOctreeNodes.clear();
+			m_isFinalNode = true;
+			m_objects.push_back(Object);
+		}
+	}
+
 	void DivideAndAdd(T Object, Vector3 Position)
 	{
 		if (m_nodeBounds.GetSize().y <= m_minSize)
@@ -164,7 +226,7 @@ public:
 				break;
 			}
 		}
-		if (dividing = false)
+		if (dividing == false)
 		{
 			m_childOctreeNodes.clear();
 		}
@@ -182,7 +244,10 @@ public:
 		// 그리고 자식노드도 다시
 		for (auto& c : m_childOctreeNodes)
 		{
-			c->ForeachNodeInternal(func);
+			if (c)
+			{
+				c->ForeachNodeInternal(func);
+			}
 		}
 	}
 
@@ -210,6 +275,13 @@ class Octree
 		Vector3 pos;
 	};
 
+	template <typename T>
+	struct ObjectBound
+	{
+		T object;
+		Bounds bounds;
+	};
+
 public:
 
 	void AddObject(T object, Vector3 Position)
@@ -219,6 +291,15 @@ public:
 		obj.object = object;
 		obj.pos = Position;
 		m_objects.push_back(obj);
+	}
+
+	void AddObject(T object, Bounds bounds)
+	{
+		m_bounds.Encapsulate(bounds);
+		ObjectBound<T> obj;
+		obj.object = object;
+		obj.bounds = bounds;
+		m_objectsBoundVer.push_back(obj);
 	}
 
 	void Bake(float minNodeSize)
@@ -232,6 +313,20 @@ public:
 		for (auto& o : m_objects)
 		{
 			m_rootNode->DivideAndAdd(o.object, o.pos);
+		}
+	}
+
+	void BakeBoundVer(float minNodeSize)
+	{
+		float maxSize = max(m_bounds.GetSize().x, max(m_bounds.GetSize().y, m_bounds.GetSize().z));
+
+		Vector3 sizeVector = Vector3(maxSize, maxSize, maxSize) * 0.5f;
+		m_bounds.SetMinMax(m_bounds.GetCenter() - sizeVector, m_bounds.GetCenter() + sizeVector);
+		m_rootNode = std::make_shared<OctreeNode<T>>(m_bounds, minNodeSize);
+
+		for (auto& o : m_objectsBoundVer)
+		{
+			m_rootNode->DivideAndAdd(o.object, o.bounds);
 		}
 	}
 
@@ -252,6 +347,7 @@ public:
 private:
 	Bounds m_bounds;
 	std::vector<Object<T>> m_objects;
+	std::vector<ObjectBound<T>> m_objectsBoundVer;
 	std::shared_ptr<OctreeNode<T>> m_rootNode;
 };
 //}

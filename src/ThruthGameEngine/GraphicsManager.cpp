@@ -284,7 +284,7 @@ void Truth::GraphicsManager::ResizeWindow(uint32 _w, uint32 _h)
 
 void Truth::GraphicsManager::BakeStaticMesh()
 {
-	m_renderer->BakeOption(100000, 100000.f);
+	m_renderer->BakeOption(32, 10.f);
 	m_renderer->BakeStaticMeshObject();
 	m_renderer->ReBuildBLASFlagOn();
 }
