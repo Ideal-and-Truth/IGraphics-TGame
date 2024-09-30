@@ -1,0 +1,20 @@
+EBlendingMode: 0
+Shader: TestCustomParticle
+Texture0: .
+Texture1: .
+Texture2: .
+Mesh: 0_Particle/Slash
+StartColor:
+  - 0
+  - 0
+  - 0
+  - 0
+Loop: false
+Duration: 2
+StopEnd: true
+RenderMode: 1
+RotationOverLifeTime: true
+RotationOverLifetimeAxisY:
+  ControlPoint:
+    - x: 0
+      y: 1

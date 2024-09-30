@@ -160,6 +160,12 @@
     <Filter Include="Component\UI">
       <UniqueIdentifier>{56aa9117-ed04-4847-847d-5dbba433fa1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Effect">
+      <UniqueIdentifier>{635f4265-3524-4529-9e77-e77c8879a2e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Particle">
+      <UniqueIdentifier>{e3db038f-f88e-408e-9f1c-a41b2f2485f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -315,8 +321,14 @@
     <ClCompile Include="MeshCollider.cpp">
       <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="FreeCamera.cpp">
+      <Filter>Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>Manager\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -493,8 +505,14 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Component\Collider\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="FreeCamera.h">
+      <Filter>Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleManager.h">
+      <Filter>Manager\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

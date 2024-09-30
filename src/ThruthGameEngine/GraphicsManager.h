@@ -18,6 +18,7 @@ namespace Ideal
 	class IMaterial;
 	class ITexture;
 	class ISprite;
+	class IdealRenderer;
 }
 
 namespace Truth
@@ -39,10 +40,10 @@ namespace Truth
 		};
 	public:
 		// path / texture
-		std::map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
+		std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
 
 		// name / matarial
-		std::map<std::string, std::shared_ptr<Material>> m_matarialMap;
+		std::unordered_map<std::string, std::shared_ptr<Material>> m_matarialMap;
 
 	public:
 		GraphicsManager();
