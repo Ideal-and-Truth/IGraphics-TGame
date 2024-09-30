@@ -67,7 +67,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertSkelFbxData(L"EnemyAnimations/FieldMob.fbx");
 // 	ConvertSkelFbxData(L"PlayerAnimations/chronos.Main_tPose1.fbx");
  	ConvertSkelFbxData(L"EnemyAnimations/RangeEnemy/Aim/Aim.fbx");
-// 
+ 
 // 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack1.fbx");
 // 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack2.fbx");
 // 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack3.fbx");
@@ -87,7 +87,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack4.fbx");
 // 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack5.fbx");
 // 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack6.fbx");
-// 
+ 
 // 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Attack/Attack.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Down.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Hit/Hit.fbx");
@@ -97,7 +97,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeL.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeR.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrongAttack/StrongAttack.fbx");
-// 
+ 
 // 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Aim/Aim.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Attack/Attack.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Down/Down.fbx");
@@ -105,24 +105,36 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Idle/Idle.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Pursuit Return/PursuitReturn.fbx");
 // 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Reload/Reload.fbx");
-// 
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackCharge.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackChargedCombo.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackJumpSmashGround.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackRunningSimple.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSmashGround.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSpin.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSwing.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCut.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCutMirror.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Dodge/Dodge.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Idle/Idle.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Run/Run.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeL.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeR.fbx");
-// 
-// 
-// 	int a = 0;
+ 
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackChargedCombo.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackJumpSmashGround.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackLightSpeedDash.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackLightSpeedReady.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackRun.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackShockWave.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSmashGround.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSpin.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSwing.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCut.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCutMirror.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-1.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-2.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-3.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/Combo2-1.fbx");
+	ConvertAniFbxData(L"BossAnimations/Attacks/Combo2-2.fbx");
+	ConvertAniFbxData(L"BossAnimations/Dodge/Dodge.fbx");
+	ConvertAniFbxData(L"BossAnimations/Dodge/DodgeLeft.fbx");
+	ConvertAniFbxData(L"BossAnimations/Dodge/DodgeRight.fbx");
+	ConvertAniFbxData(L"BossAnimations/Down/Down1.fbx");
+	ConvertAniFbxData(L"BossAnimations/Down/Down2.fbx");
+	ConvertAniFbxData(L"BossAnimations/Down/Down3.fbx");
+	ConvertAniFbxData(L"BossAnimations/Idle/Idle.fbx");
+	ConvertAniFbxData(L"BossAnimations/Run/Run.fbx");
+	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeL.fbx");
+	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeR.fbx");
+ 
+ 
+ 	int a = 0;
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 

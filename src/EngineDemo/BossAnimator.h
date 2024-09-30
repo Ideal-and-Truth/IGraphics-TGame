@@ -332,6 +332,9 @@ private:
 	PROPERTY(isDeath);
 	bool m_isDeath;
 
+	PROPERTY(isSkillActive);
+	bool m_isSkillActive;
+
 	PROPERTY(attackCoolTime);
 	float m_attackCoolTime;
 
