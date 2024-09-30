@@ -1,5 +1,6 @@
 #include "SimpleDamager.h"
 #include "Player.h"
+#include "PlayerAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(SimpleDamager)
 
@@ -25,10 +26,17 @@ void SimpleDamager::Start()
 
 void SimpleDamager::Update()
 {
-	if (m_isPlayerIn&& !m_onlyHitOnce)
+	if (m_isPlayerIn && !m_onlyHitOnce)
 	{
-		float currentTP = m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get();
-		m_player->GetTypeInfo().GetProperty("currentTP")->Set(m_player.get(), currentTP - m_damage);
+		auto player = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player");
+		auto playerAnimator = player.lock()->GetComponent<PlayerAnimator>().lock();
+
+		if (!playerAnimator->GetTypeInfo().GetProperty("isDodge")->Get<bool>(playerAnimator.get()).Get())
+		{
+			float currentTP = m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get();
+			m_player->GetTypeInfo().GetProperty("currentTP")->Set(m_player.get(), currentTP - m_damage);
+		}
+
 		m_onlyHitOnce = true;
 	}
 }

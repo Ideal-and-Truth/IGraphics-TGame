@@ -87,6 +87,26 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
+class BossDown
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+
+public:
+	BossDown(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 class BossAttackSwing
 	: public AnimationState
 {
@@ -110,6 +130,7 @@ class BossAttackRunning
 	: public AnimationState
 {
 private:
+	bool isReset = false;
 
 
 public:
@@ -186,7 +207,8 @@ class BossAttackCharge
 	: public AnimationState
 {
 private:
-
+	bool m_changePose = false;
+	bool isReset = false;
 
 public:
 	BossAttackCharge(Truth::Component* animator)
@@ -247,6 +269,150 @@ private:
 
 public:
 	BossAttackDoubleUpperCut(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class BossAttackCombo1_1
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+	bool isReset = false;
+public:
+	BossAttackCombo1_1(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class BossAttackCombo1_2
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+
+public:
+	BossAttackCombo1_2(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class BossAttackCombo1_3
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+	bool isReset = false;
+
+public:
+	BossAttackCombo1_3(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class BossAttackCombo2_1
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+	bool isReset = false;
+
+public:
+	BossAttackCombo2_1(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class BossAttackCombo2_2
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+
+public:
+	BossAttackCombo2_2(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class BossAttackSwordShoot
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+	bool isReset = false;
+
+public:
+	BossAttackSwordShoot(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class BossAttackShockWave
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+	bool isReset = false;
+
+public:
+	BossAttackShockWave(Truth::Component* animator)
 		: AnimationState(animator)
 		, m_isChangePose(false)
 	{
@@ -323,6 +489,27 @@ private:
 	PROPERTY(attackDoubleUpperCut);
 	bool m_attackDoubleUpperCut;
 
+	PROPERTY(attackCombo1_1);
+	bool m_attackCombo1_1;
+
+	PROPERTY(attackCombo1_2);
+	bool m_attackCombo1_2;
+
+	PROPERTY(attackCombo1_3);
+	bool m_attackCombo1_3;
+
+	PROPERTY(attackCombo2_1);
+	bool m_attackCombo2_1;
+
+	PROPERTY(attackCombo2_2);
+	bool m_attackCombo2_2;
+
+	PROPERTY(attackSwordShoot);
+	bool m_attackSwordShoot;
+
+	PROPERTY(attackShockWave);
+	bool m_attackShockWave;
+
 	PROPERTY(isDamage);
 	bool m_isDamage;
 
@@ -335,8 +522,11 @@ private:
 	PROPERTY(isSkillActive);
 	bool m_isSkillActive;
 
-	PROPERTY(attackCoolTime);
-	float m_attackCoolTime;
+	PROPERTY(isAttacking);
+	bool m_isAttacking;
+
+	PROPERTY(skillCoolTime);
+	bool m_skillCoolTime;
 
 	PROPERTY(sideMove);
 	float m_sideMove;
@@ -346,6 +536,10 @@ private:
 	float m_passingTime;
 
 	float m_lastHp;
+
+	float m_downGuage;
+
+	bool m_playOnce;
 
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
@@ -357,6 +551,9 @@ private:
 
 	PROPERTY(currentFrame);
 	int m_currentFrame;
+
+	PROPERTY(currentPhase);
+	int m_currentPhase;
 
 	PROPERTY(hitStopTime);
 	float m_hitStopTime;
@@ -377,6 +574,8 @@ public:
 	METHOD(Update);
 	void Update();
 
+
+	void SetCanMove(bool canMove);
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 

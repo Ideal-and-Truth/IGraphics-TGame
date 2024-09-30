@@ -100,6 +100,8 @@ void PlayerController::PlayerMove(const void*)
 	}
 
 
+
+
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
 	Vector3 disp2 = right * m_sideInput * playerSpeed;
 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f);
@@ -112,6 +114,14 @@ void PlayerController::PlayerMove(const void*)
 	{
 		return;
 	}
+
+	if (GetKeyDown(KEY::SPACE))
+	{
+		Vector3 power(finalMovement);
+		power *= 100000000000.f;
+		m_controller.lock()->AddImpulse(power);
+	}
+
 	m_playerDirection = playerDir;
 	Quaternion lookRot;
 	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);

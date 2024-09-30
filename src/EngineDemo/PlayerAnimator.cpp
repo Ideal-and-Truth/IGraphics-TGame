@@ -5,6 +5,7 @@
 #include "EnemyAnimator.h"
 #include "PlayerCamera.h"
 #include "Bullet.h"
+#include "SimpleDamager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 
@@ -208,7 +209,6 @@ void PlayerAnimator::Update()
 	{
 		m_passingTime += GetDeltaTime();
 		m_isGuard = true;
-		//m_isWalk = false;
 		m_isRun = false;
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
@@ -218,28 +218,12 @@ void PlayerAnimator::Update()
 		m_passingTime = 0.f;
 	}
 
-	// 	if (m_lastHp - 5 > m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() && m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() > 0.f)
-	// 	{
-	// 		m_isHit = true;
-	// 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-	// 	}
 
 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
 	{
 		if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
 			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() != 0.f)
 		{
-			// 			if (GetKey(KEY::LSHIFT))
-			// 			{
-			// 				m_isRun = true;
-			// 				m_isWalk = false;
-			// 			}
-			// 			else
-			// 			{
-			// 				m_isRun = false;
-			// 				m_isWalk = true;
-			// 			}
-
 			m_isRun = true;
 
 			if (GetKeyDown(KEY::SPACE))
@@ -249,9 +233,13 @@ void PlayerAnimator::Update()
 		}
 		else
 		{
-			//m_isWalk = false;
 			m_isRun = false;
 		}
+	}
+
+	if (m_currentState == m_animationStateMap["Hit"])
+	{
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 
 	m_currentState->OnStateUpdate();
@@ -274,10 +262,9 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 	auto enemy = _other->GetOwner().lock()->m_parent.lock();
 	if (enemy)
 	{
-		auto enemyAnim = enemy->GetComponent<EnemyAnimator>().lock();
-
-		if (enemyAnim)
+		if (enemy->GetComponent<EnemyAnimator>().lock())
 		{
+			auto enemyAnim = enemy->GetComponent<EnemyAnimator>().lock();
 			if (enemyAnim->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(enemyAnim.get()).Get())
 			{
 				m_isHit = true;
@@ -292,6 +279,15 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 			}
 		}
 	}
+	else if (_other->GetOwner().lock()->GetComponent<SimpleDamager>().lock() && !m_isDodge)
+	{
+		auto damager = _other->GetOwner().lock()->GetComponent<SimpleDamager>().lock();
+		if (!damager->GetTypeInfo().GetProperty("onlyHitOnce")->Get<bool>(damager.get()).Get())
+		{
+			m_isHit = true;
+		}
+	}
+
 }
 
 void PlayerAnimator::OnCollisionEnter(Truth::Collider* _other)

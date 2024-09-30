@@ -58,54 +58,52 @@ void BossSkill::Awake()
 
 void BossSkill::Update()
 {
+	m_readyToShoot = m_bossAnimator->GetTypeInfo().GetProperty("isSkillActive")->Get<bool>(m_bossAnimator.get()).Get();
 
-	if (m_bossAnimator->GetTypeInfo().GetProperty("attackSwing")->Get<bool>(m_bossAnimator.get()).Get())
+	if (!m_bossAnimator->GetTypeInfo().GetProperty("skillCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
 	{
+		if (m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_bossAnimator.get()).Get())
+		{
+			if (m_bossAnimator->GetTypeInfo().GetProperty("attackSwordShoot")->Get<bool>(m_bossAnimator.get()).Get())
+			{
+				SwordShooting();
+			}
+			else if (m_bossAnimator->GetTypeInfo().GetProperty("attackShockWave")->Get<bool>(m_bossAnimator.get()).Get())
+			{
+				ShockWave();
+			}
+		}
 	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackRunning")->Get<bool>(m_bossAnimator.get()).Get())
+	else
 	{
-	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackUpperCut")->Get<bool>(m_bossAnimator.get()).Get())
-	{
-	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackChargeCombo")->Get<bool>(m_bossAnimator.get()).Get())
-	{
-	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackSmashGround")->Get<bool>(m_bossAnimator.get()).Get())
-	{
-	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackCharge")->Get<bool>(m_bossAnimator.get()).Get())
-	{
-	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackJumpSmashGround")->Get<bool>(m_bossAnimator.get()).Get())
-	{
-	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackSpin")->Get<bool>(m_bossAnimator.get()).Get())
-	{
-	}
-	else if (m_bossAnimator->GetTypeInfo().GetProperty("attackDoubleUpperCut")->Get<bool>(m_bossAnimator.get()).Get())
-	{
+		m_passingTime += GetDeltaTime();
+		if (m_passingTime > 10.f)
+		{
+			m_bossAnimator->GetTypeInfo().GetProperty("skillCoolTime")->Set(m_bossAnimator.get(), false);
+			m_passingTime = 0.f;
+		}
 	}
 
-	if (GetKeyDown(KEY::_0) || m_paternEnds)
-	{
-		m_useSkill = !m_useSkill;
-		m_paternEnds = false;
-	}
-	if (GetKeyDown(MOUSE::RMOUSE))
-	{
-		// 나중에 보스 애니메이터가 스킬 액티브를 넘겨줄거임
-		m_readyToShoot = true;
-	}
-	if (m_useSkill)
-	{
-		//ShockWave();
-		//FlameSword();
-		SwordShooting(); //칼 회전 이상함(꼼수로 고쳤지만 짜침) + 아직 삭제 안함
-		//LightSpeedDash(false); //아직 안 만듦
-		//LightSpeedDash(true); //아직 삭제 안함
-		//DistortedTimeSphere(); //미완
-	}
+
+	// 	if (GetKeyDown(KEY::_0) || m_paternEnds)
+	// 	{
+	// 		m_useSkill = !m_useSkill;
+	// 		m_paternEnds = false;
+	// 	}
+	// 	if (GetKeyDown(MOUSE::RMOUSE))
+	// 	{
+	// 		// 나중에 보스 애니메이터가 스킬 액티브를 넘겨줄거임
+	// 		m_readyToShoot = true;
+	// 	}
+	// 	if (m_useSkill)
+	// 	{
+	// 		//ShockWave();
+	// 		//FlameSword();
+	// 		SwordShooting(); //칼 회전 이상함(꼼수로 고쳤지만 짜침) + 아직 삭제 안함
+	// 		//LightSpeedDash(false); //아직 안 만듦
+	// 		//LightSpeedDash(true); //아직 삭제 안함
+	// 		//DistortedTimeSphere(); //미완
+	// 	}
 }
 
 void BossSkill::ShockWave()
@@ -138,48 +136,53 @@ void BossSkill::ShockWave()
 	}
 	else
 	{
-		m_passingTime += GetDeltaTime();
-		if (m_passingTime > 0.3f)
+		if (m_readyToShoot)
 		{
-			float bossHeight = m_owner.lock()->m_transform->m_position.y;
-			if (m_count % 2 == 0)
+			m_passingTime += GetDeltaTime();
+			if (m_passingTime > 0.3f)
 			{
-				m_attackColliders[0].first->SetPosition({ m_shockWavePos[m_count],bossHeight,0.f });
-				m_attackColliders[1].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,0.f });
-				m_attackColliders[2].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_count] });
-				m_attackColliders[3].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_count] });
-				m_attackColliders[4].first->SetPosition({ m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-				m_attackColliders[5].first->SetPosition({ m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
-				m_attackColliders[6].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-				m_attackColliders[7].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
-			}
-			else if (m_count % 2 == 1)
-			{
-				m_attackColliders[8].first->SetPosition({ m_shockWavePos[m_count],bossHeight,0.f });
-				m_attackColliders[9].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,0.f });
-				m_attackColliders[10].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_count] });
-				m_attackColliders[11].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_count] });
-				m_attackColliders[12].first->SetPosition({ m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-				m_attackColliders[13].first->SetPosition({ m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
-				m_attackColliders[14].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-				m_attackColliders[15].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
-			}
-			m_count++;
-			m_passingTime = 0.f;
-			if (m_count >= m_shockWavePos.size())
-			{
-				m_count = 0;
-				m_paternEnds = true;
-				m_createComplete = false;
-
-				for (auto& e : m_attackColliders)
+				float bossHeight = m_owner.lock()->m_transform->m_position.y;
+				if (m_count % 2 == 0)
 				{
-					m_owner.lock()->DeleteChild(e.first);
-
-					m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+					m_attackColliders[0].first->SetPosition({ m_shockWavePos[m_count],bossHeight,0.f });
+					m_attackColliders[1].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,0.f });
+					m_attackColliders[2].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_count] });
+					m_attackColliders[3].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_count] });
+					m_attackColliders[4].first->SetPosition({ m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
+					m_attackColliders[5].first->SetPosition({ m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
+					m_attackColliders[6].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
+					m_attackColliders[7].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
 				}
+				else if (m_count % 2 == 1)
+				{
+					m_attackColliders[8].first->SetPosition({ m_shockWavePos[m_count],bossHeight,0.f });
+					m_attackColliders[9].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,0.f });
+					m_attackColliders[10].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_count] });
+					m_attackColliders[11].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_count] });
+					m_attackColliders[12].first->SetPosition({ m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
+					m_attackColliders[13].first->SetPosition({ m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
+					m_attackColliders[14].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
+					m_attackColliders[15].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
+				}
+				m_count++;
+				m_passingTime = 0.f;
+				if (m_count >= m_shockWavePos.size())
+				{
+					m_count = 0;
+					m_paternEnds = true;
+					m_createComplete = false;
 
-				m_attackColliders.clear();
+					for (auto& e : m_attackColliders)
+					{
+						m_owner.lock()->DeleteChild(e.first);
+
+						m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+					}
+
+					m_attackColliders.clear();
+
+					m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
+				}
 			}
 		}
 	}
@@ -262,8 +265,8 @@ void BossSkill::SwordShooting()
 			m_owner.lock()->AddChild(sword);
 
 			sword->SetPosition(m_swordPos[m_count]);
-			sword->SetScale({ 30.f,30.f,300.f });
-			//sword->SetScale({ 1.f,1.f,3.f });
+			//sword->SetScale({ 30.f,30.f,300.f });
+			sword->SetScale({ 1.f,1.f,3.f });
 
 
 			sword->Start();
@@ -305,7 +308,7 @@ void BossSkill::SwordShooting()
 			}
 			if (m_attackColliders[i].second)
 			{
-				m_attackColliders[i].first->m_transform->m_position += (m_swordPos[i] - m_attackColliders[i].first->m_transform->m_position) * GetDeltaTime() * 10.f;
+				m_attackColliders[i].first->m_transform->m_position += (m_shootingPos[i] - m_attackColliders[i].first->m_transform->m_position) * GetDeltaTime() * 10.f;
 			}
 		}
 
@@ -316,18 +319,31 @@ void BossSkill::SwordShooting()
 			{
 				m_attackColliders[m_count].second = true;
 
-				// Vector3 worldPos = m_attackColliders[m_count].first->m_transform->m_worldPosition;
-				// m_owner.lock()->DeleteChild(m_attackColliders[m_count].first);
-				// m_owner.lock().reset();
-				// m_attackColliders[m_count].first->m_transform->m_position = worldPos;
 
-				m_swordPos[m_count] = playerPos /*- Vector3{ 0.0f, 4.5f, 0.0f }*/;
+				m_shootingPos.push_back(playerPos);
 				m_count++;
 
-				//m_paternEnds = true;
-				//m_createComplete = false;
+				m_passingTime = 0.f;
+			}
+		}
+
+		if (m_attackColliders[m_attackColliders.size() - 1].first->m_transform->m_position.y < 1.f)
+		{
+			m_passingTime += GetDeltaTime();
+			if (m_passingTime > 2.f)
+			{
+				for (auto& e : m_attackColliders)
+				{
+					m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+				}
+				m_attackColliders.clear();
+				m_shootingPos.clear();
+
+				m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
 
 				m_passingTime = 0.f;
+				m_count = 0;
+				m_createComplete = false;
 			}
 		}
 	}
@@ -351,9 +367,11 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 				illusion->m_layer = 1;
 				illusion->AddComponent<Truth::BoxCollider>();
 				auto skinnedMesh = illusion->AddComponent<Truth::SkinnedMesh>();
-				illusion->AddComponent<SimpleDamager>();
+				auto damage = illusion->AddComponent<SimpleDamager>();
+				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 30.f);
 				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
-				skinnedMesh->AddAnimation("AttackCharge", L"BossAnimations/Attacks/AttackCharge");
+				skinnedMesh->AddAnimation("AttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
+				skinnedMesh->AddAnimation("AttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
 				illusion->m_name = "Illusion";
 				m_managers.lock()->Scene()->m_currentScene->CreateEntity(illusion);
 				m_owner.lock()->AddChild(illusion);
@@ -365,6 +383,7 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 				illusion->Start();
 
 				m_attackColliders.push_back(std::make_pair(illusion, false));
+				skinnedMesh->SetAnimation("AttackLightSpeedReady", false);
 			}
 			m_createComplete = true;
 
@@ -399,9 +418,10 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 					if (m_passingTime > 0.5f)
 					{
 						auto skinnedMesh = m_attackColliders[m_count].first->GetComponent<Truth::SkinnedMesh>().lock();
-						m_passingTime = 0.f;
+
 						m_attackColliders[m_count].second = true;
 						m_illusionPos[m_count] = playerPos;
+						m_passingTime = 0.f;
 						m_count++;
 					}
 					if (m_count >= m_attackColliders.size())
@@ -413,16 +433,20 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 			for (int i = 0; i < m_attackColliders.size(); i++)
 			{
 				auto skinnedMesh = m_attackColliders[i].first->GetComponent<Truth::SkinnedMesh>().lock();
-				if (!m_attackColliders[i].second && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 122)
+				if (!m_attackColliders[i].second && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 142)
 				{
+					skinnedMesh->SetAnimation("AttackLightSpeedDash", false);
 					skinnedMesh->SetPlayStop(false);
+
 					m_readyToShoot = true;
 				}
 				if (m_attackColliders[i].second)
 				{
 					skinnedMesh->SetPlayStop(true);
+
 					m_attackColliders[i].first->m_transform->m_position += (m_illusionPos[i] - m_attackColliders[i].first->m_transform->m_position) * GetDeltaTime() * 10.f;
-					if (skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 142)
+
+					if (skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() < 100 && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 7)
 					{
 						m_attackColliders[i].second = false;
 						skinnedMesh->SetPlayStop(false);
@@ -455,7 +479,7 @@ void BossSkill::DistortedTimeSphere()
 
 		m_createComplete = true;
 	}
-	
+
 }
 
 void BossSkill::DamageforPlayer(float damage)

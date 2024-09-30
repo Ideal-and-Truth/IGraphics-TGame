@@ -20,6 +20,8 @@ private:
 private:
 	std::shared_ptr<Player> m_player;
 	bool m_isPlayerIn;
+
+	PROPERTY(onlyHitOnce);
 	bool m_onlyHitOnce;
 
 	PROPERTY(damage);

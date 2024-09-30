@@ -43,6 +43,7 @@ void Player::Update()
 		if (m_passingTime >= 1.f)
 		{
 			m_currentTP -= 1.f;
+			m_passingTime = 0.f;
 		}
 	}
 }
