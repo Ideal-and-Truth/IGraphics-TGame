@@ -457,7 +457,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
-				// mesh->SetMaterialByIndex(j, matName);
+				mesh->SetMaterialByIndex(j, matName);
 			}
 
 			mesh->SetStatic(true);

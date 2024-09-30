@@ -272,9 +272,39 @@ std::shared_ptr<Ideal::IParticleMaterial> Truth::GraphicsManager::CreateParticle
 	return m_renderer->CreateParticleMaterial();
 }
 
+void Truth::GraphicsManager::DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial> _material)
+{
+	m_renderer->DeleteParticleMaterial(_material);
+}
+
+std::shared_ptr<Ideal::IMesh> Truth::GraphicsManager::CreateParticleMesh(const std::wstring& _name)
+{
+	if (m_particleMeshMap.find(_name) != m_particleMeshMap.end())
+	{
+		return m_particleMeshMap[_name];
+	}
+	m_particleMeshMap[_name] = m_renderer->CreateParticleMesh(_name);
+	return m_particleMeshMap[_name];
+}
+
+void Truth::GraphicsManager::DeleteParticleMesh(std::shared_ptr<Ideal::IMesh> _mesh)
+{
+	return;
+}
+
 std::shared_ptr<Ideal::IParticleSystem> Truth::GraphicsManager::CreateParticle(std::shared_ptr<Ideal::IParticleMaterial> _mat)
 {
 	return m_renderer->CreateParticleSystem(_mat);
+}
+
+void Truth::GraphicsManager::DeleteParticle(std::shared_ptr<Ideal::IParticleSystem> _particle)
+{
+	m_renderer->DeleteParticleSystem(_particle);
+}
+
+std::shared_ptr<Ideal::IShader> Truth::GraphicsManager::CreateShader(const std::wstring& _name)
+{
+	return m_renderer->CreateAndLoadParticleShader(_name);
 }
 
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::string& _name)

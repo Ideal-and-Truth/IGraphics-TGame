@@ -30,6 +30,8 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
+		std::unordered_map<std::wstring, std::shared_ptr<Ideal::IMesh>> m_particleMeshMap;
+
 		const std::string m_matSavePath = "../Resources/Matarial/";
 
 		const wchar_t* m_assetPath[3] =
@@ -80,7 +82,13 @@ namespace Truth
 		void DeleteMaterial(std::shared_ptr<Material> _material);
 
 		std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial();
+		void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial> _material);
+		std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& _name);
+		void DeleteParticleMesh(std::shared_ptr<Ideal::IMesh> _mesh);
 		std::shared_ptr<Ideal::IParticleSystem> CreateParticle(std::shared_ptr<Ideal::IParticleMaterial> _mat);
+		void DeleteParticle(std::shared_ptr<Ideal::IParticleSystem> _particle);
+
+		std::shared_ptr<Ideal::IShader> CreateShader(const std::wstring& _name);
 
 		std::shared_ptr<Material> GetMaterial(const std::string& _name);
 
