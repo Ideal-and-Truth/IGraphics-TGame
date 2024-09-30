@@ -46,15 +46,27 @@ void Truth::ParticleManager::CreateEmptyParticle()
 	emitter << YAML::Key << "StopEnd" << YAML::Value << true;
 	emitter << YAML::Key << "RenderMode" << YAML::Value << 1;
 	emitter << YAML::Key << "RotationOverLifeTime" << YAML::Value << true;
-	emitter << YAML::Key << "RotationOverLifetimeAxisYControlPoint" << YAML::BeginSeq <<
-		YAML::BeginSeq << 
+
+	emitter << YAML::Key << "RotationOverLifetimeAxisYControlPoints" << YAML::BeginSeq <<
+		YAML::BeginMap <<
 			YAML::Key << "x" << YAML::Value << 0.0f << YAML::Key << "y" << YAML::Value << 1.0f <<
-			YAML::Key << "x" << YAML::Value << 0.5f << YAML::Key << "y" << YAML::Value << 0.0f <<
-			YAML::Key << "x" << YAML::Value << 1.0f << YAML::Key << "y" << YAML::Value << 0.0f <<
-		YAML::EndSeq << 
+		YAML::EndMap <<
+		YAML::BeginMap <<
+		YAML::Key << "x" << YAML::Value << 0.5f << YAML::Key << "y" << YAML::Value << 0.0f <<
+		YAML::EndMap <<
+		YAML::BeginMap <<
+		YAML::Key << "x" << YAML::Value << 1.0f << YAML::Key << "y" << YAML::Value << 0.0f <<
+		YAML::EndMap <<
 	YAML::EndSeq;
 
-
+	emitter << YAML::Key << "GetCustomData1X" << YAML::BeginSeq <<
+		YAML::BeginMap <<
+			YAML::Key << "x" << YAML::Value << 0.0f << YAML::Key << "y" << YAML::Value << 1.0f <<
+		YAML::EndMap <<
+		YAML::BeginMap <<
+			YAML::Key << "x" << YAML::Value << 1.0f << YAML::Key << "y" << YAML::Value << 0.0f <<
+		YAML::EndMap <<
+	YAML::EndSeq;
 
 	emitter << YAML::EndMap;
 
