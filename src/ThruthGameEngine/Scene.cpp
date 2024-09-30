@@ -122,8 +122,9 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	LoadUnityData(L"1_HN_Scene2");
+	// LoadUnityData(L"1_HN_Scene2");
 }
+
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 {
@@ -413,7 +414,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 				Vector3 size = file->Read<Vector3>();
 				Vector3 center = file->Read<Vector3>();
-				// coll = std::make_shared<BoxCollider>(center, size);
+				coll = std::make_shared<BoxCollider>(center, size, false);
 				break;
 			}
 			// 			case 2:
@@ -428,7 +429,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			// 			}
 			case 4:
 			{
-				// coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
+				coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
 				break;
 			}
 			default:
@@ -457,7 +458,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
-				mesh->SetMaterialByIndex(j, matName);
+				// mesh->SetMaterialByIndex(j, matName);
 			}
 
 			mesh->SetStatic(true);
@@ -513,7 +514,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		Matrix flipXY = Matrix::Identity;
 		flipXY.m[2][2] = -1.f;
 
-		m_mapEntity[i]->SetLocalTM(ltm);
+		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
 	}
 
 	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
@@ -522,6 +523,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		};
 
 	sort(m_mapEntity.begin(), m_mapEntity.end(), comp);
+
 	// gp->BakeStaticMesh();
 
 	for (auto& e : m_mapEntity)

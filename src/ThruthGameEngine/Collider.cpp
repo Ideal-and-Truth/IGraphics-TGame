@@ -332,7 +332,7 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 
 #endif // EDITOR_MODE
 
-	m_localTM = Matrix::CreateScale(m_size * 50);
+	m_localTM = Matrix::CreateScale(m_size);
 	m_localTM *= Matrix::CreateTranslation(m_center);
 }
 
