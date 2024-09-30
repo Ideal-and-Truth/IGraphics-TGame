@@ -525,7 +525,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 	for (auto& e : m_mapEntity)
 	{
-		AddEntity(e);
+		e->Initialize();
+		e->ApplyTransform();
+		e->Awake();
+		e->Start();
 	}
 }
 

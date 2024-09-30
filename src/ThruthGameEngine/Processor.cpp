@@ -188,11 +188,6 @@ void Processor::SaveScene(std::shared_ptr<Truth::Scene> _scene)
 
 void Processor::Update()
 {
-	if (m_manager->Input()->GetKeyState(KEY::C) == KEY_STATE::DOWN)
-	{
-		m_manager->Graphics()->BakeStaticMesh();
-	}
-	
 	m_manager->Update();
 }
 
