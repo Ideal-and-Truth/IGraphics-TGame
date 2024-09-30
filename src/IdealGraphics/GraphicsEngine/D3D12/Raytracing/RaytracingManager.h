@@ -88,8 +88,6 @@ namespace Ideal
 				SRV_VertexBuffer,
 				SRV_Diffuse,
 				SRV_Normal,
-				SRV_Metalic,
-				SRV_Roughness,
 				SRV_Mask,
 				CBV_MaterialInfo,
 				Count
