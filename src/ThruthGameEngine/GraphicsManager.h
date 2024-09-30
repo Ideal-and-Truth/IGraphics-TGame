@@ -79,6 +79,9 @@ namespace Truth
 		std::shared_ptr<Material> CraeteMatarial(const std::string& _name);
 		void DeleteMaterial(std::shared_ptr<Material> _material);
 
+		std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial();
+		std::shared_ptr<Ideal::IParticleSystem> CreateParticle(std::shared_ptr<Ideal::IParticleMaterial> _mat);
+
 		std::shared_ptr<Material> GetMaterial(const std::string& _name);
 
 		void ToggleFullScreen();

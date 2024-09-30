@@ -20,6 +20,7 @@ namespace Truth
 		std::shared_ptr<GraphicsManager> m_grapics;
 
 		std::unordered_map<std::string, std::shared_ptr<Ideal::IParticleSystem>> m_particleMap;
+		std::unordered_map<std::string, std::shared_ptr<Ideal::IParticleMaterial>> m_particleMatMap;
 
 	public:
 		ParticleManager();

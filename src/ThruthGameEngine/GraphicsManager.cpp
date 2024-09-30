@@ -267,6 +267,16 @@ void Truth::GraphicsManager::DeleteMaterial(std::shared_ptr<Material> _material)
 	m_renderer->DeleteMaterial(_material->m_material);
 }
 
+std::shared_ptr<Ideal::IParticleMaterial> Truth::GraphicsManager::CreateParticleMaterial()
+{
+	return m_renderer->CreateParticleMaterial();
+}
+
+std::shared_ptr<Ideal::IParticleSystem> Truth::GraphicsManager::CreateParticle(std::shared_ptr<Ideal::IParticleMaterial> _mat)
+{
+	return m_renderer->CreateParticleSystem(_mat);
+}
+
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::string& _name)
 {
 	return m_matarialMap[_name];

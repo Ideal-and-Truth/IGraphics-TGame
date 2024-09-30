@@ -1,6 +1,9 @@
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
 #include <yaml-cpp/yaml.h>
+#include "GraphicsManager.h"
+#include "IParticleMaterial.h"
+
 Truth::ParticleManager::ParticleManager()
 {
 
@@ -80,7 +83,13 @@ void Truth::ParticleManager::CreateEmptyParticle()
 
 void Truth::ParticleManager::LoadParticle(const std::string& _name, fs::path _path)
 {
+	std::ifstream fin(_path);
+	auto node = YAML::Load(fin);
 
+	std::shared_ptr<Ideal::IParticleMaterial> mat = m_grapics->CreateParticleMaterial();
+	std::shared_ptr<Ideal::IParticleSystem> particle = m_grapics->CreateParticle(mat);
+
+	// mat->SetTexture0();
 }
 
 void Truth::ParticleManager::SaveParticle(const std::string& _name, std::shared_ptr<Ideal::IParticleSystem> _partice, fs::path _path)
