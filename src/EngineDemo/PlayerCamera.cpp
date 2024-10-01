@@ -145,7 +145,10 @@ void PlayerCamera::FreeCamera()
 
 
 	m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
-
+	if (m_cameraDistance <= 0.0f)
+	{
+		m_cameraDistance = 0.001f;
+	}
 
 
 	cameraPos.x = sin(m_elevation) * cos(m_azimuth);
