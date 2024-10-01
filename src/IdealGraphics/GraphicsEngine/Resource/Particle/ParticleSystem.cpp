@@ -419,7 +419,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 			cal *= matX;
 			cal *= matY;
 			cal *= matZ;
-			m_cbTransform.World = cal;
+			m_cbTransform.World = cal.Transpose();
 		}
 		m_cbTransform.World *= m_transform;
 		m_cbTransform.World = m_cbTransform.World.Transpose();
