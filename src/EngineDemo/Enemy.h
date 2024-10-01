@@ -40,11 +40,16 @@ private:
 	PROPERTY(attackRange);
 	float m_attackRange;
 
+	PROPERTY(stunGuage);
+	float m_stunGuage;
+
 	PROPERTY(target);
 	std::weak_ptr<Truth::Entity> m_target;
 
 	PROPERTY(isTargetIn);
 	bool m_isTargetIn;
+
+	float m_passingTime;
 
 public:
 	Enemy();

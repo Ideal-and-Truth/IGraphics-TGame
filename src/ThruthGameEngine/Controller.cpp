@@ -105,6 +105,11 @@ void Truth::Controller::Move(Vector3& _disp)
 		));
 }
 
+void Truth::Controller::AddImpulse(Vector3& _disp)
+{
+	m_rigidbody->AddImpulse(_disp);
+}
+
 /// <summary>
 /// 고정 위치로 이동 함수
 /// </summary>

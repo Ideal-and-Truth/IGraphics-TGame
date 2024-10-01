@@ -73,6 +73,7 @@ namespace Truth
 		virtual void Start() override;
 
 		void Move(Vector3& _disp);
+		void AddImpulse(Vector3& _disp);
 		bool SetPosition(Vector3& _disp);
 		void SetRotation(Quaternion& _val);
 		bool IsCollisionDown();

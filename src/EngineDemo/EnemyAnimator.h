@@ -9,6 +9,7 @@ namespace Truth
 
 class Enemy;
 class EnemyController;
+class PlayerAnimator;
 
 
 class EnemyIdle
@@ -33,14 +34,11 @@ class EnemyChase
 	: public AnimationState
 {
 private:
-	bool m_isChangePose;
-	bool m_isBackStep;
+
 
 public:
 	EnemyChase(Truth::Component* animator)
 		: AnimationState(animator)
-		 , m_isChangePose(false)
-		 , m_isBackStep(false)
 	{
 
 	}
@@ -145,14 +143,14 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
-class EnemyParried
+class EnemyDown
 	: public AnimationState
 {
 private:
 
 
 public:
-	EnemyParried(Truth::Component* animator)
+	EnemyDown(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -161,6 +159,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class EnemyDeath
@@ -196,6 +195,7 @@ private:
 	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
 	std::shared_ptr<Enemy> m_enemy;
 	std::shared_ptr<EnemyController> m_enemyController;
+	std::shared_ptr<PlayerAnimator> m_playerAnimator;
 
 
 	/// <summary>
@@ -220,11 +220,11 @@ private:
 	PROPERTY(isParryAttack);
 	bool m_isParryAttack;
 
-	PROPERTY(isHit);
-	bool m_isHit;
+	PROPERTY(isDamage);
+	bool m_isDamage;
 
-	PROPERTY(isParried);
-	bool m_isParried;
+	PROPERTY(isDown);
+	bool m_isDown;
 
 	PROPERTY(isDead);
 	bool m_isDead;

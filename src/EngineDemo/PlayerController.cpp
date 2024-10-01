@@ -43,12 +43,8 @@ void PlayerController::PlayerMove(const void*)
 	// 플레이어 이동
 	Vector3 cameraPos = m_camera.lock()->m_transform->m_position;
 
-	float playerSpeed = m_player.lock().get()->GetTypeInfo().GetProperty("moveSpeed")->Get<float4>(m_player.lock().get()).Get();
+	float playerSpeed = m_player.lock().get()->GetTypeInfo().GetProperty("moveSpeed")->Get<float>(m_player.lock().get()).Get();
 
-	if (GetKey(KEY::LSHIFT))
-	{
-		playerSpeed *= 2.f;
-	}
 
 	Vector3 playerPos = m_owner.lock()->m_transform->m_position;
 
@@ -104,14 +100,36 @@ void PlayerController::PlayerMove(const void*)
 	}
 
 
+
+
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
 	Vector3 disp2 = right * m_sideInput * playerSpeed;
 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f);
 	Vector3 finalMovement = (disp + disp2 + gravity) * GetDeltaTime();
 	m_controller.lock()->Move(finalMovement);
 
+	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
+	m_faceDirection = { playerDir.x ,0, playerDir.z };
+	if (m_faceDirection == Vector3::Zero)
+	{
+		return;
+	}
+
+	if (GetKeyDown(KEY::SPACE))
+	{
+		Vector3 power(finalMovement);
+		power *= 100000000000.f;
+		m_controller.lock()->AddImpulse(power);
+	}
+
+	m_playerDirection = playerDir;
+	Quaternion lookRot;
+	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
+	auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+	m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+
 	// 플레이어 회전
-	if (m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_camera.lock()->GetComponent<PlayerCamera>().lock().get()).Get())
+	/*if (m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_camera.lock()->GetComponent<PlayerCamera>().lock().get()).Get())
 	{
 		Vector3 playerDir = direction;
 		m_playerDirection = playerDir;
@@ -133,5 +151,5 @@ void PlayerController::PlayerMove(const void*)
 		Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
 		auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
 		m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
-	}
+	}*/
 }
