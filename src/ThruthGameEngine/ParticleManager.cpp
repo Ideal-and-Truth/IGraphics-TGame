@@ -169,14 +169,14 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 				std::shared_ptr<Texture> t0 = m_grapics->CreateTexture(tPath);
 				mat->SetTexture0(t0->m_texture);
 			}
-			if (node["Texture0"].IsDefined())
+			if (node["Texture1"].IsDefined())
 			{
 				std::wstring tPath = A2W(node["Texture1"].as<std::string>().c_str());
 				std::shared_ptr<Texture> t1 = m_grapics->CreateTexture(tPath);
 				mat->SetTexture1(t1->m_texture);
 			}
 
-			if (node["Texture0"].IsDefined())
+			if (node["Texture2"].IsDefined())
 			{
 				std::wstring tPath = A2W(node["Texture2"].as<std::string>().c_str());
 				std::shared_ptr<Texture> t2 = m_grapics->CreateTexture(tPath);
