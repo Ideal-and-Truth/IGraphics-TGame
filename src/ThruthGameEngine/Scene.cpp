@@ -122,7 +122,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	LoadUnityData(L"1_HN_Scene2");
+	// LoadUnityData(L"1_HN_Scene2");
 }
 
 
@@ -335,6 +335,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		return;
 	}
 
+
+
 	auto gp = m_managers.lock()->Graphics();
 
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
@@ -455,7 +457,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
-				// mesh->SetMaterialByIndex(j, matName);
+				mesh->SetMaterialByIndex(j, matName);
 			}
 
 			mesh->SetStatic(true);

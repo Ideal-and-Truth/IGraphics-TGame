@@ -6,6 +6,7 @@
 #include "NewScenePopup.h"
 #include "EditorUI.h"
 #include "LoadMapDataPopup.h"
+#include "ParticleManager.h"
 #pragma region test Scene
 #include "Entity.h"
 #include "RigidBody.h"
@@ -134,6 +135,12 @@ void MenuBar::ShowContext(bool* p_open)
 				currentScene->AddEntity(e);
 			}
 		}
+
+		if (ImGui::Selectable("Create Particle"))
+		{
+			m_manager.lock()->Particle()->CreateEmptyParticle();
+		}
+
 		ImGui::EndPopup();
 	}
 

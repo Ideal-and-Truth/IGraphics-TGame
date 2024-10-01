@@ -35,7 +35,7 @@ namespace Truth
 		std::vector<std::shared_ptr<Ideal::IMesh>> m_subMesh;
 
 		PROPERTY(mat);
-		std::vector<std::shared_ptr<Ideal::IMaterial>> m_mat;
+		std::vector<std::shared_ptr<Material>> m_mat;
 
 		PROPERTY(path);
 		std::wstring m_path;
