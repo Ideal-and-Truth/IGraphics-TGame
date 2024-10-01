@@ -71,7 +71,7 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 		std::string matName = m_skinnedMesh->GetMeshByIndex(i).lock()->GetFBXMaterialName();
 		auto materail = m_managers.lock()->Graphics()->CraeteMatarial(matName);
 		m_mat.push_back(materail);
-		m_skinnedMesh->GetMeshByIndex(i).lock()->SetMaterialObject(materail->m_material);
+		// m_skinnedMesh->GetMeshByIndex(i).lock()->SetMaterialObject(materail->m_material);
 	}
 }
 

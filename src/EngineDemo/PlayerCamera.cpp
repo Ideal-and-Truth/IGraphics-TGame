@@ -54,7 +54,7 @@ void PlayerCamera::LateUpdate()
 
 	if (m_isLockOn)
 	{
-		LockOnCamera();
+		// LockOnCamera();
 	}
 	else
 	{
