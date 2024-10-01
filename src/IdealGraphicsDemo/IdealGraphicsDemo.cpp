@@ -259,6 +259,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1.fbx", false);
+		//gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations/Idle/idle.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
@@ -295,8 +297,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
 		//DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
-		//std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"EnemyTest/idelTest");
-
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
+		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+		// 
+		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+		DebugStaticEnemy->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(3, 0, 0));
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
 		//DebugPlayer2->AddAnimation("Debug1", DebugPlayerAnim2);
@@ -825,6 +831,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
+				DebugPlayer->AnimationDeltaTime(0.003f);
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				//if (DebugPlayer)
@@ -837,7 +844,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (GetAsyncKeyState('L') & 0x8000)
 				{
 					//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
-					static int once = 0;
+					static int once = 1;
 					if (once < 1)
 					{
 						once++;
