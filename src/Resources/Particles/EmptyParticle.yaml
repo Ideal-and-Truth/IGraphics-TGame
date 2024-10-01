@@ -18,12 +18,12 @@ StopEnd: true
 RenderMode: 1
 RotationOverLifeTime: true
 RotationOverLifetimeAxisYControlPoints:
-  - x: 0
-    y: 1
-  - x: 0.5
-    y: 0
   - x: 1
     y: 0
+  - x: 0.5
+    y: 0
+  - x: 0
+    y: 1
 CustomData1X:
   - x: 0
     y: 0
