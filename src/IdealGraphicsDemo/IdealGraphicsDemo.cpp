@@ -809,6 +809,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (GetAsyncKeyState('G') & 0x8000)
 				{
 					//particleSystem->Play();
+					Matrix temp = Matrix::Identity;
+					temp *= Matrix::CreateTranslation(Vector3(0.2, 0.2, 0.2));
+					slashParticleSystem->SetTransformMatrix(temp);
 					slashParticleSystem->Play();
 				}
 				if (GetAsyncKeyState('H') & 0x8000)
