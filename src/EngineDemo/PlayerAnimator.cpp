@@ -171,13 +171,14 @@ void PlayerAnimator::Update()
 
 	Vector3 effectPos = m_owner.lock()->m_transform->m_position;
 	Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
+	effectPos.y += 1.f;
+
 	if (m_normalAttack1)
 	{
 		m_normalAttack1 = false;
 
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 
-		effectPos.y += 3.f;
 		effectRot.z += (3.141592 / 180.f) * -45.f;
 
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
@@ -195,7 +196,6 @@ void PlayerAnimator::Update()
 
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 
-		effectPos.y += 3.f;
 		effectRot.z += (3.141592 / 180.f) * 180.f;
 
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
@@ -213,7 +213,6 @@ void PlayerAnimator::Update()
 
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 
-		effectPos.y += 3.f;
 		effectRot.z += (3.141592 / 180.f) * 45.f;
 
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
@@ -231,7 +230,6 @@ void PlayerAnimator::Update()
 
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 
-		effectPos.y += 3.f;
 		effectRot.z += (3.141592 / 180.f) * -25.f;
 
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
@@ -249,7 +247,6 @@ void PlayerAnimator::Update()
 
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 
-		effectPos.y += 3.f;
 		effectRot.z += (3.141592 / 180.f) * -60.f;
 
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
@@ -267,7 +264,6 @@ void PlayerAnimator::Update()
 
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 
-		effectPos.y += 3.f;
 		effectRot.z += (3.141592 / 180.f) * 200.f;
 
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
