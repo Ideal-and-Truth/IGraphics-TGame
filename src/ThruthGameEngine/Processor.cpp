@@ -163,6 +163,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			DWORD width = rect.right - rect.left;
 			DWORD height = rect.bottom - rect.top;
 			g_Renderer->Resize(width, height);
+			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		}
 		break;
 	}

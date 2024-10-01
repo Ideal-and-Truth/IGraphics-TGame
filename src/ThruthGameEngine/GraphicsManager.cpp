@@ -83,7 +83,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
-	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3840_2160);
+	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 }
 
 void Truth::GraphicsManager::Finalize()

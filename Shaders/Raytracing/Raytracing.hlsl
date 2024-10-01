@@ -21,8 +21,13 @@
 #define MAX_POINT_LIGHT_NUM 16
 #define MAX_SPOT_LIGHT_NUM 16
 
+#define HitDistanceOnMiss 0
+
 //-----------GLOBAL-----------//
 RWTexture2D<float4> g_renderTarget : register(u0);
+RWTexture2D<float4> g_rtGBufferPosition : register(u1);
+RWTexture2D<float> g_rtGBufferDepth : register(u2);
+
 RaytracingAccelerationStructure g_scene : register(t0, space0);
 TextureCube<float4> g_texEnvironmentMap : register(t1);
 SamplerState LinearWrapSampler : register(s0);
@@ -35,9 +40,7 @@ StructuredBuffer<uint> l_indices : register(t0, space1);
 StructuredBuffer<PositionNormalUVTangentColor> l_vertices : register(t1, space1);
 Texture2D<float4> l_texDiffuse : register(t2, space1);
 Texture2D<float4> l_texNormal : register(t3, space1);
-Texture2D<float4> l_texMetallic : register(t4, space1);
-Texture2D<float4> l_texRoughness : register(t5, space1);
-Texture2D<float4> l_texMask : register(t6, space1);
+Texture2D<float4> l_texMask : register(t4, space1);
 ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 //StructuredBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 
@@ -46,12 +49,17 @@ typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 
 // Light
 
-
+struct GBuffer
+{
+    float tHit;
+    float3 hitPosition;
+};
 
 struct RayPayload
 {
     unsigned int rayRecursionDepth;
     float3 radiance;
+    GBuffer gBuffer;
 };
 
 struct ShadowRayPayload
@@ -59,15 +67,14 @@ struct ShadowRayPayload
     float tHit;
 };
 
-struct SafeSpawnPointParameters
+inline float3 GenerateForwardCameraRayDirection(in float4x4 projectionToWorld)
 {
-    float3 v0;
-    float3 v1;
-    float3 v2;
-    float2 bary;
-    float3x4 o2w;
-    float3x4 w2o;
-};
+    float2 screenPos = float2(0, 0);
+	
+	// Unproject the pixel coordinate into a world positon.
+	float4 world = mul(float4(screenPos, 0, 1), projectionToWorld);
+	return normalize(world.xyz);
+}
 
 // Retrieve hit world position.
 float3 HitWorldPosition()
@@ -113,16 +120,19 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     }
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
     //return texSample;
+
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
     return worldNormal;
 }
 
-RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float bounceContribution = 1, bool cullNonOpaque = false)
+RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float tMin = 0.001f, float tMax = 10000.f, bool cullNonOpaque = false)
 {
     RayPayload payload;
     payload.rayRecursionDepth = currentRayRecursionDepth + 1;
     payload.radiance = float3(0, 0, 0);
+    payload.gBuffer.tHit = HitDistanceOnMiss;
+    payload.gBuffer.hitPosition = 0;
     
     if (currentRayRecursionDepth >= g_sceneCB.maxRadianceRayRecursionDepth)
     {
@@ -134,11 +144,14 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     RayDesc rayDesc;
     rayDesc.Origin = ray.origin;
     rayDesc.Direction = ray.direction;
-    rayDesc.TMin = 0.001;
-    rayDesc.TMax = 10000.0;
+    rayDesc.TMin = tMin;
+    rayDesc.TMax = tMax;
+    //rayDesc.TMin = g_sceneCB.nearZ;
+    //rayDesc.TMax = g_sceneCB.farZ;
     
-    UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
-    rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
+    //UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
+    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;
+    //rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     
     //UINT rayFlags = 0;
     //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;
@@ -154,7 +167,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     return payload;
 }
 
-float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in SafeSpawnPointParameters spawn, in float TMax = 10000)
+float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, inout RayPayload rayPayload, in float TMax = 3000)
 {
     // offset 과는 관계없이 똑같은 노말값 오류 현상
     float tOffset = 0.001f;
@@ -162,45 +175,18 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N
     // 0
     float3 offsetAlongRay = tOffset * wi;
     float3 adjustedHitPosition = hitPosition + offsetAlongRay;
-    
-    // 1
-    //탄젠트 오프셋(Tangent Offset):
-    //float3 offsetAlongRay = tOffset * N;
-    //float3 adjustedHitPosition = hitPosition + offsetAlongRay;
-    
-    // 2
-    //float3 offsetAlongRay = tOffset * normalize(N + wi);
-    //float3 adjustedHitPosition = hitPosition + tOffset * N + 1e-4 * wi;
-    
-    // 3
-    //float3 outObjPosition, outWldPosition, outObjNormal, outWldNormal;
-    //float outWldOffset;
-    //nvidia::safeSpawnPoint(outObjPosition, outWldPosition, outObjNormal, outWldNormal, outWldOffset,
-    //    spawn.v0,
-    //    spawn.v1,
-    //    spawn.v2,
-    //    spawn.bary,
-    //    spawn.o2w,
-    //    spawn.w2o
-    //);
-    //float3 adjustedHitPosition = nvidia::safeSpawnPoint(hitPosition, N, outWldOffset);
-    //
-    //if(dot(adjustedHitPosition - hitPosition, N) < 0.f)
-    //{
-    //    rayPayload.radiance = float3(0, 0, 0);
-    //    return rayPayload.radiance;
-    //}
+   
     
     Ray ray;
     ray.origin = adjustedHitPosition;
     ray.direction = wi;
 
-    if(dot(ray.direction, N) <= 0)
-    {
-        ray.origin += N * 0.001f;
-    }
+    //if(dot(ray.direction, N) <= 0)
+    //{
+    //    ray.origin += N * 0.001f;
+    //}
 
-    float tMin = 0;
+    float tMin = 0.001f;
     float tMax = TMax;
 
     rayPayload = TraceRadianceRay(ray, rayPayload.rayRecursionDepth, tMin, tMax);
@@ -312,8 +298,7 @@ float3 Shade(
     float2 uv,
     in float3 N,
     in float3 objectNormal,
-    in float3 hitPosition,
-    in SafeSpawnPointParameters spawnParameters
+    in float3 hitPosition
 )
 {
     float3 V = -WorldRayDirection();
@@ -325,55 +310,16 @@ float3 Shade(
     const float3 Kt;
     float metallic;
     float roughness;
-    if (l_materialInfo.bUseMetallicMap)
-    {
-        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
-        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
-        metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
-    }
-    else
-    {
-        //metallic = l_texMetallic.SampleLevel(LinearWrapSampler, uv, 0).x;
-        metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
-    }
-    
-    if (l_materialInfo.bUseRoughnessMap)
-    {
-        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).x;
-//#ifdef BeforeRefactor
-        //roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
-        roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
-//#else
-//        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
-//#endif
-        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
-    }
-    else
-    {
-        //roughness = l_materialInfo.roughnessFactor;
-//#ifdef BeforeRefactor
-        //roughness = 1 - l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
-        roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
-//#else
-//        roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).r;
-//#endif
-        //roughness = l_texRoughness.SampleLevel(LinearWrapSampler, uv, 0).a;
-    }
+
+    float4 maskSample = l_texMask.SampleLevel(LinearWrapSampler, uv, 0);
+
+    metallic = maskSample.x;
+    roughness = 1 - maskSample.a;
 
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
   
     if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
-        float3 wi = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
-
-//#ifdef SHADOW_ON
-//        // Raytraced shadows
-//        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, wi, N, rayPayload);
-//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, isInShadow, roughness, N, V, wi);
-//#else
-//        L += BxDF::DirectLighting::Shade(Kd, Ks, g_sceneCB.lightDiffuseColor.xyz, false, roughness, N, V, wi);
-//#endif
-
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
         //int pointLightNum = 0;
@@ -395,75 +341,75 @@ float3 Shade(
         
         // Point Light
         {
-            for (int i = 0; i < pointLightNum; ++i)
-            {
-                float3 position = g_lightList.PointLights[i].Position.xyz;
-                float3 color = g_lightList.PointLights[i].Color.rgb;
-                float range = g_lightList.PointLights[i].Range;
-                
-                float3 direction = normalize(position - hitPosition);
-                float distance = length(position - hitPosition);
-                float att = Ideal::Attenuate(distance, range);
-                float intensity = g_lightList.PointLights[i].Intensity;
-                
-                bool isInShadow = false;
-                if(distance <= range)
-                {
-                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-                }
-                float3 light = Ideal::Light::ComputePointLight
-                (
-                Kd,
-                Ks,
-                color,
-                isInShadow,
-                roughness,
-                N,
-                V,
-                direction,
-                distance,
-                range,
-                intensity
-                );
-                L += light;
-            }
-            
-            for (int i = 0; i < spotLightNum; ++i)
-            {
-                float3 position = g_lightList.SpotLights[i].Position.xyz;
-                float3 color = g_lightList.SpotLights[i].Color.rgb;
-                float range = g_lightList.SpotLights[i].Range;
-                float angle = g_lightList.SpotLights[i].SpotAngle;
-                float intensity = g_lightList.SpotLights[i].Intensity;
-                float softness = g_lightList.SpotLights[i].Softness;
-                float3 direction = normalize(position - hitPosition);
-                float distance = length(position - hitPosition);
-                float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
-                
-                bool isInShadow = false;
-                if(distance <= range)
-                {
-                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-                }
-                float3 light = Ideal::Light::ComputeSpotLight2(
-                     Kd,
-                     Ks,
-                     color,
-                     isInShadow,
-                     roughness,
-                     N,
-                     V,
-                     direction,
-                     distance,
-                     range,
-                     intensity,
-                     softness,
-                     lightDirection,
-                     angle
-                 );
-
-                L += light;
-            }
+            //for (int i = 0; i < pointLightNum; ++i)
+            //{
+            //    float3 position = g_lightList.PointLights[i].Position.xyz;
+            //    float3 color = g_lightList.PointLights[i].Color.rgb;
+            //    float range = g_lightList.PointLights[i].Range;
+            //    
+            //    float3 direction = normalize(position - hitPosition);
+            //    float distance = length(position - hitPosition);
+            //    float att = Ideal::Attenuate(distance, range);
+            //    float intensity = g_lightList.PointLights[i].Intensity;
+            //    
+            //    bool isInShadow = false;
+            //    if(distance <= range)
+            //    {
+            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+            //    }
+            //    float3 light = Ideal::Light::ComputePointLight
+            //    (
+            //    Kd,
+            //    Ks,
+            //    color,
+            //    isInShadow,
+            //    roughness,
+            //    N,
+            //    V,
+            //    direction,
+            //    distance,
+            //    range,
+            //    intensity
+            //    );
+            //    L += light;
+            //}
+            //
+            //for (int i = 0; i < spotLightNum; ++i)
+            //{
+            //    float3 position = g_lightList.SpotLights[i].Position.xyz;
+            //    float3 color = g_lightList.SpotLights[i].Color.rgb;
+            //    float range = g_lightList.SpotLights[i].Range;
+            //    float angle = g_lightList.SpotLights[i].SpotAngle;
+            //    float intensity = g_lightList.SpotLights[i].Intensity;
+            //    float softness = g_lightList.SpotLights[i].Softness;
+            //    float3 direction = normalize(position - hitPosition);
+            //    float distance = length(position - hitPosition);
+            //    float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
+            //    
+            //    bool isInShadow = false;
+            //    if(distance <= range)
+            //    {
+            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+            //    }
+            //    float3 light = Ideal::Light::ComputeSpotLight2(
+            //         Kd,
+            //         Ks,
+            //         color,
+            //         isInShadow,
+            //         roughness,
+            //         N,
+            //         V,
+            //         direction,
+            //         distance,
+            //         range,
+            //         intensity,
+            //         softness,
+            //         lightDirection,
+            //         angle
+            //     );
+            //
+            //    L += light;
+            //}
         }
     }
 
@@ -481,13 +427,14 @@ float3 Shade(
 
     if (isReflective)
     {
+        float range = 3000.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);
         if (isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
         {
             RayPayload reflectedPayLoad = rayPayload;
             float3 wi = reflect(-V, N);
             
             //L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad, spawnParameters);
-            L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad, spawnParameters);
+            L += Kr * TraceReflectedGBufferRay(hitPosition, wi, reflectedPayLoad, range);
         }
         else // No total internal reflection
         {
@@ -500,7 +447,7 @@ float3 Shade(
                 float3 Fr = Kr * BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo); // Calculates wi
                 RayPayload reflectedRayPayLoad = rayPayload;
                 // Ref: eq 24.4, [Ray-tracing from the Ground Up]
-                L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad, spawnParameters);
+                L += Fr * TraceReflectedGBufferRay(hitPosition, wi, reflectedRayPayLoad, range);
                 //float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
                 //L += result;
                 
@@ -534,33 +481,40 @@ inline Ray GenerateCameraRay(uint2 index, out float3 origin, out float3 directio
     return ray;
 }
 
-// Diffuse lighting calculation.
-float4 CalculateDiffuseLighting(float3 hitPosition, float3 normal)
-{
-    float3 pixelToLight = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
-
-    // Diffuse contribution.
-    float fNDotL = max(0.0f, dot(pixelToLight, normal));
-
-    //return g_cubeCB[1].albedo * g_sceneCB.lightDiffuseColor * fNDotL;
-    return g_sceneCB.lightDiffuseColor * fNDotL;
-    //float4 diffuseTextureColor = g_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0);
-    //return diffuseTextureColor;
-}
-
 [shader("raygeneration")]
 void MyRaygenShader()
 {
     float3 rayDir;
     float3 origin;
     
+    uint2 dispatchRayIndex = DispatchRaysIndex().xy;
     // Generate a ray for a camera pixel corresponding to an index from the dispatched 2D grid.
-    Ray ray = GenerateCameraRay(DispatchRaysIndex().xy, origin, rayDir);
+    Ray ray = GenerateCameraRay(dispatchRayIndex, origin, rayDir);
     
     UINT currentRayRecursionDepth = 0;
-    RayPayload rayPayload = TraceRadianceRay(ray, currentRayRecursionDepth);
+    RayPayload rayPayload = TraceRadianceRay(ray, currentRayRecursionDepth, 0.001f, 3000.f);
 
     g_renderTarget[DispatchRaysIndex().xy] = float4(rayPayload.radiance, 1);
+
+    //--- GBuffer ---//
+    
+    g_rtGBufferPosition[dispatchRayIndex] = float4(rayPayload.gBuffer.hitPosition, 1);
+    
+    bool hasCameraRayHitGeometry = rayPayload.gBuffer.tHit != HitDistanceOnMiss;
+    float rayLength = HitDistanceOnMiss;
+    if(hasCameraRayHitGeometry)
+    {
+        float4 clipSpacePos = mul(mul(float4(rayPayload.gBuffer.hitPosition, 1.0f), g_sceneCB.View), g_sceneCB.Proj);
+        float3 ndcPos = clipSpacePos.xyz / clipSpacePos.w;
+        //float depth = (ndcPos.z * 0.5) + 0.5;
+        //float depth = (ndcPos.z + 1.f) * 0.5;
+        float depth = ndcPos.z;
+        g_rtGBufferDepth[dispatchRayIndex] = depth;
+    }
+    else
+    {
+        g_rtGBufferDepth[dispatchRayIndex] = 1;
+    }
     return;
 }
 
@@ -600,6 +554,10 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 
     float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
     float2 uv = HitAttribute(vertexTexCoords, attr);
+    
+    float2 tiling = float2(l_materialInfo.TilingX, l_materialInfo.TilingY);
+    float2 offset = float2(l_materialInfo.OffsetX, l_materialInfo.OffsetY);
+    Ideal_TilingAndOffset_float(uv, tiling, offset, uv);
 
     // Normal
     float3 normal;
@@ -628,7 +586,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     }
    
     //if(l_materialInfo.bUseNormalMap == false)
-    if(l_materialInfo.bUseNormalMap == true)
+    //if(l_materialInfo.bUseNormalMap == true)
     {
         normal = NormalMap(normal, uv, vertexInfo, attr);
     }
@@ -639,15 +597,12 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     //payload.radiance = normal; return;
     //payload.radiance = normal;
     //return; 
-    SafeSpawnPointParameters spawn;
-    spawn.v0 = l_vertices[indices[0]].position;
-    spawn.v1 = l_vertices[indices[1]].position;
-    spawn.v2 = l_vertices[indices[2]].position;
-    spawn.bary = attr.barycentrics;
-    spawn.o2w = ObjectToWorld3x4();
-    spawn.w2o = WorldToObject3x4();
     
-    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, spawn);
+    // GBuffer
+    payload.gBuffer.tHit = RayTCurrent();
+    payload.gBuffer.hitPosition = hitPosition;
+
+    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
 }
 
 [shader("closesthit")]
@@ -666,7 +621,7 @@ void MyMissShader(inout RayPayload payload)
 [shader("miss")]
 void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
 {
-    rayPayload.tHit = 0;
+    rayPayload.tHit = HitDistanceOnMiss;
 }
 
 #endif // RAYTRACING_HLSL

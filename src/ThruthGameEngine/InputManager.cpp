@@ -22,6 +22,15 @@ Truth::InputManager::InputManager()
 {
 	DEBUG_PRINT("Create InputManager\n");
 	m_mousePoint = new POINT;
+#ifdef EDITOR_MODE
+	m_fpsMode = false;
+	ShowCursor(true);
+
+#else
+	m_fpsMode = true;
+	ShowCursor(false);
+
+#endif
 }
 
 Truth::InputManager::~InputManager()
