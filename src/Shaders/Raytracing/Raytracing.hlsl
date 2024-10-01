@@ -427,7 +427,7 @@ float3 Shade(
 
     if (isReflective)
     {
-        float range = 300.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);
+        float range = 3000.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);
         if (isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
         {
             RayPayload reflectedPayLoad = rayPayload;
