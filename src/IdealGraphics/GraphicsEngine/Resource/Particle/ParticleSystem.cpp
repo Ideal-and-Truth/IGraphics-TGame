@@ -422,7 +422,8 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 			m_cbTransform.World = cal;
 		}
 		m_cbTransform.World *= m_transform;
-		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert().Transpose();
+		m_cbTransform.World = m_cbTransform.World.Transpose();
+		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert();
 
 		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
 		memcpy(cb1->SystemMemAddr, &m_cbTransform, sizeof(CB_Transform));
