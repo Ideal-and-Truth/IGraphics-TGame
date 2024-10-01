@@ -5,6 +5,8 @@
 #include "IAnimation.h"
 #include "Entity.h"
 #include "IBone.h"
+#include "Imesh.h"
+#include "IMaterial.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::SkinnedMesh)
 
@@ -62,6 +64,14 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 	{
 		std::weak_ptr<Ideal::IBone> bone = m_skinnedMesh->GetBoneByIndex(i);
 		m_boneMap[bone.lock()->GetName()] = bone;
+	}
+
+	for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
+	{
+		std::string matName = m_skinnedMesh->GetMeshByIndex(i).lock()->GetFBXMaterialName();
+		auto materail = m_managers.lock()->Graphics()->CraeteMatarial(matName);
+		m_mat.push_back(materail);
+		m_skinnedMesh->GetMeshByIndex(i).lock()->SetMaterialObject(materail->m_material);
 	}
 }
 

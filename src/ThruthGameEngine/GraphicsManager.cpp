@@ -49,6 +49,7 @@ Truth::GraphicsManager::~GraphicsManager()
 /// <param name="_height">스크린 높이</param>
 void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height)
 {
+	m_hwnd = _hwnd;
 	// Editor mode & Release mode
 #ifdef EDITOR_MODE
 	m_renderer = CreateRenderer(
@@ -229,11 +230,6 @@ void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
 {
-	if (_name == "M_roof_tile")
-	{
-		int a = 1;
-	}
-
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
 		std::filesystem::path matp = m_matSavePath + _name + ".matData";
@@ -254,6 +250,53 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			mat->m_baseMap = CreateTexture(albedo);
 			mat->m_normalMap = CreateTexture(normal);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
+			mat->SetTexture();
+		}
+		else
+		{
+			OPENFILENAME m_openFileName;
+			TCHAR m_filePathBuffer[256] = L"";
+			TCHAR m_fileBuffer[256] = L"";
+			
+			memset(&m_openFileName, 0, sizeof(OPENFILENAME));
+			m_openFileName.lStructSize = sizeof(OPENFILENAME);
+			m_openFileName.hwndOwner = m_hwnd;
+			m_openFileName.lpstrFile = m_fileBuffer;
+			m_openFileName.nMaxFile = 256;
+			m_openFileName.lpstrInitialDir = L".";
+
+
+			std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
+			f->Open(matp, Write);
+
+			fs::path al = "../Resources/DefaultData/DefaultAlbedo.png";
+			fs::path no = "../Resources/DefaultData/DefaultNormalMap.png";
+			fs::path ma = "../Resources/DefaultData/DefaultBlack.png";
+
+			/**if (GetOpenFileName(&m_openFileName) != 0)
+			{
+				al = m_openFileName.lpstrFile;
+			}
+			if (GetOpenFileName(&m_openFileName) != 0)
+			{
+				no = m_openFileName.lpstrFile;
+			}
+			if (GetOpenFileName(&m_openFileName) != 0)
+			{
+				ma = m_openFileName.lpstrFile;
+			}
+			std::string rootPath = "../Resources/Textures/PlayerRe/adsf/";
+
+			f->Write(rootPath + al.filename().generic_string());
+			f->Write(rootPath + no.filename().generic_string());
+			f->Write(rootPath + ma.filename().generic_string());
+			std::filesystem::path albedo(rootPath + al.filename().generic_string());
+			std::filesystem::path normal(rootPath + no.filename().generic_string());
+			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
+			*/
+			mat->m_baseMap = CreateTexture(al.generic_wstring());
+			mat->m_normalMap = CreateTexture(no.generic_wstring());
+			mat->m_maskMap = CreateTexture(ma.generic_wstring());
 			mat->SetTexture();
 		}
 

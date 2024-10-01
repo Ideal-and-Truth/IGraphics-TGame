@@ -30,6 +30,8 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
+		HWND m_hwnd;
+
 		std::unordered_map<std::wstring, std::shared_ptr<Ideal::IMesh>> m_particleMeshMap;
 
 		const std::string m_matSavePath = "../Resources/Matarial/";
