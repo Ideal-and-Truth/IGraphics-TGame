@@ -253,13 +253,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
 		//gRenderer->ConvertAssetToMyFormat(L"0_Particle/Slash.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
-		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
-		gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
+		//gRenderer->ConvertAssetToMyFormat(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1.fbx", false);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerAnimations/Idle/idle.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"statue_chronos/SMown_chronos_statue.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"formula1/Formula 1 mesh.fbx", false);
