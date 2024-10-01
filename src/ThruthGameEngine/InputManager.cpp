@@ -86,7 +86,7 @@ void Truth::InputManager::Update()
 	m_mouse->Acquire();
 
 	m_keyboard->GetDeviceState(KEYBORD_SIZE, m_keyState);
-	hr = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE2), (LPVOID) & m_mouseState);
+	hr = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE2), (LPVOID)&m_mouseState);
 
 	for (int i = 0; i < KEYBORD_SIZE; i++)
 	{
@@ -122,7 +122,7 @@ void Truth::InputManager::Update()
 	m_mousePoint->y = m_mouseState.lY;
 	m_deltaWheel = m_mouseState.lZ;
 
-	for (int i = 0; i < 3 ; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		if (m_mouseState.rgbButtons[i] & 0x80)
 		{
@@ -158,19 +158,19 @@ void Truth::InputManager::Update()
 
 	if (m_fpsMode)
 	{
-		// ShowCursor(false);
 		SetCursorPos(1920 / 2, 1080 / 2);
 
 		if (GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
 		{
+			ShowCursor(true);
 			m_fpsMode = false;
 		}
 	}
 	else
 	{
-		// ShowCursor(true);
 		if (GetKeyState(KEY::F1) == KEY_STATE::DOWN)
 		{
+			ShowCursor(false);
 			m_fpsMode = true;
 		}
 	}
