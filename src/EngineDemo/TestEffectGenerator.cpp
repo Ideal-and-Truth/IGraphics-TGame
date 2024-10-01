@@ -5,11 +5,12 @@ BOOST_CLASS_EXPORT_IMPLEMENT(TestEffectGenerator)
 
 void TestEffectGenerator::Update()
 {
-	auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 	if (GetKeyDown(KEY::P))
 	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+		p->SetTransformMatrix(GetWorldTM());
 		p->SetActive(true);
 		p->Play();
+		p->SetDeltaTime(GetDeltaTime());
 	}
-	p->SetDeltaTime(GetDeltaTime());
 }

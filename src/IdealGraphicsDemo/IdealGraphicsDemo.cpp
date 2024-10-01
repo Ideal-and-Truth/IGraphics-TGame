@@ -287,13 +287,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateMeshObjectAndAnimation
 		//-------------------Create Mesh Object-------------------//
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
-		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
-
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugEnemy = gRenderer->CreateSkinnedMeshObject(L"EnemyTest/idelTest");
-		std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
-		DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk_ori");
+		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk_ori");
+		//DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+		//
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugEnemy = gRenderer->CreateSkinnedMeshObject(L"EnemyTest/idelTest");
+		//std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
+		//DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
 		//std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"EnemyTest/idelTest");
 
@@ -368,7 +368,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere7->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 2.5f, 0.f)));
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
 
-		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		//std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> cart2 = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
@@ -387,8 +387,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-		cart->SetTransformMatrix(Matrix::CreateScale(0.2f) * Matrix::CreateRotationY(15.f) * Matrix::CreateRotationZ(15.f) * Matrix::CreateTranslation(Vector3(0, 0, 20)));
-		cart->SetStaticWhenRunTime(true);
+		//cart->SetTransformMatrix(Matrix::CreateScale(0.2f) * Matrix::CreateRotationY(15.f) * Matrix::CreateRotationZ(15.f) * Matrix::CreateTranslation(Vector3(0, 0, 20)));
+		//cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion
 #pragma region CreateTextureAndMaterial
@@ -544,6 +544,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		graphY.AddControlPoint({ 0.5, 0 });
 		graphY.AddControlPoint({ 1,0 });
 
+		particleSystem->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(0, 10, 0));
+
 		//auto& graphZ = particleSystem->GetRotationOverLifetimeAxisZ();
 		//graphZ.AddControlPoint({ 0,0 });
 
@@ -698,7 +700,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");;
 						kaMaterial = gRenderer->CreateMaterial();
 						kaMaterial->SetBaseMap(kaTexture);
-						DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+						//DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 						//meshes[0]->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
 					}
 					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
@@ -809,6 +811,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (GetAsyncKeyState('G') & 0x8000)
 				{
 					//particleSystem->Play();
+					Matrix temp = Matrix::Identity;
+					temp *= Matrix::CreateTranslation(Vector3(0.2, 0.2, 0.2));
+					slashParticleSystem->SetTransformMatrix(temp);
 					slashParticleSystem->Play();
 				}
 				if (GetAsyncKeyState('H') & 0x8000)
@@ -822,10 +827,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player->AnimationDeltaTime(0.002f);
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
-				DebugEnemy->AnimationDeltaTime(0.003f);
+				//DebugEnemy->AnimationDeltaTime(0.003f);
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
-				if (DebugPlayer)
+				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
 				}
@@ -936,7 +941,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//	//SkinnedMeshObjectBoneInfoTest(playerRe);
 						//SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 
-						if (DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
+						//if (DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
 						//SkinnedMeshObjectBoneInfoTest(DebugPlayer2);
 						//if (sprite)
@@ -996,18 +1001,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//}
 		//meshes.clear();
 
-		gRenderer->DeleteMeshObject(cart);
-		cart.reset();
+		//gRenderer->DeleteMeshObject(cart);
+		//cart.reset();
 		//gRenderer->DeleteMeshObject(cart2);
 		//cart2.reset();
 		//gRenderer->DeleteMeshObject(DebugStaticEnemy);
 		//DebugStaticEnemy.reset();
-		gRenderer->DeleteMeshObject(DebugEnemy);
-		DebugEnemy.reset();
-		gRenderer->DeleteMeshObject(DebugPlayer);
+		//gRenderer->DeleteMeshObject(DebugEnemy);
+		//DebugEnemy.reset();
+		//gRenderer->DeleteMeshObject(DebugPlayer);
 		//gRenderer->DeleteMeshObject(DebugPlayer2);
 		//gRenderer->DeleteMeshObject(DebugPlayer3);
-		DebugPlayer.reset();
+		//DebugPlayer.reset();
 		//DebugPlayer2.reset();
 		//DebugPlayer3.reset();
 		//gRenderer->DeleteMeshObject(playerRe);
