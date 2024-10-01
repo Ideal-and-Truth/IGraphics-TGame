@@ -91,17 +91,8 @@ void EnemyController::FollowTarget()
 		float distance = sqrt(pow(dir.x, 2.f) + pow(dir.z, 2.f));
 		float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
 
-		if (distance > attackRange)
-		{
-			//m_owner.lock()->m_transform->m_position += (m_target.lock()->m_transform->m_position - m_owner.lock()->m_transform->m_position) * GetDeltaTime() * 1.f;
-			m_isAttackReady = false;
-		}
-		else
-		{
-			m_isAttackReady = true;
-		}
 
-		/*// 일정거리까지 추적 후 멈춤
+		// 일정거리까지 추적 후 멈춤
 		if (distance > attackRange)
 		{
 			m_isBackStep = false;
@@ -157,7 +148,7 @@ void EnemyController::FollowTarget()
 			dir.y = -100.0f;
 			dir *= GetDeltaTime() * m_speed * 2.f;
 			m_controller.lock()->Move(dir);
-		}*/
+		}
 
 
 	}

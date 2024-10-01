@@ -275,6 +275,10 @@ void BossAnimator::Update()
 							m_attackCharge = true;
 						}
 					}
+					else
+					{
+						m_strafeMove = true;
+					}
 				}
 			}
 

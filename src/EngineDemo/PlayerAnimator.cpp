@@ -1,4 +1,5 @@
 #include "PlayerAnimator.h"
+#include "Transform.h"
 #include "SkinnedMesh.h"
 #include "Player.h"
 #include "PlayerController.h"
@@ -6,6 +7,8 @@
 #include "PlayerCamera.h"
 #include "Bullet.h"
 #include "SimpleDamager.h"
+#include "ParticleManager.h"
+#include "IParticleSystem.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 
@@ -30,6 +33,12 @@ PlayerAnimator::PlayerAnimator()
 	, m_isDead(false)
 	, m_isNormalAttack(false)
 	, m_downAttack(false)
+	, m_normalAttack1(false)
+	, m_normalAttack2(false)
+	, m_normalAttack3(false)
+	, m_normalAttack4(false)
+	, m_normalAttack5(false)
+	, m_normalAttack6(false)
 	, m_forwardInput(0.f)
 	, m_sideInput(0.f)
 {
@@ -95,6 +104,8 @@ void PlayerAnimator::Start()
 	Matrix t = Matrix::CreateFromQuaternion(q);
 	t *= Matrix::CreateTranslation(Vector3{ 0.0f, 0.02f, 0.0f });
 
+
+
 	//m_skinnedMesh->AddAnimation("Walk", L"test2/testWalk2", t);
 // 	m_skinnedMesh->AddAnimation("Run", L"PlayerAnimations1/Move/Run/Sword And Shield Run");
 // 	m_skinnedMesh->AddAnimation("NormalAttack1", L"PlayerAnimations1/NormalAttack/Sword And Shield Slash1");
@@ -155,11 +166,119 @@ void PlayerAnimator::Update()
 	m_isLockOn = m_playerCamera->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_playerCamera.get()).Get();
 	m_forwardInput = m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get();
 	m_sideInput = m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get();
-
-
-
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
+
+	Vector3 effectPos = m_owner.lock()->m_transform->m_position;
+	Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
+	if (m_normalAttack1)
+	{
+		m_normalAttack1 = false;
+
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+
+		effectPos.y += 3.f;
+		effectRot.z += (3.141592 / 180.f) * -45.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+		p->SetActive(true);
+		p->SetSimulationSpeed(3.f);
+		p->Play();
+		p->SetDeltaTime(GetDeltaTime());
+	}
+	if (m_normalAttack2)
+	{
+		m_normalAttack2 = false;
+
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+
+		effectPos.y += 3.f;
+		effectRot.z += (3.141592 / 180.f) * 180.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+		p->SetActive(true);
+		p->SetSimulationSpeed(3.f);
+		p->Play();
+		p->SetDeltaTime(GetDeltaTime());
+	}
+	if (m_normalAttack3)
+	{
+		m_normalAttack3 = false;
+
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+
+		effectPos.y += 3.f;
+		effectRot.z += (3.141592 / 180.f) * 45.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+		p->SetActive(true);
+		p->SetSimulationSpeed(2.f);
+		p->Play();
+		p->SetDeltaTime(GetDeltaTime());
+	}
+	if (m_normalAttack4)
+	{
+		m_normalAttack4 = false;
+
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+
+		effectPos.y += 3.f;
+		effectRot.z += (3.141592 / 180.f) * -25.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+		p->SetActive(true);
+		p->SetSimulationSpeed(2.f);
+		p->Play();
+		p->SetDeltaTime(GetDeltaTime());
+	}
+	if (m_normalAttack5)
+	{
+		m_normalAttack5 = false;
+
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+
+		effectPos.y += 3.f;
+		effectRot.z += (3.141592 / 180.f) * -60.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+		p->SetActive(true);
+		p->SetSimulationSpeed(2.f);
+		p->Play();
+		p->SetDeltaTime(GetDeltaTime());
+	}
+	if (m_normalAttack6)
+	{
+		m_normalAttack6 = false;
+
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+
+		effectPos.y += 3.f;
+		effectRot.z += (3.141592 / 180.f) * 200.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+		p->SetActive(true);
+		p->SetSimulationSpeed(1.f);
+		p->Play();
+		p->SetDeltaTime(GetDeltaTime());
+	}
 
 
 	if (m_isAttack)
@@ -402,6 +521,7 @@ void NormalAttack1::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.1f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
+	//GetProperty("normalAttack1")->Set(m_animator, true);
 }
 
 void NormalAttack1::OnStateUpdate()
@@ -414,9 +534,11 @@ void NormalAttack1::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 12)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 9)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
+		isReset = false;
+		GetProperty("normalAttack1")->Set(m_animator, true);
 	}
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 12 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 21))
 	{
@@ -449,6 +571,7 @@ void NormalAttack2::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.01f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
+	//GetProperty("normalAttack2")->Set(m_animator, true);
 }
 
 void NormalAttack2::OnStateUpdate()
@@ -461,9 +584,11 @@ void NormalAttack2::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 12)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 4)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
+		isReset = false;
+		GetProperty("normalAttack2")->Set(m_animator, true);
 	}
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 12 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 36))
 	{
@@ -496,6 +621,7 @@ void NormalAttack3::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
+	//GetProperty("normalAttack3")->Set(m_animator, true);
 }
 
 void NormalAttack3::OnStateUpdate()
@@ -508,9 +634,11 @@ void NormalAttack3::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 18)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 13)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
+		isReset = false;
+		GetProperty("normalAttack3")->Set(m_animator, true);
 	}
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 18 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 37))
 	{
@@ -543,6 +671,7 @@ void NormalAttack4::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.01f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
+	//GetProperty("normalAttack4")->Set(m_animator, true);
 }
 
 void NormalAttack4::OnStateUpdate()
@@ -555,9 +684,11 @@ void NormalAttack4::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 17)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 14)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
+		isReset = false;
+		GetProperty("normalAttack4")->Set(m_animator, true);
 	}
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 17 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 41))
 	{
@@ -590,6 +721,7 @@ void NormalAttack5::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.03f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
+	//GetProperty("normalAttack5")->Set(m_animator, true);
 }
 
 void NormalAttack5::OnStateUpdate()
@@ -602,9 +734,11 @@ void NormalAttack5::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 26)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 18)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
+		isReset = false;
+		GetProperty("normalAttack5")->Set(m_animator, true);
 	}
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 26 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 37))
 	{
@@ -637,6 +771,7 @@ void NormalAttack6::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
+	//GetProperty("normalAttack6")->Set(m_animator, true);
 }
 
 void NormalAttack6::OnStateUpdate()
@@ -649,10 +784,12 @@ void NormalAttack6::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 60)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 23)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
 		GetProperty("downAttack")->Set(m_animator, true);
+		isReset = false;
+		GetProperty("normalAttack6")->Set(m_animator, true);
 	}
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 60 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 71))
 	{

@@ -443,6 +443,25 @@ private:
 
 	/// ----------------------------------------
 
+	// 이펙트때문에 임시로
+	PROPERTY(normalAttack1);
+	bool m_normalAttack1;
+
+	PROPERTY(normalAttack2);
+	bool m_normalAttack2;
+
+	PROPERTY(normalAttack3);
+	bool m_normalAttack3;
+
+	PROPERTY(normalAttack4);
+	bool m_normalAttack4;
+
+	PROPERTY(normalAttack5);
+	bool m_normalAttack5;
+
+	PROPERTY(normalAttack6);
+	bool m_normalAttack6;
+	
 	float m_lastHp;
 
 	float m_passingTime;

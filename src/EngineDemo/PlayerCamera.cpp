@@ -98,7 +98,7 @@ void PlayerCamera::LateUpdate()
 	}
 	if (GetKeyDown(KEY::P))
 	{
-		m_isShaking = true;
+		//m_isShaking = true;
 	}
 	if (m_isShaking)
 	{
