@@ -133,11 +133,6 @@ void BossAnimator::Start()
 
 void BossAnimator::Update()
 {
-	if (GetKeyDown(KEY::_9))
-	{
-		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
-	}
-
 	if (m_isDeath || !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
 		return;

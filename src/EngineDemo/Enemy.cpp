@@ -36,6 +36,11 @@ void Enemy::Start()
 
 void Enemy::Update()
 {
+	if (GetKeyDown(KEY::_9))
+	{
+		m_isTargetIn = !m_isTargetIn;
+	}
+
 	if (!m_isTargetIn)
 	{
 		return;
