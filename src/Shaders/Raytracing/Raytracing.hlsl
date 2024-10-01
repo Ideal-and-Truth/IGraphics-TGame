@@ -67,16 +67,6 @@ struct ShadowRayPayload
     float tHit;
 };
 
-struct SafeSpawnPointParameters
-{
-    float3 v0;
-    float3 v1;
-    float3 v2;
-    float2 bary;
-    float3x4 o2w;
-    float3x4 w2o;
-};
-
 inline float3 GenerateForwardCameraRayDirection(in float4x4 projectionToWorld)
 {
     float2 screenPos = float2(0, 0);
@@ -176,7 +166,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     return payload;
 }
 
-float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in SafeSpawnPointParameters spawn, in float TMax = 3000)
+float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in float TMax = 3000)
 {
     // offset 과는 관계없이 똑같은 노말값 오류 현상
     float tOffset = 0.001f;
@@ -334,8 +324,7 @@ float3 Shade(
     float2 uv,
     in float3 N,
     in float3 objectNormal,
-    in float3 hitPosition,
-    in SafeSpawnPointParameters spawnParameters
+    in float3 hitPosition
 )
 {
     float3 V = -WorldRayDirection();
@@ -470,7 +459,7 @@ float3 Shade(
             float3 wi = reflect(-V, N);
             
             //L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad, spawnParameters);
-            L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad, spawnParameters);
+            L += Kr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedPayLoad);
         }
         else // No total internal reflection
         {
@@ -483,7 +472,7 @@ float3 Shade(
                 float3 Fr = Kr * BxDF::Specular::Reflection::Sample_Fr(V, wi, N, Fo); // Calculates wi
                 RayPayload reflectedRayPayLoad = rayPayload;
                 // Ref: eq 24.4, [Ray-tracing from the Ground Up]
-                L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad, spawnParameters);
+                L += Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
                 //float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
                 //L += result;
                 
@@ -633,19 +622,12 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     //payload.radiance = normal; return;
     //payload.radiance = normal;
     //return; 
-    SafeSpawnPointParameters spawn;
-    spawn.v0 = l_vertices[indices[0]].position;
-    spawn.v1 = l_vertices[indices[1]].position;
-    spawn.v2 = l_vertices[indices[2]].position;
-    spawn.bary = attr.barycentrics;
-    spawn.o2w = ObjectToWorld3x4();
-    spawn.w2o = WorldToObject3x4();
     
     // GBuffer
     payload.gBuffer.tHit = RayTCurrent();
     payload.gBuffer.hitPosition = hitPosition;
 
-    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, spawn);
+    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
 }
 
 [shader("closesthit")]
