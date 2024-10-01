@@ -27,6 +27,9 @@ namespace Truth
 
 		std::map<std::string, std::weak_ptr<Ideal::IBone>> m_boneMap;
 
+		PROPERTY(mat);
+		std::vector<std::shared_ptr<Material>> m_mat;
+
 	private:
 		PROPERTY(path);
 		std::wstring m_path;

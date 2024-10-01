@@ -13,6 +13,8 @@
 #include "ITexture.h"
 #include "IMaterial.h"
 #include "ISprite.h"
+#include "Material.h"
+#include "Texture.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -151,26 +153,53 @@ namespace TypeUI
 			}
 			return isSelect;
 		}
-		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Ideal::IMaterial>>>)
+		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Truth::Material>>>)
 		{
+			USES_CONVERSION;
 			const ImVec2 size(100, 100);
-			ImGui::Text("Texture");
+			// ImGui::Button("Save Matarial Data");
 			for (auto& mat : _val)
 			{
-				if (!mat->GetBaseMap().expired())
+				if (mat->m_baseMap != nullptr)
 				{
-					ImGui::ImageButton((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
-					ImGui::SameLine();
+					std::string matPath = W2A(mat->m_baseMap->m_path.c_str());
+					matPath.resize(128);
+					char* temp = (char*)matPath.c_str();
+					bool success = ImGui::InputText(_name, temp, 128, ImGuiInputTextFlags_EnterReturnsTrue);
+					if (success)
+					{
+						std::wstring p = A2W(temp);
+						mat->ChangeTexture(p, 0);
+					}
+					ImGui::ImageButton((ImTextureID)(mat->m_baseMap->GetImageID()), size);
 				}
-				if (!mat->GetNomralMap().expired())
-				{
 
-					ImGui::ImageButton((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
-					ImGui::SameLine();
-				}
-				if (!mat->GetMaskMap().expired())
+				if (mat->m_normalMap != nullptr)
 				{
-					ImGui::ImageButton((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
+					std::string matPath = W2A(mat->m_normalMap->m_path.c_str());
+					matPath.resize(128);
+					char* temp = (char*)matPath.c_str();
+					bool success = ImGui::InputText(_name, temp, 128, ImGuiInputTextFlags_EnterReturnsTrue);
+					if (success)
+					{
+						std::wstring p = A2W(temp);
+						mat->ChangeTexture(p, 1);
+					}
+					ImGui::ImageButton((ImTextureID)(mat->m_normalMap->GetImageID()), size);
+				}
+				if (mat->m_maskMap != nullptr)
+				{
+					std::string matPath = W2A(mat->m_maskMap->m_path.c_str());
+					matPath.resize(128);
+					char* temp = (char*)matPath.c_str();
+
+					bool success = ImGui::InputText(_name, temp, 128, ImGuiInputTextFlags_EnterReturnsTrue);
+					if (success)
+					{
+						std::wstring p = A2W(temp);
+						mat->ChangeTexture(p, 2);
+					}
+					ImGui::ImageButton((ImTextureID)(mat->m_maskMap->GetImageID()), size);
 				}
 			}
 			return false;

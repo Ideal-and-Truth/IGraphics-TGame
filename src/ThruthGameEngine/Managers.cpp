@@ -6,6 +6,7 @@
 #include "PhysicsManager.h"
 #include "GraphicsManager.h"
 #include "EditorCamera.h"
+#include "ParticleManager.h"
 #include "ComponentFactory.h"
 #include <time.h>
 
@@ -170,6 +171,7 @@ void Truth::Managers::CreateManagers()
 	m_sceneManager = std::make_shared<SceneManager>();
 	m_physXManager = std::make_shared<PhysicsManager>();
 	m_graphicsManager = std::make_shared<GraphicsManager>();
+	m_particleManager = std::make_shared<ParticleManager>();
 }
 
 void Truth::Managers::InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 _width, uint32 _height)
@@ -180,4 +182,5 @@ void Truth::Managers::InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 
 	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();
 	m_graphicsManager->Initalize(_hwnd, _width, _height);
+	m_particleManager->Initalize(m_graphicsManager);
 }
