@@ -93,7 +93,7 @@ void EnemyController::FollowTarget()
 
 		if (distance > attackRange)
 		{
-			m_owner.lock()->m_transform->m_position += (m_target.lock()->m_transform->m_position - m_owner.lock()->m_transform->m_position) * GetDeltaTime() * 1.f;
+			//m_owner.lock()->m_transform->m_position += (m_target.lock()->m_transform->m_position - m_owner.lock()->m_transform->m_position) * GetDeltaTime() * 1.f;
 			m_isAttackReady = false;
 		}
 		else

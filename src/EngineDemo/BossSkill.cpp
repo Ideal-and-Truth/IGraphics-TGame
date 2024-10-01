@@ -258,15 +258,15 @@ void BossSkill::SwordShooting()
 			sword->Initialize();
 			sword->m_layer = 1;
 			sword->AddComponent<Truth::BoxCollider>();
-			sword->AddComponent<SimpleDamager>();
+			//sword->AddComponent<SimpleDamager>();
 
 			sword->m_name = "Sword";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(sword);
 			m_owner.lock()->AddChild(sword);
 
 			sword->SetPosition(m_swordPos[m_count]);
-			//sword->SetScale({ 30.f,30.f,300.f });
-			sword->SetScale({ 1.f,1.f,3.f });
+			sword->SetScale({ 30.f,30.f,300.f });
+			//sword->SetScale({ 1.f,1.f,3.f });
 
 
 			sword->Start();

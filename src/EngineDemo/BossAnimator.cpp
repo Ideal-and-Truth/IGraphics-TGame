@@ -133,6 +133,11 @@ void BossAnimator::Start()
 
 void BossAnimator::Update()
 {
+	if (GetKeyDown(KEY::_9))
+	{
+		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
+	}
+
 	if (m_isDeath || !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
 		return;
@@ -259,11 +264,11 @@ void BossAnimator::Update()
 					{
 						if (random <= 7)
 						{
-							//m_attackShockWave = true;
+							m_attackSwordShoot = true;
 						}
 						else if (random > 7 && random <= 14)
 						{
-							//m_attackShockWave = true;
+							m_attackShockWave = true;
 						}
 						else
 						{
@@ -271,6 +276,11 @@ void BossAnimator::Update()
 						}
 					}
 				}
+			}
+
+			if (m_attackCharge)
+			{
+				m_passingTime += GetDeltaTime();
 			}
 		}
 	}
@@ -310,14 +320,16 @@ void BossAnimator::Update()
 
 
 
-
-	if (m_isAttacking)
+	if (!m_attackCharge)
 	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-	}
-	else
-	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
+		if (m_isAttacking)
+		{
+			m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+		}
+		else
+		{
+			m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
+		}
 	}
 
 	m_currentState->OnStateUpdate();
@@ -610,30 +622,40 @@ void BossAttackCharge::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackLightSpeedReady", false);
 	GetProperty("isAttacking")->Set(m_animator, true);
+	dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(false);
 }
 
 void BossAttackCharge::OnStateUpdate()
 {
-	if (m_changePose && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 8)
+	if (m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 8)
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
+		//dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
 		dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(false);
+		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.f);
 	}
-	if (!m_changePose && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 142)
+	if (m_changePose && isReset && GetProperty("passingTime")->Get<float>(m_animator).Get() > 3.f)
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(1.f);
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
+	}
+	if (!m_changePose && isReset&&GetProperty("currentFrame")->Get<int>(m_animator).Get() > 142)
 	{
 		m_changePose = true;
+		isReset = false;
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackLightSpeedDash", false);
 		dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(true);
+		GetProperty("passingTime")->Set(m_animator, 0.f);
 	}
 }
 
 void BossAttackCharge::OnStateExit()
 {
 	GetProperty("attackCharge")->Set(m_animator, false);
+	GetProperty("passingTime")->Set(m_animator, 0.f);
 	m_changePose = false;
 	isReset = false;
 }
