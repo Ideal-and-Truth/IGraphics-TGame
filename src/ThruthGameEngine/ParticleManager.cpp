@@ -33,7 +33,7 @@ void Truth::ParticleManager::CreateEmptyParticle()
 	emitter << YAML::Key << "MaxCount" << YAML::Value << 10;
 	emitter << YAML::Key << "MatName" << YAML::Value << "defaultMat";
 
-	emitter << YAML::Key << "EBlendingMode" << YAML::Value << 0;
+	emitter << YAML::Key << "EBlendingMode" << YAML::Value << 1;
 	emitter << YAML::Key << "Shader" << YAML::Value << "SwordSlash";
 	emitter << YAML::Key << "Texture0" << YAML::Value << "../Resources/Textures/0_Particle/Smoke12.png";
 	emitter << YAML::Key << "Texture1" << YAML::Value << "../Resources/Textures/0_Particle/Crater62.png";
@@ -107,15 +107,15 @@ void Truth::ParticleManager::CreateEmptyParticle()
 	emitter << YAML::Key << "ColorOverLifetimeGradientGraph" << YAML::BeginSeq <<
 		YAML::BeginMap <<
 		YAML::Key << "Color" << YAML::BeginSeq << 
-		YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 0.0f << 
+		YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << 
 		YAML::EndSeq <<
 		YAML::Key << "position" << YAML::Value << 0.0f << 
 		YAML::EndMap <<
 		YAML::BeginMap <<
 		YAML::Key << "Color" << YAML::BeginSeq <<
-		YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f <<
+		YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 0.0f <<
 		YAML::EndSeq <<
-		YAML::Key << "position" << YAML::Value << 0.0f <<
+		YAML::Key << "position" << YAML::Value << 1.0f <<
 		YAML::EndMap <<
 		YAML::EndSeq;
 

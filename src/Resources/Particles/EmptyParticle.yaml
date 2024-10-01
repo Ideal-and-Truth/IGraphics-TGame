@@ -1,11 +1,11 @@
 MaxCount: 10
-MatName: defaultMat
-EBlendingMode: 0
-Shader: TestCustomParticle
+MatName: defaultMattt
+EBlendingMode: 1
+Shader: SwordSlash
 Texture0: ../Resources/Textures/0_Particle/Smoke12.png
 Texture1: ../Resources/Textures/0_Particle/Crater62.png
 Texture2: ../Resources/Textures/0_Particle/Noise43b.png
-Mesh: 0_Particle/Slash
+Mesh: 0_Particle/Slash3
 StartColor:
   - 1
   - 1
@@ -48,11 +48,11 @@ ColorOverLifetimeGradientGraph:
       - 1
       - 1
       - 1
-      - 0
+      - 1
     position: 0
   - Color:
       - 1
       - 1
       - 1
-      - 1
-    position: 0
+      - 0
+    position: 1
