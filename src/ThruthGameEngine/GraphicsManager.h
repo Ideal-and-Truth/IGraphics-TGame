@@ -84,6 +84,8 @@ namespace Truth
 
 		void ResizeWindow(uint32 _w, uint32 _h);
 
+		void BakeStaticMesh();
+
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);
 #endif // EDITOR_MODE

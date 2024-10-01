@@ -7,6 +7,7 @@
 #include "GraphicsManager.h"
 #include "EditorCamera.h"
 #include "ComponentFactory.h"
+#include <time.h>
 
 Truth::Managers::Managers()
 {
@@ -77,8 +78,20 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
-	m_sceneManager->ApplyTransform();
+	clock_t start, finish;
+	double duration;
 
+	start = clock();
+
+	m_sceneManager->ApplyTransform();
+	finish = clock();
+
+	std::string temp = std::to_string(finish - start);
+	temp = std::string("update : ") + temp;
+	temp += " / ";
+	DEBUG_PRINT(temp.c_str());
+
+	start = clock();
 #ifdef EDITOR_MODE
 	if (m_isEdit)
 	{
@@ -92,6 +105,12 @@ void Truth::Managers::Render() const
 #else
 	m_graphicsManager->Render();
 #endif // EDITOR_MODE
+	finish = clock();
+	temp = std::to_string(finish - start);
+	temp = std::string("render : ") + temp;
+	temp += " \n ";
+	DEBUG_PRINT(temp.c_str());
+
 }
 
 void Truth::Managers::Finalize()

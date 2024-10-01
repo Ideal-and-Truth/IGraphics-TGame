@@ -164,6 +164,7 @@ namespace Truth
 
 		void ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner);
 		void ParseBoxCollider(const YAML::Node& _node, GameObject* _owner);
+		void ParseMeshCollider(const YAML::Node& _node, GameObject* _owner);
 		void ParseMeshFilter(const YAML::Node& _node, GameObject* _owner);
 		void ParseLight(const YAML::Node& _node, GameObject* _owner);
 

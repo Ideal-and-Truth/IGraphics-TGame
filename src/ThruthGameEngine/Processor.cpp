@@ -16,6 +16,8 @@
 #include "IdealRenderer.h"
 #include "ThreadPool.h"
 
+#include <time.h>
+
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
 
@@ -58,94 +60,19 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
 	// 
-	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
-
-// 	ConvertStaticFbxData(L"EnemyAnimations/MeleeWarriorSword.fbx");
-// 	ConvertSkelFbxData(L"BossAnimations/boss_test_ani_V6.fbx");
- 	ConvertSkelFbxData(L"BossAnimations/Idle/Idle.fbx");
-// 	ConvertSkelFbxData(L"EnemyAnimations/FieldMob.fbx");
-// 	ConvertSkelFbxData(L"EnemyAnimations/FieldMob.fbx");
-// 	ConvertSkelFbxData(L"PlayerAnimations/chronos.Main_tPose1.fbx");
- 	ConvertSkelFbxData(L"EnemyAnimations/RangeEnemy/Aim/Aim.fbx");
- 
-// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack1.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack2.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack3.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack4.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAttack5.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/ComboAttackReady/ComboAttackReady.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/Dodge/Dodge.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/Dodge/DodgeAttack.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/Fall/Fall.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/Guard/Guard.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/Hit/Hit.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/Idle/idle.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/Move/Run.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack1.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack2.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack3.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack4.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack5.fbx");
-// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAttack6.fbx");
- 
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Attack/Attack.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Down.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Hit/Hit.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Idle/Idle.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Pursuit/Pursuit.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Return/Return.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeL.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeR.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/StrongAttack/StrongAttack.fbx");
- 
-// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Aim/Aim.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Attack/Attack.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Down/Down.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Hit/Hit.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Idle/Idle.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Pursuit Return/PursuitReturn.fbx");
-// 	ConvertAniFbxData(L"EnemyAnimations/RangeEnemy/Reload/Reload.fbx");
- 
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackChargedCombo.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackJumpSmashGround.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackLightSpeedDash.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackLightSpeedReady.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackRun.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackShockWave.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSmashGround.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSpin.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSwing.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCut.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackUpperCutMirror.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-1.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-2.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-3.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo2-1.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo2-2.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Dodge/Dodge.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Dodge/DodgeLeft.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Dodge/DodgeRight.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Down/Down1.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Down/Down2.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Down/Down3.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Idle/Idle.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Run/Run.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeL.fbx");
-// 	ConvertAniFbxData(L"BossAnimations/Strafe/StrafeR.fbx");
- 
- 
- 	int a = 0;
+	// ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
 #ifdef EDITOR_MODE
 
-
 	Truth::UnityParser up(m_manager->Graphics().get());
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
-	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\BOSSROOM\\Hanna_BOSSROOM.unity");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2_half.unity");
 	// up.ParseMatarialData();
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 #endif // EDITOR_MODE
@@ -158,9 +85,29 @@ void Processor::Finalize()
 
 void Processor::Process()
 {
+	clock_t start, finish;
+	double duration;
+
+	start = clock();
 	Update();
 	LateUpdate();
+	finish = clock();
+
+	std::string temp = std::to_string(finish - start);
+	temp = std::string("update : ") + temp;
+	temp += " / ";
+	// DEBUG_PRINT(temp.c_str());
+
+	start = clock();
+
 	Render();
+	finish = clock();
+
+	temp = std::to_string(finish - start);
+	temp = std::string("render : ") + temp;
+	temp += " \n ";
+
+	// DEBUG_PRINT(temp.c_str());
 }
 
 void Processor::Loop()
@@ -399,6 +346,6 @@ void Processor::ConvertSkelFbxData(const std::wstring& _path)
 
 void Processor::ConvertStaticFbxData(const std::wstring& _path)
 {
-	g_Renderer->ConvertAssetToMyFormat(_path, false);
+	g_Renderer->ConvertAssetToMyFormat(_path, false, true);
 }
 #endif // CONVERT_DATA

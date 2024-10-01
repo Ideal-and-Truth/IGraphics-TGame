@@ -15,6 +15,8 @@
 #include "MeshCollider.h"
 #include "Mesh.h"
 
+#include <algorithm>
+
 /// <summary>
 /// »ý¼ºÀÚ
 /// </summary>
@@ -120,8 +122,9 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	// LoadUnityData(L"SampleScene");
+	LoadUnityData(L"1_HN_Scene2");
 }
+
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 {
@@ -355,6 +358,9 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		int32 parent = file->Read<int32>();
 		std::string name = file->Read<std::string>();
 		m_mapEntity[i]->m_name = name;
+		m_mapEntity[i]->Initialize();
+
+
 		if (parent != -1)
 		{
 			m_mapEntity[parent]->AddChild(m_mapEntity[i]);
@@ -397,16 +403,15 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		if (isCollider)
 		{
 			int32 type = file->Read<int32>();
-			Vector3 size = file->Read<Vector3>();
-			Vector3 center = file->Read<Vector3>();
-
 			std::shared_ptr<Collider> coll;
 
 			switch (type)
 			{
 			case 1:
 			{
-				coll = std::make_shared<BoxCollider>(center, size);
+				Vector3 size = file->Read<Vector3>();
+				Vector3 center = file->Read<Vector3>();
+				coll = std::make_shared<BoxCollider>(center, size, false);
 				break;
 			}
 			// 			case 2:
@@ -419,11 +424,11 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			// 				coll = std::make_shared<CapsuleCollider>(size, center);
 			// 				break;
 			// 			}
-			// 			case 4:
-			// 			{
-			// 				coll = std::make_shared<MeshCollider>(size, center);
-			// 				break;
-			// 			}
+			case 4:
+			{
+				coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
+				break;
+			}
 			default:
 				break;
 			}
@@ -446,12 +451,14 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
+
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
-				mesh->SetMaterialByIndex(j, matName);
+				// mesh->SetMaterialByIndex(j, matName);
 			}
 
+			mesh->SetStatic(true);
 			Matrix mtm = mesh->GetMeshLocalTM();
 
 			Vector3 mPos;
@@ -507,9 +514,21 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
 	}
 
+	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
+		{
+			return _a->m_name > _b->m_name;
+		};
+
+	sort(m_mapEntity.begin(), m_mapEntity.end(), comp);
+
+	// gp->BakeStaticMesh();
+
 	for (auto& e : m_mapEntity)
 	{
-		AddEntity(e);
+		e->Initialize();
+		e->ApplyTransform();
+		e->Awake();
+		e->Start();
 	}
 }
 

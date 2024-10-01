@@ -21,6 +21,7 @@ namespace Truth
 
 	public:
 		MeshCollider();
+		MeshCollider(std::string _path);
 		~MeshCollider();
 
 		METHOD(Initalize);

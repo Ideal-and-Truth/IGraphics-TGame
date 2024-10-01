@@ -40,9 +40,7 @@ StructuredBuffer<uint> l_indices : register(t0, space1);
 StructuredBuffer<PositionNormalUVTangentColor> l_vertices : register(t1, space1);
 Texture2D<float4> l_texDiffuse : register(t2, space1);
 Texture2D<float4> l_texNormal : register(t3, space1);
-Texture2D<float4> l_texMetallic : register(t4, space1);
-Texture2D<float4> l_texRoughness : register(t5, space1);
-Texture2D<float4> l_texMask : register(t6, space1);
+Texture2D<float4> l_texMask : register(t4, space1);
 ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 //StructuredBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 
@@ -157,7 +155,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     rayDesc.Origin = ray.origin;
     rayDesc.Direction = ray.direction;
     rayDesc.TMin = 0.001;
-    rayDesc.TMax = 10000.0;
+    rayDesc.TMax = 3000.0;
     //rayDesc.TMin = g_sceneCB.nearZ;
     //rayDesc.TMax = g_sceneCB.farZ;
     
@@ -178,7 +176,7 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     return payload;
 }
 
-float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in SafeSpawnPointParameters spawn, in float TMax = 10000)
+float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in SafeSpawnPointParameters spawn, in float TMax = 3000)
 {
     // offset 과는 관계없이 똑같은 노말값 오류 현상
     float tOffset = 0.001f;
@@ -349,23 +347,11 @@ float3 Shade(
     const float3 Kt;
     float metallic;
     float roughness;
-    if (l_materialInfo.bUseMetallicMap)
-    {
-        metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
-    }
-    else
-    {
-        metallic = l_texMask.SampleLevel(LinearWrapSampler, uv, 0).x;
-    }
-    
-    if (l_materialInfo.bUseRoughnessMap)
-    {
-        roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
-    }
-    else
-    {
-        roughness = 1 - l_texMask.SampleLevel(LinearWrapSampler, uv, 0).a;
-    }
+
+    float4 maskSample = l_texMask.SampleLevel(LinearWrapSampler, uv, 0);
+
+    metallic = maskSample.x;
+    roughness = 1 - maskSample.a;
 
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
   
@@ -636,7 +622,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     }
    
     //if(l_materialInfo.bUseNormalMap == false)
-    if(l_materialInfo.bUseNormalMap == true)
+    //if(l_materialInfo.bUseNormalMap == true)
     {
         normal = NormalMap(normal, uv, vertexInfo, attr);
     }

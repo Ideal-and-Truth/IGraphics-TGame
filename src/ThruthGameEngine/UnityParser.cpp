@@ -342,14 +342,14 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 	GO->m_parent = _parent;
 	GO->m_mine = static_cast<uint32>(m_gameObjects.size());
 	m_gameObjects.push_back(GO);
+	const std::string& prefabGuid = _node["m_SourcePrefab"]["guid"].as<std::string>();
+	GO->m_guid = prefabGuid;
 
 	// get transform data
 	GetPrefabMatrix(_node["m_Modification"]["m_Modifications"], GO);
 	GetPrefabMatarial(GO, _node["m_Modification"]["m_Modifications"]);
 
 
-	const std::string& prefabGuid = _node["m_SourcePrefab"]["guid"].as<std::string>();
-	GO->m_guid = prefabGuid;
 
 	if (m_guidMap.find(prefabGuid) != m_guidMap.end())
 	{
@@ -373,11 +373,16 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 			const YAML::Node& component = *it;
 			std::string cFid = component["addedObject"]["fileID"].as<std::string>();
 
-			const YAML::Node& c = m_nodeMap[_guid][cFid]->m_node["BoxCollider"];
+			const YAML::Node& boxc = m_nodeMap[_guid][cFid]->m_node["BoxCollider"];
+			const YAML::Node& meshc = m_nodeMap[_guid][cFid]->m_node["MeshCollider"];
 			/// find box collider
-			if (c.IsDefined())
+			if (boxc.IsDefined())
 			{
-				ParseBoxCollider(c, GO);
+				ParseBoxCollider(boxc, GO);
+			}
+			else if (meshc.IsDefined())
+			{
+				ParseMeshCollider(meshc, GO);
 			}
 		}
 	}
@@ -400,13 +405,6 @@ void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::N
 		if (collider.IsDefined())
 		{
 			ParseBoxCollider(collider, _owner);
-		}
-
-		/// find mesh filter
-		const YAML::Node& meshFilter = m_nodeMap[_guid][compFid]->m_node["MeshFilter"];
-		if (meshFilter.IsDefined())
-		{
-			ParseMeshFilter(meshFilter, _owner);
 		}
 
 		/// find Light
@@ -435,30 +433,14 @@ void Truth::UnityParser::ParseBoxCollider(const YAML::Node& _node, GameObject* _
 		});
 }
 
+void Truth::UnityParser::ParseMeshCollider(const YAML::Node& _node, GameObject* _owner)
+{
+	_owner->m_isCollider = true;
+	_owner->m_shape = 4;
+}
+
 void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _owner)
 {
-	m_meshFilterCount++;
-	_owner->m_isMesh = true;
-	if (_node["m_Mesh"]["fileID"].as<std::string>() == "10202")
-	{
-		_owner->m_meshPath = m_debugCubePath.generic_string();
-	}
-	else if (_node["m_Mesh"]["fileID"].as<std::string>() == "10209")
-	{
-		// _owner->m_meshPath = m_debugCubePath.generic_string();
-	}
-	else
-	{
-		if (_node["m_Mesh"]["guid"].IsDefined())
-		{
-			std::string fbxGuid = _node["m_Mesh"]["guid"].as<std::string>();
-			fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
-			_owner->m_meshPath = fbxFilePath.generic_string();
-
-			m_unLoadMesh.insert(fbxFilePath);
-		}
-
-	}
 }
 
 void Truth::UnityParser::ParseLight(const YAML::Node& _node, GameObject* _owner)
@@ -546,10 +528,18 @@ void Truth::UnityParser::GetPrefabMatarial(GameObject* _GO, const YAML::Node& _n
 		std::string propertyPath = (*itr)["propertyPath"].as<std::string>();
 		if (propertyPath.find("m_Materials.Array.data") != std::string::npos)
 		{
+			if (!(*itr)["objectReference"].IsDefined())
+			{
+				return;
+			}
+			if (!(*itr)["objectReference"]["guid"].IsDefined())
+			{
+				return;
+			}
 			std::string matGuid = (*itr)["objectReference"]["guid"].as<std::string>();
 			if (m_matarialMap.find(matGuid) != m_matarialMap.end())
 			{
-				_GO->m_matarialsName.push_back(m_matarialMap[matGuid].m_name);
+				_GO->m_matarialsName.push_back(matGuid);
 				continue;
 			}
 			ParseMatarialFile(_GO, matGuid);
@@ -612,10 +602,16 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 	MatarialData matdata = MatarialData();
 
 	fs::path matfile = m_guidMap[_matGuid]->m_filePath;
+
+	if (matfile.extension() != ".mat")
+	{
+		return;
+	}
+
 	std::ifstream matDataFile(matfile);
 
-	matdata.m_name = matfile.filename().replace_extension("").generic_string();
-	_GO->m_matarialsName.push_back(matdata.m_name);
+	matdata.m_name = _matGuid;
+	_GO->m_matarialsName.push_back(_matGuid);
 
 	auto matDoc = YAML::LoadAll(matDataFile);
 	for (auto& matNode : matDoc)
@@ -627,6 +623,8 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 			{
 				if (texmap["_NormalMap"].IsDefined())
 				{
+					if (!texmap["_NormalMap"]["m_Texture"]["guid"].IsDefined())
+						continue;
 					std::string texGuid = texmap["_NormalMap"]["m_Texture"]["guid"].as<std::string>();
 					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 					if (!fs::exists(p))
@@ -637,6 +635,9 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 				}
 				else if (texmap["_MainTex"].IsDefined())
 				{
+					if (!texmap["_MainTex"]["m_Texture"]["guid"].IsDefined())
+						continue;
+
 					std::string texGuid = texmap["_MainTex"]["m_Texture"]["guid"].as<std::string>();
 					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 					if (!fs::exists(p))
@@ -647,6 +648,8 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 				}
 				else if (texmap["_MaskMap"].IsDefined())
 				{
+					if (!texmap["_MaskMap"]["m_Texture"]["guid"].IsDefined())
+						continue;
 					std::string texGuid = texmap["_MaskMap"]["m_Texture"]["guid"].as<std::string>();
 					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 					if (!fs::exists(p))
@@ -654,6 +657,42 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
 					}
 					matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+				}
+				else if (texmap["_BarkBaseColorMap"].IsDefined())
+				{
+					if (!texmap["_BarkBaseColorMap"]["m_Texture"]["guid"].IsDefined())
+						continue;
+					std::string texGuid = texmap["_BarkBaseColorMap"]["m_Texture"]["guid"].as<std::string>();
+					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					if (!fs::exists(p))
+					{
+						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
+					}
+					matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+				}
+				else if (texmap["_BarkMaskMap"].IsDefined())
+				{
+					if (!texmap["_BarkMaskMap"]["m_Texture"]["guid"].IsDefined())
+						continue;
+					std::string texGuid = texmap["_BarkMaskMap"]["m_Texture"]["guid"].as<std::string>();
+					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					if (!fs::exists(p))
+					{
+						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
+					}
+					matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+				}
+				else if (texmap["_BarkNormalMap"].IsDefined())
+				{
+					if (!texmap["_BarkNormalMap"]["m_Texture"]["guid"].IsDefined())
+						continue;
+					std::string texGuid = texmap["_BarkNormalMap"]["m_Texture"]["guid"].as<std::string>();
+					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					if (!fs::exists(p))
+					{
+						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
+					}
+					matdata.m_normal = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
 				}
 			}
 		}
@@ -758,7 +797,7 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 	for (auto& path : m_unLoadMesh)
 	{
 		fs::copy(path, assetPath, fs::copy_options::skip_existing);
-		m_gp->ConvertAsset(dataPath / path.filename());
+		m_gp->ConvertAsset(dataPath / path.filename(), false, true);
 	}
 }
 
@@ -797,9 +836,12 @@ void Truth::UnityParser::WriteColliderData(std::shared_ptr<FileUtils> _file, Gam
 	{
 		_file->Write<int32>(_GO->m_shape);
 
-		_file->Write<Vector3>(_GO->m_size[0]);
+		if (_GO->m_shape == 1)
+		{
+			_file->Write<Vector3>(_GO->m_size[0]);
 
-		_file->Write<Vector3>(_GO->m_center[0]);
+			_file->Write<Vector3>(_GO->m_center[0]);
+		}
 	}
 }
 

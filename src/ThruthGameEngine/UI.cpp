@@ -47,7 +47,8 @@ void Truth::UI::Update()
 {
 
 }
-
+#ifdef EDITOR_MODE
+ 
 void Truth::UI::EditorSetValue()
 {
 	auto gp = m_managers.lock()->Graphics();
@@ -62,3 +63,4 @@ void Truth::UI::EditorSetValue()
 	m_sprite->SetZ(m_zDepth);
 	m_sprite->SetSampleRect({ 0, 0, tex->w, tex->h });
 }
+#endif // IFDE

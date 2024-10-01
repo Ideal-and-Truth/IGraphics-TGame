@@ -55,7 +55,7 @@ namespace Truth
 		METHOD(Initalize);
 		void Initalize();
 
-		METHOD(ApplyTransform);
+		// METHOD(ApplyTransform);
 		void ApplyTransform();
 
 		void DeleteMesh();
@@ -64,6 +64,8 @@ namespace Truth
 		std::vector<uint64> GetMaterialImagesIDByIndex(uint32 _index);
 
 		Matrix GetMeshLocalTM();
+
+		void SetStatic(bool _isStatic);
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();

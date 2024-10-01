@@ -500,8 +500,12 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, boo
 	if (scale.x < 0)
 		bone->isNegative = true;
 
-
+	if (bone->parent < 0 || m_bones[bone->parent]->parent <= 0)
+	{
+		matParent = Matrix::Identity;
+	}
 	bone->transform = bone->transform * matParent;
+
 
 	isNegative = bone->isNegative != isNegative;
 
@@ -774,6 +778,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 		mesh->name = node->mName.C_Str();
 		mesh->boneIndex = bone;
 		mesh->localTM = m_bones[bone]->transform;
+
 		uint32 index = node->mMeshes[i];
 		const aiMesh* srcMesh = m_scene->mMeshes[index];
 
@@ -802,7 +807,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
 				//2024.08.13 본의 위치를 곱해준다.
-				if (m_bones[bone]->parent >= 0)
+				if (m_bones[bone]->parent > 0)
 				{
 					isChangeBound = true;
 					Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
@@ -829,7 +834,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			if (srcMesh->HasNormals())
 			{
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
-				if (m_bones[bone]->parent >= 0)
+				if (m_bones[bone]->parent > 0)
 				{
 					Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
 					vertex.Normal = normal;
@@ -840,7 +845,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			if (srcMesh->HasTangentsAndBitangents())
 			{
 				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
-				if (m_bones[bone]->parent >= 0)
+				if (m_bones[bone]->parent > 0)
 				{
 					Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
 					vertex.Tangent = tangent;
@@ -967,7 +972,7 @@ void AssimpConverter::ReadParticleModelData(aiNode* node, int32 index, int32 par
 {
 	std::shared_ptr<AssimpConvert::ParticleMesh> mesh = std::make_shared<AssimpConvert::ParticleMesh>();
 	mesh->name = node->mName.C_Str();
-	
+
 	// 하나밖에 없다고 가정한다.
 	const aiMesh* srcMesh = m_scene->mMeshes[0];
 
@@ -977,7 +982,7 @@ void AssimpConverter::ReadParticleModelData(aiNode* node, int32 index, int32 par
 		ParticleVertexTest vertex;
 		{
 			memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
-			
+
 			if (SetScale)
 			{
 				Vector3 result = Vector3::Transform(vertex.Position, Matrix::CreateScale(Scale));
