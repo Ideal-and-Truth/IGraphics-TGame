@@ -16,7 +16,7 @@ Truth::ParticleManager::~ParticleManager()
 void Truth::ParticleManager::Initalize(std::shared_ptr<GraphicsManager> _grapics)
 {
 	m_grapics = _grapics;
-	// ReloadAllParticle();
+	ReloadAllParticle();
 }
 
 void Truth::ParticleManager::Finalize()
@@ -219,6 +219,11 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (node["RenderMode"].IsDefined())
 		{
 			particle->SetRenderMode(static_cast<Ideal::ParticleMenu::ERendererMode>(node["RenderMode"].as<int>()));
+		}
+
+		if (node["RotationOverLifeTime"].IsDefined())
+		{
+			particle->SetRotationOverLifetime(node["RotationOverLifeTime"].as<bool>());
 		}
 
 		if (node["RotationOverLifetimeAxisXControlPoints"].IsDefined())
