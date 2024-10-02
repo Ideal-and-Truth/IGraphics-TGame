@@ -103,13 +103,13 @@ void EnemyController::FollowTarget()
 		{
 // 			m_isBackStep = true;
 // 			m_isAttackReady = false;
-//
+// 
 // 			Vector3 backDir = dir;
 // 			backDir.y = 0.0f;
 // 			backDir.Normalize(backDir);
 // 			backDir.y = -100.0f;
 // 			backDir *= GetDeltaTime() * m_speed;
-//
+// 
 // 			backDir.x *= -1.f;
 // 			backDir.z *= -1.f;
 // 			m_controller.lock()->Move(backDir);
