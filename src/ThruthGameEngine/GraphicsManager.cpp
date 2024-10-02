@@ -277,7 +277,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			fs::path no = "../Resources/DefaultData/DefaultNormalMap.png";
 			fs::path ma = "../Resources/DefaultData/DefaultBlack.png";
 
-			/**if (GetOpenFileName(&m_openFileName) != 0)
+			if (GetOpenFileName(&m_openFileName) != 0)
 			{
 				al = m_openFileName.lpstrFile;
 			}
@@ -297,7 +297,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			std::filesystem::path albedo(rootPath + al.filename().generic_string());
 			std::filesystem::path normal(rootPath + no.filename().generic_string());
 			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
-			*/
+			
 			mat->m_baseMap = CreateTexture(al.generic_wstring());
 			mat->m_normalMap = CreateTexture(no.generic_wstring());
 			mat->m_maskMap = CreateTexture(ma.generic_wstring());

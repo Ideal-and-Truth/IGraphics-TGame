@@ -167,12 +167,22 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		}
 		break;
 	}
+	case WM_SYSCOMMAND:
+	{
+		if (SC_KEYMENU == (wParam & 0xFFF0) && (lParam == 13))
+		{
+			g_Renderer->ToggleFullScreenWindow();
+			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+		}
+		[[fallthrough]];
+	}
 	default:
 		if (g_inputmanager)
 		{
 			g_inputmanager->m_deltaWheel = 0;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
+
 	}
 	return 0;
 }
