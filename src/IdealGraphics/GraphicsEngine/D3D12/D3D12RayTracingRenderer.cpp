@@ -385,6 +385,8 @@ finishAdapter:
 
 
 	//---------------Create Managers---------------//
+	CompileShader(L"../Shaders/Texture/CS_GenerateMips.hlsl", L"../Shaders/Texture/", L"GenerateMipsCS", L"cs_6_3", L"Main", L"../Shaders/Texture/");
+
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
 
 	m_resourceManager = std::make_shared<Ideal::ResourceManager>();
@@ -498,6 +500,10 @@ finishAdapter:
 
 	RaytracingManagerInit();
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
+
+
+	// shader compile
+
 
 }
 
@@ -1073,10 +1079,28 @@ void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
 	m_skyBoxTexture = skyBox;
 }
 
-std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName)
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/)
 {
 	std::shared_ptr<Ideal::D3D12Texture> texture;
-	m_resourceManager->CreateTexture(texture, FileName);
+	uint32 generateMips = 1;
+	if (IsGenerateMips)
+	{
+		generateMips = 0;
+	}
+	m_resourceManager->CreateTexture(texture, FileName,false, generateMips);
+
+	//if (IsGenerateMips)
+	//{
+	//	m_resourceManager->GenerateMips(
+	//		m_device,
+	//		m_commandLists[m_currentContextIndex],
+	//		m_descriptorHeaps[m_currentContextIndex],
+	//		m_cbAllocator[m_currentContextIndex],
+	//		texture,
+	//		4	// TEMP
+	//	);
+	//}
+
 
 	if (m_isEditor)
 	{
