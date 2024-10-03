@@ -546,7 +546,7 @@ void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
 	// TODO
 }
 
-std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /* = false*/)
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/)
 {
 	return nullptr;
 }
