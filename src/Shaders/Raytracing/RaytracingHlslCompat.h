@@ -127,7 +127,7 @@ struct LightList
 	float pad1;
 
     DirectionalLight DirLight;
-    PointLight PointLights[16];  //TEMP
-    SpotLight SpotLights[16];    //TEMP
+    PointLight PointLights[100];  //TEMP
+    SpotLight SpotLights[100];    //TEMP
 };
 #endif // RAYTRACINGHLSLCOMPAT_H
