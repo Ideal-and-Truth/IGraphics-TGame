@@ -166,6 +166,9 @@
     <Filter Include="Manager\Particle">
       <UniqueIdentifier>{e3db038f-f88e-408e-9f1c-a41b2f2485f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager\Sound">
+      <UniqueIdentifier>{9da1c56a-31e0-4368-992c-f652a7325bc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -329,6 +332,9 @@
       <Filter>Manager\Particle</Filter>
     </ClCompile>
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Manager\Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -513,6 +519,9 @@
       <Filter>Manager\Particle</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="SoundManager.h">
+      <Filter>Manager\Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

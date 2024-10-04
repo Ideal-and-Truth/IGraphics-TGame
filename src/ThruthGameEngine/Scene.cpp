@@ -514,6 +514,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		{
 			uint32 lightType = file->Read<uint32>();
 			float intensity = file->Read<float>();
+			// intensity *= 0.5;
 			Color lightColor;
 			lightColor.x = file->Read<float>();
 			lightColor.y = file->Read<float>();
@@ -535,9 +536,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_direction = dir;
 				light->m_angle = angle;
 				light->m_range = range;
-				light->m_intensity = intensity;
+				light->m_intensity = intensity * 0.001;
+				light->m_softness = 5;
 				light->m_lightColor = lightColor;
-				// m_mapEntity[i]->AddComponent(light);
+				m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			case 1:
@@ -547,7 +549,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_direction = dir;
 				light->m_intensity = intensity;
 				light->m_diffuseColor = lightColor;
-				// m_mapEntity[i]->AddComponent(light);
+				m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			case 2:
@@ -556,9 +558,9 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_isRendering = true;
 				light->m_position = pos;
 				light->m_radius = range;
-				light->m_intensity = intensity;
+				light->m_intensity = intensity * 0.01;
 				light->m_lightColor = lightColor;
-				// m_mapEntity[i]->AddComponent(light);
+				m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			default:
