@@ -115,12 +115,12 @@ void PlayerController::PlayerMove(const void*)
 		return;
 	}
 
-// 	if (GetKeyDown(KEY::SPACE))
-// 	{
-// 		Vector3 power(finalMovement);
-// 		power *= 100000000000.f;
-// 		m_controller.lock()->AddImpulse(power);
-// 	}
+	if (GetKeyDown(KEY::SPACE))
+	{
+		Vector3 power(finalMovement);
+		power *= 5.f;
+		m_controller.lock()->AddImpulse(power);
+	}
 
 	m_playerDirection = playerDir;
 	Quaternion lookRot;
