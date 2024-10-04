@@ -18,8 +18,8 @@
 
 #define SHADOW_ON
 
-#define MAX_POINT_LIGHT_NUM 16
-#define MAX_SPOT_LIGHT_NUM 16
+#define MAX_POINT_LIGHT_NUM 100
+#define MAX_SPOT_LIGHT_NUM 100
 
 #define HitDistanceOnMiss 0
 
@@ -432,7 +432,6 @@ float3 Shade(
     
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
-    return L;
     if (isReflective)
     {
         float range = 3000.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);
