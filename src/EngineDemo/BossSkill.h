@@ -23,7 +23,7 @@ private:
 	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_attackColliders;
 	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_timeSpheres;
 
-	bool m_useSkill;
+	bool m_deleteCollider;
 	bool m_createComplete;
 	bool m_paternEnds;
 	float m_passingTime;

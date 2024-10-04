@@ -14,7 +14,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 BossSkill::BossSkill()
 	: m_createComplete(false)
 	, m_paternEnds(false)
-	, m_useSkill(false)
+	, m_deleteCollider(false)
 	, m_readyToShoot(false)
 	, m_passingTime(0.f)
 	, m_count(0)
@@ -80,11 +80,51 @@ void BossSkill::Update()
 	}
 	else
 	{
-		m_passingTime += GetDeltaTime();
-		if (m_passingTime > 10.f)
+		if (m_attackColliders.empty())
 		{
-			m_bossAnimator->GetTypeInfo().GetProperty("skillCoolTime")->Set(m_bossAnimator.get(), false);
+			m_passingTime += GetDeltaTime();
+			if (m_passingTime > 10.f)
+			{
+				m_bossAnimator->GetTypeInfo().GetProperty("skillCoolTime")->Set(m_bossAnimator.get(), false);
+				m_passingTime = 0.f;
+			}
+		}
+	}
+
+	if (m_deleteCollider)
+	{
+		m_passingTime += GetDeltaTime();
+		if (m_passingTime > 3.f)
+		{
+			for (auto& e : m_attackColliders)
+			{
+				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			}
+
+			m_attackColliders.clear();
+			m_shootingPos.clear();
+
+			m_deleteCollider = false;
+
+			m_count = 0;
+			m_paternEnds = true;
+			m_createComplete = false;
+		}
+
+		if (m_passingTime > 2.f)
+		{
+			for (auto& e : m_attackColliders)
+			{
+				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			}
+			m_attackColliders.clear();
+			m_shootingPos.clear();
+
+			m_deleteCollider = false;
+
 			m_passingTime = 0.f;
+			m_count = 0;
+			m_createComplete = false;
 		}
 	}
 
@@ -222,31 +262,26 @@ void BossSkill::FlameSword()
 	}
 	else
 	{
-		float bossHeight = m_owner.lock()->m_transform->m_position.y;
-		m_passingTime += GetDeltaTime();
-		if (m_passingTime > 0.1f && m_count < m_flamePos.size())
+		if (m_readyToShoot)
 		{
-			m_attackColliders[m_count].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_count] });
-			Vector3 worldPos = m_attackColliders[m_count].first->m_transform->m_worldPosition;
-			m_owner.lock()->DeleteChild(m_attackColliders[m_count].first);
-			m_owner.lock().reset();
-			m_attackColliders[m_count].first->m_transform->m_position = worldPos;
-			m_count++;
-			m_passingTime = 0.f;
-
-		}
-		if (m_count >= m_flamePos.size())
-		{
-			if (m_passingTime > 3.f)
+			float bossHeight = m_owner.lock()->m_transform->m_position.y;
+			m_passingTime += GetDeltaTime();
+			if (m_passingTime > 0.1f && m_count < m_flamePos.size())
 			{
-				m_count = 0;
-				m_paternEnds = true;
-				m_createComplete = false;
-				for (auto& e : m_attackColliders)
-				{
-					m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-				}
-				m_attackColliders.clear();
+				m_attackColliders[m_count].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_count] });
+				Vector3 worldPos = m_attackColliders[m_count].first->m_transform->m_worldPosition;
+				m_owner.lock()->DeleteChild(m_attackColliders[m_count].first);
+				m_owner.lock().reset();
+				m_attackColliders[m_count].first->m_transform->m_position = worldPos;
+				m_count++;
+				m_passingTime = 0.f;
+
+			}
+			if (m_count >= m_flamePos.size())
+			{
+				m_deleteCollider = true;
+				m_passingTime = 0.f;
+				m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
 			}
 		}
 	}
@@ -334,22 +369,9 @@ void BossSkill::SwordShooting()
 
 		if (m_attackColliders[m_attackColliders.size() - 1].first->m_transform->m_position.y < 1.f)
 		{
-			m_passingTime += GetDeltaTime();
-			if (m_passingTime > 2.f)
-			{
-				for (auto& e : m_attackColliders)
-				{
-					m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-				}
-				m_attackColliders.clear();
-				m_shootingPos.clear();
-
-				m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
-
-				m_passingTime = 0.f;
-				m_count = 0;
-				m_createComplete = false;
-			}
+			m_deleteCollider = true;
+			m_passingTime = 0.f;
+			m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
 		}
 	}
 

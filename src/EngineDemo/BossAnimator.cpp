@@ -219,8 +219,10 @@ void BossAnimator::Update()
 			{
 				m_passingTime += GetDeltaTime();
 
+				// 근접일때
 				if (m_isInRange)
 				{
+					// 평타 3번치면 백스텝
 					if (m_attackCount < 3)
 					{
 						if (m_attackCombo1_1)
@@ -257,11 +259,13 @@ void BossAnimator::Update()
 							}
 						}
 					}
+					// 백스텝용
 					else
 					{
 						m_isDodge = true;
 					}
 				}
+				// 원거리일때
 				else
 				{
 					if (m_attackCombo1_1)
@@ -627,7 +631,15 @@ void BossAttackUpperCut::OnStateEnter()
 
 void BossAttackUpperCut::OnStateUpdate()
 {
-	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isReset = true;
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 91)
+	{
+		GetProperty("isSkillActive")->Set(m_animator, true);
+	}
+	if (isReset && !GetProperty("isAttacking")->Get<bool>(m_animator).Get()&& GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
 	}
@@ -639,6 +651,7 @@ void BossAttackUpperCut::OnStateExit()
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isSkillActive")->Set(m_animator, false);
 	GetProperty("skillCoolTime")->Set(m_animator, true);
+	isReset = false;
 }
 
 void BossAttackChargeCombo::OnStateEnter()
@@ -861,6 +874,7 @@ void BossAttackCombo1_1::OnStateExit()
 {
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("attackCombo1_1")->Set(m_animator, false);
+	isReset = false;
 }
 
 void BossAttackCombo1_2::OnStateEnter()
@@ -911,6 +925,7 @@ void BossAttackCombo1_3::OnStateExit()
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("attackCombo1_3")->Set(m_animator, false);
 	GetProperty("attackCount")->Set(m_animator, GetProperty("attackCount")->Get<int>(m_animator).Get() + 1);
+	isReset = false;
 }
 
 void BossAttackCombo2_1::OnStateEnter()
@@ -986,6 +1001,7 @@ void BossAttackSwordShoot::OnStateExit()
 	GetProperty("attackSwordShoot")->Set(m_animator, false);
 	GetProperty("isSkillActive")->Set(m_animator, false);
 	GetProperty("skillCoolTime")->Set(m_animator, true);
+	isReset = false;
 }
 
 void BossAttackShockWave::OnStateEnter()
@@ -1021,6 +1037,7 @@ void BossAttackShockWave::OnStateExit()
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isSkillActive")->Set(m_animator, false);
 	GetProperty("skillCoolTime")->Set(m_animator, true);
+	isReset = false;
 }
 
 void BossAnimator::AllStateReset()

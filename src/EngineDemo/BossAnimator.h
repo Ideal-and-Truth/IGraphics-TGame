@@ -152,7 +152,7 @@ class BossAttackUpperCut
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
 	BossAttackUpperCut(Truth::Component* animator)
