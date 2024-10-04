@@ -41,7 +41,7 @@ void Truth::Entity::Initialize()
 		c->SetOwner(shared_from_this());
 		c->SetManager(m_manager);
 
-		// c->Initalize();
+/*		c->Initalize();*/
 		ApplyComponent(c);
 		c->m_index = index++;
 	}
@@ -247,6 +247,7 @@ void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
 	{
 		if ((*c) == _entity)
 		{
+			(*c)->m_parent.reset();
 			m_children.erase(c);
 			return;
 		}

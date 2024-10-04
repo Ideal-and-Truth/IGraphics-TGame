@@ -48,6 +48,7 @@ private:
 	PROPERTY(unlockSkill1);
 	bool m_unlockSkill1;
 
+	float m_passingTime;
 
 public:
 	Player();

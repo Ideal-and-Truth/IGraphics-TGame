@@ -149,4 +149,21 @@ namespace Ideal
 			};
 		}
 	}
+
+	namespace GenerateMipsCSRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				CBV_GenerateMipsInfo = 0,
+				SRV_SourceMip,
+				UAV_OutMip1,
+				UAV_OutMip2,
+				UAV_OutMip3,
+				UAV_OutMip4,
+				Count
+			};
+		}
+	}
 }

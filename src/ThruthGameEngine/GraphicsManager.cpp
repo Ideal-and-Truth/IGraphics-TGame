@@ -83,7 +83,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
-	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3840_2160);
+	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 }
 
 void Truth::GraphicsManager::Finalize()
@@ -97,6 +97,10 @@ void Truth::GraphicsManager::Finalize()
 void Truth::GraphicsManager::Render()
 {
 #ifdef EDITOR_MODE
+	if (m_mainCamera)
+	{
+		m_mainCamera->CompleteCamera();
+	}
 	m_renderer->Render();
 #else
 	CompleteCamera();
@@ -273,27 +277,27 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			fs::path no = "../Resources/DefaultData/DefaultNormalMap.png";
 			fs::path ma = "../Resources/DefaultData/DefaultBlack.png";
 
-			/**if (GetOpenFileName(&m_openFileName) != 0)
-			{
-				al = m_openFileName.lpstrFile;
-			}
-			if (GetOpenFileName(&m_openFileName) != 0)
-			{
-				no = m_openFileName.lpstrFile;
-			}
-			if (GetOpenFileName(&m_openFileName) != 0)
-			{
-				ma = m_openFileName.lpstrFile;
-			}
-			std::string rootPath = "../Resources/Textures/PlayerRe/adsf/";
-
-			f->Write(rootPath + al.filename().generic_string());
-			f->Write(rootPath + no.filename().generic_string());
-			f->Write(rootPath + ma.filename().generic_string());
-			std::filesystem::path albedo(rootPath + al.filename().generic_string());
-			std::filesystem::path normal(rootPath + no.filename().generic_string());
-			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
-			*/
+// 			if (GetOpenFileName(&m_openFileName) != 0)
+// 			{
+// 				al = m_openFileName.lpstrFile;
+// 			}
+// 			if (GetOpenFileName(&m_openFileName) != 0)
+// 			{
+// 				no = m_openFileName.lpstrFile;
+// 			}
+// 			if (GetOpenFileName(&m_openFileName) != 0)
+// 			{
+// 				ma = m_openFileName.lpstrFile;
+// 			}
+// 			std::string rootPath = "../Resources/Textures/PlayerRe/adsf/";
+// 
+// 			f->Write(rootPath + al.filename().generic_string());
+// 			f->Write(rootPath + no.filename().generic_string());
+// 			f->Write(rootPath + ma.filename().generic_string());
+// 			std::filesystem::path albedo(rootPath + al.filename().generic_string());
+// 			std::filesystem::path normal(rootPath + no.filename().generic_string());
+// 			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
+			
 			mat->m_baseMap = CreateTexture(al.generic_wstring());
 			mat->m_normalMap = CreateTexture(no.generic_wstring());
 			mat->m_maskMap = CreateTexture(ma.generic_wstring());

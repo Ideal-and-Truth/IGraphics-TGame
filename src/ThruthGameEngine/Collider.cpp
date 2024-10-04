@@ -238,8 +238,9 @@ void Truth::Collider::ApplyTransform()
 		return;
 	}
 	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
+	Matrix tempSzie = Matrix::CreateScale(Vector3(50, 50, 50));
 	m_globalTM = m_localTM * ownerTM;
-	m_debugMesh->SetTransformMatrix(m_globalTM);
+	m_debugMesh->SetTransformMatrix(tempSzie * m_globalTM);
 
 }
 

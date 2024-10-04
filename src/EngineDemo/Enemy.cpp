@@ -11,7 +11,9 @@ Enemy::Enemy()
 	, m_currentDamage(20.f)
 	, m_currentTP(0.f)
 	, m_currentCP(0.f)
+	, m_stunGuage(0.f)
 	, m_attackRange(5.f)
+	, m_passingTime(0.f)
 	, m_isTargetIn(false)
 {
 	m_name = "Enemy";
@@ -34,9 +36,28 @@ void Enemy::Start()
 
 void Enemy::Update()
 {
+	if (GetKeyDown(KEY::_9))
+	{
+		m_isTargetIn = !m_isTargetIn;
+	}
+
 	if (!m_isTargetIn)
 	{
 		return;
+	}
+	if (m_stunGuage > 0.f)
+	{
+		m_passingTime += GetDeltaTime();
+		if (m_passingTime > 1.f)
+		{
+			m_stunGuage -= 1.f;
+			m_passingTime = 0.f;
+		}
+	}
+	else
+	{
+		m_stunGuage = 0.f;
+		m_passingTime = 0.f;
 	}
 
 }

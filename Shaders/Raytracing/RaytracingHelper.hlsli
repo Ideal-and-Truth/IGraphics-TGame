@@ -40,8 +40,9 @@ namespace BxDF
                 float multi = 0.3641 * a; // 0.3641 = PI * 0.1159
 
                 diffuse = Albedo * (single + Albedo * multi);
+                return diffuse;
             }
-            return diffuse;
+            return Albedo * 0.5;
         }
     }
     // Fresnel reflectance - schlick approximation.
@@ -144,11 +145,28 @@ namespace BxDF
                 if (!IsBlack(Albedo))
                 {
                     directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                    //if(directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    //{
+                    //    directDiffuse = Albedo;
+                    //}
+                    //if (IsBlack(directDiffuse))
+                    //{
+                    //    directDiffuse = Albedo;
+                    //}
+                    //if (directDiffuse.x > float3(1.f, 1.f, 1.f))
+                    //{
+                    //    directDiffuse = Albedo.xyz;
+                    //}
+
                 }
                 
                 float3 directSpecular = 0;
                 directSpecular = BxDF::Specular::GGX::F(Roughness, N, V, L, Fo);
                 directLighting = NoL * Radiance * (directDiffuse + directSpecular);
+                //if(IsBlack(directLighting))
+                //{
+                //    directLighting = Albedo;
+                //}
             }
             return directLighting;
         }
@@ -215,7 +233,16 @@ namespace Ideal
                 if (!BxDF::IsBlack(Albedo))
                 {
                     directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                    if (directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    {
+                        directDiffuse = Albedo;
+                    }
                     //directDiffuse = BxDF::Diffuse::Lambert::F(Albedo);
+                    if(directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    //if (BxDF::IsBlack(directDiffuse))
+                    {
+                        directDiffuse = Albedo;
+                    }
                 }
                 
                 float3 directSpecular = 0;
@@ -502,4 +529,8 @@ float3 CalculateTangent(in float3 v0, in float3 v1, in float3 v2, in float2 uv0,
     return (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
 }
 
+void Ideal_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out float2 Out)
+{
+    Out = UV * Tiling + Offset;
+}
 #endif

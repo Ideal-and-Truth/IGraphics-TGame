@@ -184,6 +184,7 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 	}
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	psoDesc.SampleMask = UINT_MAX;
@@ -419,10 +420,11 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 			cal *= matX;
 			cal *= matY;
 			cal *= matZ;
-			m_cbTransform.World = cal;
+			m_cbTransform.World = cal.Transpose();
 		}
 		m_cbTransform.World *= m_transform;
-		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert().Transpose();
+		m_cbTransform.World = m_cbTransform.World.Transpose();
+		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert();
 
 		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
 		memcpy(cb1->SystemMemAddr, &m_cbTransform, sizeof(CB_Transform));

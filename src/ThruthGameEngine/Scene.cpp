@@ -122,7 +122,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	// LoadUnityData(L"1_HN_Scene2");
+	LoadUnityData(L"1_HN_Scene2");
 }
 
 
@@ -503,10 +503,12 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			file->Read<float>();
 		}
 
+		Matrix tempScale = Matrix::CreateScale(Vector3(3.0f, 3.0f, 3.0f));
+
 		Matrix ltm = Matrix::CreateScale(sca);
 		ltm *= Matrix::CreateFromQuaternion(rot);
 		ltm *= Matrix::CreateTranslation(pos);
-
+		// ltm = tempScale * ltm;
 		Matrix flipYZ = Matrix::Identity;
 		flipYZ.m[0][0] = -1.f;
 
