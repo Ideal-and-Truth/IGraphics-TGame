@@ -14,7 +14,9 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "Mesh.h"
-
+#include "PointLight.h"
+#include "DirectionLight.h"
+#include "SpotLight.h"
 #include <algorithm>
 
 /// <summary>
@@ -489,6 +491,23 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			}
 		}
 
+		Matrix tempScale = Matrix::CreateScale(Vector3(3.0f, 3.0f, 3.0f));
+
+		Matrix ltm = Matrix::CreateScale(sca);
+		ltm *= Matrix::CreateFromQuaternion(rot);
+		ltm *= Matrix::CreateTranslation(pos);
+		// ltm = tempScale * ltm;
+		Matrix flipYZ = Matrix::Identity;
+		flipYZ.m[0][0] = -1.f;
+
+		Matrix flipXY = Matrix::Identity;
+		flipXY.m[2][2] = -1.f;
+
+		ltm = flipYZ * flipXY * ltm;
+
+		m_mapEntity[i]->SetLocalTM(ltm);
+		ltm.Decompose(sca, rot, pos);
+
 		// read Light Data
 		bool isLight = file->Read<bool>();
 		if (isLight)
@@ -505,25 +524,43 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 			switch (lightType)
 			{
-
+			case 0:
+			{
+				std::shared_ptr<SpotLight> light = std::make_shared<SpotLight>();
+				light->m_isRendering = true;
+				light->m_position = pos;
+				light->m_direction = rot.ToEuler();
+				light->m_angle = angle;
+				light->m_intensity = intensity;
+				light->m_lightColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			case 1:
+			{
+				std::shared_ptr<DirectionLight> light = std::make_shared<DirectionLight>();
+				light->m_isRendering = true;
+				light->m_direction = rot.ToEuler();
+				light->m_intensity = intensity;
+				light->m_diffuseColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			case 2:
+			{
+				std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
+				light->m_isRendering = true;
+				light->m_position = pos;
+				light->m_radius = range;
+				light->m_intensity = intensity;
+				light->m_lightColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
 			default:
 				break;
 			}
 		}
-
-		Matrix tempScale = Matrix::CreateScale(Vector3(3.0f, 3.0f, 3.0f));
-
-		Matrix ltm = Matrix::CreateScale(sca);
-		ltm *= Matrix::CreateFromQuaternion(rot);
-		ltm *= Matrix::CreateTranslation(pos);
-		// ltm = tempScale * ltm;
-		Matrix flipYZ = Matrix::Identity;
-		flipYZ.m[0][0] = -1.f;
-
-		Matrix flipXY = Matrix::Identity;
-		flipXY.m[2][2] = -1.f;
-
-		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
 	}
 
 	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
