@@ -113,19 +113,22 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
         float3 v0 = vertices[0].position;
         float3 v1 = vertices[1].position;
         float3 v2 = vertices[2].position;
-        float2 uv0 = float2(vertices[0].uv[0],vertices[0].uv[1]);
-        float2 uv1 = float2(vertices[1].uv[0],vertices[1].uv[1]);
-        float2 uv2 = float2(vertices[2].uv[0],vertices[2].uv[1]);
+        float2 uv0 = float2(vertices[0].uv[0], vertices[0].uv[1]);
+        float2 uv1 = float2(vertices[1].uv[0], vertices[1].uv[1]);
+        float2 uv2 = float2(vertices[2].uv[0], vertices[2].uv[1]);
         tangent = CalculateTangent(v0, v1, v2, uv0, uv1, uv2);
     }
-    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
-    //return texSample;
 
+    // 거리와 법선 벡터의 각도를 기반으로 LOD 값 계산
+    float distance = length(g_sceneCB.cameraPosition.xyz - HitWorldPosition());
+    float lod = log2(distance);  // 거리 기반 LOD
+    lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
+
+    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
     return worldNormal;
 }
-
 RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float tMin = 0.001f, float tMax = 10000.f, bool cullNonOpaque = false)
 {
     RayPayload payload;
@@ -171,8 +174,6 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, inout RayPa
 {
     // offset 과는 관계없이 똑같은 노말값 오류 현상
     float tOffset = 0.001f;
-    
-    // 0
     float3 offsetAlongRay = tOffset * wi;
     float3 adjustedHitPosition = hitPosition + offsetAlongRay;
    
@@ -186,7 +187,7 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, inout RayPa
     //    ray.origin += N * 0.001f;
     //}
 
-    float tMin = 0.001f;
+    float tMin = 0;
     float tMax = TMax;
 
     rayPayload = TraceRadianceRay(ray, rayPayload.rayRecursionDepth, tMin, tMax);
@@ -304,14 +305,21 @@ float3 Shade(
     float3 V = -WorldRayDirection();
     float3 L = 0;
 
-    float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).xyz;
+    float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+
+    // 거리와 법선 각도를 기반으로 LOD 값 계산
+    float lod = log2(distance); // 거리 기반 LOD
+    lod -= log2(abs(dot(N, V))); // 법선과 광선 벡터의 각도에 따른 조정
+    lod = saturate(lod);
+
+    float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
     float3 Ks;
     float3 Kr;
     const float3 Kt;
     float metallic;
     float roughness;
 
-    float4 maskSample = l_texMask.SampleLevel(LinearWrapSampler, uv, 0);
+    float4 maskSample = l_texMask.SampleLevel(LinearWrapSampler, uv, lod);
 
     metallic = maskSample.x;
     roughness = 1 - maskSample.a;
@@ -340,7 +348,7 @@ float3 Shade(
         }
         
         // Point Light
-        {
+        {   //
             //for (int i = 0; i < pointLightNum; ++i)
             //{
             //    float3 position = g_lightList.PointLights[i].Position.xyz;
@@ -424,7 +432,7 @@ float3 Shade(
     
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
-
+    return L;
     if (isReflective)
     {
         float range = 3000.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);

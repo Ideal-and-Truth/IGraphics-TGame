@@ -256,6 +256,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"DebugPlane/Plane.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
@@ -389,6 +390,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 
+#pragma endregion
+#pragma region TestPlane
+		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
+		auto planeMaterial= gRenderer->CreateMaterial();
+		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_BaseMap.png", true);
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_MaskMap.png", true, true);
+		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png", true, true);
+		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_Normal.png", true, true);
+		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
+		planeMaterial->SetBaseMap(planeAlbedoTexture);
+		planeMaterial->SetMaskMap(planeMaskTexture);
+		planeMaterial->SetNormalMap(planeNormalTexture);
+		plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
+		plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(5, 0, 0)));
 #pragma endregion
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
