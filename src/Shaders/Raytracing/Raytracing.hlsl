@@ -348,7 +348,7 @@ float3 Shade(
         }
         
         // Point Light
-        {
+        {   //
             //for (int i = 0; i < pointLightNum; ++i)
             //{
             //    float3 position = g_lightList.PointLights[i].Position.xyz;

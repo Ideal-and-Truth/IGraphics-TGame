@@ -341,7 +341,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	const DirectX::Image* img = nullptr;
 	if (isTGA)
 	{
-		Check(DirectX::LoadFromTGAFile(Path.c_str(), nullptr, image), L"Failed To Load TGA File");
+		//Check(DirectX::LoadFromTGAFile(Path.c_str(), nullptr, image), L"Failed To Load TGA File");
+		Check(DirectX::LoadFromTGAFile(Path.c_str(), &metadata, image), L"Failed To Load TGA File");
 		img = image.GetImages();
 	}
 	else
