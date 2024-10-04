@@ -122,7 +122,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	LoadUnityData(L"1_HN_Scene2");
+	// LoadUnityData(L"1_HN_Scene2");
 }
 
 
