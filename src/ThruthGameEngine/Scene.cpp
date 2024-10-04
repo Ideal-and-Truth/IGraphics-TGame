@@ -534,9 +534,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_position = pos;
 				light->m_direction = dir;
 				light->m_angle = angle;
+				light->m_range = range;
 				light->m_intensity = intensity;
 				light->m_lightColor = lightColor;
-				m_mapEntity[i]->AddComponent(light);
+				// m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			case 1:
@@ -546,7 +547,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_direction = dir;
 				light->m_intensity = intensity;
 				light->m_diffuseColor = lightColor;
-				m_mapEntity[i]->AddComponent(light);
+				// m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			case 2:
@@ -557,7 +558,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_radius = range;
 				light->m_intensity = intensity;
 				light->m_lightColor = lightColor;
-				m_mapEntity[i]->AddComponent(light);
+				// m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			default:
