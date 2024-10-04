@@ -163,8 +163,18 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			DWORD width = rect.right - rect.left;
 			DWORD height = rect.bottom - rect.top;
 			g_Renderer->Resize(width, height);
+			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		}
 		break;
+	}
+	case WM_SYSCOMMAND:
+	{
+		if (SC_KEYMENU == (wParam & 0xFFF0) && (lParam == 13))
+		{
+			g_Renderer->ToggleFullScreenWindow();
+			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+		}
+		[[fallthrough]];
 	}
 	default:
 		if (g_inputmanager)
@@ -172,6 +182,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			g_inputmanager->m_deltaWheel = 0;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
+
 	}
 	return 0;
 }

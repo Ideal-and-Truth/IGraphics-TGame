@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>wood</Name>
+        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
+        <NormalFile>DefaultNormalMap.png</NormalFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
+        <RoughnessFile>DefaulBlack.png</RoughnessFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="0.53129649" B="0.00769446" A="1"/>
+        <Specular R="1" G="0.53129649" B="0.00769446" A="0"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+        <Metallic Factor="-1.0737418e+08"/>
+        <Roughness Factor="1"/>
+        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+    </Material>
+    <Material>
+        <Name>bench</Name>
+        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
+        <NormalFile>DefaultNormalMap.png</NormalFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
+        <RoughnessFile>DefaulBlack.png</RoughnessFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="0.039068423" G="0.29131418" B="1" A="1"/>
+        <Specular R="0.039068423" G="0.29131418" B="1" A="0"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+        <Metallic Factor="-1.0737418e+08"/>
+        <Roughness Factor="1"/>
+        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
+    </Material>
+</Materials>

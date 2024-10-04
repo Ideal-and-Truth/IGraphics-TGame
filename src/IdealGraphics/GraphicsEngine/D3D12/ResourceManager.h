@@ -8,6 +8,7 @@
 
 namespace Ideal
 {
+	class D3D12Shader;
 	class D3D12Resource;
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
@@ -25,6 +26,8 @@ namespace Ideal
 	class RaytracingManager;
 	class DeferredDeleteManager;
 	class IMesh;
+	class D3D12DynamicConstantBufferAllocator;
+	class GenerateMips;
 }
 
 namespace Ideal
@@ -135,7 +138,7 @@ namespace Ideal
 		//}
 
 		// 파일 로드하여 srv로 만든다.
-		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB = false);
+		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB = false, uint32 MipLevels = 1);
 
 		void CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
@@ -166,6 +169,8 @@ namespace Ideal
 
 		// Particle
 		std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& filename);
+
+		std::shared_ptr<Ideal::D3D12Shader> CreateAndLoadShader(const std::wstring& FilePath);
 
 	private:
 		ComPtr<ID3D12Device5> m_device = nullptr;
@@ -231,5 +236,14 @@ namespace Ideal
 	private:
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_debugLineVertexBuffer;
 		//std::shared_ptr<Ideal::D3D12VertexBuffer> GetDebugLineIB();
+
+	public:
+		// GenerateMipsInfo
+		void GenerateMips(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12Texture> Texture, uint32 GenerateMipsNum);
+
+	private:
+		void InitGenerateMipsManager(ComPtr<ID3D12Device> Device);
+
+		std::shared_ptr<Ideal::GenerateMips> m_generateMipsManager;
 	};
 }

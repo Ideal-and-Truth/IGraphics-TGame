@@ -76,6 +76,15 @@ struct CB_DebugLine
 	Color color;
 };
 
+struct CB_GenerateMipsInfo
+{
+	uint32 SrcMipLevel;
+	uint32 NumMipLevels;
+	uint32 SrcDimension;
+	bool IsSRGB;
+	Vector2 TexelSize;
+};
+
 //------------Light-----------//
 #define MAX_POINT_LIGHT_NUM 16
 #define MAX_SPOT_LIGHT_NUM 16

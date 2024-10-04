@@ -210,13 +210,14 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
-    <VcpkgEnabled>false</VcpkgEnabled>
+    <VcpkgEnabled>true</VcpkgEnabled>
     <VcpkgManifestInstall>true</VcpkgManifestInstall>
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <VcpkgConfiguration>Release</VcpkgConfiguration>
-    <VcpkgInstalledDir>$(SolutionDir)vcpkg_installed\</VcpkgInstalledDir>
+    <VcpkgConfiguration>$(Configuration)</VcpkgConfiguration>
+    <VcpkgInstalledDir>
+    </VcpkgInstalledDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -302,7 +303,7 @@
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)Libraries\ReleaseLib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib;DebugUtils.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib</AdditionalDependencies>
+      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
