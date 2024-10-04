@@ -35,6 +35,8 @@ namespace Truth
 
 		const float m_minmumDistance;
 
+		Vector3 m_impulse;
+
 		PROPERTY(height);
 		float m_height;
 

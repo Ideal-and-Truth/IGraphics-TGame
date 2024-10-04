@@ -103,16 +103,23 @@ void Truth::Controller::Move(Vector3& _disp)
 		static_cast<uint32>(
 			m_controller->move
 			(
-				MathUtil::Convert(_disp),
+				MathUtil::Convert(_disp + m_impulse),
 				m_minmumDistance,
 				1.0f / 60.0f,
 				physx::PxControllerFilters()
 			));
+
+	m_impulse -= m_impulse * 0.01;
+	if (m_impulse.Length() <= 1.0f)
+	{
+		m_impulse = Vector3::Zero;
+	}
 }
 
 void Truth::Controller::AddImpulse(Vector3& _disp)
 {
-	m_rigidbody->AddImpulse(_disp);
+	m_impulse = _disp;
+	// m_rigidbody->AddImpulse(_disp);
 }
 
 /// <summary>
