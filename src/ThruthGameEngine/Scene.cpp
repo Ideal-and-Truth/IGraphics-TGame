@@ -493,14 +493,22 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		bool isLight = file->Read<bool>();
 		if (isLight)
 		{
-			file->Read<uint32>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
+			uint32 lightType = file->Read<uint32>();
+			float intensity = file->Read<float>();
+			Color lightColor;
+			lightColor.x = file->Read<float>();
+			lightColor.y = file->Read<float>();
+			lightColor.z = file->Read<float>();
+			lightColor.w = file->Read<float>();
+			float range = file->Read<float>();
+			float angle = file->Read<float>();
+
+			switch (lightType)
+			{
+
+			default:
+				break;
+			}
 		}
 
 		Matrix tempScale = Matrix::CreateScale(Vector3(3.0f, 3.0f, 3.0f));
