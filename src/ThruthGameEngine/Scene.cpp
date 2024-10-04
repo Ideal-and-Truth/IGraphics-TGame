@@ -506,7 +506,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		ltm = flipYZ * flipXY * ltm;
 
 		m_mapEntity[i]->SetLocalTM(ltm);
-		ltm.Decompose(sca, rot, pos);
+		// ltm.Decompose(sca, rot, pos);
 
 		// read Light Data
 		bool isLight = file->Read<bool>();
@@ -522,6 +522,9 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			float range = file->Read<float>();
 			float angle = file->Read<float>();
 
+			Matrix rotMat = Matrix::CreateFromQuaternion(rot);
+			Vector3 dir = { 0.0f, 0.0f, 1.0f };
+			dir = Vector3::Transform(dir, rotMat);
 			switch (lightType)
 			{
 			case 0:
@@ -529,7 +532,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				std::shared_ptr<SpotLight> light = std::make_shared<SpotLight>();
 				light->m_isRendering = true;
 				light->m_position = pos;
-				light->m_direction = rot.ToEuler();
+				light->m_direction = dir;
 				light->m_angle = angle;
 				light->m_intensity = intensity;
 				light->m_lightColor = lightColor;
@@ -540,7 +543,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 				std::shared_ptr<DirectionLight> light = std::make_shared<DirectionLight>();
 				light->m_isRendering = true;
-				light->m_direction = rot.ToEuler();
+				light->m_direction = dir;
 				light->m_intensity = intensity;
 				light->m_diffuseColor = lightColor;
 				m_mapEntity[i]->AddComponent(light);

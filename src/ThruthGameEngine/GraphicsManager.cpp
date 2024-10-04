@@ -202,7 +202,7 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 	m_mainCamera = _camera;
 }
 
-std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path)
+std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _a, bool _b)
 {
 	if (m_textureMap.find(_path) == m_textureMap.end())
 	{
@@ -212,11 +212,7 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		{
 			return nullptr;
 		}
-// 		else if (p.extension() == ".tga" || p.extension() == ".TGA")
-// 		{
-// 			return nullptr;
-// 		}
-		tex->m_texture = m_renderer->CreateTexture(_path);
+		tex->m_texture = m_renderer->CreateTexture(_path, _a, _b);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
 
@@ -252,7 +248,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			std::filesystem::path normal(f->Read<std::string>());
 			std::filesystem::path metalicRoughness(f->Read<std::string>());
 			mat->m_baseMap = CreateTexture(albedo);
-			mat->m_normalMap = CreateTexture(normal);
+			mat->m_normalMap = CreateTexture(normal, false, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
 			mat->SetTexture();
 		}
@@ -299,7 +295,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 // 			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
 			
 			mat->m_baseMap = CreateTexture(al.generic_wstring());
-			mat->m_normalMap = CreateTexture(no.generic_wstring());
+			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
 			mat->m_maskMap = CreateTexture(ma.generic_wstring());
 			mat->SetTexture();
 		}
