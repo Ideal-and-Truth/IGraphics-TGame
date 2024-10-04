@@ -46,6 +46,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class BossStrafe
@@ -73,7 +74,7 @@ class BossDodge
 	: public AnimationState
 {
 private:
-
+	bool isPlay = false;
 
 public:
 	BossDodge(Truth::Component* animator)
@@ -85,6 +86,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class BossDown
@@ -456,9 +458,6 @@ private:
 	PROPERTY(strafeMove);
 	bool m_strafeMove;
 
-	PROPERTY(isReturn);
-	bool m_isReturn;
-
 	PROPERTY(isInRange);
 	bool m_isInRange;
 
@@ -516,9 +515,13 @@ private:
 	PROPERTY(isDown);
 	bool m_isDown;
 
+	PROPERTY(isDodge);
+	bool m_isDodge;
+
 	PROPERTY(isDeath);
 	bool m_isDeath;
 
+	/// 상태 조건을 위한 것들
 	PROPERTY(isSkillActive);
 	bool m_isSkillActive;
 
@@ -530,6 +533,9 @@ private:
 
 	PROPERTY(sideMove);
 	float m_sideMove;
+
+	PROPERTY(attackCount);
+	int m_attackCount;
 
 	/// ----------------------------------------
 	PROPERTY(passingTime);
@@ -560,6 +566,7 @@ private:
 
 private:
 	int RandomNumber(int _min, int _max);
+	void AllStateReset();
 
 public:
 	BossAnimator();

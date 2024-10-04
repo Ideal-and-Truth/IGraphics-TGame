@@ -72,6 +72,10 @@ void BossSkill::Update()
 			{
 				ShockWave();
 			}
+			else if (m_bossAnimator->GetTypeInfo().GetProperty("attackUpperCut")->Get<bool>(m_bossAnimator.get()).Get())
+			{
+				FlameSword();
+			}
 		}
 	}
 	else
@@ -123,8 +127,8 @@ void BossSkill::ShockWave()
 			m_owner.lock()->AddChild(shock);
 
 			shock->SetPosition({ 0.f,0.f,0.f });
-			//shock->SetScale({ 3.f,1.f,3.f });
-			shock->SetScale({ 300.f,30.f,300.f });
+			shock->SetScale({ 3.f,1.f,3.f });
+			//shock->SetScale({ 300.f,30.f,300.f });
 
 
 			//shock->Awake();
@@ -133,6 +137,7 @@ void BossSkill::ShockWave()
 			m_attackColliders.push_back(std::make_pair(shock, false));
 		}
 		m_createComplete = true;
+		m_passingTime = 0.5f;
 	}
 	else
 	{
@@ -206,8 +211,8 @@ void BossSkill::FlameSword()
 			m_owner.lock()->AddChild(flame);
 
 			flame->SetPosition({ 0.f,0.f,0.f });
-			//flame->SetScale({ 3.f,1.f,3.f });
-			flame->SetScale({ 300.f,30.f,300.f });
+			flame->SetScale({ 3.f,1.f,3.f });
+			//flame->SetScale({ 300.f,30.f,300.f });
 
 			flame->Start();
 
@@ -265,8 +270,8 @@ void BossSkill::SwordShooting()
 			m_owner.lock()->AddChild(sword);
 
 			sword->SetPosition(m_swordPos[m_count]);
-			sword->SetScale({ 30.f,30.f,300.f });
-			//sword->SetScale({ 1.f,1.f,3.f });
+			//sword->SetScale({ 30.f,30.f,300.f });
+			sword->SetScale({ 0.1f,0.1f,2.f });
 
 
 			sword->Start();
