@@ -580,7 +580,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_descriptorManager,
 		m_currentContextIndex,
 		m_cbAllocator[m_currentContextIndex],
-		m_sceneCB, m_lightListCB, m_skyBoxTexture);
+		m_sceneCB, &m_lightListCB, m_skyBoxTexture);
 
 #ifdef BeforeRefactor
 	CopyRaytracingOutputToBackBuffer();
