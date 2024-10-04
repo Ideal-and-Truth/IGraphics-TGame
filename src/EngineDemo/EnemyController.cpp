@@ -99,8 +99,8 @@ void EnemyController::FollowTarget()
 			m_isAttackReady = false;
 		}
 		// 뒷걸음질
-		else if (distance < attackRange - 1.f)
-		{
+//		else if (distance < attackRange - 1.f)
+//		{
 // 			m_isBackStep = true;
 // 			m_isAttackReady = false;
 //
@@ -113,7 +113,7 @@ void EnemyController::FollowTarget()
 // 			backDir.x *= -1.f;
 // 			backDir.z *= -1.f;
 // 			m_controller.lock()->Move(backDir);
-		}
+//		}
 		// 간보기
 		else
 		{

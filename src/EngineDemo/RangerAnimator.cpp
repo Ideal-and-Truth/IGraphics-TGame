@@ -91,7 +91,7 @@ void RangerAnimator::Update()
 	if (m_isDeath)
 	{
 		for (auto& e : m_owner.lock()->m_children)
-		{
+		{ 
 			m_owner.lock()->DeleteChild(e);
 			m_owner.lock().reset();
 			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e);

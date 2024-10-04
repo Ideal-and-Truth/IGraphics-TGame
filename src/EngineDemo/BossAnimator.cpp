@@ -133,10 +133,16 @@ void BossAnimator::Start()
 
 void BossAnimator::Update()
 {
+	if (GetKeyDown(KEY::_9))
+	{
+		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get());
+	}
+
 	if (m_isDeath || !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
 		return;
 	}
+
 
 	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
 	{
@@ -641,7 +647,7 @@ void BossAttackCharge::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
 	}
-	if (!m_changePose && isReset&&GetProperty("currentFrame")->Get<int>(m_animator).Get() > 142)
+	if (!m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 142)
 	{
 		m_changePose = true;
 		isReset = false;
