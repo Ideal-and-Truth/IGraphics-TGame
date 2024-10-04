@@ -293,7 +293,7 @@ uint64 ResourceManager::AllocateMaterialID()
 	return ret;
 }
 
-void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB /*= false*/, uint32 MipLevels /*= 1*/)
+void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB /*= false*/, uint32 MipLevels /*= 1*/, bool IsNormalMap /*= false*/)
 {
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
@@ -341,7 +341,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	const DirectX::Image* img = nullptr;
 	if (isTGA)
 	{
-		Check(DirectX::LoadFromTGAFile(Path.c_str(), nullptr, image), L"Failed To Load TGA File");
+		//Check(DirectX::LoadFromTGAFile(Path.c_str(), nullptr, image), L"Failed To Load TGA File");
+		Check(DirectX::LoadFromTGAFile(Path.c_str(), &metadata, image), L"Failed To Load TGA File");
 		img = image.GetImages();
 	}
 	else
@@ -350,6 +351,10 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		img = image.GetImages();
 	}
 
+	if (IgnoreSRGB || IsNormalMap)
+	{
+		metadata.format = MakeLinear(metadata.format);
+	}
 
 	MipLevels = (MipLevels == 0) ?
 		1 + static_cast<UINT16>(std::floor(std::log2(std::max<uint64>(metadata.width, metadata.height)))) :
@@ -361,7 +366,14 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	DirectX::ScratchImage mipChain;
 	if (MipLevels > 1)
 	{
-		Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
+		if (IsNormalMap)
+		{
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT | DirectX::TEX_FILTER_FORCE_NON_WIC, MipLevels, mipChain), L"Failed to generate MIP maps");
+		}
+		else
+		{
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
+		}
 		img = mipChain.GetImages();
 	}
 	// 각 MIP 레벨별 서브리소스 데이터 생성

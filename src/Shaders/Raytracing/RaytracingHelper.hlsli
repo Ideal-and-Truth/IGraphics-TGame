@@ -285,7 +285,18 @@ namespace Ideal
                 
                 if (!BxDF::IsBlack(Albedo))
                 {
+                    //directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
                     directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                    if (directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    {
+                        directDiffuse = Albedo;
+                    }
+                    //directDiffuse = BxDF::Diffuse::Lambert::F(Albedo);
+                    if (directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    //if (BxDF::IsBlack(directDiffuse))
+                    {
+                        directDiffuse = Albedo;
+                    }
                 }
                 
                 directSpecular = BxDF::Specular::GGX::F(Roughness, N, V, L, Fo);
@@ -342,7 +353,18 @@ namespace Ideal
 
                 if (!BxDF::IsBlack(Albedo))
                 {
+                    //directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
                     directDiffuse = BxDF::Diffuse::F(Albedo, Roughness, N, V, L, Fo);
+                    if (directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    {
+                        directDiffuse = Albedo;
+                    }
+                    //directDiffuse = BxDF::Diffuse::Lambert::F(Albedo);
+                    if (directDiffuse.x > 1 && directDiffuse.y > 1 && directDiffuse.z > 1)
+                    //if (BxDF::IsBlack(directDiffuse))
+                    {
+                        directDiffuse = Albedo;
+                    }
                 }
 
                 directSpecular = BxDF::Specular::GGX::F(Roughness, N, V, L, Fo);
@@ -533,4 +555,7 @@ void Ideal_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out fl
 {
     Out = UV * Tiling + Offset;
 }
+
+
+
 #endif

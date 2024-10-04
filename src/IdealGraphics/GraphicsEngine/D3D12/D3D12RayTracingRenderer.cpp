@@ -580,7 +580,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_descriptorManager,
 		m_currentContextIndex,
 		m_cbAllocator[m_currentContextIndex],
-		m_sceneCB, m_lightListCB, m_skyBoxTexture);
+		m_sceneCB, &m_lightListCB, m_skyBoxTexture);
 
 #ifdef BeforeRefactor
 	CopyRaytracingOutputToBackBuffer();
@@ -1079,7 +1079,7 @@ void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
 	m_skyBoxTexture = skyBox;
 }
 
-std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/)
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/)
 {
 	std::shared_ptr<Ideal::D3D12Texture> texture;
 	uint32 generateMips = 1;

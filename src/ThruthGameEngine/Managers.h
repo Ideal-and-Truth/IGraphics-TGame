@@ -11,6 +11,7 @@ namespace Truth
 	class GraphicsManager;
 	class EditorCamera;
 	class ParticleManager;
+	class SoundManager;
 	class Mesh;
 	class ComponentFactory;
 }
@@ -28,6 +29,7 @@ namespace Truth
 		std::shared_ptr<PhysicsManager> m_physXManager;
 		std::shared_ptr<GraphicsManager> m_graphicsManager;
 		std::shared_ptr<ParticleManager> m_particleManager;
+		std::shared_ptr<SoundManager> m_soundManager;
 
 		std::unique_ptr<ComponentFactory> m_componentFactory;
 
@@ -65,6 +67,7 @@ namespace Truth
 		inline std::shared_ptr<Truth::PhysicsManager> Physics() const { return m_physXManager; };
 		inline std::shared_ptr<Truth::GraphicsManager> Graphics() const { return m_graphicsManager; };
 		inline std::shared_ptr<Truth::ParticleManager> Particle() const { return m_particleManager; };
+		inline std::shared_ptr<Truth::SoundManager> Sound() const { return m_soundManager; };
 
 	private:
 		void CreateManagers();
