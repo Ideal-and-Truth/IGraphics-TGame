@@ -455,7 +455,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
-
+			if (name == "55394")
+			{
+				int a = 1;
+			}
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
@@ -536,7 +539,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_direction = dir;
 				light->m_angle = angle;
 				light->m_range = range;
-				light->m_intensity = intensity * 0.001;
+				light->m_intensity = intensity * 1;
 				light->m_softness = 5;
 				light->m_lightColor = lightColor;
 				m_mapEntity[i]->AddComponent(light);
@@ -558,7 +561,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_isRendering = true;
 				light->m_position = pos;
 				light->m_radius = range;
-				light->m_intensity = intensity * 0.01;
+				light->m_intensity = intensity * 1;
 				light->m_lightColor = lightColor;
 				m_mapEntity[i]->AddComponent(light);
 				break;

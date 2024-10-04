@@ -197,8 +197,8 @@ namespace Ideal
     }
     float Attenuate(float distance, float range)
     {
-        float att = saturate(1.f - (distance * distance / (range * range)));
-        return att * att;
+        // float att = saturate(1.f - (distance * distance / (range * range)));
+        // return att * att;
         
         //float numer = distance / range;
         //numer = numer * numer;
@@ -207,6 +207,10 @@ namespace Ideal
         //numer = numer * numer;
         //float denom = dist * dist + 1;
         //return (numer / denom);
+        
+        float rangeFactor = saturate(1.0f - (distance / range)); // 범위를 벗어나면 0이 됨
+        float attenuation = 1.0f / (distance * distance + 1.0f); // 역제곱 감쇠
+        return attenuation * (rangeFactor * rangeFactor); // 범위에 따른 부드러운 감쇠 적용
     }
     
     namespace Light

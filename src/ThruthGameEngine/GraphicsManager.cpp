@@ -208,6 +208,10 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
 		std::filesystem::path p(_path);
+		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
+		{
+			int a = 1;
+		}
 		if (_path.empty())
 		{
 			return nullptr;

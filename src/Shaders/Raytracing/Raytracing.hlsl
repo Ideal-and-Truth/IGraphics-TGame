@@ -120,11 +120,11 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     }
 
     // 거리와 법선 벡터의 각도를 기반으로 LOD 값 계산
-    float distance = length(g_sceneCB.cameraPosition.xyz - HitWorldPosition());
-    float lod = log2(distance);  // 거리 기반 LOD
-    lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
+    // float distance = length(g_sceneCB.cameraPosition.xyz - HitWorldPosition());
+    // float lod = log2(distance);  // 거리 기반 LOD
+    // lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
 
-    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
+    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
     return worldNormal;
