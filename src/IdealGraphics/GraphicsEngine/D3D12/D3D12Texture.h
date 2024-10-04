@@ -51,7 +51,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle GetSRV();
 		Ideal::D3D12DescriptorHandle GetRTV();
 		Ideal::D3D12DescriptorHandle GetDSV();
-		Ideal::D3D12DescriptorHandle GetUAV();
+		Ideal::D3D12DescriptorHandle GetUAV(uint32 i = 0);
 
 		void SetUploadBuffer(ComPtr<ID3D12Resource> UploadBuffer);
 		ComPtr<ID3D12Resource> GetUploadBuffer() { return m_uploadBuffer; }
@@ -74,6 +74,10 @@ namespace Ideal
 		ComPtr<ID3D12Resource> m_uploadBuffer;
 
 		std::weak_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager;
+
+		// UAVCount
+		std::vector<Ideal::D3D12DescriptorHandle> m_uavHandles;
+		uint32 m_uavCount = 0;
 
 	private:
 		// 2024.05.15 Texture일 경우 필요한 여러가지 정보들
