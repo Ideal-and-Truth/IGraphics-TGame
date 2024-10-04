@@ -86,8 +86,8 @@ struct CB_GenerateMipsInfo
 };
 
 //------------Light-----------//
-#define MAX_POINT_LIGHT_NUM 16
-#define MAX_SPOT_LIGHT_NUM 16
+#define MAX_POINT_LIGHT_NUM 100
+#define MAX_SPOT_LIGHT_NUM 100
 
 struct PointLight
 {

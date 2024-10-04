@@ -18,8 +18,8 @@
 
 #define SHADOW_ON
 
-#define MAX_POINT_LIGHT_NUM 16
-#define MAX_SPOT_LIGHT_NUM 16
+#define MAX_POINT_LIGHT_NUM 100
+#define MAX_SPOT_LIGHT_NUM 100
 
 #define HitDistanceOnMiss 0
 
@@ -349,75 +349,75 @@ float3 Shade(
         
         // Point Light
         {   //
-            //for (int i = 0; i < pointLightNum; ++i)
-            //{
-            //    float3 position = g_lightList.PointLights[i].Position.xyz;
-            //    float3 color = g_lightList.PointLights[i].Color.rgb;
-            //    float range = g_lightList.PointLights[i].Range;
-            //    
-            //    float3 direction = normalize(position - hitPosition);
-            //    float distance = length(position - hitPosition);
-            //    float att = Ideal::Attenuate(distance, range);
-            //    float intensity = g_lightList.PointLights[i].Intensity;
-            //    
-            //    bool isInShadow = false;
-            //    if(distance <= range)
-            //    {
-            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-            //    }
-            //    float3 light = Ideal::Light::ComputePointLight
-            //    (
-            //    Kd,
-            //    Ks,
-            //    color,
-            //    isInShadow,
-            //    roughness,
-            //    N,
-            //    V,
-            //    direction,
-            //    distance,
-            //    range,
-            //    intensity
-            //    );
-            //    L += light;
-            //}
-            //
-            //for (int i = 0; i < spotLightNum; ++i)
-            //{
-            //    float3 position = g_lightList.SpotLights[i].Position.xyz;
-            //    float3 color = g_lightList.SpotLights[i].Color.rgb;
-            //    float range = g_lightList.SpotLights[i].Range;
-            //    float angle = g_lightList.SpotLights[i].SpotAngle;
-            //    float intensity = g_lightList.SpotLights[i].Intensity;
-            //    float softness = g_lightList.SpotLights[i].Softness;
-            //    float3 direction = normalize(position - hitPosition);
-            //    float distance = length(position - hitPosition);
-            //    float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
-            //    
-            //    bool isInShadow = false;
-            //    if(distance <= range)
-            //    {
-            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-            //    }
-            //    float3 light = Ideal::Light::ComputeSpotLight2(
-            //         Kd,
-            //         Ks,
-            //         color,
-            //         isInShadow,
-            //         roughness,
-            //         N,
-            //         V,
-            //         direction,
-            //         distance,
-            //         range,
-            //         intensity,
-            //         softness,
-            //         lightDirection,
-            //         angle
-            //     );
-            //
-            //    L += light;
-            //}
+            for (int i = 0; i < pointLightNum; ++i)
+            {
+                float3 position = g_lightList.PointLights[i].Position.xyz;
+                float3 color = g_lightList.PointLights[i].Color.rgb;
+                float range = g_lightList.PointLights[i].Range;
+                
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                float att = Ideal::Attenuate(distance, range);
+                float intensity = g_lightList.PointLights[i].Intensity;
+                
+                bool isInShadow = false;
+                if(distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                }
+                float3 light = Ideal::Light::ComputePointLight
+                (
+                Kd,
+                Ks,
+                color,
+                isInShadow,
+                roughness,
+                N,
+                V,
+                direction,
+                distance,
+                range,
+                intensity
+                );
+                L += light;
+            }
+            
+            for (int i = 0; i < spotLightNum; ++i)
+            {
+                float3 position = g_lightList.SpotLights[i].Position.xyz;
+                float3 color = g_lightList.SpotLights[i].Color.rgb;
+                float range = g_lightList.SpotLights[i].Range;
+                float angle = g_lightList.SpotLights[i].SpotAngle;
+                float intensity = g_lightList.SpotLights[i].Intensity;
+                float softness = g_lightList.SpotLights[i].Softness;
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
+                
+                bool isInShadow = false;
+                if(distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                }
+                float3 light = Ideal::Light::ComputeSpotLight2(
+                     Kd,
+                     Ks,
+                     color,
+                     isInShadow,
+                     roughness,
+                     N,
+                     V,
+                     direction,
+                     distance,
+                     range,
+                     intensity,
+                     softness,
+                     lightDirection,
+                     angle
+                 );
+            
+                L += light;
+            }
         }
     }
 
@@ -432,7 +432,6 @@ float3 Shade(
     
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
-    return L;
     if (isReflective)
     {
         float range = 3000.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);
