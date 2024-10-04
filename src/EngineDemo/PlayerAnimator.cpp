@@ -343,7 +343,7 @@ void PlayerAnimator::Update()
 
 			if (GetKeyDown(KEY::SPACE))
 			{
-				// m_isDodge = true;
+				m_isDodge = true;
 			}
 		}
 		else
