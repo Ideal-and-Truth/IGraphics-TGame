@@ -7,7 +7,7 @@ Truth::SoundManager::SoundManager()
 {
 	FMOD_RESULT result;
 	result = FMOD::System_Create(&m_system);
-	assert(result != FMOD_OK && "cannnot create fmod system");
+	assert(result == FMOD_OK && "cannnot create fmod system");
 }
 
 Truth::SoundManager::~SoundManager()
@@ -19,7 +19,7 @@ void Truth::SoundManager::Initalize()
 {
 	FMOD_RESULT result;
 	result = m_system->init(MAX_CHANNEL, FMOD_INIT_NORMAL, 0);
-	assert(result != FMOD_OK && "cannnot initalize fmod system");
+	assert(result == FMOD_OK && "cannnot initalize fmod system");
 
 }
 
