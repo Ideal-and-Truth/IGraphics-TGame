@@ -210,6 +210,11 @@ DirectX::SimpleMath::Color& Ideal::ParticleSystem::GetStartColor()
 	return m_startColor;
 }
 
+void Ideal::ParticleSystem::SetStartSize(float Size)
+{
+	m_startSize = Size;
+}
+
 void Ideal::ParticleSystem::SetStartLifetime(float Time)
 {
 	m_startLifetime = Time;
@@ -281,6 +286,34 @@ void Ideal::ParticleSystem::UpdateColorOverLifetime()
 	{
 		m_cbParticleSystem.StartColor = m_startColor;
 	}
+}
+
+void Ideal::ParticleSystem::SetSizeOverLifetime(bool Active)
+{
+	m_isSizeOverLifetime = Active;
+}
+
+Ideal::IBezierCurve& Ideal::ParticleSystem::GetSizeOverLifetimeAxisX()
+{
+	return m_SizeOverLifetimeAxisX;
+}
+
+Ideal::IBezierCurve& Ideal::ParticleSystem::GetSizeOverLifetimeAxisY()
+{
+	return m_SizeOverLifetimeAxisY;
+}
+
+Ideal::IBezierCurve& Ideal::ParticleSystem::GetSizeOverLifetimeAxisZ()
+{
+	return m_SizeOverLifetimeAxisZ;
+}
+
+void Ideal::ParticleSystem::UpdateSizeOverLifetime()
+{
+	if (!m_isSizeOverLifetime)
+		return;
+
+	
 }
 
 void Ideal::ParticleSystem::SetRotationOverLifetime(bool Active)
@@ -409,21 +442,31 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 	{
 		// RotationOverLifetime
 		Matrix cal = Matrix::Identity;
+		cal *= Matrix::CreateScale(m_startSize);
+		if (m_isSizeOverLifetime)
+		{
+			float x = m_SizeOverLifetimeAxisX.GetPoint(m_currentDurationTime).y;
+			float y = m_SizeOverLifetimeAxisY.GetPoint(m_currentDurationTime).y;
+			float z = m_SizeOverLifetimeAxisZ.GetPoint(m_currentDurationTime).y;
+			Vector3 newSize(x, y, z);
+			cal *= Matrix::CreateScale(newSize);
+		}
+
 		if (m_isRotationOverLifetime)
 		{
 			float xRot = m_RotationOverLifetimeAxisX.GetPoint(m_currentDurationTime).y;
-			auto matX = Matrix::CreateRotationX(xRot * 3.14);
+			auto matX = Matrix::CreateRotationX(xRot * DirectX::XM_PI);
 			float yRot = m_RotationOverLifetimeAxisY.GetPoint(m_currentDurationTime).y;
-			auto matY = Matrix::CreateRotationY(yRot * 3.14);
+			auto matY = Matrix::CreateRotationY(yRot * DirectX::XM_PI);
 			float zRot = m_RotationOverLifetimeAxisZ.GetPoint(m_currentDurationTime).y;
-			auto matZ = Matrix::CreateRotationZ(zRot * 3.14);
+			auto matZ = Matrix::CreateRotationZ(zRot * DirectX::XM_PI);
 			cal *= matX;
 			cal *= matY;
 			cal *= matZ;
-			m_cbTransform.World = cal.Transpose();
 		}
-		m_cbTransform.World *= m_transform;
-		m_cbTransform.World = m_cbTransform.World.Transpose();
+
+		m_cbTransform.World = m_transform.Transpose();
+		m_cbTransform.World *= cal;
 		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert();
 
 		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));

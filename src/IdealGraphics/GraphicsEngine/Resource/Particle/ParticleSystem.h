@@ -67,6 +67,8 @@ namespace Ideal
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) override;
 		virtual DirectX::SimpleMath::Color& GetStartColor() override;
 
+		virtual void SetStartSize(float Size) override;
+
 		virtual void SetStartLifetime(float Time) override;
 		virtual float GetStartLifetime() override;
 
@@ -83,6 +85,13 @@ namespace Ideal
 		virtual void SetColorOverLifetime(bool Active) override;
 		virtual Ideal::IGradient& GetColorOverLifetimeGradientGraph() override;
 		void UpdateColorOverLifetime();
+
+		//----Size Over Lifetime----//
+		virtual void SetSizeOverLifetime(bool Active) override;
+		virtual Ideal::IBezierCurve& GetSizeOverLifetimeAxisX() override;
+		virtual Ideal::IBezierCurve& GetSizeOverLifetimeAxisY() override;
+		virtual Ideal::IBezierCurve& GetSizeOverLifetimeAxisZ() override;
+		void UpdateSizeOverLifetime();
 
 		//----Rotation Over Lifetime----//
 		virtual void SetRotationOverLifetime(bool Active) override;
@@ -126,12 +135,19 @@ namespace Ideal
 		float m_currentDurationTime = 0.f;
 		float m_currentTime = 0.f;
 		Color m_startColor = Color(1, 1, 1, 1);
+		float m_startSize = 1.f;
 		float m_startLifetime = 1.f;	//1 ю╨ юс╫ц
 		float m_simulationSpeed = 1.f;
 
 		//------Color Over Lifetime------//
 		bool m_isUseColorOverLifetime = false;
 		Ideal::Gradient m_ColorOverLifetimeGradientGraph;
+
+		//----Size Over Lifetime----//
+		bool m_isSizeOverLifetime = false;
+		Ideal::BezierCurve m_SizeOverLifetimeAxisX;
+		Ideal::BezierCurve m_SizeOverLifetimeAxisY;
+		Ideal::BezierCurve m_SizeOverLifetimeAxisZ;
 
 		//----Rotation Over Lifetime----//
 		bool m_isRotationOverLifetime = false;

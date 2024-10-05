@@ -78,6 +78,8 @@ namespace Ideal
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
 		virtual DirectX::SimpleMath::Color& GetStartColor() abstract;
 
+		virtual void SetStartSize(float Size) abstract;
+
 		// 생명 시간
 		virtual void SetStartLifetime(float Time) abstract;
 		virtual float GetStartLifetime() abstract;
@@ -104,6 +106,12 @@ namespace Ideal
 		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisX() abstract;
 		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisY() abstract;
 		virtual Ideal::IBezierCurve& GetRotationOverLifetimeAxisZ() abstract;
+
+		//----Size Over Lifetime----//
+		virtual void SetSizeOverLifetime(bool Active) abstract;
+		virtual Ideal::IBezierCurve& GetSizeOverLifetimeAxisX() abstract;
+		virtual Ideal::IBezierCurve& GetSizeOverLifetimeAxisY() abstract;
+		virtual Ideal::IBezierCurve& GetSizeOverLifetimeAxisZ() abstract;
 
 		//----------Custom Data---------//
 		virtual Ideal::IBezierCurve& GetCustomData1X() abstract;
