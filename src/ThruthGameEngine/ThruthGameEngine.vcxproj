@@ -130,9 +130,13 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkinnedMesh.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="SoundManager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+=======
+    <ClCompile Include="SoundManager.cpp" />
+>>>>>>> main
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="StringConverter.cpp" />
@@ -279,7 +283,11 @@
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)Libraries\Debuglib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
+<<<<<<< HEAD
       <AdditionalDependencies>Debuglib\GraphicsEngine\IdealGraphics.lib;DebugUtils-d.lib;Detour-d.lib;DetourCrowd-d.lib;DetourTileCache-d.lib;Recast-d.lib;DebugLib\fmod\fmod_vc.lib;DebugLib\fmod\fmodL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
+      <AdditionalDependencies>Debuglib\GraphicsEngine\IdealGraphics.lib;DebugUtils-d.lib;Detour-d.lib;DetourCrowd-d.lib;DetourTileCache-d.lib;Recast-d.lib;DebugLib\fmod\fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> main
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;$(SolutionDir)vcpkg_installed\x64-windows\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
