@@ -166,13 +166,9 @@
     <Filter Include="Manager\Particle">
       <UniqueIdentifier>{e3db038f-f88e-408e-9f1c-a41b2f2485f4}</UniqueIdentifier>
     </Filter>
-<<<<<<< HEAD
-    <Filter Include="Manager\Sound">
-      <UniqueIdentifier>{9da1c56a-31e0-4368-992c-f652a7325bc6}</UniqueIdentifier>
-=======
+
     <Filter Include="Manager\sound">
       <UniqueIdentifier>{a5b864c0-d07f-4547-bd36-7d537ad1e424}</UniqueIdentifier>
->>>>>>> main
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -338,11 +334,8 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="SoundManager.cpp">
-<<<<<<< HEAD
-      <Filter>Manager\Sound</Filter>
-=======
+
       <Filter>Manager\sound</Filter>
->>>>>>> main
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -529,11 +522,7 @@
     </ClInclude>
     <ClInclude Include="Particle.h" />
     <ClInclude Include="SoundManager.h">
-<<<<<<< HEAD
-      <Filter>Manager\Sound</Filter>
-=======
       <Filter>Manager\sound</Filter>
->>>>>>> main
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

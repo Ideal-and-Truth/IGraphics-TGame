@@ -251,9 +251,14 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			std::filesystem::path albedo(f->Read<std::string>());
 			std::filesystem::path normal(f->Read<std::string>());
 			std::filesystem::path metalicRoughness(f->Read<std::string>());
+
+			// mat->m_tileX = f->Read<float>();
+			// mat->m_tileY = f->Read<float>();
+
 			mat->m_baseMap = CreateTexture(albedo);
 			mat->m_normalMap = CreateTexture(normal, false, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
+			
 			mat->SetTexture();
 		}
 		else

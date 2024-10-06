@@ -12,6 +12,8 @@ void Truth::Material::SetTexture()
 		m_material->SetNormalMap(m_normalMap->m_texture);
 	if (m_maskMap)
 		m_material->SetMaskMap(m_maskMap->m_texture);
+
+	// m_material->SetTiling(m_tileX, m_tileY);
 }
 
 void Truth::Material::ChangeTexture(std::wstring _path, int _type)
