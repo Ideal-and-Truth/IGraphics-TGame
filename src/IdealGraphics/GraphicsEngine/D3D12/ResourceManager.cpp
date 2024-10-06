@@ -654,6 +654,18 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 		1, 1, 1, 0
 	);
 
+	//if (makeRTV)
+	//{
+	//	DXGI_SAMPLE_DESC sampleDesc = {};
+	//	sampleDesc.Count = 8; // ¿¹: 4x MSAA Àû¿ë
+	//	sampleDesc.Quality = DXGI_STANDARD_MULTISAMPLE_QUALITY_PATTERN;
+	//	resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+	//		DXGI_FORMAT_R8G8B8A8_UNORM,
+	//		Width, Height,
+	//		1, 0, sampleDesc.Count, sampleDesc.Quality, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
+	//	);
+	//}
+
 	if (makeRTV)
 		resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 	if (makeUAV)

@@ -2,7 +2,7 @@
 <Materials>
     <Material>
         <Name>Material.001</Name>
-        <DiffuseFile>DefaultWhite.png</DiffuseFile>
+        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -11,8 +11,8 @@
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
         <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="100"/>
         <Emissive R="0" G="0" B="0" A="1"/>
-        <Metallic Factor="0"/>
+        <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="false" Normal="false" Metallic="true" Roughness="true"/>
+        <UseTextureInfo Diffuse="false" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>
