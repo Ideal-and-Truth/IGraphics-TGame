@@ -539,6 +539,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> DefaultParticlePSShader = gRenderer->CreateAndLoadParticleShader(L"DefaultParticlePS");
 
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossFX_FileProjectile.hlsl",
+			L"../Shaders/Particle/",
+			L"BossFX_FileProjectilePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossFireProjectileShader = gRenderer->CreateAndLoadParticleShader(L"BossFX_FileProjectilePS");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossFX_FileProjectile1.hlsl",
+			L"../Shaders/Particle/",
+			L"BossFX_FileProjectilePS_1",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossFireProjectileShader1 = gRenderer->CreateAndLoadParticleShader(L"BossFX_FileProjectilePS_1");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossSphereImpact.hlsl",
+			L"../Shaders/Particle/",
+			L"BossSphereImpactPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossSphereImpactShader = gRenderer->CreateAndLoadParticleShader(L"BossSphereImpactPS");
+
 #pragma endregion
 
 #pragma region BossEffect
@@ -613,6 +643,124 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			auto& graph = bossParticleSystem1->GetSizeOverLifetimeAxisZ();
 			graph.AddControlPoint({ 0,1 });
+		}
+
+		///----------------------FileProjectile---------------------///
+		std::shared_ptr<Ideal::IParticleMaterial> bossFireProjectileMaterial0 = gRenderer->CreateParticleMaterial();
+		bossFireProjectileMaterial0->SetShader(bossFireProjectileShader);
+
+		std::shared_ptr<Ideal::ITexture> bossFileProjectileTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossProjectile/mask_4.png");
+		std::shared_ptr<Ideal::ITexture> bossFileProjectileTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossProjectile/Fire_Single_2.png");
+		
+		bossFireProjectileMaterial0->SetTexture0(bossFileProjectileTexture0);
+		bossFireProjectileMaterial0->SetTexture1(bossFileProjectileTexture1);
+
+		bossFireProjectileMaterial0->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
+		bossFireProjectileMaterial0->SetBackFaceCulling(false);
+		std::shared_ptr<Ideal::IParticleSystem> bossFireProjectileParticleSystem0 = gRenderer->CreateParticleSystem(bossFireProjectileMaterial0);
+
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/UVSphere.fbx");
+		std::shared_ptr<Ideal::IMesh> bossParticleMeshSphere = gRenderer->CreateParticleMesh(L"0_Particle/UVSphere");
+
+		bossFireProjectileParticleSystem0->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		bossFireProjectileParticleSystem0->SetRenderMesh(bossParticleMeshSphere);
+
+		bossFireProjectileParticleSystem0->SetStartSize(35.f);
+		bossFireProjectileParticleSystem0->SetStartColor(DirectX::SimpleMath::Color(3.5, 0.03, 0, 1));
+		bossFireProjectileParticleSystem0->SetLoop(false);
+		bossFireProjectileParticleSystem0->SetDuration(3.f);
+		bossFireProjectileParticleSystem0->SetStartLifetime(3.f);
+		
+		bossFireProjectileParticleSystem0->SetTransformMatrix(
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(2, 2, 4)) 
+			// * DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 5, 0))
+		);
+
+
+		std::shared_ptr<Ideal::IParticleMaterial> bossFireProjectileMaterial1 = gRenderer->CreateParticleMaterial();
+		bossFireProjectileMaterial1->SetShader(bossFireProjectileShader);
+
+		//std::shared_ptr<Ideal::ITexture> bossFileProjectileTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossProjectile/mask_4.png");
+		//std::shared_ptr<Ideal::ITexture> bossFileProjectileTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossProjectile/Fire_Single_2.png");
+		std::shared_ptr<Ideal::ITexture> bossFileProjectileTexture2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossProjectile/Normal_16.png");
+
+		bossFireProjectileMaterial1->SetTexture0(bossFileProjectileTexture0);
+		bossFireProjectileMaterial1->SetTexture1(bossFileProjectileTexture1);
+		//bossFireProjectileMaterial1->SetTexture2(bossFileProjectileTexture2);
+		bossFireProjectileMaterial1->SetBackFaceCulling(false);
+		bossFireProjectileMaterial1->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
+		std::shared_ptr<Ideal::IParticleSystem> bossFireProjectileParticleSystem1 = gRenderer->CreateParticleSystem(bossFireProjectileMaterial1);
+
+		//gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/UVSphere.fbx");
+		//std::shared_ptr<Ideal::IMesh> bossParticleMeshSphere1 = gRenderer->CreateParticleMesh(L"0_Particle/UVSphere");
+
+		bossFireProjectileParticleSystem1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		bossFireProjectileParticleSystem1->SetRenderMesh(bossParticleMeshSphere);
+
+		bossFireProjectileParticleSystem1->SetStartSize(35.f);
+		//bossFireProjectileParticleSystem1->SetStartColor(DirectX::SimpleMath::Color(0.749, 0.106, 0.020));
+		bossFireProjectileParticleSystem1->SetStartColor(DirectX::SimpleMath::Color(1, 1, 0.7,1));
+
+
+		bossFireProjectileParticleSystem1->SetLoop(false);
+		bossFireProjectileParticleSystem1->SetDuration(3.f);
+		bossFireProjectileParticleSystem0->SetStartLifetime(3.f);
+
+		bossFireProjectileParticleSystem1->SetTransformMatrix(
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(1, 1, 5))
+			//* DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 5, -1))
+			* DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 0, -1))
+		);
+
+
+		//bossFireProjectileParticleSystem->SetColorOverLifetime(true);
+		//{
+		//	auto& graph = bossFireProjectileParticleSystem->GetColorOverLifetimeGradientGraph();
+		//	graph.AddPoint(Color(1, 1, 1, 0), 0.f);
+		//	graph.AddPoint(Color(1, 1, 1, 0.31), 0.015f);
+		//	graph.AddPoint(Color(1, 1, 1, 1), 0.11f);
+		//	graph.AddPoint(Color(1, 1, 1, 0), 1.f);
+		//}
+
+		//------------------------Sphere Impact---------------------------//
+		std::shared_ptr<Ideal::IParticleMaterial> sphereImpactMaterial = gRenderer->CreateParticleMaterial();
+		sphereImpactMaterial->SetShader(bossSphereImpactShader);
+
+		std::shared_ptr<Ideal::ITexture> sITex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossSpearImpact/PerlinNoise_9.png");
+		std::shared_ptr<Ideal::ITexture> sITex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossSpearImpact/Normal_13.png");
+		std::shared_ptr<Ideal::ITexture> sITex2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossSpearImpact/mask_4.png");
+		sphereImpactMaterial->SetTexture0(sITex0);
+		sphereImpactMaterial->SetTexture1(sITex1);
+		sphereImpactMaterial->SetTexture2(sITex2);
+		sphereImpactMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		sphereImpactMaterial->SetBackFaceCulling(false);
+
+		std::shared_ptr<Ideal::IParticleSystem> sphereImpactParticleSystem = gRenderer->CreateParticleSystem(sphereImpactMaterial);
+		sphereImpactParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		sphereImpactParticleSystem->SetRenderMesh(bossParticleMeshSphere);
+		sphereImpactParticleSystem->SetTransformMatrix(
+			Matrix::CreateScale(35.f)
+			* Matrix::CreateScale(Vector3(2.5, 2.5, 1))
+			* Matrix::CreateRotationX(3.1415 * 0.5)
+			* Matrix::CreateTranslation(-3, 0, 0)
+		);
+		sphereImpactParticleSystem->SetStartColor(Color(0, 0.6506, 5.8796, 1));
+		sphereImpactParticleSystem->SetLoop(false);
+		sphereImpactParticleSystem->SetDuration(3.f);
+		sphereImpactParticleSystem->SetStartLifetime(3.f);
+
+		{
+			auto& graph = sphereImpactParticleSystem->GetCustomData1X();
+			graph.AddControlPoint({ 0, 0.1 });
+		}
+
+		sphereImpactParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = sphereImpactParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 0);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.059);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.309);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 1);
 		}
 #pragma endregion
 
@@ -926,7 +1074,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					bossParticleSystem1->Play();
 					//slashParticleSystem->Play();
 				}
-
+				if (GetAsyncKeyState('X') & 0x8000)
+				{
+					bossFireProjectileParticleSystem0->Play();
+					bossFireProjectileParticleSystem1->Play();
+				}
+				if (GetAsyncKeyState('C') & 0x8000)
+				{
+					bossFireProjectileParticleSystem0->Pause();
+					bossFireProjectileParticleSystem1->Pause();
+				}
+				if (GetAsyncKeyState('V') & 0x8000)
+				{
+					sphereImpactParticleSystem->Play();
+				}
+				if (GetAsyncKeyState('B') & 0x8000)
+				{
+					sphereImpactParticleSystem->Pause();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -939,6 +1104,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
 				bossParticleSystem1->SetDeltaTime(0.003f);
+				bossFireProjectileParticleSystem0->SetDeltaTime(0.003f);
+				bossFireProjectileParticleSystem1->SetDeltaTime(0.003f);
+				sphereImpactParticleSystem->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);

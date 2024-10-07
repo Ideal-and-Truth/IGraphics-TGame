@@ -16,6 +16,7 @@ namespace Ideal
 		{
 			Additive = 0,
 			Alpha,
+			AlphaAdditive
 		};
 	}
 }
@@ -35,6 +36,6 @@ namespace Ideal
 		virtual void SetTexture0(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		virtual void SetTexture1(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		virtual void SetTexture2(std::shared_ptr<Ideal::ITexture> Texture) abstract;
-
+		virtual void SetBackFaceCulling(bool Culling) abstract;
 	};
 }

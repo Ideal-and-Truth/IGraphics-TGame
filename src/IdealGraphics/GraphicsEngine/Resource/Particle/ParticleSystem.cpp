@@ -170,6 +170,15 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
 			}
 				break;
+			case Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA; // Alpha blending
+			}
+			break;
 			default:
 				break;
 		}
@@ -186,7 +195,15 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+
+	if (m_particleMaterial.lock()->GetBackFaceCulling())
+	{
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	}
+	else
+	{
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	}
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
