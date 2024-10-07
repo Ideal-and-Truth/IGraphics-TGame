@@ -9,10 +9,10 @@
 Truth::NavMeshGenerater::NavMeshGenerater()
 	: m_cellSize(0.3f)
 	, m_cellHeight(0.2f)
-	, m_agentMaxSlope(45.0f)
+	, m_agentMaxSlope(60.0f)
 	, m_agentHeight(2.0f)
 	, m_agentMaxClimb(1.0f)
-	, m_agentRadius(1.0f)
+	, m_agentRadius(0.1f)
 	, m_edgeMaxLen(12.0f)
 	, m_edgeMaxError(1.3f)
 	, m_regionMinSize(8.0f)
@@ -57,9 +57,93 @@ Truth::NavMeshGenerater::~NavMeshGenerater()
 
 void Truth::NavMeshGenerater::Initalize(std::wstring _path)
 {
+	m_geom.Load(_path);
+	Initalize();
+}
+
+void Truth::NavMeshGenerater::Initalize(const std::vector<float>& _points, const std::vector<uint32>& _indices)
+{
+	m_geom.Load(_points, _indices);
+	Initalize();
+}
+
+Vector3 Truth::NavMeshGenerater::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
+{
+	if (!m_navMesh)
+		return Vector3();
+
+	float spos[3] = { _start.x, _start.y, _start.z };
+	// float spos[3] = { 10.0f, 10.0f, 10.0f };
+	float epos[3] = { _end.x, _end.y, _end.z };
+	float polyPickExt[3] = { 100, 100, 100 };
+
+	dtPolyRef startRef = 0;
+	dtPolyRef endRef = 0;
+	dtPolyRef* polys = new dtPolyRef[MAX_POLYS];
+
+	float* straightPath = new float[MAX_POLYS * 3];
+	unsigned char* straightPathFlags = new unsigned char[MAX_POLYS];
+	dtPolyRef* straightPathPolys = new dtPolyRef[MAX_POLYS];
+	int straightPathOptions = 0;
+
+	float testPoint[3] = { -1.0f, -1.0f, -1.0f };
+
+	int npolys;
+	int nstraightPath;
+	dtStatus pathFindStatus;
+
+	// m_navQuery->findRandomPoint(m_filter, frand, &startRef, spos);
+
+	pathFindStatus = m_navQuery->findNearestPoly(spos, polyPickExt, m_filter, &startRef, testPoint);
+
+	pathFindStatus = m_navQuery->findNearestPoly(epos, polyPickExt, m_filter, &endRef, testPoint);
+
+	pathFindStatus = DT_FAILURE;
+
+	if (startRef && endRef)
+	{
+		m_navQuery->findPath(startRef, endRef, spos, epos, m_filter, polys, &npolys, MAX_POLYS);
+		nstraightPath = 0;
+		if (npolys)
+		{
+			// In case of partial path, make sure the end point is clamped to the last polygon.
+			float epos_[3];
+			dtVcopy(epos_, epos);
+			if (polys[npolys - 1] != endRef)
+				m_navQuery->closestPointOnPoly(polys[npolys - 1], epos, epos_, 0);
+
+			pathFindStatus = m_navQuery->findStraightPath(spos, epos_, polys, npolys,
+				straightPath, straightPathFlags,
+				straightPathPolys, &nstraightPath, MAX_POLYS, straightPathOptions);
+		}
+	}
+	else
+	{
+		npolys = 0;
+		nstraightPath = 0;
+	}
+	Vector3 result;
+	if (!(pathFindStatus & DT_FAILURE))
+	{
+		result = Vector3(straightPath[3], straightPath[4], straightPath[5]);
+	}
+	else
+	{
+		result = Vector3(0.0f, 0.0f, 0.0f);
+	}
+
+	delete[] polys;
+	delete[] straightPath;
+	delete[] straightPathFlags;
+	delete[] straightPathPolys;
+
+	return result;
+}
+
+void Truth::NavMeshGenerater::Initalize()
+{
 	m_cfg = new rcConfig;
 
-	m_geom.Load(_path);
 	const float* bmin = m_geom.m_bmin.data();
 	const float* bmax = m_geom.m_bmax.data();
 	const float* verts = m_geom.m_ver.data();
@@ -193,13 +277,13 @@ void Truth::NavMeshGenerater::Initalize(std::wstring _path)
 		params.ch = m_cfg->ch;
 		params.buildBvTree = true;
 
-// 		params.offMeshConVerts = m_geom->getOffMeshConnectionVerts();
-// 		params.offMeshConRad = m_geom->getOffMeshConnectionRads();
-// 		params.offMeshConDir = m_geom->getOffMeshConnectionDirs();
-// 		params.offMeshConAreas = m_geom->getOffMeshConnectionAreas();
-// 		params.offMeshConFlags = m_geom->getOffMeshConnectionFlags();
-// 		params.offMeshConUserID = m_geom->getOffMeshConnectionId();
-// 		params.offMeshConCount = m_geom->getOffMeshConnectionCount();
+		// 		params.offMeshConVerts = m_geom->getOffMeshConnectionVerts();
+		// 		params.offMeshConRad = m_geom->getOffMeshConnectionRads();
+		// 		params.offMeshConDir = m_geom->getOffMeshConnectionDirs();
+		// 		params.offMeshConAreas = m_geom->getOffMeshConnectionAreas();
+		// 		params.offMeshConFlags = m_geom->getOffMeshConnectionFlags();
+		// 		params.offMeshConUserID = m_geom->getOffMeshConnectionId();
+		// 		params.offMeshConCount = m_geom->getOffMeshConnectionCount();
 
 		if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
 		{
@@ -228,77 +312,5 @@ void Truth::NavMeshGenerater::Initalize(std::wstring _path)
 			m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh query");
 		}
 	}
-
-
-}
-
-Vector3 Truth::NavMeshGenerater::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
-{
-	return _end;
-
-	if (!m_navMesh)
-		return Vector3();
-
-	float spos[3] = { _start.x, _start.y, _start.z };
-	// float spos[3] = { 10.0f, 10.0f, 10.0f };
-	float epos[3] = { _end.x, _end.y, _end.z };
-	float polyPickExt[3] = { 10, 10, 10 };
-
-	dtPolyRef startRef = 0;
-	dtPolyRef endRef = 0;
-	dtPolyRef polys[MAX_POLYS];
-
-	float straightPath[MAX_POLYS * 3];
-	unsigned char straightPathFlags[MAX_POLYS];
-	dtPolyRef straightPathPolys[MAX_POLYS];
-	int straightPathOptions = 0;
-
-	float testPoint[3] = { -1.0f, -1.0f, -1.0f };
-
-	int npolys;
-	int nstraightPath;
-	dtStatus pathFindStatus;
-
-	// m_navQuery->findRandomPoint(m_filter, frand, &startRef, spos);
-
-	pathFindStatus = m_navQuery->findNearestPoly(spos, polyPickExt, m_filter, &startRef, testPoint);
-
-	pathFindStatus = m_navQuery->findNearestPoly(epos, polyPickExt, m_filter, &endRef, testPoint);
-
-	pathFindStatus = DT_FAILURE;
-
-	if (startRef && endRef)
-	{
-		m_navQuery->findPath(startRef, endRef, spos, epos, m_filter, polys, &npolys, MAX_POLYS);
-		nstraightPath = 0;
-		if (npolys)
-		{
-			// In case of partial path, make sure the end point is clamped to the last polygon.
-			float epos_[3];
-			dtVcopy(epos_, epos);
-			if (polys[npolys - 1] != endRef)
-				m_navQuery->closestPointOnPoly(polys[npolys - 1], epos, epos_, 0);
-
-			pathFindStatus = m_navQuery->findStraightPath(spos, epos_, polys, npolys,
-				straightPath, straightPathFlags,
-				straightPathPolys, &nstraightPath, MAX_POLYS, straightPathOptions);
-		}
-	}
-	else
-	{
-		npolys = 0;
-		nstraightPath = 0;
-	}
-	Vector3 result;
-	if (!(pathFindStatus & DT_FAILURE))
-	{
-		result = Vector3(straightPath[3], straightPath[4], straightPath[5]);
-	}
-	else
-	{
-		result = Vector3(0.0f, 0.0f, 0.0f);
-	}
-
-	return result;
 }
 

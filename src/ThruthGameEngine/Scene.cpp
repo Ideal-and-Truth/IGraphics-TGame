@@ -356,14 +356,51 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 	m_mapEntity.resize(objCount);
 
+	const static std::vector<Vector3> boxPoints =
+	{
+		{ -0.5, -0.5, -0.5 },
+		{ 0.5, -0.5, -0.5 },
+		{ 0.5, 0.5, -0.5 },
+		{ -0.5, 0.5, -0.5 },
+		{ -0.5, -0.5, 0.5 },
+		{ 0.5, -0.5, 0.5 },
+		{ 0.5, 0.5, 0.5 },
+		{ -0.5, 0.5, 0.5 }
+	};
+	const static std::vector<uint32> boxIndices =
+	{
+		 0, 1, 2,
+		 0, 2, 3,
+		 4, 5, 6,
+		 4, 6, 7,
+		 0, 1, 5,
+		 0, 5, 4,
+		 1, 2, 6,
+		 0, 6, 5,
+		 2, 3, 7,
+		 2, 7, 6,
+		 3, 0, 4,
+		 3, 4, 7
+	};
+
+	std::vector<float> vPositions;
+	std::vector<uint32> vIndices;
+
+	m_navMesh = std::make_shared<NavMeshGenerater>();
+
 	for (size_t i = 0; i < objCount; ++i)
 	{
+		/// read base data
 		m_mapEntity[i] = std::make_shared<Entity>(m_managers.lock());
 		int32 parent = file->Read<int32>();
 		std::string name = file->Read<std::string>();
 		m_mapEntity[i]->m_name = name;
 		m_mapEntity[i]->Initialize();
 
+		std::vector<float> vertexPosition;
+		std::vector<uint32> indices;
+		bool isBoxCollider = false;
+		bool isMeshCollider = false;
 
 		if (parent != -1)
 		{
@@ -371,6 +408,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			m_mapEntity[i]->m_parent = m_mapEntity[parent];
 		}
 
+		/// read TM Dirty
 		Vector3 pos;
 		Vector3 sca;
 		Quaternion rot;
@@ -402,7 +440,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 		localRotationChange = file->Read<bool>();
 
-		// read Collider Data
+		/// read Collider Data
 		bool isCollider = file->Read<bool>();
 		if (isCollider)
 		{
@@ -413,6 +451,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 			case 1:
 			{
+				isBoxCollider = true;
 				Vector3 size = file->Read<Vector3>();
 				Vector3 center = file->Read<Vector3>();
 				coll = std::make_shared<BoxCollider>(center, size, false);
@@ -430,6 +469,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			// 			}
 			case 4:
 			{
+				isMeshCollider = true;
 				coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
 				break;
 			}
@@ -443,7 +483,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			}
 		}
 
-		// read Mesh Data
+		/// read Mesh Data
 		bool isMesh = file->Read<bool>();
 		if (isMesh)
 		{
@@ -455,14 +495,14 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
-			if (name == "51764")
+			if (name == "50292")
 			{
 				int a = 1;
 			}
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
-				mesh->SetMaterialByIndex(j, matName);
+				mesh->SetMaterialByIndex(static_cast<uint32>(j), matName);
 			}
 
 			mesh->SetStatic(true);
@@ -494,12 +534,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			}
 		}
 
-		Matrix tempScale = Matrix::CreateScale(Vector3(3.0f, 3.0f, 3.0f));
-
+		/// set local TM
 		Matrix ltm = Matrix::CreateScale(sca);
 		ltm *= Matrix::CreateFromQuaternion(rot);
 		ltm *= Matrix::CreateTranslation(pos);
-		// ltm = tempScale * ltm;
 		Matrix flipYZ = Matrix::Identity;
 		flipYZ.m[0][0] = -1.f;
 
@@ -509,9 +547,55 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		ltm = flipYZ * flipXY * ltm;
 
 		m_mapEntity[i]->SetLocalTM(ltm);
-		// ltm.Decompose(sca, rot, pos);
 
-		// read Light Data
+		/// create nav mesh data
+		if (isBoxCollider)
+		{
+			size_t offset = vPositions.size() / 3;
+			for (const auto& i : boxIndices)
+			{
+				vIndices.push_back(i + offset);
+			}
+
+			for (const auto& v : boxPoints)
+			{
+				Vector3 finalPosition = Vector3::Transform(v, ltm);
+				vPositions.push_back(finalPosition.x);
+				vPositions.push_back(finalPosition.y);
+				vPositions.push_back(finalPosition.z);
+			}
+		}
+		else if (isMeshCollider)
+		{
+			size_t offset = vPositions.size() / 3;
+			std::shared_ptr<FileUtils> posFile = std::make_shared<FileUtils>();
+			fs::path posFilePath = "../Resources/Models/MapData/1_HN_Scene2/";
+			posFilePath /= name + ".pos";
+			posFile->Open(posFilePath.generic_wstring(), FileMode::Read);
+
+			uint32 meshSize = posFile->Read<uint32>();
+			uint32 vertexSize = posFile->Read<uint32>();
+			for (uint32 i = 0; i < vertexSize ; i++)
+			{
+				Vector3 v;
+				v.x = posFile->Read<float>();
+				v.y = posFile->Read<float>();
+				v.z = posFile->Read<float>();
+				Vector3 finalPosition = Vector3::Transform(v, ltm);
+
+				vPositions.push_back(finalPosition.x);
+				vPositions.push_back(finalPosition.y);
+				vPositions.push_back(finalPosition.z);
+			}
+
+			uint32 indexSize = posFile->Read<uint32>();
+			for (uint32 i = 0; i < indexSize ; i++)
+			{
+				vIndices.push_back(offset + posFile->Read<uint32>());
+			}
+		}
+
+		/// read Light Data
 		bool isLight = file->Read<bool>();
 		if (isLight)
 		{
@@ -572,14 +656,17 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		}
 	}
 
-	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
-		{
-			return _a->m_name > _b->m_name;
-		};
+	/// create nav mesh
+	m_navMesh->Initalize(vPositions, vIndices);
 
-	sort(m_mapEntity.begin(), m_mapEntity.end(), comp);
+	// 	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
+	// 		{
+	// 			return _a->m_name > _b->m_name;
+	// 		};
+	// 
+	// 	sort(m_mapEntity.begin(), m_mapEntity.end(), comp);
 
-	// gp->BakeStaticMesh();
+		// gp->BakeStaticMesh();
 
 	for (auto& e : m_mapEntity)
 	{

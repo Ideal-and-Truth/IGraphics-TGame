@@ -79,16 +79,17 @@ void EnemyController::FollowTarget()
 		m_isComeBack = false;
 
 		Vector3 pos = m_owner.lock()->GetWorldPosition();
-// 		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
-// 			pos,
-// 			m_target.lock()->GetWorldPosition(),
-// 			GetScale()
-// 		);
+		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
+			pos,
+			m_target.lock()->GetWorldPosition(),
+			GetScale()
+		);
 
-		Vector3 targetPos = m_target.lock()->m_transform->m_position;
+		Vector3 playerPos = m_target.lock()->m_transform->m_position;
 
 		Vector3 dir = targetPos - pos;
-		float distance = sqrt(pow(dir.x, 2.f) + pow(dir.z, 2.f));
+		
+		float distance = (playerPos - pos).Length();
 		float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
 
 
