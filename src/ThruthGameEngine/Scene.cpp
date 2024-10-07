@@ -14,7 +14,9 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "Mesh.h"
-
+#include "PointLight.h"
+#include "DirectionLight.h"
+#include "SpotLight.h"
 #include <algorithm>
 
 /// <summary>
@@ -122,7 +124,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	// LoadUnityData(L"1_HN_Scene2");
+	LoadUnityData(L"1_HN_Scene2");
 }
 
 
@@ -453,7 +455,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
-
+			if (name == "51764")
+			{
+				int a = 1;
+			}
 			for (size_t j = 0; j < matCount; ++j)
 			{
 				std::string matName = file->Read<std::string>();
@@ -489,20 +494,6 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			}
 		}
 
-		// read Light Data
-		bool isLight = file->Read<bool>();
-		if (isLight)
-		{
-			file->Read<uint32>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-		}
-
 		Matrix tempScale = Matrix::CreateScale(Vector3(3.0f, 3.0f, 3.0f));
 
 		Matrix ltm = Matrix::CreateScale(sca);
@@ -515,7 +506,70 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		Matrix flipXY = Matrix::Identity;
 		flipXY.m[2][2] = -1.f;
 
-		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
+		ltm = flipYZ * flipXY * ltm;
+
+		m_mapEntity[i]->SetLocalTM(ltm);
+		// ltm.Decompose(sca, rot, pos);
+
+		// read Light Data
+		bool isLight = file->Read<bool>();
+		if (isLight)
+		{
+			uint32 lightType = file->Read<uint32>();
+			float intensity = file->Read<float>();
+			// intensity *= 0.5;
+			Color lightColor;
+			lightColor.x = file->Read<float>();
+			lightColor.y = file->Read<float>();
+			lightColor.z = file->Read<float>();
+			lightColor.w = file->Read<float>();
+			float range = file->Read<float>();
+			float angle = file->Read<float>();
+
+			Matrix rotMat = Matrix::CreateFromQuaternion(rot);
+			Vector3 dir = { 0.0f, 0.0f, 1.0f };
+			dir = Vector3::Transform(dir, rotMat);
+			switch (lightType)
+			{
+			case 0:
+			{
+				std::shared_ptr<SpotLight> light = std::make_shared<SpotLight>();
+				light->m_isRendering = true;
+				light->m_position = pos;
+				light->m_direction = dir;
+				light->m_angle = angle;
+				light->m_range = range;
+				light->m_intensity = intensity * 1;
+				light->m_softness = 5;
+				light->m_lightColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			case 1:
+			{
+				std::shared_ptr<DirectionLight> light = std::make_shared<DirectionLight>();
+				light->m_isRendering = true;
+				light->m_direction = dir;
+				light->m_intensity = intensity;
+				light->m_diffuseColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			case 2:
+			{
+				std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
+				light->m_isRendering = true;
+				light->m_position = pos;
+				light->m_radius = range;
+				light->m_intensity = intensity * 1;
+				light->m_lightColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			default:
+				break;
+			}
+		}
 	}
 
 	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool

@@ -166,6 +166,7 @@
     <Filter Include="Manager\Particle">
       <UniqueIdentifier>{e3db038f-f88e-408e-9f1c-a41b2f2485f4}</UniqueIdentifier>
     </Filter>
+
     <Filter Include="Manager\sound">
       <UniqueIdentifier>{a5b864c0-d07f-4547-bd36-7d537ad1e424}</UniqueIdentifier>
     </Filter>
@@ -333,6 +334,7 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="SoundManager.cpp">
+
       <Filter>Manager\sound</Filter>
     </ClCompile>
   </ItemGroup>

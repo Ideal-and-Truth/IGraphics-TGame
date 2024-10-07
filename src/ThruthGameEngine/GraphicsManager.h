@@ -77,7 +77,7 @@ namespace Truth
 
 		void SetMainCamera(Camera* _camera);
 
-		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path);
+		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path, bool _a = false, bool _b = false);
 		void DeleteTexture(std::shared_ptr<Texture> _texture);
 
 		std::shared_ptr<Material> CraeteMatarial(const std::string& _name);

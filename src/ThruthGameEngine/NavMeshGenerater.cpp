@@ -234,6 +234,8 @@ void Truth::NavMeshGenerater::Initalize(std::wstring _path)
 
 Vector3 Truth::NavMeshGenerater::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
 {
+	return _end;
+
 	if (!m_navMesh)
 		return Vector3();
 

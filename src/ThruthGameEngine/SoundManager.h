@@ -32,7 +32,6 @@ namespace Truth
 		void CreateSound(fs::path _path, bool _isLoop);
 		void SetVolum(int _channel, float _vol);
 		void Play(fs::path _path, bool _canReduplication, int _channel);
-
 	};
 }
 
