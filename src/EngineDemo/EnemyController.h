@@ -7,6 +7,7 @@ namespace Truth
 }
 
 class Enemy;
+class BossAnimator;
 
 class EnemyController :
 	public Truth::Component
@@ -22,12 +23,16 @@ private:
 
 private:
 	std::weak_ptr<Truth::Controller> m_controller;
+	std::shared_ptr<BossAnimator> m_bossAnimator;
 	std::weak_ptr<Enemy> m_enemy;
 	std::weak_ptr<Truth::Entity> m_target;
 
 	Vector3 m_homePos;
 	float m_speed;
 	float m_passingTime;
+
+	PROPERTY(impulsePower);
+	float m_impulsePower;
 
 	PROPERTY(sideMove);
 	float m_sideMove;
@@ -49,6 +54,12 @@ private:
 
 	PROPERTY(strafeMove);
 	bool m_strafeMove;
+
+	PROPERTY(attackCharge);
+	bool m_attackCharge;
+
+	PROPERTY(useImpulse);
+	bool m_useImpulse;
 
 public:
 	EnemyController();

@@ -29,6 +29,8 @@ private:
 	float m_passingTime;
 	int m_count;
 	bool m_readyToShoot;
+	int m_currentPhase;
+
 	std::vector<float> m_shockWavePos;
 	std::vector<float> m_flamePos;
 	std::vector<Vector3> m_swordPos;

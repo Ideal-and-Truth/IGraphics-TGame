@@ -18,6 +18,7 @@ BossSkill::BossSkill()
 	, m_readyToShoot(false)
 	, m_passingTime(0.f)
 	, m_count(0)
+	, m_currentPhase(0)
 {
 	m_name = "BossSkill";
 }
@@ -90,6 +91,23 @@ void BossSkill::Update()
 			}
 		}
 	}
+
+
+	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get())
+	{
+		for (auto& e : m_attackColliders)
+		{
+			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+		}
+		m_attackColliders.clear();
+		m_shootingPos.clear();
+
+		m_passingTime = 0.f;
+		m_count = 0;
+		m_createComplete = false;
+	}
+
+	m_currentPhase = m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get();
 
 	if (m_deleteCollider)
 	{
@@ -281,7 +299,7 @@ void BossSkill::FlameSword()
 			{
 				m_deleteCollider = true;
 				m_passingTime = 0.f;
-				m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
+				//m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
 			}
 		}
 	}
@@ -298,7 +316,7 @@ void BossSkill::SwordShooting()
 			sword->Initialize();
 			sword->m_layer = 1;
 			sword->AddComponent<Truth::BoxCollider>();
-			//sword->AddComponent<SimpleDamager>();
+			sword->AddComponent<SimpleDamager>();
 
 			sword->m_name = "Sword";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(sword);
@@ -336,7 +354,7 @@ void BossSkill::SwordShooting()
 		{
 			if (!m_attackColliders[i].second)
 			{
-				Vector3 dir = playerPos - m_attackColliders[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 4.5f, 0.0f };
+				Vector3 dir = playerPos - m_attackColliders[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 1.5f, 0.0f };
 				dir.Normalize(dir);
 				Quaternion lookRot;
 				if (playerPos.z - m_attackColliders[i].first->m_transform->m_worldPosition.z > 0.f)

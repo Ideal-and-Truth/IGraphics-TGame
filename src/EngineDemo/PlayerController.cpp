@@ -59,9 +59,6 @@ void PlayerController::PlayerMove(const void*)
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
 
 
-	auto playerAnimator = m_owner.lock().get()->GetComponent<PlayerAnimator>().lock();
-	bool isDodge = playerAnimator->GetTypeInfo().GetProperty("isDodge")->Get<bool>(playerAnimator.get()).Get();
-
 	if (GetKey(KEY::W))
 	{
 		m_forwardInput = 1.f;

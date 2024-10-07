@@ -528,6 +528,9 @@ private:
 	PROPERTY(isAttacking);
 	bool m_isAttacking;
 
+	PROPERTY(isLockOn);
+	bool m_isLockOn;
+
 	PROPERTY(skillCoolTime);
 	bool m_skillCoolTime;
 
@@ -581,6 +584,8 @@ public:
 	METHOD(Update);
 	void Update();
 
+
+	void SetImpulse(float power);
 
 	void SetCanMove(bool canMove);
 
