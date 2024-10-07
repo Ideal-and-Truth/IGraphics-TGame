@@ -331,11 +331,12 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		{
 			const YAML::Node& child = node["ColorOverLifetimeGradientGraph"];
 			auto& graph = particle->GetColorOverLifetimeGradientGraph();
-			for (int j = 0; j < 2; j++)
+
+			for (YAML::const_iterator it = child.begin(); it != child.end(); ++it)
 			{
-				const YAML::Node& point = child[j]["Color"];
+				const YAML::Node& point = (*it)["Color"];
 				Color startColor(point[0].as<float>(), point[1].as<float>(), point[2].as<float>(), point[3].as<float>());
-				float position = child[j]["position"].as<float>();
+				float position = (*it)["position"].as<float>();
 				graph.AddPoint(startColor, position);
 			}
 		}
