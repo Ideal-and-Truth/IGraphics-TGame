@@ -712,4 +712,10 @@ float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirect
     
     return Lo;
 }
+
+void Ideal_NormalStrength_float(float3 In, float Strength, out float3 Out)
+{
+    //Out = {precision}3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
+    Out = float3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
+}
 #endif
