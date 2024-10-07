@@ -666,6 +666,8 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
 					}
 					matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					matdata.m_tileX = texmap["_MainTex"]["m_Scale"]["x"].as<float>();
+					matdata.m_tileY = texmap["_MainTex"]["m_Scale"]["y"].as<float>();
 				}
 				else if (texmap["_MaskMap"].IsDefined())
 				{
@@ -817,9 +819,15 @@ void Truth::UnityParser::WriteMaterialData()
 	{
 		fs::path p = m_matSavePath / (mat.second.m_name + ".matData");
 		file->Open(p, FileMode::Write);
-		file->Write<std::string>(mat.second.m_albedo.generic_string());
-		file->Write<std::string>(mat.second.m_normal.generic_string());
-		file->Write<std::string>(mat.second.m_metalicRoughness.generic_string());
+
+		const auto& matData = mat.second;
+
+		file->Write<std::string>(matData.m_albedo.generic_string());
+		file->Write<std::string>(matData.m_normal.generic_string());
+		file->Write<std::string>(matData.m_metalicRoughness.generic_string());
+
+		file->Write<float>(matData.m_tileX);
+		file->Write<float>(matData.m_tileY);
 	}
 
 	// file->Close();

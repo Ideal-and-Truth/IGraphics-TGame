@@ -53,6 +53,9 @@ namespace Truth
 			fs::path m_albedo;
 			fs::path m_normal;
 			fs::path m_metalicRoughness;
+			
+			float m_tileX = 1.0f;
+			float m_tileY = 1.0f;
 		};
 
 		/// <summary>
