@@ -15,7 +15,7 @@
 #define HLSL
 #include "RaytracingHlslCompat.h"
 #include "RaytracingHelper.hlsli"
-
+#include "RayConeHelper.hlsli"
 #define SHADOW_ON
 
 #define MAX_POINT_LIGHT_NUM 100
@@ -60,6 +60,7 @@ struct RayPayload
     unsigned int rayRecursionDepth;
     float3 radiance;
     GBuffer gBuffer;
+    RayCone rayCone;
 };
 
 struct ShadowRayPayload
@@ -125,6 +126,7 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
 
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
+    //float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
     float3 newNormal;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // 다르게
@@ -326,13 +328,32 @@ float3 Shade(
     float3 V = -WorldRayDirection();
     float3 L = 0;
 
-    float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+    RayCone cone;
+    cone.width = 0;  // 첫 번째 hit에서 시작 시 RayCone의 width는 0
+    cone.spreadAngle = pixelSpreadAngle(g_sceneCB.fov, g_sceneCB.imageHeight);  // 첫 번째 hit에서 각도 설정
 
-    // 거리와 법선 각도를 기반으로 LOD 값 계산
-    float lod = log2(distance); // 거리 기반 LOD
-    lod -= log2(abs(dot(N, V))); // 법선과 광선 벡터의 각도에 따른 조정
-    lod = saturate(lod);
-    float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
+    // 거리 계산 (카메라 위치에서 hit 포인트까지의 거리)
+    //float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+
+    // 법선 변화량을 기반으로 표면 스프레드 각도(β) 계산 (식 32 기반)
+    //float beta = calculateSurfaceSpreadAngle(N, hitPosition, ExtractRotationMatrix(ObjectToWorld3x4()));
+    //
+    //// RayCone 확장 (표면 스프레드 각도와 거리로 확장)
+    //cone = propagate(cone, beta, distance);  // 올바르게 surfaceSpreadAngle과 distance를 전달
+    //
+    //// 텍스처 샘플링 시 RayCone의 width 및 법선 각도를 사용하여 LOD 계산
+    //uint width, height;
+    //l_texDiffuse.GetDimensions(width, height);
+    //float lod = computeTextureLOD(WorldRayDirection(), N, cone, width, height);
+
+    // 거리와 법선 벡터의 각도를 기반으로 LOD 값 계산
+    float distance = length(g_sceneCB.cameraPosition.xyz - HitWorldPosition());
+    float lod = log2(distance);  // 거리 기반 LOD
+    lod -= log2(abs(dot(normalize(objectNormal), WorldRayDirection())));  // 각도 기반 조정
+
+    // LOD 값을 사용한 텍스처 샘플링
+    float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, saturate(lod)).xyz;
+
     float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
     float3 Ks;
     float3 Kr;
@@ -479,8 +500,9 @@ void MyRaygenShader()
     uint2 dispatchRayIndex = DispatchRaysIndex().xy;
     // Generate a ray for a camera pixel corresponding to an index from the dispatched 2D grid.
     Ray ray = GenerateCameraRay(dispatchRayIndex, origin, rayDir);
-    
     UINT currentRayRecursionDepth = 0;
+
+    
     RayPayload rayPayload = TraceRadianceRay(ray, currentRayRecursionDepth, 0.001f, 3000.f);
 
     g_renderTarget[DispatchRaysIndex().xy] = float4(rayPayload.radiance, 1);

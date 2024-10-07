@@ -36,11 +36,18 @@ namespace Ideal
 		Vector3 hitPosition;
 	};
 
+	struct RayCone
+	{
+		float width;
+		float spreadAngle;
+	};
+
 	struct RayPayload
 	{
 		uint32 rayRecursionDepth;
 		Vector3 radiance;
 		GBuffer gBuffer;
+		RayCone rayCone;
 	};
 
 	struct ShadowRayPayload

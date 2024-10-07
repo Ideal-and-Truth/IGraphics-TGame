@@ -490,6 +490,8 @@ finishAdapter:
 
 	m_sceneCB.nearZ = 0;
 	m_sceneCB.farZ = 0;
+	m_sceneCB.fov = 0.f;
+	m_sceneCB.imageHeight = 0.f;
 	//m_sceneCB.nearZ = m_mainCamera->GetNearZ();
 	//m_sceneCB.farZ = m_mainCamera->GetFarZ();
 
@@ -525,6 +527,9 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.Proj = m_mainCamera->GetProj().Transpose();
 	m_sceneCB.nearZ = m_mainCamera->GetNearZ();
 	m_sceneCB.farZ = m_mainCamera->GetFarZ();
+
+	m_sceneCB.fov = m_mainCamera->GetFOV();
+	m_sceneCB.imageHeight = m_height;
 
 	m_globalCB.View = m_mainCamera->GetView().Transpose();
 	m_globalCB.Proj = m_mainCamera->GetProj().Transpose();
