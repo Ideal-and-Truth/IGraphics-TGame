@@ -623,148 +623,66 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 			{
 				if (texmap["_NormalMap"].IsDefined())
 				{
-					if (!texmap["_NormalMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_NormalMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
-
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_normal = m_texturePath / m_sceneName / originPath.filename();
+					 CopyTexture(texmap["_NormalMap"], matdata.m_normal);
 				}
 
 				else if (texmap["_BumpMap"].IsDefined())
 				{
-					if (!texmap["_BumpMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_BumpMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
-
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_normal = m_texturePath / m_sceneName / originPath.filename();
+					CopyTexture(texmap["_BumpMap"], matdata.m_normal);
 				}
 
 				else if (texmap["_MainTex"].IsDefined())
 				{
-					if (!texmap["_MainTex"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_MainTex"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
+					CopyTexture(texmap["_MainTex"], matdata.m_albedo);
 
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_albedo = m_texturePath / m_sceneName / originPath.filename();
 					matdata.m_tileX = texmap["_MainTex"]["m_Scale"]["x"].as<float>();
 					matdata.m_tileY = texmap["_MainTex"]["m_Scale"]["y"].as<float>();
 				}
 				else if (texmap["_MaskMap"].IsDefined())
 				{
-					if (!texmap["_MaskMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_MaskMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
-
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_metalicRoughness = m_texturePath / m_sceneName / originPath.filename();
+					CopyTexture(texmap["_MaskMap"], matdata.m_metalicRoughness);
 				}
 				else if (texmap["_MetallicGlossMap"].IsDefined())
 				{
-					if (!texmap["_MetallicGlossMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_MetallicGlossMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
-
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_metalicRoughness = m_texturePath / m_sceneName / originPath.filename();
+					CopyTexture(texmap["_MetallicGlossMap"], matdata.m_metalicRoughness);
 				}
 				else if (texmap["_BarkBaseColorMap"].IsDefined())
 				{
-					if (!texmap["_BarkBaseColorMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_BarkBaseColorMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
-
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_albedo = m_texturePath / m_sceneName / originPath.filename();
+					CopyTexture(texmap["_BarkBaseColorMap"], matdata.m_albedo);
 				}
 				else if (texmap["_BarkMaskMap"].IsDefined())
 				{
-					if (!texmap["_BarkMaskMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_BarkMaskMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
-
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_metalicRoughness = m_texturePath / m_sceneName / originPath.filename();
+					CopyTexture(texmap["_BarkMaskMap"], matdata.m_metalicRoughness);
 				}
 				else if (texmap["_BarkNormalMap"].IsDefined())
 				{
-					if (!texmap["_BarkNormalMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_BarkNormalMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) == m_guidMap.end())
-						continue;
-
-					const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-					fs::path parent = originPath.parent_path();
-					fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(originPath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_normal = m_texturePath / m_sceneName / originPath.filename();
+					CopyTexture(texmap["_BarkNormalMap"], matdata.m_normal);
 				}
 			}
 		}
 	}
 	m_matarialMap[_matGuid] = matdata;
+}
+
+void Truth::UnityParser::CopyTexture(const YAML::Node& _node, fs::path& _output)
+{
+	if (!_node["m_Texture"]["guid"].IsDefined())
+		return;
+	std::string texGuid = _node["m_Texture"]["guid"].as<std::string>();
+	if (m_guidMap.find(texGuid) == m_guidMap.end())
+		return;
+
+	const fs::path originPath = m_guidMap[texGuid]->m_filePath;
+	fs::path parent = originPath.parent_path();
+	fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
+	fs::path copyPath = m_texturePath / m_sceneName / parent.filename();
+
+	if (!fs::exists(copyPath))
+		fs::create_directory(copyPath);
+
+	if (!fs::exists(p))
+		fs::copy(originPath, copyPath, fs::copy_options::skip_existing);
+	_output = copyPath / originPath.filename();
 }
 
 void Truth::UnityParser::ParseOnlyMatarialFile(const fs::path& _matPath)

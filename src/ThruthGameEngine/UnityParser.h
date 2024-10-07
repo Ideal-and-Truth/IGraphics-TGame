@@ -177,6 +177,7 @@ namespace Truth
 		void ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxPath);
 
 		void ParseMatarialFile(GameObject* _GO, const std::string& _matGuid);
+		void CopyTexture(const YAML::Node& _node, fs::path& _output);
 		void ParseOnlyMatarialFile(const fs::path& _matGuid);
 
 		void WriteMaterialData();
