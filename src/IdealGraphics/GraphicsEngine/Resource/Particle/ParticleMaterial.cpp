@@ -37,6 +37,11 @@ void Ideal::ParticleMaterial::SetTexture2(std::shared_ptr<Ideal::ITexture> Textu
 	m_texture2 = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 }
 
+void Ideal::ParticleMaterial::SetBackFaceCulling(bool Culling)
+{
+	m_isBackFaceCulling = Culling;
+}
+
 Ideal::ParticleMaterialMenu::EBlendingMode Ideal::ParticleMaterial::GetBlendingMode()
 {
 	return m_blendingMode;
@@ -60,4 +65,9 @@ std::weak_ptr<Ideal::D3D12Texture> Ideal::ParticleMaterial::GetTexture1()
 std::weak_ptr<Ideal::D3D12Texture> Ideal::ParticleMaterial::GetTexture2()
 {
 	return m_texture2;
+}
+
+bool Ideal::ParticleMaterial::GetBackFaceCulling()
+{
+	return m_isBackFaceCulling;
 }
