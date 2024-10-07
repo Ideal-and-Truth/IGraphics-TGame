@@ -125,6 +125,8 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
 
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
+    //Ideal_NormalStrength_float(texSample, 0.5, texSample);
+
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
     return worldNormal;
@@ -596,6 +598,8 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     //if(l_materialInfo.bUseNormalMap == true)
     {
         normal = NormalMap(normal, uv, vertexInfo, attr);
+        normal = normalize(normal);
+
     }
     if(dot(-WorldRayDirection(), normal) < 0)
     {
