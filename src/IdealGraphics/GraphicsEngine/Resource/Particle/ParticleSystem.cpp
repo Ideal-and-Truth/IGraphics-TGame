@@ -170,6 +170,15 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
 			}
 				break;
+			case Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA; // Alpha blending
+			}
+			break;
 			default:
 				break;
 		}

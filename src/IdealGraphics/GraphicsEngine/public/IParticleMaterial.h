@@ -16,6 +16,7 @@ namespace Ideal
 		{
 			Additive = 0,
 			Alpha,
+			AlphaAdditive
 		};
 	}
 }
