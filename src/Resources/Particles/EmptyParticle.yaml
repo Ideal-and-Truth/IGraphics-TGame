@@ -1,5 +1,5 @@
 MaxCount: 10
-MatName: defaultMattt
+MatName: sowrdSlash
 EBlendingMode: 1
 Shader: SwordSlash
 Texture0: ../Resources/Textures/0_Particle/Smoke12.png
@@ -14,7 +14,7 @@ StartColor:
 StartLifetime: 1
 Loop: false
 Duration: 2
-StopEnd: true
+StopWhenFinished: true
 RenderMode: 1
 RotationOverLifeTime: true
 RotationOverLifetimeAxisYControlPoints:
