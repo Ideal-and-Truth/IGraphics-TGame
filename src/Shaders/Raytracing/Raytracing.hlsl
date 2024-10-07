@@ -127,7 +127,7 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
     float3 newNormal;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
-    Ideal_NormalStrength_float(bumpNormal, 0, newNormal);
+    Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // ´Ù¸£°Ô
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(newNormal, normal, tangent);
     return worldNormal;
 }

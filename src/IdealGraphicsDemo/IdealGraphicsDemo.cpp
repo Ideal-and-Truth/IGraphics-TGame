@@ -394,10 +394,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region TestPlane
 		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		auto planeMaterial= gRenderer->CreateMaterial();
-		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_BaseMap.png", true);
-		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_MaskMap.png", true, true);
+		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_BaseMap.png", true);
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_MaskMap.png", true, true);
 		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png", true, true);
-		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_Normal.png", true, true);
+		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_Normal.png", true, true);
 		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
