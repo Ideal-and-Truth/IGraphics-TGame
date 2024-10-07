@@ -455,7 +455,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
-			if (name == "55394")
+			if (name == "51764")
 			{
 				int a = 1;
 			}
