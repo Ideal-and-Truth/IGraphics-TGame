@@ -344,6 +344,7 @@ void PlayerAnimator::Update()
 			if (GetKeyDown(KEY::SPACE))
 			{
 				m_isDodge = true;
+				m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 			}
 		}
 		else
@@ -359,7 +360,7 @@ void PlayerAnimator::Update()
 
 	m_currentState->OnStateUpdate();
 
-	if (!m_isAttacking && !m_isGuard && !m_isComboReady && !m_isNormalAttack && m_currentState != m_animationStateMap["Hit"])
+	if (!m_isDodge && !m_isAttacking && !m_isGuard && !m_isComboReady && !m_isNormalAttack && m_currentState != m_animationStateMap["Hit"])
 	{
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
 	}

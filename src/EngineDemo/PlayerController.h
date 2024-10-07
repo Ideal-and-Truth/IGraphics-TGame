@@ -40,6 +40,8 @@ private:
 	PROPERTY(canMove);
 	bool m_canMove;
 
+	bool m_isDodge;
+
 public:
 	PlayerController();
 	virtual ~PlayerController();

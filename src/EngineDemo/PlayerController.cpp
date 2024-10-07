@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Controller.h"
 #include "Player.h"
+#include "PlayerAnimator.h"
 #include "PlayerCamera.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
@@ -11,6 +12,7 @@ PlayerController::PlayerController()
 	: m_forwardInput(0.f)
 	, m_sideInput(0.f)
 	, m_canMove(true)
+	, m_isDodge(true)
 {
 	m_name = "PlayerController";
 }
@@ -57,12 +59,8 @@ void PlayerController::PlayerMove(const void*)
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
 
 
-	if (!m_canMove)
-	{
-		m_forwardInput = 0.f;
-		m_sideInput = 0.f;
-		return;
-	}
+	auto playerAnimator = m_owner.lock().get()->GetComponent<PlayerAnimator>().lock();
+	bool isDodge = playerAnimator->GetTypeInfo().GetProperty("isDodge")->Get<bool>(playerAnimator.get()).Get();
 
 	if (GetKey(KEY::W))
 	{
@@ -106,21 +104,38 @@ void PlayerController::PlayerMove(const void*)
 	Vector3 disp2 = right * m_sideInput * playerSpeed;
 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f);
 	Vector3 finalMovement = (disp + disp2 + gravity) * GetDeltaTime();
-	m_controller.lock()->Move(finalMovement);
 
 	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
 	m_faceDirection = { playerDir.x ,0, playerDir.z };
-	if (m_faceDirection == Vector3::Zero)
+
+	if (!m_isDodge && GetKeyDown(KEY::SPACE))
+	{
+		Vector3 power(finalMovement);
+		power *= 8.f;
+		m_controller.lock()->AddImpulse(power);
+		m_isDodge = true;
+
+		m_playerDirection = playerDir;
+		Quaternion lookRot;
+		Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
+		auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+		m_owner.lock()->m_transform->m_rotation = lookRot;
+	}
+
+
+	if (!m_canMove)
+	{
+		finalMovement = { 0.f,0.f,0.f };
+	}
+	m_controller.lock()->Move(finalMovement);
+
+	if (m_faceDirection == Vector3::Zero || !m_canMove)
 	{
 		return;
 	}
 
-	if (GetKeyDown(KEY::SPACE))
-	{
-		Vector3 power(finalMovement);
-		power *= 5.f;
-		m_controller.lock()->AddImpulse(power);
-	}
+	m_isDodge = false;
+
 
 	m_playerDirection = playerDir;
 	Quaternion lookRot;
