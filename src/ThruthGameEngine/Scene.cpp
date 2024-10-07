@@ -148,7 +148,7 @@ DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end
 	{
 		return m_navMesh->FindPath(_start, _end, _size);
 	}
-	return Vector3::Zero;
+	return _end;
 }
 
 std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
