@@ -15,6 +15,7 @@ public:
 
 public:
 	void Open(std::wstring FilePath, FileMode Mode);
+	void Close();
 
 	template <typename T>
 	void Write(const T& Data)

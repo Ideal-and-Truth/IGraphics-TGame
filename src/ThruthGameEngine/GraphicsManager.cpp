@@ -81,7 +81,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	// 추후에 카메라에 넘겨 줄 시야각
 	m_aspect = static_cast<float>(_wight) / static_cast<float>(_height);
 
-	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
+	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/NightStormMoonGlow.dds");
 
 	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 }
@@ -202,21 +202,21 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 	m_mainCamera = _camera;
 }
 
-std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path)
+std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _a, bool _b)
 {
 	if (m_textureMap.find(_path) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
 		std::filesystem::path p(_path);
+		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
+		{
+			int a = 1;
+		}
 		if (_path.empty())
 		{
 			return nullptr;
 		}
-// 		else if (p.extension() == ".tga" || p.extension() == ".TGA")
-// 		{
-// 			return nullptr;
-// 		}
-		tex->m_texture = m_renderer->CreateTexture(_path);
+		tex->m_texture = m_renderer->CreateTexture(_path, _a, _b);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
 
@@ -251,9 +251,14 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			std::filesystem::path albedo(f->Read<std::string>());
 			std::filesystem::path normal(f->Read<std::string>());
 			std::filesystem::path metalicRoughness(f->Read<std::string>());
+
+			mat->m_tileX = f->Read<float>();
+			mat->m_tileY = f->Read<float>();
+
 			mat->m_baseMap = CreateTexture(albedo);
-			mat->m_normalMap = CreateTexture(normal);
+			mat->m_normalMap = CreateTexture(normal, false, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
+			
 			mat->SetTexture();
 		}
 		else
@@ -299,7 +304,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 // 			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
 			
 			mat->m_baseMap = CreateTexture(al.generic_wstring());
-			mat->m_normalMap = CreateTexture(no.generic_wstring());
+			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
 			mat->m_maskMap = CreateTexture(ma.generic_wstring());
 			mat->SetTexture();
 		}

@@ -305,7 +305,7 @@
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)Libraries\ReleaseLib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib</AdditionalDependencies>
+      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib;ReleaseLib\fmod\fmod_vc.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

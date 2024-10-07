@@ -517,6 +517,103 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Shaders/Particle/"
 		);
 		std::shared_ptr<Ideal::IShader> swordParticleShader = gRenderer->CreateAndLoadParticleShader(L"SwordSlash");
+
+		// boss
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossFX_1Beam.hlsl",
+			L"../Shaders/Particle/",
+			L"BossFX_1Beam",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossParticleShader0 = gRenderer->CreateAndLoadParticleShader(L"BossFX_1Beam");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/DefaultParticlePS.hlsl",
+			L"../Shaders/Particle/",
+			L"DefaultParticlePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> DefaultParticlePSShader = gRenderer->CreateAndLoadParticleShader(L"DefaultParticlePS");
+
+#pragma endregion
+
+#pragma region BossEffect
+		//------------------------Create Particle---------------------------//
+
+		std::shared_ptr<Ideal::IParticleMaterial> bossParticleMaterial0 = gRenderer->CreateParticleMaterial();
+		bossParticleMaterial0->SetShader(bossParticleShader0);
+
+		std::shared_ptr<Ideal::ITexture> bossParticleTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/boss/PerlinMap_4.png");
+		std::shared_ptr<Ideal::ITexture> bossParticleTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/boss/GausianNoise_3.png");
+		bossParticleMaterial0->SetTexture0(bossParticleTexture0);
+		bossParticleMaterial0->SetTexture1(bossParticleTexture1);
+
+		bossParticleMaterial0->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
+
+		std::shared_ptr<Ideal::IParticleSystem> bossParticleSystem0 = gRenderer->CreateParticleSystem(bossParticleMaterial0);
+
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Cylinder_01.fbx");
+		std::shared_ptr<Ideal::IMesh> bossParticleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Cylinder_01");
+
+		bossParticleSystem0->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		bossParticleSystem0->SetRenderMesh(bossParticleMesh);
+
+		bossParticleSystem0->SetLoop(false);
+		// 첫 사이즈
+		bossParticleSystem0->SetStartSize(0.35f);
+		bossParticleSystem0->SetSimulationSpeed(2.f);
+		// 첫 색상
+		bossParticleSystem0->SetStartColor(DirectX::SimpleMath::Color(0.1080087, 0.5713133, 2.544206, 1));
+		
+		bossParticleSystem0->SetTransformMatrix(
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4,0.4,1))*
+			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
+		);
+
+		///////////// 같이 쓰는거
+		std::shared_ptr<Ideal::IParticleMaterial> bossParticleMaterial1 = gRenderer->CreateParticleMaterial();
+		bossParticleMaterial1->SetShader(DefaultParticlePSShader);
+
+		bossParticleMaterial1->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
+
+		std::shared_ptr<Ideal::IParticleSystem> bossParticleSystem1 = gRenderer->CreateParticleSystem(bossParticleMaterial1);
+
+		//gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Cylinder_01.fbx", true, Vector3(0.35f, 0.35f, 0.35f));
+		//std::shared_ptr<Ideal::IMesh> bossParticleMesh = gRenderer->CreateParticleMesh(L"0_Particle/Cylinder_01");
+
+		bossParticleSystem1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		bossParticleSystem1->SetRenderMesh(bossParticleMesh);
+
+		bossParticleSystem1->SetStartSize(0.25f);
+		bossParticleSystem1->SetLoop(false);
+		// 첫 색상
+		bossParticleSystem1->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
+		bossParticleSystem1->SetTransformMatrix(
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1))*
+			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f));
+		bossParticleSystem1->SetSimulationSpeed(2.f);
+		// 크기 
+		bossParticleSystem1->SetSizeOverLifetime(true);
+		{
+			auto& graph = bossParticleSystem1->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,1 });
+			graph.AddControlPoint({ 0.5,1.5f });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = bossParticleSystem1->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1 });
+			graph.AddControlPoint({ 0.5,1.5f });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = bossParticleSystem1->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,1 });
+		}
 #pragma endregion
 
 #pragma region CreateParticle
@@ -702,28 +799,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				//----- Set Draw -----//
 
-				static int tX = 0;
-				if (GetAsyncKeyState('Z') & 0x8000)
-				{
-					//if (sprite)
-						//gRenderer->DeleteSprite(sprite);
-					if (text)
-					{
-						text->ChangeText(L"HELLO WORLDasdf");
-						//gRenderer->DeleteText(text);
-					}
-				}
+				//static int tX = 0;
+				//if (GetAsyncKeyState('Z') & 0x8000)
+				//{
+				//	//if (sprite)
+				//		//gRenderer->DeleteSprite(sprite);
+				//	if (text)
+				//	{
+				//		text->ChangeText(L"HELLO WORLDasdf");
+				//		//gRenderer->DeleteText(text);
+				//	}
+				//}
 
-				if (GetAsyncKeyState('C') & 0x8000)
+				//if (GetAsyncKeyState('C') & 0x8000)
 				{
-					if (!kaMaterial)
-					{
-						kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");;
-						kaMaterial = gRenderer->CreateMaterial();
-						kaMaterial->SetBaseMap(kaTexture);
-						//DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
-						//meshes[0]->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
-					}
+					//if (!kaMaterial)
+					//{
+					//	kaTexture = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");;
+					//	kaMaterial = gRenderer->CreateMaterial();
+					//	kaMaterial->SetBaseMap(kaTexture);
+					//	//DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+					//	//meshes[0]->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+					//}
 					//std::shared_ptr<Ideal::ISkinnedMeshObject> ka;
 					//ka = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
 					//ka->AddAnimation("Walk", walkAnim);
@@ -800,26 +897,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}*/
 
-				if (GetAsyncKeyState('M') & 0x8000)
-				{
-					if (debugCart)
-					{
-						gRenderer->DeleteDebugMeshObject(debugCart);
-						debugCart.reset();
-					}
-					//for (int i = 0; i < 1; i++)
-					//{
-					//	if (meshes.size())
-					//	{
-					//		auto back = meshes.back();
-					//		meshes.pop_back();
-					//
-					//		gRenderer->DeleteMeshObject(back);
-					//		if (tX > 0)
-					//			tX--;
-					//	}
-					//}
-				}
 
 				if (GetAsyncKeyState('F') & 0x8000)
 				{
@@ -842,6 +919,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					particleSystem->Play();
 					//slashParticleSystem->Play();
 				}
+
+				if (GetAsyncKeyState('Z') & 0x8000)
+				{
+					bossParticleSystem0->Play();
+					bossParticleSystem1->Play();
+					//slashParticleSystem->Play();
+				}
+
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -852,6 +937,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				DebugPlayer->AnimationDeltaTime(0.003f);
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
+				bossParticleSystem0->SetDeltaTime(0.003f);
+				bossParticleSystem1->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
