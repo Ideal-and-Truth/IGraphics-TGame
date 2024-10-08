@@ -31,6 +31,8 @@ namespace Truth
 
 		HWND m_hwnd;
 
+		std::string m_path;
+
 		std::shared_ptr<Texture> m_baseMap;
 		std::shared_ptr<Texture> m_normalMap;
 		std::shared_ptr<Texture> m_maskMap;
@@ -40,6 +42,7 @@ namespace Truth
 
 		void SetTexture();
 		void ChangeTexture(std::wstring _path, int _type);
+		void ChangeMaterial();
 		void ChangeTexture(int _type);
 		void SaveMaterial();
 	};

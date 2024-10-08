@@ -93,8 +93,7 @@ public:
 			for (size_t i = 0; i < obj.size(); i++)
 			{
 				auto o = obj[i];
-				int a = 1;
-				isSelect |= TypeUI::DisplayType(o, _name, _min, _max);
+				isSelect |= TypeUI::DisplayType(o, _name, _min, _max, static_cast<uint32>(i));
 			}
 			return isSelect;
 		}

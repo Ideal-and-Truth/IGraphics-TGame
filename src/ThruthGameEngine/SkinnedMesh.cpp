@@ -67,27 +67,33 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 		m_boneMap[bone.lock()->GetName()] = bone;
 	}
 
-	std::unordered_map<fs::path, std::shared_ptr<Material>> matMap;
-	for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
+	if (m_matPath.empty())
 	{
-		std::string matName = m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->GetFBXMaterialName();
-		fs::path matPath = "../Resources/Matarial" / meshPath.filename();
-
-		if (!fs::exists(matPath))
-			fs::create_directories(matPath);
-
-		matPath = matPath.filename() / matName;
-
-		auto material = m_managers.lock()->Graphics()->CraeteMaterial(matPath.generic_string());
-		std::unordered_map<fs::path, std::shared_ptr<Material>>::iterator itr = matMap.find(matPath);
-
-		if (itr == matMap.end())
+		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
 		{
-			m_mat.push_back(material);
-			matMap[matPath] = material;
-		}
+			std::string matName = m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->GetFBXMaterialName();
+			fs::path matPath = "../Resources/Matarial" / meshPath.filename();
 
-		m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+			if (!fs::exists(matPath))
+				fs::create_directories(matPath);
+
+			matPath = matPath.filename() / matName;
+
+			auto material = m_managers.lock()->Graphics()->CreateMaterial(matPath.generic_string());
+			m_mat.push_back(material);
+
+			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
+		{
+			auto material = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
+			m_mat.push_back(material);
+
+			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+		}
 	}
 }
 
@@ -201,6 +207,7 @@ std::weak_ptr<Ideal::IBone> Truth::SkinnedMesh::GetBone(const std::string& _name
 #ifdef EDITOR_MODE
 void Truth::SkinnedMesh::EditorSetValue()
 {
+	m_matPath.clear();
 	SetSkinnedMesh(m_path);
 }
 #endif // EDITOR_MODE

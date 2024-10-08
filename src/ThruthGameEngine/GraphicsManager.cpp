@@ -232,9 +232,21 @@ void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 	m_renderer->DeleteTexture(_texture->m_texture);
 }
 
-std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMaterial(const std::string& _name)
+std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const std::string& _name, bool _useDefalutPath)
 {
-	std::filesystem::path matp = m_matSavePath + _name + ".matData";
+	std::filesystem::path matp;
+	if (_useDefalutPath)
+	{
+		matp = m_matSavePath + _name + ".matData";
+	}
+	else
+	{
+		matp = _name;
+		if (matp.is_absolute())
+		{
+			matp = fs::relative(matp);
+		}
+	}
 	std::shared_ptr<Material> mat = std::make_shared<Material>();
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
@@ -245,6 +257,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMaterial(const st
 		mat->m_baseMap = nullptr;
 		mat->m_normalMap = nullptr;
 		mat->m_maskMap = nullptr;
+		mat->m_path = matp.generic_string();
 
 		if (std::filesystem::exists(matp))
 		{

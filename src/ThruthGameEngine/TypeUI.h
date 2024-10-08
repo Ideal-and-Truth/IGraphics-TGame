@@ -34,7 +34,7 @@ namespace TypeUI
 {
 	// 템플릿 타입에 대한 타입은 여기서 정의한다.
 	template<typename T>
-	bool DisplayType(T& _val, const char* _name, float _min = 0.0f, float _max = 0.0f)
+	bool DisplayType(T& _val, const char* _name, float _min = 0.0f, float _max = 0.0f, uint32 _index = 0)
 	{
 		if constexpr (std::is_same_v<T, int>)
 		{
@@ -149,23 +149,32 @@ namespace TypeUI
 		{
 			const ImVec2 size(100, 100);
 
-			ImGui::Text(_val->m_name.c_str());
+			std::string fileID = _val->m_name + "##" + std::to_string(_index);
+			if (ImGui::Button(fileID.c_str()))
+			{
+				// _val->ChangeMaterial();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button(("new##" + fileID).c_str()))
+			{
+				// _val->ChangeMaterial();
+			}
 
 			if (_val->m_baseMap != nullptr)
 			{
-				if (ImGui::ImageButton((ImTextureID)(_val->m_baseMap->GetImageID()), size))
+				if (ImGui::ImageButton((fileID + "0").c_str(), (ImTextureID)(_val->m_baseMap->GetImageID()), size))
 					_val->ChangeTexture(0);
 			}
 			ImGui::SameLine();
 			if (_val->m_normalMap != nullptr)
 			{
-				if (ImGui::ImageButton((ImTextureID)(_val->m_normalMap->GetImageID()), size))
+				if (ImGui::ImageButton((fileID + "1").c_str(), (ImTextureID)(_val->m_normalMap->GetImageID()), size))
 					_val->ChangeTexture(1);
 			}
 			ImGui::SameLine();
 			if (_val->m_maskMap != nullptr)
 			{
-				if (ImGui::ImageButton((ImTextureID)(_val->m_maskMap->GetImageID()), size))
+				if (ImGui::ImageButton((fileID + "2").c_str(), (ImTextureID)(_val->m_maskMap->GetImageID()), size))
 					_val->ChangeTexture(2);
 			}
 		}
