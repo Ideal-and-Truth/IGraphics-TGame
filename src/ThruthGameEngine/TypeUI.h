@@ -115,22 +115,14 @@ namespace TypeUI
 			value[1] = temp.y;
 			value[2] = temp.z;
 
-			bool isSelect = ImGui::DragFloat3(_name, value, 0.1f);
-			if (isSelect)
-			{
-				delta = {
-					temp.x - value[0],
-					temp.y - value[1],
-					temp.z - value[2]
-				};
-			}
+			ImGui::DragFloat3(_name, value, 0.1f);
 
-			delta.x = delta.x * DegToRad;
-			delta.y = delta.y * DegToRad;
-			delta.z = delta.z * DegToRad;
+			delta.x = value[0] * DegToRad;
+			delta.y = value[1] * DegToRad;
+			delta.z = value[2] * DegToRad;
 
-			_val = _val * Quaternion::CreateFromYawPitchRoll(delta);
-			return isSelect;
+			_val = Quaternion::CreateFromYawPitchRoll(delta);
+			return false;
 		}
 		else if constexpr (std::is_same_v<T, Color>)
 		{
@@ -153,56 +145,32 @@ namespace TypeUI
 			}
 			return isSelect;
 		}
-		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Truth::Material>>>)
+		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::Material>>)
 		{
 			USES_CONVERSION;
+
 			const ImVec2 size(100, 100);
-			// ImGui::Button("Save Matarial Data");
-			for (auto& mat : _val)
+
+			ImGui::Text(_val->m_name.c_str());
+
+			if (_val->m_baseMap != nullptr)
 			{
-				if (mat->m_baseMap != nullptr)
-				{
-					std::string matPath = W2A(mat->m_baseMap->m_path.c_str());
-					matPath.resize(128);
-					char* temp = (char*)matPath.c_str();
-					bool success = ImGui::InputText(_name, temp, 128, ImGuiInputTextFlags_EnterReturnsTrue);
-					if (success)
-					{
-						std::wstring p = A2W(temp);
-						mat->ChangeTexture(p, 0);
-					}
-					ImGui::ImageButton((ImTextureID)(mat->m_baseMap->GetImageID()), size);
-				}
-
-				if (mat->m_normalMap != nullptr)
-				{
-					std::string matPath = W2A(mat->m_normalMap->m_path.c_str());
-					matPath.resize(128);
-					char* temp = (char*)matPath.c_str();
-					bool success = ImGui::InputText(_name, temp, 128, ImGuiInputTextFlags_EnterReturnsTrue);
-					if (success)
-					{
-						std::wstring p = A2W(temp);
-						mat->ChangeTexture(p, 1);
-					}
-					ImGui::ImageButton((ImTextureID)(mat->m_normalMap->GetImageID()), size);
-				}
-				if (mat->m_maskMap != nullptr)
-				{
-					std::string matPath = W2A(mat->m_maskMap->m_path.c_str());
-					matPath.resize(128);
-					char* temp = (char*)matPath.c_str();
-
-					bool success = ImGui::InputText(_name, temp, 128, ImGuiInputTextFlags_EnterReturnsTrue);
-					if (success)
-					{
-						std::wstring p = A2W(temp);
-						mat->ChangeTexture(p, 2);
-					}
-					ImGui::ImageButton((ImTextureID)(mat->m_maskMap->GetImageID()), size);
-				}
+				if (ImGui::ImageButton((ImTextureID)(_val->m_baseMap->GetImageID()), size))
+					_val->ChangeTexture(0);
 			}
-			return false;
+			ImGui::SameLine();
+			if (_val->m_normalMap != nullptr)
+			{
+				if (ImGui::ImageButton((ImTextureID)(_val->m_normalMap->GetImageID()), size))
+
+					_val->ChangeTexture(1);
+			}
+			ImGui::SameLine();
+			if (_val->m_maskMap != nullptr)
+			{
+				if (ImGui::ImageButton((ImTextureID)(_val->m_maskMap->GetImageID()), size))
+					_val->ChangeTexture(2);
+			}
 		}
 		return false;
 	}

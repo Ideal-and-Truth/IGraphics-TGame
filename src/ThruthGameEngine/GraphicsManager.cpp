@@ -10,7 +10,7 @@
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
-#include "FileUtils.h"
+#include "TFileUtils.h"
 
 
 /// <summary>
@@ -239,6 +239,8 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 		std::filesystem::path matp = m_matSavePath + _name + ".matData";
 		std::shared_ptr<Material> mat = std::make_shared<Material>();
 		mat->m_material = m_renderer->CreateMaterial();
+		mat->m_gp = this;
+		mat->m_hwnd = m_hwnd;
 		mat->m_name = _name;
 		mat->m_baseMap = nullptr;
 		mat->m_normalMap = nullptr;
@@ -246,7 +248,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 		
 		if (std::filesystem::exists(matp))
 		{
-			std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
+			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
 			f->Open(matp, Read);
 			std::filesystem::path albedo(f->Read<std::string>());
 			std::filesystem::path normal(f->Read<std::string>());
@@ -260,22 +262,11 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			mat->m_maskMap = CreateTexture(metalicRoughness);
 			
 			mat->SetTexture();
+			f->Close();
 		}
 		else
 		{
-			OPENFILENAME m_openFileName;
-			TCHAR m_filePathBuffer[256] = L"";
-			TCHAR m_fileBuffer[256] = L"";
-			
-			memset(&m_openFileName, 0, sizeof(OPENFILENAME));
-			m_openFileName.lStructSize = sizeof(OPENFILENAME);
-			m_openFileName.hwndOwner = m_hwnd;
-			m_openFileName.lpstrFile = m_fileBuffer;
-			m_openFileName.nMaxFile = 256;
-			m_openFileName.lpstrInitialDir = L".";
-
-
-			std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
+			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
 			f->Open(matp, Write);
 
 			fs::path al = "../Resources/DefaultData/DefaultAlbedo.png";
@@ -307,6 +298,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
 			mat->m_maskMap = CreateTexture(ma.generic_wstring());
 			mat->SetTexture();
+			f->Close();
 		}
 
 		return m_matarialMap[_name] = mat;

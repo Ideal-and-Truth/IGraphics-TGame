@@ -2,7 +2,7 @@
 #include "IMaterial.h"
 #include "Texture.h"
 #include "GraphicsManager.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 
 void Truth::Material::SetTexture()
 {
@@ -23,24 +23,49 @@ void Truth::Material::ChangeTexture(std::wstring _path, int _type)
 	{
 	case 0:
 		m_material->SetBaseMap(m_tex->m_texture);
+		m_baseMap = m_tex;
 		break;
 	case 1:
 		m_material->SetNormalMap(m_tex->m_texture);
+		m_normalMap = m_tex;
 		break;
 	case 2:
 		m_material->SetMaskMap(m_tex->m_texture);
+		m_maskMap = m_tex;
 		break;
 	default:
 		break;
 	}
 }
+
+void Truth::Material::ChangeTexture(int _type)
+{
+	std::filesystem::path testPath = std::filesystem::current_path();
+	memset(&m_openFileName, 0, sizeof(OPENFILENAME));
+	m_openFileName.lStructSize = sizeof(OPENFILENAME);
+	m_openFileName.hwndOwner = m_hwnd;
+	m_openFileName.lpstrFile = m_fileBuffer;
+	m_openFileName.nMaxFile = 256;
+	m_openFileName.lpstrInitialDir = L".";
+
+	if (GetOpenFileName(&m_openFileName) != 0)
+	{
+		ChangeTexture(m_openFileName.lpstrFile, _type);
+	}
+	::SetCurrentDirectory(testPath.generic_wstring().c_str());
+	SaveMaterial();
+}
+
 void Truth::Material::SaveMaterial()
 {
-	std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
 	std::filesystem::path matp = "../Resources/Matarial/" + m_name + ".matData";
+	std::filesystem::path testPath = std::filesystem::current_path();
+	bool b = std::filesystem::exists(matp);
+	
 	f->Open(matp, Write);
-	f->Write(m_baseMap->m_path);
-	f->Write(m_normalMap->m_path);
-	f->Write(m_maskMap->m_path);
+	f->Write(m_baseMap->m_path.generic_string());
+	f->Write(m_normalMap->m_path.generic_string());
+	f->Write(m_maskMap->m_path.generic_string());
 
 }

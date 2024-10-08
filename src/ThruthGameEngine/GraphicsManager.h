@@ -30,7 +30,6 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
-		HWND m_hwnd;
 
 		std::unordered_map<std::wstring, std::shared_ptr<Ideal::IMesh>> m_particleMeshMap;
 
@@ -42,6 +41,8 @@ namespace Truth
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		};
+		HWND m_hwnd;
+
 	public:
 		// path / texture
 		std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textureMap;

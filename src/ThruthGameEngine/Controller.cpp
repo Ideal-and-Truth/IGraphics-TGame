@@ -113,7 +113,7 @@ void Truth::Controller::Move(Vector3& _disp)
 				physx::PxControllerFilters()
 			));
 
-	m_impulse -= m_impulse * 0.01;
+	m_impulse -= m_impulse * 0.01f;
 	if (m_impulse.Length() <= 1.0f)
 	{
 		m_impulse = Vector3::Zero;

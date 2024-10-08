@@ -1,5 +1,5 @@
 #include "NavGeom.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 
 Truth::NavGeom::NavGeom()
 	: m_bmin(std::vector<float>(3, FLT_MAX))
@@ -17,7 +17,7 @@ Truth::NavGeom::~NavGeom()
 
 void Truth::NavGeom::Load(const std::wstring& _path)
 {
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	file->Open(_path, FileMode::Read);
 
 	uint32 acc = 0;

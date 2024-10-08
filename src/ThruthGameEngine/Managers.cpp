@@ -82,7 +82,6 @@ void Truth::Managers::FixedUpdate() const
 void Truth::Managers::Render() const
 {
 	clock_t start, finish;
-	double duration;
 
 	start = clock();
 

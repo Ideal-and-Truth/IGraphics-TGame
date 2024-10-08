@@ -3,6 +3,7 @@
 #include <string>
 #include "ITexture.h"
 #include "Types.h"
+#include <filesystem>
 
 namespace Ideal
 {
@@ -13,8 +14,9 @@ namespace Truth
 {
 	struct Texture
 	{
+
 	public:
-		std::wstring m_path; 
+		std::filesystem::path m_path; 
 		std::shared_ptr<Ideal::ITexture> m_texture;
 
 		uint32 w;

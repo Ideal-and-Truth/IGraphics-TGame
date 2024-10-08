@@ -3,7 +3,7 @@
 #include "Collider.h"
 #include "MathUtil.h"
 #include "RigidBody.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 
 // static uint8 physx::m_collsionTable[8] = {};
 
@@ -356,7 +356,7 @@ physx::PxMaterial* Truth::PhysicsManager::CreateMaterial(Vector3 _val)
 /// <param name="_path"></param>
 void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 {
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	file->Open(_path, FileMode::Read);
 
 	std::vector<std::vector<physx::PxVec3>> vers;

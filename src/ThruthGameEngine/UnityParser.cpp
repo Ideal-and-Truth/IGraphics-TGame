@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <iostream>
-#include "FileUtils.h"
+#include "TFileUtils.h"
 #include "GraphicsManager.h"
 
 #include "Entity.h"
@@ -755,7 +755,7 @@ void Truth::UnityParser::WriteMaterialData()
 
 	for (auto& mat : m_matarialMap)
 	{
-		std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+		std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 		fs::path p = m_matSavePath / (mat.second.m_name + ".matData");
 		file->Open(p, FileMode::Write);
 
@@ -793,7 +793,7 @@ void Truth::UnityParser::WriteData()
 	ConvertUnloadedMesh();
 	WriteMaterialData();
 
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	std::wstring path = m_defaultPath;
 	path += m_sceneName.generic_wstring() + L"/";
 	path += L"Data.map";
@@ -815,7 +815,7 @@ void Truth::UnityParser::WriteData()
 	}
 }
 
-void Truth::UnityParser::WriteColliderData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteColliderData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isCollider);
 	if (_GO->m_isCollider)
@@ -831,7 +831,7 @@ void Truth::UnityParser::WriteColliderData(std::shared_ptr<FileUtils> _file, Gam
 	}
 }
 
-void Truth::UnityParser::WriteMeshData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteMeshData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isMesh);
 	if (_GO->m_isMesh)
@@ -851,7 +851,7 @@ void Truth::UnityParser::WriteMeshData(std::shared_ptr<FileUtils> _file, GameObj
 	}
 }
 
-void Truth::UnityParser::WriteLightData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteLightData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isLight);
 	if (_GO->m_isLight)
@@ -867,7 +867,7 @@ void Truth::UnityParser::WriteLightData(std::shared_ptr<FileUtils> _file, GameOb
 	}
 }
 
-void Truth::UnityParser::WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteLocalTMData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<float>(_GO->m_position.x);
 	_file->Write<float>(_GO->m_position.y);
