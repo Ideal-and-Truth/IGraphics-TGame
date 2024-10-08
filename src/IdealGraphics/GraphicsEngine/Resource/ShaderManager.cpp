@@ -134,7 +134,7 @@ void Ideal::ShaderManager::CompileShaderAndSave(const std::wstring& FilePath, co
 	else
 		CompileShader(FilePath, ShaderModel, OutBlob);
 
-	OutShader(OutBlob, SavePath + SaveName + L".cso");
+	//OutShader(OutBlob, SavePath + SaveName + L".cso");
 
 	//
 	uint32 Size = OutBlob->GetBufferSize();

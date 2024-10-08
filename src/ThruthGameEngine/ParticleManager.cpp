@@ -106,10 +106,10 @@ void Truth::ParticleManager::CreateEmptyParticle()
 
 	emitter << YAML::Key << "ColorOverLifetimeGradientGraph" << YAML::BeginSeq <<
 		YAML::BeginMap <<
-		YAML::Key << "Color" << YAML::BeginSeq << 
-		YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << 
+		YAML::Key << "Color" << YAML::BeginSeq <<
+		YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f << YAML::Value << 1.0f <<
 		YAML::EndSeq <<
-		YAML::Key << "position" << YAML::Value << 0.0f << 
+		YAML::Key << "position" << YAML::Value << 0.0f <<
 		YAML::EndMap <<
 		YAML::BeginMap <<
 		YAML::Key << "Color" << YAML::BeginSeq <<
@@ -162,7 +162,7 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		}
 		else
 		{
-			/// Create Texture
+			/// Create Texture 0 1 2
 			if (node["Texture0"].IsDefined())
 			{
 				std::wstring tPath = A2W(node["Texture0"].as<std::string>().c_str());
@@ -182,10 +182,17 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 				std::shared_ptr<Texture> t2 = m_grapics->CreateTexture(tPath);
 				mat->SetTexture2(t2->m_texture);
 			}
+			/// Blending Mode
 			if (node["EBlendingMode"].IsDefined())
 			{
 				mat->SetBlendingMode(static_cast<Ideal::ParticleMaterialMenu::EBlendingMode>(node["EBlendingMode"].as<int>()));
 			}
+			/// Back Face Culling
+			if (node["BackFaceCulling"].IsDefined())
+			{
+				mat->SetBackFaceCulling(node["BackFaceCulling"].as<bool>());
+			}
+
 			m_particleMatMap[matName] = mat;
 			particle = m_grapics->CreateParticle(mat);
 			particle->SetActive(false);
@@ -197,14 +204,28 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		}
 
 		/// Create Particle 
+		particle->SetSizeOverLifetime(false);
+		///Loop
 		if (node["Loop"].IsDefined())
 		{
 			particle->SetLoop(node["Loop"].as<bool>());
 		}
+		/// Duration
 		if (node["Duration"].IsDefined())
 		{
 			particle->SetDuration(node["Duration"].as<float>());
 		}
+		/// Stop When Finished
+		if (node["StopWhenFinished"].IsDefined())
+		{
+			particle->SetStopWhenFinished(node["StopWhenFinished"].as<bool>());
+		}
+		/// Play OnWake
+		if (node["PlayOnWake"].IsDefined())
+		{
+			particle->SetPlayOnWake(node["PlayOnWake"].as<bool>());
+		}
+		/// Start Color
 		if (node["StartColor"].IsDefined())
 		{
 			const YAML::Node& cNode = node["StartColor"];
@@ -212,95 +233,144 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			particle->SetStartColor(c);
 		}
 
+		/// Start Life Time
 		if (node["StartLifetime"].IsDefined())
 		{
 			particle->SetStartLifetime(node["StartLifetime"].as<float>());
 		}
+
+		/// Render Mode
 		if (node["RenderMode"].IsDefined())
 		{
 			particle->SetRenderMode(static_cast<Ideal::ParticleMenu::ERendererMode>(node["RenderMode"].as<int>()));
 		}
 
+		/// Rotation Over Life Time
 		if (node["RotationOverLifeTime"].IsDefined())
 		{
 			particle->SetRotationOverLifetime(node["RotationOverLifeTime"].as<bool>());
 		}
 
+		/// Rotation Over Life Time Axis X ControlPoints
 		if (node["RotationOverLifetimeAxisXControlPoints"].IsDefined())
 		{
 			const YAML::Node& child = node["RotationOverLifetimeAxisXControlPoints"];
 			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisX());
 		}
+		/// Rotation Over Life Time Axis Y ControlPoints
 		if (node["RotationOverLifetimeAxisYControlPoints"].IsDefined())
 		{
 			const YAML::Node& child = node["RotationOverLifetimeAxisYControlPoints"];
 			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisY());
 		}
+		/// Rotation Over Lifetime Axis Z ControlPoints
 		if (node["RotationOverLifetimeAxisZControlPoints"].IsDefined())
 		{
 			const YAML::Node& child = node["RotationOverLifetimeAxisZControlPoints"];
 			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisZ());
 		}
 
+		/// Custom Data 1 X
 		if (node["CustomData1X"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1X"];
 			GetControlPoints(child, particle, particle->GetCustomData1X());
 		}
+		/// Custom Data 1 Y
 		if (node["CustomData1Y"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1Y"];
 			GetControlPoints(child, particle, particle->GetCustomData1Y());
 		}
+		/// Custom Data 1 Z
 		if (node["CustomData1Z"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1Z"];
 			GetControlPoints(child, particle, particle->GetCustomData1Z());
 		}
+		/// Custom Data 1 W
 		if (node["CustomData1W"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1W"];
 			GetControlPoints(child, particle, particle->GetCustomData1W());
 		}
 
+		/// Custom Data 2 X
 		if (node["CustomData2X"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2X"];
 			GetControlPoints(child, particle, particle->GetCustomData2X());
 		}
+		/// Custom Data 2 Y
 		if (node["CustomData2Y"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2Y"];
 			GetControlPoints(child, particle, particle->GetCustomData2Y());
 		}
+		/// Custom Data 2 Z
 		if (node["CustomData2Z"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2Z"];
 			GetControlPoints(child, particle, particle->GetCustomData2Z());
 		}
+		/// Custom Data 2 W
 		if (node["CustomData2W"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2W"];
 			GetControlPoints(child, particle, particle->GetCustomData2W());
 		}
 
+		/// Color Over Lifetime
 		if (node["ColorOverLifetime"].IsDefined())
 		{
 			particle->SetColorOverLifetime(node["ColorOverLifetime"].as<bool>());
 		}
 
+		/// Color Over Lifetime Gradient Graph
 		if (node["ColorOverLifetimeGradientGraph"].IsDefined())
 		{
 			const YAML::Node& child = node["ColorOverLifetimeGradientGraph"];
 			auto& graph = particle->GetColorOverLifetimeGradientGraph();
-			for (int j = 0; j < 2; j++)
+
+			for (YAML::const_iterator it = child.begin(); it != child.end(); ++it)
 			{
-				const YAML::Node& point = child[j]["Color"];
+				const YAML::Node& point = (*it)["Color"];
 				Color startColor(point[0].as<float>(), point[1].as<float>(), point[2].as<float>(), point[3].as<float>());
-				float position = child[j]["position"].as<float>();
+				float position = (*it)["position"].as<float>();
 				graph.AddPoint(startColor, position);
 			}
 		}
+
+		/// Simulation Speed
+		if (node["SimulationSpeed"].IsDefined())
+		{
+			particle->SetSimulationSpeed(node["SimulationSpeed"].as<float>());
+		}
+
+		/// Size Over Lifetime
+		if (node["SizeOverLifetime"].IsDefined())
+		{
+			particle->SetSizeOverLifetime(node["SizeOverLifetime"].as<bool>());
+		}
+		/// Size Over Life Time Axis X ControlPoints
+		if (node["SizeOverLifetimeAxisX"].IsDefined())
+		{
+			const YAML::Node& child = node["SizeOverLifetimeAxisX"];
+			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisX());
+		}
+		/// Size Over Life Time Axis Y ControlPoints
+		if (node["SizeOverLifetimeAxisY"].IsDefined())
+		{
+			const YAML::Node& child = node["SizeOverLifetimeAxisY"];
+			GetControlPoints(child, particle, particle->GetSizeOverLifetimeAxisY());
+		}
+		/// Size Over Lifetime Axis Z ControlPoints
+		if (node["SizeOverLifetimeAxisZ"].IsDefined())
+		{
+			const YAML::Node& child = node["SizeOverLifetimeAxisZ"];
+			GetControlPoints(child, particle, particle->GetSizeOverLifetimeAxisZ());
+		}
+
 
 		m_particleMap[_path]->m_pool.push_back(particle);
 

@@ -15,7 +15,7 @@ class dtNavMeshQuery;
 
 class dtQueryFilter;
 
-#define MAX_POLYS 256
+#define MAX_POLYS 1024
 
 enum SamplePolyAreas
 {
@@ -94,7 +94,11 @@ namespace Truth
 		~NavMeshGenerater();
 
 		void Initalize(std::wstring _path);
+		void Initalize(const std::vector<float>& _points, const std::vector<uint32>& _indices);
 
 		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size);
+
+	private:
+		void Initalize();
 	};
 }

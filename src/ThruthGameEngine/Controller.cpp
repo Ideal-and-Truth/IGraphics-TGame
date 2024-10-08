@@ -65,8 +65,12 @@ void Truth::Controller::Awake()
 	m_rigidbody->m_isController = true;
 	m_rigidbody->m_controller = m_controller;
 
+
 	m_rigidbody->m_body = m_controller->getActor();
 	m_controller->getActor()->userData = m_rigidbody.get();
+
+	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
 
 	// create collider to access physx shape
 	m_collider = std::make_shared<CapsuleCollider>();

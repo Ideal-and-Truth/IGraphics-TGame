@@ -125,8 +125,10 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
 
     float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
+    float3 newNormal;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
-    float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
+    Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // 다르게
+    float3 worldNormal = BumpMapNormalToWorldSpaceNormal(newNormal, normal, tangent);
     return worldNormal;
 }
 RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float tMin = 0.001f, float tMax = 10000.f, bool cullNonOpaque = false)
@@ -346,146 +348,64 @@ float3 Shade(
     
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
     
-    //roughness = 1.f;
-    //metallic = 0.f;
-    //Kr = 0;
-    float3 Lo = float3(0, 0, 0);
-    {
-  
-        float3 F0 = float3(0.04f, 0.04f, 0.04f);
-        F0 = lerp(F0, albedo, metallic);
-        
-        float3 L = -g_lightList.DirLight.Direction.xyz;
-        float3 H = normalize(V + L);
-        float3 radiance = g_lightList.DirLight.DiffuseColor.rgb;
-        
-        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, L, N, rayPayload);
-        if(!isInShadow)
-        {
-            float NDF = DistributionGGX(N, H, roughness);
-            float G = GeometrySmith(N, V, L, roughness);
-            float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-        
-            float3 kS = F;
-            float3 nkD = float3(1.f, 1.f, 1.f) - kS;
-            nkD *= 1.0 - metallic;
-            float3 numerator = NDF * G * F;
-            float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-            float3 specular = numerator / max(denominator, 0.001);
-            float NdotL = max(dot(N, L), 0.0);
-            Lo += (nkD * albedo / PI + specular) * radiance * NdotL;
-        
-            float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
-            float3 color = ambient + Lo;
-            color += 0.2 * albedo;
-        //return color;
-            Lo = color;
-        }
-        else
-        {
-            Lo = 0.2 * albedo;
-        }
-    }
-    L = Lo;
-    
-    if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
+
+    //if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
-        //int pointLightNum = 0;
-        //int spotLightNum = 0;
+ 
         // Directional Light
-        //{
-        //    float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
-        //    
-        //    float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-        //    
-        //    bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
-        //    L += Ideal::Light::ComputeDirectionalLight(
-        //    Kd,
-        //    Ks,
-        //    color,
-        //    isInShadow, roughness, N, V,
-        //    direction);
-        //}
+        {
+            float3 LightVector = -g_lightList.DirLight.Direction.xyz;
+            float3 H = normalize(V + LightVector);
+            float3 radiance = g_lightList.DirLight.DiffuseColor.rgb;
+            bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
+            L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
+        }
         
-        // Point Light
-        {   ////
-            //for (int i = 0; i < pointLightNum; ++i)
-            //{
-            //    float3 position = g_lightList.PointLights[i].Position.xyz;
-            //    float3 color = g_lightList.PointLights[i].Color.rgb;
-            //    float range = g_lightList.PointLights[i].Range;
-            //    
-            //    float3 direction = normalize(position - hitPosition);
-            //    float distance = length(position - hitPosition);
-            //    float att = Ideal::Attenuate(distance, range);
-            //    float intensity = g_lightList.PointLights[i].Intensity;
-            //    
-            //    bool isInShadow = false;
-            //    if(distance <= range)
-            //    {
-            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-            //    }
-            //    float3 light = Ideal::Light::ComputePointLight
-            //    (
-            //    Kd,
-            //    Ks,
-            //    color,
-            //    isInShadow,
-            //    roughness,
-            //    N,
-            //    V,
-            //    direction,
-            //    distance,
-            //    range,
-            //    intensity
-            //    );
-            //    L += light;
-            //}
-            //
-            //for (int i = 0; i < spotLightNum; ++i)
-            //{
-            //    float3 position = g_lightList.SpotLights[i].Position.xyz;
-            //    float3 color = g_lightList.SpotLights[i].Color.rgb;
-            //    float range = g_lightList.SpotLights[i].Range;
-            //    float angle = g_lightList.SpotLights[i].SpotAngle;
-            //    float intensity = g_lightList.SpotLights[i].Intensity;
-            //    float softness = g_lightList.SpotLights[i].Softness;
-            //    float3 direction = normalize(position - hitPosition);
-            //    float distance = length(position - hitPosition);
-            //    float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
-            //    
-            //    bool isInShadow = false;
-            //    if(distance <= range)
-            //    {
-            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-            //    }
-            //    float3 light = Ideal::Light::ComputeSpotLight2(
-            //         Kd,
-            //         Ks,
-            //         color,
-            //         isInShadow,
-            //         roughness,
-            //         N,
-            //         V,
-            //         direction,
-            //         distance,
-            //         range,
-            //         intensity,
-            //         softness,
-            //         lightDirection,
-            //         angle
-            //     );
-            //
-            //    L += light;
-            //}
+        {   
+            // Point Light
+            for (int i = 0; i < pointLightNum; ++i)
+            {
+                float3 position = g_lightList.PointLights[i].Position.xyz;
+                float3 color = g_lightList.PointLights[i].Color.rgb;
+                float range = g_lightList.PointLights[i].Range;
+                float intensity = g_lightList.PointLights[i].Intensity;
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                bool isInShadow = false;
+                if(distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                    L += PointLight(isInShadow, V, direction, N, distance, color, albedo, roughness, metallic, intensity);
+                }
+            }
+            // SpotLight
+            for (int i = 0; i < spotLightNum; ++i)
+            {
+                float3 position = g_lightList.SpotLights[i].Position.xyz;
+                float3 color = g_lightList.SpotLights[i].Color.rgb;
+                float range = g_lightList.SpotLights[i].Range;
+                float angle = g_lightList.SpotLights[i].SpotAngle;
+                float intensity = g_lightList.SpotLights[i].Intensity;
+                float softness = g_lightList.SpotLights[i].Softness;
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
+                
+                bool isInShadow = false;
+                if (distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                    L += SpotLight(isInShadow, V, direction, lightDirection, N, distance, color, softness, angle, albedo, roughness, metallic, intensity);
+                }
+            }
         }
     }
 
     
     // Temp : 0.2는 임시 값
-    //L += 0.2f * Kd;
+    L += 0.2f * albedo;
     //return L;
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);

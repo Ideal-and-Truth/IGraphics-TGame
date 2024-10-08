@@ -565,6 +565,7 @@ void Ideal_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out fl
 
 
 ///////////////////////////////////////////////////////////
+// https://github.com/nfginola/dx11_pbr/blob/main/shaders/ForwardPBR_PS.hlsl
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
     float a = roughness * roughness;
@@ -603,5 +604,118 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 float3 fresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
+}
+
+float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 LightColor, float3 albedo, float roughness, float metallic, float ao)
+{
+    if(isInShadow)
+        return float3(0, 0, 0);
+    
+    float3 Lo = float3(0, 0, 0);
+    
+    float3 F0 = float3(0.04f, 0.04f, 0.04f);
+    F0 = lerp(F0, albedo, metallic);
+    float3 H = normalize(V + L);
+    float3 radiance = LightColor;
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, L, roughness);
+    float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        
+    float3 kS = F;
+    float3 kD = float3(1.f, 1.f, 1.f) - kS;
+    kD *= 1.0 - metallic;
+    float3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+    float3 specular = numerator / max(denominator, 0.001);
+    float NdotL = max(dot(N, L), 0.0);
+    Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+        
+    float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
+    float3 color = ambient + Lo;
+    //color += 0.2 * albedo;
+    Lo = color;
+    
+    return Lo;
+}
+
+float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float distance, float3 LightColor, float3 albedo, float roughness, float metallic, float lightIntensity)
+{
+    if(isInShadow)
+        return float3(0, 0, 0);
+    
+    float3 Lo = float3(0.f, 0.f, 0.f);
+    
+    float3 F0 = float3(0.04f, 0.04f, 0.04f);
+    F0 = lerp(F0, albedo, metallic);
+    float3 H = normalize(V + Direction);
+    
+    float attenuation = 1.0 / (distance * distance);
+    float3 radiance = LightColor * lightIntensity* attenuation;
+    
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, Direction, roughness);
+    float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        
+    float3 kS = F;
+    float3 kD = float3(1.f, 1.f, 1.f) - kS;
+    kD *= 1.0 - metallic;
+    float3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, Direction), 0.0);
+    float3 specular = numerator / max(denominator, 0.001);
+    float NdotL = max(dot(N, Direction), 0.0);
+    Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+        
+    //float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
+    //float3 color = ambient + Lo;
+    //color += 0.2 * albedo;
+    //Lo = color;
+    
+    return Lo;
+}
+
+float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirection, float3 N, float distance, float3 LightColor,float softness, float angle, float3 albedo, float roughness, float metallic, float lightIntensity)
+{
+    if (isInShadow)
+        return float3(0, 0, 0);
+    
+    
+    float spotEffect = dot(normalize(-Direction), LightDirection);
+    float cutoff = cos(radians(angle * 0.5));
+    float SpotSoftness = softness;
+    float outerCutoff = cos(radians((angle * 0.5) + SpotSoftness));
+    float smoothFactor = smoothstep(outerCutoff, cutoff, spotEffect);
+    float3 Lo = float3(0.f, 0.f, 0.f);
+    if (spotEffect > outerCutoff)
+    {
+    
+        float3 F0 = float3(0.04f, 0.04f, 0.04f);
+        F0 = lerp(F0, albedo, metallic);
+        float3 H = normalize(V + Direction);
+    
+        float attenuation = 1.0 / (distance * distance);
+        float newIntensity = lightIntensity * attenuation * smoothFactor;
+        float3 radiance = LightColor * newIntensity * attenuation;
+    
+        float NDF = DistributionGGX(N, H, roughness);
+        float G = GeometrySmith(N, V, Direction, roughness);
+        float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        
+        float3 kS = F;
+        float3 kD = float3(1.f, 1.f, 1.f) - kS;
+        kD *= 1.0 - metallic;
+        float3 numerator = NDF * G * F;
+        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, Direction), 0.0);
+        float3 specular = numerator / max(denominator, 0.001);
+        float NdotL = max(dot(N, Direction), 0.0);
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+    }
+    
+    return Lo;
+}
+
+void Ideal_NormalStrength_float(float3 In, float Strength, out float3 Out)
+{
+    //Out = {precision}3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
+    Out = float3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
 }
 #endif
