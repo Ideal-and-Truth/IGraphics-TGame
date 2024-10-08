@@ -75,7 +75,7 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 		std::string s = m_subMesh[i]->GetFBXMaterialName();
 // 		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
 // 		mat->SetTexture();
-		m_mat.push_back(m_managers.lock()->Graphics()->CraeteMatarial(s));
+		m_mat.push_back(m_managers.lock()->Graphics()->CraeteMaterial(s));
 // 		m_subMesh[i]->SetMaterialObject(mat->m_material);
 	}
 }
@@ -99,7 +99,7 @@ void Truth::Mesh::SetMesh()
 		std::string s = m_subMesh[i]->GetFBXMaterialName();
 // 		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
 // 		mat->SetTexture();
-		m_mat.push_back(m_managers.lock()->Graphics()->CraeteMatarial(s));
+		m_mat.push_back(m_managers.lock()->Graphics()->CraeteMaterial(s));
 // 		m_subMesh[i]->SetMaterialObject(mat->m_material);
 	}
 }
@@ -132,7 +132,7 @@ void Truth::Mesh::SetMaterialByIndex(uint32 _index, std::string _material)
 	{
 		return;
 	}
-	m_subMesh[_index]->SetMaterialObject(m_managers.lock()->Graphics()->CraeteMatarial(_material)->m_material);
+	m_subMesh[_index]->SetMaterialObject(m_managers.lock()->Graphics()->CraeteMaterial(_material)->m_material);
 }
 
 std::vector<uint64> Truth::Mesh::GetMaterialImagesIDByIndex(uint32 _index)

@@ -81,7 +81,7 @@ namespace Truth
 		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path, bool _a = false, bool _b = false);
 		void DeleteTexture(std::shared_ptr<Texture> _texture);
 
-		std::shared_ptr<Material> CraeteMatarial(const std::string& _name);
+		std::shared_ptr<Material> CraeteMaterial(const std::string& _name);
 		void DeleteMaterial(std::shared_ptr<Material> _material);
 
 		std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial();

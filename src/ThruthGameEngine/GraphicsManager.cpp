@@ -232,12 +232,12 @@ void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 	m_renderer->DeleteTexture(_texture->m_texture);
 }
 
-std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
+std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMaterial(const std::string& _name)
 {
+	std::filesystem::path matp = m_matSavePath + _name + ".matData";
+	std::shared_ptr<Material> mat = std::make_shared<Material>();
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
-		std::filesystem::path matp = m_matSavePath + _name + ".matData";
-		std::shared_ptr<Material> mat = std::make_shared<Material>();
 		mat->m_material = m_renderer->CreateMaterial();
 		mat->m_gp = this;
 		mat->m_hwnd = m_hwnd;
@@ -245,7 +245,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 		mat->m_baseMap = nullptr;
 		mat->m_normalMap = nullptr;
 		mat->m_maskMap = nullptr;
-		
+
 		if (std::filesystem::exists(matp))
 		{
 			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
@@ -260,7 +260,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			mat->m_baseMap = CreateTexture(albedo);
 			mat->m_normalMap = CreateTexture(normal, false, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
-			
+
 			mat->SetTexture();
 			f->Close();
 		}
@@ -273,27 +273,13 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const st
 			fs::path no = "../Resources/DefaultData/DefaultNormalMap.png";
 			fs::path ma = "../Resources/DefaultData/DefaultBlack.png";
 
-// 			if (GetOpenFileName(&m_openFileName) != 0)
-// 			{
-// 				al = m_openFileName.lpstrFile;
-// 			}
-// 			if (GetOpenFileName(&m_openFileName) != 0)
-// 			{
-// 				no = m_openFileName.lpstrFile;
-// 			}
-// 			if (GetOpenFileName(&m_openFileName) != 0)
-// 			{
-// 				ma = m_openFileName.lpstrFile;
-// 			}
-// 			std::string rootPath = "../Resources/Textures/PlayerRe/adsf/";
-// 
-// 			f->Write(rootPath + al.filename().generic_string());
-// 			f->Write(rootPath + no.filename().generic_string());
-// 			f->Write(rootPath + ma.filename().generic_string());
-// 			std::filesystem::path albedo(rootPath + al.filename().generic_string());
-// 			std::filesystem::path normal(rootPath + no.filename().generic_string());
-// 			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
-			
+			f->Write<std::string>(al.generic_string());
+			f->Write<std::string>(no.generic_string());
+			f->Write<std::string>(ma.generic_string());
+
+			f->Write<float>(1.0f);
+			f->Write<float>(1.0f);
+
 			mat->m_baseMap = CreateTexture(al.generic_wstring());
 			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
 			mat->m_maskMap = CreateTexture(ma.generic_wstring());

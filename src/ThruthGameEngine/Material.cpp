@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "GraphicsManager.h"
 #include "TFileUtils.h"
+#include "managers.h"
 
 void Truth::Material::SetTexture()
 {
@@ -40,7 +41,6 @@ void Truth::Material::ChangeTexture(std::wstring _path, int _type)
 
 void Truth::Material::ChangeTexture(int _type)
 {
-	std::filesystem::path testPath = std::filesystem::current_path();
 	memset(&m_openFileName, 0, sizeof(OPENFILENAME));
 	m_openFileName.lStructSize = sizeof(OPENFILENAME);
 	m_openFileName.hwndOwner = m_hwnd;
@@ -52,7 +52,7 @@ void Truth::Material::ChangeTexture(int _type)
 	{
 		ChangeTexture(m_openFileName.lpstrFile, _type);
 	}
-	::SetCurrentDirectory(testPath.generic_wstring().c_str());
+	::SetCurrentDirectory(Managers::GetRootPath().c_str());
 	SaveMaterial();
 }
 
@@ -68,4 +68,6 @@ void Truth::Material::SaveMaterial()
 	f->Write(m_normalMap->m_path.generic_string());
 	f->Write(m_maskMap->m_path.generic_string());
 
+	f->Write(m_tileX);
+	f->Write(m_tileY);
 }

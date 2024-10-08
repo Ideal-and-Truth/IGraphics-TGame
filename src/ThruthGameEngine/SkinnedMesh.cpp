@@ -49,6 +49,7 @@ Truth::SkinnedMesh::~SkinnedMesh()
 void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 {
 	m_path = _path;
+	fs::path meshPath = m_path;
 
 	if (m_skinnedMesh != nullptr)
 	{
@@ -60,18 +61,33 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 	m_boneMap.clear();
 	uint32 boneSize = m_skinnedMesh->GetBonesSize();
 
-	for (uint32 i = 0; i < boneSize ; i++)
+	for (uint32 i = 0; i < boneSize; i++)
 	{
 		std::weak_ptr<Ideal::IBone> bone = m_skinnedMesh->GetBoneByIndex(i);
 		m_boneMap[bone.lock()->GetName()] = bone;
 	}
 
+	std::unordered_map<fs::path, std::shared_ptr<Material>> matMap;
 	for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
 	{
 		std::string matName = m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->GetFBXMaterialName();
-		auto materail = m_managers.lock()->Graphics()->CraeteMatarial(matName);
-		m_mat.push_back(materail);
-		m_skinnedMesh->GetMeshByIndex(i).lock()->SetMaterialObject(materail->m_material);
+		fs::path matPath = "../Resources/Matarial" / meshPath.filename();
+
+		if (!fs::exists(matPath))
+			fs::create_directories(matPath);
+
+		matPath = matPath.filename() / matName;
+
+		auto material = m_managers.lock()->Graphics()->CraeteMaterial(matPath.generic_string());
+		std::unordered_map<fs::path, std::shared_ptr<Material>>::iterator itr = matMap.find(matPath);
+
+		if (itr == matMap.end())
+		{
+			m_mat.push_back(material);
+			matMap[matPath] = material;
+		}
+
+		m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
 	}
 }
 

@@ -147,8 +147,6 @@ namespace TypeUI
 		}
 		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::Material>>)
 		{
-			USES_CONVERSION;
-
 			const ImVec2 size(100, 100);
 
 			ImGui::Text(_val->m_name.c_str());
@@ -162,7 +160,6 @@ namespace TypeUI
 			if (_val->m_normalMap != nullptr)
 			{
 				if (ImGui::ImageButton((ImTextureID)(_val->m_normalMap->GetImageID()), size))
-
 					_val->ChangeTexture(1);
 			}
 			ImGui::SameLine();
