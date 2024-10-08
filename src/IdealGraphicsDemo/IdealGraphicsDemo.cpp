@@ -762,6 +762,93 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.309);
 			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 1);
 		}
+
+		{
+		 	auto& graph = sphereImpactParticleSystem->GetCustomData1Y();
+			graph.AddControlPoint({ 0,5 });
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem->GetCustomData1Z();
+			graph.AddControlPoint({ 0,7.5 });
+		}
+		// Sphere Impact1
+		std::shared_ptr<Ideal::IParticleSystem> sphereImpactParticleSystem1 = gRenderer->CreateParticleSystem(sphereImpactMaterial);
+		sphereImpactParticleSystem1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		sphereImpactParticleSystem1->SetRenderMesh(bossParticleMeshSphere);
+		sphereImpactParticleSystem1->SetTransformMatrix(
+			Matrix::CreateScale(35.f)
+			* Matrix::CreateScale(Vector3(3, 3, 1))
+			* Matrix::CreateRotationX(3.1415 * 0.5)
+			* Matrix::CreateTranslation(-3, 0, 0)
+		);
+		sphereImpactParticleSystem1->SetStartColor(Color(0, 0.1608106, 5.930247, 1));
+		sphereImpactParticleSystem1->SetLoop(false);
+		sphereImpactParticleSystem1->SetDuration(3.f);
+		sphereImpactParticleSystem1->SetStartLifetime(3.f);
+		
+		{
+			auto& graph = sphereImpactParticleSystem1->GetCustomData1X();
+			graph.AddControlPoint({ 0, 0.1 });
+		}
+		
+		sphereImpactParticleSystem1->SetColorOverLifetime(true);
+		{
+			auto& graph = sphereImpactParticleSystem1->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 0);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.059);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.309);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 1);
+		}
+		
+		{
+			auto& graph = sphereImpactParticleSystem1->GetCustomData1Y();
+			graph.AddControlPoint({ 0,0 });
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem1->GetCustomData1Z();
+			graph.AddControlPoint({ 0,1 });
+		}
+
+		// Sphere Impact2
+		std::shared_ptr<Ideal::IParticleSystem> sphereImpactParticleSystem2 = gRenderer->CreateParticleSystem(sphereImpactMaterial);
+		sphereImpactParticleSystem2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		sphereImpactParticleSystem2->SetRenderMesh(bossParticleMeshSphere);
+		sphereImpactParticleSystem2->SetTransformMatrix(
+			Matrix::CreateScale(35.f)
+			* Matrix::CreateScale(Vector3(1, 1, 2))
+			* Matrix::CreateRotationX(3.1415 * 0.5)
+			* Matrix::CreateTranslation(-3, 1, 0)
+		);
+		sphereImpactParticleSystem2->SetStartColor(Color(0, 0.1608106, 5.930247, 1));
+		sphereImpactParticleSystem2->SetLoop(false);
+		sphereImpactParticleSystem2->SetDuration(3.f);
+		sphereImpactParticleSystem2->SetStartLifetime(3.f);
+
+		{
+			auto& graph = sphereImpactParticleSystem2->GetCustomData1X();
+			graph.AddControlPoint({ 0, 0.1 });
+		}
+
+		sphereImpactParticleSystem2->SetColorOverLifetime(true);
+		{
+			auto& graph = sphereImpactParticleSystem2->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 0);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.059);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.309);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 1);
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem2->GetCustomData1Y();
+			graph.AddControlPoint({ 0,0 });
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem2->GetCustomData1Z();
+			graph.AddControlPoint({ 0,1 });
+		}
 #pragma endregion
 
 #pragma region CreateParticle
@@ -1083,14 +1170,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					bossFireProjectileParticleSystem0->Pause();
 					bossFireProjectileParticleSystem1->Pause();
+
 				}
 				if (GetAsyncKeyState('V') & 0x8000)
 				{
 					sphereImpactParticleSystem->Play();
+					sphereImpactParticleSystem1->Play();
+					sphereImpactParticleSystem2->Play();
 				}
 				if (GetAsyncKeyState('B') & 0x8000)
 				{
 					sphereImpactParticleSystem->Pause();
+					sphereImpactParticleSystem1->Pause();
+					sphereImpactParticleSystem2->Pause();
 				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
@@ -1107,6 +1199,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				bossFireProjectileParticleSystem0->SetDeltaTime(0.003f);
 				bossFireProjectileParticleSystem1->SetDeltaTime(0.003f);
 				sphereImpactParticleSystem->SetDeltaTime(0.003f);
+				sphereImpactParticleSystem1->SetDeltaTime(0.003f);
+				sphereImpactParticleSystem2->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
