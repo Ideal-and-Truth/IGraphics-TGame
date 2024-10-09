@@ -6,6 +6,7 @@
         float4x4 View;
         float4x4 Proj;
         float4x4 ViewProj;
+        float3 eyePos;
     };
 
     cbuffer Transform : register(b1)

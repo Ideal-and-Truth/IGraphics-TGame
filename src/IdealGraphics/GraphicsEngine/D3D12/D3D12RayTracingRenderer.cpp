@@ -1222,7 +1222,14 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 	std::shared_ptr<Ideal::ParticleSystem> NewParticleSystem = std::make_shared<Ideal::ParticleSystem>();
 	std::shared_ptr<Ideal::ParticleMaterial> GetParticleMaterial = std::static_pointer_cast<Ideal::ParticleMaterial>(ParticleMaterial);
 	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), m_particleSystemManager->GetVS(), GetParticleMaterial);
-	m_particleSystemManager->AddParticleSystem(NewParticleSystem);
+	if (GetParticleMaterial->GetTransparency())
+	{
+		m_particleSystemManager->AddParticleSystem(NewParticleSystem);
+	}
+	else
+	{
+		m_particleSystemManager->AddParticleSystemNoTransparency(NewParticleSystem);
+	}
 	return std::static_pointer_cast<Ideal::IParticleSystem>(NewParticleSystem);
 }
 
