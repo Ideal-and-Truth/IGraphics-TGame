@@ -916,10 +916,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0, 0, 0, 0), 0);
 			graph.AddPoint(Color(0, 0.4, 1, 1), 0.082 / 8);
 			graph.AddPoint(Color(0, 0.4, 1, 1), 0.92 / 8);
-			graph.AddPoint(Color(0.8, 0.6, 0, 1), 3 / 8);
-			graph.AddPoint(Color(0.8, 0.6, 0, 1), 4 / 8);
-			graph.AddPoint(Color(1, 0.1, 0, 1), 5 / 8);
-			graph.AddPoint(Color(1, 0.1, 0, 1), 8 / 8);
+			graph.AddPoint(Color(0.8, 0.6, 0, 1), (float)3 / 8);	// float으로...
+			graph.AddPoint(Color(0.8, 0.6, 0, 1), (float)5 / 8);
+			graph.AddPoint(Color(1, 0.1, 0, 1), (float)6 / 8);
+			graph.AddPoint(Color(1, 0.1, 0, 1), (float)8 / 8);
 		}
 		
 		// blackhole sphere

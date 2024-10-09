@@ -299,6 +299,10 @@ void Ideal::ParticleSystem::UpdateColorOverLifetime()
 {
 	if (m_isUseColorOverLifetime)
 	{
+		if (m_currentDurationTime >= 6.f)
+		{
+			int a = 3;
+		}
 		// 현재 그래프의 색상을 불러온다.
 		Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentDurationTime / m_duration);
 		m_cbParticleSystem.StartColor = colorAtCurrentTime;
