@@ -1108,7 +1108,193 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
 			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
 		}
-		
+
+		// Nor_S_Attack_Effect
+		std::shared_ptr<Ideal::IParticleSystem> norAttackEffect0 = gRenderer->CreateParticleSystem(slashParticleMaterial);
+		norAttackEffect0->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		norAttackEffect0->SetRenderMesh(slashParticleMesh);
+		norAttackEffect0->SetLoop(false);
+		norAttackEffect0->SetDuration(2.f);
+		norAttackEffect0->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
+		norAttackEffect0->SetRotationOverLifetime(true);
+		norAttackEffect0->SetTransformMatrix(
+			Matrix::CreateScale(Vector3(1.5, 3, 1.5))
+			* Matrix::CreateRotationZ(0.13f)
+			 * Matrix::CreateTranslation(Vector3(3, 0, 0))
+		);
+
+		{
+			auto& graphY = norAttackEffect0->GetRotationOverLifetimeAxisY();
+			graphY.AddControlPoint({ 0,1 });
+			graphY.AddControlPoint({ 0.5, 0 });
+			graphY.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = norAttackEffect0->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = norAttackEffect0->GetCustomData1Y();
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = norAttackEffect0->GetCustomData2Z();
+			graph.AddControlPoint({ 0,0 });
+		}
+		{
+			auto& graph = norAttackEffect0->GetCustomData2W();
+			graph.AddControlPoint({ 0,0.2 });
+		}
+
+		norAttackEffect0->SetSizeOverLifetime(true);
+
+		{
+			auto& graph = norAttackEffect0->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0.f, 0.7f });
+			graph.AddControlPoint({ 1.f, 1.f });
+		}
+
+		{
+			auto& graph = norAttackEffect0->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0.f, 0.7f });
+			graph.AddControlPoint({ 1.f, 1.f });
+		}
+
+		{
+			auto& graph = norAttackEffect0->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({0.f, 0.7f});
+			graph.AddControlPoint({1.f, 1.f });
+		}
+
+
+		// use color over lifetime
+		norAttackEffect0->SetColorOverLifetime(true);
+		{
+			auto& graph = norAttackEffect0->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
+			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
+		}
+
+		// Nor_S_Attack_Effect2
+		std::shared_ptr<Ideal::IParticleSystem> norAttackEffect1 = gRenderer->CreateParticleSystem(slashParticleMaterial);
+		norAttackEffect1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		norAttackEffect1->SetRenderMesh(slashParticleMesh);
+		norAttackEffect1->SetLoop(false);
+		norAttackEffect1->SetDuration(2.f);
+		norAttackEffect1->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
+		norAttackEffect1->SetRotationOverLifetime(true);
+		norAttackEffect1->SetTransformMatrix(
+			Matrix::CreateScale(Vector3(1.5, 3, 1.5))
+			* Matrix::CreateRotationY(2.44f)
+			* Matrix::CreateRotationZ(-0.13f)
+			* Matrix::CreateTranslation(Vector3(3, 0, 0))
+		);
+
+		{
+			auto& graphY = norAttackEffect1->GetRotationOverLifetimeAxisY();
+			graphY.AddControlPoint({ 0,1 });
+			graphY.AddControlPoint({ 0.5, 0 });
+			graphY.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = norAttackEffect1->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = norAttackEffect1->GetCustomData1Y();
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = norAttackEffect1->GetCustomData2Z();
+			graph.AddControlPoint({ 0,0 });
+		}
+		{
+			auto& graph = norAttackEffect1->GetCustomData2W();
+			graph.AddControlPoint({ 0,0.2 });
+		}
+
+		norAttackEffect1->SetSizeOverLifetime(true);
+
+		{
+			auto& graph = norAttackEffect1->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0.f, 0.7f });
+			graph.AddControlPoint({ 1.f, 1.f });
+		}
+
+		{
+			auto& graph = norAttackEffect1->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0.f, 0.7f });
+			graph.AddControlPoint({ 1.f, 1.f });
+		}
+
+		{
+			auto& graph = norAttackEffect1->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0.f, 0.7f });
+			graph.AddControlPoint({ 1.f, 1.f });
+		}
+
+
+		// use color over lifetime
+		norAttackEffect1->SetColorOverLifetime(true);
+		{
+			auto& graph = norAttackEffect1->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
+			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
+		}
+
+		// norAttack2
+		std::shared_ptr<Ideal::IParticleSystem> norAttackEffect2 = gRenderer->CreateParticleSystem(slashParticleMaterial);
+		norAttackEffect2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		norAttackEffect2->SetRenderMesh(slashParticleMesh);
+		norAttackEffect2->SetLoop(false);
+		norAttackEffect2->SetDuration(2.f);
+		norAttackEffect2->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
+		norAttackEffect2->SetTransformMatrix(
+			Matrix::CreateRotationY(2.44f)
+			* Matrix::CreateTranslation(Vector3(3, 0, 0))
+		);
+
+		norAttackEffect2->SetRotationOverLifetime(true);
+		{
+			auto& graphY = norAttackEffect2->GetRotationOverLifetimeAxisY();
+			graphY.AddControlPoint({ 0,1 });
+			graphY.AddControlPoint({ 0.5, 0 });
+			graphY.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = norAttackEffect2->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = norAttackEffect2->GetCustomData1Y();
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = norAttackEffect2->GetCustomData2Z();
+			graph.AddControlPoint({ 0,0 });
+		}
+		{
+			auto& graph = norAttackEffect2->GetCustomData2W();
+			graph.AddControlPoint({ 0,0.2 });
+		}
+
+		// use color over lifetime
+		norAttackEffect2->SetColorOverLifetime(true);
+		{
+			auto& graph = norAttackEffect2->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
+			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
+		}
+
 #pragma endregion
 
 
@@ -1335,6 +1521,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					blackHoleSphereParticleSystem->Resume();
 				}
 
+				if (GetAsyncKeyState('R') & 0x8000)
+				{
+					norAttackEffect0->Play();
+					norAttackEffect1->Play();
+					norAttackEffect2->Play();
+				}
+
 				if (GetAsyncKeyState('O') & 0x8000)
 				{
 					//auto p = gRenderer->GetTopLeftEditorPos();
@@ -1366,7 +1559,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				blackHoleParticleSystem->SetDeltaTime(0.003f);
 				blackHoleSphereParticleSystem->SetDeltaTime(0.003f);
 				bossBeamRingParticleSystem->SetDeltaTime(0.003f);
-
+				norAttackEffect0->SetDeltaTime(0.003f);
+				norAttackEffect1->SetDeltaTime(0.003f);
+				norAttackEffect2->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
