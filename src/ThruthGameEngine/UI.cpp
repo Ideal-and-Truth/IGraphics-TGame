@@ -190,10 +190,10 @@ void Truth::UI::SetSpriteActive(BUTTON_STATE _state)
 	}
 }
 
-void Truth::UI::DefaultBehavior()
-{
-	int a = 1;
-}
+// void Truth::UI::DefaultBehavior()
+// {
+// 	int a = 1;
+// }
 
 #ifdef EDITOR_MODE
 void Truth::UI::EditorSetValue()

@@ -1086,7 +1086,7 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetTopLeftEditorPos
 	float nx = m_mainCameraEditorTopLeft.x;
 	ny += y;
 	nx += x;
-	return Vector2(x,y);
+	return Vector2(nx,ny);
 }
 
 DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEditorPos()
@@ -1105,7 +1105,7 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEdito
 	nx -= x;
 	//ny += m_mainCameraEditorTopLeft.y;
 	//nx += m_mainCameraEditorTopLeft.x;
-	return Vector2(x, y);
+	return Vector2(nx, ny);
 }
 
 void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)

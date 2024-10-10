@@ -385,7 +385,7 @@ DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetDisplayResolution()
 RECT Truth::GraphicsManager::GetWindowRect()
 {
 	RECT result;
-	::GetWindowRect(m_hwnd, &result);
+	::GetClientRect(m_hwnd, &result);
 	return result;
 }
 
