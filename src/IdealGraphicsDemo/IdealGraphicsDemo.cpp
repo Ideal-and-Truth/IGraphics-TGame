@@ -1328,7 +1328,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		{
 			auto& graph = comAttack0->GetCustomData2Z();
-			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0,0.3 });
 		}
 		{
 			auto& graph = comAttack0->GetCustomData2W();
@@ -1380,7 +1380,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		{
 			auto& graph = comAttack1->GetCustomData2Z();
-			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0,0.3 });
 		}
 		{
 			auto& graph = comAttack1->GetCustomData2W();

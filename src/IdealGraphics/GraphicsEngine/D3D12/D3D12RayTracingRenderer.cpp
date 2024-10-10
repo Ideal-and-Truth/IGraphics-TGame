@@ -1103,8 +1103,6 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEdito
 	float nx = m_mainCameraEditorBottomRight.x;
 	ny -= y;
 	nx -= x;
-	//ny += m_mainCameraEditorTopLeft.y;
-	//nx += m_mainCameraEditorTopLeft.x;
 	return Vector2(x, y);
 }
 
