@@ -540,6 +540,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IShader> DefaultParticlePSShader = gRenderer->CreateAndLoadParticleShader(L"DefaultParticlePS");
 
 		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossFX_1BeamRing.hlsl",
+			L"../Shaders/Particle/",
+			L"BossFX_1BeamRingPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossBeamRingShader = gRenderer->CreateAndLoadParticleShader(L"BossFX_1BeamRingPS");
+
+		gRenderer->CompileShader(
 			L"../Shaders/Particle/BossFX_FileProjectile.hlsl",
 			L"../Shaders/Particle/",
 			L"BossFX_FileProjectilePS",
@@ -568,6 +578,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Shaders/Particle/"
 		);
 		std::shared_ptr<Ideal::IShader> bossSphereImpactShader = gRenderer->CreateAndLoadParticleShader(L"BossSphereImpactPS");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossBlackHole.hlsl",
+			L"../Shaders/Particle/",
+			L"BossBlackHolePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossBlackHoleShader = gRenderer->CreateAndLoadParticleShader(L"BossBlackHolePS");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossBlackHoleSphere.hlsl",
+			L"../Shaders/Particle/",
+			L"BossBlackHoleSpherePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossBlackHoleSphereShader = gRenderer->CreateAndLoadParticleShader(L"BossBlackHoleSpherePS");
 
 #pragma endregion
 
@@ -644,6 +674,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			auto& graph = bossParticleSystem1->GetSizeOverLifetimeAxisZ();
 			graph.AddControlPoint({ 0,1 });
 		}
+		// 또 같이 쓰는거
+
+		std::shared_ptr<Ideal::IParticleMaterial> bossBeamRingMaterial = gRenderer->CreateParticleMaterial();
+		bossBeamRingMaterial->SetShader(bossBeamRingShader);
+		std::shared_ptr<Ideal::ITexture> bossBeamTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/boss/Ring_2.png");
+		bossBeamRingMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		//std::shared_ptr<Ideal::IParticleSystem> bossBeamRingParticleSystem 
+
 
 		///----------------------FileProjectile---------------------///
 		std::shared_ptr<Ideal::IParticleMaterial> bossFireProjectileMaterial0 = gRenderer->CreateParticleMaterial();
@@ -762,6 +800,162 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.309);
 			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 1);
 		}
+
+		{
+		 	auto& graph = sphereImpactParticleSystem->GetCustomData1Y();
+			graph.AddControlPoint({ 0,5 });
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem->GetCustomData1Z();
+			graph.AddControlPoint({ 0,7.5 });
+		}
+		// Sphere Impact1
+		std::shared_ptr<Ideal::IParticleSystem> sphereImpactParticleSystem1 = gRenderer->CreateParticleSystem(sphereImpactMaterial);
+		sphereImpactParticleSystem1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		sphereImpactParticleSystem1->SetRenderMesh(bossParticleMeshSphere);
+		sphereImpactParticleSystem1->SetTransformMatrix(
+			Matrix::CreateScale(35.f)
+			* Matrix::CreateScale(Vector3(3, 3, 1))
+			* Matrix::CreateRotationX(3.1415 * 0.5)
+			* Matrix::CreateTranslation(-3, 0, 0)
+		);
+		sphereImpactParticleSystem1->SetStartColor(Color(0, 0.1608106, 5.930247, 1));
+		sphereImpactParticleSystem1->SetLoop(false);
+		sphereImpactParticleSystem1->SetDuration(3.f);
+		sphereImpactParticleSystem1->SetStartLifetime(3.f);
+		
+		{
+			auto& graph = sphereImpactParticleSystem1->GetCustomData1X();
+			graph.AddControlPoint({ 0, 0.1 });
+		}
+		
+		sphereImpactParticleSystem1->SetColorOverLifetime(true);
+		{
+			auto& graph = sphereImpactParticleSystem1->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 0);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.059);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.309);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 1);
+		}
+		
+		{
+			auto& graph = sphereImpactParticleSystem1->GetCustomData1Y();
+			graph.AddControlPoint({ 0,0 });
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem1->GetCustomData1Z();
+			graph.AddControlPoint({ 0,1 });
+		}
+
+		// Sphere Impact2
+		std::shared_ptr<Ideal::IParticleSystem> sphereImpactParticleSystem2 = gRenderer->CreateParticleSystem(sphereImpactMaterial);
+		sphereImpactParticleSystem2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		sphereImpactParticleSystem2->SetRenderMesh(bossParticleMeshSphere);
+		sphereImpactParticleSystem2->SetTransformMatrix(
+			Matrix::CreateScale(35.f)
+			* Matrix::CreateScale(Vector3(1, 1, 2))
+			* Matrix::CreateRotationX(3.1415 * 0.5)
+			* Matrix::CreateTranslation(-3, 1, 0)
+		);
+		sphereImpactParticleSystem2->SetStartColor(Color(0, 0.1608106, 5.930247, 1));
+		sphereImpactParticleSystem2->SetLoop(false);
+		sphereImpactParticleSystem2->SetDuration(3.f);
+		sphereImpactParticleSystem2->SetStartLifetime(3.f);
+
+		{
+			auto& graph = sphereImpactParticleSystem2->GetCustomData1X();
+			graph.AddControlPoint({ 0, 0.1 });
+		}
+
+		sphereImpactParticleSystem2->SetColorOverLifetime(true);
+		{
+			auto& graph = sphereImpactParticleSystem2->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 0);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.059);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 1), 0.309);
+			graph.AddPoint(Color(0, 0.6506, 5.8796, 0), 1);
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem2->GetCustomData1Y();
+			graph.AddControlPoint({ 0,0 });
+		}
+
+		{
+			auto& graph = sphereImpactParticleSystem2->GetCustomData1Z();
+			graph.AddControlPoint({ 0,3.5 });
+		}
+
+		//------------------------Boss Blackhole---------------------------//
+		std::shared_ptr<Ideal::IParticleMaterial> blackholeMaterial = gRenderer->CreateParticleMaterial();
+		blackholeMaterial->SetShader(bossBlackHoleShader);
+		//blackholeMaterial->SetWriteDepthBuffer(true);
+
+
+		std::shared_ptr<Ideal::ITexture> bhTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/PerlinMap_1.png");
+		std::shared_ptr<Ideal::ITexture> bhTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
+		std::shared_ptr<Ideal::ITexture> bhTex2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_5.png");
+		blackholeMaterial->SetTexture0(bhTex0);
+		blackholeMaterial->SetTexture1(bhTex1);
+		blackholeMaterial->SetTexture2(bhTex2);
+		//blackholeMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Blend);
+		blackholeMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		blackholeMaterial->SetBackFaceCulling(false);
+		//blackholeMaterial->SetWriteDepthBuffer(false);
+
+
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Circle_2.fbx");
+		std::shared_ptr<Ideal::IMesh> blackHoleMaterialMesh = gRenderer->CreateParticleMesh(L"0_Particle/Circle_2");
+
+
+		std::shared_ptr<Ideal::IParticleSystem> blackHoleParticleSystem = gRenderer->CreateParticleSystem(blackholeMaterial);
+		blackHoleParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		blackHoleParticleSystem->SetRenderMesh(blackHoleMaterialMesh);
+		blackHoleParticleSystem->SetStartSize(0.1);
+		blackHoleParticleSystem->SetStartColor(Color(1, 1, 1, 1));
+		blackHoleParticleSystem->SetLoop(false);
+		blackHoleParticleSystem->SetDuration(8.f);
+		blackHoleParticleSystem->SetStartLifetime(8.f);
+		blackHoleParticleSystem->SetTransformMatrix(
+			Matrix::CreateRotationX(3.14 * 0.5)
+		);
+		blackHoleParticleSystem->SetColorOverLifetime(true);
+		//{
+		//	auto& graph = blackHoleParticleSystem->GetColorOverLifetimeGradientGraph();
+		//	graph.AddPoint(Color(0, 0, 0, 0), 0);
+		//	graph.AddPoint(Color(0, 0.4, 1, 1), 0.082);
+		//	graph.AddPoint(Color(0, 0.4, 1, 1), 0.92);
+		//	graph.AddPoint(Color(0, 0.4, 1, 0), 1);
+		//}
+		{
+			auto& graph = blackHoleParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0, 0, 0, 0), 0);
+			graph.AddPoint(Color(0, 0.4, 1, 1), 0.082 / 8);
+			graph.AddPoint(Color(0, 0.4, 1, 1), 0.92 / 8);
+			graph.AddPoint(Color(0.8, 0.6, 0, 1), (float)3 / 8);	// float으로...
+			graph.AddPoint(Color(0.8, 0.6, 0, 1), (float)5 / 8);
+			graph.AddPoint(Color(1, 0.1, 0, 1), (float)6 / 8);
+			graph.AddPoint(Color(1, 0.1, 0, 1), (float)8 / 8);
+		}
+		
+		// blackhole sphere
+		std::shared_ptr<Ideal::IParticleMaterial> blackholeSphereMaterial = gRenderer->CreateParticleMaterial();
+		blackholeSphereMaterial->SetShader(bossBlackHoleSphereShader);
+		blackholeSphereMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		//blackholeSphereMaterial->SetWriteDepthBuffer(false);
+		//blackholeSphereMaterial->SetTransparency(false);
+		//blackholeSphereMaterial->SetWriteDepthBuffer(true);
+		std::shared_ptr<Ideal::IParticleSystem> blackHoleSphereParticleSystem = gRenderer->CreateParticleSystem(blackholeSphereMaterial);
+		blackHoleSphereParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		blackHoleSphereParticleSystem->SetRenderMesh(bossParticleMeshSphere);
+		blackHoleSphereParticleSystem->SetStartSize(15.f);
+		blackHoleSphereParticleSystem->SetDuration(8.f);
+		blackHoleSphereParticleSystem->SetStartLifetime(8.f);
+		blackHoleSphereParticleSystem->SetStartColor(Color(0, 0, 0, 1));
+		blackHoleSphereParticleSystem->SetStartColor(Color(1, 0, 0, 1));
+		blackHoleSphereParticleSystem->SetLoop(false);
 #pragma endregion
 
 #pragma region CreateParticle
@@ -1083,15 +1277,43 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					bossFireProjectileParticleSystem0->Pause();
 					bossFireProjectileParticleSystem1->Pause();
+
 				}
 				if (GetAsyncKeyState('V') & 0x8000)
 				{
 					sphereImpactParticleSystem->Play();
+					sphereImpactParticleSystem1->Play();
+					sphereImpactParticleSystem2->Play();
 				}
 				if (GetAsyncKeyState('B') & 0x8000)
 				{
 					sphereImpactParticleSystem->Pause();
+					sphereImpactParticleSystem1->Pause();
+					sphereImpactParticleSystem2->Pause();
 				}
+				if (GetAsyncKeyState('J') & 0x8000)
+				{
+					blackHoleParticleSystem->Play();
+					blackHoleSphereParticleSystem->Play();
+				}
+				if (GetAsyncKeyState('K') & 0x8000)
+				{
+					blackHoleParticleSystem->Pause();
+					blackHoleSphereParticleSystem->Pause();
+				}
+				if (GetAsyncKeyState('L') & 0x8000)
+				{
+					blackHoleParticleSystem->Resume();
+					blackHoleSphereParticleSystem->Resume();
+				}
+
+				if (GetAsyncKeyState('O') & 0x8000)
+				{
+					auto p = gRenderer->GetTopLeftEditorPos();
+					auto p2 = gRenderer->GetRightBottomEditorPos();
+					int a = 3;
+				}
+				
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -1107,6 +1329,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				bossFireProjectileParticleSystem0->SetDeltaTime(0.003f);
 				bossFireProjectileParticleSystem1->SetDeltaTime(0.003f);
 				sphereImpactParticleSystem->SetDeltaTime(0.003f);
+				sphereImpactParticleSystem1->SetDeltaTime(0.003f);
+				sphereImpactParticleSystem2->SetDeltaTime(0.003f);
+				blackHoleParticleSystem->SetDeltaTime(0.003f);
+				blackHoleSphereParticleSystem->SetDeltaTime(0.003f);
+
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -1114,54 +1341,54 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//DebugPlayer2->AnimationDeltaTime(0.002f);
 				//DebugPlayer3->AnimationDeltaTime(0.002f);
 				
-				if (GetAsyncKeyState('L') & 0x8000)
-				{
-					//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
-					static int once = 1;
-					if (once < 1)
-					{
-						once++;
-
-						//for (int i = 0; i < 32; i++)
-						//{
-						//	std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-						//	meshes.push_back(mesh);
-						//	mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(i, 0, 0)));
-						//}
-
-						for (int z = 0; z < 5; z++)
-						{
-							for (int y = 0; y < 5; y++)
-							{
-								for (int x = 0; x < 5; x++)
-								{
-									std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-									mesh->SetStaticWhenRunTime(true);
-									mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
-									meshes.push_back(mesh);
-									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 0)));
-									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
-
-									mesh->SetTransformMatrix(Matrix::CreateScale(0.2f) * Matrix::CreateRotationY(15.f) * Matrix::CreateRotationZ(15.f) * Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
-
-									
-
-									if(z == 1)
-										mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-10 + x * 0.2, -10, -10)));
-									//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 0.1, y * 0.1, z * 0.1)));
-
-									if (z == 0 && x == 0 && y == 0)
-									{
-										mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0,2,0)));
-									}
-								}
-							}
-						}
-						gRenderer->BakeOption(200, 4.f);
-						gRenderer->BakeStaticMeshObject();
-						gRenderer->ReBuildBLASFlagOn();
-					}
-				}
+				//if (GetAsyncKeyState('L') & 0x8000)
+				//{
+				//	//std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"DebugObject/debugCube");
+				//	static int once = 1;
+				//	if (once < 1)
+				//	{
+				//		once++;
+				//
+				//		//for (int i = 0; i < 32; i++)
+				//		//{
+				//		//	std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+				//		//	meshes.push_back(mesh);
+				//		//	mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(i, 0, 0)));
+				//		//}
+				//
+				//		for (int z = 0; z < 5; z++)
+				//		{
+				//			for (int y = 0; y < 5; y++)
+				//			{
+				//				for (int x = 0; x < 5; x++)
+				//				{
+				//					std::shared_ptr<Ideal::IMeshObject> mesh = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+				//					mesh->SetStaticWhenRunTime(true);
+				//					mesh->GetMeshByIndex(0).lock()->SetMaterialObject(skirtMaterial);
+				//					meshes.push_back(mesh);
+				//					//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 0)));
+				//					//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
+				//
+				//					mesh->SetTransformMatrix(Matrix::CreateScale(0.2f) * Matrix::CreateRotationY(15.f) * Matrix::CreateRotationZ(15.f) * Matrix::CreateTranslation(Vector3(x * 10, y * 10, z * 10)));
+				//
+				//					
+				//
+				//					if(z == 1)
+				//						mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-10 + x * 0.2, -10, -10)));
+				//					//mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x * 0.1, y * 0.1, z * 0.1)));
+				//
+				//					if (z == 0 && x == 0 && y == 0)
+				//					{
+				//						mesh->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0,2,0)));
+				//					}
+				//				}
+				//			}
+				//		}
+				//		gRenderer->BakeOption(200, 4.f);
+				//		gRenderer->BakeStaticMeshObject();
+				//		gRenderer->ReBuildBLASFlagOn();
+				//	}
+				//}
 				
 				// --- Optimization Ray Tracing --- //
 				if (GetAsyncKeyState('N') & 0x8000)
@@ -1481,20 +1708,6 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::I
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 	{
 		Camera->Pitch(speed * 0.2);
-	}
-
-
-	if (GetAsyncKeyState('L') & 0x8000)
-	{
-		//Camera->SetLook(Vector3(0.f, 1.f, 1.f));
-	}
-	if (GetAsyncKeyState('K') & 0x8000)
-	{
-		Camera->SetLook(Vector3(0.f, 0.f, -1.f));
-	}
-	if (GetAsyncKeyState('J') & 0x8000)
-	{
-		Camera->SetLook(Vector3(0.f, 0.f, 1.f));
 	}
 
 	if (SpotLight)

@@ -1072,6 +1072,36 @@ void Ideal::D3D12RayTracingRenderer::ClearImGui()
 	}
 }
 
+DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetTopLeftEditorPos()
+{
+	//m_mainCameraEditorTopLeft;
+	// 비율 계산
+	auto& rect = m_postViewport->GetScissorRect();
+	m_mainCameraEditorWindowSize;
+	// offset * editor size / main window size = new Offset // return new Offset + editor pos
+	float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
+	float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
+
+	y += m_mainCameraEditorTopLeft.y;
+	x += m_mainCameraEditorTopLeft.x;
+	return Vector2(x,y);
+}
+
+DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEditorPos()
+{
+	//m_mainCameraEditorTopLeft;
+	// 비율 계산
+	auto& rect = m_postViewport->GetScissorRect();
+	m_mainCameraEditorWindowSize;
+	// offset * editor size / main window size = new Offset // return new Offset + editor pos
+	float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
+	float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
+
+	y += m_mainCameraEditorTopLeft.y + m_mainCameraEditorBottomRight.y;
+	x += m_mainCameraEditorTopLeft.x + m_mainCameraEditorBottomRight.x;
+	return Vector2(x, y);
+}
+
 void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
 {
 	std::shared_ptr <Ideal::D3D12Texture> skyBox = std::make_shared<Ideal::D3D12Texture>();
@@ -1222,7 +1252,14 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 	std::shared_ptr<Ideal::ParticleSystem> NewParticleSystem = std::make_shared<Ideal::ParticleSystem>();
 	std::shared_ptr<Ideal::ParticleMaterial> GetParticleMaterial = std::static_pointer_cast<Ideal::ParticleMaterial>(ParticleMaterial);
 	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), m_particleSystemManager->GetVS(), GetParticleMaterial);
-	m_particleSystemManager->AddParticleSystem(NewParticleSystem);
+	if (GetParticleMaterial->GetTransparency())
+	{
+		m_particleSystemManager->AddParticleSystem(NewParticleSystem);
+	}
+	else
+	{
+		m_particleSystemManager->AddParticleSystemNoTransparency(NewParticleSystem);
+	}
 	return std::static_pointer_cast<Ideal::IParticleSystem>(NewParticleSystem);
 }
 
@@ -2147,8 +2184,20 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 {
 	ImGui::Begin("MAIN SCREEN", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav);		// Create a window called "Hello, world!" and append into it.
 
+	ImVec2 windowPos = ImGui::GetWindowPos();
+ 	ImVec2 min = ImGui::GetWindowContentRegionMin();
+ 	ImVec2 max = ImGui::GetWindowContentRegionMax();
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 size(windowSize.x, windowSize.y);
+
+	m_mainCameraEditorWindowSize.x = windowSize.x;
+	m_mainCameraEditorWindowSize.y = windowSize.y;
+
+	m_mainCameraEditorTopLeft.x = windowPos.x + min.x;
+	m_mainCameraEditorTopLeft.y = windowPos.y + min.y;
+
+	m_mainCameraEditorBottomRight.x = windowPos.x + max.x;
+	m_mainCameraEditorBottomRight.y = windowPos.y + max.y;
 
 	float viewWidthRatio = static_cast<float>(m_width) / windowSize.x;
 	float viewHeightRatio = static_cast<float>(m_height) / windowSize.y;

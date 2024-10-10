@@ -6,6 +6,7 @@
         float4x4 View;
         float4x4 Proj;
         float4x4 ViewProj;
+        float3 eyePos;
     };
 
     cbuffer Transform : register(b1)
@@ -66,8 +67,7 @@
         Out = 1 - In;
     }
 
-    // Range
-        // Remap
+    // Remap
     void Ideal_Remap_float4(float4 In, float2 InMinMax, float2 OutMinMax, out float4 Out)
     {
         Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);

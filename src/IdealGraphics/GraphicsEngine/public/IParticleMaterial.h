@@ -16,7 +16,7 @@ namespace Ideal
 		{
 			Additive = 0,
 			Alpha,
-			AlphaAdditive
+			AlphaAdditive,
 		};
 	}
 }
@@ -37,5 +37,8 @@ namespace Ideal
 		virtual void SetTexture1(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		virtual void SetTexture2(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		virtual void SetBackFaceCulling(bool Culling) abstract;
+		virtual void SetWriteDepthBuffer(bool Write) abstract; // 깊이를 그릴지 결정
+		virtual void SetTransparency(bool Transpaerancy) abstract;
+
 	};
 }
