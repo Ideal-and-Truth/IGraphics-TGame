@@ -1097,8 +1097,10 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEdito
 	float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
 	float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
 
-	y += m_mainCameraEditorBottomRight.y;
-	x += m_mainCameraEditorBottomRight.x;
+	float ny = m_mainCameraEditorBottomRight.y;
+	float nx = m_mainCameraEditorBottomRight.x;
+	ny -= y;
+	nx -= x;
 	return Vector2(x, y);
 }
 
@@ -2196,8 +2198,8 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 	m_mainCameraEditorTopLeft.x = windowPos.x + min.x;
 	m_mainCameraEditorTopLeft.y = windowPos.y + min.y;
 
-	m_mainCameraEditorBottomRight.x = windowPos.x + max.x;
-	m_mainCameraEditorBottomRight.y = windowPos.y + max.y;
+	//m_mainCameraEditorBottomRight.x = windowPos.x + max.x;
+	//m_mainCameraEditorBottomRight.y = windowPos.y + max.y;
 
 	float viewWidthRatio = static_cast<float>(m_width) / windowSize.x;
 	float viewHeightRatio = static_cast<float>(m_height) / windowSize.y;
@@ -2219,7 +2221,8 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 	}
 	size.x = x * windowSize.x;
 	size.y = y * windowSize.y;
-
+	m_mainCameraEditorBottomRight.x = size.x;
+	m_mainCameraEditorBottomRight.y = size.y;
 	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
 	ImGui::End();
 }
