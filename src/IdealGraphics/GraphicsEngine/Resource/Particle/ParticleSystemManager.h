@@ -33,6 +33,7 @@ namespace Ideal
 		void SetVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 
 	public:
+		void AddParticleSystemNoTransparency(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem);
 		void AddParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem);
 		void DeleteParticleSystem(std::shared_ptr<Ideal::ParticleSystem>& ParticleSystem);
 
@@ -43,6 +44,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_VS;
 
 	private:
+		std::vector<std::shared_ptr<Ideal::ParticleSystem>> m_particlesNoTransparency;
 		std::vector<std::shared_ptr<Ideal::ParticleSystem>> m_particles;
 	};
 }

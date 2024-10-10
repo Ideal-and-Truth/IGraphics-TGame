@@ -1,5 +1,5 @@
 #include "MeshCollider.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 #include "PhysicsManager.h"
 #include "MathUtil.h"
 #include "RigidBody.h"
@@ -82,7 +82,7 @@ void Truth::MeshCollider::Awake()
 /// </summary>
 void Truth::MeshCollider::GetPoints()
 {
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	std::wstring prefix = L"../Resources/Models/";
 	file->Open(prefix + m_path + L".pos", FileMode::Read);
 

@@ -5,7 +5,7 @@
 #include "GraphicsManager.h"
 #include "NavMeshGenerater.h"
 #include "PhysicsManager.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 #include "ISpotLight.h"
 #include "Material.h"
 #include "IMesh.h"
@@ -350,7 +350,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	}
 
 	/// read map data
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	file->Open(mapPath + L"Data.map", FileMode::Read);
 	size_t objCount = file->Read<size_t>();
 
@@ -554,7 +554,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			size_t offset = vPositions.size() / 3;
 			for (const auto& i : boxIndices)
 			{
-				vIndices.push_back(i + offset);
+				vIndices.push_back(i + static_cast<uint32>(offset));
 			}
 
 			for (const auto& v : boxPoints)
@@ -568,7 +568,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		else if (isMeshCollider)
 		{
 			size_t offset = vPositions.size() / 3;
-			std::shared_ptr<FileUtils> posFile = std::make_shared<FileUtils>();
+			std::shared_ptr<TFileUtils> posFile = std::make_shared<TFileUtils>();
 			fs::path posFilePath = "../Resources/Models/MapData/1_HN_Scene2/";
 			posFilePath /= name + ".pos";
 			posFile->Open(posFilePath.generic_wstring(), FileMode::Read);
@@ -591,7 +591,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			uint32 indexSize = posFile->Read<uint32>();
 			for (uint32 i = 0; i < indexSize ; i++)
 			{
-				vIndices.push_back(offset + posFile->Read<uint32>());
+				vIndices.push_back(static_cast<uint32>(offset) + posFile->Read<uint32>());
 			}
 		}
 

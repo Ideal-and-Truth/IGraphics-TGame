@@ -94,10 +94,7 @@ void Inspector::ShowContext(bool* p_open)
 
 		// Show Components
 		for (auto& e : m_selectedEntity.lock()->m_components)
-		{
-			// Checking Component
 			TranslateComponent(e);
-		}
 
 
 
@@ -109,10 +106,7 @@ void Inspector::ShowContext(bool* p_open)
 		}
 
 		// Add Component
-		{
-			// Show Components List
 			AddComponentList(m_selectedEntity.lock());
-		}
 	}
 
 	/// End of ShowDemoWindow()
@@ -123,9 +117,8 @@ void Inspector::ShowContext(bool* p_open)
 void Inspector::TranslateComponent(std::shared_ptr<Truth::Component> _component)
 {
 	if (_component == nullptr)
-	{
 		return;
-	}
+
 	const TypeInfo& typeinfo = _component->GetTypeInfo();
 
 	// 컴포넌트 이름
@@ -143,22 +136,16 @@ void Inspector::TranslateComponent(std::shared_ptr<Truth::Component> _component)
 		if (ImGui::BeginPopupContextItem())
 		{
 			if (ImGui::Selectable("Remove Component"))
-			{
 				m_deletedComponent.push(std::make_pair(m_selectedEntity, _component->m_index));
-			}
 
 			ImGui::EndPopup();
 		}
 
 		for (auto* p : properties)
-		{
 			isSelect |= p->DisplayUI(_component.get(), "##" + std::to_string(_component->m_ID));
-		}
 	}
 	if (isSelect)
-	{
 		_component->EditorSetValue();
-	}
 }
 
 void Inspector::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
@@ -167,9 +154,7 @@ void Inspector::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 	{
 		int selectedItem = -1;
 		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), static_cast<int32>(m_componentList.size()), 6))
-		{
 			SelectedEntity->AddComponent(TypeInfo::g_factory->Create(m_componentList[selectedItem]));
-		}
 	}
 }
 #endif // EDITOR_MODE

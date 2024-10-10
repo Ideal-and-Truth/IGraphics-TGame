@@ -154,6 +154,9 @@ namespace Ideal
 		bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 		void ClearImGui() override;
 
+		DirectX::SimpleMath::Vector2 GetTopLeftEditorPos() override;
+		DirectX::SimpleMath::Vector2 GetRightBottomEditorPos() override;
+
 		virtual void SetSkyBox(const std::wstring& FileName) override;
 
 		// Texture
@@ -381,6 +384,9 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
 
+		Vector2 m_mainCameraEditorTopLeft;
+		Vector2 m_mainCameraEditorBottomRight;
+		Vector2 m_mainCameraEditorWindowSize;
 		// Optimization
 	public:
 		virtual void BakeOption(int32 MaxBakeCount, float MinSpaceSize) override;

@@ -10,7 +10,7 @@
 
 namespace fs = std::filesystem;
 
-class FileUtils;
+class TFileUtils;
 
 namespace Truth
 {
@@ -185,10 +185,10 @@ namespace Truth
 		void ConvertUnloadedMesh();
 
 		void WriteData();
-		void WriteColliderData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteMeshData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteLightData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
+		void WriteColliderData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteMeshData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteLightData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteLocalTMData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
 	};
 }
 

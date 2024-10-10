@@ -44,10 +44,11 @@ namespace Ideal
 		virtual void SetDeltaTime(float DT) override;
 		
 		virtual void Play() override;
+		virtual void Resume() override;	// 일시 정지 했을 경우 지금 시간부터 시작
 		virtual void Pause() override;
 		virtual void SetStopWhenFinished(bool StopWhenFinished) override;
 		virtual void SetPlayOnWake(bool PlayOnWake) override;
-		
+		virtual float GetCurrentDurationTime() override;
 	public:
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);

@@ -13,10 +13,13 @@ float4 PSMain(VSOutput input) : SV_TARGET
 
     baseColor.a *= g_startColor.a;
 
+    // Color Factor
+    baseColor.rgb *= g_CustomData1.z;
+
     // 시간에 따른 애니메이션 조정 (Texture Animate)
     float2 animatedUV = input.UV;
     float2 animatedUVTO;
-    Ideal_TilingAndOffset_float(input.UV, float2(5, 2), float2(0, 0), animatedUVTO);
+    Ideal_TilingAndOffset_float(input.UV, float2(g_CustomData1.y, 2), float2(0, 0), animatedUVTO);    // offet customaData에서 불러옴
     animatedUVTO += g_Time * g_CustomData1.x; // 애니메이션 속도 조정
     baseColor *= ParticleTexture0.Sample(LinearWrapSampler, animatedUVTO); // 텍스처 애니메이션 적용
 

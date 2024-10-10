@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 #include "TypeInfo.h"
+#include <windows.h>
+#include <commdlg.h>
 
 namespace Truth
 {
@@ -17,13 +19,19 @@ namespace Truth
 {
 	struct Material
 	{
-		std::string m_name; 
+		OPENFILENAME m_openFileName;
+		TCHAR m_filePathBuffer[256];
+		TCHAR m_fileBuffer[256];
 
-		unsigned int m_useCount;
+		std::string m_name; 
 
 		std::shared_ptr<Ideal::IMaterial> m_material;
 
-		std::shared_ptr<GraphicsManager> m_gp;
+		GraphicsManager* m_gp;
+
+		HWND m_hwnd;
+
+		std::string m_path;
 
 		std::shared_ptr<Texture> m_baseMap;
 		std::shared_ptr<Texture> m_normalMap;
@@ -34,6 +42,8 @@ namespace Truth
 
 		void SetTexture();
 		void ChangeTexture(std::wstring _path, int _type);
+		void ChangeMaterial();
+		void ChangeTexture(int _type);
 		void SaveMaterial();
 	};
 }

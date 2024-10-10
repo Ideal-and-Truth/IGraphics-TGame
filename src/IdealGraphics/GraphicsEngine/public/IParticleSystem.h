@@ -69,10 +69,13 @@ namespace Ideal
 		virtual void SetDeltaTime(float DT) abstract;
 
 		virtual void Play() abstract;
+		virtual void Resume() abstract;	// 일시 정지 했을 경우 지금 시간부터 시작
 		virtual void Pause() abstract;
 
 		virtual void SetStopWhenFinished(bool StopWhenFinished) abstract;
 		virtual void SetPlayOnWake(bool PlayOnWake) abstract;
+
+		virtual float GetCurrentDurationTime() abstract;
 
 	public:
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
@@ -81,7 +84,7 @@ namespace Ideal
 		virtual void SetStartSize(float Size) abstract;
 
 		// 생명 시간
-		virtual void SetStartLifetime(float Time) abstract;
+		virtual void SetStartLifetime(float Time) abstract; // 내부 지속 시간	( 이펙트가 끝나도 duration이 끝나야 다시 Loop를 하든 끝나든함)
 		virtual float GetStartLifetime() abstract;
 
 		// 재생 속도 값
@@ -89,10 +92,10 @@ namespace Ideal
 		virtual float GetSimulationSpeed() abstract;
 
 		// 총 지속 시간
-		virtual void SetDuration(float Time) abstract;
+		virtual void SetDuration(float Time) abstract;	// 총 지속 시간
 		virtual float GetDuration() abstract;
 
-		virtual void SetLoop(bool Loop) abstract;
+		virtual void SetLoop(bool Loop) abstract;	
 		virtual bool GetLoop() abstract;
 
 		//------Color Over Lifetime------//
