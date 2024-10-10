@@ -8,6 +8,7 @@
 #include "SkinnedMesh.h"
 #include "SimpleDamager.h"
 #include "TimeDistortion.h"
+#include "Controller.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -15,6 +16,7 @@ BossSkill::BossSkill()
 	: m_createComplete(false)
 	, m_paternEnds(false)
 	, m_deleteCollider(false)
+	, m_deleteFire(false)
 	, m_readyToShoot(false)
 	, m_passingTime(0.f)
 	, m_count(0)
@@ -50,8 +52,7 @@ void BossSkill::Awake()
 	m_swordPos.push_back({ -1.1f,4.2f,0.f });
 	m_swordPos.push_back({ -2.2f,4.7f,0.f });
 
-	m_illusionPos.push_back({ 2.2f,0.f,0.f });
-	m_illusionPos.push_back({ -2.2f,0.f,0.f });
+
 
 
 
@@ -77,6 +78,10 @@ void BossSkill::Update()
 			{
 				FlameSword();
 			}
+			else if (m_bossAnimator->GetTypeInfo().GetProperty("attackCharge")->Get<bool>(m_bossAnimator.get()).Get())
+			{
+				LightSpeedDash(m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get() > 1);
+			}
 		}
 	}
 	else
@@ -101,6 +106,7 @@ void BossSkill::Update()
 		}
 		m_attackColliders.clear();
 		m_shootingPos.clear();
+		m_illusionPos.clear();
 
 		m_passingTime = 0.f;
 		m_count = 0;
@@ -112,7 +118,7 @@ void BossSkill::Update()
 	if (m_deleteCollider)
 	{
 		m_passingTime += GetDeltaTime();
-		if (m_passingTime > 3.f)
+		if (m_passingTime > 2.f)
 		{
 			for (auto& e : m_attackColliders)
 			{
@@ -121,6 +127,7 @@ void BossSkill::Update()
 
 			m_attackColliders.clear();
 			m_shootingPos.clear();
+			m_illusionPos.clear();
 
 			m_deleteCollider = false;
 
@@ -128,27 +135,31 @@ void BossSkill::Update()
 			m_paternEnds = true;
 			m_createComplete = false;
 		}
+	}
 
-		if (m_passingTime > 2.f)
+	if (m_deleteFire)
+	{
+		m_passingTime += GetDeltaTime();
+		if (m_passingTime > 3.f)
 		{
-			for (auto& e : m_attackColliders)
+			for (auto& e : m_fires)
 			{
 				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 			}
-			m_attackColliders.clear();
-			m_shootingPos.clear();
 
-			m_deleteCollider = false;
+			m_fires.clear();
 
-			m_passingTime = 0.f;
+			m_deleteFire = false;
+
 			m_count = 0;
+			m_paternEnds = true;
 			m_createComplete = false;
 		}
 	}
 
 
 	// 	if (GetKeyDown(KEY::_0) || m_paternEnds)
-	// 	{
+	// 	if (GetKeyDown(KEY::_0)
 	// 		m_useSkill = !m_useSkill;
 	// 		m_paternEnds = false;
 	// 	}
@@ -166,6 +177,11 @@ void BossSkill::Update()
 	// 		//LightSpeedDash(true); //아직 삭제 안함
 	// 		//DistortedTimeSphere(); //미완
 	// 	}
+// 	if (GetKeyDown(KEY::_0))
+// 	{
+// 		m_readyToShoot = !m_readyToShoot;
+// 	}
+// 
 }
 
 void BossSkill::ShockWave()
@@ -185,8 +201,7 @@ void BossSkill::ShockWave()
 			m_owner.lock()->AddChild(shock);
 
 			shock->SetPosition({ 0.f,0.f,0.f });
-			shock->SetScale({ 3.f,1.f,3.f });
-			//shock->SetScale({ 300.f,30.f,300.f });
+			shock->SetScale({ 5.f,1.f,5.f });
 
 
 			//shock->Awake();
@@ -269,12 +284,12 @@ void BossSkill::FlameSword()
 			m_owner.lock()->AddChild(flame);
 
 			flame->SetPosition({ 0.f,0.f,0.f });
-			flame->SetScale({ 3.f,1.f,3.f });
+			flame->SetScale({ 5.f,1.f,5.f });
 			//flame->SetScale({ 300.f,30.f,300.f });
 
 			flame->Start();
 
-			m_attackColliders.push_back(std::make_pair(flame, false));
+			m_fires.push_back(std::make_pair(flame, false));
 		}
 		m_createComplete = true;
 	}
@@ -286,18 +301,18 @@ void BossSkill::FlameSword()
 			m_passingTime += GetDeltaTime();
 			if (m_passingTime > 0.1f && m_count < m_flamePos.size())
 			{
-				m_attackColliders[m_count].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_count] });
-				Vector3 worldPos = m_attackColliders[m_count].first->m_transform->m_worldPosition;
-				m_owner.lock()->DeleteChild(m_attackColliders[m_count].first);
+				m_fires[m_count].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_count] });
+				Vector3 worldPos = m_fires[m_count].first->m_transform->m_worldPosition;
+				m_owner.lock()->DeleteChild(m_fires[m_count].first);
 				m_owner.lock().reset();
-				m_attackColliders[m_count].first->m_transform->m_position = worldPos;
+				m_fires[m_count].first->m_transform->m_position = worldPos;
 				m_count++;
 				m_passingTime = 0.f;
 
 			}
 			if (m_count >= m_flamePos.size())
 			{
-				m_deleteCollider = true;
+				m_deleteFire = true;
 				m_passingTime = 0.f;
 				//m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
 			}
@@ -324,7 +339,7 @@ void BossSkill::SwordShooting()
 
 			sword->SetPosition(m_swordPos[m_count]);
 			//sword->SetScale({ 30.f,30.f,300.f });
-			sword->SetScale({ 0.1f,0.1f,2.f });
+			sword->SetScale({ 0.8f,0.8f,2.f });
 
 
 			sword->Start();
@@ -385,7 +400,7 @@ void BossSkill::SwordShooting()
 			}
 		}
 
-		if (m_attackColliders[m_attackColliders.size() - 1].first->m_transform->m_position.y < 1.f)
+		if (m_attackColliders[m_attackColliders.size() - 1].first->m_transform->m_position.y <= 0.1f)
 		{
 			m_deleteCollider = true;
 			m_passingTime = 0.f;
@@ -395,24 +410,23 @@ void BossSkill::SwordShooting()
 
 }
 
-void BossSkill::LightSpeedDash(bool isThirdPhase)
+void BossSkill::LightSpeedDash(bool isSecondPhase)
 {
-	if (!isThirdPhase)
-	{
-
-	}
-	else
+	if (isSecondPhase)
 	{
 		if (!m_createComplete)
 		{
+			m_illusionPos.push_back({ 4.2f,0.f,0.f });
+			m_illusionPos.push_back({ -4.2f,0.f,0.f });
 			for (int i = 0; i < 2; i++)
 			{
 				std::shared_ptr<Truth::Entity> illusion = std::make_shared<Truth::Entity>(m_managers.lock());
 				illusion->Initialize();
 				illusion->m_layer = 1;
-				illusion->AddComponent<Truth::BoxCollider>();
+				//auto boxCollider = illusion->AddComponent<Truth::BoxCollider>();
 				auto skinnedMesh = illusion->AddComponent<Truth::SkinnedMesh>();
 				auto damage = illusion->AddComponent<SimpleDamager>();
+				auto rigid = illusion->AddComponent<Truth::Controller>();
 				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 30.f);
 				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
 				skinnedMesh->AddAnimation("AttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
@@ -422,10 +436,7 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 				m_owner.lock()->AddChild(illusion);
 
 				illusion->SetPosition(m_illusionPos[i]);
-				illusion->SetScale({ 3.f,3.f,3.f });
-
-
-				illusion->Start();
+				illusion->SetScale({ 1.f,1.f,1.f });
 
 				m_attackColliders.push_back(std::make_pair(illusion, false));
 				skinnedMesh->SetAnimation("AttackLightSpeedReady", false);
@@ -443,9 +454,10 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 		else
 		{
 			Vector3 playerPos = m_player->GetOwner().lock()->m_transform->m_position;
+
 			for (int i = 0; i < m_attackColliders.size(); i++)
 			{
-				if (!m_attackColliders[i].second)
+				if (!m_attackColliders[i].second && !m_deleteCollider)
 				{
 					Vector3 dir = playerPos - m_attackColliders[i].first->m_transform->m_worldPosition;
 					dir.y = 0.f;
@@ -455,46 +467,67 @@ void BossSkill::LightSpeedDash(bool isThirdPhase)
 					m_attackColliders[i].first->m_transform->m_rotation = Quaternion::Slerp(m_attackColliders[i].first->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
 				}
 			}
+
 			if (m_count < m_attackColliders.size())
 			{
 				if (m_readyToShoot)
 				{
 					m_passingTime += GetDeltaTime();
-					if (m_passingTime > 0.5f)
+
+					if (m_passingTime > 0.8f)
 					{
 						auto skinnedMesh = m_attackColliders[m_count].first->GetComponent<Truth::SkinnedMesh>().lock();
 
 						m_attackColliders[m_count].second = true;
 						m_illusionPos[m_count] = playerPos;
 						m_passingTime = 0.f;
+						skinnedMesh->SetAnimation("AttackLightSpeedDash", false);
+						skinnedMesh->SetAnimationSpeed(1.f);
+
+						auto rigid = m_attackColliders[m_count].first->GetComponent<Truth::Controller>().lock();
+
+						Vector3 power(playerPos - m_attackColliders[m_count].first->m_transform->m_position);
+						power.y = 0.f;
+						power.Normalize();
+						power.y = -100.f;
+						power *= GetDeltaTime();
+						power *= 120.f;
+
+						rigid->AddImpulse(power);
+
 						m_count++;
 					}
+
 					if (m_count >= m_attackColliders.size())
 					{
-						m_readyToShoot = false;
+						//m_readyToShoot = false;
 					}
 				}
 			}
+
 			for (int i = 0; i < m_attackColliders.size(); i++)
 			{
 				auto skinnedMesh = m_attackColliders[i].first->GetComponent<Truth::SkinnedMesh>().lock();
+
 				if (!m_attackColliders[i].second && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 142)
 				{
-					skinnedMesh->SetAnimation("AttackLightSpeedDash", false);
-					skinnedMesh->SetPlayStop(false);
+					skinnedMesh->SetAnimationSpeed(0.f);
 
-					m_readyToShoot = true;
+					//m_readyToShoot = true;
 				}
+
 				if (m_attackColliders[i].second)
 				{
-					skinnedMesh->SetPlayStop(true);
+					auto rigid = m_attackColliders[i].first->GetComponent<Truth::Controller>().lock();
 
-					m_attackColliders[i].first->m_transform->m_position += (m_illusionPos[i] - m_attackColliders[i].first->m_transform->m_position) * GetDeltaTime() * 10.f;
+					Vector3 zero = Vector3::Zero;
+					rigid->Move(zero);
 
-					if (skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() < 100 && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 7)
+					if (skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() < 100 && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 8)
 					{
 						m_attackColliders[i].second = false;
-						skinnedMesh->SetPlayStop(false);
+						m_deleteCollider = true;
+						skinnedMesh->SetAnimationSpeed(0.f);
 					}
 				}
 			}
@@ -515,7 +548,7 @@ void BossSkill::DistortedTimeSphere()
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(timeSphere);
 
 		timeSphere->SetPosition(m_owner.lock()->m_transform->m_position);
-		timeSphere->SetScale({ 3.f,3.f,3.f });
+		timeSphere->SetScale({ 4.f,4.f,4.f });
 
 
 		timeSphere->Start();

@@ -11,8 +11,10 @@ BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 PlayerController::PlayerController()
 	: m_forwardInput(0.f)
 	, m_sideInput(0.f)
+	, m_impulsePower(0.f)
+	, m_useImpulse(true)
+	, m_needRot(true)
 	, m_canMove(true)
-	, m_isDodge(true)
 {
 	m_name = "PlayerController";
 }
@@ -94,7 +96,27 @@ void PlayerController::PlayerMove(const void*)
 		m_sideInput = 0.f;
 	}
 
+	if (GetKey(KEY::W) && GetKey(KEY::A))
+	{
+		m_forwardInput = 0.6f;
+		m_sideInput = -0.6f;
+	}
+	else if (GetKey(KEY::W) && GetKey(KEY::D))
+	{
+		m_forwardInput = 0.6f;
+		m_sideInput = 0.6f;
+	}
 
+	if (GetKey(KEY::S) && GetKey(KEY::A))
+	{
+		m_forwardInput = -0.6f;
+		m_sideInput = -0.6f;
+	}
+	else if (GetKey(KEY::S) && GetKey(KEY::D))
+	{
+		m_forwardInput = -0.6f;
+		m_sideInput = 0.6f;
+	}
 
 
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
@@ -105,20 +127,27 @@ void PlayerController::PlayerMove(const void*)
 	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
 	m_faceDirection = { playerDir.x ,0, playerDir.z };
 
-	if (!m_isDodge && GetKeyDown(KEY::SPACE))
+
+	if (m_useImpulse)
 	{
-		Vector3 power(finalMovement);
-		power *= 8.f;
+		Vector3 power(m_playerDirection.x, -100.f, m_playerDirection.z);
+		power *= m_impulsePower;
+		power *= 0.01f;
+		
 		m_controller.lock()->AddImpulse(power);
-		m_isDodge = true;
+		
+		if (m_needRot)
+		{
+			Quaternion lookRot;
+			Quaternion::LookRotation(m_playerDirection, Vector3::Up, lookRot);
+			auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+			m_owner.lock()->m_transform->m_rotation = lookRot;
+		}
 
-		m_playerDirection = playerDir;
-		Quaternion lookRot;
-		Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
-		auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
-		m_owner.lock()->m_transform->m_rotation = lookRot;
+		m_needRot = false;
+		m_useImpulse = false;
+		m_impulsePower = 0.f;
 	}
-
 
 	if (!m_canMove)
 	{
@@ -130,8 +159,6 @@ void PlayerController::PlayerMove(const void*)
 	{
 		return;
 	}
-
-	m_isDodge = false;
 
 
 	m_playerDirection = playerDir;

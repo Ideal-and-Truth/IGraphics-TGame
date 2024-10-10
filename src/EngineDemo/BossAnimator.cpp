@@ -296,20 +296,20 @@ void BossAnimator::Update()
 					}
 					else if (m_skillCoolTime)
 					{
-						if (random <= 10)
+						if (random <= 12)
 						{
 							m_strafeMove = false;
 							m_isPursuit = true;
+						}
+						else if (random > 12 && random <= 14)
+						{
+							m_strafeMove = true;
 						}
 						else
 						{
 							m_attackCharge = true;
 						}
 					}
-					// else
-					// {
-					// 	m_strafeMove = true;
-					// }
 				}
 			}
 
@@ -323,24 +323,129 @@ void BossAnimator::Update()
 	{
 		if (!m_playOnce)
 		{
-			AllStateReset();
-			m_isDodge = true;
-			ChangeState("Dodge");
-			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
-			m_attackCount = 3;
+			if (m_currentState != m_animationStateMap["Dodge"] && !m_attackUpperCut)
+			{
+				AllStateReset();
+				m_isDodge = true;
+				ChangeState("Dodge");
+				m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+				m_attackCount = 3;
+			}
 			if (m_currentState == m_animationStateMap["Dodge"])
 			{
 				m_skillCoolTime = false;
 				m_attackUpperCut = true;
+			}
+			if (m_currentState == m_animationStateMap["AttackUpperCut"])
+			{
 				m_playOnce = true;
 			}
 			m_passingTime = 0.f;
 		}
+		/// 작업중 ////////////////////////////////////////////////////////////////////
 		else
 		{
+			if (!m_isAttacking)
+			{
+				m_passingTime += GetDeltaTime();
+
+				// 근접일때
+				if (m_isInRange)
+				{
+					// 평타 3번치면 백스텝
+					if (m_attackCount < 3)
+					{
+						if (m_attackCombo1_1)
+						{
+							if (random <= 10)
+							{
+								m_attackCombo1_2 = true;
+								m_attackCombo1_3 = false;
+							}
+							else
+							{
+								m_attackSpin = true;
+							}
+						}
+						if (m_attackCombo2_1)
+						{
+							m_attackCombo2_2 = true;
+						}
+						if (m_passingTime < 1.f)
+						{
+							m_strafeMove = true;
+							m_isPursuit = false;
+						}
+						else
+						{
+							m_strafeMove = false;
+							if (random <= 10)
+							{
+								m_attackCombo1_1 = true;
+							}
+							else
+							{
+								m_attackCombo2_1 = true;
+							}
+						}
+					}
+					// 백스텝용
+					else
+					{
+						m_isDodge = true;
+					}
+				}
+				// 원거리일때
+				else
+				{
+					if (m_attackCombo1_1)
+					{
+						m_attackCombo1_3 = true;
+						m_attackCombo1_2 = false;
+						m_attackSpin = false;
+					}
+					if (m_attackCombo2_1)
+					{
+						m_attackCombo2_2 = true;
+					}
+					if (!m_skillCoolTime && !m_attackSwordShoot && !m_attackShockWave && !m_attackCharge)
+					{
+						if (random <= 7)
+						{
+							m_attackSwordShoot = true;
+						}
+						else if (random > 7 && random <= 14)
+						{
+							m_attackShockWave = true;
+						}
+						else
+						{
+							m_attackCharge = true;
+						}
+					}
+					else if (m_skillCoolTime)
+					{
+						if (random <= 16)
+						{
+							m_strafeMove = false;
+							m_isPursuit = true;
+						}
+						else if (random > 16 && random <= 20)
+						{
+							m_strafeMove = true;
+						}
+					}
+				}
+			}
+
+			if (m_attackCharge)
+			{
+				m_passingTime += GetDeltaTime();
+			}
 
 		}
 	}
+	/// 작업중 ////////////////////////////////////////////////////////////////////
 	else if (m_currentPhase == 3)
 	{
 		if (!m_playOnce)
@@ -366,7 +471,7 @@ void BossAnimator::Update()
 
 
 
-	if (m_isAttacking)
+	if (m_isAttacking || m_isDodge)
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 	}
@@ -380,10 +485,11 @@ void BossAnimator::Update()
 
 }
 
-void BossAnimator::SetImpulse(float power)
+void BossAnimator::SetImpulse(float power, float pL_mR_M)
 {
 	m_enemyController->GetTypeInfo().GetProperty("useImpulse")->Set(m_enemyController.get(), true);
 	m_enemyController->GetTypeInfo().GetProperty("impulsePower")->Set(m_enemyController.get(), power);
+	m_enemyController->GetTypeInfo().GetProperty("sideImpulse")->Set(m_enemyController.get(), pL_mR_M);
 }
 
 void BossAnimator::SetCanMove(bool canMove)
@@ -509,7 +615,7 @@ void BossRun::OnStateUpdate()
 {
 	if (GetProperty("isInRange")->Get<bool>(m_animator).Get())
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackRunning");
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackCombo1_3");
 	}
 }
 
@@ -553,6 +659,7 @@ void BossStrafe::OnStateUpdate()
 void BossDodge::OnStateEnter()
 {
 	isPlay = false;
+	dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(false);
 }
 
 void BossDodge::OnStateUpdate()
@@ -560,18 +667,20 @@ void BossDodge::OnStateUpdate()
 	if (!isPlay && GetProperty("attackCount")->Get<int>(m_animator).Get() > 2)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDodge", false);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(-20.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(-20.f, 0.f);
 		GetProperty("attackCount")->Set(m_animator, 0);
 		isPlay = true;
 	}
 	else if (!isPlay && GetProperty("sideMove")->Get<float>(m_animator).Get() < 0.f && GetProperty("attackCount")->Get<int>(m_animator).Get() <= 2)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDodgeLeft", false);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(20.f, 1.f);
 		isPlay = true;
 	}
 	else if (!isPlay && GetProperty("sideMove")->Get<float>(m_animator).Get() > 0.f && GetProperty("attackCount")->Get<int>(m_animator).Get() <= 2)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDodgeRight", false);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(20.f, -1.f);
 		isPlay = true;
 	}
 
@@ -623,7 +732,7 @@ void BossAttackRunning::OnStateUpdate()
 	{
 		isReset = false;
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.f);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(100.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, 0.f);
 	}
 	if (GetProperty("isInRange")->Get<bool>(m_animator).Get())
 	{
@@ -714,6 +823,10 @@ void BossAttackCharge::OnStateEnter()
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackLightSpeedReady", false);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(false);
+	if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.8f);
+	}
 }
 
 void BossAttackCharge::OnStateUpdate()
@@ -722,23 +835,38 @@ void BossAttackCharge::OnStateUpdate()
 	{
 		isReset = true;
 	}
+
 	if (m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 8)
 	{
 		GetProperty("isPursuit")->Set(m_animator, true);
 		GetProperty("strafeMove")->Set(m_animator, false);
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.f);
 	}
+
 	if (m_changePose && isReset && GetProperty("passingTime")->Get<float>(m_animator).Get() > 1.f)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
 	}
+
+	if (!m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 132)
+	{
+		GetProperty("isSkillActive")->Set(m_animator, true);
+	}
+
 	if (!m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 142)
 	{
 		m_changePose = true;
 		isReset = false;
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackLightSpeedDash", false);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(100.f);
+		if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
+		{
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(70.f, 0.f);
+		}
+		else
+		{
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, 0.f);
+		}
 		GetProperty("passingTime")->Set(m_animator, 0.f);
 		GetProperty("isLockOn")->Set(m_animator, true);
 	}
@@ -746,6 +874,12 @@ void BossAttackCharge::OnStateUpdate()
 
 void BossAttackCharge::OnStateExit()
 {
+	if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
+	{
+		GetProperty("isSkillActive")->Set(m_animator, false);
+		GetProperty("skillCoolTime")->Set(m_animator, true);
+	}
+
 	GetProperty("attackCharge")->Set(m_animator, false);
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isLockOn")->Set(m_animator, false);
@@ -775,6 +909,7 @@ void BossAttackJumpSmashGround::OnStateExit()
 void BossAttackSpin::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackSpin", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(8.f, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -865,6 +1000,7 @@ void BossDown::OnStateExit()
 void BossAttackCombo1_1::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackCombo1_1", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(8.f, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -898,6 +1034,7 @@ void BossAttackCombo1_1::OnStateExit()
 void BossAttackCombo1_2::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackCombo1_2", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(8.f, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -919,6 +1056,7 @@ void BossAttackCombo1_2::OnStateExit()
 void BossAttackCombo1_3::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackCombo1_3", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -949,6 +1087,7 @@ void BossAttackCombo1_3::OnStateExit()
 void BossAttackCombo2_1::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackCombo2_1", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(8.f, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -973,6 +1112,7 @@ void BossAttackCombo2_1::OnStateExit()
 void BossAttackCombo2_2::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackCombo2_2", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(8.f, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -1033,6 +1173,7 @@ void BossAttackShockWave::OnStateUpdate()
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
+		GetProperty("isLockOn")->Set(m_animator, true);
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 34)
 	{
@@ -1055,6 +1196,7 @@ void BossAttackShockWave::OnStateExit()
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isSkillActive")->Set(m_animator, false);
 	GetProperty("skillCoolTime")->Set(m_animator, true);
+	GetProperty("isLockOn")->Set(m_animator, false);
 	isReset = false;
 }
 

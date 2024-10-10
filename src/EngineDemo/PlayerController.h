@@ -40,7 +40,14 @@ private:
 	PROPERTY(canMove);
 	bool m_canMove;
 
-	bool m_isDodge;
+	PROPERTY(impulsePower);
+	float m_impulsePower;
+
+	PROPERTY(useImpulse);
+	bool m_useImpulse;
+
+	PROPERTY(needRot);
+	bool m_needRot;
 
 public:
 	PlayerController();

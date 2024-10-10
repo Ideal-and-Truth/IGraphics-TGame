@@ -56,3 +56,19 @@ void SimpleDamager::OnTriggerExit(Truth::Collider* _other)
 		m_isPlayerIn = false;
 	}
 }
+
+void SimpleDamager::OnCollisionEnter(Truth::Collider* _other)
+{
+	if (_other->GetOwner().lock()->m_name == "Player")
+	{
+		m_isPlayerIn = true;
+	}
+}
+
+void SimpleDamager::OnCollisionExit(Truth::Collider* _other)
+{
+	if (_other->GetOwner().lock()->m_name == "Player")
+	{
+		m_isPlayerIn = false;
+	}
+}

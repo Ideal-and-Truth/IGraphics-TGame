@@ -21,9 +21,11 @@ private:
 	std::shared_ptr<BossAnimator> m_bossAnimator;
 	std::shared_ptr<Player> m_player;
 	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_attackColliders;
+	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_fires;
 	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_timeSpheres;
 
 	bool m_deleteCollider;
+	bool m_deleteFire;
 	bool m_createComplete;
 	bool m_paternEnds;
 	float m_passingTime;
@@ -51,7 +53,7 @@ private:
 	void ShockWave();
 	void FlameSword();
 	void SwordShooting();
-	void LightSpeedDash(bool isThirdPhase);
+	void LightSpeedDash(bool isSecondPhase);
 	void DistortedTimeSphere();
 	void DamageforPlayer(float damage);
 };

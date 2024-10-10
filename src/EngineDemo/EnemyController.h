@@ -31,6 +31,9 @@ private:
 	float m_speed;
 	float m_passingTime;
 
+	PROPERTY(sideImpulse);
+	float m_sideImpulse;
+
 	PROPERTY(impulsePower);
 	float m_impulsePower;
 

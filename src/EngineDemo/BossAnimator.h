@@ -585,7 +585,7 @@ public:
 	void Update();
 
 
-	void SetImpulse(float power);
+	void SetImpulse(float power, float pL_mR_M);
 
 	void SetCanMove(bool canMove);
 

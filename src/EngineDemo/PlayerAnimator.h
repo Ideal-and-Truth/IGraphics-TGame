@@ -32,26 +32,6 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
-// 
-// class PlayerWalk
-// 	: public AnimationState
-// {
-// private:
-// 	float m_lastForwardInput = 0.f;
-// 	float m_lastSideInput = 0.f;
-// 
-// public:
-// 	PlayerWalk(Truth::Component* animator)
-// 		: AnimationState(animator)
-// 	{
-// 
-// 	}
-// 
-// public:
-// 	virtual void OnStateEnter() override;
-// 	virtual void OnStateUpdate() override;
-// };
-
 class PlayerRun
 	: public AnimationState
 {
@@ -393,9 +373,6 @@ private:
 	/// <param name=""></param>
 	/// 
 	/// ----------------------------------------
-// 	PROPERTY(isWalk);
-// 	bool m_isWalk;
-
 	PROPERTY(isRun);
 	bool m_isRun;
 
@@ -435,6 +412,9 @@ private:
 	PROPERTY(downAttack);
 	bool m_downAttack;
 
+	PROPERTY(chargedReady);
+	bool m_chargedReady;
+
 	PROPERTY(forwardInput);
 	float m_forwardInput;
 
@@ -465,6 +445,8 @@ private:
 	float m_lastHp;
 
 	float m_passingTime;
+
+	float m_chargedTime;
 
 	PROPERTY(hitStopTime);
 	float m_hitStopTime;
@@ -498,6 +480,8 @@ public:
 
 	METHOD(OnCollisionEnter);
 	void OnCollisionEnter(Truth::Collider* _other);
+
+	void SetImpulse(float power, bool needRot);
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 

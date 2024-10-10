@@ -19,6 +19,7 @@ EnemyController::EnemyController()
 	, m_passingTime(0.f)
 	, m_sideMove(1.f)
 	, m_impulsePower(0.f)
+	, m_sideImpulse(0.f)
 {
 	m_name = "EnemyController";
 }
@@ -50,16 +51,18 @@ void EnemyController::Update()
 
 	// Àû È¸Àü
 	Vector3 pos = m_owner.lock()->GetWorldPosition();
-	//Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
-	//	pos,
-	//	m_target.lock()->GetWorldPosition(),
-	//	GetScale()
-	//);
 
-	Vector3 targetPos = m_target.lock()->m_transform->m_position;
+	Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
+		pos,
+		m_target.lock()->GetWorldPosition(),
+		GetScale()
+	);
+
+	Vector3 playerPos = m_target.lock()->m_transform->m_position;
+
 	Vector3 dir = targetPos - pos;
 
-	float distance = sqrt(pow(dir.x, 2.f) + pow(dir.z, 2.f));
+	float distance = (playerPos - pos).Length();
 	float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
 
 	dir.Normalize(dir);
@@ -81,16 +84,35 @@ void EnemyController::Update()
 
 	if (m_useImpulse)
 	{
-		Vector3 power(targetPos - pos);
+		Vector3 power(playerPos - pos);
 		power.y = 0.f;
 		power.Normalize();
 		power.y = -100.f;
 		power *= GetDeltaTime();
-		power *= m_impulsePower;
-		m_controller.lock()->AddImpulse(power);
+		power.x *= m_impulsePower;
+		power.y *= abs(m_impulsePower);
+		power.z *= m_impulsePower;
+		Vector3 p = power;
+		if (m_sideImpulse > 0.f)
+		{
+			p.x = power.z;
+			p.z = -power.x;
+		}
+		else if (m_sideImpulse < 0.f)
+		{
+			p.x = -power.z;
+			p.z = power.x;
+		}
+		else if (m_sideImpulse == 0.f)
+		{
+			p = power;
+		}
+
+		m_controller.lock()->AddImpulse(p);
 
 		m_useImpulse = false;
 		m_impulsePower = 0.f;
+		m_sideImpulse = 0.f;
 	}
 
 	Vector3 moveVec = { 0.f,0.f,0.f };
@@ -133,7 +155,7 @@ void EnemyController::FollowTarget()
 		Vector3 playerPos = m_target.lock()->m_transform->m_position;
 
 		Vector3 dir = targetPos - pos;
-		
+
 		float distance = (playerPos - pos).Length();
 		float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
 
