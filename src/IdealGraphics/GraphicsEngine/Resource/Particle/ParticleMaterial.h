@@ -46,6 +46,8 @@ namespace Ideal
 		virtual void SetTexture1(std::shared_ptr<Ideal::ITexture> Texture) override;
 		virtual void SetTexture2(std::shared_ptr<Ideal::ITexture> Texture) override;
 		virtual void SetBackFaceCulling(bool Culling) override;
+		virtual void SetWriteDepthBuffer(bool Write) override;
+		virtual void SetTransparency(bool Transpaerancy) override;
 	public:
 		Ideal::ParticleMaterialMenu::EBlendingMode GetBlendingMode();
 		std::shared_ptr<Ideal::D3D12Shader> GetShader();
@@ -53,6 +55,8 @@ namespace Ideal
 		std::weak_ptr<Ideal::D3D12Texture> GetTexture1();
 		std::weak_ptr<Ideal::D3D12Texture> GetTexture2();
 		bool GetBackFaceCulling();
+		bool GetWriteDepthBuffer();
+		bool GetTransparency();
 
 	private:
 		Ideal::ParticleMaterialMenu::EBlendingMode m_blendingMode;
@@ -61,5 +65,7 @@ namespace Ideal
 		std::weak_ptr<Ideal::D3D12Texture> m_texture1;	
 		std::weak_ptr<Ideal::D3D12Texture> m_texture2;	
 		bool m_isBackFaceCulling = true;
+		bool m_isWriteDepthBuffer = false;
+		bool m_isTransperancy = false;
 	};
 }

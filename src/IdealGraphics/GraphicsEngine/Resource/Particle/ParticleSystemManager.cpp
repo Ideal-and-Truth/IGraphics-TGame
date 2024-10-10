@@ -81,6 +81,11 @@ void Ideal::ParticleSystemManager::SetVS(std::shared_ptr<Ideal::D3D12Shader> Sha
 	m_VS = Shader;
 }
 
+void Ideal::ParticleSystemManager::AddParticleSystemNoTransparency(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)
+{
+	m_particlesNoTransparency.push_back(ParticleSystem);
+}
+
 void Ideal::ParticleSystemManager::AddParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)
 {
 	m_particles.push_back(ParticleSystem);
@@ -109,7 +114,14 @@ void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, Co
 		Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), cb0->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_Global, handle0.GetGpuHandle());
 	}
-
+	for (auto& p : m_particlesNoTransparency)
+	{
+		// TODO: DRAW
+		if (p->GetActive())
+		{
+			p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
+		}
+	}
 	for (auto& p : m_particles)
 	{
 		// TODO: DRAW

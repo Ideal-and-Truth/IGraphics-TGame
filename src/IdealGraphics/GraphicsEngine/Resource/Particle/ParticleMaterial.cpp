@@ -42,6 +42,16 @@ void Ideal::ParticleMaterial::SetBackFaceCulling(bool Culling)
 	m_isBackFaceCulling = Culling;
 }
 
+void Ideal::ParticleMaterial::SetWriteDepthBuffer(bool Write)
+{
+	m_isWriteDepthBuffer = Write;
+}
+
+void Ideal::ParticleMaterial::SetTransparency(bool Transpaerancy)
+{
+	m_isTransperancy = Transpaerancy;
+}
+
 Ideal::ParticleMaterialMenu::EBlendingMode Ideal::ParticleMaterial::GetBlendingMode()
 {
 	return m_blendingMode;
@@ -70,4 +80,14 @@ std::weak_ptr<Ideal::D3D12Texture> Ideal::ParticleMaterial::GetTexture2()
 bool Ideal::ParticleMaterial::GetBackFaceCulling()
 {
 	return m_isBackFaceCulling;
+}
+
+bool Ideal::ParticleMaterial::GetWriteDepthBuffer()
+{
+	return m_isWriteDepthBuffer;
+}
+
+bool Ideal::ParticleMaterial::GetTransparency()
+{
+	return m_isTransperancy;
 }

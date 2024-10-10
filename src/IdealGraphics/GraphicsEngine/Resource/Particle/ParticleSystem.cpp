@@ -70,6 +70,11 @@ void Ideal::ParticleSystem::Play()
 	m_currentDurationTime = 0;
 }
 
+void Ideal::ParticleSystem::Resume()
+{
+	m_isPlaying = true;
+}
+
 void Ideal::ParticleSystem::Pause()
 {
 	m_isPlaying = false;
@@ -83,6 +88,11 @@ void Ideal::ParticleSystem::SetStopWhenFinished(bool StopWhenFinished)
 void Ideal::ParticleSystem::SetPlayOnWake(bool PlayOnWake)
 {
 	m_playOnWake = PlayOnWake;
+}
+
+float Ideal::ParticleSystem::GetCurrentDurationTime()
+{
+	return m_currentDurationTime;
 }
 
 void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
@@ -193,7 +203,10 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 	}
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	if (m_particleMaterial.lock()->GetWriteDepthBuffer() == false)
+	{
+		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	}
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
 
 	if (m_particleMaterial.lock()->GetBackFaceCulling())
@@ -289,15 +302,6 @@ void Ideal::ParticleSystem::UpdateColorOverLifetime()
 		// 현재 그래프의 색상을 불러온다.
 		Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentDurationTime / m_duration);
 		m_cbParticleSystem.StartColor = colorAtCurrentTime;
-		//Color colorAtCurrentTime = m_ColorOverLifetimeGradientGraph.GetColorAtPosition(m_currentTime);
-		//if (m_currentTime > 0.8f)
-		//{
-		//	int a = 3;
-		//}
-		//if (m_currentTime > 1.f)
-		//{
-		//	m_cbParticleSystem.StartColor.A(0.f);
-		//}
 	}
 	else
 	{

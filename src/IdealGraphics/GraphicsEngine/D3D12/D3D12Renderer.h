@@ -142,6 +142,8 @@ namespace Ideal
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 		virtual void ClearImGui() override;
 
+		virtual DirectX::SimpleMath::Vector2 GetTopLeftEditorPos() override;
+		virtual DirectX::SimpleMath::Vector2 GetRightBottomEditorPos() override;
 	public:
 		void Release();
 
