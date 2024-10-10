@@ -16,6 +16,11 @@ namespace AssimpConvert
 
 class AssimpConverter
 {
+	struct AABB {
+		aiVector3D minBounds;
+		aiVector3D maxBounds;
+	};
+
 public:
 	AssimpConverter();
 	~AssimpConverter();
@@ -40,6 +45,11 @@ public:
 	// 정점 위치만 내보내기 위한 함수
 	void ExportVertexPositionData(const std::wstring& savePath);
 
+	// 파티클 매쉬 
+	void ExportParticleData(std::wstring savePath, bool SetScale = false, Vector3 Scale = Vector3(1.f));
+
+
+
 private:
 	std::string WriteTexture(std::string SaveFolder, std::string File);
 	void WriteMaterialData(std::wstring FilePath);
@@ -52,6 +62,9 @@ private:
 	void ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool convertCenter = false);
 	void ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parentBone = -1);
 
+	void ReadParticleModelData(aiNode* node, int32 index, int32 parent, bool SetScale, Vector3 Scale = Vector3(1.f));
+	void WriteParticleModelData(const std::wstring& filePath);
+
 	std::shared_ptr<AssimpConvert::Animation> ReadAnimationData(aiAnimation* srcAnimation);
 	std::shared_ptr<AssimpConvert::AnimationNode> ParseAnimationNode(std::shared_ptr<AssimpConvert::Animation> animation, aiNodeAnim* srcNode);
 	void ReadKeyFrameData(std::shared_ptr<AssimpConvert::Animation> animation, aiNode* node, std::map<std::string, std::shared_ptr<AssimpConvert::AnimationNode>>& cache);
@@ -59,6 +72,9 @@ private:
 	uint32 GetBoneIndex(const std::string& name);
 
 	void WriteVertexPositionFile(const std::wstring& filePath);
+
+public:
+	AABB CalculateAABB(const aiMesh* mesh);
 
 private:
 	
@@ -74,6 +90,7 @@ private:
 
 	std::vector<std::shared_ptr<AssimpConvert::Material>> m_materials;
 	std::vector<std::shared_ptr<AssimpConvert::Mesh>> m_meshes;
+	std::vector<std::shared_ptr<AssimpConvert::ParticleMesh>> m_particleMeshes;
 	std::vector<std::shared_ptr<AssimpConvert::SkinnedMesh>> m_skinnedMeshes;
 	std::vector<std::shared_ptr<AssimpConvert::Bone>> m_bones;
 };

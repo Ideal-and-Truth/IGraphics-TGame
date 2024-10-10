@@ -14,8 +14,8 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
-	private:
 		std::shared_ptr<Ideal::IPointLight> m_pointLight;
+	public:
 
 		PROPERTY(isRendering);
 		bool m_isRendering;

@@ -3,7 +3,7 @@
 #include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
-
+#include "GraphicsEngine/D3D12/D3D12UAV.h"
 using namespace Ideal;
 
 //------------------------Resource------------------------//
@@ -28,6 +28,11 @@ void D3D12Resource::Release()
 	//m_resource->Release();
 	//m_resource = nullptr;
 	m_resource.Reset();
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> D3D12Resource::GetResourceComPtr()
+{
+	return m_resource;
 }
 
 //------------------------UploadBuffer------------------------//
@@ -179,6 +184,46 @@ void D3D12VertexBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* 
 	m_vertexBufferView.StrideInBytes = m_elementSize;
 }
 
+void Ideal::D3D12VertexBuffer::CreateAndCopyResource(ComPtr<ID3D12Device> Device, uint32 ElementSize, uint32 ElementCount, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12Resource> Resource, D3D12_RESOURCE_STATES BeforeState)
+{
+	//m_resource = Resource->GetResourceComPtr();
+	D3D12GPUBuffer::CreateBuffer(Device.Get(), ElementSize, ElementCount);
+	D3D12GPUBuffer::SetName(L"VertexBuffer");
+
+	CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
+	preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+		Resource->GetResource(),
+		BeforeState,
+		D3D12_RESOURCE_STATE_COPY_SOURCE
+	);
+	preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_resource.Get(),
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATE_COPY_DEST
+	);
+	
+	CommandList->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
+	CommandList->CopyResource(m_resource.Get(), Resource->GetResource());
+
+	CD3DX12_RESOURCE_BARRIER postCopyBarriers[2];
+	postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+		Resource->GetResource(),
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		BeforeState
+	);
+	postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_resource.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER
+	);
+
+	CommandList->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
+	
+	m_vertexBufferView.BufferLocation = m_resource->GetGPUVirtualAddress();
+	m_vertexBufferView.SizeInBytes = m_bufferSize;
+	m_vertexBufferView.StrideInBytes = m_elementSize;
+}
+
 //------------------------IndexBuffer------------------------//
 
 D3D12IndexBuffer::D3D12IndexBuffer()
@@ -318,4 +363,14 @@ void D3D12UAVBuffer::Create(ID3D12Device* Device, uint32 BufferSize, D3D12_RESOU
 D3D12_GPU_VIRTUAL_ADDRESS D3D12UAVBuffer::GetGPUVirtualAddress()
 {
 	return m_resource->GetGPUVirtualAddress();
+}
+
+void D3D12UAVBuffer::SetUAV(std::shared_ptr<Ideal::D3D12UnorderedAccessView> UAV)
+{
+	m_uav = UAV;
+}
+
+std::shared_ptr<Ideal::D3D12UnorderedAccessView> D3D12UAVBuffer::GetUAV()
+{
+	return m_uav;
 }

@@ -63,12 +63,16 @@ namespace Ideal
 		virtual void SetTransformMatrix(const Matrix& Transform) override { m_transform = Transform; m_isDirty = true; }
 		virtual void SetDrawObject(bool IsDraw) override { m_isDraw = IsDraw; };
 
-		virtual Ideal::EMeshType GetMeshType() const override { return Ideal::EMeshType::Skinned; }
+		virtual DirectX::SimpleMath::Matrix GetLocalTransformMatrix() { return m_transform; };
 
+		virtual Ideal::EMeshType GetMeshType() const override { return Ideal::EMeshType::Skinned; }
+		virtual void SetDebugMeshColor(DirectX::SimpleMath::Color& Color) override {};
 
 		const Matrix& GetTransformMatrix() const { return m_transform; }
 		void SetSkinnedMesh(std::shared_ptr<Ideal::IdealSkinnedMesh> Mesh);
 		
+		// 작동 안함
+		virtual void SetStaticWhenRunTime(bool Static) override;
 
 	private:
 		bool m_isDraw = true;

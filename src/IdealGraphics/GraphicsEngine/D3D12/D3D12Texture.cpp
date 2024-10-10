@@ -49,8 +49,12 @@ void Ideal::D3D12Texture::Free()
 	m_srvHandle.Free();
 	m_rtvHandle.Free();
 	m_dsvHandle.Free();
-	m_uavHandle.Free();
-
+	//m_uavHandle.Free();
+	for (uint32 i = 0; i < m_uavCount; i++)
+	{
+		m_uavHandles[i].Free();
+	}
+	m_uavHandles.clear();
 	m_srvHandleInEditor.Free();
 }
 
@@ -71,7 +75,7 @@ void Ideal::D3D12Texture::EmplaceDSV(Ideal::D3D12DescriptorHandle DSVHandle)
 
 void Ideal::D3D12Texture::EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle)
 {
-	m_uavHandle = UAVHandle;
+	m_uavHandles.push_back(UAVHandle);
 }
 
 Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetSRV()
@@ -101,13 +105,21 @@ Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetDSV()
 	return m_dsvHandle;
 }
 
-Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetUAV()
+Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetUAV(uint32 i /*= 0*/)
 {
-	if (m_uavHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+	if (i > m_uavHandles.size()  - 1)
+	{
+		// 현재 가지고 있는 UAV handle이 원하는 개수보다 적을떄
+		__debugbreak();
+	}
+	D3D12DescriptorHandle returnHandle = m_uavHandles[i];
+
+	if (returnHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 	{
 		__debugbreak();
 	}
-	return m_uavHandle;
+
+	return returnHandle;
 }
 
 void Ideal::D3D12Texture::SetUploadBuffer(ComPtr<ID3D12Resource> UploadBuffer)

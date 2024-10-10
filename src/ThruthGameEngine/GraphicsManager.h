@@ -18,6 +18,7 @@ namespace Ideal
 	class IMaterial;
 	class ITexture;
 	class ISprite;
+	class IdealRenderer;
 }
 
 namespace Truth
@@ -29,6 +30,9 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
+
+		std::unordered_map<std::wstring, std::shared_ptr<Ideal::IMesh>> m_particleMeshMap;
+
 		const std::string m_matSavePath = "../Resources/Matarial/";
 
 		const wchar_t* m_assetPath[3] =
@@ -37,12 +41,14 @@ namespace Truth
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		};
+		HWND m_hwnd;
+
 	public:
 		// path / texture
-		std::map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
+		std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
 
 		// name / matarial
-		std::map<std::string, std::shared_ptr<Material>> m_matarialMap;
+		std::unordered_map<std::string, std::shared_ptr<Material>> m_matarialMap;
 
 	public:
 		GraphicsManager();
@@ -72,17 +78,28 @@ namespace Truth
 
 		void SetMainCamera(Camera* _camera);
 
-		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path);
+		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path, bool _a = false, bool _b = false);
 		void DeleteTexture(std::shared_ptr<Texture> _texture);
 
-		std::shared_ptr<Material> CraeteMatarial(const std::string& _name);
+		std::shared_ptr<Material> CreateMaterial(const std::string& _name, bool _useDefalutPath = true);
 		void DeleteMaterial(std::shared_ptr<Material> _material);
+
+		std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial();
+		void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial> _material);
+		std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& _name);
+		void DeleteParticleMesh(std::shared_ptr<Ideal::IMesh> _mesh);
+		std::shared_ptr<Ideal::IParticleSystem> CreateParticle(std::shared_ptr<Ideal::IParticleMaterial> _mat);
+		void DeleteParticle(std::shared_ptr<Ideal::IParticleSystem> _particle);
+
+		std::shared_ptr<Ideal::IShader> CreateShader(const std::wstring& _name);
 
 		std::shared_ptr<Material> GetMaterial(const std::string& _name);
 
 		void ToggleFullScreen();
 
 		void ResizeWindow(uint32 _w, uint32 _h);
+
+		void BakeStaticMesh();
 
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);

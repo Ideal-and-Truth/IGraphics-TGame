@@ -55,6 +55,12 @@
     <Filter Include="TestEntity\BejieTest">
       <UniqueIdentifier>{4c7c6d36-d005-4f29-b10a-509ff47229de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Boss">
+      <UniqueIdentifier>{169424a4-957d-4f4b-9f0f-0512a90777e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Ranger">
+      <UniqueIdentifier>{5455936b-ba9c-4982-ac1a-603cd865476c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -132,6 +138,24 @@
     <ClInclude Include="BezierShooter.h">
       <Filter>TestEntity\BejieTest</Filter>
     </ClInclude>
+    <ClInclude Include="BossAnimator.h">
+      <Filter>Component\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="RangerAnimator.h">
+      <Filter>Component\Ranger</Filter>
+    </ClInclude>
+    <ClInclude Include="BossSkill.h">
+      <Filter>Component\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleDamager.h">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeDistortion.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TestEffectGenerator.h">
+      <Filter>TestEntity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -199,6 +223,24 @@
     </ClCompile>
     <ClCompile Include="BezierShooter.cpp">
       <Filter>TestEntity\BejieTest</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAnimator.cpp">
+      <Filter>Component\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="RangerAnimator.cpp">
+      <Filter>Component\Ranger</Filter>
+    </ClCompile>
+    <ClCompile Include="BossSkill.cpp">
+      <Filter>Component\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleDamager.cpp">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeDistortion.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TestEffectGenerator.cpp">
+      <Filter>TestEntity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

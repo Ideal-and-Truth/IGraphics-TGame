@@ -14,7 +14,11 @@ PlayerCamera::PlayerCamera()
 	, m_cameraDistance(25.f)
 	, m_cameraSpeed(0.003f)
 	, m_passingTime(0.f)
+	, m_shakeAzimuth(0.f)
+	, m_shakeElevation(0.f)
 	, m_isLockOn(false)
+	, m_isShaking(false)
+	, m_isShaked(false)
 	, m_enemyCount(0)
 {
 	m_name = "PlayerCamera";
@@ -38,11 +42,11 @@ void PlayerCamera::Start()
 	targetPos.z -= m_cameraDistance;
 
 	m_owner.lock()->m_transform->m_position = targetPos;
+	
+	m_playerController = m_player.lock()->GetComponent<PlayerController>().lock();
 
-	m_playerController = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player").lock()->GetComponent<PlayerController>().lock();
-
-	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
-	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Enemy").lock());
+	//m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
+	//m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
 }
 
 void PlayerCamera::LateUpdate()
@@ -54,7 +58,7 @@ void PlayerCamera::LateUpdate()
 
 	if (m_isLockOn)
 	{
-		LockOnCamera();
+		// LockOnCamera();
 	}
 	else
 	{
@@ -63,11 +67,11 @@ void PlayerCamera::LateUpdate()
 
 	if (!m_enemys.empty())
 	{
-		if (GetKeyDown(KEY::Q))
+		if (GetKeyDown(MOUSE::WHEEL))
 		{
 			m_isLockOn = true;
 		}
-		if (GetKey(KEY::Q) && m_isLockOn)
+		if (GetKey(MOUSE::WHEEL) && m_isLockOn)
 		{
 			m_passingTime += GetDeltaTime();
 			if (m_isLockOn && m_passingTime > 1.5f)
@@ -86,15 +90,20 @@ void PlayerCamera::LateUpdate()
 
 	for (auto& e : m_enemys)
 	{
-		if (e->GetComponent<EnemyAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(e->GetComponent<EnemyAnimator>().lock().get()).Get())
+		if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
 		{
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
 			break;
 		}
 	}
-
-	m_camera.lock()->CompleteCamera();
-
+	if (GetKeyDown(KEY::P))
+	{
+		//m_isShaking = true;
+	}
+	if (m_isShaking)
+	{
+		ShakeCamera();
+	}
 }
 
 void PlayerCamera::OnTriggerEnter(Truth::Collider* _other)
@@ -120,7 +129,7 @@ void PlayerCamera::FreeCamera()
 {
 	// 자유시점 카메라
 	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
-	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 4.5f, 0.0f };
+	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 1.0f, 0.0f };
 
 	m_elevation += MouseDy() * m_cameraSpeed;
 	m_azimuth -= MouseDx() * m_cameraSpeed;
@@ -145,7 +154,10 @@ void PlayerCamera::FreeCamera()
 
 
 	m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
-
+	if (m_cameraDistance <= 0.0f)
+	{
+		m_cameraDistance = 0.001f;
+	}
 
 
 	cameraPos.x = sin(m_elevation) * cos(m_azimuth);
@@ -163,7 +175,6 @@ void PlayerCamera::FreeCamera()
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0;
 
-	// m_camera.get()->GetTypeInfo().GetProperty("look")->Set(m_camera.get(), look);
 }
 
 void PlayerCamera::LockOnCamera()
@@ -171,7 +182,7 @@ void PlayerCamera::LockOnCamera()
 	SortEnemy();
 
 	// 락온 카메라
-	if (GetKeyDown(KEY::Q))
+	if (GetKeyDown(MOUSE::WHEEL))
 	{
 		m_enemyCount++;
 	}
@@ -187,9 +198,13 @@ void PlayerCamera::LockOnCamera()
 	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
 
 	// 락온 중일때 각도 계산
-	m_elevation = acos(m_camera.lock()->m_look.y);
-	m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
-	if (m_camera.lock()->m_look.z < 0)
+	if (!m_isShaking)
+	{
+		m_elevation = acos(m_camera.lock()->m_look.y);
+		m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
+	}
+
+	if (m_camera.lock()->m_look.z < 0.f)
 	{
 		m_azimuth *= -1.f;
 	}
@@ -202,7 +217,7 @@ void PlayerCamera::LockOnCamera()
 	m_camera.lock()->m_look = look;
 
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
-	m_owner.lock()->m_transform->m_rotation.z = 0;
+	m_owner.lock()->m_transform->m_rotation.z = 0.f;
 
 
 }
@@ -232,5 +247,38 @@ void PlayerCamera::SortEnemy()
 			}
 		}
 	}
+}
+
+void PlayerCamera::ShakeCamera()
+{
+	if (m_shakeAzimuth < 0.3f && !m_isShaked)
+	{
+		m_shakeAzimuth += 5.f * GetDeltaTime();
+		m_shakeElevation += 5.f * GetDeltaTime();
+		m_azimuth += 5.f * GetDeltaTime();
+		m_elevation += 5.f * GetDeltaTime();
+	}
+	else if (m_shakeAzimuth >= 0.3f && !m_isShaked)
+	{
+		m_shakeAzimuth = 0.3f;
+		m_shakeElevation = 0.3f;
+		m_isShaked = true;
+	}
+
+	if (m_isShaked)
+	{
+		m_shakeAzimuth -= 1.f * GetDeltaTime();
+		m_shakeElevation -= 1.f * GetDeltaTime();
+		m_azimuth -= 1.f * GetDeltaTime();
+		m_elevation -= 1.f * GetDeltaTime();
+	}
+
+	if (m_shakeAzimuth <= 0.f)
+	{
+		m_isShaking = false;
+		m_isShaked = false;
+	}
+
+
 }
 

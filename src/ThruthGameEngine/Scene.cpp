@@ -5,7 +5,7 @@
 #include "GraphicsManager.h"
 #include "NavMeshGenerater.h"
 #include "PhysicsManager.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 #include "ISpotLight.h"
 #include "Material.h"
 #include "IMesh.h"
@@ -14,6 +14,10 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "Mesh.h"
+#include "PointLight.h"
+#include "DirectionLight.h"
+#include "SpotLight.h"
+#include <algorithm>
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -120,8 +124,9 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	// LoadUnityData(L"SampleScene");
+	// LoadUnityData(L"1_HN_Scene2");
 }
+
 
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 {
@@ -143,7 +148,7 @@ DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end
 	{
 		return m_navMesh->FindPath(_start, _end, _size);
 	}
-	return Vector3::Zero;
+	return _end;
 }
 
 std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
@@ -332,6 +337,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		return;
 	}
 
+
+
 	auto gp = m_managers.lock()->Graphics();
 
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
@@ -343,49 +350,111 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	}
 
 	/// read map data
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	file->Open(mapPath + L"Data.map", FileMode::Read);
 	size_t objCount = file->Read<size_t>();
 
 	m_mapEntity.resize(objCount);
 
+	const static std::vector<Vector3> boxPoints =
+	{
+		{ -0.5, -0.5, -0.5 },
+		{ 0.5, -0.5, -0.5 },
+		{ 0.5, 0.5, -0.5 },
+		{ -0.5, 0.5, -0.5 },
+		{ -0.5, -0.5, 0.5 },
+		{ 0.5, -0.5, 0.5 },
+		{ 0.5, 0.5, 0.5 },
+		{ -0.5, 0.5, 0.5 }
+	};
+	const static std::vector<uint32> boxIndices =
+	{
+		 0, 1, 2,
+		 0, 2, 3,
+		 4, 5, 6,
+		 4, 6, 7,
+		 0, 1, 5,
+		 0, 5, 4,
+		 1, 2, 6,
+		 0, 6, 5,
+		 2, 3, 7,
+		 2, 7, 6,
+		 3, 0, 4,
+		 3, 4, 7
+	};
+
+	std::vector<float> vPositions;
+	std::vector<uint32> vIndices;
+
+	m_navMesh = std::make_shared<NavMeshGenerater>();
+
 	for (size_t i = 0; i < objCount; ++i)
 	{
+		/// read base data
 		m_mapEntity[i] = std::make_shared<Entity>(m_managers.lock());
 		int32 parent = file->Read<int32>();
 		std::string name = file->Read<std::string>();
 		m_mapEntity[i]->m_name = name;
+		m_mapEntity[i]->Initialize();
+
+		std::vector<float> vertexPosition;
+		std::vector<uint32> indices;
+		bool isBoxCollider = false;
+		bool isMeshCollider = false;
+
 		if (parent != -1)
 		{
 			m_mapEntity[parent]->AddChild(m_mapEntity[i]);
 			m_mapEntity[i]->m_parent = m_mapEntity[parent];
 		}
 
-		Matrix ltm = file->Read<Matrix>();
+		/// read TM Dirty
+		Vector3 pos;
+		Vector3 sca;
+		Quaternion rot;
 
-		Matrix flipYZ = Matrix::Identity;
-		flipYZ.m[0][0] = -1.f;
+		bool localPosChange[3] = { 0, };
+		bool localScaleChange[3] = { 0, };
+		bool localRotationChange = false;
 
-		Matrix flipXY = Matrix::Identity;
-		flipXY.m[2][2] = -1.f;
+		pos.x = file->Read<float>();
+		pos.y = file->Read<float>();
+		pos.z = file->Read<float>();
 
-		m_mapEntity[i]->SetLocalTM(flipYZ * flipXY * ltm);
+		rot.x = file->Read<float>();
+		rot.y = file->Read<float>();
+		rot.z = file->Read<float>();
+		rot.w = file->Read<float>();
 
-		// read Collider Data
+		sca.x = file->Read<float>();
+		sca.y = file->Read<float>();
+		sca.z = file->Read<float>();
+
+		localPosChange[0] = file->Read<bool>();
+		localPosChange[1] = file->Read<bool>();
+		localPosChange[2] = file->Read<bool>();
+
+		localScaleChange[0] = file->Read<bool>();
+		localScaleChange[1] = file->Read<bool>();
+		localScaleChange[2] = file->Read<bool>();
+
+		localRotationChange = file->Read<bool>();
+
+		/// read Collider Data
 		bool isCollider = file->Read<bool>();
 		if (isCollider)
 		{
 			int32 type = file->Read<int32>();
-			Vector3 size = file->Read<Vector3>();
-			Vector3 center = file->Read<Vector3>();
-
 			std::shared_ptr<Collider> coll;
 
 			switch (type)
 			{
 			case 1:
 			{
-				coll = std::make_shared<BoxCollider>(center, size);
+				isBoxCollider = true;
+				Vector3 size = file->Read<Vector3>();
+				Vector3 center = file->Read<Vector3>();
+				coll = std::make_shared<BoxCollider>(center, size, false);
 				break;
 			}
 			// 			case 2:
@@ -398,11 +467,12 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			// 				coll = std::make_shared<CapsuleCollider>(size, center);
 			// 				break;
 			// 			}
-			// 			case 4:
-			// 			{
-			// 				coll = std::make_shared<MeshCollider>(size, center);
-			// 				break;
-			// 			}
+			case 4:
+			{
+				isMeshCollider = true;
+				coll = std::make_shared<MeshCollider>("MapData/1_HN_Scene2/" + name);
+				break;
+			}
 			default:
 				break;
 			}
@@ -413,7 +483,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			}
 		}
 
-		// read Mesh Data
+		/// read Mesh Data
 		bool isMesh = file->Read<bool>();
 		if (isMesh)
 		{
@@ -425,31 +495,185 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(assetPath + mp.filename().replace_extension("").generic_wstring());
 			m_mapEntity[i]->AddComponent(mesh);
 			mesh->SetMesh();
-// 			for (size_t j = 0; j < matCount; ++j)
-// 			{
-// 				std::string matName = file->Read<std::string>();
-// 				mesh->SetMaterialByIndex(j, matName);
-// 			}
+			if (name == "50292")
+			{
+				int a = 1;
+			}
+			for (size_t j = 0; j < matCount; ++j)
+			{
+				std::string matName = file->Read<std::string>();
+				mesh->SetMaterialByIndex(static_cast<uint32>(j), matName);
+			}
+
+			mesh->SetStatic(true);
+			Matrix mtm = mesh->GetMeshLocalTM();
+
+			Vector3 mPos;
+			Vector3 mSca;
+			Quaternion mRot;
+
+			mtm.Decompose(mSca, mRot, mPos);
+
+			if (!localPosChange[0])
+				pos.x = mPos.x;
+			if (!localPosChange[1])
+				pos.y = mPos.y;
+			if (!localPosChange[2])
+				pos.z = mPos.z;
+
+			if (!localScaleChange[0])
+				sca.x = mSca.x;
+			if (!localScaleChange[1])
+				sca.y = mSca.y;
+			if (!localScaleChange[2])
+				sca.z = mSca.z;
+
+			if (!localRotationChange)
+			{
+				rot = mRot;
+			}
 		}
 
-		// read Light Data
+		/// set local TM
+		Matrix ltm = Matrix::CreateScale(sca);
+		ltm *= Matrix::CreateFromQuaternion(rot);
+		ltm *= Matrix::CreateTranslation(pos);
+		Matrix flipYZ = Matrix::Identity;
+		flipYZ.m[0][0] = -1.f;
+
+		Matrix flipXY = Matrix::Identity;
+		flipXY.m[2][2] = -1.f;
+
+		ltm = flipYZ * flipXY * ltm;
+
+		m_mapEntity[i]->SetLocalTM(ltm);
+
+		/// create nav mesh data
+		if (isBoxCollider)
+		{
+			size_t offset = vPositions.size() / 3;
+			for (const auto& i : boxIndices)
+			{
+				vIndices.push_back(i + static_cast<uint32>(offset));
+			}
+
+			for (const auto& v : boxPoints)
+			{
+				Vector3 finalPosition = Vector3::Transform(v, ltm);
+				vPositions.push_back(finalPosition.x);
+				vPositions.push_back(finalPosition.y);
+				vPositions.push_back(finalPosition.z);
+			}
+		}
+		else if (isMeshCollider)
+		{
+			size_t offset = vPositions.size() / 3;
+			std::shared_ptr<TFileUtils> posFile = std::make_shared<TFileUtils>();
+			fs::path posFilePath = "../Resources/Models/MapData/1_HN_Scene2/";
+			posFilePath /= name + ".pos";
+			posFile->Open(posFilePath.generic_wstring(), FileMode::Read);
+
+			uint32 meshSize = posFile->Read<uint32>();
+			uint32 vertexSize = posFile->Read<uint32>();
+			for (uint32 i = 0; i < vertexSize ; i++)
+			{
+				Vector3 v;
+				v.x = posFile->Read<float>();
+				v.y = posFile->Read<float>();
+				v.z = posFile->Read<float>();
+				Vector3 finalPosition = Vector3::Transform(v, ltm);
+
+				vPositions.push_back(finalPosition.x);
+				vPositions.push_back(finalPosition.y);
+				vPositions.push_back(finalPosition.z);
+			}
+
+			uint32 indexSize = posFile->Read<uint32>();
+			for (uint32 i = 0; i < indexSize ; i++)
+			{
+				vIndices.push_back(static_cast<uint32>(offset) + posFile->Read<uint32>());
+			}
+		}
+
+		/// read Light Data
 		bool isLight = file->Read<bool>();
 		if (isLight)
 		{
-			file->Read<uint32>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
-			file->Read<float>();
+			uint32 lightType = file->Read<uint32>();
+			float intensity = file->Read<float>();
+			// intensity *= 0.5;
+			Color lightColor;
+			lightColor.x = file->Read<float>();
+			lightColor.y = file->Read<float>();
+			lightColor.z = file->Read<float>();
+			lightColor.w = file->Read<float>();
+			float range = file->Read<float>();
+			float angle = file->Read<float>();
+
+			Matrix rotMat = Matrix::CreateFromQuaternion(rot);
+			Vector3 dir = { 0.0f, 0.0f, 1.0f };
+			dir = Vector3::Transform(dir, rotMat);
+			switch (lightType)
+			{
+			case 0:
+			{
+				std::shared_ptr<SpotLight> light = std::make_shared<SpotLight>();
+				light->m_isRendering = true;
+				light->m_position = pos;
+				light->m_direction = dir;
+				light->m_angle = angle;
+				light->m_range = range;
+				light->m_intensity = intensity * 1;
+				light->m_softness = 5;
+				light->m_lightColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			case 1:
+			{
+				std::shared_ptr<DirectionLight> light = std::make_shared<DirectionLight>();
+				light->m_isRendering = true;
+				light->m_direction = dir;
+				light->m_intensity = intensity;
+				light->m_diffuseColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			case 2:
+			{
+				std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
+				light->m_isRendering = true;
+				light->m_position = pos;
+				light->m_radius = range;
+				light->m_intensity = intensity * 1;
+				light->m_lightColor = lightColor;
+				m_mapEntity[i]->AddComponent(light);
+				break;
+			}
+			default:
+				break;
+			}
 		}
 	}
 
+	/// create nav mesh
+	m_navMesh->Initalize(vPositions, vIndices);
+
+	// 	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
+	// 		{
+	// 			return _a->m_name > _b->m_name;
+	// 		};
+	// 
+	// 	sort(m_mapEntity.begin(), m_mapEntity.end(), comp);
+
+		// gp->BakeStaticMesh();
+
 	for (auto& e : m_mapEntity)
 	{
-		AddEntity(e);
+		e->Initialize();
+		e->ApplyTransform();
+		e->Awake();
+		e->Start();
 	}
 }
 

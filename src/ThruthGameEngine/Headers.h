@@ -71,5 +71,5 @@ using namespace DirectX::SimpleMath;
 #include <string>
 
 #include <filesystem>
-
+namespace fs = std::filesystem;
 #include <atlconv.h>

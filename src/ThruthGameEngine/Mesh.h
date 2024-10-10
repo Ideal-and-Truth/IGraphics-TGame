@@ -35,7 +35,8 @@ namespace Truth
 		std::vector<std::shared_ptr<Ideal::IMesh>> m_subMesh;
 
 		PROPERTY(mat);
-		std::vector<std::shared_ptr<Ideal::IMaterial>> m_mat;
+		std::vector<std::shared_ptr<Material>> m_mat;
+		std::vector<std::string> m_matPath;
 
 		PROPERTY(path);
 		std::wstring m_path;
@@ -55,13 +56,17 @@ namespace Truth
 		METHOD(Initalize);
 		void Initalize();
 
-		METHOD(ApplyTransform);
+		// METHOD(ApplyTransform);
 		void ApplyTransform();
 
 		void DeleteMesh();
 
 		void SetMaterialByIndex(uint32 _index, std::string _material);
 		std::vector<uint64> GetMaterialImagesIDByIndex(uint32 _index);
+
+		Matrix GetMeshLocalTM();
+
+		void SetStatic(bool _isStatic);
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
@@ -73,6 +78,17 @@ namespace Truth
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_path;
+		if (file_version >= 1)
+		{
+			size_t matSize;
+			_ar& matSize;
+			for (size_t i = 0; i < matSize; i++)
+			{
+				std::string matPath;
+				_ar& matPath;
+				m_matPath.push_back(matPath);
+			}
+		}
 	}
 
 	template<class Archive>
@@ -80,8 +96,13 @@ namespace Truth
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_path;
+		_ar& m_mat.size();
+		for (auto& m : m_mat)
+		{
+			_ar& m->m_path;
+		}
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::Mesh)
-BOOST_CLASS_VERSION(Truth::Mesh, 0)
+BOOST_CLASS_VERSION(Truth::Mesh, 1)

@@ -10,7 +10,10 @@
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
 #include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
+#include "GraphicsEngine/D3D12/GenerateMips.h"
 
+#include "GraphicsEngine/Resource/ShaderManager.h"
+#include "GraphicsEngine/D3D12/D3D12Shader.h"
 
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
 #include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
@@ -26,6 +29,7 @@
 
 #include "ThirdParty/Include/DirectXTK12/WICTextureLoader.h"
 #include "ThirdParty/Include/DirectXTK12/DDSTextureLoader.h"
+#include "ThirdParty/Include/DirectXTex/DirectXTex.h"
 #include "Misc/Utils/FileUtils.h"
 #include "Misc/Utils/StringUtils.h"
 #include "Misc/Utils/tinyxml2.h"
@@ -88,15 +92,21 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	//------------RTV Heap-----------//
 	m_rtvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	//m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
-	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 32);
+	m_rtvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_RTV_HEAP_COUNT);
 
 	//-----------DSV Heap------------//
 	m_dsvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
-	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
+	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_DSV_HEAP_COUNT);
 
 	// default resource
 	CreateDefaultQuadMesh();
 	CreateDefaultQuadMesh2();
+	CreateDefaultDebugLine();
+
+	// generate mips manager init
+	auto shader = CreateAndLoadShader(L"../Shaders/Texture/GenerateMipsCS.shader");
+	m_generateMipsManager = std::make_shared<Ideal::GenerateMips>();
+	m_generateMipsManager->Init(Device, shader);
 }
 
 void ResourceManager::Fence()
@@ -283,7 +293,7 @@ uint64 ResourceManager::AllocateMaterialID()
 	return ret;
 }
 
-void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB/*= false*/)
+void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB /*= false*/, uint32 MipLevels /*= 1*/, bool IsNormalMap /*= false*/)
 {
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
@@ -302,44 +312,99 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	// 2024.05.14 : 이 함수 Texture에 있어야 할지도// 
 	// 2024.05.15 : fence때문에 잘 모르겠다. 일단 넘어간다.
 
+	//uint32 MipLevelsCount = MipLevels;
+
+
+	/// TGA 체크 ///
+	//std::filesystem::path path = name;
+	bool isTGA = false;
+	if (name.compare(name.size() - 4, 4, ".tga") == 0 || name.compare(name.size() - 4, 4, ".TGA") == 0)
+	{
+		isTGA = true;
+	}
+
 	//----------------------Init--------------------------//
 	m_commandAllocator->Reset();
 	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
 
 	ComPtr<ID3D12Resource> resource;
 	Ideal::D3D12DescriptorHandle srvHandle;
+	//D3D12_SUBRESOURCE_DATA subResource;
+	std::vector<D3D12_SUBRESOURCE_DATA> subResources;
 
-	//----------------------Load WIC Texture From File--------------------------//
 
-	std::unique_ptr<uint8_t[]> decodeData;
-	D3D12_SUBRESOURCE_DATA subResource;
-	
-	if (IgnoreSRGB)
+	D3D12_RESOURCE_FLAGS resourceFlag = D3D12_RESOURCE_FLAG_NONE;
+
+	//----------------------Load TGA Texture From File---------------------//
+	DirectX::ScratchImage image;
+	DirectX::TexMetadata metadata;
+	const DirectX::Image* img = nullptr;
+	if (isTGA)
 	{
-		Check(DirectX::LoadWICTextureFromFileEx(
-			m_device.Get(),
-			Path.c_str(),
-			0,
-			D3D12_RESOURCE_FLAG_NONE,
-			WIC_LOADER_IGNORE_SRGB,
-			resource.ReleaseAndGetAddressOf(),
-			decodeData,
-			subResource
-		));
+		//Check(DirectX::LoadFromTGAFile(Path.c_str(), nullptr, image), L"Failed To Load TGA File");
+		Check(DirectX::LoadFromTGAFile(Path.c_str(), &metadata, image), L"Failed To Load TGA File");
+		img = image.GetImages();
 	}
 	else
 	{
-		Check(DirectX::LoadWICTextureFromFile(
-			m_device.Get(),
-			Path.c_str(),
-			resource.ReleaseAndGetAddressOf(),
-			decodeData,
-			subResource
-		));
+		Check(DirectX::LoadFromWICFile(Path.c_str(), WIC_FLAGS_FORCE_RGB, &metadata, image), L"Failed to load WIC from file");
+		img = image.GetImages();
 	}
+
+	if (IgnoreSRGB || IsNormalMap)
+	{
+		metadata.format = MakeLinear(metadata.format);
+	}
+
+	MipLevels = (MipLevels == 0) ?
+		1 + static_cast<UINT16>(std::floor(std::log2(std::max<uint64>(metadata.width, metadata.height)))) :
+		static_cast<UINT16>(MipLevels);
+
+	if (MipLevels > 4) MipLevels = 4;
+
+	// --------------------- MIP 맵 생성 (GenerateMipMaps 사용) ------------------------//
+	DirectX::ScratchImage mipChain;
+	if (MipLevels > 1)
+	{
+		if (IsNormalMap)
+		{
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT | DirectX::TEX_FILTER_FORCE_NON_WIC, MipLevels, mipChain), L"Failed to generate MIP maps");
+		}
+		else
+		{
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
+		}
+		img = mipChain.GetImages();
+	}
+	// 각 MIP 레벨별 서브리소스 데이터 생성
+	for (uint32_t i = 0; i < MipLevels; ++i) {
+		D3D12_SUBRESOURCE_DATA subResource = {};
+		subResource.pData = img[i].pixels;
+		subResource.RowPitch = img[i].rowPitch;
+		subResource.SlicePitch = img[i].slicePitch;
+		subResources.push_back(subResource);
+	}
+	// 텍스처 리소스 생성
+	CD3DX12_RESOURCE_DESC textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		metadata.format,
+		(uint64)metadata.width,
+		(uint32)metadata.height,
+		(uint16)metadata.arraySize,
+		MipLevels // 자동 생성된 MIP맵 레벨 수 반영
+	);
+
+	Check(m_device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE,
+		&textureDesc,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		nullptr,
+		IID_PPV_ARGS(resource.GetAddressOf())
+	));
+
 	//----------------------Upload Buffer--------------------------//
 
-	uint64 bufferSize = GetRequiredIntermediateSize(resource.Get(), 0, 1);
+	uint64 bufferSize = GetRequiredIntermediateSize(resource.Get(), 0, MipLevels);
 
 	Ideal::D3D12UploadBuffer uploadBuffer;
 	uploadBuffer.Create(m_device.Get(), (uint32)bufferSize);
@@ -350,7 +415,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		m_commandList.Get(),
 		resource.Get(),
 		uploadBuffer.GetResource(),
-		0, 0, 1, &subResource
+		0, 0, static_cast<UINT>(subResources.size()), subResources.data()
 	);
 
 	uploadBuffer.UnMap();
@@ -383,12 +448,27 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	//	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	//}
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-
-	//----------------------Allocate Descriptor-----------------------//
+	srvDesc.Texture2D.MipLevels = MipLevels;
 	srvHandle = m_cbv_srv_uavHeap->Allocate();
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = srvHandle.GetCpuHandle();
 	m_device->CreateShaderResourceView(resource.Get(), &srvDesc, cpuHandle);
+
+	//----------------------Create Unordered Access View--------------------------//
+	//{
+	//	for (uint32 i = 0; i < GenerateMips; i++)
+	//	{
+	//		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	//		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	//		uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//		uavDesc.Texture2D.MipSlice = i;
+	//		uavDesc.Texture2D.PlaneSlice = 0;
+	//
+	//		auto handle = m_cbv_srv_uavHeap->Allocate();
+	//
+	//		m_device->CreateUnorderedAccessView(resource.Get(), nullptr, &uavDesc, handle.GetCpuHandle());
+	//		OutTexture->EmplaceUAV(handle);
+	//	}
+	//}
 
 	//----------------------Final Create---------------------//
 	OutTexture->Create(resource, m_deferredDeleteManager);
@@ -535,21 +615,30 @@ void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& Out
 	OutTexture->Create(resource, m_deferredDeleteManager);
 	OutTexture->EmplaceSRV(srvHandle);
 
-	
+
 }
 
 void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const uint32& Width, const uint32 Height, DXGI_FORMAT Format, const Ideal::IdealTextureTypeFlag& TextureFlags, const std::wstring& Name)
 {
+	DXGI_FORMAT MakeFormat = Format;
 	bool makeRTV = false;
 	bool makeSRV = false;
 	bool makeUAV = false;
-
+	bool makeDSV = false;
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_RTV)
 		makeRTV = true;
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_SRV)
 		makeSRV = true;
 	if (TextureFlags & Ideal::IDEAL_TEXTURE_UAV)
 		makeUAV = true;
+	if (TextureFlags & Ideal::IDEAL_TEXTURE_DSV)
+	{
+		makeRTV = false;
+		makeSRV = false;
+		makeUAV = false;
+		makeDSV = true;
+		MakeFormat = DXGI_FORMAT_D32_FLOAT;
+	}
 
 	if (!OutTexture)
 	{
@@ -559,16 +648,18 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 	ComPtr<ID3D12Resource> resource;
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		Format,
+		MakeFormat,
 		Width,
 		Height,
 		1, 1, 1, 0
 	);
 
 	if (makeRTV)
-		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 	if (makeUAV)
 		resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	if (makeDSV)
+		resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 	Check(m_device->CreateCommittedResource(
 		&heapProp,
@@ -617,6 +708,18 @@ void ResourceManager::CreateEmptyTexture2D(std::shared_ptr<Ideal::D3D12Texture>&
 		m_device->CreateUnorderedAccessView(resource.Get(), nullptr, &uavDesc, uavHandle.GetCpuHandle());
 
 		OutTexture->EmplaceUAV(uavHandle);
+	}
+
+	if (makeDSV)
+	{
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+		auto dsvHandle = m_dsvHeap->Allocate();
+		m_device->CreateDepthStencilView(resource.Get(), &dsvDesc, dsvHandle.GetCpuHandle());
+
+		OutTexture->EmplaceDSV(dsvHandle);
 	}
 }
 
@@ -689,19 +792,23 @@ std::shared_ptr<Ideal::D3D12ShaderResourceView> ResourceManager::CreateSRV(ComPt
 	return ret;
 }
 
-void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename)
+void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename, bool IsDebugMesh /*= false*/)
 {
 	// 이미 있을 경우
 	std::string key = StringUtils::ConvertWStringToString(filename);
-	std::shared_ptr<Ideal::IdealStaticMesh> staticMesh = m_staticMeshes[key];
 
-
-	if (staticMesh != nullptr)
+	std::shared_ptr<Ideal::IdealStaticMesh> staticMesh;
+	if (!IsDebugMesh)
 	{
-		staticMesh->AddRefCount();
-		OutMesh->SetStaticMesh(staticMesh);
-		return;
+		staticMesh = m_staticMeshes[key];
+		if (staticMesh != nullptr)
+		{
+			staticMesh->AddRefCount();
+			OutMesh->SetStaticMesh(staticMesh);
+			return;
+		}
 	}
+	
 	staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 	staticMesh->AddRefCount();
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
@@ -732,7 +839,8 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 			for (uint32 i = 0; i < count; ++i)
 			{
 				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> mesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
-
+				mesh->SetLocalTM(file->Read<Matrix>());
+			
 				mesh->SetName(file->Read<std::string>());
 				mesh->SetBoneIndex(file->Read<int32>());
 
@@ -759,6 +867,13 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 					void* data = indices.data();
 					file->Read(&data, sizeof(uint32) * count);
 					mesh->AddIndices(indices);
+				}
+
+				// Bounds
+				{
+					Vector3 minBound = file->Read<Vector3>();
+					Vector3 maxBound = file->Read<Vector3>();
+					mesh->SetMinMaxBound(minBound, maxBound);
 				}
 				mesh->SetMaterial(m_defaultMaterial);
 				staticMesh->AddMesh(mesh);
@@ -1002,6 +1117,7 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 			for (uint32 i = 0; i < count; ++i)
 			{
 				std::shared_ptr <Ideal::IdealMesh<SkinnedVertex>> mesh = std::make_shared<Ideal::IdealMesh<SkinnedVertex>>();
+				// mesh->SetLocalTM(file->Read<Matrix>());
 
 				mesh->SetName(file->Read<std::string>());
 				mesh->SetBoneIndex(file->Read<int32>());
@@ -1228,6 +1344,66 @@ void Ideal::ResourceManager::CreateSkinnedMeshObject(std::shared_ptr<Ideal::Idea
 
 	// KeyBinding
 	m_skinnedMeshes[key] = skinnedMesh;
+}
+
+std::shared_ptr<Ideal::D3D12Shader> ResourceManager::CreateAndLoadShader(const std::wstring& FilePath)
+{
+	std::shared_ptr<Ideal::ShaderManager> shaderManager = std::make_shared<Ideal::ShaderManager>();
+	std::shared_ptr<Ideal::D3D12Shader> shader = std::make_shared<Ideal::D3D12Shader>();
+	shaderManager->Init();
+	shaderManager->LoadShaderFile(FilePath, shader);
+	return shader;
+}
+
+std::shared_ptr<Ideal::D3D12VertexBuffer> ResourceManager::GetDebugLineVB()
+{
+	return m_debugLineVertexBuffer;
+}
+
+void ResourceManager::CreateDefaultDebugLine()
+{
+	GeometryVertex g1; g1.Position = Vector3(0, 0, 0);
+	GeometryVertex g2; g2.Position = Vector3(1, 0, 0);
+	std::vector<GeometryVertex> vertices = { g1, g2 };
+
+	m_debugLineVertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+
+	CreateVertexBuffer<GeometryVertex>(m_debugLineVertexBuffer, vertices);
+}
+
+std::shared_ptr<Ideal::IMesh> ResourceManager::CreateParticleMesh(const std::wstring& filename)
+{
+	std::shared_ptr<IdealMesh<ParticleVertexTest>> mesh = std::make_shared<IdealMesh<ParticleVertexTest>>();
+
+	std::wstring fullPath = m_modelPath + filename + L".pmesh";
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(fullPath, FileMode::Read);
+
+	mesh->SetName(file->Read<std::string>());
+
+	// vertex data
+	{
+		const uint32 count = file->Read<uint32>();
+		std::vector<ParticleVertexTest> vertices;
+		vertices.resize(count);
+
+		void* data = vertices.data();
+		file->Read(&data, sizeof(ParticleVertexTest) * count);
+		mesh->AddVertices(vertices);
+	}
+
+	// index Data
+	{
+		const uint32 count = file->Read<uint32>();
+		std::vector<uint32> indices;
+		indices.resize(count);
+
+		void* data = indices.data();
+		file->Read(&data, sizeof(uint32) * count);
+		mesh->AddIndices(indices);
+	}
+	mesh->Create(shared_from_this());
+	return std::static_pointer_cast<Ideal::IMesh>(mesh);
 }
 
 void ResourceManager::DeleteStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> Mesh)
@@ -1487,4 +1663,33 @@ void ResourceManager::CreateDefaultQuadMesh2()
 std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> ResourceManager::GetDefaultQuadMesh2()
 {
 	return m_defaultQuadMesh2;
+}
+
+void ResourceManager::InitGenerateMipsManager(ComPtr<ID3D12Device> Device)
+{
+	m_generateMipsManager = std::make_shared<Ideal::GenerateMips>();
+	//m_generateMipsManager->Init(Device);
+}
+
+void Ideal::ResourceManager::GenerateMips(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12Texture> Texture, uint32 GenerateMipsNum)
+{
+	auto resourceDesc = Texture->GetResource()->GetDesc();
+	if (resourceDesc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D ||
+		resourceDesc.DepthOrArraySize != 1 ||
+		resourceDesc.SampleDesc.Count > 1)
+	{
+		__debugbreak();
+	}
+
+	//auto resourceDesc = Texture->GetResource()->GetDesc();
+
+	CB_GenerateMipsInfo generateMipInfo;
+	//generateMipInfo.
+	generateMipInfo.IsSRGB = true;	// TEMP
+	generateMipInfo.SrcMipLevel = 0;
+	generateMipInfo.NumMipLevels = GenerateMipsNum;
+	generateMipInfo.TexelSize.x = 1 / resourceDesc.Width;
+	generateMipInfo.TexelSize.y = 1 / resourceDesc.Height;
+
+	m_generateMipsManager->Generate(Device, CommandList, DescriptorHeap, CBPool, Texture, &generateMipInfo);
 }

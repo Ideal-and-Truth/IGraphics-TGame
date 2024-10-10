@@ -1,5 +1,5 @@
 #include "NavGeom.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 
 Truth::NavGeom::NavGeom()
 	: m_bmin(std::vector<float>(3, FLT_MAX))
@@ -12,12 +12,12 @@ Truth::NavGeom::NavGeom()
 
 Truth::NavGeom::~NavGeom()
 {
-	
+
 }
 
 void Truth::NavGeom::Load(const std::wstring& _path)
 {
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	file->Open(_path, FileMode::Read);
 
 	uint32 acc = 0;
@@ -52,5 +52,32 @@ void Truth::NavGeom::Load(const std::wstring& _path)
 		}
 
 		acc += verticesNum;
+	}
+}
+
+void Truth::NavGeom::Load(const std::vector<float>& _points, const std::vector<uint32>& _indices)
+{
+	for (size_t j = 0; j < _points.size(); j += 3)
+	{
+		float x = _points[j];
+		float y = _points[j + 1];
+		float z = _points[j + 2];
+
+		m_ver.push_back(x);
+		m_ver.push_back(y);
+		m_ver.push_back(z);
+
+		m_bmax[0] = max(m_bmax[0], x);
+		m_bmax[1] = max(m_bmax[1], y);
+		m_bmax[2] = max(m_bmax[2], z);
+
+		m_bmin[0] = min(m_bmin[0], x);
+		m_bmin[1] = min(m_bmin[1], y);
+		m_bmin[2] = min(m_bmin[2], z);
+	}
+
+	for (size_t j = 0; j < _indices.size(); j++)
+	{
+		m_inx.push_back(_indices[j]);
 	}
 }

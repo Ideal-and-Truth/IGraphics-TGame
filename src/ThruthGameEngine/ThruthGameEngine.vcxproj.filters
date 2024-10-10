@@ -160,11 +160,17 @@
     <Filter Include="Component\UI">
       <UniqueIdentifier>{56aa9117-ed04-4847-847d-5dbba433fa1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Camera\Free">
-      <UniqueIdentifier>{6205761a-064e-4459-b335-ec50cd353e68}</UniqueIdentifier>
+    <Filter Include="Component\Effect">
+      <UniqueIdentifier>{635f4265-3524-4529-9e77-e77c8879a2e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Button">
-      <UniqueIdentifier>{2e25556e-7be8-4860-bc60-7574205a8d6e}</UniqueIdentifier>
+    <Filter Include="Manager\Particle">
+      <UniqueIdentifier>{e3db038f-f88e-408e-9f1c-a41b2f2485f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\sound">
+      <UniqueIdentifier>{a5b864c0-d07f-4547-bd36-7d537ad1e424}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\File">
+      <UniqueIdentifier>{31f8c7b2-a354-48b8-a224-a789a244d0b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -321,13 +327,20 @@
     <ClCompile Include="MeshCollider.cpp">
       <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp">
-      <Filter>Component\UI</Filter>
-    </ClCompile>
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="FreeCamera.cpp">
-      <Filter>Component\Camera\Free</Filter>
+      <Filter>Component\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>Manager\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Manager\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="TFileUtils.cpp">
+      <Filter>Utils\File</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -504,13 +517,20 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Component\Collider\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h">
-      <Filter>Component\UI</Filter>
-    </ClInclude>
+    <ClInclude Include="UI.h" />
     <ClInclude Include="FreeCamera.h">
-      <Filter>Component\Camera\Free</Filter>
+      <Filter>Component\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h" />
+    <ClInclude Include="ParticleManager.h">
+      <Filter>Manager\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="SoundManager.h">
+      <Filter>Manager\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="TFileUtils.h">
+      <Filter>Utils\File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

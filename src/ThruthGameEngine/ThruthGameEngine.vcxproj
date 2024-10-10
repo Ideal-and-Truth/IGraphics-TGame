@@ -38,6 +38,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="DirectionLight.h" />
     <ClInclude Include="EntityHierarchy.h" />
+    <ClInclude Include="TFileUtils.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="LinkBonePopup.h" />
@@ -49,6 +50,8 @@
     <ClInclude Include="NavGeom.h" />
     <ClInclude Include="NavMeshGenerater.h" />
     <ClInclude Include="NewScenePopup.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PxEventCallback.h" />
     <ClInclude Include="RigidBody.h" />
@@ -69,6 +72,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShapeType.h" />
     <ClInclude Include="SkinnedMesh.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="StringConverter.h" />
@@ -101,6 +105,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="DirectionLight.cpp" />
     <ClCompile Include="EntityHierarchy.cpp" />
+    <ClCompile Include="TFileUtils.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="LinkBonePopup.cpp" />
@@ -112,6 +117,8 @@
     <ClCompile Include="NavGeom.cpp" />
     <ClCompile Include="NavMeshGenerater.cpp" />
     <ClCompile Include="NewScenePopup.cpp" />
+    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PxEventCallback.cpp" />
     <ClCompile Include="RigidBody.cpp" />
@@ -127,6 +134,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkinnedMesh.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="StringConverter.cpp" />
@@ -213,8 +221,9 @@
     <VcpkgAutoLink>true</VcpkgAutoLink>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <VcpkgConfiguration>Release</VcpkgConfiguration>
-    <VcpkgInstalledDir>$(SolutionDir)vcpkg_installed\</VcpkgInstalledDir>
+    <VcpkgConfiguration>$(Configuration)</VcpkgConfiguration>
+    <VcpkgInstalledDir>
+    </VcpkgInstalledDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -272,7 +281,7 @@
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)Libraries\Debuglib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>Debuglib\GraphicsEngine\IdealGraphics.lib;DebugUtils-d.lib;Detour-d.lib;DetourCrowd-d.lib;DetourTileCache-d.lib;Recast-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Debuglib\GraphicsEngine\IdealGraphics.lib;DebugUtils-d.lib;Detour-d.lib;DetourCrowd-d.lib;DetourTileCache-d.lib;Recast-d.lib;DebugLib\fmod\fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;$(SolutionDir)vcpkg_installed\x64-windows\x64-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
@@ -289,6 +298,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Utils;$(SolutionDir)IdealGraphics\GraphicsEngine\public;$(SolutionDir)PhysX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -299,23 +309,23 @@
     </Link>
     <Lib>
       <OutputFile>$(SolutionDir)Libraries\ReleaseLib\GameEngine\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib;DebugUtils.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib</AdditionalDependencies>
+      <AdditionalDependencies>ReleaseLib\GraphicsEngine\IdealGraphics.lib;Detour.lib;DetourCrowd.lib;DetourTileCache.lib;Recast.lib;ReleaseLib\fmod\fmod_vc.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Libraries\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets" Condition="Exists('..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets')" />
     <Import Project="..\packages\boost.1.85.0\build\boost.targets" Condition="Exists('..\packages\boost.1.85.0\build\boost.targets')" />
     <Import Project="..\packages\boost_serialization-vc143.1.85.0\build\boost_serialization-vc143.targets" Condition="Exists('..\packages\boost_serialization-vc143.1.85.0\build\boost_serialization-vc143.targets')" />
+    <Import Project="..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets" Condition="Exists('..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props'))" />
-    <Error Condition="!Exists('..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets'))" />
     <Error Condition="!Exists('..\packages\boost.1.85.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.85.0\build\boost.targets'))" />
     <Error Condition="!Exists('..\packages\boost_serialization-vc143.1.85.0\build\boost_serialization-vc143.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_serialization-vc143.1.85.0\build\boost_serialization-vc143.targets'))" />
+    <Error Condition="!Exists('..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.props'))" />
+    <Error Condition="!Exists('..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NVIDIA.PhysX.4.1.229882250\build\native\NVIDIA.PhysX.targets'))" />
   </Target>
 </Project>

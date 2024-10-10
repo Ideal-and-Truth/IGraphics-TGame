@@ -8,6 +8,7 @@
 
 namespace Ideal
 {
+	class D3D12Shader;
 	class D3D12Resource;
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
@@ -24,6 +25,9 @@ namespace Ideal
 	class IdealAnimation;
 	class RaytracingManager;
 	class DeferredDeleteManager;
+	class IMesh;
+	class D3D12DynamicConstantBufferAllocator;
+	class GenerateMips;
 }
 
 namespace Ideal
@@ -51,6 +55,9 @@ namespace Ideal
 
 	class ResourceManager : public std::enable_shared_from_this<ResourceManager>
 	{
+		static const uint32 MAX_DSV_HEAP_COUNT = 5;
+		static const uint32 MAX_RTV_HEAP_COUNT = 32;
+
 	private:
 		//--resource id--//
 		uint64 AllocateMaterialID();
@@ -117,8 +124,21 @@ namespace Ideal
 		void CreateIndexBufferUint16(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer,
 			std::vector<uint16>& Indices);
 
+		//template <typename T>
+		//void CreateInstanceBuffer(std::shared_ptr<Ideal::D3D12UploadBuffer> OutInstanceBuffer, std::vector<T> InstanceData, uint32 ElementCount)
+		//{
+		//	m_commandAllocator->Reset();
+		//	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+		//
+		//	OutInstanceBuffer = std::make_shared<Ideal::D3D12UploadBuffer>();
+		//	OutInstanceBuffer->Create(m_device.Get(), sizeof(T) * ElementCount);
+		//	void* data = OutInstanceBuffer->Map();
+		//	memcpy(data, InstanceData.data(), sizeof(T) * ElementCount);
+		//	OutInstanceBuffer->UnMap();
+		//}
+
 		// 파일 로드하여 srv로 만든다.
-		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB= false);
+		void CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB = false, uint32 MipLevels = 1, bool IsNormalMap = false);
 
 		void CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path);
 
@@ -133,7 +153,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12ShaderResourceView> CreateSRV(ComPtr<ID3D12Resource> Resource, uint32 NumElements, uint32 ElementSize);
 		std::shared_ptr<Ideal::D3D12UnorderedAccessView> CreateUAV(std::shared_ptr<Ideal::D3D12Resource> Resource, uint32 NumElements, uint32 ElementSize);
 
-		void CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename);
+		void CreateStaticMeshObject(std::shared_ptr<Ideal::IdealStaticMeshObject> OutMesh, const std::wstring& filename, bool IsDebugMesh = false);
 		void CreateSkinnedMeshObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> OutMesh, const std::wstring& filename);
 		void CreateAnimation(std::shared_ptr<Ideal::IdealAnimation>& OutAnimation, const std::wstring& filename, const Matrix& offset = Matrix::Identity);
 
@@ -145,6 +165,12 @@ namespace Ideal
 		std::shared_ptr<Ideal::IdealMaterial> CreateMaterial();
 
 		void DeleteTexture(std::shared_ptr<Ideal::D3D12Texture> Texture);
+
+
+		// Particle
+		std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& filename);
+
+		std::shared_ptr<Ideal::D3D12Shader> CreateAndLoadShader(const std::wstring& FilePath);
 
 	private:
 		ComPtr<ID3D12Device5> m_device = nullptr;
@@ -161,7 +187,8 @@ namespace Ideal
 	private:
 		// Descriptor heaps
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_cbv_srv_uavHeap;
-		const uint32 m_srvHeapCount = 16384;
+		// const uint32 m_srvHeapCount = 16384;
+		const uint32 m_srvHeapCount = 16384 * 4;
 
 		// 2024.05.14 Multi Render Target
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_rtvHeap;
@@ -201,5 +228,22 @@ namespace Ideal
 	private:
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_defaultQuadMesh;
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_defaultQuadMesh2;
+
+	public:
+		void CreateDefaultDebugLine();
+		std::shared_ptr<Ideal::D3D12VertexBuffer> GetDebugLineVB();
+
+	private:
+		std::shared_ptr<Ideal::D3D12VertexBuffer> m_debugLineVertexBuffer;
+		//std::shared_ptr<Ideal::D3D12VertexBuffer> GetDebugLineIB();
+
+	public:
+		// GenerateMipsInfo
+		void GenerateMips(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12Texture> Texture, uint32 GenerateMipsNum);
+
+	private:
+		void InitGenerateMipsManager(ComPtr<ID3D12Device> Device);
+
+		std::shared_ptr<Ideal::GenerateMips> m_generateMipsManager;
 	};
 }

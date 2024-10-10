@@ -13,7 +13,7 @@
 #define G_SWAP_CHAIN_NUM 4
 
 // Raytracing Ray Recursion Depth
-#define G_MAX_RAY_RECURSION_DEPTH 3
+#define G_MAX_RAY_RECURSION_DEPTH 2
 
 // Index Format
 #define INDEX_FORMAT DXGI_FORMAT_R32_UINT
@@ -100,6 +100,68 @@ namespace Ideal
 				CBV_Global = 0,
 				CBV_Transform,
 				CBV_ParticleSystemData,
+				SRV_ParticleTexture0,
+				SRV_ParticleTexture1,
+				SRV_ParticleTexture2,
+				Count
+			};
+		}
+	}
+
+	namespace DebugMeshRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				CBV_Global = 0,
+				CBV_Transform,
+				CBV_Color,
+				Count
+			};
+		}
+	}
+
+	namespace DebugLineRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				CBV_Global = 0,
+				CBV_LineInfo,
+				Count
+			};
+		}
+	}
+	
+	namespace ModifyVertexBufferCSRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Vertices = 0,
+				CBV_Transform,
+				CBV_VertexCount,
+				UAV_OutputVertices,
+				Count
+			};
+		}
+	}
+
+	namespace GenerateMipsCSRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				CBV_GenerateMipsInfo = 0,
+				SRV_SourceMip,
+				UAV_OutMip1,
+				UAV_OutMip2,
+				UAV_OutMip3,
+				UAV_OutMip4,
 				Count
 			};
 		}

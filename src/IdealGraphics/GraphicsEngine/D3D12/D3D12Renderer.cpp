@@ -489,7 +489,7 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12Renderer::CreateAnimation(const s
 std::shared_ptr<Ideal::IMeshObject> Ideal::D3D12Renderer::CreateDebugMeshObject(const std::wstring& FileName)
 {
 	std::shared_ptr<Ideal::IMeshObject> newDebugMesh = std::make_shared<Ideal::IdealStaticMeshObject>();
-	m_resourceManager->CreateStaticMeshObject(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newDebugMesh), FileName);
+	m_resourceManager->CreateStaticMeshObject(std::static_pointer_cast<Ideal::IdealStaticMeshObject>(newDebugMesh), FileName, true);
 	m_currentRenderScene->AddDebugObject(newDebugMesh);
 
 	return newDebugMesh;
@@ -546,7 +546,7 @@ void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
 	// TODO
 }
 
-std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName)
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/)
 {
 	return nullptr;
 }
@@ -619,6 +619,11 @@ void Ideal::D3D12Renderer::DeleteParticleMaterial(std::shared_ptr<Ideal::IPartic
 
 }
 
+std::shared_ptr<Ideal::IMesh> Ideal::D3D12Renderer::CreateParticleMesh(const std::wstring& FileName)
+{
+	return nullptr;
+}
+
 void Ideal::D3D12Renderer::ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData /*= false*/, bool NeedVertexInfo /*= false*/, bool NeedConvertCenter/* = false*/)
 {
 	std::shared_ptr<AssimpConverter> assimpConverter = std::make_shared<AssimpConverter>();
@@ -658,6 +663,12 @@ void Ideal::D3D12Renderer::ConvertAnimationAssetToMyFormat(std::wstring FileName
 	FileName.pop_back();
 
 	assimpConverter->ExportAnimationData(FileName);
+}
+
+void Ideal::D3D12Renderer::ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale /*= false*/, Vector3 Scale /*= Vector3(1.f)*/)
+{
+	__debugbreak();
+	return;
 }
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -983,6 +994,21 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
 	}
+}
+
+void Ideal::D3D12Renderer::BakeOption(int MaxBakeCount, float MinSpaceSize)
+{
+
+}
+
+void Ideal::D3D12Renderer::BakeStaticMeshObject()
+{
+
+}
+
+void Ideal::D3D12Renderer::ReBuildBLASFlagOn()
+{
+
 }
 
 void Ideal::D3D12Renderer::CreateAndInitRenderingResources()

@@ -8,6 +8,9 @@
 #include <d3dx12.h>
 
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
+
+#include "Misc/Utils/Octree/Octree.h"
+ 
 // Test
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/VertexInfo.h"
@@ -44,6 +47,7 @@ namespace Ideal
 	class D3D12Texture;
 	class D3D12PipelineStateObject;
 	class D3D12Viewport;
+	class D3D12UAVBuffer;
 
 	class IdealCamera;
 	class IdealRenderScene;
@@ -67,6 +71,7 @@ namespace Ideal
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12UploadBufferPool;
 	class DeferredDeleteManager;
+	class DebugMeshManager;
 
 	// Interface
 	class ICamera;
@@ -105,8 +110,9 @@ namespace Ideal
 		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
 
 	private:
-		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 8192;
-		static const uint32	MAX_DESCRIPTOR_COUNT = 16384;
+		//static const uint32 MAX_DRAW_COUNT_PER_FRAME = 8192;
+		static const uint32 MAX_DRAW_COUNT_PER_FRAME = 16384;
+		static const uint32	MAX_DESCRIPTOR_COUNT = 16384 * 4;
 		static const uint32	MAX_UI_DESCRIPTOR_COUNT = 256;
 		static const uint32 MAX_EDITOR_SRV_COUNT = 16384;
 
@@ -144,13 +150,14 @@ namespace Ideal
 		void SetTexturePath(const std::wstring& TexturePath) override;
 		void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) override;
 		void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
+		void ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale = false, Vector3 Scale = Vector3(1.f)) override;
 		bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 		void ClearImGui() override;
 
 		virtual void SetSkyBox(const std::wstring& FileName) override;
 
 		// Texture
-		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName) override;
+		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName, bool IsGenerateMips = false, bool IsNormalMap = false) override;
 		virtual std::shared_ptr<Ideal::IMaterial> CreateMaterial() override;
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
@@ -167,6 +174,7 @@ namespace Ideal
 		// Shader
 		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") override;	// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
 		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) override;
+		std::shared_ptr<Ideal::D3D12Shader> CreateAndLoadShader(const std::wstring& FilePath);
 
 		// Particle
 		virtual std::shared_ptr<Ideal::IParticleSystem> CreateParticleSystem(std::shared_ptr<Ideal::IParticleMaterial> ParticleMaterial) override;
@@ -175,6 +183,10 @@ namespace Ideal
 		// ParticleMaterial
 		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() override;
 		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) override;
+
+		// ParticleMesh
+		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) override;
+
 
 	private:
 		void CreateCommandlists();
@@ -296,6 +308,7 @@ namespace Ideal
 		// AS
 		SceneConstantBuffer m_sceneCB;
 		CB_LightList m_lightListCB;
+		CB_Global m_globalCB;
 
 		// Render
 		void CopyRaytracingOutputToBackBuffer();
@@ -315,6 +328,7 @@ namespace Ideal
 		void RaytracingManagerInit();
 		void RaytracingManagerUpdate();
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
+		void RaytracingManagerAddBakedObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
 
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
@@ -347,6 +361,13 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::ParticleSystemManager> m_particleSystemManager;
 
+		// DebugMesh
+	private:
+		void CreateDebugMeshManager();
+		void DrawDebugMeshes();
+
+		std::shared_ptr<Ideal::DebugMeshManager> m_debugMeshManager;
+
 		// EDITOR 
 	private:
 		void InitImGui();
@@ -359,5 +380,34 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_imguiSRVHeap;
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
+
+		// Optimization
+	public:
+		virtual void BakeOption(int32 MaxBakeCount, float MinSpaceSize) override;
+		virtual void BakeStaticMeshObject() override;
+		virtual void ReBuildBLASFlagOn() override;
+
+	private:
+		void ReBuildBLAS();
+		void InitModifyVertexBufferShader();
+		void CreateModifyVertexBufferRootSignature();
+		void CreateModifyVertexBufferCSPipelineState();
+		void DispatchModifyVertexBuffer(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh, CB_Transform TransformData, std::shared_ptr<Ideal::D3D12UAVBuffer> UAVBuffer);
+		void ReleaseBakedObject();
+		bool m_ReBuildBLASFlag = false;
+
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedObjects;
+
+		ComPtr<ID3D12RootSignature> m_ModifyVertexBufferRootSignature;
+		ComPtr<ID3D12PipelineState> m_ModifyVertexBufferPipelineState;
+		std::shared_ptr<Ideal::D3D12Shader> m_ModifyVertexBufferCS;
+
+		Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_Octree;
+		
+		int32 m_maxBakeCount = 32;
+		float m_octreeMinSpaceSize = 5.f;
+
+		std::vector<std::shared_ptr<Ideal::D3D12UAVBuffer>> m_tempUAVS;
+		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedMesh;
 	};
 }

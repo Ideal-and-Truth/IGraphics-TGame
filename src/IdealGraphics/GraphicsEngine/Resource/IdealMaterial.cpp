@@ -21,6 +21,8 @@ Ideal::IdealMaterial::IdealMaterial()
 	m_cbMaterialInfo.bUseNormalMap = false;
 	m_cbMaterialInfo.bUseRoughnessMap = false;
 	m_cbMaterialInfo.bUseMetallicMap = false;
+	SetTiling(1, 1);
+	SetOffset(0, 0);
 }
 
 Ideal::IdealMaterial::~IdealMaterial()
@@ -70,6 +72,20 @@ std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetNomralMap()
 std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetMaskMap()
 {
 	return m_maskTexture;
+}
+
+void Ideal::IdealMaterial::SetTiling(float x, float y)
+{
+	m_Tiling.x = x;
+	m_Tiling.y = y;
+	m_cbMaterialInfo.tiling = m_Tiling;
+}
+
+void Ideal::IdealMaterial::SetOffset(float x, float y)
+{
+	m_Offset.x = x;
+	m_Offset.y = y;
+	m_cbMaterialInfo.offset = m_Offset;
 }
 
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
@@ -197,6 +213,6 @@ void Ideal::IdealMaterial::CopyHandleToRayTracingDescriptorTable(ComPtr<ID3D12De
 		Device->CopyDescriptorsSimple(1, m_diffuseTextureInRayTracing.GetCpuHandle(), m_diffuseTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	if(!m_normalTexture.expired())
 		Device->CopyDescriptorsSimple(1, m_normalTextureInRayTracing.GetCpuHandle(), m_normalTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	if(!m_roughnessTexture.expired())
-		Device->CopyDescriptorsSimple(1, m_maskTextureInRayTracing.GetCpuHandle(), m_roughnessTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	if(!m_maskTexture.expired())
+		Device->CopyDescriptorsSimple(1, m_maskTextureInRayTracing.GetCpuHandle(), m_maskTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }

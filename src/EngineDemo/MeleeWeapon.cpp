@@ -98,7 +98,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 		{
 			if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
 			{
-				if (!_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<EnemyAnimator>().lock().get()).Get())
+				if (_other->GetOwner().lock()->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(_other->GetOwner().lock()->GetComponent<Enemy>().lock().get()).Get() > 0.f)
 				{
 					m_onHitEnemys.push_back(_other->GetOwner().lock());
 					WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
@@ -109,10 +109,13 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 		{
 			if (_other->GetOwner().lock()->GetComponent<Player>().lock())
 			{
-				if (!_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock().get()).Get())
+				if (!_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock()->GetTypeInfo().GetProperty("isDodge")->Get<bool>(_other->GetOwner().lock()->GetComponent<PlayerAnimator>().lock().get()).Get())
 				{
-					m_onHitEnemys.push_back(_other->GetOwner().lock());
-					WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
+					if (_other->GetOwner().lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(_other->GetOwner().lock()->GetComponent<Player>().lock().get()).Get() > 0.f)
+					{
+						m_onHitEnemys.push_back(_other->GetOwner().lock());
+						WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
+					}
 				}
 			}
 		}

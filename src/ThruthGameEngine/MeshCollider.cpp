@@ -1,5 +1,5 @@
 #include "MeshCollider.h"
-#include "FileUtils.h"
+#include "TFileUtils.h"
 #include "PhysicsManager.h"
 #include "MathUtil.h"
 #include "RigidBody.h"
@@ -11,6 +11,15 @@ Truth::MeshCollider::MeshCollider()
 {
 	m_size = Vector3{ 1.0f, 1.0f, 1.0f };
 	m_path = L"TestMap/navTestMap";
+	m_shape = ColliderShape::MESH;
+}
+
+Truth::MeshCollider::MeshCollider(std::string _path)
+{
+	m_size = Vector3{ 1.0f, 1.0f, 1.0f };
+	USES_CONVERSION;
+	m_path = A2W(_path.c_str());
+
 	m_shape = ColliderShape::MESH;
 }
 
@@ -73,7 +82,7 @@ void Truth::MeshCollider::Awake()
 /// </summary>
 void Truth::MeshCollider::GetPoints()
 {
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	std::wstring prefix = L"../Resources/Models/";
 	file->Open(prefix + m_path + L".pos", FileMode::Read);
 

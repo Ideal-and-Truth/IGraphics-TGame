@@ -1,8 +1,8 @@
 #pragma once
 #include "Core/Core.h"
 
-#define MAX_BONE_TRANSFORMS 350
-#define MAX_MODEL_KEYFRAMES 500
+#define MAX_BONE_TRANSFORMS 600
+#define MAX_MODEL_KEYFRAMES 600
 
 
 struct SceneConstantBuffer
@@ -27,6 +27,10 @@ struct CB_MaterialInfo
 
 	float metallicFactor;
 	float roughnessFactor;
+
+	Vector2 tiling;
+	Vector2 offset;
+
 	float pad0;
 	float pad1;
 };
@@ -34,6 +38,11 @@ struct CB_MaterialInfo
 struct CB_Bone
 {
 	Matrix transforms[MAX_BONE_TRANSFORMS];
+};
+
+struct CB_Color
+{
+	Color color;
 };
 
 struct CB_Transform
@@ -58,9 +67,27 @@ struct CB_Global
 	Vector3 eyePos;
 };
 
+struct CB_DebugLine
+{
+	Vector3 startPos;
+	float pad0;
+	Vector3 endPos;
+	float pad1;
+	Color color;
+};
+
+struct CB_GenerateMipsInfo
+{
+	uint32 SrcMipLevel;
+	uint32 NumMipLevels;
+	uint32 SrcDimension;
+	bool IsSRGB;
+	Vector2 TexelSize;
+};
+
 //------------Light-----------//
-#define MAX_POINT_LIGHT_NUM 16
-#define MAX_SPOT_LIGHT_NUM 16
+#define MAX_POINT_LIGHT_NUM 100
+#define MAX_SPOT_LIGHT_NUM 100
 
 struct PointLight
 {
@@ -141,8 +168,9 @@ struct CB_Sprite
 //----Particle----//
 struct CB_ParticleSystem
 {
-	float Time;
-
 	float CustomData1[4];
 	float CustomData2[4];
+	float Time = 0.f;
+	Vector3 pad;
+	Color StartColor;
 };

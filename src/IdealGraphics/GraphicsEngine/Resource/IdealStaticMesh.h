@@ -26,14 +26,16 @@ namespace Ideal
 		virtual ~IdealStaticMesh();
 
 	public:
-		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer);
-
+		void Draw(std::shared_ptr<Ideal::IdealRenderer> Renderer, const Matrix& WorldTM);
+		void DebugDraw(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList);
 	public:
 		void AddMesh(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh);
 		void AddMaterial(std::shared_ptr<Ideal::IdealMaterial> Material);
 		void AddBone(std::shared_ptr<Ideal::IdealBone> Bone) { m_bones.push_back(Bone); }
 
 		void FinalCreate(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
+
+		Matrix GetLocalTM();
 
 	public:
 		std::vector<std::shared_ptr<Ideal::IdealMesh<BasicVertex>>>& GetMeshes() { return m_meshes; }

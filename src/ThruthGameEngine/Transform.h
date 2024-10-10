@@ -108,6 +108,8 @@ namespace Truth
 		{
 			m_localTM = _tm;
 			_tm.Decompose(m_scale, m_rotation, m_position);
+			// ApplyTransform();
+
 		}
 #pragma endregion Transform
 

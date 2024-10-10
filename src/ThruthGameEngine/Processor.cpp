@@ -16,7 +16,7 @@
 #include "IdealRenderer.h"
 #include "ThreadPool.h"
 
-#include <windowsx.h>
+#include <time.h>
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
@@ -59,18 +59,20 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/FieldMob.fbx");
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
-	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+	// 
+	// ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
 #ifdef EDITOR_MODE
-
 
 	Truth::UnityParser up(m_manager->Graphics().get());
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\navTest.unity");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\BOSSROOM\\Hanna_BOSSROOM.unity");
 	// up.ParseMatarialData();
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 #endif // EDITOR_MODE
@@ -83,9 +85,28 @@ void Processor::Finalize()
 
 void Processor::Process()
 {
+	clock_t start, finish;
+
+	start = clock();
 	Update();
 	LateUpdate();
+	finish = clock();
+
+	std::string temp = std::to_string(finish - start);
+	temp = std::string("update : ") + temp;
+	temp += " / ";
+	// DEBUG_PRINT(temp.c_str());
+
+	start = clock();
+
 	Render();
+	finish = clock();
+
+	temp = std::to_string(finish - start);
+	temp = std::string("render : ") + temp;
+	temp += " \n ";
+
+	// DEBUG_PRINT(temp.c_str());
 }
 
 void Processor::Loop()
@@ -141,6 +162,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			DWORD width = rect.right - rect.left;
 			DWORD height = rect.bottom - rect.top;
 			g_Renderer->Resize(width, height);
+			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		}
 		break;
 	}
@@ -149,6 +171,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		if (SC_KEYMENU == (wParam & 0xFFF0) && (lParam == 13))
 		{
 			g_Renderer->ToggleFullScreenWindow();
+			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		}
 		[[fallthrough]];
 	}
@@ -158,6 +181,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			g_inputmanager->m_deltaWheel = 0;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
+
 	}
 	return 0;
 }
@@ -248,6 +272,28 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 
 	ShowWindow(m_hwnd, SW_SHOWNORMAL);
 	UpdateWindow(m_hwnd);
+
+	RECT nowRect;
+	DWORD _style = (DWORD)GetWindowLong(m_hwnd, GWL_STYLE);
+	DWORD _exstyle = (DWORD)GetWindowLong(m_hwnd, GWL_EXSTYLE);
+
+	GetWindowRect(m_hwnd, &nowRect);
+
+	// 	RECT newRect = {};
+	// 	newRect.left = 0;
+	// 	newRect.top = 0;
+	// 	newRect.right = _width;
+	// 	newRect.bottom = _height;
+	// 
+	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+	// 	//AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+	// 
+	// 	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
+	// 	int _newWidth = (newRect.right - newRect.left);
+	// 	int _newHeight = (newRect.bottom - newRect.top);
+	// 
+	// 	SetWindowPos(m_hwnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
+	// 		_newWidth, _newHeight, SWP_SHOWWINDOW);
 }
 
 void Processor::InitializeManager()
@@ -310,6 +356,6 @@ void Processor::ConvertSkelFbxData(const std::wstring& _path)
 
 void Processor::ConvertStaticFbxData(const std::wstring& _path)
 {
-	g_Renderer->ConvertAssetToMyFormat(_path, false);
+	g_Renderer->ConvertAssetToMyFormat(_path, false, true);
 }
 #endif // CONVERT_DATA

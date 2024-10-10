@@ -36,10 +36,10 @@ namespace Ideal
 
 	public:
 		virtual std::string GetName() override { return m_name; }
-		virtual void SetMaterialObject(std::shared_ptr<Ideal::IMaterial> Material) override 
+		virtual void SetMaterialObject(std::shared_ptr<Ideal::IMaterial> Material) override
 		{
 			Ideal::Singleton::RayTracingFlagManger::GetInstance().SetMaterialChanged();
-			m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material); 
+			m_material = std::static_pointer_cast<Ideal::IdealMaterial>(Material);
 		}
 		virtual std::weak_ptr<Ideal::IMaterial> GetMaterialObject() override { return m_material; }
 		virtual std::string GetFBXMaterialName() override { return m_materialName; }
@@ -73,10 +73,13 @@ namespace Ideal
 			//}
 		}
 
+
 		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return m_vertexBuffer->GetView(); }
 		std::shared_ptr<D3D12VertexBuffer> GetVertexBuffer() { return m_vertexBuffer; }
+		void SetVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> VB) { m_vertexBuffer = VB; }
 		D3D12_INDEX_BUFFER_VIEW	GetIndexBufferView() { return m_indexBuffer->GetView(); }
 		std::shared_ptr<D3D12IndexBuffer> GetIndexBuffer() { return m_indexBuffer; }
+		void SetIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer> IB) { m_indexBuffer = IB; }
 		const uint32& GetElementCount() const { return m_indexBuffer->GetElementCount(); }
 
 		void AddVertices(const std::vector<TVertexType>& vertices)
@@ -97,6 +100,18 @@ namespace Ideal
 		std::weak_ptr<Ideal::IdealMaterial> GetMaterial() { return m_material; }
 		void SetMaterial(std::shared_ptr<IdealMaterial> Material) { m_material = Material; }
 		void SetBoneIndex(const int32& Index) { m_boneIndex = Index; }
+		void SetLocalTM(const Matrix& matrix) { m_localTM = matrix; }
+		Matrix GetLocalTM() { return m_localTM; }
+
+		template <typename T>
+		void TransferMaterialInfo(std::shared_ptr<IdealMesh<T>> other)
+		{
+			m_material = other->m_material;
+		}
+
+		void SetMinMaxBound(Vector3 MinBound, Vector3 MaxBound) { m_minBound = MinBound; m_maxBound = MaxBound; }
+		Vector3 GetMinBound() { return m_minBound; }
+		Vector3 GetMaxBound() { return m_maxBound; }
 	private:
 		std::shared_ptr<D3D12VertexBuffer>	m_vertexBuffer;
 		std::shared_ptr<D3D12IndexBuffer>	m_indexBuffer;
@@ -109,6 +124,11 @@ namespace Ideal
 
 		std::vector<Ideal::IdealBone> m_bones;
 		int32 m_boneIndex;
+
+		Matrix m_localTM;
+
+		Vector3 m_minBound;
+		Vector3 m_maxBound;
 
 	public:
 		Ideal::D3D12ConstantBuffer m_constantBuffer;

@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <iostream>
-#include "FileUtils.h"
+#include "TFileUtils.h"
 #include "GraphicsManager.h"
 
 #include "Entity.h"
@@ -280,31 +280,32 @@ void Truth::UnityParser::ParseTranfomrNode(const YAML::Node& _node, const std::s
 
 
 	// get transform data
-	Vector3 pos = {
+	GO->m_position = {
 		_node["m_LocalPosition"]["x"].as<float>(),
 		_node["m_LocalPosition"]["y"].as<float>(),
 		_node["m_LocalPosition"]["z"].as<float>()
 	};
 
-	Quaternion rot = {
+	GO->m_rotation = {
 		_node["m_LocalRotation"]["x"].as<float>(),
 		_node["m_LocalRotation"]["y"].as<float>(),
 		_node["m_LocalRotation"]["z"].as<float>(),
 		_node["m_LocalRotation"]["w"].as<float>(),
 	};
 
-	Vector3 scale = {
+	GO->m_scale = {
 		_node["m_LocalScale"]["x"].as<float>(),
 		_node["m_LocalScale"]["y"].as<float>(),
 		_node["m_LocalScale"]["z"].as<float>()
 	};
 
-	// create Local Matrix
-	Matrix LTM = Matrix::CreateScale(scale);
-	LTM *= Matrix::CreateFromQuaternion(rot);
-	LTM *= Matrix::CreateTranslation(pos);
+	for (uint32 i = 0; i < 3; i++)
+	{
+		GO->m_localPosChange[i] = true;
+		GO->m_localScaleChange[i] = true;
+	}
 
-	GO->m_localTM = LTM;
+	GO->m_localRotationChange = true;
 
 	// get game object
 	std::string GOfid = _node["m_GameObject"]["fileID"].as<std::string>();
@@ -341,14 +342,14 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 	GO->m_parent = _parent;
 	GO->m_mine = static_cast<uint32>(m_gameObjects.size());
 	m_gameObjects.push_back(GO);
+	const std::string& prefabGuid = _node["m_SourcePrefab"]["guid"].as<std::string>();
+	GO->m_guid = prefabGuid;
 
 	// get transform data
-	GO->m_localTM = GetPrefabMatrix(_node["m_Modification"]["m_Modifications"]);
+	GetPrefabMatrix(_node["m_Modification"]["m_Modifications"], GO);
 	GetPrefabMatarial(GO, _node["m_Modification"]["m_Modifications"]);
 
 
-	const std::string& prefabGuid = _node["m_SourcePrefab"]["guid"].as<std::string>();
-	GO->m_guid = prefabGuid;
 
 	if (m_guidMap.find(prefabGuid) != m_guidMap.end())
 	{
@@ -362,17 +363,37 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 		{
 			ParseFbxMetaFile(GO, prefabPath);
 		}
-		return;
 	}
-	return;
+
+	const YAML::Node& components = _node["m_Modification"]["m_AddedComponents"];
+	if (components.IsDefined() && components.IsSequence())
+	{
+		for (YAML::const_iterator it = components.begin(); it != components.end(); ++it)
+		{
+			const YAML::Node& component = *it;
+			std::string cFid = component["addedObject"]["fileID"].as<std::string>();
+
+			const YAML::Node& boxc = m_nodeMap[_guid][cFid]->m_node["BoxCollider"];
+			const YAML::Node& meshc = m_nodeMap[_guid][cFid]->m_node["MeshCollider"];
+			/// find box collider
+			if (boxc.IsDefined())
+			{
+				ParseBoxCollider(boxc, GO);
+			}
+			else if (meshc.IsDefined())
+			{
+				ParseMeshCollider(meshc, GO);
+			}
+		}
+	}
 }
 
 void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner)
 {
 	// get component list
-	YAML::Node comList = _node["m_Component"];
+	const YAML::Node& comList = _node["m_Component"];
 	_owner->m_name = _node["m_Name"].as<std::string>();
-	for (YAML::iterator it = comList.begin(); it != comList.end(); ++it)
+	for (YAML::const_iterator it = comList.begin(); it != comList.end(); ++it)
 	{
 		// get component list
 		const YAML::Node& comp = *it;
@@ -384,13 +405,6 @@ void Truth::UnityParser::ParseGameObject(const std::string& _guid, const YAML::N
 		if (collider.IsDefined())
 		{
 			ParseBoxCollider(collider, _owner);
-		}
-
-		/// find mesh filter
-		const YAML::Node& meshFilter = m_nodeMap[_guid][compFid]->m_node["MeshFilter"];
-		if (meshFilter.IsDefined())
-		{
-			ParseMeshFilter(meshFilter, _owner);
 		}
 
 		/// find Light
@@ -419,30 +433,14 @@ void Truth::UnityParser::ParseBoxCollider(const YAML::Node& _node, GameObject* _
 		});
 }
 
+void Truth::UnityParser::ParseMeshCollider(const YAML::Node& _node, GameObject* _owner)
+{
+	_owner->m_isCollider = true;
+	_owner->m_shape = 4;
+}
+
 void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _owner)
 {
-	m_meshFilterCount++;
-	_owner->m_isMesh = true;
-	if (_node["m_Mesh"]["fileID"].as<std::string>() == "10202")
-	{
-		_owner->m_meshPath = m_debugCubePath.generic_string();
-	}
-	else if (_node["m_Mesh"]["fileID"].as<std::string>() == "10209")
-	{
-		// _owner->m_meshPath = m_debugCubePath.generic_string();
-	}
-	else
-	{
-		if (_node["m_Mesh"]["guid"].IsDefined())
-		{
-			std::string fbxGuid = _node["m_Mesh"]["guid"].as<std::string>();
-			fs::path fbxFilePath = m_guidMap[fbxGuid]->m_filePath;
-			_owner->m_meshPath = fbxFilePath.generic_string();
-
-			m_unLoadMesh.insert(fbxFilePath);
-		}
-
-	}
 }
 
 void Truth::UnityParser::ParseLight(const YAML::Node& _node, GameObject* _owner)
@@ -459,44 +457,49 @@ void Truth::UnityParser::ParseLight(const YAML::Node& _node, GameObject* _owner)
 	_owner->m_angle = _node["m_SpotAngle"].as<float>();
 }
 
-DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node)
+void Truth::UnityParser::GetPrefabMatrix(const YAML::Node& _node, GameObject* _owner)
 {
 	Vector3 scale = { 1.0f ,1.0f, 1.0f };
 	Vector3 pos = { 0.0f, 0.0f, 0.0f };
 	Quaternion rot = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	Matrix result = Matrix::Identity;
-
 	for (auto itr = _node.begin(); itr != _node.end(); itr++)
 	{
 		if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.x")
 		{
+			_owner->m_localScaleChange[0] = true;
 			scale.x = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.y")
 		{
+			_owner->m_localScaleChange[1] = true;
 			scale.y = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalScale.z")
 		{
+			_owner->m_localScaleChange[2] = true;
 			scale.z = (*itr)["value"].as<float>();
 		}
 
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.x")
 		{
+			_owner->m_localPosChange[0] = true;
 			pos.x = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.y")
 		{
+			_owner->m_localPosChange[1] = true;
 			pos.y = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalPosition.z")
 		{
+			_owner->m_localPosChange[2] = true;
 			pos.z = (*itr)["value"].as<float>();
 		}
 
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.w")
 		{
+			_owner->m_localRotationChange = true;
 			rot.w = (*itr)["value"].as<float>();
 		}
 		else if ((*itr)["propertyPath"].as<std::string>() == "m_LocalRotation.x")
@@ -513,11 +516,9 @@ DirectX::SimpleMath::Matrix Truth::UnityParser::GetPrefabMatrix(const YAML::Node
 		}
 	}
 
-	result = Matrix::CreateScale(scale);
-	result *= Matrix::CreateFromQuaternion(rot);
-	result *= Matrix::CreateTranslation(pos);
-
-	return result;
+	_owner->m_scale = scale;
+	_owner->m_rotation = rot;
+	_owner->m_position = pos;
 }
 
 void Truth::UnityParser::GetPrefabMatarial(GameObject* _GO, const YAML::Node& _node)
@@ -527,10 +528,18 @@ void Truth::UnityParser::GetPrefabMatarial(GameObject* _GO, const YAML::Node& _n
 		std::string propertyPath = (*itr)["propertyPath"].as<std::string>();
 		if (propertyPath.find("m_Materials.Array.data") != std::string::npos)
 		{
+			if (!(*itr)["objectReference"].IsDefined())
+			{
+				return;
+			}
+			if (!(*itr)["objectReference"]["guid"].IsDefined())
+			{
+				return;
+			}
 			std::string matGuid = (*itr)["objectReference"]["guid"].as<std::string>();
 			if (m_matarialMap.find(matGuid) != m_matarialMap.end())
 			{
-				_GO->m_matarialsName.push_back(m_matarialMap[matGuid].m_name);
+				_GO->m_matarialsName.push_back(matGuid);
 				continue;
 			}
 			ParseMatarialFile(_GO, matGuid);
@@ -593,10 +602,16 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 	MatarialData matdata = MatarialData();
 
 	fs::path matfile = m_guidMap[_matGuid]->m_filePath;
+
+	if (matfile.extension() != ".mat")
+	{
+		return;
+	}
+
 	std::ifstream matDataFile(matfile);
 
-	matdata.m_name = matfile.filename().replace_extension("").generic_string();
-	_GO->m_matarialsName.push_back(matdata.m_name);
+	matdata.m_name = _matGuid;
+	_GO->m_matarialsName.push_back(_matGuid);
 
 	auto matDoc = YAML::LoadAll(matDataFile);
 	for (auto& matNode : matDoc)
@@ -608,38 +623,66 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 			{
 				if (texmap["_NormalMap"].IsDefined())
 				{
-					std::string texGuid = texmap["_NormalMap"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_normal = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					 CopyTexture(texmap["_NormalMap"], matdata.m_normal);
 				}
+
+				else if (texmap["_BumpMap"].IsDefined())
+				{
+					CopyTexture(texmap["_BumpMap"], matdata.m_normal);
+				}
+
 				else if (texmap["_MainTex"].IsDefined())
 				{
-					std::string texGuid = texmap["_MainTex"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					CopyTexture(texmap["_MainTex"], matdata.m_albedo);
+
+					matdata.m_tileX = texmap["_MainTex"]["m_Scale"]["x"].as<float>();
+					matdata.m_tileY = texmap["_MainTex"]["m_Scale"]["y"].as<float>();
 				}
 				else if (texmap["_MaskMap"].IsDefined())
 				{
-					std::string texGuid = texmap["_MaskMap"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					CopyTexture(texmap["_MaskMap"], matdata.m_metalicRoughness);
+				}
+				else if (texmap["_MetallicGlossMap"].IsDefined())
+				{
+					CopyTexture(texmap["_MetallicGlossMap"], matdata.m_metalicRoughness);
+				}
+				else if (texmap["_BarkBaseColorMap"].IsDefined())
+				{
+					CopyTexture(texmap["_BarkBaseColorMap"], matdata.m_albedo);
+				}
+				else if (texmap["_BarkMaskMap"].IsDefined())
+				{
+					CopyTexture(texmap["_BarkMaskMap"], matdata.m_metalicRoughness);
+				}
+				else if (texmap["_BarkNormalMap"].IsDefined())
+				{
+					CopyTexture(texmap["_BarkNormalMap"], matdata.m_normal);
 				}
 			}
 		}
 	}
 	m_matarialMap[_matGuid] = matdata;
+}
+
+void Truth::UnityParser::CopyTexture(const YAML::Node& _node, fs::path& _output)
+{
+	if (!_node["m_Texture"]["guid"].IsDefined())
+		return;
+	std::string texGuid = _node["m_Texture"]["guid"].as<std::string>();
+	if (m_guidMap.find(texGuid) == m_guidMap.end())
+		return;
+
+	const fs::path originPath = m_guidMap[texGuid]->m_filePath;
+	fs::path parent = originPath.parent_path();
+	fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
+	fs::path copyPath = m_texturePath / m_sceneName / parent.filename();
+
+	if (!fs::exists(copyPath))
+		fs::create_directory(copyPath);
+
+	if (!fs::exists(p))
+		fs::copy(originPath, copyPath, fs::copy_options::skip_existing);
+	_output = copyPath / originPath.filename();
 }
 
 void Truth::UnityParser::ParseOnlyMatarialFile(const fs::path& _matPath)
@@ -708,21 +751,22 @@ void Truth::UnityParser::ParseOnlyMatarialFile(const fs::path& _matPath)
 
 void Truth::UnityParser::WriteMaterialData()
 {
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-
 	fs::create_directories(m_matSavePath);
 
 	for (auto& mat : m_matarialMap)
 	{
+		std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 		fs::path p = m_matSavePath / (mat.second.m_name + ".matData");
-		if (fs::exists(p))
-		{
-			continue;
-		}
 		file->Open(p, FileMode::Write);
-		file->Write<std::string>(mat.second.m_albedo.generic_string());
-		file->Write<std::string>(mat.second.m_normal.generic_string());
-		file->Write<std::string>(mat.second.m_metalicRoughness.generic_string());
+
+		const auto& matData = mat.second;
+
+		file->Write<std::string>(matData.m_albedo.generic_string());
+		file->Write<std::string>(matData.m_normal.generic_string());
+		file->Write<std::string>(matData.m_metalicRoughness.generic_string());
+
+		file->Write<float>(matData.m_tileX);
+		file->Write<float>(matData.m_tileY);
 	}
 }
 
@@ -739,7 +783,7 @@ void Truth::UnityParser::ConvertUnloadedMesh()
 	for (auto& path : m_unLoadMesh)
 	{
 		fs::copy(path, assetPath, fs::copy_options::skip_existing);
-		m_gp->ConvertAsset(dataPath / path.filename());
+		m_gp->ConvertAsset(dataPath / path.filename(), false, true);
 	}
 }
 
@@ -749,7 +793,7 @@ void Truth::UnityParser::WriteData()
 	ConvertUnloadedMesh();
 	WriteMaterialData();
 
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	std::wstring path = m_defaultPath;
 	path += m_sceneName.generic_wstring() + L"/";
 	path += L"Data.map";
@@ -771,20 +815,23 @@ void Truth::UnityParser::WriteData()
 	}
 }
 
-void Truth::UnityParser::WriteColliderData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteColliderData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isCollider);
 	if (_GO->m_isCollider)
 	{
 		_file->Write<int32>(_GO->m_shape);
 
-		_file->Write<Vector3>(_GO->m_size[0]);
+		if (_GO->m_shape == 1)
+		{
+			_file->Write<Vector3>(_GO->m_size[0]);
 
-		_file->Write<Vector3>(_GO->m_center[0]);
+			_file->Write<Vector3>(_GO->m_center[0]);
+		}
 	}
 }
 
-void Truth::UnityParser::WriteMeshData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteMeshData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isMesh);
 	if (_GO->m_isMesh)
@@ -804,7 +851,7 @@ void Truth::UnityParser::WriteMeshData(std::shared_ptr<FileUtils> _file, GameObj
 	}
 }
 
-void Truth::UnityParser::WriteLightData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteLightData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isLight);
 	if (_GO->m_isLight)
@@ -820,9 +867,30 @@ void Truth::UnityParser::WriteLightData(std::shared_ptr<FileUtils> _file, GameOb
 	}
 }
 
-void Truth::UnityParser::WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteLocalTMData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
-	_file->Write<Matrix>(_GO->m_localTM);
+	_file->Write<float>(_GO->m_position.x);
+	_file->Write<float>(_GO->m_position.y);
+	_file->Write<float>(_GO->m_position.z);
+
+	_file->Write<float>(_GO->m_rotation.x);
+	_file->Write<float>(_GO->m_rotation.y);
+	_file->Write<float>(_GO->m_rotation.z);
+	_file->Write<float>(_GO->m_rotation.w);
+
+	_file->Write<float>(_GO->m_scale.x);
+	_file->Write<float>(_GO->m_scale.y);
+	_file->Write<float>(_GO->m_scale.z);
+
+	_file->Write<bool>(_GO->m_localPosChange[0]);
+	_file->Write<bool>(_GO->m_localPosChange[1]);
+	_file->Write<bool>(_GO->m_localPosChange[2]);
+
+	_file->Write<bool>(_GO->m_localScaleChange[0]);
+	_file->Write<bool>(_GO->m_localScaleChange[1]);
+	_file->Write<bool>(_GO->m_localScaleChange[2]);
+
+	_file->Write<bool>(_GO->m_localRotationChange);
 }
 
 /// <summary>

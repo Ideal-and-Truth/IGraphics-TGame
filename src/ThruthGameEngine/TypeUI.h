@@ -13,6 +13,8 @@
 #include "ITexture.h"
 #include "IMaterial.h"
 #include "ISprite.h"
+#include "Material.h"
+#include "Texture.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -32,7 +34,7 @@ namespace TypeUI
 {
 	// 템플릿 타입에 대한 타입은 여기서 정의한다.
 	template<typename T>
-	bool DisplayType(T& _val, const char* _name, float _min = 0.0f, float _max = 0.0f)
+	bool DisplayType(T& _val, const char* _name, float _min = 0.0f, float _max = 0.0f, uint32 _index = 0)
 	{
 		if constexpr (std::is_same_v<T, int>)
 		{
@@ -113,22 +115,14 @@ namespace TypeUI
 			value[1] = temp.y;
 			value[2] = temp.z;
 
-			bool isSelect = ImGui::DragFloat3(_name, value, 0.1f);
-			if (isSelect)
-			{
-				delta = {
-					temp.x - value[0],
-					temp.y - value[1],
-					temp.z - value[2]
-				};
-			}
+			ImGui::DragFloat3(_name, value, 0.1f);
 
-			delta.x = delta.x * DegToRad;
-			delta.y = delta.y * DegToRad;
-			delta.z = delta.z * DegToRad;
+			delta.x = value[0] * DegToRad;
+			delta.y = value[1] * DegToRad;
+			delta.z = value[2] * DegToRad;
 
-			_val = _val * Quaternion::CreateFromYawPitchRoll(delta);
-			return isSelect;
+			_val = Quaternion::CreateFromYawPitchRoll(delta);
+			return false;
 		}
 		else if constexpr (std::is_same_v<T, Color>)
 		{
@@ -151,19 +145,38 @@ namespace TypeUI
 			}
 			return isSelect;
 		}
-		else if constexpr (std::is_same_v<T, std::vector<std::shared_ptr<Ideal::IMaterial>>>)
+		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::Material>>)
 		{
 			const ImVec2 size(100, 100);
-			ImGui::Text("Texture");
-			for (auto& mat : _val)
+
+			std::string fileID = _val->m_name + "##" + std::to_string(_index);
+			if (ImGui::Button(fileID.c_str()))
 			{
- 				// ImGui::ImageButton((ImTextureID)(mat->GetBaseMap().lock()->GetImageID()), size);
- 				// ImGui::SameLine();
- 				// ImGui::ImageButton((ImTextureID)(mat->GetNomralMap().lock()->GetImageID()), size);
- 				// ImGui::SameLine();
- 				// ImGui::ImageButton((ImTextureID)(mat->GetMaskMap().lock()->GetImageID()), size);
+				// _val->ChangeMaterial();
 			}
-			return false;
+			ImGui::SameLine();
+			if (ImGui::Button(("new##" + fileID).c_str()))
+			{
+				// _val->ChangeMaterial();
+			}
+
+			if (_val->m_baseMap != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "0").c_str(), (ImTextureID)(_val->m_baseMap->GetImageID()), size))
+					_val->ChangeTexture(0);
+			}
+			ImGui::SameLine();
+			if (_val->m_normalMap != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "1").c_str(), (ImTextureID)(_val->m_normalMap->GetImageID()), size))
+					_val->ChangeTexture(1);
+			}
+			ImGui::SameLine();
+			if (_val->m_maskMap != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "2").c_str(), (ImTextureID)(_val->m_maskMap->GetImageID()), size))
+					_val->ChangeTexture(2);
+			}
 		}
 		return false;
 	}

@@ -84,7 +84,7 @@ namespace Ideal
 		virtual void SetSkyBox(const std::wstring& FileName) abstract;
 
 		// Texture
-		virtual std::shared_ptr<Ideal::ITexture>			CreateTexture(const std::wstring& FileName) abstract;
+		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName, bool IsGenerateMips = false, bool IsNormalMap = false) abstract;
 		virtual std::shared_ptr<Ideal::IMaterial>			CreateMaterial() abstract;
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) abstract;
@@ -111,8 +111,15 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() abstract;
 		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) abstract;
 
-		// IMesh
-		// virtual std::shared_ptr<Ideal::IMesh> CreateMesh()
+		// ParticleMesh
+		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) abstract;
+
+	public:
+		// Ray Tracing Optimization
+		// 최대 한번에 BLAS로 합칠 개수, 공간분할 할 때 최소 길이
+		virtual void BakeOption(int MaxBakeCount, float MinSpaceSize) abstract;
+		virtual void BakeStaticMeshObject() abstract;
+		virtual void ReBuildBLASFlagOn() abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
@@ -121,6 +128,8 @@ namespace Ideal
 
 		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) abstract;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) abstract;
+
+		virtual void ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale = false, DirectX::SimpleMath::Vector3 Scale = DirectX::SimpleMath::Vector3(1.f)) abstract;
 
 	public:
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) abstract;

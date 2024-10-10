@@ -41,6 +41,10 @@ private:
 
 	float m_passingTime;
 
+	float m_shakeAzimuth;
+	float m_shakeElevation;
+	bool m_isShaking;
+	bool m_isShaked;
 
 public:
 	PlayerCamera();
@@ -67,6 +71,7 @@ private:
 	void FreeCamera();
 	void LockOnCamera();
 	void SortEnemy();
+	void ShakeCamera();
 };
 
 template<class Archive>

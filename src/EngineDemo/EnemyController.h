@@ -46,6 +46,10 @@ private:
 
 	PROPERTY(canMove);
 	bool m_canMove;
+
+	PROPERTY(strafeMove);
+	bool m_strafeMove;
+
 public:
 	EnemyController();
 	virtual ~EnemyController();

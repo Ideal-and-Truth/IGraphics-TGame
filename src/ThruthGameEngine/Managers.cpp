@@ -6,11 +6,17 @@
 #include "PhysicsManager.h"
 #include "GraphicsManager.h"
 #include "EditorCamera.h"
+#include "ParticleManager.h"
+#include "SoundManager.h"
 #include "ComponentFactory.h"
+#include <time.h>
+
+fs::path Truth::Managers::ROOT_PATH = fs::path();
 
 Truth::Managers::Managers()
 {
 	DEBUG_PRINT("Create Managers\n");
+	ROOT_PATH = fs::current_path();
 }
 
 Truth::Managers::~Managers()
@@ -33,10 +39,10 @@ void Truth::Managers::Update() const
 {
 	m_inputManager->Update();
 	m_timeManager->Update();
-
 #ifdef EDITOR_MODE
 	if (!m_isEdit)
 	{
+		m_soundManager->Update();
 		m_physXManager->Update();
 		m_sceneManager->Update();
 		m_eventManager->Update();
@@ -47,6 +53,7 @@ void Truth::Managers::Update() const
 		m_editorCamera->Update(m_timeManager->GetDT());
 	}
 #else
+	m_soundManager->Update();
 	m_physXManager->Update();
 	m_sceneManager->Update();
 	m_eventManager->Update();
@@ -77,8 +84,19 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
-	m_sceneManager->ApplyTransform();
+	clock_t start, finish;
 
+	start = clock();
+
+	m_sceneManager->ApplyTransform();
+	finish = clock();
+
+	std::string temp = std::to_string(finish - start);
+	temp = std::string("update : ") + temp;
+	temp += " / ";
+	DEBUG_PRINT(temp.c_str());
+
+	start = clock();
 #ifdef EDITOR_MODE
 	if (m_isEdit)
 	{
@@ -92,6 +110,12 @@ void Truth::Managers::Render() const
 #else
 	m_graphicsManager->Render();
 #endif // EDITOR_MODE
+	finish = clock();
+	temp = std::to_string(finish - start);
+	temp = std::string("render : ") + temp;
+	temp += " \n ";
+	DEBUG_PRINT(temp.c_str());
+
 }
 
 void Truth::Managers::Finalize()
@@ -113,6 +137,9 @@ void Truth::Managers::Finalize()
 
 	m_graphicsManager->Finalize();
 	m_graphicsManager.reset();
+
+	m_soundManager->Finalize();
+	m_soundManager.reset();
 }
 
 
@@ -151,14 +178,18 @@ void Truth::Managers::CreateManagers()
 	m_sceneManager = std::make_shared<SceneManager>();
 	m_physXManager = std::make_shared<PhysicsManager>();
 	m_graphicsManager = std::make_shared<GraphicsManager>();
+	m_particleManager = std::make_shared<ParticleManager>();
+	m_soundManager = std::make_shared<SoundManager>();
 }
 
 void Truth::Managers::InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 _width, uint32 _height)
 {
+	m_soundManager->Initalize();
 	m_eventManager->Initialize(m_timeManager, m_physXManager);
 	m_timeManager->Initalize(shared_from_this());
 	m_inputManager->Initalize(_hinstance, _hwnd, m_eventManager);
 	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();
 	m_graphicsManager->Initalize(_hwnd, _width, _height);
+	m_particleManager->Initalize(m_graphicsManager);
 }

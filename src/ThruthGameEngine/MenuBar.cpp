@@ -6,7 +6,36 @@
 #include "NewScenePopup.h"
 #include "EditorUI.h"
 #include "LoadMapDataPopup.h"
+#include "ParticleManager.h"
 
+#pragma region test Scene
+#include "Entity.h"
+#include "RigidBody.h"
+#include "BoxCollider.h"
+#include "CapsuleCollider.h"
+#include "SphereCollider.h"
+#include "MeshCollider.h"
+#include "Mesh.h"
+#include "Camera.h"
+#include "FreeCamera.h"
+
+#include "Transform.h"
+#include "TestComponent.h"
+
+#include "SkinnedMesh.h"
+#include "DirectionLight.h"
+#include "Animator.h"
+
+#include "Controller.h"
+
+#include "NavMeshGenerater.h"
+
+#include "DirectionLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+
+#include "UI.h"
+#pragma endregion test Scene
 MenuBar::MenuBar(std::weak_ptr<Truth::Managers> _manager, HWND _hwnd, EditorUI* _editor)
 	: EditorContext("Menu Bar", _manager, _hwnd, _editor)
 {
@@ -68,6 +97,7 @@ void MenuBar::ShowContext(bool* p_open)
 				USES_CONVERSION;
 				m_manager.lock()->Scene()->m_currentScene->m_name = W2A(f.back().c_str());
 			}
+			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
 		if (ImGui::Selectable("Load Scene"))
 		{
@@ -77,6 +107,7 @@ void MenuBar::ShowContext(bool* p_open)
 				std::wstring filepath = m_openFileName.lpstrFile;
 				m_manager.lock()->Scene()->LoadSceneData(filepath);
 			}
+			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
 		if (ImGui::Selectable("Load Map Data"))
 		{
@@ -99,14 +130,21 @@ void MenuBar::ShowContext(bool* p_open)
 
 				std::shared_ptr<Truth::Entity> e;
 
-				std::ifstream inputstream(f.back());
+				std::ifstream inputstream(filepath);
 				boost::archive::text_iarchive inputArchive(inputstream);
 				inputArchive >> e;
 				e->SetManager(m_manager);
 
 				currentScene->AddEntity(e);
 			}
+			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
+
+		if (ImGui::Selectable("Create Particle"))
+		{
+			m_manager.lock()->Particle()->CreateEmptyParticle();
+		}
+
 		ImGui::EndPopup();
 	}
 

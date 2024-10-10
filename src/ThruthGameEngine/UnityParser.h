@@ -10,7 +10,7 @@
 
 namespace fs = std::filesystem;
 
-class FileUtils;
+class TFileUtils;
 
 namespace Truth
 {
@@ -53,6 +53,9 @@ namespace Truth
 			fs::path m_albedo;
 			fs::path m_normal;
 			fs::path m_metalicRoughness;
+			
+			float m_tileX = 1.0f;
+			float m_tileY = 1.0f;
 		};
 
 		/// <summary>
@@ -81,8 +84,6 @@ namespace Truth
 			float m_range;
 			float m_angle;
 
-			// Transform Info
-			Matrix m_localTM = Matrix::Identity;
 
 			std::string m_guid = "";
 			std::string m_fileID = "";
@@ -90,6 +91,15 @@ namespace Truth
 			int32 m_parent = -1;
 			int32 m_mine = -1;
 			std::string m_name;
+
+			// Transform Info
+			Vector3 m_position;
+			Vector3 m_scale;
+			Quaternion m_rotation;
+
+			bool m_localPosChange[3] = {0, };
+			bool m_localScaleChange[3] = {0, };
+			bool m_localRotationChange = false;
 		};
 
 		uint32 m_meshFilterCount = 0;
@@ -157,15 +167,17 @@ namespace Truth
 
 		void ParseGameObject(const std::string& _guid, const YAML::Node& _node, GameObject* _owner);
 		void ParseBoxCollider(const YAML::Node& _node, GameObject* _owner);
+		void ParseMeshCollider(const YAML::Node& _node, GameObject* _owner);
 		void ParseMeshFilter(const YAML::Node& _node, GameObject* _owner);
 		void ParseLight(const YAML::Node& _node, GameObject* _owner);
 
-		Matrix GetPrefabMatrix(const YAML::Node& _node);
+		void GetPrefabMatrix(const YAML::Node& _node, GameObject* _owner);
 		void GetPrefabMatarial(GameObject* _GO, const YAML::Node& _node);
 
 		void ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxPath);
 
 		void ParseMatarialFile(GameObject* _GO, const std::string& _matGuid);
+		void CopyTexture(const YAML::Node& _node, fs::path& _output);
 		void ParseOnlyMatarialFile(const fs::path& _matGuid);
 
 		void WriteMaterialData();
@@ -173,10 +185,10 @@ namespace Truth
 		void ConvertUnloadedMesh();
 
 		void WriteData();
-		void WriteColliderData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteMeshData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteLightData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
+		void WriteColliderData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteMeshData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteLightData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteLocalTMData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
 	};
 }
 

@@ -7,6 +7,16 @@
 
 namespace AssimpConvert
 {
+	struct ParticleMesh
+	{
+		std::string name;
+		int32 boneIndex;	//뼈일 경우 인덱스 값
+		std::string materialName;	// 이 mesh를 그릴때 필요한 material의 이름을 가지고 있겠다.
+
+		std::vector<ParticleVertexTest> vertices;
+		std::vector<uint32> indices;
+	};
+
 	struct Mesh
 	{
 		std::string name;
@@ -15,6 +25,12 @@ namespace AssimpConvert
 
 		std::vector<BasicVertex> vertices;
 		std::vector<uint32> indices;
+
+		Matrix localTM;
+
+		// AABB 경계 정보
+		Vector3 minBounds;  // AABB 최소 경계 (x, y, z)
+		Vector3 maxBounds;  // AABB 최대 경계 (x, y, z)
 	};
 
 	struct SkinnedMesh

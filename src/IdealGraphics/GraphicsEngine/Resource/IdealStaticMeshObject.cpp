@@ -3,13 +3,15 @@
 #include "GraphicsEngine/Resource/IdealMaterial.h"
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
 #include "GraphicsEngine/D3D12/D3D12Renderer.h"
-#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 #include "GraphicsEngine/D3D12/D3D12Texture.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 #include "Misc/Utils/StringUtils.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
+#include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
+#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
@@ -58,33 +60,70 @@ void Ideal::IdealStaticMeshObject::Draw(std::shared_ptr<Ideal::IdealRenderer> Re
 		return;
 	}
 	// Ver2 2024.05.07 : Constant Buffer를 Pool에서 할당받아 사용한다.
-	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
-	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
-	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
+// 	std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<D3D12Renderer>(Renderer);
+// 	ComPtr<ID3D12GraphicsCommandList> commandList = d3d12Renderer->GetCommandList();
+// 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 
-	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
-	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Transform));
-	if (!cb)
-	{
-		__debugbreak();
-	}
+// 	std::shared_ptr<Ideal::D3D12DescriptorHeap> descriptorHeap = d3d12Renderer->GetMainDescriptorHeap();
+// 	auto cb = d3d12Renderer->ConstantBufferAllocate(sizeof(CB_Transform));
+// 	if (!cb)
+// 	{
+// 		__debugbreak();
+// 	}
+// 
+// 	CB_Transform* cbTransform = (CB_Transform*)cb->SystemMemAddr;
+// 	cbTransform->World = m_transform.Transpose();
+// 	cbTransform->WorldInvTranspose = m_transform.Transpose().Invert();
+// 
+// 	// b0용 Descriptor Table 할당
+// 	auto handle = descriptorHeap->Allocate(1);	// 공용 root parameter인 b0 : transform 만 필요하니 Descriptor 공간을 하나만 받는다.
+// 	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+// 
+// 	// Copy To Main Descriptor
+// 	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM, incrementSize);
+// 	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+// 
+// 	// 공용으로 쓰는 Root Parameter인 Transform은 Root Paramter Index가 0번임.
+// 	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ, handle.GetGpuHandle());
 
-	CB_Transform* cbTransform = (CB_Transform*)cb->SystemMemAddr;
+	m_staticMesh->Draw(Renderer, m_transform);
+}
+
+void Ideal::IdealStaticMeshObject::DebugDraw(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+{
+	// Transform Data 
+	auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
+	CB_Transform* cbTransform = (CB_Transform*)cb1->SystemMemAddr;
 	cbTransform->World = m_transform.Transpose();
 	cbTransform->WorldInvTranspose = m_transform.Transpose().Invert();
+	memcpy(cb1->SystemMemAddr, cbTransform, sizeof(CB_Transform));
+	auto handle0 = DescriptorHeap->Allocate();
+	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), cb1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetGraphicsRootDescriptorTable(Ideal::DebugMeshRootSignature::Slot::CBV_Transform, handle0.GetGpuHandle());
 
-	// b0용 Descriptor Table 할당
-	auto handle = descriptorHeap->Allocate(1);	// 공용 root parameter인 b0 : transform 만 필요하니 Descriptor 공간을 하나만 받는다.
-	uint32 incrementSize = d3d12Renderer->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	// Color Data
+	auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_Color));
+	memcpy(cb2->SystemMemAddr, &m_cbDebugColor, sizeof(CB_Color));
+	auto handle1 = DescriptorHeap->Allocate();
+	Device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CommandList->SetGraphicsRootDescriptorTable(Ideal::DebugMeshRootSignature::Slot::CBV_Color, handle1.GetGpuHandle());
 
-	// Copy To Main Descriptor
-	CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(handle.GetCpuHandle(), STATIC_MESH_DESCRIPTOR_INDEX_CBV_TRANSFORM, incrementSize);
-	device->CopyDescriptorsSimple(1, cbvDest, cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	m_staticMesh->DebugDraw(Device, CommandList);
+}
 
-	// 공용으로 쓰는 Root Parameter인 Transform은 Root Paramter Index가 0번임.
-	commandList->SetGraphicsRootDescriptorTable(STATIC_MESH_DESCRIPTOR_TABLE_INDEX_OBJ, handle.GetGpuHandle());
+void Ideal::IdealStaticMeshObject::SetStaticWhenRunTime(bool Static)
+{
+	m_isStaticWhenRuntime = Static;
+}
 
-	m_staticMesh->Draw(Renderer);
+bool Ideal::IdealStaticMeshObject::GetIsStaticWhenRunTime()
+{
+	return m_isStaticWhenRuntime;
+}
+
+void Ideal::IdealStaticMeshObject::SetDebugMeshColor(DirectX::SimpleMath::Color& Color)
+{
+	m_cbDebugColor.color = Color;
 }
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)

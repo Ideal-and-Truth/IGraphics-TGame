@@ -27,6 +27,10 @@ namespace Truth
 
 		std::map<std::string, std::weak_ptr<Ideal::IBone>> m_boneMap;
 
+		PROPERTY(mat);
+		std::vector<std::shared_ptr<Material>> m_mat;
+		std::vector<std::string> m_matPath;
+
 	private:
 		PROPERTY(path);
 		std::wstring m_path;
@@ -89,6 +93,17 @@ namespace Truth
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_path;
+		if (file_version >= 1)
+		{
+			size_t matSize;
+			_ar& matSize;
+			for (size_t i = 0; i < matSize ; i++)
+			{
+				std::string matPath;
+				_ar& matPath;
+				m_matPath.push_back(matPath);
+			}
+		}
 	}
 
 	template<class Archive>
@@ -96,8 +111,13 @@ namespace Truth
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		_ar& m_path;
+		_ar& m_mat.size();
+		for (auto& m : m_mat)
+		{
+			_ar& m->m_path;
+		}
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::SkinnedMesh)
-BOOST_CLASS_VERSION(Truth::SkinnedMesh, 0)
+BOOST_CLASS_VERSION(Truth::SkinnedMesh, 1)

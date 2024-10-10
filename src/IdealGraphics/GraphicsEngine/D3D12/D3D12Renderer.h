@@ -101,7 +101,7 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() override;
 
 		virtual void SetSkyBox(const std::wstring& FileName) override;
-		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName) override;
+		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName, bool IsGenerateMips = false, bool IsNormalMap = false) override;
 		virtual std::shared_ptr<Ideal::IMaterial> CreateMaterial() override;
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) override;
@@ -125,6 +125,9 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial() override;
 		virtual void DeleteParticleMaterial(std::shared_ptr<Ideal::IParticleMaterial>& ParticleMaterial) override;
 
+		// ParticleMesh
+		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) override;
+
 	public:
 		//--------Asset Info---------//
 		virtual void SetAssetPath(const std::wstring& AssetPath) override { m_assetPath = AssetPath; }
@@ -133,6 +136,7 @@ namespace Ideal
 
 		virtual void ConvertAssetToMyFormat(std::wstring FileName, bool isSkinnedData = false, bool NeedVertexInfo = false, bool NeedConvertCenter = false) override;
 		virtual void ConvertAnimationAssetToMyFormat(std::wstring FileName) override;
+		virtual void ConvertParticleMeshAssetToMyFormat(std::wstring FileName, bool SetScale = false, Vector3 Scale = Vector3(1.f)) override;
 
 		//--------ImGui--------//
 		virtual bool SetImGuiWin32WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
@@ -285,5 +289,11 @@ namespace Ideal
 		// 2024.07.08 : object 관리 수정
 		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		//std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
+
+		// Ray Tracing Optimization // Do not use In Rasterizer Renderer
+	private:
+		virtual void BakeOption(int MaxBakeCount, float MinSpaceSize) override;
+		virtual void BakeStaticMeshObject() override;
+		virtual void ReBuildBLASFlagOn() override;
 	};
 }

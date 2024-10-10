@@ -4,7 +4,8 @@
 #include "Misc/Utils/FileUtils.h"
 #include <filesystem>
 #include "Misc/Utils/StringUtils.h"
-
+#include <limits>
+#include <algorithm>
 // 유틸리티 함수: UTF-8 문자열을 wstring으로 변환
 std::wstring utf8_to_wstring(const std::string& utf8Str) {
 	if (utf8Str.empty()) return std::wstring();
@@ -26,6 +27,7 @@ std::string wstring_to_multibyte(const std::wstring& wideStr) {
 
 	return multiByteStr;
 }
+
 
 bool IsNegative(const Matrix& m)
 {
@@ -134,7 +136,9 @@ void AssimpConverter::ReadAssetFile(const std::wstring& path, bool isSkinnedData
 	fileStr = m_assetPath + path;
 
 	uint32 flag = 0;
-	flag |= aiProcess_ConvertToLeftHanded;
+	flag |= aiProcess_MakeLeftHanded;
+	flag |= aiProcess_FlipUVs;
+	flag |= aiProcess_FlipWindingOrder;
 	flag |= aiProcess_Triangulate;
 	flag |= aiProcess_GenUVCoords;
 	flag |= aiProcess_GenNormals;
@@ -238,6 +242,14 @@ void AssimpConverter::ExportVertexPositionData(const std::wstring& savePath)
 {
 	std::wstring finalPath = m_modelPath + savePath + L".pos";
 	WriteVertexPositionFile(finalPath);
+}
+
+void AssimpConverter::ExportParticleData(std::wstring savePath, bool SetScale /*= false*/, Vector3 Scale /*= Vector3(1.f)*/)
+{
+	ReadParticleModelData(m_scene->mRootNode, -1, -1, SetScale, Scale);
+	// Write
+	std::wstring finalPath = m_modelPath + savePath + L".pmesh";
+	WriteParticleModelData(finalPath);
 }
 
 std::string AssimpConverter::WriteTexture(std::string SaveFolder, std::string File)
@@ -397,6 +409,8 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 	file->Write<uint32>((uint32)m_meshes.size());
 	for (auto& mesh : m_meshes)
 	{
+		file->Write<Matrix>(mesh->localTM);
+
 		file->Write<std::string>(mesh->name);
 		file->Write<int32>(mesh->boneIndex);
 		file->Write<std::string>(mesh->materialName);
@@ -409,6 +423,9 @@ void AssimpConverter::WriteModelFile(const std::wstring& filePath)
 		file->Write<uint32>((uint32)mesh->indices.size());
 		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
 
+		// bound
+		file->Write<Vector3>(mesh->minBounds);
+		file->Write<Vector3>(mesh->maxBounds);
 	}
 }
 
@@ -468,13 +485,27 @@ void AssimpConverter::ReadModelData(aiNode* node, int32 index, int32 parent, boo
 	m_bones.push_back(bone);
 
 	Vector3 scale;
-	bone->transform.Decompose(scale, Quaternion(), Vector3());
+	Quaternion rot;
+	Vector3 pos;
+	bone->transform.Decompose(scale, rot, pos);
+	// rot *= Quaternion::CreateFromYawPitchRoll({ 0.0f, 1.5f, 0.0f });
+
+// 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3(0.0f, 3.14f, 0.0f));
+// 	rot *= q;
+// 
+// 	bone->transform = Matrix::CreateScale(scale);
+// 	bone->transform *= Matrix::CreateFromQuaternion(rot);
+//  	bone->transform *= Matrix::CreateTranslation(pos);
+
 	if (scale.x < 0)
-	{
 		bone->isNegative = true;
+
+	if (bone->parent < 0 || m_bones[bone->parent]->parent <= 0)
+	{
+		matParent = Matrix::Identity;
 	}
-	// Local Transform
 	bone->transform = bone->transform * matParent;
+
 
 	isNegative = bone->isNegative != isNegative;
 
@@ -746,6 +777,7 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 		std::shared_ptr<AssimpConvert::Mesh> mesh = std::make_shared<AssimpConvert::Mesh>();
 		mesh->name = node->mName.C_Str();
 		mesh->boneIndex = bone;
+		mesh->localTM = m_bones[bone]->transform;
 
 		uint32 index = node->mMeshes[i];
 		const aiMesh* srcMesh = m_scene->mMeshes[index];
@@ -759,6 +791,15 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 
 		const uint32 startVertex = (uint32)mesh->vertices.size();
 
+		// AABB 계산
+		AABB aabb = CalculateAABB(srcMesh);
+
+		// AABB 값을 float 타입으로 저장
+		mesh->minBounds = Vector3(aabb.minBounds.x, aabb.minBounds.y, aabb.minBounds.z);
+		mesh->maxBounds = Vector3(aabb.maxBounds.x, aabb.maxBounds.y, aabb.maxBounds.z);
+		Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+		Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+		bool isChangeBound = false;
 		// Vertex
 		for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 		{
@@ -766,8 +807,21 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			{
 				memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
 				//2024.08.13 본의 위치를 곱해준다.
-				Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
-				vertex.Position = result;
+				if (m_bones[bone]->parent > 0)
+				{
+					isChangeBound = true;
+					Vector3 result = Vector3::Transform(vertex.Position, m_bones[bone]->transform);
+					vertex.Position = result;
+
+					minBounds.x = std::min(minBounds.x, result.x);
+					minBounds.y = std::min(minBounds.y, result.y);
+					minBounds.z = std::min(minBounds.z, result.z);
+
+					maxBounds.x = max(maxBounds.x, result.x);
+					maxBounds.y = max(maxBounds.y, result.y);
+					maxBounds.z = max(maxBounds.z, result.z);
+				}
+
 			}
 
 			// UV
@@ -780,21 +834,32 @@ void AssimpConverter::ReadMeshData(aiNode* node, int32 bone, Vector3 scale, bool
 			if (srcMesh->HasNormals())
 			{
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
-				Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
-				vertex.Normal = normal;
+				if (m_bones[bone]->parent > 0)
+				{
+					Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
+					vertex.Normal = normal;
+				}
 			}
 
 			// Tangent
 			if (srcMesh->HasTangentsAndBitangents())
 			{
 				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
-				Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
-				vertex.Tangent = tangent;
+				if (m_bones[bone]->parent > 0)
+				{
+					Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
+					vertex.Tangent = tangent;
+				}
 			}
 
 			mesh->vertices.push_back(vertex);
 		}
 
+		if (isChangeBound)
+		{
+			mesh->minBounds = minBounds;
+			mesh->maxBounds = maxBounds;
+		}
 		// Index
 		for (uint32 f = 0; f < srcMesh->mNumFaces; ++f)
 		{
@@ -869,6 +934,10 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parent
 				memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
 				Vector3 normal = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
 				vertex.Normal = normal;
+
+				// 역 전치를 사용하여 노멀 변환
+				//Matrix inverseTranspose = m_bones[bone]->transform.Transpose().Invert();
+				//vertex.Normal = Vector3::TransformNormal(vertex.Normal, inverseTranspose);
 			}
 
 			// Tangent
@@ -877,6 +946,8 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parent
 				memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
 				Vector3 tangent = Vector3::TransformNormal(vertex.Normal, m_bones[bone]->transform);
 				vertex.Tangent = tangent;
+				//Matrix inverseTranspose = m_bones[bone]->transform.Transpose().Invert();
+				//vertex.Tangent = Vector3::TransformNormal(vertex.Tangent, inverseTranspose);
 			}
 
 			mesh->vertices.push_back(vertex);
@@ -894,6 +965,96 @@ void AssimpConverter::ReadSkinnedMeshData(aiNode* node, int32 bone, int32 parent
 		}
 		mesh->parentIndexIfHaveNotBone = parentBone;
 		m_skinnedMeshes.push_back(mesh);
+	}
+}
+
+void AssimpConverter::ReadParticleModelData(aiNode* node, int32 index, int32 parent, bool SetScale, Vector3 Scale /*= Vector3(1.f)*/)
+{
+	std::shared_ptr<AssimpConvert::ParticleMesh> mesh = std::make_shared<AssimpConvert::ParticleMesh>();
+	mesh->name = node->mName.C_Str();
+
+	// 하나밖에 없다고 가정한다.
+	const aiMesh* srcMesh = m_scene->mMeshes[0];
+
+	// Vertex
+	for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
+	{
+		ParticleVertexTest vertex;
+		{
+			memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
+
+			if (SetScale)
+			{
+				Vector3 result = Vector3::Transform(vertex.Position, Matrix::CreateScale(Scale));
+				vertex.Position = result;
+			}
+		}
+
+		// UV
+		if (srcMesh->HasTextureCoords(0))
+		{
+			memcpy(&vertex.UV, &srcMesh->mTextureCoords[0][v], sizeof(Vector2));
+		}
+
+		// Normal
+		if (srcMesh->HasNormals())
+		{
+			memcpy(&vertex.Normal, &srcMesh->mNormals[v], sizeof(Vector3));
+			if (SetScale)
+			{
+				Vector3 normal = Vector3::TransformNormal(vertex.Normal, Matrix::CreateScale(Scale));
+				normal.Normalize();
+				vertex.Normal = normal;
+			}
+		}
+
+		//// Tangent
+		//if (srcMesh->HasTangentsAndBitangents())
+		//{
+		//	memcpy(&vertex.Tangent, &srcMesh->mTangents[v], sizeof(Vector3));
+		//	if (SetScale)
+		//	{
+		//		Vector3 tangent = Vector3::TransformNormal(vertex.Tangent, Matrix::CreateScale(Scale));
+		//		vertex.Tangent = tangent;
+		//	}
+		//}
+
+		mesh->vertices.push_back(vertex);
+	}
+
+	// Index
+	for (uint32 f = 0; f < srcMesh->mNumFaces; ++f)
+	{
+		aiFace& face = srcMesh->mFaces[f];
+
+		for (uint32 k = 0; k < face.mNumIndices; ++k)
+		{
+			mesh->indices.push_back(face.mIndices[k]);
+		}
+	}
+	m_particleMeshes.push_back(mesh);
+}
+
+void AssimpConverter::WriteParticleModelData(const std::wstring& filePath)
+{
+	auto path = std::filesystem::path(filePath);
+
+	std::filesystem::create_directories(path.parent_path());
+
+	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	file->Open(filePath, FileMode::Write);
+
+	for (auto& mesh : m_particleMeshes)
+	{
+		file->Write<std::string>(mesh->name);
+
+		// vertex
+		file->Write<uint32>((uint32)mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(ParticleVertexTest) * (uint32)mesh->vertices.size());
+
+		// index
+		file->Write<uint32>((uint32)mesh->indices.size());
+		file->Write(&mesh->indices[0], sizeof(uint32) * (uint32)mesh->indices.size());
 	}
 }
 
@@ -1121,4 +1282,29 @@ void AssimpConverter::WriteVertexPositionFile(const std::wstring& filePath)
 			file->Write<uint32>(mesh->indices[i]);
 		}
 	}
+}
+
+#undef max
+
+AssimpConverter::AABB AssimpConverter::CalculateAABB(const aiMesh* mesh)
+{
+	AABB aabb;
+	// 초기 최소값, 최대값 설정
+	aabb.minBounds = aiVector3D(std::numeric_limits<float>::max());
+	aabb.maxBounds = aiVector3D(std::numeric_limits<float>::lowest());
+
+	// 정점들을 순회하며 AABB 경계 계산
+	for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
+		const aiVector3D& vertex = mesh->mVertices[i];
+
+		aabb.minBounds.x = std::min(aabb.minBounds.x, vertex.x);
+		aabb.minBounds.y = std::min(aabb.minBounds.y, vertex.y);
+		aabb.minBounds.z = std::min(aabb.minBounds.z, vertex.z);
+
+		aabb.maxBounds.x = std::max(aabb.maxBounds.x, vertex.x);
+		aabb.maxBounds.y = std::max(aabb.maxBounds.y, vertex.y);
+		aabb.maxBounds.z = std::max(aabb.maxBounds.z, vertex.z);
+	}
+
+	return aabb;
 }

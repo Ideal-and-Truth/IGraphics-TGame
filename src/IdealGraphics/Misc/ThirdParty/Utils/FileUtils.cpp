@@ -1,4 +1,4 @@
-#include "Misc/Utils/FileUtils.h"
+#include "Misc/ThirdParty/Utils/FileUtils.h"
 
 FileUtils::FileUtils()
 {
@@ -47,6 +47,11 @@ void FileUtils::Open(std::wstring FilePath, FileMode Mode)
 	}
 
 	assert(m_handle != INVALID_HANDLE_VALUE);
+}
+
+void FileUtils::Close()
+{
+	CloseHandle(m_handle);
 }
 
 void FileUtils::Write(void* Data, uint32 DataSize)

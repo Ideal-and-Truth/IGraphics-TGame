@@ -5,7 +5,7 @@
 class Player;
 class PlayerAnimator;
 class Enemy;
-class EnemyAnimator;
+class RangerAnimator;
 
 class RangedWeapon :
 	public Truth::Component
@@ -28,7 +28,7 @@ private:
 	std::shared_ptr<PlayerAnimator> m_playerAnimator;
 
 	std::shared_ptr<Enemy> m_enemy;
-	std::shared_ptr<EnemyAnimator> m_enemyAnimator;
+	std::shared_ptr<RangerAnimator> m_rangerAnimator;
 
 
 	bool m_isAttacking;

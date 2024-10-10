@@ -35,6 +35,8 @@ namespace Truth
 
 		const float m_minmumDistance;
 
+		Vector3 m_impulse;
+
 		PROPERTY(height);
 		float m_height;
 
@@ -73,6 +75,7 @@ namespace Truth
 		virtual void Start() override;
 
 		void Move(Vector3& _disp);
+		void AddImpulse(Vector3& _disp);
 		bool SetPosition(Vector3& _disp);
 		void SetRotation(Quaternion& _val);
 		bool IsCollisionDown();

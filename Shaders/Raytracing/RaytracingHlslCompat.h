@@ -30,17 +30,15 @@ struct Ray
 
 struct SceneConstantBuffer
 {
+    XMMATRIX View;
+    XMMATRIX Proj;
     XMMATRIX projectionToWorld;
     XMVECTOR cameraPosition;
-    XMVECTOR lightPosition;
-    XMVECTOR lightAmbientColor;
-    XMVECTOR lightDiffuseColor;
 
     unsigned int maxRadianceRayRecursionDepth;
     unsigned int maxShadowRayRecursionDepth;
-
-    XMVECTOR Color;
-    float padding[2];
+    float nearZ;
+    float farZ;
 };
 
 struct MaterialInfoConstantBuffer
@@ -52,6 +50,11 @@ struct MaterialInfoConstantBuffer
 
 	float metallicFactor;
 	float roughnessFactor;
+    float TilingX;
+    float TilingY;
+    float OffsetX;
+    float OffsetY;
+
     float pad0;
     float pad1;
 };
@@ -124,9 +127,7 @@ struct LightList
 	float pad1;
 
     DirectionalLight DirLight;
-    PointLight PointLights[16];  //TEMP
-    SpotLight SpotLights[16];    //TEMP
-
-
+    PointLight PointLights[100];  //TEMP
+    SpotLight SpotLights[100];    //TEMP
 };
 #endif // RAYTRACINGHLSLCOMPAT_H
