@@ -540,6 +540,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IShader> DefaultParticlePSShader = gRenderer->CreateAndLoadParticleShader(L"DefaultParticlePS");
 
 		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossFX_1BeamRing.hlsl",
+			L"../Shaders/Particle/",
+			L"BossFX_1BeamRingPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossBeamRingShader = gRenderer->CreateAndLoadParticleShader(L"BossFX_1BeamRingPS");
+
+		gRenderer->CompileShader(
 			L"../Shaders/Particle/BossFX_FileProjectile.hlsl",
 			L"../Shaders/Particle/",
 			L"BossFX_FileProjectilePS",
@@ -664,6 +674,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			auto& graph = bossParticleSystem1->GetSizeOverLifetimeAxisZ();
 			graph.AddControlPoint({ 0,1 });
 		}
+		// 또 같이 쓰는거
+
+		std::shared_ptr<Ideal::IParticleMaterial> bossBeamRingMaterial = gRenderer->CreateParticleMaterial();
+		bossBeamRingMaterial->SetShader(bossBeamRingShader);
+		std::shared_ptr<Ideal::ITexture> bossBeamTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/boss/Ring_2.png");
+		bossBeamRingMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		//std::shared_ptr<Ideal::IParticleSystem> bossBeamRingParticleSystem 
+
 
 		///----------------------FileProjectile---------------------///
 		std::shared_ptr<Ideal::IParticleMaterial> bossFireProjectileMaterial0 = gRenderer->CreateParticleMaterial();
@@ -1287,6 +1305,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					blackHoleParticleSystem->Resume();
 					blackHoleSphereParticleSystem->Resume();
+				}
+
+				if (GetAsyncKeyState('O') & 0x8000)
+				{
+					auto p = gRenderer->GetTopLeftEditorPos();
+					auto p2 = gRenderer->GetRightBottomEditorPos();
+					int a = 3;
 				}
 				
 				// Animation // 역재생 안됨
