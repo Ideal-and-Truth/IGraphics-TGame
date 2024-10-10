@@ -393,11 +393,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 #pragma region TestPlane
 		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-		auto planeMaterial= gRenderer->CreateMaterial();
-		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_BaseMap.png", true);
-		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_MaskMap.png", true, true);
+		auto planeMaterial = gRenderer->CreateMaterial();
+		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_BaseMap.png", true);
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_MaskMap.png", true, true);
 		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png", true, true);
-		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_Normal.png", true, true);
+		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_Normal.png", true, true);
 		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
@@ -628,9 +628,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		bossParticleSystem0->SetSimulationSpeed(2.f);
 		// 첫 색상
 		bossParticleSystem0->SetStartColor(DirectX::SimpleMath::Color(0.1080087, 0.5713133, 2.544206, 1));
-		
+
 		bossParticleSystem0->SetTransformMatrix(
-			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4,0.4,1))*
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
 		);
 
@@ -653,7 +653,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// 첫 색상
 		bossParticleSystem1->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
 		bossParticleSystem1->SetTransformMatrix(
-			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1))*
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f));
 		bossParticleSystem1->SetSimulationSpeed(2.f);
 		// 크기 
@@ -679,8 +679,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IParticleMaterial> bossBeamRingMaterial = gRenderer->CreateParticleMaterial();
 		bossBeamRingMaterial->SetShader(bossBeamRingShader);
 		std::shared_ptr<Ideal::ITexture> bossBeamTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/boss/Ring_2.png");
+		bossBeamRingMaterial->SetTexture0(bossBeamTex0);
 		bossBeamRingMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
-		//std::shared_ptr<Ideal::IParticleSystem> bossBeamRingParticleSystem 
+		std::shared_ptr<Ideal::IParticleSystem> bossBeamRingParticleSystem = gRenderer->CreateParticleSystem(bossBeamRingMaterial);
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Plane.fbx");
+		std::shared_ptr<Ideal::IMesh> bossParticleMeshPlane = gRenderer->CreateParticleMesh(L"0_Particle/Plane");
+		bossBeamRingParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		bossBeamRingParticleSystem->SetRenderMesh(bossParticleMeshPlane);
+		bossBeamRingParticleSystem->SetStartSize(0.5f);
+		bossBeamRingParticleSystem->SetStartLifetime(1.f);
+		bossBeamRingParticleSystem->SetDuration(1.f);
+		bossBeamRingParticleSystem->SetLoop(false);
+		bossBeamRingParticleSystem->SetStartColor(Color(0.515574, 2.434655, 5.470814, 1));
+
+		bossBeamRingParticleSystem->SetSizeOverLifetime(true);
+		{
+			auto& graph = bossBeamRingParticleSystem->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.5 });
+			graph.AddControlPoint({ 1,3 });
+		}
+		{
+			auto& graph = bossBeamRingParticleSystem->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1 });
+		}
+		{
+			auto& graph = bossBeamRingParticleSystem->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.5 });
+			graph.AddControlPoint({ 1,3 });
+		}
+
 
 
 		///----------------------FileProjectile---------------------///
@@ -1266,6 +1293,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					bossParticleSystem0->Play();
 					bossParticleSystem1->Play();
+					bossBeamRingParticleSystem->Play();
 					//slashParticleSystem->Play();
 				}
 				if (GetAsyncKeyState('X') & 0x8000)
@@ -1309,11 +1337,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('O') & 0x8000)
 				{
-					auto p = gRenderer->GetTopLeftEditorPos();
-					auto p2 = gRenderer->GetRightBottomEditorPos();
-					int a = 3;
+					//auto p = gRenderer->GetTopLeftEditorPos();
+					//auto p2 = gRenderer->GetRightBottomEditorPos();
+					//int a = 3;
+					bossBeamRingParticleSystem->Play();
 				}
-				
+				if (GetAsyncKeyState('P') & 0x8000)
+				{
+					bossBeamRingParticleSystem->Pause();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -1333,6 +1365,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				sphereImpactParticleSystem2->SetDeltaTime(0.003f);
 				blackHoleParticleSystem->SetDeltaTime(0.003f);
 				blackHoleSphereParticleSystem->SetDeltaTime(0.003f);
+				bossBeamRingParticleSystem->SetDeltaTime(0.003f);
 
 				//if (DebugPlayer)
 				{
@@ -1638,6 +1671,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
+		case WM_SYSKEYDOWN:
+		case WM_KEYUP:
+			return 0;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 	}
