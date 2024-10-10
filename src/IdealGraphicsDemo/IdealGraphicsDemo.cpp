@@ -1657,6 +1657,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('U') & 0x8000)
 				{
+					gRenderer->GetTopLeftEditorPos();
 					gRenderer->GetRightBottomEditorPos();
 				}
 
