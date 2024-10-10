@@ -1082,8 +1082,10 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetTopLeftEditorPos
 	float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
 	float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
 
-	y += m_mainCameraEditorTopLeft.y;
-	x += m_mainCameraEditorTopLeft.x;
+	float ny = m_mainCameraEditorTopLeft.y;
+	float nx = m_mainCameraEditorTopLeft.x;
+	ny += y;
+	nx += x;
 	return Vector2(x,y);
 }
 
@@ -1101,6 +1103,8 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEdito
 	float nx = m_mainCameraEditorBottomRight.x;
 	ny -= y;
 	nx -= x;
+	//ny += m_mainCameraEditorTopLeft.y;
+	//nx += m_mainCameraEditorTopLeft.x;
 	return Vector2(x, y);
 }
 
@@ -2186,18 +2190,18 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 {
 	ImGui::Begin("MAIN SCREEN", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav);		// Create a window called "Hello, world!" and append into it.
 
-	ImVec2 windowPos = ImGui::GetWindowPos();
- 	ImVec2 min = ImGui::GetWindowContentRegionMin();
- 	ImVec2 max = ImGui::GetWindowContentRegionMax();
+	ImVec2 windowPos = ImGui::GetWindowPos(); // 현재 윈도우 포지션
+ 	ImVec2 min = ImGui::GetWindowContentRegionMin(); // 컨텐츠 포지션 왼쪽 위 -> 윈도우 왼쪽 위 기준
+ 	ImVec2 max = ImGui::GetWindowContentRegionMax(); // 컨텐츠 포지션 오른쪽 아래 -> 윈도우 왼쪽 위 기준
 	ImVec2 windowSize = ImGui::GetWindowSize();
+	auto a = ImGui::GetWindowHeight();
+	auto b = ImGui::GetWindowWidth();
 	ImVec2 size(windowSize.x, windowSize.y);
 
-	m_mainCameraEditorWindowSize.x = windowSize.x;
-	m_mainCameraEditorWindowSize.y = windowSize.y;
-
+	
 	m_mainCameraEditorTopLeft.x = windowPos.x + min.x;
 	m_mainCameraEditorTopLeft.y = windowPos.y + min.y;
-
+	
 	//m_mainCameraEditorBottomRight.x = windowPos.x + max.x;
 	//m_mainCameraEditorBottomRight.y = windowPos.y + max.y;
 
@@ -2221,8 +2225,11 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 	}
 	size.x = x * windowSize.x;
 	size.y = y * windowSize.y;
-	m_mainCameraEditorBottomRight.x = size.x;
-	m_mainCameraEditorBottomRight.y = size.y;
+	m_mainCameraEditorBottomRight.x = windowPos.x + size.x;
+	m_mainCameraEditorBottomRight.y = windowPos.y + min.y + size.y;
+	m_mainCameraEditorWindowSize.x = size.x - min.x;
+	m_mainCameraEditorWindowSize.y = size.y - min.y;
+
 	ImGui::Image((ImTextureID)(m_editorTexture->GetSRV().GetGpuHandle().ptr), size);
 	ImGui::End();
 }
