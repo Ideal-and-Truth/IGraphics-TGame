@@ -1097,8 +1097,8 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEdito
 	float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
 	float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
 
-	y += m_mainCameraEditorTopLeft.y + m_mainCameraEditorBottomRight.y;
-	x += m_mainCameraEditorTopLeft.x + m_mainCameraEditorBottomRight.x;
+	y += m_mainCameraEditorBottomRight.y;
+	x += m_mainCameraEditorBottomRight.x;
 	return Vector2(x, y);
 }
 

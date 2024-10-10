@@ -26,27 +26,28 @@ namespace Truth
 			IDEL,
 			OVER,
 			DOWN,
+			UP,
 			END,
 		};
 
 	private:
 		std::shared_ptr<Ideal::ISprite> m_sprite[3];
 
-		fs::path m_texturePath[3];
+		std::string m_texturePath[3];
 
+		BUTTON_STATE m_prevState;
 		BUTTON_STATE m_state;
+
+		RECT m_rect;
 
 		PROPERTY(texture);
 		std::shared_ptr<Texture> m_texture[3];
 
-		PROPERTY(scale);
-		Vector2 m_scale;
+		PROPERTY(size);
+		Vector2 m_size;
 
 		PROPERTY(position);
 		Vector2 m_position;
-
-		PROPERTY(isActive);
-		bool m_isActive;
 
 		PROPERTYM(alpha, 0.0f, 1.0f);
 		float m_alpha;
@@ -65,9 +66,20 @@ namespace Truth
 		METHOD(Update);
 		virtual void Update() override;
 
-		void OnMouseOver();
-		void OnMouseClick();
-		void OnMouseUp();
+		std::string m_funcName[3];
+
+		PROPERTY(OnMouseOver);
+		Method* m_OnMouseOver;
+		PROPERTY(OnMouseClick);
+		Method* m_OnMouseClick;
+		PROPERTY(OnMouseUp);
+		Method* m_OnMouseUp;
+
+		void CheckState();
+
+		bool IsActive();
+
+		void SetSpriteActive(BUTTON_STATE _state);
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
@@ -79,14 +91,12 @@ namespace Truth
 	void Truth::UI::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-
-		std::string texPath;
-		_ar& texPath;
-		m_texturePath = fs::path(texPath);
-
-		_ar& m_scale;
+		for (int i = 0; i < 3; i++)
+		{
+			_ar& m_texturePath[i];
+		}
+		_ar& m_size;
 		_ar& m_position;
-		_ar& m_isActive;
 		_ar& m_alpha;
 		_ar& m_zDepth;
 	}
@@ -95,11 +105,12 @@ namespace Truth
 	void Truth::UI::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-
-		_ar& m_texturePath.generic_string();
-		_ar& m_scale;
+		for (int i = 0; i < 3; i++)
+		{
+			_ar& m_texturePath[i];
+		}
+		_ar& m_size;
 		_ar& m_position;
-		_ar& m_isActive;
 		_ar& m_alpha;
 		_ar& m_zDepth;
 	}

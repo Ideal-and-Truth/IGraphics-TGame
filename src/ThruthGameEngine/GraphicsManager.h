@@ -30,6 +30,7 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
+		Vector2 m_resolution;
 
 		std::unordered_map<std::wstring, std::shared_ptr<Ideal::IMesh>> m_particleMeshMap;
 
@@ -99,6 +100,12 @@ namespace Truth
 
 		void ResizeWindow(uint32 _w, uint32 _h);
 
+		Vector2 GetContentPosMin();
+		Vector2 GetContentPosMax();
+
+		// void SetDisplayResolution();
+		Vector2 GetDisplayResolution();
+		RECT GetWindowRect();
 		void BakeStaticMesh();
 
 #ifdef EDITOR_MODE

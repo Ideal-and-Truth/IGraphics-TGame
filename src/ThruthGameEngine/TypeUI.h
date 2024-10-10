@@ -178,6 +178,10 @@ namespace TypeUI
 					_val->ChangeTexture(2);
 			}
 		}
+		else if constexpr (std::is_same_v<T, Method*>)
+		{
+
+		}
 		return false;
 	}
 };

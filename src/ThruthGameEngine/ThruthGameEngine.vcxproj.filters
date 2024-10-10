@@ -327,7 +327,6 @@
     <ClCompile Include="MeshCollider.cpp">
       <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp" />
     <ClCompile Include="FreeCamera.cpp">
       <Filter>Component\Camera</Filter>
     </ClCompile>
@@ -340,6 +339,9 @@
     </ClCompile>
     <ClCompile Include="TFileUtils.cpp">
       <Filter>Utils\File</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>Component\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -517,7 +519,6 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Component\Collider\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h" />
     <ClInclude Include="FreeCamera.h">
       <Filter>Component\Camera</Filter>
     </ClInclude>
@@ -530,6 +531,9 @@
     </ClInclude>
     <ClInclude Include="TFileUtils.h">
       <Filter>Utils\File</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Component\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

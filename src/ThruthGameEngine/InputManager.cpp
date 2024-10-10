@@ -228,7 +228,6 @@ void Truth::InputManager::ResetMouseMovement(int _x /*= 0*/, int _y /*= 0*/)
 {
 	m_mouseDx = 0;
 	m_mouseDy = 0;
-
 }
 
 KEY_STATE Truth::InputManager::GetKeyState(KEY _eKey) const
@@ -249,5 +248,16 @@ int16 Truth::InputManager::GetMouseMoveX() const
 int16 Truth::InputManager::GetMouseMoveY() const
 {
 	return m_mouseDy;
+}
+
+int32 Truth::InputManager::GetMousePosX()
+{
+	return m_nowMousePosX;
+
+}
+
+int32 Truth::InputManager::GetMousePosY()
+{
+	return m_nowMousePosY;
 }
 

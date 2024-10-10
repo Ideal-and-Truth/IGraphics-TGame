@@ -20,6 +20,7 @@ Truth::GraphicsManager::GraphicsManager()
 	: m_renderer(nullptr)
 	, m_aspect(1.0f)
 	, m_mainCamera(nullptr)
+	, m_resolution(1920, 1080)
 {
 
 }
@@ -363,6 +364,29 @@ void Truth::GraphicsManager::ToggleFullScreen()
 void Truth::GraphicsManager::ResizeWindow(uint32 _w, uint32 _h)
 {
 	m_renderer->Resize(_w, _h);
+}
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetContentPosMin()
+{
+	return m_renderer->GetTopLeftEditorPos();
+}
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetContentPosMax()
+{
+	return m_renderer->GetRightBottomEditorPos();
+}
+
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetDisplayResolution()
+{
+	return m_resolution;
+}
+
+RECT Truth::GraphicsManager::GetWindowRect()
+{
+	RECT result;
+	::GetWindowRect(m_hwnd, &result);
+	return result;
 }
 
 void Truth::GraphicsManager::BakeStaticMesh()

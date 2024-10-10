@@ -173,6 +173,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			g_Renderer->ToggleFullScreenWindow();
 			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		}
+
 		[[fallthrough]];
 	}
 	default:
