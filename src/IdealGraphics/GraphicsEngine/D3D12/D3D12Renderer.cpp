@@ -694,6 +694,16 @@ void Ideal::D3D12Renderer::ClearImGui()
 #endif
 }
 
+DirectX::SimpleMath::Vector2 Ideal::D3D12Renderer::GetTopLeftEditorPos()
+{
+	return Vector2();
+}
+
+DirectX::SimpleMath::Vector2 Ideal::D3D12Renderer::GetRightBottomEditorPos()
+{
+	return Vector2();
+}
+
 void Ideal::D3D12Renderer::Release()
 {
 
