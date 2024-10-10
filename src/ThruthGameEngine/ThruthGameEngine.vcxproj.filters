@@ -343,6 +343,9 @@
     <ClCompile Include="UI.cpp">
       <Filter>Component\UI</Filter>
     </ClCompile>
+    <ClCompile Include="Method.cpp">
+      <Filter>Reflection\Advanced</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">

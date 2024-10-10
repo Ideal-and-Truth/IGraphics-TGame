@@ -180,7 +180,10 @@ namespace TypeUI
 		}
 		else if constexpr (std::is_same_v<T, Method*>)
 		{
-
+			if (_val != nullptr)
+			{
+				ImGui::Text(_val->GetName());
+			}
 		}
 		return false;
 	}

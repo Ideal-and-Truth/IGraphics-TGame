@@ -17,6 +17,9 @@ Truth::UI::UI()
 	, m_prevState(BUTTON_STATE::IDEL)
 	, m_state(BUTTON_STATE::IDEL)
 	, m_rect{}
+	, m_OnMouseUp(nullptr)
+	, m_OnMouseClick(nullptr)
+	, m_OnMouseOver(nullptr)
 {
 	m_texturePath[0] = "../Resources/Textures/UI/title_button_basic.png";
 	m_texturePath[1] = "../Resources/Textures/UI/title_button_blue.png";
@@ -185,6 +188,11 @@ void Truth::UI::SetSpriteActive(BUTTON_STATE _state)
 		else
 			m_sprite[i]->SetActive(false);
 	}
+}
+
+void Truth::UI::DefaultBehavior()
+{
+	int a = 1;
 }
 
 #ifdef EDITOR_MODE

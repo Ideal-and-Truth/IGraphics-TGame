@@ -81,6 +81,9 @@ namespace Truth
 
 		void SetSpriteActive(BUTTON_STATE _state);
 
+// 		METHOD(DefaultBehavior);
+// 		static void DefaultBehavior();
+
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE

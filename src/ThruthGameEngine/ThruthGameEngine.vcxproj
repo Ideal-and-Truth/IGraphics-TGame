@@ -103,6 +103,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="DirectionLight.cpp" />
     <ClCompile Include="EntityHierarchy.cpp" />
+    <ClCompile Include="Method.cpp" />
     <ClCompile Include="TFileUtils.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Inspector.cpp" />
