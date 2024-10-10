@@ -121,10 +121,8 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
 
     // 거리와 법선 벡터의 각도를 기반으로 LOD 값 계산
     float distance = length(g_sceneCB.cameraPosition.xyz - HitWorldPosition());
-    float lod = log2(distance);  // 거리 기반 LOD
-    lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
 
-    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
+    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
     float3 newNormal;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
     Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // 다르게
@@ -330,10 +328,10 @@ float3 Shade(
 
     // 거리와 법선 각도를 기반으로 LOD 값 계산
     float lod = log2(distance); // 거리 기반 LOD
-    lod -= log2(abs(dot(N, V))); // 법선과 광선 벡터의 각도에 따른 조정
-    lod = saturate(lod);
+    lod -= abs(dot(N, V)); // 법선과 광선 벡터의 각도에 따른 조정
     float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
-    float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
+    return albedo;
+    float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).xyz;
     float3 Ks;
     float3 Kr;
     const float3 Kt;

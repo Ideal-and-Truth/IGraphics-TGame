@@ -208,8 +208,8 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 	if (m_textureMap.find(_path) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
-		std::filesystem::path p(_path);
-		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
+		std::filesystem::path p("E:/Projects/IGraphics-TGame/Resources/Textures/MapData/1_HN_Scene2/T_archtile_BaseMap.png");
+		if (p.filename().generic_wstring() == L"T_archtile_BaseMap.png")
 		{
 			int a = 1;
 		}
@@ -217,7 +217,7 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(_path, _a, _b);
+		tex->m_texture = m_renderer->CreateTexture(p, true, _b);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
 

@@ -65,13 +65,10 @@ void Truth::UI::Initalize()
 		}
 	}
 
-
 	m_rect.left = static_cast<LONG>(m_position.x - (m_size.x * 0.5f));
 	m_rect.top = static_cast<LONG>(m_position.y - (m_size.y * 0.5f));
 	m_rect.right = static_cast<LONG>(m_position.x + (m_size.x * 0.5f));
 	m_rect.bottom = static_cast<LONG>(m_position.y + (m_size.y * 0.5f));
-
-
 }
 
 void Truth::UI::Update()
@@ -88,7 +85,7 @@ void Truth::UI::Update()
 
 	float winW = static_cast<float>(winRect.right - winRect.left);
 	float winH = static_cast<float>(winRect.bottom - winRect.top);
-
+	
 	float ratioW = contentW / winW;
 	float ratioH = contentH / winH;
 
@@ -138,6 +135,19 @@ void Truth::UI::CheckState()
 {
 	int mouseX = m_managers.lock()->Input()->m_nowMousePosX;
 	int mouseY = m_managers.lock()->Input()->m_nowMousePosY;
+
+	std::string log;
+	log += "left: "; log += std::to_string(m_rect.left);
+	log += " / top: "; log += std::to_string(m_rect.top);
+	log += " / right : "; log += std::to_string(m_rect.right);
+	log += " / bottom : "; log += std::to_string(m_rect.bottom);
+	log += "\n";
+
+	log += "mouseX: ";  log += std::to_string(mouseX);
+	log += " / mouseY: ";  log += std::to_string(mouseY);
+	log += "\n";
+
+	DEBUG_PRINT(log.c_str());
 
 	if (IsActive())
 	{
@@ -199,24 +209,13 @@ void Truth::UI::SetSpriteActive(BUTTON_STATE _state)
 void Truth::UI::EditorSetValue()
 {
 	auto gp = m_managers.lock()->Graphics();
-	for (uint32 i = 0; i < 3; i++)
-	{
-		float w = static_cast<float>(m_texture[i]->w);
-		float h = static_cast<float>(m_texture[i]->h);
-		m_sprite[i]->SetScale({ m_size.x / w, m_size.y / h });
-		m_sprite[i]->SetPosition(m_position);
-		m_sprite[i]->SetActive(IsActive());
-		m_sprite[i]->SetAlpha(m_alpha);
-		m_sprite[i]->SetZ(m_zDepth);
-	}
 
+	RECT winRect = gp->GetWindowRect();
 	Vector2 realLT = gp->GetContentPosMin();
 	Vector2 realRB = gp->GetContentPosMax();
 
-	float contentW = realRB.x - realRB.x;
-	float contentH = realRB.y - realRB.y;
-
-	RECT winRect = gp->GetWindowRect();
+	float contentW = realRB.x - realLT.x;
+	float contentH = realRB.y - realLT.y;
 
 	float winW = static_cast<float>(winRect.right - winRect.left);
 	float winH = static_cast<float>(winRect.bottom - winRect.top);
@@ -226,15 +225,26 @@ void Truth::UI::EditorSetValue()
 
 	Vector2 editorSize = {};
 	editorSize.x = m_size.x * ratioW;
-	editorSize.y = m_size.y * ratioW;
+	editorSize.y = m_size.y * ratioH;
 
 	Vector2 editorPos = {};
-	editorPos.x = realLT.x + (m_position.x * ratioW);
-	editorPos.y = realLT.y + (m_position.y * ratioW);
+	editorPos.x = (m_position.x * ratioW);
+	editorPos.y = (m_position.y * ratioH);
 
-	m_rect.left = static_cast<LONG>(m_position.x - (editorSize.x * 0.5f));
-	m_rect.top = static_cast<LONG>(m_position.y - (editorSize.y * 0.5f));
-	m_rect.right = static_cast<LONG>(m_position.x + (editorSize.x * 0.5f));
-	m_rect.bottom = static_cast<LONG>(m_position.y + (editorSize.y * 0.5f));
+	m_rect.left = static_cast<LONG>(editorPos.x - (editorSize.x * 0.5f) + realLT.x);
+	m_rect.top = static_cast<LONG>(editorPos.y - (editorSize.y * 0.5f) + realLT.y);
+	m_rect.right = static_cast<LONG>(editorPos.x + (editorSize.x * 0.5f) + realLT.x);
+	m_rect.bottom = static_cast<LONG>(editorPos.y + (editorSize.y * 0.5f) + realLT.y);
+
+	for (uint32 i = 0; i < 3; i++)
+	{
+		float w = static_cast<float>(m_texture[i]->w);
+		float h = static_cast<float>(m_texture[i]->h);
+		m_sprite[i]->SetScale({ editorSize.x / w, editorSize.y / h });
+		m_sprite[i]->SetPosition({ m_position.x - (editorSize.x * 0.5f), m_position.y - (editorSize.y * 0.5f) });
+		m_sprite[i]->SetActive(IsActive());
+		m_sprite[i]->SetAlpha(m_alpha);
+		m_sprite[i]->SetZ(m_zDepth);
+	}
 }
 #endif // IFDE

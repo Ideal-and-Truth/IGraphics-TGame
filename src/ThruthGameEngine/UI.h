@@ -63,6 +63,8 @@ namespace Truth
 		METHOD(Initalize);
 		virtual void Initalize() override;
 
+		// METHOD(Start)
+
 		METHOD(Update);
 		virtual void Update() override;
 

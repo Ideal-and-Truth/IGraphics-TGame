@@ -360,7 +360,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		1 + static_cast<UINT16>(std::floor(std::log2(std::max<uint64>(metadata.width, metadata.height)))) :
 		static_cast<UINT16>(MipLevels);
 
-	if (MipLevels > 4) MipLevels = 4;
+	//if (MipLevels > 4) MipLevels = 4;
 
 	// --------------------- MIP ¸Ê »ý¼º (GenerateMipMaps »ç¿ë) ------------------------//
 	DirectX::ScratchImage mipChain;
@@ -368,11 +368,11 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	{
 		if (IsNormalMap)
 		{
-			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT | DirectX::TEX_FILTER_FORCE_NON_WIC, MipLevels, mipChain), L"Failed to generate MIP maps");
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT | DirectX::TEX_FILTER_LINEAR, MipLevels, mipChain), L"Failed to generate MIP maps");
 		}
 		else
 		{
-			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_LINEAR, MipLevels, mipChain), L"Failed to generate MIP maps");
 		}
 		img = mipChain.GetImages();
 	}

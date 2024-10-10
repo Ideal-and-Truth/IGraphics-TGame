@@ -174,7 +174,7 @@ public:
 		return (*itr).second;
 	};
 
-	static void InsertMethod(const std::string& _name, const Method* _method)
+	static void InsertMethod(std::string _name, const Method* _method)
 	{
 		Method::g_methodMap[_name] = _method;
 	};
