@@ -39,6 +39,9 @@ struct SceneConstantBuffer
     unsigned int maxShadowRayRecursionDepth;
     float nearZ;
     float farZ;
+
+    float resolutionX;
+    float resolutionY;
 };
 
 struct MaterialInfoConstantBuffer

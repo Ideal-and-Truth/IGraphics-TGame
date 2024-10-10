@@ -474,10 +474,11 @@ void Ideal::RaytracingManager::CreateRootSignature(ComPtr<ID3D12Device5> Device)
 		CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
 		{
 			// LinearWrapSampler
-			CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC),	// s0
+			//CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_ANISOTROPIC),	// s0
+			CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_MAXIMUM_ANISOTROPIC),	// s0
 			//CD3DX12_STATIC_SAMPLER_DESC(
 			//	0,                                  // ShaderRegister
-			//	D3D12_FILTER_ANISOTROPIC,           // Filter
+			//	D3D12_FILTER_MAXIMUM_ANISOTROPIC,           // Filter
 			//	D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   // AddressU
 			//	D3D12_TEXTURE_ADDRESS_MODE_CLAMP,   // AddressV
 			//	D3D12_TEXTURE_ADDRESS_MODE_CLAMP    // AddressW

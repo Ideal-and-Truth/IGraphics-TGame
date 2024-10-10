@@ -525,6 +525,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.Proj = m_mainCamera->GetProj().Transpose();
 	m_sceneCB.nearZ = m_mainCamera->GetNearZ();
 	m_sceneCB.farZ = m_mainCamera->GetFarZ();
+	m_sceneCB.resolutionX = m_resolutionOptions[m_displayResolutionIndex].Width;
+	m_sceneCB.resolutionY = m_resolutionOptions[m_displayResolutionIndex].Height;
 
 	m_globalCB.View = m_mainCamera->GetView().Transpose();
 	m_globalCB.Proj = m_mainCamera->GetProj().Transpose();
