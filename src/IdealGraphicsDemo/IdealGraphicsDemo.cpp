@@ -1304,7 +1304,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		comAttack0->SetDuration(2.f);
 		comAttack0->SetStartColor(DirectX::SimpleMath::Color(1, 1, 1, 1));
 		comAttack0->SetTransformMatrix(
-			Matrix::CreateRotationY(-2.44f)
+			Matrix::CreateRotationY(-2.7925f)
 			* Matrix::CreateTranslation(Vector3(6, 0, 0))
 		);
 
