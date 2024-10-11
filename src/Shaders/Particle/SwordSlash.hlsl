@@ -28,6 +28,7 @@ float4 PSMain(VSOutput input) : SV_TARGET
         float3 mul0 = clamp0 * EmissionData;
         
         float4 AddColorData = float4(0.0113418, 0, 0.1981132, 0);
+        //float4 AddColorData = float4(0.1037736, 0.07531176, 0.06020825, 0);
         float4 mul1 = g_startColor * AddColorData;
         float3 mul2 = g_startColor.xyz * mul0;
         float3 add0 = mul1.xyz + mul2;

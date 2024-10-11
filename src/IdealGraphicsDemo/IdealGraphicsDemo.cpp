@@ -601,7 +601,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma endregion
 
-#pragma region BossEffect
+		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
+
+#pragma region Beam1
 		//------------------------Create Particle---------------------------//
 
 		std::shared_ptr<Ideal::IParticleMaterial> bossParticleMaterial0 = gRenderer->CreateParticleMaterial();
@@ -611,7 +613,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> bossParticleTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/boss/GausianNoise_3.png");
 		bossParticleMaterial0->SetTexture0(bossParticleTexture0);
 		bossParticleMaterial0->SetTexture1(bossParticleTexture1);
-
+		particleTexturesToDelete.push_back(bossParticleTexture0);
+		particleTexturesToDelete.push_back(bossParticleTexture1);
+			
 		bossParticleMaterial0->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
 
 		std::shared_ptr<Ideal::IParticleSystem> bossParticleSystem0 = gRenderer->CreateParticleSystem(bossParticleMaterial0);
@@ -680,6 +684,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		bossBeamRingMaterial->SetShader(bossBeamRingShader);
 		std::shared_ptr<Ideal::ITexture> bossBeamTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/boss/Ring_2.png");
 		bossBeamRingMaterial->SetTexture0(bossBeamTex0);
+
+		particleTexturesToDelete.push_back(bossBeamTex0);
+
 		bossBeamRingMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
 		std::shared_ptr<Ideal::IParticleSystem> bossBeamRingParticleSystem = gRenderer->CreateParticleSystem(bossBeamRingMaterial);
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Plane.fbx");
@@ -708,14 +715,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddControlPoint({ 1,3 });
 		}
 
-
-
+#pragma endregion
+#pragma region FireProjectile
 		///----------------------FileProjectile---------------------///
 		std::shared_ptr<Ideal::IParticleMaterial> bossFireProjectileMaterial0 = gRenderer->CreateParticleMaterial();
 		bossFireProjectileMaterial0->SetShader(bossFireProjectileShader);
 
 		std::shared_ptr<Ideal::ITexture> bossFileProjectileTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossProjectile/mask_4.png");
 		std::shared_ptr<Ideal::ITexture> bossFileProjectileTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossProjectile/Fire_Single_2.png");
+
+		particleTexturesToDelete.push_back(bossFileProjectileTexture0);
+		particleTexturesToDelete.push_back(bossFileProjectileTexture1);
 
 		bossFireProjectileMaterial0->SetTexture0(bossFileProjectileTexture0);
 		bossFireProjectileMaterial0->SetTexture1(bossFileProjectileTexture1);
@@ -751,6 +761,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		bossFireProjectileMaterial1->SetTexture0(bossFileProjectileTexture0);
 		bossFireProjectileMaterial1->SetTexture1(bossFileProjectileTexture1);
+
 		//bossFireProjectileMaterial1->SetTexture2(bossFileProjectileTexture2);
 		bossFireProjectileMaterial1->SetBackFaceCulling(false);
 		bossFireProjectileMaterial1->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
@@ -777,7 +788,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			* DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 0, -1))
 		);
 
-
+#pragma endregion
+#pragma region SphereImpact
 		//bossFireProjectileParticleSystem->SetColorOverLifetime(true);
 		//{
 		//	auto& graph = bossFireProjectileParticleSystem->GetColorOverLifetimeGradientGraph();
@@ -794,6 +806,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> sITex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossSpearImpact/PerlinNoise_9.png");
 		std::shared_ptr<Ideal::ITexture> sITex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossSpearImpact/Normal_13.png");
 		std::shared_ptr<Ideal::ITexture> sITex2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossSpearImpact/mask_4.png");
+		particleTexturesToDelete.push_back(sITex0);
+		particleTexturesToDelete.push_back(sITex1);
+		particleTexturesToDelete.push_back(sITex2);
 		sphereImpactMaterial->SetTexture0(sITex0);
 		sphereImpactMaterial->SetTexture1(sITex1);
 		sphereImpactMaterial->SetTexture2(sITex2);
@@ -914,7 +929,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			auto& graph = sphereImpactParticleSystem2->GetCustomData1Z();
 			graph.AddControlPoint({ 0,3.5 });
 		}
-
+#pragma endregion
+#pragma region BlackHole
 		//------------------------Boss Blackhole---------------------------//
 		std::shared_ptr<Ideal::IParticleMaterial> blackholeMaterial = gRenderer->CreateParticleMaterial();
 		blackholeMaterial->SetShader(bossBlackHoleShader);
@@ -924,6 +940,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> bhTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/PerlinMap_1.png");
 		std::shared_ptr<Ideal::ITexture> bhTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
 		std::shared_ptr<Ideal::ITexture> bhTex2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_5.png");
+		particleTexturesToDelete.push_back(bhTex0);
+		particleTexturesToDelete.push_back(bhTex1);
+		particleTexturesToDelete.push_back(bhTex2);
 		blackholeMaterial->SetTexture0(bhTex0);
 		blackholeMaterial->SetTexture1(bhTex1);
 		blackholeMaterial->SetTexture2(bhTex2);
@@ -991,6 +1010,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		particleMaterial->SetShader(particleCustomShader);
 
 		std::shared_ptr<Ideal::ITexture> particleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Slash_1_Slashfx.png");
+		particleTexturesToDelete.push_back(particleTexture);
 		particleMaterial->SetTexture0(particleTexture);
 
 		// --- 반드시 뺴먹지 말 것 --- Blending Mode---//
@@ -1040,7 +1060,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		auto& custom1X = particleSystem->GetCustomData1X();
 		custom1X.AddControlPoint({ 0,1 });
 		custom1X.AddControlPoint({ 1,0 });
-
+#pragma endregion
+#pragma region Nor_Attack_Effect
 		//---------------Particle Sword Slash-------------------//
 		// Shader
 		std::shared_ptr<Ideal::IParticleMaterial> slashParticleMaterial = gRenderer->CreateParticleMaterial();
@@ -1050,9 +1071,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		slashParticleMaterial->SetTexture0(slashParticleTexture0);
 		std::shared_ptr<Ideal::ITexture> slashParticleTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Crater62.png");
 		slashParticleMaterial->SetTexture1(slashParticleTexture1);
-		//particleMaterial->SetTexture0(slashParticleTexture1);
 		std::shared_ptr<Ideal::ITexture> slashParticleTexture2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise43b.png");
 		slashParticleMaterial->SetTexture2(slashParticleTexture2);
+
+		particleTexturesToDelete.push_back(slashParticleTexture0);
+		particleTexturesToDelete.push_back(slashParticleTexture1);
+		particleTexturesToDelete.push_back(slashParticleTexture2);
+
 		slashParticleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
 		//slashParticleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
 		//
@@ -1108,7 +1133,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
 			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
 		}
-
+#pragma endregion
+#pragma region Nor_S_Attack_Effect
 		// Nor_S_Attack_Effect
 		std::shared_ptr<Ideal::IParticleSystem> norAttackEffect0 = gRenderer->CreateParticleSystem(slashParticleMaterial);
 		norAttackEffect0->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
@@ -1294,7 +1320,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
 			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
 		}
-
+#pragma endregion
+#pragma region ComAttack
 		//------Com Attack------//
 		// com attack 0
 		std::shared_ptr<Ideal::IParticleSystem> comAttack0 = gRenderer->CreateParticleSystem(slashParticleMaterial);
@@ -1409,6 +1436,74 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			auto& graph = comAttack1->GetColorOverLifetimeGradientGraph();
 			graph.AddPoint(Color(1, 1, 1, 1), 0.f);	// 시작 생상
 			graph.AddPoint(Color(1, 1, 1, 0), 1.f);	// 끝 색상
+		}
+
+#pragma endregion
+#pragma region DodgeEffect
+		//----------Dodge effect----------//
+		std::shared_ptr<Ideal::IParticleMaterial> slashParticleMaterial1 = gRenderer->CreateParticleMaterial();
+		slashParticleMaterial1->SetShader(swordParticleShader);
+		//
+		std::shared_ptr<Ideal::ITexture> slashParticleTexture1_0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Smoke12.png");
+		slashParticleMaterial1->SetTexture0(slashParticleTexture1_0);
+		std::shared_ptr<Ideal::ITexture> slashParticleTexture1_1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Fire13.png");
+		slashParticleMaterial1->SetTexture1(slashParticleTexture1_1);
+		//particleMaterial->SetTexture0(slashParticleTexture1);
+		std::shared_ptr<Ideal::ITexture> slashParticleTexture1_2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise43b.png");
+		slashParticleMaterial1->SetTexture2(slashParticleTexture1_2);
+
+		
+		particleTexturesToDelete.push_back(slashParticleTexture1_0);
+		particleTexturesToDelete.push_back(slashParticleTexture1_1);
+		particleTexturesToDelete.push_back(slashParticleTexture1_2);
+
+		slashParticleMaterial1->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+
+
+		std::shared_ptr<Ideal::IParticleSystem> dodgeEffect= gRenderer->CreateParticleSystem(slashParticleMaterial1);
+		dodgeEffect->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		dodgeEffect->SetRenderMesh(slashParticleMesh);
+		dodgeEffect->SetLoop(false);
+		dodgeEffect->SetDuration(2.f);
+		dodgeEffect->SetStartColor(DirectX::SimpleMath::Color(0.2509f, 0, 0.7529f, 1));
+		dodgeEffect->SetTransformMatrix(
+			Matrix::CreateRotationY(-2.44f)
+			* Matrix::CreateTranslation(Vector3(9, 0, 0))
+		);
+
+		dodgeEffect->SetRotationOverLifetime(true);
+		{
+			auto& graphY = dodgeEffect->GetRotationOverLifetimeAxisY();
+			graphY.AddControlPoint({ 0,1 });
+			graphY.AddControlPoint({ 0.5, 0 });
+			graphY.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = dodgeEffect->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = dodgeEffect->GetCustomData1Y();
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = dodgeEffect->GetCustomData2Z();
+			graph.AddControlPoint({ 0,0 });
+		}
+		{
+			auto& graph = dodgeEffect->GetCustomData2W();
+			graph.AddControlPoint({ 0,1 });
+		}
+
+		// use color over lifetime
+		dodgeEffect->SetColorOverLifetime(true);
+		{
+			auto& graph = dodgeEffect->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 1), 0.f);	// 시작 생상
+			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 0), 1.f);	// 끝 색상
 		}
 #pragma endregion
 
@@ -1651,14 +1746,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('Y') & 0x8000)
 				{
-					comAttack0->Pause();
-					comAttack1->Pause();
+					dodgeEffect->Play();
 				}
 
 				if (GetAsyncKeyState('U') & 0x8000)
 				{
-					gRenderer->GetTopLeftEditorPos();
-					gRenderer->GetRightBottomEditorPos();
+					
 				}
 
 				// Animation // 역재생 안됨
@@ -1686,6 +1779,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				norAttackEffect2->SetDeltaTime(0.003f);
 				comAttack0->SetDeltaTime(0.003f);
 				comAttack1->SetDeltaTime(0.003f);
+				dodgeEffect->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -1850,11 +1944,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		particleTexture.reset();
 		gRenderer->DeleteParticleSystem(particleSystem);
 
-		//for (int i = 0; i < meshes.size(); i++)
-		//{
-		//	gRenderer->DeleteMeshObject(meshes[i]);
-		//	meshes[i].reset();
-		//}
+		for (int i = 0; i < particleTexturesToDelete.size(); i++)
+		{
+			gRenderer->DeleteTexture(particleTexturesToDelete[i]);
+			particleTexturesToDelete[i].reset();
+		}
+		
 		//meshes.clear();
 
 		//gRenderer->DeleteMeshObject(cart);
