@@ -55,6 +55,8 @@ namespace Ideal
 		void DeleteBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, const std::wstring& Name, bool IsSkinnedData);
 		void DeleteBLASInstance(std::shared_ptr<Ideal::BLASInstanceDesc> Instance);
 
+		std::vector<std::shared_ptr<Ideal::BLASInstanceDesc>>& GetBLASInstanceDescs();
+
 	private:
 		std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> m_topLevelAS = nullptr;
 		//std::map<std::wstring, std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure>> m_blasMap = {};
@@ -69,9 +71,9 @@ namespace Ideal
 		// Instance에 사용되는 인덱스
 		std::vector<std::shared_ptr<Ideal::BLASInstanceDesc>> m_blasInstanceDescs = {};
 		
-		
 		//std::set<std::shared_ptr<Ideal::BLASInstanceDesc>> m_instanceDescs = {};
 		//std::vector<Ideal::BLASInstanceDesc> m_instanceDescs = {};
+		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_prevFrameBottomLevelASInstanceTransforms[MAX_PENDING_FRAME];
 
 	private:
 		std::shared_ptr<Ideal::DXRTopLevelAccelerationStructure> m_topLevelASs[MAX_PENDING_FRAME] = {};

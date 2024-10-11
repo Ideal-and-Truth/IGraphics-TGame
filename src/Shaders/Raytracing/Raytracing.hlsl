@@ -35,6 +35,8 @@ SamplerState LinearWrapSampler : register(s0);
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
 ConstantBuffer<LightList> g_lightList : register(b1);
 
+StructuredBuffer<float4x4> g_prevFrameBottomLevelASInstanceTransform : register(t2);
+
 //-----------LOCAL-----------//
 StructuredBuffer<uint> l_indices : register(t0, space1);
 StructuredBuffer<PositionNormalUVTangentColor> l_vertices : register(t1, space1);
@@ -42,8 +44,8 @@ Texture2D<float4> l_texDiffuse : register(t2, space1);
 Texture2D<float4> l_texNormal : register(t3, space1);
 Texture2D<float4> l_texMask : register(t4, space1);
 ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
+StructuredBuffer<PositionNormalUVTangentColor> l_prevFrameVertices : register(t5, space1);
 //StructuredBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
-
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 
@@ -616,6 +618,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 
 		// ÃÖÁ¾½Ä
 		float Pl = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+		//float Pl = RayTCurrent();
 		//lod = log2(Pl / Pb);
 		lod = log2(Pl) - log2(Pb);
 	}

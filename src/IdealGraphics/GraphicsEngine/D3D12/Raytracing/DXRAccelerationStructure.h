@@ -38,6 +38,7 @@ namespace Ideal
 
 		// refactor
 		Ideal::D3D12DescriptorHandle SRV_VertexBuffer;
+		Ideal::D3D12DescriptorHandle SRV_PrevVertexBuffer;
 		Ideal::D3D12DescriptorHandle SRV_IndexBuffer;
 		Ideal::D3D12DescriptorHandle SRV_Diffuse;
 		Ideal::D3D12DescriptorHandle SRV_Normal;

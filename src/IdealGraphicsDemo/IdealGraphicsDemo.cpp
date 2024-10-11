@@ -236,7 +236,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
 		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
-		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_2560_1440);
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_2560_1440);
 
 #pragma endregion
 

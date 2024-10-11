@@ -1897,7 +1897,7 @@ void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToUAV()
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height);
+	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height, MAX_DRAW_COUNT_PER_FRAME);
 
 	//ResetCommandList();
 

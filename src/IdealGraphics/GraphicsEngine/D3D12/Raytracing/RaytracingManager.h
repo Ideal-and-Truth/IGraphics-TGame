@@ -73,6 +73,7 @@ namespace Ideal
 				UAV_GBufferPosition,
 				UAV_GBufferDepth,
 
+				SRV_PrevFrameBottomLevelASIstanceTransforms,
 				Count
 			};
 		}
@@ -92,6 +93,7 @@ namespace Ideal
 				//SRV_Roughness,
 				SRV_Mask,
 				CBV_MaterialInfo,
+				SRV_PrevFrameVertexBuffer,
 				Count
 			};
 		}
@@ -110,6 +112,9 @@ namespace Ideal
 
 			//D3D12_GPU_DESCRIPTOR_HANDLE CBV_MaterialInfo;
 			CB_MaterialInfo CBV_MaterialInfo;
+
+			// Prev Frame Vertex Buffer
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_PrevFrameVertices;
 		};
 	}
 
@@ -145,6 +150,7 @@ namespace Ideal
 	/// </summary>
 	class RaytracingManager
 	{
+		const static uint32 MAX_PENDING_FRAME = G_SWAP_CHAIN_NUM - 1;
 		static const uint32 MAX_RAY_RECURSION_DEPTH = G_MAX_RAY_RECURSION_DEPTH;
 		const wchar_t* c_raygenShaderName = L"MyRaygenShader";
 		const wchar_t* c_closestHitShaderName[2] = { L"MyClosestHitShader", L"MyClosestHitShader_ShadowRay" };
@@ -156,7 +162,7 @@ namespace Ideal
 		~RaytracingManager();
 
 	public:
-		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height, uint32 MaxDrawPerCount);
 		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, CB_LightList* LightCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture);
 		void Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
 
@@ -282,5 +288,15 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::D3D12Texture> m_CopyDepthBuffer;	// raytracing으로 뽑은 depth buffer를 옮길 dsv
 																// 이유는 uav와 dsv 동시 허용하여 생성을 못한다.
+	
+		//---PrevFrameBottomLevelAccelerationStructureInstanceTransform---//
+		// velocity를 구하기위한 여정..
+	public:
+		void InitPrevFrameBuffer(ComPtr<ID3D12Device5> Device, uint32 MaxDrawCountPerFrame);
+		void UpdatePrevFrameBuffer(uint32 CurrentContextIndex);
+
+	private:
+		std::shared_ptr<Ideal::D3D12UploadBufferPool> m_prevFrameBottomLevelASInstanceTransforms[MAX_PENDING_FRAME];
+		std::vector<Matrix> m_prevFrameInstanceTransforms;
 	};
 }

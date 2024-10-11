@@ -98,6 +98,11 @@ void Ideal::DXRAccelerationStructureManager::DeleteBLASInstance(std::shared_ptr<
 	}
 }
 
+std::vector<std::shared_ptr<Ideal::BLASInstanceDesc>>& Ideal::DXRAccelerationStructureManager::GetBLASInstanceDescs()
+{
+	return m_blasInstanceDescs;
+}
+
 void Ideal::DXRAccelerationStructureManager::DeleteBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> BLAS, const std::wstring& Name, bool IsSkinnedData)
 { 
 	if (!IsSkinnedData)
@@ -159,6 +164,15 @@ void Ideal::DXRAccelerationStructureManager::Build(ComPtr<ID3D12Device5> Device,
 
 		// 2024.08.20 ContributionToHitGroupIndex를 갱신을 다시 해준다.	// 이거떄매 GPU 메모리 잘못 접근하는 오류가 생겼었다. 이거 찾기 졸라 힘들었다.
 		ptr->InstanceContributionToHitGroupIndex = m_blasInstanceDescs[i]->BLAS->GetInstanceContributionToHitGroupIndex();	
+
+
+		//// 2024.10.11 prev transform 을 위한 계산 추가
+		//{
+		//	m_prevFrameBottomLevelASInstanceTransforms[m_currentIndex]->Reset();
+		//	auto prevTransformContainer = m_prevFrameBottomLevelASInstanceTransforms[m_currentIndex]->Allocate();
+		//	Matrix* prevTransform = (Matrix*)container->SystemMemoryAddress;
+		//	*prevTransform = m_blasInstanceDescs[i]->InstanceDesc.GetTransform();
+		//}
 	}
 
 	// Build BLAS

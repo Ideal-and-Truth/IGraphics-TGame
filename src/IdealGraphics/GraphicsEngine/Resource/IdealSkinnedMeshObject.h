@@ -105,8 +105,8 @@ namespace Ideal
 		void SetBLASInstanceDesc(std::shared_ptr<Ideal::BLASInstanceDesc> InstanceDesc) { m_BLASInstanceDesc = InstanceDesc; }
 		std::shared_ptr<Ideal::BLASInstanceDesc> GetBLASInstanceDesc() { return m_BLASInstanceDesc; }
 
-		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_VertexBuffer() { return m_uavBuffer; }
 		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_VertexBufferByIndex(const uint32& index) { return m_vertexBuffers[index]; }
+		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_PrevVertexBufferByIndex(const uint32& index) { return m_prevVertexBuffers[index]; }
 
 	private:
 		uint32 m_instanceIndex = 0;
@@ -114,13 +114,14 @@ namespace Ideal
 		bool m_isDirty = false;
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_BLAS;
 
-		std::shared_ptr<Ideal::D3D12UAVBuffer> m_uavBuffer;
 		std::shared_ptr<Ideal::D3D12UnorderedAccessView> m_uavView;
 		
 		// mesh가 여러개일 경우 
 		std::vector<std::shared_ptr<Ideal::D3D12UAVBuffer>> m_vertexBuffers;
 		std::vector<std::shared_ptr<Ideal::D3D12UnorderedAccessView>> m_vertexBufferUAVs;
 
+		std::vector<std::shared_ptr<Ideal::D3D12UAVBuffer>> m_prevVertexBuffers;
+		std::vector<std::shared_ptr<Ideal::D3D12UnorderedAccessView>> m_prevVertexBufferUAVs;
 
 		// Animation
 	public:

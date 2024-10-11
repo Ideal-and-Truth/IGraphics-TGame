@@ -302,15 +302,30 @@ void Ideal::IdealSkinnedMeshObject::CreateUAVVertexBuffer(ComPtr<ID3D12Device5> 
 
 	for (uint32 i = 0; i < numMesh; ++i)
 	{
-		uint32 numVertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
-		uint32 size = numVertexCount * sizeof(BasicVertex);
-		std::shared_ptr<Ideal::D3D12UAVBuffer> newVertexBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
-		std::wstring name = L"UAV_SkinnedVertex";
-		name += std::to_wstring(m_vertexBuffers.size());
-		newVertexBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name.c_str());
-		std::shared_ptr<Ideal::D3D12UnorderedAccessView> newUAVView = ResourceManager->CreateUAV(newVertexBuffer, numVertexCount, sizeof(BasicVertex));
-		m_vertexBuffers.push_back(newVertexBuffer);
-		m_vertexBufferUAVs.push_back(newUAVView);
+		{
+			uint32 numVertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
+			uint32 size = numVertexCount * sizeof(BasicVertex);
+			std::shared_ptr<Ideal::D3D12UAVBuffer> newVertexBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+			std::wstring name = L"UAV_SkinnedVertex";
+			name += std::to_wstring(m_vertexBuffers.size());
+			newVertexBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name.c_str());
+			std::shared_ptr<Ideal::D3D12UnorderedAccessView> newUAVView = ResourceManager->CreateUAV(newVertexBuffer, numVertexCount, sizeof(BasicVertex));
+			m_vertexBuffers.push_back(newVertexBuffer);
+			m_vertexBufferUAVs.push_back(newUAVView);
+		}
+
+		// prev frame buffers
+		{
+			uint32 numVertexCount = meshes[i]->GetVertexBuffer()->GetElementCount();
+			uint32 size = numVertexCount * sizeof(BasicVertex);
+			std::shared_ptr<Ideal::D3D12UAVBuffer> newVertexBuffer = std::make_shared<Ideal::D3D12UAVBuffer>();
+			std::wstring name = L"UAV_prevSkinnedVertex";
+			name += std::to_wstring(m_prevVertexBuffers.size());
+			newVertexBuffer->Create(Device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name.c_str());
+			std::shared_ptr<Ideal::D3D12UnorderedAccessView> newUAVView = ResourceManager->CreateUAV(newVertexBuffer, numVertexCount, sizeof(BasicVertex));
+			m_prevVertexBuffers.push_back(newVertexBuffer);
+			m_prevVertexBufferUAVs.push_back(newUAVView);
+		}
 	}
 }
 
@@ -329,14 +344,68 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 		
 		return;
 	}
+	
+
+	// Update Prev Frame Vertices Data
+	// prev 버퍼에 애니메이션을 계산하지 않은 버퍼를 복사하고 배리어를 건다.
+	auto& meshes = m_skinnedMesh->GetMeshes();
+	auto& geometries = m_BLAS->GetGeometries();
+
+	uint64 numMesh = meshes.size();
+
+	//for (int i = 0; i < numMesh; ++i)
+	//{
+	//	// ResourceBarrier
+	//	CD3DX12_RESOURCE_BARRIER preCopyBarriers[2];
+	//	preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+	//		m_prevVertexBuffers[i]->GetResource(),
+	//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+	//		D3D12_RESOURCE_STATE_COPY_DEST
+	//	);
+	//	preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+	//		m_vertexBuffers[i]->GetResource(),
+	//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+	//		D3D12_RESOURCE_STATE_COPY_SOURCE
+	//	);
+	//	CommandList->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
+	//	CommandList->CopyResource(m_prevVertexBuffers[i]->GetResource(), m_vertexBuffers[i]->GetResource());
+	//
+	//	CD3DX12_RESOURCE_BARRIER postCopyBarriers[2];
+	//	postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(
+	//		m_prevVertexBuffers[i]->GetResource(),
+	//		D3D12_RESOURCE_STATE_COPY_DEST,
+	//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	//	);
+	//	postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(
+	//		m_vertexBuffers[i]->GetResource(),
+	//		D3D12_RESOURCE_STATE_COPY_SOURCE,
+	//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	//	);
+	//	CommandList->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
+	//}
+	// 일단 복사보다 그냥 연산하는게 더 빠르긴 하다. -> 그렇다고 완전 빠르다는건아님. 결국 연산하면 느려짐
+	for (int i = 0; i < numMesh; ++i)
+	{
+		{
+			RaytracingManager->DispatchAnimationComputeShader(
+				Device,
+				CommandList,
+				ResourceManager,
+				DescriptorManager,
+				CurrentContextIndex,
+				CBPool,
+				meshes[i]->GetVertexBuffer(),
+				&m_cbBoneData,
+				//m_uavView
+				m_prevVertexBufferUAVs[i]
+			);
+		}
+	}
 
 	AnimationPlay();
 
 	{
-		auto& meshes = m_skinnedMesh->GetMeshes();
-		auto& geometries = m_BLAS->GetGeometries();
-
-		uint64 numMesh = meshes.size();
+		
 
 		Ideal::BLASData blasGeometryDesc;
 		blasGeometryDesc.Geometries.resize(numMesh);

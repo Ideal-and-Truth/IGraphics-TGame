@@ -366,14 +366,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	DirectX::ScratchImage mipChain;
 	if (MipLevels > 1)
 	{
-		if (IsNormalMap)
-		{
-			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT | DirectX::TEX_FILTER_FORCE_NON_WIC, MipLevels, mipChain), L"Failed to generate MIP maps");
-		}
-		else
-		{
-			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_LINEAR, MipLevels, mipChain), L"Failed to generate MIP maps");
-		}
+		Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_LINEAR, MipLevels, mipChain), L"Failed to generate MIP maps");
 		img = mipChain.GetImages();
 	}
 	// 각 MIP 레벨별 서브리소스 데이터 생성
@@ -808,7 +801,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 			return;
 		}
 	}
-	
+
 	staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 	staticMesh->AddRefCount();
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
@@ -840,7 +833,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 			{
 				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> mesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
 				mesh->SetLocalTM(file->Read<Matrix>());
-			
+
 				mesh->SetName(file->Read<std::string>());
 				mesh->SetBoneIndex(file->Read<int32>());
 
