@@ -316,7 +316,9 @@ float3 Shade(
 	in float3 N,
 	in float3 objectNormal,
 	in float3 hitPosition,
-	in float lod
+	in float lod,
+	in float2 grad0,
+	in float2 grad1
 )
 {
 	float3 V = -WorldRayDirection();
@@ -327,16 +329,16 @@ float3 Shade(
 
 
 
-
+	//float3 albedo = l_texDiffuse.SampleGrad(LinearWrapSampler, uv, grad0, grad1).xyz;
 	float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
-	float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
+	float3 Kd = albedo; //= l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
 	float3 Ks;
 	float3 Kr;
 	const float3 Kt;
 	float metallic;
 	float roughness;
 
-	float4 maskSample = l_texMask.SampleLevel(LinearWrapSampler, uv, lod);
+	float4 maskSample = l_texMask.SampleLevel(LinearWrapSampler, uv, 0);
 
 	metallic = maskSample.x;
 	roughness = 1 - maskSample.a;
@@ -530,6 +532,12 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 		l_vertices[indices[2]].tangent
 	};
 
+	float3 vertexPositions[3] =
+	{
+		l_vertices[indices[0]].position,
+		l_vertices[indices[1]].position,
+		l_vertices[indices[2]].position
+	};
 	PositionNormalUVTangentColor vertexInfo[3] =
 	{
 		l_vertices[indices[0]],
@@ -550,12 +558,12 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 	float3 objectNormal;
 	float3 objectTangent;
 	{
-		float3 vertexNormals[3] =
-		{
-			vertexInfo[0].normal,
-			vertexInfo[1].normal,
-			vertexInfo[2].normal
-		};
+// 		float3 vertexNormals[3] =
+// 		{
+// 			vertexInfo[0].normal,
+// 			vertexInfo[1].normal,
+// 			vertexInfo[2].normal
+// 		};
 		objectNormal = normalize(HitAttribute(vertexNormals, attr));
 		float orientation = HitKind() == HIT_KIND_TRIANGLE_FRONT_FACE ? 1 : -1;
 		objectNormal *= orientation;
@@ -612,11 +620,33 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 		lod = log2(Pl) - log2(Pb);
 	}
 
+	{
+		uint textureWidth, textureHeight;
+		l_texDiffuse.GetDimensions(textureWidth, textureHeight);
+		float ta = textureWidth * textureHeight * abs(
+		(vertexTexCoords[1].x - vertexTexCoords[0].x) * (vertexTexCoords[2].y - vertexTexCoords[0].y) 
+			- (vertexTexCoords[2].x - vertexTexCoords[0].x) * (vertexTexCoords[1].y - vertexTexCoords[0].y));
+		float3 crossPos = cross((vertexInfo[1].position - vertexInfo[0].position), (vertexInfo[2].position - vertexInfo[0].position));
+		float pa = length(crossPos);
+		float delta = 0.5f * log2(ta/pa);
+		float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+		float calnormal = dot(-WorldRayDirection(), normal);
+		float lambda = delta + log2(distance) - log2(abs(calnormal));
+		//lod = lambda;
+	}
+	
+		float2 texGradiant0, texGradiant1;
+	{
+		float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+		float r = distance * tan(0.05f);
+		computeAnisotropicEllipseAxes(hitPosition.xyz, objectNormal, WorldRayDirection(),  r, vertexPositions, vertexTexCoords, uv, texGradiant0, texGradiant1);
+	}
+
 	// GBuffer
 	payload.gBuffer.tHit = RayTCurrent();
 	payload.gBuffer.hitPosition = hitPosition;
 
-	payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod);
+	payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod,texGradiant0, texGradiant1);
 }
 
 [shader("closesthit")]

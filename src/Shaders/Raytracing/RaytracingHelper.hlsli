@@ -718,5 +718,36 @@ void Ideal_NormalStrength_float(float3 In, float Strength, out float3 Out)
     //Out = {precision}3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
     Out = float3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
 }
-
+// P is the intersection point
+    // f is the triangle normal
+    // d is the ray cone direction
+void computeAnisotropicEllipseAxes(in float3 P, in float3 f,
+    in float3 d, in float rayConeRadiusAtIntersection,
+    in float3 positions[3], in float2 txcoords[3],
+    in float2 interpolatedTexCoordsAtIntersection,
+    out float2 texGradient1, out float2 texGradient2)
+{
+    // Compute ellipse axes.
+    float3 a1 = d - dot(f, d) * f;
+    float3 p1 = a1 - dot(d, a1) * d;
+    a1 *= rayConeRadiusAtIntersection / max(0.0001, length(p1));
+    float3 a2 = cross(f, a1);
+    float3 p2 = a2 - dot(d, a2) * d;
+    a2 *= rayConeRadiusAtIntersection / max(0.0001, length(p2));
+    // Compute texture coordinate gradients.
+    float3 eP, delta = P - positions[0];
+    float3 e1 = positions[1] - positions[0];
+    float3 e2 = positions[2] - positions[0];
+    float oneOverAreaTriangle = 1.0 / dot(f, cross(e1, e2));
+    eP = delta + a1;
+    float u1 = dot(f, cross(eP, e2)) * oneOverAreaTriangle;
+    float v1 = dot(f, cross(e1, eP)) * oneOverAreaTriangle;
+    texGradient1 = (1.0 - u1 - v1) * txcoords[0] + u1 * txcoords[1] +
+    v1 * txcoords[2] - interpolatedTexCoordsAtIntersection;
+    eP = delta + a2;
+    float u2 = dot(f, cross(eP, e2)) * oneOverAreaTriangle;
+    float v2 = dot(f, cross(e1, eP)) * oneOverAreaTriangle;
+    texGradient2 = (1.0 - u2 - v2) * txcoords[0] + u2 * txcoords[1] +
+    v2 * txcoords[2] - interpolatedTexCoordsAtIntersection;
+}
 #endif
