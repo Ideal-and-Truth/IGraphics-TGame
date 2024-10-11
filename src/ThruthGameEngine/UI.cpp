@@ -79,12 +79,13 @@ void Truth::UI::Update()
 	RECT winRect = gp->GetWindowRect();
 	Vector2 realLT = gp->GetContentPosMin();
 	Vector2 realRB = gp->GetContentPosMax();
+	Vector2 resolution = gp->GetDisplayResolution();
 
 	float contentW = realRB.x - realLT.x;
 	float contentH = realRB.y - realLT.y;
 
-	float winW = static_cast<float>(winRect.right - winRect.left);
-	float winH = static_cast<float>(winRect.bottom - winRect.top);
+	float winW = resolution.x;
+	float winH = resolution.y;
 	
 	float ratioW = contentW / winW;
 	float ratioH = contentH / winH;
@@ -213,12 +214,13 @@ void Truth::UI::EditorSetValue()
 	RECT winRect = gp->GetWindowRect();
 	Vector2 realLT = gp->GetContentPosMin();
 	Vector2 realRB = gp->GetContentPosMax();
+	Vector2 resolution = gp->GetDisplayResolution();
 
 	float contentW = realRB.x - realLT.x;
 	float contentH = realRB.y - realLT.y;
 
-	float winW = static_cast<float>(winRect.right - winRect.left);
-	float winH = static_cast<float>(winRect.bottom - winRect.top);
+	float winW = resolution.x;
+	float winH = resolution.y;
 
 	float ratioW = contentW / winW;
 	float ratioH = contentH / winH;
@@ -240,8 +242,8 @@ void Truth::UI::EditorSetValue()
 	{
 		float w = static_cast<float>(m_texture[i]->w);
 		float h = static_cast<float>(m_texture[i]->h);
-		m_sprite[i]->SetScale({ editorSize.x / w, editorSize.y / h });
-		m_sprite[i]->SetPosition({ m_position.x - (editorSize.x * 0.5f), m_position.y - (editorSize.y * 0.5f) });
+		m_sprite[i]->SetScale({ m_size.x / w, m_size.y / h });
+		m_sprite[i]->SetPosition({ m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) });
 		m_sprite[i]->SetActive(IsActive());
 		m_sprite[i]->SetAlpha(m_alpha);
 		m_sprite[i]->SetZ(m_zDepth);
