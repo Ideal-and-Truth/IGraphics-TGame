@@ -236,7 +236,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
 		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
-
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+		//gRenderer->ToggleFullScreenWindow();
 #pragma endregion
 
 #pragma region FBXConvert
@@ -392,18 +393,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma endregion
 #pragma region TestPlane
-		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		auto planeMaterial = gRenderer->CreateMaterial();
-		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_BaseMap.png", true);
-		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_MaskMap.png", true, true);
+		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_BaseMap.png", true);
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_MaskMap.png", true);
 		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png", true, true);
-		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/T_archtile_Normal.png", true, true);
+		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_Normal.png", true, true);
 		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
 		planeMaterial->SetNormalMap(planeNormalTexture);
-		plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
-		plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(5, 0, 0)));
+		
+		for(int y = 0 ; y < 20;y++)
+		{
+			for (int x = 0; x < 20; x++)
+			{
+				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
+				plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
+				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
+				meshes.push_back(plane);
+			}
+		}
 #pragma endregion
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
@@ -475,8 +484,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateLight
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
-		dirLight->SetDirection(Vector3(1.f, 0.f, 0.f));
+		dirLight->SetDirection(Vector3(0.f, 1.f, 0.f));
 
+		//Matrix dir = Matrix::Identity;
+		//dir *= Matrix::CreateRotationX(3.874f);
+		//dirLight->SetDirection(dir.Forward());
 		//std::shared_ptr<Ideal::IPointLight> pointLight2 = Renderer->CreatePointLight();
 
 		std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();

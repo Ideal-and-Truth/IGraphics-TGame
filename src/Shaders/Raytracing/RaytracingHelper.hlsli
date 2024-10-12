@@ -718,4 +718,30 @@ void Ideal_NormalStrength_float(float3 In, float Strength, out float3 Out)
     //Out = {precision}3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
     Out = float3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
 }
+
+float2 TriUVInfoFromRayCone(
+float3 vRayDir, float3 vWorldNormal, float vRayConeWidth,
+float2 aUV[3], float3 aPos[3], float3x3 matWorld
+)
+{
+    float2 vUV10 = aUV[1] - aUV[0];
+    float2 vUV20 = aUV[2] - aUV[0];
+    float fTriUVArea = abs(vUV10.x * vUV20.y - vUV20.x * vUV10.y);
+    
+    float3 vEdge10 = mul(aPos[1] - aPos[0], matWorld);
+    float3 vEdge20 = mul(aPos[2] - aPos[0], matWorld);
+    float3 vFaceNrm = cross(vEdge10, vEdge20);
+    
+    float fTriLODOffset = 0.5f * log2(fTriUVArea / length(vFaceNrm));
+    float fDistTerm = vRayConeWidth * vRayConeWidth;
+    float fNormalTerm = dot(vRayDir, vWorldNormal);
+    
+    return float2(fTriLODOffset, fDistTerm / (fNormalTerm * fNormalTerm));
+}
+
+float TriUVInfoToTexLOD(uint2 vTexSize, float2 vUVInfo)
+{
+    return vUVInfo.x + 0.5f * log2(vTexSize.x * vTexSize.y * vUVInfo.y);
+}
+
 #endif

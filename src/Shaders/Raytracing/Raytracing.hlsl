@@ -98,7 +98,7 @@ float2 HitAttribute(float2 vertexAttribute[3], BuiltInTriangleIntersectionAttrib
         attr.barycentrics.y * (vertexAttribute[2] - vertexAttribute[0]);
 }
 
-float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangentColor vertices[3], in MyAttributes attr)
+float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangentColor vertices[3], in MyAttributes attr, in float lod)
 {
     float3 tangent;
     float3 vertexTangents[3] =
@@ -119,15 +119,12 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
         tangent = CalculateTangent(v0, v1, v2, uv0, uv1, uv2);
     }
 
-    // 거리와 법선 벡터의 각도를 기반으로 LOD 값 계산
-    float distance = length(g_sceneCB.cameraPosition.xyz - HitWorldPosition());
-    float lod = log2(distance);  // 거리 기반 LOD
-    lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
 
-    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
+    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, lod).xyz;
     float3 newNormal;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
-    Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // 다르게
+    //Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // 다르게
+    Ideal_NormalStrength_float(bumpNormal, 1, newNormal); // 다르게
     float3 worldNormal = BumpMapNormalToWorldSpaceNormal(newNormal, normal, tangent);
     return worldNormal;
 }
@@ -320,7 +317,8 @@ float3 Shade(
     float2 uv,
     in float3 N,
     in float3 objectNormal,
-    in float3 hitPosition
+    in float3 hitPosition,
+    in float lod
 )
 {
     float3 V = -WorldRayDirection();
@@ -329,10 +327,11 @@ float3 Shade(
     float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
 
     // 거리와 법선 각도를 기반으로 LOD 값 계산
-    float lod = log2(distance); // 거리 기반 LOD
-    lod -= log2(abs(dot(N, V))); // 법선과 광선 벡터의 각도에 따른 조정
-    lod = saturate(lod);
+    //lod *= 0.1;
+    //lod = floor(lod);
+    //return float3(lod, lod, lod);
     float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
+    //return albedo;
     float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
     float3 Ks;
     float3 Kr;
@@ -349,11 +348,11 @@ float3 Shade(
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
     
 
-    //if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
+    if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
- 
+    
         // Directional Light
         {
             float3 LightVector = -g_lightList.DirLight.Direction.xyz;
@@ -403,7 +402,7 @@ float3 Shade(
         }
     }
 
-    
+    L *= ao;
     // Temp : 0.2는 임시 값
     L += 0.2f * albedo;
     //return L;
@@ -527,6 +526,13 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         l_vertices[indices[2]].normal 
     };
     
+    float3 vertexPositions[3] =
+    {
+        l_vertices[indices[0]].position,
+        l_vertices[indices[1]].position,
+        l_vertices[indices[2]].position 
+    };
+    
     float3 vertexTangents[3] =
     {
         l_vertices[indices[0]].tangent,
@@ -574,24 +580,36 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         //normal = normalize(mul(objectNormal, (float3x3) ObjectToWorld3x4()));
     }
    
-    //if(l_materialInfo.bUseNormalMap == false)
-    //if(l_materialInfo.bUseNormalMap == true)
+    
+    float lod;
     {
-        normal = NormalMap(normal, uv, vertexInfo, attr);
+        float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+        ///// calculate lod
+        // calculate alpha
+        float alpha = 2 * atan(g_sceneCB.FOV / g_sceneCB.resolutionY * 2);
+        float coneWidth = 2 * distance * tan(alpha / 2);
+
+        // calculate texLOD
+        float2 vTriUVInfo = TriUVInfoFromRayCone(
+        WorldRayDirection(), normal, coneWidth,
+        vertexTexCoords, vertexPositions, (float3x3) ObjectToWorld3x4()
+        );
+        
+        uint2 texSize;
+        l_texDiffuse.GetDimensions(texSize.x, texSize.y);
+        float MipIndex = TriUVInfoToTexLOD(texSize, vTriUVInfo);
+        lod = MipIndex;
+        lod *= 0.8f;
     }
-    if(dot(-WorldRayDirection(), normal) < 0)
     {
-        //payload.radiance = float3(1,1,1); return;
+        normal = NormalMap(normal, uv, vertexInfo, attr, lod);
     }
-    //payload.radiance = normal; return;
-    //payload.radiance = normal;
-    //return; 
     
     // GBuffer
     payload.gBuffer.tHit = RayTCurrent();
     payload.gBuffer.hitPosition = hitPosition;
 
-    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
+    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod);
 }
 
 [shader("closesthit")]

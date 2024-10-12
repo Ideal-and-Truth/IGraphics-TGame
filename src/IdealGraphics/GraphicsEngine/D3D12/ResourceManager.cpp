@@ -360,19 +360,20 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		1 + static_cast<UINT16>(std::floor(std::log2(std::max<uint64>(metadata.width, metadata.height)))) :
 		static_cast<UINT16>(MipLevels);
 
-	if (MipLevels > 4) MipLevels = 4;
-
 	// --------------------- MIP 맵 생성 (GenerateMipMaps 사용) ------------------------//
 	DirectX::ScratchImage mipChain;
 	if (MipLevels > 1)
 	{
+		//Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
+		//Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_LINEAR, MipLevels, mipChain), L"Failed to generate MIP maps");
 		if (IsNormalMap)
 		{
 			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT | DirectX::TEX_FILTER_FORCE_NON_WIC, MipLevels, mipChain), L"Failed to generate MIP maps");
+			//Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT | DirectX::TEX_FILTER_LINEAR, MipLevels, mipChain), L"Failed to generate MIP maps");
 		}
 		else
 		{
-			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_FANT, MipLevels, mipChain), L"Failed to generate MIP maps");
 		}
 		img = mipChain.GetImages();
 	}
@@ -808,7 +809,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 			return;
 		}
 	}
-	
+
 	staticMesh = std::make_shared<Ideal::IdealStaticMesh>();
 	staticMesh->AddRefCount();
 	// 없으면 StaticMesh를 만들어서 끼워서 넣어주면된다
@@ -840,7 +841,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 			{
 				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> mesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
 				mesh->SetLocalTM(file->Read<Matrix>());
-			
+
 				mesh->SetName(file->Read<std::string>());
 				mesh->SetBoneIndex(file->Read<int32>());
 
