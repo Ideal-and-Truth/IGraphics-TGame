@@ -327,11 +327,7 @@ float3 Shade(
     float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
 
     // 거리와 법선 각도를 기반으로 LOD 값 계산
-    //lod *= 0.1;
-    //lod = floor(lod);
-    //return float3(lod, lod, lod);
     float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
-    //return albedo;
     float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
     float3 Ks;
     float3 Kr;
@@ -599,7 +595,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         l_texDiffuse.GetDimensions(texSize.x, texSize.y);
         float MipIndex = TriUVInfoToTexLOD(texSize, vTriUVInfo);
         lod = MipIndex;
-        lod *= 0.8f;
+        lod *= 0.7f;
     }
     {
         normal = NormalMap(normal, uv, vertexInfo, attr, lod);
