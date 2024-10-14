@@ -90,6 +90,7 @@ private:
 
 	static Ideal::IdealRenderer* g_Renderer;
 	static Truth::InputManager* g_inputmanager;
+	static Truth::SceneManager* g_sceneManager;
 
 	uint32 m_wight;
 	uint32 m_height;

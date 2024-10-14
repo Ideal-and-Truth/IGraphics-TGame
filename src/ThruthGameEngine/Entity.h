@@ -88,6 +88,8 @@ namespace Truth
 		ComponentMethod m_destroy;
 		ComponentMethod m_applyTransform;
 
+		ComponentMethod m_resizeWindow;
+
 		std::shared_ptr<Transform> m_transform;
 
 	public:
@@ -138,6 +140,8 @@ namespace Truth
 		void Update();
 		void FixedUpdate();
 		void LateUpdate();
+
+		void ResizeWindow();
 
 		void OnCollisionEnter(Collider* _other);
 		void OnCollisionStay(Collider* _other);

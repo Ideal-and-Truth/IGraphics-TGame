@@ -87,6 +87,7 @@
     <ClInclude Include="TypeInfoMacros.h" />
     <ClInclude Include="TypeUI.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="UISpriteSet.h" />
     <ClInclude Include="UnityParser.h" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,7 @@
     </ClCompile>
     <ClCompile Include="TypeUI.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="UISpriteSet.cpp" />
     <ClCompile Include="UnityParser.cpp" />
   </ItemGroup>
   <ItemGroup>

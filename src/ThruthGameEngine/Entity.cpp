@@ -181,6 +181,11 @@ void Truth::Entity::LateUpdate()
 	IterateComponentMethod(m_latedUpdate);
 }
 
+void Truth::Entity::ResizeWindow()
+{
+	IterateComponentMethod(m_resizeWindow);
+}
+
 void Truth::Entity::OnCollisionEnter(Collider* _other)
 {
 	IterateComponentMethod(m_onCollisionEnter, _other);
@@ -347,6 +352,11 @@ void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 		if (metName == "ApplyTransform")
 		{
 			m_applyTransform.push_back(p);
+		}
+
+		if (metName == "ResizeWindow")
+		{
+			m_resizeWindow.push_back(p);
 		}
 
 		if (metName == "Initialize")

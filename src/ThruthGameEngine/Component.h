@@ -71,6 +71,7 @@ namespace Truth
 		virtual void OnTriggerStay() {};
 		virtual void Initialize() {};
 		virtual void ApplyTransform() {};
+		virtual void ResizeWindow() {};
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue() {};
 #endif // EDITOR_MODE

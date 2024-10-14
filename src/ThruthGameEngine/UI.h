@@ -9,6 +9,7 @@ namespace Ideal
 namespace Truth
 {
 	class ButtonBehavior;
+	class UISpriteSet;
 }
 
 namespace Truth
@@ -38,8 +39,7 @@ namespace Truth
 		};
 
 	private:
-		// PROPERTY(sprite)
-		std::shared_ptr<Ideal::ISprite> m_sprite[3];
+		std::shared_ptr<UISpriteSet> m_sprite;
 
 		std::string m_texturePath[3];
 
@@ -48,6 +48,7 @@ namespace Truth
 
 		RECT m_rect;
 
+		PROPERTY(texture)
 		std::shared_ptr<Texture> m_texture[3];
 
 		PROPERTY(size);
@@ -86,7 +87,7 @@ namespace Truth
 		void SetSpriteActive(BUTTON_STATE _state);
 
 		METHOD(ResizeWindow);
-		void ResizeWindow();
+		void ResizeWindow() override;
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();

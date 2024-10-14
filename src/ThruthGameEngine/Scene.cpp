@@ -36,9 +36,9 @@ Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 Truth::Scene::~Scene()
 {
 	ClearEntity();
-	for (auto& m : m_mapMesh)
+	for (auto& m : m_mapEntity)
 	{
-		m_managers.lock()->Graphics()->DeleteMeshObject(m);
+		DeleteEntity(m);
 	}
 }
 
@@ -166,10 +166,11 @@ std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
 void Truth::Scene::ResetMapData()
 {
 	m_managers.lock()->Physics()->ResetPhysX();
-	for (auto& m : m_mapMesh)
+	for (auto& me : m_mapEntity)
 	{
-		m_managers.lock()->Graphics()->DeleteMeshObject(m);
+		DeleteEntity(me);
 	}
+	m_mapEntity.clear();
 }
 
 #ifdef EDITOR_MODE
@@ -282,6 +283,14 @@ void Truth::Scene::ApplyTransform()
 	for (auto& e : m_entities)
 	{
 		e->ApplyTransform();
+	}
+}
+
+void Truth::Scene::ResizeWindow()
+{
+	for (auto& e : m_entities)
+	{
+		e->ResizeWindow();
 	}
 }
 

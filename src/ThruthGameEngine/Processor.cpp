@@ -20,6 +20,7 @@
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
+Truth::SceneManager* Processor::g_sceneManager = nullptr;
 
 Processor::Processor()
 	: m_hwnd(nullptr)
@@ -51,7 +52,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
-
+	g_sceneManager = m_manager->Scene().get();
 #ifdef CONVERT_DATA
 	// ConvertData();
 	// ConvertSkelFbxData(L"AsciiAniTest/idelTest.fbx");
@@ -164,6 +165,10 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			g_Renderer->Resize(width, height);
 			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		}
+
+		if (g_sceneManager)
+			g_sceneManager->m_currentScene->ResizeWindow();
+
 		break;
 	}
 	case WM_SYSCOMMAND:
@@ -172,15 +177,16 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		{
 			g_Renderer->ToggleFullScreenWindow();
 			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+			if (g_sceneManager)
+				g_sceneManager->m_currentScene->ResizeWindow();
 		}
 
 		[[fallthrough]];
 	}
 	default:
 		if (g_inputmanager)
-		{
 			g_inputmanager->m_deltaWheel = 0;
-		}
+
 		return DefWindowProc(hWnd, message, wParam, lParam);
 
 	}

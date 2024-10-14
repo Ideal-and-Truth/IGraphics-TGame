@@ -118,14 +118,8 @@
     <Filter Include="Component\Mesh\SkindedMesh">
       <UniqueIdentifier>{1f12477e-c5ec-4050-9948-8154cc431f88}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Mesh\Matarial">
-      <UniqueIdentifier>{b6fad28f-a227-4ace-adf8-870f21691bd6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\Mesh\StaticMesh">
       <UniqueIdentifier>{af153011-55fd-4105-a6ae-59c7e6d4f705}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Mesh\Texture">
-      <UniqueIdentifier>{bc9727cb-6a5d-4d2d-ae5d-93620a72ff4d}</UniqueIdentifier>
     </Filter>
     <Filter Include="EditorUI\Context">
       <UniqueIdentifier>{2a7ebf82-cfa0-43cb-b031-51218f8e4cf0}</UniqueIdentifier>
@@ -157,9 +151,6 @@
     <Filter Include="Component\UI">
       <UniqueIdentifier>{56aa9117-ed04-4847-847d-5dbba433fa1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Effect">
-      <UniqueIdentifier>{635f4265-3524-4529-9e77-e77c8879a2e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager\Particle">
       <UniqueIdentifier>{e3db038f-f88e-408e-9f1c-a41b2f2485f4}</UniqueIdentifier>
     </Filter>
@@ -180,6 +171,18 @@
     </Filter>
     <Filter Include="Utils\Factory\Button">
       <UniqueIdentifier>{44fff902-fec8-4017-8097-da454fb53fc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae">
+      <UniqueIdentifier>{4e59a185-7dda-48b1-852a-c744918865f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae\Matarial">
+      <UniqueIdentifier>{b6fad28f-a227-4ace-adf8-870f21691bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae\Texture">
+      <UniqueIdentifier>{bc9727cb-6a5d-4d2d-ae5d-93620a72ff4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae\UISprite">
+      <UniqueIdentifier>{a2cf1341-5bca-4a44-85d7-930ec194ab70}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -298,10 +301,10 @@
       <Filter>Component\Mesh\SkindedMesh</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
-      <Filter>Component\Mesh\Matarial</Filter>
+      <Filter>Imgae\Matarial</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>Component\Mesh\Texture</Filter>
+      <Filter>Imgae\Texture</Filter>
     </ClCompile>
     <ClCompile Include="EntityHierarchy.cpp">
       <Filter>EditorUI\Context\Hierachy</Filter>
@@ -360,6 +363,9 @@
     </ClCompile>
     <ClCompile Include="ButtonFactory.cpp">
       <Filter>Utils\Factory\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="UISpriteSet.cpp">
+      <Filter>Imgae\UISprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -498,10 +504,10 @@
       <Filter>Component\Mesh\SkindedMesh</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
-      <Filter>Component\Mesh\Matarial</Filter>
+      <Filter>Imgae\Matarial</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Component\Mesh\Texture</Filter>
+      <Filter>Imgae\Texture</Filter>
     </ClInclude>
     <ClInclude Include="EntityHierarchy.h">
       <Filter>EditorUI\Context\Hierachy</Filter>
@@ -558,6 +564,9 @@
     </ClInclude>
     <ClInclude Include="ButtonFactory.h">
       <Filter>Utils\Factory\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="UISpriteSet.h">
+      <Filter>Imgae\UISprite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

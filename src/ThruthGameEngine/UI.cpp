@@ -5,6 +5,7 @@
 #include "ISprite.h"
 #include "InputManager.h"
 #include "ButtonBehavior.h"
+#include "UISpriteSet.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::UI)
 
@@ -29,10 +30,10 @@ Truth::UI::~UI()
 {
 	for (uint32 i = 0; i < 3; i++)
 	{
-		if (m_sprite[i] != nullptr)
+		if ((*m_sprite)[i] != nullptr)
 		{
-			m_managers.lock()->Graphics()->DeleteSprite(m_sprite[i]);
-			m_sprite[i] = nullptr;
+			m_managers.lock()->Graphics()->DeleteSprite((*m_sprite)[i]);
+			(*m_sprite)[i] = nullptr;
 		}
 	}
 }
@@ -40,13 +41,16 @@ Truth::UI::~UI()
 void Truth::UI::Initialize()
 {
 	auto gp = m_managers.lock()->Graphics();
+	m_sprite = std::make_shared<UISpriteSet>();
 
 	for (uint32 i = 0; i < 3; i++)
 	{
 		if (!m_texturePath[i].empty())
 		{
-			m_sprite[i] = gp->CreateSprite();
+			(*m_sprite)[i] = gp->CreateSprite();
 			auto tex = gp->CreateTexture(fs::path(m_texturePath[i]));
+			m_sprite->GetTex(i)->m_path = m_texturePath[i];
+
 			float w = static_cast<float>(tex->w);
 			float h = static_cast<float>(tex->h);
 
@@ -54,13 +58,13 @@ void Truth::UI::Initialize()
 			Vector2 gpPosition = { m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) };
 
 			m_texture[i] = tex;
-			m_sprite[i]->SetTexture(tex->m_texture);
-			m_sprite[i]->SetScale(gpScale);
-			m_sprite[i]->SetPosition(gpPosition);
-			m_sprite[i]->SetActive(IsActive());
-			m_sprite[i]->SetAlpha(m_alpha);
-			m_sprite[i]->SetZ(m_zDepth);
-			m_sprite[i]->SetSampleRect({ 0, 0, tex->w, tex->h });
+			(*m_sprite)[i]->SetTexture(tex->m_texture);
+			(*m_sprite)[i]->SetScale(gpScale);
+			(*m_sprite)[i]->SetPosition(gpPosition);
+			(*m_sprite)[i]->SetActive(IsActive());
+			(*m_sprite)[i]->SetAlpha(m_alpha);
+			(*m_sprite)[i]->SetZ(m_zDepth);
+			(*m_sprite)[i]->SetSampleRect({ 0, 0, tex->w, tex->h });
 		}
 	}
 
@@ -172,9 +176,9 @@ void Truth::UI::SetSpriteActive(BUTTON_STATE _state)
 	for (uint32 i = 0; i < 3; i++)
 	{
 		if (state == i)
-			m_sprite[i]->SetActive(true);
+			(*m_sprite)[i]->SetActive(true);
 		else
-			m_sprite[i]->SetActive(false);
+			(*m_sprite)[i]->SetActive(false);
 	}
 }
 
@@ -219,11 +223,11 @@ void Truth::UI::EditorSetValue()
 	{
 		float w = static_cast<float>(m_texture[i]->w);
 		float h = static_cast<float>(m_texture[i]->h);
-		m_sprite[i]->SetScale({ m_size.x / w, m_size.y / h });
-		m_sprite[i]->SetPosition({ m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) });
-		m_sprite[i]->SetActive(IsActive());
-		m_sprite[i]->SetAlpha(m_alpha);
-		m_sprite[i]->SetZ(m_zDepth);
+		(*m_sprite)[i]->SetScale({ m_size.x / w, m_size.y / h });
+		(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) });
+		(*m_sprite)[i]->SetActive(IsActive());
+		(*m_sprite)[i]->SetAlpha(m_alpha);
+		(*m_sprite)[i]->SetZ(m_zDepth);
 	}
 }
 #endif // EDITOR_MODE
