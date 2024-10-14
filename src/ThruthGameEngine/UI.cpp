@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "ISprite.h"
 #include "InputManager.h"
+#include "ButtonBehavior.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::UI)
 
@@ -17,9 +18,7 @@ Truth::UI::UI()
 	, m_prevState(BUTTON_STATE::IDEL)
 	, m_state(BUTTON_STATE::IDEL)
 	, m_rect{}
-	, m_OnMouseUp(nullptr)
-	, m_OnMouseClick(nullptr)
-	, m_OnMouseOver(nullptr)
+	, m_behavior(nullptr)
 {
 	m_texturePath[0] = "../Resources/Textures/UI/title_button_basic.png";
 	m_texturePath[1] = "../Resources/Textures/UI/title_button_blue.png";
@@ -86,7 +85,7 @@ void Truth::UI::Update()
 
 	float winW = resolution.x;
 	float winH = resolution.y;
-	
+
 	float ratioW = contentW / winW;
 	float ratioH = contentH / winH;
 
@@ -115,16 +114,27 @@ void Truth::UI::Update()
 	case BUTTON_STATE::OVER:
 	{
 		SetSpriteActive(BUTTON_STATE::OVER);
+		if (m_behavior != nullptr)
+			m_behavior->OnMouseOver();
 		break;
 	}
 	case BUTTON_STATE::DOWN:
 	{
 		SetSpriteActive(BUTTON_STATE::DOWN);
+		if (m_behavior != nullptr)
+			m_behavior->OnMouseClick();
 		break;
 	}
 	case BUTTON_STATE::UP:
 	{
 		SetSpriteActive(BUTTON_STATE::IDEL);
+		if (m_behavior != nullptr)
+			m_behavior->OnMouseUp();
+		break;
+	}
+	case BUTTON_STATE::HOLD:
+	{
+		SetSpriteActive(BUTTON_STATE::DOWN);
 		break;
 	}
 	default:
@@ -137,40 +147,33 @@ void Truth::UI::CheckState()
 	int mouseX = m_managers.lock()->Input()->m_nowMousePosX;
 	int mouseY = m_managers.lock()->Input()->m_nowMousePosY;
 
-	std::string log;
-	log += "left: "; log += std::to_string(m_rect.left);
-	log += " / top: "; log += std::to_string(m_rect.top);
-	log += " / right : "; log += std::to_string(m_rect.right);
-	log += " / bottom : "; log += std::to_string(m_rect.bottom);
-	log += "\n";
-
-	log += "mouseX: ";  log += std::to_string(mouseX);
-	log += " / mouseY: ";  log += std::to_string(mouseY);
-	log += "\n";
-
-	DEBUG_PRINT(log.c_str());
-
 	if (IsActive())
 	{
 		if (((mouseX >= m_rect.left) && (mouseX <= m_rect.right)) &&
 			((mouseY >= m_rect.top) && (mouseY <= m_rect.bottom)))
 		{
 			if (GetKey(MOUSE::LMOUSE))
-				m_state = BUTTON_STATE::DOWN;
-
-			else if (GetKeyUp(MOUSE::LMOUSE))
-				m_state = BUTTON_STATE::UP;
-
-			else if (m_prevState == BUTTON_STATE::IDEL || m_prevState == BUTTON_STATE::OVER)
-				m_state = BUTTON_STATE::OVER;
+			{
+				if (m_prevState == BUTTON_STATE::DOWN || m_prevState == BUTTON_STATE::HOLD)
+					m_state = BUTTON_STATE::HOLD;
+				else 
+					m_state = BUTTON_STATE::DOWN;
+			}
+			else
+			{
+				if (m_prevState == BUTTON_STATE::IDEL || m_prevState == BUTTON_STATE::OVER)
+					m_state = BUTTON_STATE::OVER;
+				else if (m_prevState == BUTTON_STATE::UP)
+					m_state = BUTTON_STATE::IDEL;
+				else if (m_prevState == BUTTON_STATE::DOWN || m_prevState == BUTTON_STATE::HOLD)
+					m_state = BUTTON_STATE::UP;
+			}
 		}
 		else
 			m_state = BUTTON_STATE::IDEL;
 
 		m_prevState = m_state;
 	}
-	else
-		m_prevState = m_state = BUTTON_STATE::IDEL;
 }
 
 bool Truth::UI::IsActive()

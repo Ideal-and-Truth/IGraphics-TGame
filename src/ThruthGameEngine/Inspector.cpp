@@ -5,7 +5,7 @@
 
 Inspector::Inspector(std::weak_ptr<Truth::Managers> _manager, HWND _hwnd, EditorUI* _editor, std::weak_ptr<Truth::Entity>& _selectedEntity)
 	: EditorContext("Inspector", _manager, _hwnd, _editor)
-	, m_componentList(TypeInfo::g_factory->m_componentList)
+	, m_componentList(TypeInfo::g_componentFactory->m_componentList)
 	, m_selectedEntity(_selectedEntity)
 {
 	m_isActive = true;
@@ -106,7 +106,7 @@ void Inspector::ShowContext(bool* p_open)
 		}
 
 		// Add Component
-			AddComponentList(m_selectedEntity.lock());
+		AddComponentList(m_selectedEntity.lock());
 	}
 
 	/// End of ShowDemoWindow()
@@ -154,7 +154,7 @@ void Inspector::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 	{
 		int selectedItem = -1;
 		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), static_cast<int32>(m_componentList.size()), 6))
-			SelectedEntity->AddComponent(TypeInfo::g_factory->Create(m_componentList[selectedItem]));
+			SelectedEntity->AddComponent(TypeInfo::g_componentFactory->Create(m_componentList[selectedItem]));
 	}
 }
 #endif // EDITOR_MODE

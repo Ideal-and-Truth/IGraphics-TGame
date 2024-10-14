@@ -78,16 +78,14 @@ namespace StringConverter
 	std::string ToString(T _val, int _indent = 0)
 	{
 		if constexpr (std::is_integral_v<T>)
-		{
 			return std::to_string(_val);
-		}
+
 		else if constexpr (std::is_floating_point_v<T>)
-		{
 			return std::to_string(_val);
-		}
+
 		else if constexpr (IsStdSharedPtr<T>::value)
 		{
-			return ToString(*_val);
+			return "";
 		}
 		else if constexpr (IsStdVector<T>::value)
 		{

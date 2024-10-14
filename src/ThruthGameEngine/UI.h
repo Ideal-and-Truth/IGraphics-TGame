@@ -8,6 +8,11 @@ namespace Ideal
 
 namespace Truth
 {
+	class ButtonBehavior;
+}
+
+namespace Truth
+{
 	class UI :
 		public Component
 	{
@@ -16,6 +21,7 @@ namespace Truth
 	private:
 		friend class boost::serialization::access;
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
+
 		template<class Archive>
 		void save(Archive& ar, const unsigned int file_version) const;
 		template<class Archive>
@@ -26,11 +32,13 @@ namespace Truth
 			IDEL,
 			OVER,
 			DOWN,
+			HOLD,
 			UP,
 			END,
 		};
 
 	private:
+		// PROPERTY(sprite)
 		std::shared_ptr<Ideal::ISprite> m_sprite[3];
 
 		std::string m_texturePath[3];
@@ -55,6 +63,9 @@ namespace Truth
 		PROPERTYM(zDepth, 0.0f, 1.0f);
 		float m_zDepth;
 
+		PROPERTY(behavior);
+		std::shared_ptr<ButtonBehavior> m_behavior;
+
 	public:
 		UI();
 		virtual ~UI();
@@ -68,23 +79,11 @@ namespace Truth
 		METHOD(Update);
 		virtual void Update() override;
 
-		std::string m_funcName[3];
-
-		PROPERTY(OnMouseOver);
-		Method* m_OnMouseOver;
-		PROPERTY(OnMouseClick);
-		Method* m_OnMouseClick;
-		PROPERTY(OnMouseUp);
-		Method* m_OnMouseUp;
-
 		void CheckState();
 
 		bool IsActive();
 
 		void SetSpriteActive(BUTTON_STATE _state);
-
-// 		METHOD(DefaultBehavior);
-// 		static void DefaultBehavior();
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
@@ -104,6 +103,7 @@ namespace Truth
 		_ar& m_position;
 		_ar& m_alpha;
 		_ar& m_zDepth;
+		_ar& m_behavior;
 	}
 
 	template<class Archive>
@@ -118,9 +118,13 @@ namespace Truth
 		_ar& m_position;
 		_ar& m_alpha;
 		_ar& m_zDepth;
+		if (file_version >= 1)
+		{
+			_ar& m_behavior;
+		}
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::UI)
-BOOST_CLASS_VERSION(Truth::UI, 0)
+BOOST_CLASS_VERSION(Truth::UI, 1)
 

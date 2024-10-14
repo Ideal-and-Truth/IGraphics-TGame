@@ -158,26 +158,6 @@ private:
 	const CallableBase& m_callable;
 
 public:
-	typedef std::unordered_map<std::string, const Method*> MethodMap;
-	static MethodMap g_methodMap;
-
-
-public:
-
-	static const Method* GetMethod(const std::string& _name)
-	{
-		auto itr = Method::g_methodMap.find(_name);
-		if (itr == Method::g_methodMap.end())
-		{
-			return nullptr;
-		}
-		return (*itr).second;
-	};
-
-	static void InsertMethod(std::string _name, const Method* _method)
-	{
-		Method::g_methodMap[_name] = _method;
-	};
 
 	const std::string Dump(void* _object, int _indent = 0) const 
 	{
@@ -367,7 +347,6 @@ public:
 			TClass* forDeduction = nullptr;
 			static StaticCallable callable(forDeduction, ptr);
 			static Method method(typeInfo, ptr, name, callable);
-			Method::InsertMethod(name, &method);
 		}
 	}
 };

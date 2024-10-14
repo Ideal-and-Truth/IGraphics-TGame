@@ -24,6 +24,8 @@
     <ClInclude Include="AdvanceReflection.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="ButtonBehavior.h" />
+    <ClInclude Include="ButtonFactory.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="Collider.h" />
@@ -91,6 +93,8 @@
     <ClCompile Include="..\Utils\SimpleMath.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="ButtonBehavior.cpp" />
+    <ClCompile Include="ButtonFactory.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />

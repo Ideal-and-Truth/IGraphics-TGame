@@ -1,8 +1,9 @@
 #pragma once
-
+#include "windows.h"
 #ifndef _DEBUG
 #define DEBUG_PRINT
 #else
+#include <debugapi.h>
 // static void _PrintDebugString(const WCHAR* format, ...) 
 // {
 // 	WCHAR buf[1024];

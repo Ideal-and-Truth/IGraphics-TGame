@@ -61,6 +61,12 @@
     <Filter Include="Component\Ranger">
       <UniqueIdentifier>{5455936b-ba9c-4982-ac1a-603cd865476c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TestEntity\EffectTest">
+      <UniqueIdentifier>{c07ba5df-5bc5-46f3-8936-295f6429c17d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestEntity\ButtonTest">
+      <UniqueIdentifier>{851318c3-2952-4716-9a0d-38045107f7c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -154,7 +160,10 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TestEffectGenerator.h">
-      <Filter>TestEntity</Filter>
+      <Filter>TestEntity\EffectTest</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonTest.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -240,7 +249,10 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TestEffectGenerator.cpp">
-      <Filter>TestEntity</Filter>
+      <Filter>TestEntity\EffectTest</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonTest.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

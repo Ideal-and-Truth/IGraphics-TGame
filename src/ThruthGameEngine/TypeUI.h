@@ -15,6 +15,8 @@
 #include "ISprite.h"
 #include "Material.h"
 #include "Texture.h"
+#include "ButtonBehavior.h"
+#include "TypeInfo.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -27,6 +29,7 @@ namespace Truth
 	class Entity;
 	class Component;
 	class Scene;
+	class ButtonBehavior;
 }
 #pragma warning(disable : 6387)
 #pragma warning(disable : 6255)
@@ -178,13 +181,21 @@ namespace TypeUI
 					_val->ChangeTexture(2);
 			}
 		}
-		else if constexpr (std::is_same_v<T, Method*>)
+		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::ButtonBehavior>>)
 		{
 			if (_val != nullptr)
+				ImGui::Text(_val->m_name.c_str());
+
+			const auto& buttonList = TypeInfo::g_buttonFactory->m_buttonList;
+			if (ImGui::CollapsingHeader("Set Button"))
 			{
-				ImGui::Text(_val->GetName());
+				int selectedItem = -1;
+				if (ImGui::ListBox("Button", &selectedItem, buttonList.data(), static_cast<int32>(buttonList.size()), 6))
+					_val = TypeInfo::g_buttonFactory->Create(buttonList[selectedItem]);
 			}
+			return false;
 		}
+
 		return false;
 	}
 };
