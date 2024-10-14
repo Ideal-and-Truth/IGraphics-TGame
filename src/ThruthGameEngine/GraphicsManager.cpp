@@ -295,9 +295,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			f->Write<float>(1.0f);
 			f->Write<float>(1.0f);
 
-			mat->m_baseMap = CreateTexture(al.generic_wstring());
-			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
-			mat->m_maskMap = CreateTexture(ma.generic_wstring());
+			mat->m_baseMap = CreateTexture(al.generic_wstring(), true, false);
+			mat->m_normalMap = CreateTexture(no.generic_wstring(), true, true);
+			mat->m_maskMap = CreateTexture(ma.generic_wstring(), true, true);
 			mat->SetTexture();
 			f->Close();
 		}
