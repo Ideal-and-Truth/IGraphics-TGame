@@ -21,6 +21,7 @@ Truth::Mesh::Mesh(std::wstring _path)
 	, m_path(_path)
 	, m_isRendering(true)
 	, m_mesh(nullptr)
+	, m_isStatic(false)
 {
 	m_name = "Mesh Filter";
 }
@@ -33,6 +34,7 @@ Truth::Mesh::Mesh()
 	, m_path(L"DebugObject/debugCube")
 	, m_isRendering(true)
 	, m_mesh(nullptr)
+	, m_isStatic(false)
 {
 	m_name = "Mesh Filter";
 }
@@ -134,9 +136,17 @@ void Truth::Mesh::Initialize()
 
 void Truth::Mesh::ApplyTransform()
 {
-	m_owner.lock()->ApplyTransform();
-	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
-	m_mesh->SetDrawObject(m_isRendering);
+	if (!m_owner.lock()->m_isStatic)
+	{
+		m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
+		m_mesh->SetDrawObject(m_isRendering);
+	}
+}
+
+void Truth::Mesh::Update()
+{
+	if (!m_owner.lock()->m_isStatic)
+		ApplyTransform();
 }
 
 void Truth::Mesh::DeleteMesh()

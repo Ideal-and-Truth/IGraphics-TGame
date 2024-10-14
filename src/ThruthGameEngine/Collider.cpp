@@ -253,13 +253,9 @@ void Truth::Collider::EditorSetValue()
 	SetSize(m_size);
 
 	if (m_enable)
-	{
 		OnDisable();
-	}
 	else
-	{
 		OnEnable();
-	}
 }
 #endif // EDITOR_MODE
 
