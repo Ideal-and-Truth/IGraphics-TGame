@@ -526,6 +526,15 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_sceneCB.nearZ = m_mainCamera->GetNearZ();
 	m_sceneCB.farZ = m_mainCamera->GetFarZ();
 
+	m_sceneCB.resolutionX = m_width;
+	m_sceneCB.resolutionY = m_height;
+
+	m_sceneCB.resolutionX = m_postViewport->GetViewport().Width;
+	m_sceneCB.resolutionY = m_postViewport->GetViewport().Height;
+
+	m_sceneCB.FOV = m_mainCamera->GetFOV();
+
+
 	m_globalCB.View = m_mainCamera->GetView().Transpose();
 	m_globalCB.Proj = m_mainCamera->GetProj().Transpose();
 	m_globalCB.ViewProj = m_mainCamera->GetViewProj().Transpose();
@@ -719,6 +728,7 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 	// Viewport Reize
 	m_viewport->ReSize(Width, Height);
 	m_postViewport->ReSize(Width, Height);
+
 	{
 		auto r = m_resolutionOptions[m_displayResolutionIndex];
 		m_postViewport->UpdatePostViewAndScissor(r.Width, r.Height);
@@ -741,6 +751,7 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 	//m_raytracingManager->Resize(m_device, Width, Height);
 	m_UICanvas->SetCanvasSize(Width, Height);
 	//
+	SetDisplayResolutionOption(m_displayResolutionIndex);
 }
 void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 {
@@ -788,7 +799,8 @@ void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 
 		SetWindowPos(
 			m_hwnd,
-			HWND_TOPMOST,
+			//HWND_TOPMOST,
+			HWND_NOTOPMOST,
 			fullScreenWindowRect.left,
 			fullScreenWindowRect.top,
 			fullScreenWindowRect.right,
@@ -799,6 +811,7 @@ void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 	}
 
 	m_fullScreenMode = !m_fullScreenMode;
+	SetDisplayResolutionOption(m_displayResolutionIndex);
 }
 
 bool Ideal::D3D12RayTracingRenderer::IsFullScreen()
@@ -825,11 +838,6 @@ void Ideal::D3D12RayTracingRenderer::SetDisplayResolutionOption(const Resolution
 	if (m_mainCamera)
 	{
 		m_mainCamera->SetAspectRatio(float(resolutionWidth) / resolutionHeight);
-	}
-
-	if (m_isEditor)
-	{
-		//CreateEditorRTV(resolutionWidth, resolutionHeight);
 	}
 
 	// ray tracing / UI //
@@ -1103,8 +1111,6 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEdito
 	float nx = m_mainCameraEditorBottomRight.x;
 	ny -= y;
 	nx -= x;
-	//ny += m_mainCameraEditorTopLeft.y;
-	//nx += m_mainCameraEditorTopLeft.x;
 	return Vector2(nx, ny);
 }
 

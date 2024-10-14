@@ -209,7 +209,9 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
 		std::filesystem::path p(_path);
-		if (p.filename().generic_wstring() == L"T_archtile_BaseMap.png")
+		if (p.is_absolute())
+			return nullptr;
+		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
 		{
 			int a = 1;
 		}
@@ -217,7 +219,7 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(p, true, _b);
+		tex->m_texture = m_renderer->CreateTexture(_path, true, _b);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
 
@@ -294,9 +296,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			f->Write<float>(1.0f);
 			f->Write<float>(1.0f);
 
-			mat->m_baseMap = CreateTexture(al.generic_wstring());
-			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
-			mat->m_maskMap = CreateTexture(ma.generic_wstring());
+			mat->m_baseMap = CreateTexture(al.generic_wstring(), true, false);
+			mat->m_normalMap = CreateTexture(no.generic_wstring(), true, true);
+			mat->m_maskMap = CreateTexture(ma.generic_wstring(), true, true);
 			mat->SetTexture();
 			f->Close();
 		}
