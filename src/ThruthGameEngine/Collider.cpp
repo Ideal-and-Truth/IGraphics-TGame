@@ -83,7 +83,19 @@ Truth::Collider::~Collider()
 /// </summary>
 void Truth::Collider::Destroy()
 {
+	if (m_collider)
+	{
+		m_collider->userData = nullptr;
+		m_body->detachShape(*m_collider);
+	}
 
+#ifdef EDITOR_MODE
+	// 	if (m_debugMesh != nullptr)
+	// 	{
+	// 		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
+	// 		m_debugMesh = nullptr;
+	// 	}
+#endif // EDITOR_MODE
 }
 
 /// <summary>
