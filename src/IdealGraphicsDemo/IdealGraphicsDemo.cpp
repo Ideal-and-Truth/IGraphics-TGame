@@ -611,6 +611,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> bossBlackHoleSphereShader = gRenderer->CreateAndLoadParticleShader(L"BossBlackHoleSpherePS");
 
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/DefaultTextureParticlePS.hlsl",
+			L"../Shaders/Particle/",
+			L"DefaultTextureParticlePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> defaultTextureParticleShader = gRenderer->CreateAndLoadParticleShader(L"DefaultTextureParticlePS");
+
 #pragma endregion
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
@@ -702,9 +712,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		bossBeamRingMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
 		std::shared_ptr<Ideal::IParticleSystem> bossBeamRingParticleSystem = gRenderer->CreateParticleSystem(bossBeamRingMaterial);
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Plane.fbx");
-		std::shared_ptr<Ideal::IMesh> bossParticleMeshPlane = gRenderer->CreateParticleMesh(L"0_Particle/Plane");
+		std::shared_ptr<Ideal::IMesh> particleMeshPlane = gRenderer->CreateParticleMesh(L"0_Particle/Plane");
 		bossBeamRingParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
-		bossBeamRingParticleSystem->SetRenderMesh(bossParticleMeshPlane);
+		bossBeamRingParticleSystem->SetRenderMesh(particleMeshPlane);
 		bossBeamRingParticleSystem->SetStartSize(0.5f);
 		bossBeamRingParticleSystem->SetStartLifetime(1.f);
 		bossBeamRingParticleSystem->SetDuration(1.f);
@@ -1072,6 +1082,78 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		auto& custom1X = particleSystem->GetCustomData1X();
 		custom1X.AddControlPoint({ 0,1 });
 		custom1X.AddControlPoint({ 1,0 });
+#pragma endregion
+#pragma region EnemyAimRing
+		std::shared_ptr<Ideal::IParticleMaterial> magicCircleMaterial = gRenderer->CreateParticleMaterial();
+		magicCircleMaterial->SetShader(defaultTextureParticleShader);
+		std::shared_ptr<Ideal::ITexture> magicCircleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Enemy/MagicCircle51.png");
+		particleTexturesToDelete.push_back(magicCircleTexture);
+		
+		magicCircleMaterial->SetTexture0(magicCircleTexture);
+		magicCircleMaterial->SetBackFaceCulling(false);
+		magicCircleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		
+		std::shared_ptr<Ideal::IParticleSystem> magicCircleParticleSystem = gRenderer->CreateParticleSystem(magicCircleMaterial);
+		magicCircleParticleSystem->SetLoop(true);
+		magicCircleParticleSystem->SetDuration(2.5f);
+		magicCircleParticleSystem->SetStartLifetime(2.5f);
+		magicCircleParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		magicCircleParticleSystem->SetRenderMesh(particleMeshPlane);
+		magicCircleParticleSystem->SetTransformMatrix(Matrix::CreateScale(0.5f) * Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0,3,0)));
+		magicCircleParticleSystem->SetStartColor(Color(1, 1, 1, 1));
+
+		// 아래 색 조정, 사이즈 조절은 유니티 별로여서 걍 내가 넣은거임. 알아서 넣을지 말지 결정하셈
+		magicCircleParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = magicCircleParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 1, 1, 0), 0.f);
+			graph.AddPoint(Color(1, 1, 1, 1), 0.5f / 2.5f);
+			graph.AddPoint(Color(1, 1, 1, 0), 2.5f / 2.5f);
+		}
+		magicCircleParticleSystem->SetSizeOverLifetime(true);
+		{
+			auto& graph = magicCircleParticleSystem->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.7f });
+			graph.AddControlPoint({ 2.5f, 0.9f });
+		}
+		{
+			auto& graph = magicCircleParticleSystem->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1.f });
+			graph.AddControlPoint({ 2.5f,1.f });
+		}
+		{
+			auto& graph = magicCircleParticleSystem->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.7f });
+			graph.AddControlPoint({ 2.5f  ,0.9f });
+		}
+#pragma endregion
+#pragma region EnemyAimAttack
+		std::shared_ptr<Ideal::IParticleMaterial> bowAttackMaterial = gRenderer->CreateParticleMaterial();
+		bowAttackMaterial->SetShader(defaultTextureParticleShader);
+		std::shared_ptr<Ideal::ITexture> bowAttackTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Enemy/FX_117.png");
+		particleTexturesToDelete.push_back(bowAttackTexture);
+
+		bowAttackMaterial->SetTexture0(bowAttackTexture);
+		bowAttackMaterial->SetBackFaceCulling(false);
+		bowAttackMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+
+		std::shared_ptr<Ideal::IParticleSystem> bowAttackParticleSystem = gRenderer->CreateParticleSystem(bowAttackMaterial);
+		bowAttackParticleSystem->SetLoop(true);
+		bowAttackParticleSystem->SetDuration(2.5f);
+		bowAttackParticleSystem->SetStartLifetime(2.5f);
+		bowAttackParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		bowAttackParticleSystem->SetRenderMesh(particleMeshPlane);
+		bowAttackParticleSystem->SetTransformMatrix(Matrix::CreateScale(0.8f)* Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(-1.57f)* Matrix::CreateTranslation(Vector3(0, 3, -0.2f)));
+		bowAttackParticleSystem->SetStartColor(Color(1, 1, 1, 1));
+		// 아래 색 조정, 사이즈 조절은 유니티 별로여서 걍 내가 넣은거임. 알아서 넣을지 말지 결정하셈
+		bowAttackParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = bowAttackParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 1, 1, 0), 0.f);
+			graph.AddPoint(Color(1, 1, 1, 1), 0.5f / 2.5f);
+			graph.AddPoint(Color(1, 1, 1, 0), 2.5f / 2.5f);
+		}
+		
 #pragma endregion
 #pragma region Nor_Attack_Effect
 		//---------------Particle Sword Slash-------------------//
@@ -1763,7 +1845,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('U') & 0x8000)
 				{
-					
+					magicCircleParticleSystem->Play();
+					bowAttackParticleSystem->Play();
 				}
 
 				// Animation // 역재생 안됨
@@ -1792,6 +1875,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				comAttack0->SetDeltaTime(0.003f);
 				comAttack1->SetDeltaTime(0.003f);
 				dodgeEffect->SetDeltaTime(0.003f);
+				magicCircleParticleSystem->SetDeltaTime(0.003f);
+				bowAttackParticleSystem->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
