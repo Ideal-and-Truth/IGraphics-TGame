@@ -1872,6 +1872,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					magicCircleParticleSystem->Play();
 					bowAttackParticleSystem->Play();
 				}
+				if (GetAsyncKeyState('G') & 0x8000)
+				{
+					auto a = gRenderer->GetRightBottomEditorPos();
+					auto b =gRenderer->GetTopLeftEditorPos();
+					int c = 3;
+				}
 
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
