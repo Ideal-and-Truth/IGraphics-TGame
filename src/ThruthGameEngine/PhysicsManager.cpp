@@ -113,7 +113,7 @@ void Truth::PhysicsManager::FixedUpdate()
 
 	physx::PxU32 nbActiveActors;
 	physx::PxActor** activeActors = m_scene->getActiveActors(nbActiveActors);
-
+	physx::PxActorFlag;
 	for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
 	{
 		physx::PxRigidActor* rigidActor = activeActors[i]->is<physx::PxRigidActor>();

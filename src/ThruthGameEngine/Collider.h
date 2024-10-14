@@ -16,9 +16,8 @@ namespace physx
 namespace Truth
 {
 	class RigidBody;
+	class Entity;
 }
-
-
 
 namespace Truth
 {
@@ -74,7 +73,6 @@ namespace Truth
 		Collider(Vector3 _pos, bool _isTrigger = true);
 		virtual ~Collider();
 
-		METHOD(Destroy);
 		void Destroy();
 
 		METHOD(Awake);
