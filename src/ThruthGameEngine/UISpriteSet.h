@@ -43,7 +43,7 @@ namespace Truth
 		void ChangeTexture(std::wstring _path, int _type);
 		void ChangeTexture(int _type);
 
-		std::shared_ptr<Ideal::ISprite> operator[](int _index)
+		std::shared_ptr<Ideal::ISprite>& operator[](int _index)
 		{
 			switch (_index)
 			{
@@ -53,12 +53,11 @@ namespace Truth
 				return m_overSprite;
 			case 2:
 				return m_clickSprite;
-			default:
-				return nullptr;
 			}
+			return m_idealSprite;
 		}
 
-		std::shared_ptr<Texture> GetTex(int _index)
+		std::shared_ptr<Texture>& GetTex(int _index)
 		{
 			switch (_index)
 			{
@@ -68,11 +67,9 @@ namespace Truth
 				return m_overTexture;
 			case 2:
 				return m_clickTexture;
-			default:
-				return nullptr;
 			}
+			return m_idealTexture;
 		}
-
 	};
 }
 

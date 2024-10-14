@@ -17,6 +17,7 @@
 #include "Texture.h"
 #include "ButtonBehavior.h"
 #include "TypeInfo.h"
+#include "UISpriteSet.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -195,8 +196,39 @@ namespace TypeUI
 			}
 			return false;
 		}
-
-
+		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::UISpriteSet>>)
+		{
+			const ImVec2 size(100, 100);
+			std::string fileID = _val->m_name + "##" + std::to_string(_index);
+			bool isSelect = false;
+			if (_val->m_idealTexture != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "0").c_str(), (ImTextureID)(_val->m_idealTexture->GetImageID()), size))
+				{
+					isSelect |= true;
+					_val->ChangeTexture(0);
+				}
+			}
+			ImGui::SameLine();
+			if (_val->m_overTexture != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "1").c_str(), (ImTextureID)(_val->m_overTexture->GetImageID()), size))
+				{
+					isSelect |= true;
+					_val->ChangeTexture(1);
+				}
+			}
+			ImGui::SameLine();
+			if (_val->m_clickTexture != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "2").c_str(), (ImTextureID)(_val->m_clickTexture->GetImageID()), size))
+				{
+					isSelect |= true;
+					_val->ChangeTexture(2);
+				}
+			}
+			return isSelect;
+		}
 		return false;
 	}
 };

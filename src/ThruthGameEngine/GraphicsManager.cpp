@@ -6,7 +6,7 @@
 #include "Texture.h"
 #include "Material.h"
 #include <filesystem>
-
+#include "UISpriteSet.h"
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
@@ -210,7 +210,10 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
 		std::filesystem::path p(_path);
 		if (p.is_absolute())
-			return nullptr;
+		{
+			::SetCurrentDirectory(Managers::GetRootPath().c_str());
+			p = fs::relative(_path);
+		}
 		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
 		{
 			int a = 1;
@@ -219,7 +222,7 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(_path, true, _b);
+		tex->m_texture = m_renderer->CreateTexture(_path, _a, _b);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
 
@@ -356,6 +359,15 @@ std::shared_ptr<Ideal::IShader> Truth::GraphicsManager::CreateShader(const std::
 std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::string& _name)
 {
 	return m_matarialMap[_name];
+}
+
+std::shared_ptr<Truth::UISpriteSet> Truth::GraphicsManager::CreateUISpriteSet()
+{
+	std::shared_ptr<Truth::UISpriteSet> result = std::make_shared<Truth::UISpriteSet>();
+	result->m_gp = this;
+	result->m_hwnd = m_hwnd;
+
+	return result;
 }
 
 void Truth::GraphicsManager::ToggleFullScreen()

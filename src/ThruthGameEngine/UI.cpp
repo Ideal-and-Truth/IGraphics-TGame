@@ -5,7 +5,6 @@
 #include "ISprite.h"
 #include "InputManager.h"
 #include "ButtonBehavior.h"
-#include "UISpriteSet.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::UI)
 
@@ -41,7 +40,7 @@ Truth::UI::~UI()
 void Truth::UI::Initialize()
 {
 	auto gp = m_managers.lock()->Graphics();
-	m_sprite = std::make_shared<UISpriteSet>();
+	m_sprite = gp->CreateUISpriteSet();
 
 	for (uint32 i = 0; i < 3; i++)
 	{
@@ -49,7 +48,7 @@ void Truth::UI::Initialize()
 		{
 			(*m_sprite)[i] = gp->CreateSprite();
 			auto tex = gp->CreateTexture(fs::path(m_texturePath[i]));
-			m_sprite->GetTex(i)->m_path = m_texturePath[i];
+			m_sprite->GetTex(i) = tex;
 
 			float w = static_cast<float>(tex->w);
 			float h = static_cast<float>(tex->h);
@@ -57,7 +56,6 @@ void Truth::UI::Initialize()
 			Vector2 gpScale = { m_size.x / w, m_size.y / h };
 			Vector2 gpPosition = { m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) };
 
-			m_texture[i] = tex;
 			(*m_sprite)[i]->SetTexture(tex->m_texture);
 			(*m_sprite)[i]->SetScale(gpScale);
 			(*m_sprite)[i]->SetPosition(gpPosition);
@@ -81,6 +79,10 @@ void Truth::UI::Start()
 
 void Truth::UI::Update()
 {
+#ifdef EDITOR_MODE
+	ResizeWindow();
+#endif
+
 	CheckState();
 	switch (m_state)
 	{
@@ -134,7 +136,7 @@ void Truth::UI::CheckState()
 			{
 				if (m_prevState == BUTTON_STATE::DOWN || m_prevState == BUTTON_STATE::HOLD)
 					m_state = BUTTON_STATE::HOLD;
-				else 
+				else
 					m_state = BUTTON_STATE::DOWN;
 			}
 			else
@@ -221,13 +223,16 @@ void Truth::UI::EditorSetValue()
 
 	for (uint32 i = 0; i < 3; i++)
 	{
-		float w = static_cast<float>(m_texture[i]->w);
-		float h = static_cast<float>(m_texture[i]->h);
+		auto tex = m_sprite->GetTex(i);
+		float w = static_cast<float>(tex->w);
+		float h = static_cast<float>(tex->h);
 		(*m_sprite)[i]->SetScale({ m_size.x / w, m_size.y / h });
 		(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) });
 		(*m_sprite)[i]->SetActive(IsActive());
 		(*m_sprite)[i]->SetAlpha(m_alpha);
 		(*m_sprite)[i]->SetZ(m_zDepth);
+
+		m_texturePath[i] = tex->m_path.generic_string();
 	}
 }
 #endif // EDITOR_MODE

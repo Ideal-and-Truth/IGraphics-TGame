@@ -10,7 +10,7 @@ namespace Truth
 #ifdef EDITOR_MODE
 	class EditorCamera;
 #endif // EDITOR_MODE
-
+	struct UISpriteSet;
 }
 
 namespace Ideal
@@ -95,6 +95,9 @@ namespace Truth
 		std::shared_ptr<Ideal::IShader> CreateShader(const std::wstring& _name);
 
 		std::shared_ptr<Material> GetMaterial(const std::string& _name);
+
+		std::shared_ptr<UISpriteSet> CreateUISpriteSet();
+
 
 		void ToggleFullScreen();
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "UISpriteSet.h"
 
 namespace Ideal
 {
@@ -9,7 +10,7 @@ namespace Ideal
 namespace Truth
 {
 	class ButtonBehavior;
-	class UISpriteSet;
+	struct UISpriteSet;
 }
 
 namespace Truth
@@ -39,6 +40,7 @@ namespace Truth
 		};
 
 	private:
+		PROPERTY(sprite)
 		std::shared_ptr<UISpriteSet> m_sprite;
 
 		std::string m_texturePath[3];
@@ -47,9 +49,6 @@ namespace Truth
 		BUTTON_STATE m_state;
 
 		RECT m_rect;
-
-		PROPERTY(texture)
-		std::shared_ptr<Texture> m_texture[3];
 
 		PROPERTY(size);
 		Vector2 m_size;
@@ -100,9 +99,8 @@ namespace Truth
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		for (int i = 0; i < 3; i++)
-		{
 			_ar& m_texturePath[i];
-		}
+
 		_ar& m_size;
 		_ar& m_position;
 		_ar& m_alpha;
@@ -115,17 +113,15 @@ namespace Truth
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
 		for (int i = 0; i < 3; i++)
-		{
 			_ar& m_texturePath[i];
-		}
+
 		_ar& m_size;
 		_ar& m_position;
 		_ar& m_alpha;
 		_ar& m_zDepth;
+
 		if (file_version >= 1)
-		{
 			_ar& m_behavior;
-		}
 	}
 }
 
