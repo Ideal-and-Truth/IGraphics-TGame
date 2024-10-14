@@ -61,6 +61,9 @@
     <Filter Include="Component\Ranger">
       <UniqueIdentifier>{5455936b-ba9c-4982-ac1a-603cd865476c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\AutoTarget">
+      <UniqueIdentifier>{52c87665-16dc-484c-861c-f6fa6129208e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -156,6 +159,9 @@
     <ClInclude Include="TestEffectGenerator.h">
       <Filter>TestEntity</Filter>
     </ClInclude>
+    <ClInclude Include="AutoTarget.h">
+      <Filter>Component\AutoTarget</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -241,6 +247,9 @@
     </ClCompile>
     <ClCompile Include="TestEffectGenerator.cpp">
       <Filter>TestEntity</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoTarget.cpp">
+      <Filter>Component\AutoTarget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

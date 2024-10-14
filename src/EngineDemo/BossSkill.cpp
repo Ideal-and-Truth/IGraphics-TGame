@@ -1,3 +1,4 @@
+#include <random>
 #include "BossSkill.h"
 #include "BossAnimator.h"
 #include "Player.h"
@@ -12,8 +13,23 @@
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
+int BossSkill::RandomNumber(int _min, int _max)
+{
+	std::random_device rd;
+	// 시드값으로 난수 생성 엔진 초기화
+	std::mt19937 gen(rd());
+	// 균등 분포 정의
+	std::uniform_int_distribution<int> dis(_min, _max);
+	// 난수 반환
+	return dis(gen);
+}
+
 BossSkill::BossSkill()
-	: m_createComplete(false)
+	: m_createComplete1(false)
+	, m_createComplete2(false)
+	, m_createComplete3(false)
+	, m_createComplete4(false)
+	, m_createComplete5(false)
 	, m_paternEnds(false)
 	, m_swordShooting(false)
 	, m_shockWave(false)
@@ -23,10 +39,17 @@ BossSkill::BossSkill()
 	, m_deleteFire(false)
 	, m_deleteSword(false)
 	, m_deleteClone(false)
-	, m_deleteTimeSphere(false)
 	, m_readyToShoot(false)
 	, m_passingTime(0.f)
-	, m_count(0)
+	, m_swordShootCoolTime(0.f)
+	, m_shockWaveCoolTime(0.f)
+	, m_flameSwordCoolTime(0.f)
+	, m_lightSpeedDashCoolTime(0.f)
+	, m_timeDistortionCoolTime(0.f)
+	, m_shockCount(0)
+	, m_swordCount(0)
+	, m_flameCount(0)
+	, m_cloneCount(0)
 	, m_currentPhase(0)
 {
 	m_name = "BossSkill";
@@ -59,7 +82,14 @@ void BossSkill::Awake()
 	m_swordPos.push_back({ -1.1f,4.2f,0.f });
 	m_swordPos.push_back({ -2.2f,4.7f,0.f });
 
-
+	m_spherePos.push_back({ 9.f, 7.f, 0.f });
+	m_spherePos.push_back({ -9.f, 7.f, 0.f });
+	m_spherePos.push_back({ 0.f, 7.f, 9.f });
+	m_spherePos.push_back({ 0.f, 7.f, -9.f });
+	m_spherePos.push_back({ sqrt(40.5f), 7.f, sqrt(40.5f) });
+	m_spherePos.push_back({ sqrt(40.5f), 7.f, -sqrt(40.5f) });
+	m_spherePos.push_back({ -sqrt(40.5f), 7.f, sqrt(40.5f) });
+	m_spherePos.push_back({ -sqrt(40.5f), 7.f, -sqrt(40.5f) });
 
 
 
@@ -69,171 +99,40 @@ void BossSkill::Update()
 {
 	m_readyToShoot = m_bossAnimator->GetTypeInfo().GetProperty("isSkillActive")->Get<bool>(m_bossAnimator.get()).Get();
 
-	if (!m_bossAnimator->GetTypeInfo().GetProperty("skillCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
+	if (m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_bossAnimator.get()).Get())
 	{
-		if (m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_bossAnimator.get()).Get())
+		if (m_bossAnimator->GetTypeInfo().GetProperty("attackSwordShoot")->Get<bool>(m_bossAnimator.get()).Get() && !m_deleteSword)
 		{
-			if (m_bossAnimator->GetTypeInfo().GetProperty("attackSwordShoot")->Get<bool>(m_bossAnimator.get()).Get() && !m_deleteSword)
-			{
-				m_swordShooting = true;
-			}
-			else if (m_bossAnimator->GetTypeInfo().GetProperty("attackShockWave")->Get<bool>(m_bossAnimator.get()).Get())
-			{
-				m_shockWave = true;
-			}
-			else if (m_bossAnimator->GetTypeInfo().GetProperty("attackUpperCut")->Get<bool>(m_bossAnimator.get()).Get() && !m_deleteFire)
-			{
-				m_flameSword = true;
-			}
-			else if (m_bossAnimator->GetTypeInfo().GetProperty("attackCharge")->Get<bool>(m_bossAnimator.get()).Get() && !m_deleteClone)
-			{
-				m_lightSpeedDash = true;
-			}
+			m_swordShooting = true;
+			m_bossAnimator->GetTypeInfo().GetProperty("attackSwordShoot")->Set(m_bossAnimator.get(), false);
 		}
-	}
-	else
-	{
-		m_passingTime += GetDeltaTime();
-		if (m_passingTime > 10.f)
+		else if (m_bossAnimator->GetTypeInfo().GetProperty("attackShockWave")->Get<bool>(m_bossAnimator.get()).Get())
 		{
-			m_bossAnimator->GetTypeInfo().GetProperty("skillCoolTime")->Set(m_bossAnimator.get(), false);
-			m_passingTime = 0.f;
+			m_shockWave = true;
+			m_bossAnimator->GetTypeInfo().GetProperty("attackShockWave")->Set(m_bossAnimator.get(), false);
+		}
+		else if (m_bossAnimator->GetTypeInfo().GetProperty("attackUpperCut")->Get<bool>(m_bossAnimator.get()).Get() && !m_deleteFire)
+		{
+			m_flameSword = true;
+			m_bossAnimator->GetTypeInfo().GetProperty("attackUpperCut")->Set(m_bossAnimator.get(), false);
+		}
+		else if (m_bossAnimator->GetTypeInfo().GetProperty("attackCharge")->Get<bool>(m_bossAnimator.get()).Get() && !m_deleteClone)
+		{
+			m_lightSpeedDash = true;
+			m_bossAnimator->GetTypeInfo().GetProperty("attackCharge")->Set(m_bossAnimator.get(), false);
+		}
+		else if (m_bossAnimator->GetTypeInfo().GetProperty("attackTimeSphere")->Get<bool>(m_bossAnimator.get()).Get())
+		{
+			m_timeDistortion = true;
+			m_bossAnimator->GetTypeInfo().GetProperty("attackTimeSphere")->Set(m_bossAnimator.get(), false);
 		}
 	}
 
-	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get())
-	{
-		for (auto& e : m_fires)
-		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-		}
-
-		for (auto& e : m_shockWaves)
-		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-		}
-
-		for (auto& e : m_swords)
-		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-		}
-
-		for (auto& e : m_clones)
-		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-		}
-
-		for (auto& e : m_timeSpheres)
-		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-		}
-		m_fires.clear();
-		m_shockWaves.clear();
-		m_swords.clear();
-		m_clones.clear();
-		m_timeSpheres.clear();
-
-		m_shootingPos.clear();
-		m_illusionPos.clear();
-
-		m_passingTime = 0.f;
-		m_count = 0;
-		m_createComplete = false;
-	}
+	DeleteCheck();
 
 	m_currentPhase = m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get();
 
-
-	if (m_deleteFire)
-	{
-		m_flameSword = false;
-		m_passingTime += GetDeltaTime();
-
-		if (m_passingTime > 3.f)
-		{
-			for (auto& e : m_fires)
-			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-			}
-
-			m_fires.clear();
-
-			m_deleteFire = false;
-
-			m_count = 0;
-			m_paternEnds = true;
-			m_createComplete = false;
-		}
-	}
-
-	if (m_deleteSword)
-	{
-		m_swordShooting = false;
-		m_passingTime += GetDeltaTime();
-
-		if (m_passingTime > 2.f)
-		{
-			for (auto& e : m_swords)
-			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-			}
-
-			m_swords.clear();
-			m_shootingPos.clear();
-
-			m_deleteSword = false;
-
-			m_count = 0;
-			m_paternEnds = true;
-			m_createComplete = false;
-		}
-	}
-
-	if (m_deleteClone)
-	{
-		m_lightSpeedDash = false;
-		m_passingTime += GetDeltaTime();
-
-		if (m_passingTime > 2.f)
-		{
-			for (auto& e : m_clones)
-			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-			}
-
-			m_clones.clear();
-			m_illusionPos.clear();
-
-			m_deleteClone = false;
-
-			m_count = 0;
-			m_paternEnds = true;
-			m_createComplete = false;
-		}
-	}
-
-	if (m_deleteTimeSphere)
-	{
-		m_timeDistortion = false;
-		m_passingTime += GetDeltaTime();
-
-		if (m_passingTime > 2.f)
-		{
-			for (auto& e : m_timeSpheres)
-			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
-			}
-
-			m_timeSpheres.clear();
-			m_illusionPos.clear();
-
-			m_deleteTimeSphere = false;
-
-			m_count = 0;
-			m_paternEnds = true;
-			m_createComplete = false;
-		}
-	}
+	CoolTimeCheck();
 
 	if (m_swordShooting)
 	{
@@ -249,42 +148,20 @@ void BossSkill::Update()
 	}
 	if (m_lightSpeedDash)
 	{
-		LightSpeedDash(m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get() > 1);
+		LightSpeedDash(m_currentPhase > 1);
 	}
-	if (m_timeDistortion && !m_deleteTimeSphere)
+	if (m_timeDistortion)
 	{
 		DistortedTimeSphere();
 	}
 
-	// 	if (GetKeyDown(KEY::_0) || m_paternEnds)
-	// 	if (GetKeyDown(KEY::_0)
-	// 		m_useSkill = !m_useSkill;
-	// 		m_paternEnds = false;
-	// 	}
-	// 	if (GetKeyDown(MOUSE::RMOUSE))
-	// 	{
-	// 		// 나중에 보스 애니메이터가 스킬 액티브를 넘겨줄거임
-	// 		m_readyToShoot = true;
-	// 	}
-	// 	if (m_useSkill)
-	// 	{
-	// 		//ShockWave();
-	// 		//FlameSword();
-	// 		SwordShooting(); //칼 회전 이상함(꼼수로 고쳤지만 짜침) + 아직 삭제 안함
-	// 		//LightSpeedDash(false); //아직 안 만듦
-	// 		//LightSpeedDash(true); //아직 삭제 안함
-	// 		//DistortedTimeSphere(); //미완
-	// 	}
-// 	if (GetKeyDown(KEY::_0))
-// 	{
-// 		m_readyToShoot = !m_readyToShoot;
-// 	}
-// 
+
+
 }
 
 void BossSkill::ShockWave()
 {
-	if (!m_createComplete)
+	if (!m_createComplete1)
 	{
 		for (int i = 0; i < 16; i++)
 		{
@@ -307,7 +184,7 @@ void BossSkill::ShockWave()
 
 			m_shockWaves.push_back(std::make_pair(shock, false));
 		}
-		m_createComplete = true;
+		m_createComplete1 = true;
 		m_passingTime = 0.5f;
 	}
 	else
@@ -315,38 +192,44 @@ void BossSkill::ShockWave()
 		if (m_readyToShoot)
 		{
 			m_passingTime += GetDeltaTime();
+
 			if (m_passingTime > 0.3f)
 			{
 				float bossHeight = m_owner.lock()->m_transform->m_position.y;
-				if (m_count % 2 == 0)
+
+				auto pos = sqrt(pow(m_shockWavePos[m_shockCount], 2.f) / 2.f);
+
+				if (m_shockCount % 2 == 0)
 				{
-					m_shockWaves[0].first->SetPosition({ m_shockWavePos[m_count],bossHeight,0.f });
-					m_shockWaves[1].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,0.f });
-					m_shockWaves[2].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_count] });
-					m_shockWaves[3].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_count] });
-					m_shockWaves[4].first->SetPosition({ m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-					m_shockWaves[5].first->SetPosition({ m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
-					m_shockWaves[6].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-					m_shockWaves[7].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
+					m_shockWaves[0].first->SetPosition({ m_shockWavePos[m_shockCount],bossHeight,0.f });
+					m_shockWaves[1].first->SetPosition({ -m_shockWavePos[m_shockCount],bossHeight,0.f });
+					m_shockWaves[2].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_shockCount] });
+					m_shockWaves[3].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_shockCount] });
+					m_shockWaves[4].first->SetPosition({ pos,bossHeight,pos });
+					m_shockWaves[5].first->SetPosition({ pos,bossHeight,-pos });
+					m_shockWaves[6].first->SetPosition({ -pos,bossHeight,pos });
+					m_shockWaves[7].first->SetPosition({ -pos,bossHeight,-pos });
 				}
-				else if (m_count % 2 == 1)
+				else if (m_shockCount % 2 == 1)
 				{
-					m_shockWaves[8].first->SetPosition({ m_shockWavePos[m_count],bossHeight,0.f });
-					m_shockWaves[9].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,0.f });
-					m_shockWaves[10].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_count] });
-					m_shockWaves[11].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_count] });
-					m_shockWaves[12].first->SetPosition({ m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-					m_shockWaves[13].first->SetPosition({ m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
-					m_shockWaves[14].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,m_shockWavePos[m_count] });
-					m_shockWaves[15].first->SetPosition({ -m_shockWavePos[m_count],bossHeight,-m_shockWavePos[m_count] });
+					m_shockWaves[8].first->SetPosition({ m_shockWavePos[m_shockCount],bossHeight,0.f });
+					m_shockWaves[9].first->SetPosition({ -m_shockWavePos[m_shockCount],bossHeight,0.f });
+					m_shockWaves[10].first->SetPosition({ 0.f,bossHeight,m_shockWavePos[m_shockCount] });
+					m_shockWaves[11].first->SetPosition({ 0.f,bossHeight,-m_shockWavePos[m_shockCount] });
+					m_shockWaves[12].first->SetPosition({ pos,bossHeight,pos });
+					m_shockWaves[13].first->SetPosition({ pos,bossHeight,-pos });
+					m_shockWaves[14].first->SetPosition({ -pos,bossHeight,pos });
+					m_shockWaves[15].first->SetPosition({ -pos,bossHeight,-pos });
 				}
-				m_count++;
+
+				m_shockCount++;
 				m_passingTime = 0.f;
-				if (m_count >= m_shockWavePos.size())
+
+				if (m_shockCount >= m_shockWavePos.size())
 				{
-					m_count = 0;
+					m_shockCount = 0;
 					m_paternEnds = true;
-					m_createComplete = false;
+					m_createComplete1 = false;
 					m_shockWave = false;
 
 					for (auto& e : m_shockWaves)
@@ -368,7 +251,7 @@ void BossSkill::ShockWave()
 
 void BossSkill::FlameSword()
 {
-	if (!m_createComplete)
+	if (!m_createComplete2)
 	{
 		for (int i = 0; i < 5; i++)
 		{
@@ -390,7 +273,7 @@ void BossSkill::FlameSword()
 
 			m_fires.push_back(std::make_pair(flame, false));
 		}
-		m_createComplete = true;
+		m_createComplete2 = true;
 	}
 	else
 	{
@@ -398,18 +281,18 @@ void BossSkill::FlameSword()
 		{
 			float bossHeight = m_owner.lock()->m_transform->m_position.y;
 			m_passingTime += GetDeltaTime();
-			if (m_passingTime > 0.1f && m_count < m_flamePos.size())
+			if (m_passingTime > 0.1f && m_flameCount < m_flamePos.size())
 			{
-				m_fires[m_count].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_count] });
-				Vector3 worldPos = m_fires[m_count].first->m_transform->m_worldPosition;
-				m_owner.lock()->DeleteChild(m_fires[m_count].first);
+				m_fires[m_flameCount].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_flameCount] });
+				Vector3 worldPos = m_fires[m_flameCount].first->m_transform->m_worldPosition;
+				m_owner.lock()->DeleteChild(m_fires[m_flameCount].first);
 				m_owner.lock().reset();
-				m_fires[m_count].first->m_transform->m_position = worldPos;
-				m_count++;
+				m_fires[m_flameCount].first->m_transform->m_position = worldPos;
+				m_flameCount++;
 				m_passingTime = 0.f;
 
 			}
-			if (m_count >= m_flamePos.size())
+			if (m_flameCount >= m_flamePos.size())
 			{
 				m_deleteFire = true;
 				m_flameSword = false;
@@ -422,10 +305,10 @@ void BossSkill::FlameSword()
 
 void BossSkill::SwordShooting()
 {
-	if (!m_createComplete)
+	if (!m_createComplete3)
 	{
 		m_passingTime += GetDeltaTime();
-		if (m_passingTime > 0.1f && m_count < m_swordPos.size())
+		if (m_passingTime > 0.1f && m_swordCount < m_swordPos.size())
 		{
 			std::shared_ptr<Truth::Entity> sword = std::make_shared<Truth::Entity>(m_managers.lock());
 			sword->Initialize();
@@ -437,7 +320,7 @@ void BossSkill::SwordShooting()
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(sword);
 			m_owner.lock()->AddChild(sword);
 
-			sword->SetPosition(m_swordPos[m_count]);
+			sword->SetPosition(m_swordPos[m_swordCount]);
 			//sword->SetScale({ 30.f,30.f,300.f });
 			sword->SetScale({ 0.8f,0.8f,2.f });
 
@@ -447,12 +330,12 @@ void BossSkill::SwordShooting()
 			m_swords.push_back(std::make_pair(sword, false));
 
 			m_passingTime = 0.f;
-			m_count++;
+			m_swordCount++;
 		}
-		if (m_count >= m_swordPos.size())
+		if (m_swordCount >= m_swordPos.size())
 		{
-			m_createComplete = true;
-			m_count = 0;
+			m_createComplete3 = true;
+			m_swordCount = 0;
 			for (auto& e : m_swords)
 			{
 				Vector3 worldPos = e.first->m_transform->m_worldPosition;
@@ -488,13 +371,13 @@ void BossSkill::SwordShooting()
 		if (m_readyToShoot)
 		{
 			m_passingTime += GetDeltaTime();
-			if (m_count < m_swordPos.size() && m_passingTime > 1.2f)
+			if (m_swordCount < m_swordPos.size() && m_passingTime > 1.2f)
 			{
-				m_swords[m_count].second = true;
+				m_swords[m_swordCount].second = true;
 
 
 				m_shootingPos.push_back(playerPos);
-				m_count++;
+				m_swordCount++;
 
 				m_passingTime = 0.f;
 			}
@@ -515,7 +398,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 {
 	if (isSecondPhase)
 	{
-		if (!m_createComplete)
+		if (!m_createComplete4)
 		{
 			m_illusionPos.push_back({ 4.2f,0.f,0.f });
 			m_illusionPos.push_back({ -4.2f,0.f,0.f });
@@ -526,8 +409,8 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				illusion->m_layer = 1;
 				//auto boxCollider = illusion->AddComponent<Truth::BoxCollider>();
 				auto skinnedMesh = illusion->AddComponent<Truth::SkinnedMesh>();
-				auto damage = illusion->AddComponent<SimpleDamager>();
 				auto rigid = illusion->AddComponent<Truth::Controller>();
+				auto damage = illusion->AddComponent<SimpleDamager>();
 				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 30.f);
 				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
 				skinnedMesh->AddAnimation("AttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
@@ -536,13 +419,14 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				m_managers.lock()->Scene()->m_currentScene->CreateEntity(illusion);
 				m_owner.lock()->AddChild(illusion);
 
+				rigid->GetTypeInfo().GetProperty("height")->Set(rigid.get(), 3.f);
 				illusion->SetPosition(m_illusionPos[i]);
 				illusion->SetScale({ 1.f,1.f,1.f });
 
 				m_clones.push_back(std::make_pair(illusion, false));
 				skinnedMesh->SetAnimation("AttackLightSpeedReady", false);
 			}
-			m_createComplete = true;
+			m_createComplete4 = true;
 
 			for (auto& e : m_clones)
 			{
@@ -569,7 +453,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				}
 			}
 
-			if (m_count < m_clones.size())
+			if (m_cloneCount < m_clones.size())
 			{
 				if (m_readyToShoot)
 				{
@@ -577,17 +461,17 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 
 					if (m_passingTime > 0.8f)
 					{
-						auto skinnedMesh = m_clones[m_count].first->GetComponent<Truth::SkinnedMesh>().lock();
+						auto skinnedMesh = m_clones[m_cloneCount].first->GetComponent<Truth::SkinnedMesh>().lock();
 
-						m_clones[m_count].second = true;
-						m_illusionPos[m_count] = playerPos;
+						m_clones[m_cloneCount].second = true;
+						m_illusionPos[m_cloneCount] = playerPos;
 						m_passingTime = 0.f;
 						skinnedMesh->SetAnimation("AttackLightSpeedDash", false);
 						skinnedMesh->SetAnimationSpeed(1.f);
 
-						auto rigid = m_clones[m_count].first->GetComponent<Truth::Controller>().lock();
+						auto rigid = m_clones[m_cloneCount].first->GetComponent<Truth::Controller>().lock();
 
-						Vector3 power(playerPos - m_clones[m_count].first->m_transform->m_position);
+						Vector3 power(playerPos - m_clones[m_cloneCount].first->m_transform->m_position);
 						power.y = 0.f;
 						power.Normalize();
 						power.y = -100.f;
@@ -596,12 +480,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 
 						rigid->AddImpulse(power);
 
-						m_count++;
-					}
-
-					if (m_count >= m_clones.size())
-					{
-						//m_readyToShoot = false;
+						m_cloneCount++;
 					}
 				}
 			}
@@ -627,9 +506,11 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 					if (skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() < 100 && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 8)
 					{
 						m_clones[i].second = false;
-						m_deleteClone = true;
-						m_lightSpeedDash = false;
 						skinnedMesh->SetAnimationSpeed(0.f);
+						if (m_clones[1].second == false)
+						{
+							m_deleteClone = true;
+						}
 					}
 				}
 			}
@@ -639,32 +520,262 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 
 void BossSkill::DistortedTimeSphere()
 {
-	if (!m_createComplete)
+	if (!m_createComplete5)
 	{
-		std::shared_ptr<Truth::Entity> timeSphere = std::make_shared<Truth::Entity>(m_managers.lock());
-		timeSphere->Initialize();
-		timeSphere->m_layer = 1;
-		timeSphere->AddComponent<Truth::SphereCollider>();
-		timeSphere->AddComponent<TimeDistortion>();
-		timeSphere->m_name = "DistortedTimeSphere";
-		m_managers.lock()->Scene()->m_currentScene->CreateEntity(timeSphere);
+		for (int i = 0; i < 5; i++)
+		{
+			std::shared_ptr<Truth::Entity> timeSphere = std::make_shared<Truth::Entity>(m_managers.lock());
+			timeSphere->Initialize();
+			timeSphere->m_layer = 1;
+			timeSphere->AddComponent<Truth::BoxCollider>();
+			timeSphere->AddComponent<TimeDistortion>();
+			timeSphere->m_name = "DistortedTimeSphere";
+			m_managers.lock()->Scene()->m_currentScene->CreateEntity(timeSphere);
+			m_owner.lock()->AddChild(timeSphere);
 
-		timeSphere->SetPosition(m_owner.lock()->m_transform->m_position);
-		timeSphere->SetScale({ 4.f,4.f,4.f });
+			timeSphere->SetPosition(m_spherePos[i]);
+			timeSphere->SetScale({ 6.f,4.f,6.f });
 
 
-		timeSphere->Start();
+			timeSphere->Start();
 
-		m_timeSpheres.push_back(std::make_pair(timeSphere, false));
+			m_timeSpheres.push_back(std::make_pair(timeSphere, false));
 
-		m_createComplete = true;
+		}
+
+		m_createComplete5 = true;
+
+		for (auto& e : m_timeSpheres)
+		{
+			Vector3 worldPos = e.first->m_transform->m_worldPosition;
+			m_owner.lock()->DeleteChild(e.first);
+			m_owner.lock().reset();
+			e.first->m_transform->m_position = worldPos;
+		}
 	}
-
+	else
+	{
+		for (auto& e : m_timeSpheres)
+		{
+			if (e.first->m_transform->m_position.y > 0.5f)
+			{
+				e.first->m_transform->m_position.y -= GetDeltaTime() * 2.f;
+			}
+			else
+			{
+				e.first->GetComponent<TimeDistortion>().lock()->GetTypeInfo().GetProperty("active")->Set(e.first->GetComponent<TimeDistortion>().lock().get(), true);
+			}
+		}
+	}
 }
 
-void BossSkill::DamageforPlayer(float damage)
+void BossSkill::CoolTimeCheck()
 {
-	float playerHp = m_player->GetTypeInfo().GetProperty("currentTp")->Get<float>(m_player.get()).Get();
-	m_player->GetTypeInfo().GetProperty("currentTp")->Set(m_player.get(), playerHp - damage);
+	if (m_bossAnimator->GetTypeInfo().GetProperty("swordShootCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
+	{
+		m_swordShootCoolTime += GetDeltaTime();
+
+		if (m_swordShootCoolTime > 10.f)
+		{
+			m_bossAnimator->GetTypeInfo().GetProperty("swordShootCoolTime")->Set(m_bossAnimator.get(), false);
+			m_swordShootCoolTime = 0.f;
+		}
+	}
+
+	if (m_bossAnimator->GetTypeInfo().GetProperty("shockWaveCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
+	{
+		m_shockWaveCoolTime += GetDeltaTime();
+
+		if (m_shockWaveCoolTime > 10.f)
+		{
+			m_bossAnimator->GetTypeInfo().GetProperty("shockWaveCoolTime")->Set(m_bossAnimator.get(), false);
+			m_shockWaveCoolTime = 0.f;
+		}
+	}
+
+	if (m_bossAnimator->GetTypeInfo().GetProperty("flameSwordCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
+	{
+		m_flameSwordCoolTime += GetDeltaTime();
+
+		if (m_flameSwordCoolTime > 10.f)
+		{
+			m_bossAnimator->GetTypeInfo().GetProperty("flameSwordCoolTime")->Set(m_bossAnimator.get(), false);
+			m_flameSwordCoolTime = 0.f;
+		}
+	}
+
+	if (m_bossAnimator->GetTypeInfo().GetProperty("lightSpeedDashCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
+	{
+		m_lightSpeedDashCoolTime += GetDeltaTime();
+
+		if (m_lightSpeedDashCoolTime > 10.f)
+		{
+			m_bossAnimator->GetTypeInfo().GetProperty("lightSpeedDashCoolTime")->Set(m_bossAnimator.get(), false);
+			m_lightSpeedDashCoolTime = 0.f;
+		}
+	}
+
+	if (m_timeSpheres.empty())
+	{
+		m_createComplete5 = false;
+
+		m_timeDistortionCoolTime += GetDeltaTime();
+
+		if (m_timeDistortionCoolTime > 10.f)
+		{
+			m_bossAnimator->GetTypeInfo().GetProperty("timeDistortionCoolTime")->Set(m_bossAnimator.get(), false);
+			m_timeDistortionCoolTime = 0.f;
+		}
+	}
+}
+
+void BossSkill::DeleteCheck()
+{
+	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get())
+	{
+		for (auto& e : m_fires)
+		{
+			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+		}
+
+		for (auto& e : m_shockWaves)
+		{
+			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+		}
+
+		for (auto& e : m_swords)
+		{
+			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+		}
+
+		for (auto& e : m_clones)
+		{
+			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+		}
+
+		for (auto& e : m_timeSpheres)
+		{
+			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+		}
+
+		m_fires.clear();
+		m_shockWaves.clear();
+		m_swords.clear();
+		m_clones.clear();
+		m_timeSpheres.clear();
+
+		m_shootingPos.clear();
+		m_illusionPos.clear();
+
+		m_passingTime = 0.f;
+		m_shockCount = 0;
+		m_swordCount = 0;
+		m_flameCount = 0;
+		m_cloneCount = 0;
+
+		m_createComplete1 = false;
+		m_createComplete2 = false;
+		m_createComplete3 = false;
+		m_createComplete4 = false;
+		m_createComplete5 = false;
+
+		m_swordShooting = false;
+		m_shockWave = false;
+		m_flameSword = false;
+		m_lightSpeedDash = false;
+		m_timeDistortion = false;
+	}
+
+	if (m_deleteFire)
+	{
+		m_flameSword = false;
+		m_passingTime += GetDeltaTime();
+
+		if (m_passingTime > 3.f)
+		{
+			for (auto& e : m_fires)
+			{
+				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			}
+
+			m_fires.clear();
+
+			m_deleteFire = false;
+
+			m_flameCount = 0;
+			m_paternEnds = true;
+			m_createComplete2 = false;
+		}
+	}
+
+	if (m_deleteSword)
+	{
+		m_swordShooting = false;
+		m_passingTime += GetDeltaTime();
+
+		if (m_passingTime > 2.f)
+		{
+			for (auto& e : m_swords)
+			{
+				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			}
+
+			m_swords.clear();
+			m_shootingPos.clear();
+
+			m_deleteSword = false;
+
+			m_swordCount = 0;
+			m_paternEnds = true;
+			m_createComplete3 = false;
+		}
+	}
+
+	if (m_deleteClone)
+	{
+		m_passingTime += GetDeltaTime();
+
+		if (m_passingTime > 2.f)
+		{
+			m_lightSpeedDash = false;
+
+			for (auto& e : m_clones)
+			{
+				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			}
+
+			m_clones.clear();
+			m_illusionPos.clear();
+
+			m_deleteClone = false;
+
+			m_cloneCount = 0;
+			m_paternEnds = true;
+			m_createComplete4 = false;
+		}
+	}
+
+	if (!m_timeSpheres.empty())
+	{
+		int count = 0;
+		for (auto& e : m_timeSpheres)
+		{
+			auto compo = e.first->GetComponent<TimeDistortion>().lock();
+			if (compo->GetTypeInfo().GetProperty("delete")->Get<bool>(compo.get()).Get())
+			{
+				count++;
+			}
+		}
+
+		if (count > 0)
+		{
+			for (auto& e : m_timeSpheres)
+			{
+				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			}
+			m_timeSpheres.clear();
+			m_deleteSphere = false;
+		}
+	}
 }
 

@@ -427,6 +427,26 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class BossAttackTimeSphere
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+	bool isReset = false;
+
+public:
+	BossAttackTimeSphere(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class BossAnimator :
@@ -509,6 +529,9 @@ private:
 	PROPERTY(attackShockWave);
 	bool m_attackShockWave;
 
+	PROPERTY(attackTimeSphere);
+	bool m_attackTimeSphere;
+
 	PROPERTY(isDamage);
 	bool m_isDamage;
 
@@ -544,6 +567,21 @@ private:
 	PROPERTY(passingTime);
 	float m_passingTime;
 
+	PROPERTY(swordShootCoolTime);
+	bool m_swordShootCoolTime;
+
+	PROPERTY(shockWaveCoolTime);
+	bool m_shockWaveCoolTime;
+
+	PROPERTY(flameSwordCoolTime);
+	bool m_flameSwordCoolTime;
+
+	PROPERTY(lightSpeedDashCoolTime);
+	bool m_lightSpeedDashCoolTime;
+
+	PROPERTY(timeDistortionCoolTime);
+	bool m_timeDistortionCoolTime;
+
 	float m_lastHp;
 
 	float m_downGuage;
@@ -570,6 +608,10 @@ private:
 private:
 	int RandomNumber(int _min, int _max);
 	void AllStateReset();
+
+	void Phase1();
+	void Phase2();
+	void Phase3();
 
 public:
 	BossAnimator();

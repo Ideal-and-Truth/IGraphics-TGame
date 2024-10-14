@@ -38,15 +38,21 @@ BossAnimator::BossAnimator()
 	, m_attackCombo2_2(false)
 	, m_attackSwordShoot(false)
 	, m_attackShockWave(false)
+	, m_attackTimeSphere(false)
 	, m_isDamage(false)
 	, m_isDown(false)
 	, m_isDodge(false)
 	, m_isDeath(false)
-	, m_isSkillActive(false)
 	, m_isAttacking(false)
 	, m_playOnce(false)
 	, m_isAnimationEnd(false)
+	, m_isSkillActive(false)
 	, m_skillCoolTime(false)
+	, m_swordShootCoolTime(false)
+	, m_shockWaveCoolTime(false)
+	, m_flameSwordCoolTime(false)
+	, m_lightSpeedDashCoolTime(false)
+	, m_timeDistortionCoolTime(false)
 	, m_isLockOn(false)
 	, m_passingTime(0.f)
 	, m_lastHp(0.f)
@@ -160,7 +166,6 @@ void BossAnimator::Update()
 	float currentTP = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
 	float maxTP = m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get();
 
-	int random = RandomNumber(1, 20);
 
 	// 스턴용
 	if (m_enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(m_enemy.get()).Get() > m_downGuage)
@@ -206,267 +211,16 @@ void BossAnimator::Update()
 	/// 각 페이즈 별 조건처리
 	if (m_currentPhase == 1)
 	{
-		if (!m_playOnce)
-		{
-			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
-
-			m_attackRunning = true;
-			m_playOnce = true;
-			m_passingTime = 0.f;
-		}
-		else
-		{
-			if (!m_isAttacking)
-			{
-				m_passingTime += GetDeltaTime();
-
-				// 근접일때
-				if (m_isInRange)
-				{
-					// 평타 3번치면 백스텝
-					if (m_attackCount < 3)
-					{
-						if (m_attackCombo1_1)
-						{
-							if (random <= 10)
-							{
-								m_attackCombo1_2 = true;
-								m_attackCombo1_3 = false;
-							}
-							else
-							{
-								m_attackSpin = true;
-							}
-						}
-						if (m_attackCombo2_1)
-						{
-							m_attackCombo2_2 = true;
-						}
-						if (m_passingTime < 1.f)
-						{
-							m_strafeMove = true;
-							m_isPursuit = false;
-						}
-						else
-						{
-							m_strafeMove = false;
-							if (random <= 10)
-							{
-								m_attackCombo1_1 = true;
-							}
-							else
-							{
-								m_attackCombo2_1 = true;
-							}
-						}
-					}
-					// 백스텝용
-					else
-					{
-						m_isDodge = true;
-					}
-				}
-				// 원거리일때
-				else
-				{
-					if (m_attackCombo1_1)
-					{
-						m_attackCombo1_3 = true;
-						m_attackCombo1_2 = false;
-						m_attackSpin = false;
-					}
-					if (m_attackCombo2_1)
-					{
-						m_attackCombo2_2 = true;
-					}
-					if (!m_skillCoolTime && !m_attackSwordShoot && !m_attackShockWave && !m_attackCharge)
-					{
-						if (random <= 7)
-						{
-							m_attackSwordShoot = true;
-						}
-						else if (random > 7 && random <= 14)
-						{
-							m_attackShockWave = true;
-						}
-						else
-						{
-							m_attackCharge = true;
-						}
-					}
-					else if (m_skillCoolTime)
-					{
-						if (random <= 12)
-						{
-							m_strafeMove = false;
-							m_isPursuit = true;
-						}
-						else if (random > 12 && random <= 14)
-						{
-							m_strafeMove = true;
-						}
-						else
-						{
-							m_attackCharge = true;
-						}
-					}
-				}
-			}
-
-			if (m_attackCharge)
-			{
-				m_passingTime += GetDeltaTime();
-			}
-		}
+		Phase1();
 	}
 	else if (m_currentPhase == 2)
 	{
-		if (!m_playOnce)
-		{
-			if (m_currentState != m_animationStateMap["Dodge"] && !m_attackUpperCut)
-			{
-				AllStateReset();
-				m_isDodge = true;
-				ChangeState("Dodge");
-				m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
-				m_attackCount = 3;
-			}
-			if (m_currentState == m_animationStateMap["Dodge"])
-			{
-				m_skillCoolTime = false;
-				m_attackUpperCut = true;
-			}
-			if (m_currentState == m_animationStateMap["AttackUpperCut"])
-			{
-				m_playOnce = true;
-			}
-			m_passingTime = 0.f;
-		}
-		/// 작업중 ////////////////////////////////////////////////////////////////////
-		else
-		{
-			if (!m_isAttacking)
-			{
-				m_passingTime += GetDeltaTime();
-
-				// 근접일때
-				if (m_isInRange)
-				{
-					// 평타 3번치면 백스텝
-					if (m_attackCount < 3)
-					{
-						if (m_attackCombo1_1)
-						{
-							if (random <= 10)
-							{
-								m_attackCombo1_2 = true;
-								m_attackCombo1_3 = false;
-							}
-							else
-							{
-								m_attackSpin = true;
-							}
-						}
-						if (m_attackCombo2_1)
-						{
-							m_attackCombo2_2 = true;
-						}
-						if (m_passingTime < 1.f)
-						{
-							m_strafeMove = true;
-							m_isPursuit = false;
-						}
-						else
-						{
-							m_strafeMove = false;
-							if (random <= 10)
-							{
-								m_attackCombo1_1 = true;
-							}
-							else
-							{
-								m_attackCombo2_1 = true;
-							}
-						}
-					}
-					// 백스텝용
-					else
-					{
-						m_isDodge = true;
-					}
-				}
-				// 원거리일때
-				else
-				{
-					if (m_attackCombo1_1)
-					{
-						m_attackCombo1_3 = true;
-						m_attackCombo1_2 = false;
-						m_attackSpin = false;
-					}
-					if (m_attackCombo2_1)
-					{
-						m_attackCombo2_2 = true;
-					}
-					if (!m_skillCoolTime && !m_attackSwordShoot && !m_attackShockWave && !m_attackCharge)
-					{
-						if (random <= 7)
-						{
-							m_attackSwordShoot = true;
-						}
-						else if (random > 7 && random <= 14)
-						{
-							m_attackShockWave = true;
-						}
-						else
-						{
-							m_attackCharge = true;
-						}
-					}
-					else if (m_skillCoolTime)
-					{
-						if (random <= 16)
-						{
-							m_strafeMove = false;
-							m_isPursuit = true;
-						}
-						else if (random > 16 && random <= 20)
-						{
-							m_strafeMove = true;
-						}
-					}
-				}
-			}
-
-			if (m_attackCharge)
-			{
-				m_passingTime += GetDeltaTime();
-			}
-
-		}
+		Phase2();
 	}
 	/// 작업중 ////////////////////////////////////////////////////////////////////
 	else if (m_currentPhase == 3)
 	{
-		if (!m_playOnce)
-		{
-			AllStateReset();
-			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
-			m_isDown = true;
-			if (m_currentState == m_animationStateMap["Down"])
-			{
-				m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 5.f);
-			}
-			if (currentTP / maxTP >= 0.5f)
-			{
-				m_playOnce = true;
-				m_isDown = false;
-			}
-		}
-		else
-		{
-
-		}
+		Phase3();
 	}
 
 
@@ -617,6 +371,13 @@ void BossRun::OnStateUpdate()
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackCombo1_3");
 	}
+	else
+	{
+		if (GetProperty("strafeMove")->Get<bool>(m_animator).Get())
+		{
+			dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Strafe");
+		}
+	}
 }
 
 void BossRun::OnStateExit()
@@ -734,7 +495,7 @@ void BossAttackRunning::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.f);
 		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, 0.f);
 	}
-	if (GetProperty("isInRange")->Get<bool>(m_animator).Get())
+	if (GetProperty("isInRange")->Get<bool>(m_animator).Get() || GetProperty("passingTime")->Get<float>(m_animator).Get() > 1.f)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 	}
@@ -747,6 +508,7 @@ void BossAttackRunning::OnStateUpdate()
 void BossAttackRunning::OnStateExit()
 {
 	GetProperty("attackRunning")->Set(m_animator, false);
+	GetProperty("passingTime")->Set(m_animator, 0.f);
 }
 
 void BossAttackUpperCut::OnStateEnter()
@@ -776,7 +538,7 @@ void BossAttackUpperCut::OnStateExit()
 	GetProperty("attackUpperCut")->Set(m_animator, false);
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isSkillActive")->Set(m_animator, false);
-	GetProperty("skillCoolTime")->Set(m_animator, true);
+	GetProperty("flameSwordCoolTime")->Set(m_animator, true);
 	isReset = false;
 }
 
@@ -825,7 +587,7 @@ void BossAttackCharge::OnStateEnter()
 	dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(false);
 	if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.8f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.6f);
 	}
 }
 
@@ -849,9 +611,12 @@ void BossAttackCharge::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
 	}
 
-	if (!m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 132)
+	if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
 	{
-		GetProperty("isSkillActive")->Set(m_animator, true);
+		if (!m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 132)
+		{
+			GetProperty("isSkillActive")->Set(m_animator, true);
+		}
 	}
 
 	if (!m_changePose && isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 142)
@@ -877,7 +642,7 @@ void BossAttackCharge::OnStateExit()
 	if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
 	{
 		GetProperty("isSkillActive")->Set(m_animator, false);
-		GetProperty("skillCoolTime")->Set(m_animator, true);
+		GetProperty("lightSpeedDashCoolTime")->Set(m_animator, true);
 	}
 
 	GetProperty("attackCharge")->Set(m_animator, false);
@@ -956,7 +721,7 @@ void BossAttackDoubleUpperCut::OnStateExit()
 	GetProperty("attackDoubleUpperCut")->Set(m_animator, false);
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isSkillActive")->Set(m_animator, false);
-	GetProperty("skillCoolTime")->Set(m_animator, true);
+	GetProperty("flameSwordCoolTime")->Set(m_animator, true);
 }
 
 void BossDown::OnStateEnter()
@@ -1158,7 +923,7 @@ void BossAttackSwordShoot::OnStateExit()
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("attackSwordShoot")->Set(m_animator, false);
 	GetProperty("isSkillActive")->Set(m_animator, false);
-	GetProperty("skillCoolTime")->Set(m_animator, true);
+	GetProperty("swordShootCoolTime")->Set(m_animator, true);
 	isReset = false;
 }
 
@@ -1195,7 +960,38 @@ void BossAttackShockWave::OnStateExit()
 	GetProperty("attackShockWave")->Set(m_animator, false);
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isSkillActive")->Set(m_animator, false);
-	GetProperty("skillCoolTime")->Set(m_animator, true);
+	GetProperty("shockWaveCoolTime")->Set(m_animator, true);
+	GetProperty("isLockOn")->Set(m_animator, false);
+	isReset = false;
+}
+
+void BossAttackTimeSphere::OnStateEnter()
+{
+	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackShockWave", false);
+	GetProperty("isAttacking")->Set(m_animator, true);
+}
+
+void BossAttackTimeSphere::OnStateUpdate()
+{
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isReset = true;
+		GetProperty("isLockOn")->Set(m_animator, true);
+		GetProperty("isSkillActive")->Set(m_animator, true);
+	}
+	if (isReset && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
+	}
+}
+
+void BossAttackTimeSphere::OnStateExit()
+{
+	GetProperty("isAttacking")->Set(m_animator, false);
+	GetProperty("attackTimeSphere")->Set(m_animator, false);
+	GetProperty("passingTime")->Set(m_animator, 0.f);
+	GetProperty("isSkillActive")->Set(m_animator, false);
+	GetProperty("timeDistortionCoolTime")->Set(m_animator, true);
 	GetProperty("isLockOn")->Set(m_animator, false);
 	isReset = false;
 }
@@ -1228,3 +1024,303 @@ void BossAnimator::AllStateReset()
 	m_isSkillActive = false;
 	m_isAttacking = false;
 }
+
+void BossAnimator::Phase1()
+{
+	int random = RandomNumber(1, 20);
+
+	if (!m_playOnce)
+	{
+		m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+
+		m_attackRunning = true;
+		m_playOnce = true;
+		m_passingTime = 0.f;
+	}
+	else
+	{
+		if (!m_isAttacking)
+		{
+			m_passingTime += GetDeltaTime();
+
+			// 근접일때
+			if (m_isInRange)
+			{
+				// 평타 3번치면 백스텝
+				if (m_attackCount < 3)
+				{
+					if (m_attackCombo1_1)
+					{
+						if (random <= 10)
+						{
+							m_attackCombo1_2 = true;
+							m_attackCombo1_3 = false;
+						}
+						else
+						{
+							m_attackSpin = true;
+						}
+					}
+
+					if (m_attackCombo2_1)
+					{
+						m_attackCombo2_2 = true;
+					}
+
+					if (m_passingTime < 1.f)
+					{
+						m_strafeMove = true;
+						m_isPursuit = false;
+					}
+					else
+					{
+						m_strafeMove = false;
+
+						if (random <= 10)
+						{
+							m_attackCombo1_1 = true;
+						}
+						else
+						{
+							m_attackCombo2_1 = true;
+						}
+					}
+				}
+				// 백스텝용
+				else
+				{
+					m_isDodge = true;
+				}
+			}
+			// 원거리일때
+			else
+			{
+				if (m_attackCombo1_1)
+				{
+					m_attackCombo1_3 = true;
+					m_attackCombo1_2 = false;
+					m_attackSpin = false;
+				}
+
+				if (m_attackCombo2_1)
+				{
+					m_attackCombo2_2 = true;
+				}
+
+				if (!m_attackCombo1_3 && !m_attackCombo2_2 && m_currentState == m_animationStateMap["Idle"])
+				{
+					if (random <= 10)
+					{
+						random = RandomNumber(1, 20);
+
+						if (random <= 10 && !m_swordShootCoolTime)
+						{
+							m_attackSwordShoot = true;
+						}
+						else if (random > 10 && !m_shockWaveCoolTime)
+						{
+							m_attackShockWave = true;
+						}
+					}
+					else
+					{
+						random = RandomNumber(1, 20);
+						if (random <= 12)
+						{
+							m_strafeMove = false;
+							m_isPursuit = true;
+						}
+						else if (random > 12 && random <= 14)
+						{
+							m_strafeMove = true;
+						}
+						else
+						{
+							m_attackCharge = true;
+						}
+					}
+				}
+			}
+		}
+
+		if (m_currentState == m_animationStateMap["AttackCharge"])
+		{
+			m_passingTime += GetDeltaTime();
+		}
+	}
+}
+
+void BossAnimator::Phase2()
+{
+	int random = RandomNumber(1, 20);
+
+	if (!m_playOnce)
+	{
+		if (m_currentState != m_animationStateMap["Dodge"] && !m_attackUpperCut && m_currentState != m_animationStateMap["AttackUpperCut"])
+		{
+			AllStateReset();
+			m_isDodge = true;
+			ChangeState("Dodge");
+			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+			m_attackCount = 3;
+		}
+		if (m_currentState == m_animationStateMap["Dodge"])
+		{
+			m_skillCoolTime = false;
+			m_attackUpperCut = true;
+		}
+		if (m_currentState == m_animationStateMap["AttackUpperCut"])
+		{
+			m_playOnce = true;
+		}
+		m_passingTime = 0.f;
+	}
+	/// 작업중 ////////////////////////////////////////////////////////////////////
+	else
+	{
+		if (!m_isAttacking)
+		{
+			m_passingTime += GetDeltaTime();
+
+			// 근접일때
+			if (m_isInRange)
+			{
+				// 평타 3번치면 백스텝
+				if (m_attackCount < 3)
+				{
+					if (m_attackCombo1_1)
+					{
+						if (random <= 10)
+						{
+							m_attackCombo1_2 = true;
+							m_attackCombo1_3 = false;
+						}
+						else
+						{
+							m_attackSpin = true;
+						}
+					}
+
+					if (m_attackCombo2_1)
+					{
+						m_attackCombo2_2 = true;
+					}
+
+					if (m_passingTime < 1.f)
+					{
+						m_strafeMove = true;
+						m_isPursuit = false;
+					}
+					else
+					{
+						m_strafeMove = false;
+						if (random <= 10)
+						{
+							m_attackCombo1_1 = true;
+						}
+						else
+						{
+							m_attackCombo2_1 = true;
+						}
+					}
+				}
+				// 백스텝용
+				else
+				{
+					m_isDodge = true;
+				}
+			}
+			// 원거리일때
+			else
+			{
+				if (m_attackCombo1_1)
+				{
+					m_attackCombo1_3 = true;
+					m_attackCombo1_2 = false;
+					m_attackSpin = false;
+				}
+
+				if (m_attackCombo2_1)
+				{
+					m_attackCombo2_2 = true;
+				}
+
+				if (!m_attackCombo1_3 && !m_attackCombo2_2 && m_currentState == m_animationStateMap["Idle"])
+				{
+					if (random <= 10)
+					{
+						random = RandomNumber(1, 20);
+
+						if (random <= 5 && !m_swordShootCoolTime)
+						{
+							m_attackSwordShoot = true;
+						}
+						else if (random > 5 && random <= 10 && !m_shockWaveCoolTime)
+						{
+							m_attackShockWave = true;
+						}
+						else if (random > 10 && random <= 15 && !m_timeDistortionCoolTime)
+						{
+							m_attackTimeSphere = true;
+						}
+						else if (random > 15 && !m_lightSpeedDashCoolTime)
+						{
+							m_attackCharge = true;
+						}
+					}
+					else
+					{
+						random = RandomNumber(1, 20);
+
+						if (random <= 10)
+						{
+							m_strafeMove = false;
+							m_isPursuit = true;
+						}
+						else if (random > 10 && random <= 16)
+						{
+							m_attackRunning = true;
+						}
+						else if (random > 16 && random <= 20)
+						{
+							m_strafeMove = true;
+						}
+					}
+				}
+			}
+		}
+		if (m_currentState == m_animationStateMap["AttackCharge"] || m_currentState == m_animationStateMap["AttackRunning"])
+		{
+			m_passingTime += GetDeltaTime();
+		}
+	}
+}
+
+void BossAnimator::Phase3()
+{
+	float currentTP = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
+	float maxTP = m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get();
+
+	int random = RandomNumber(1, 20);
+
+	if (!m_playOnce)
+	{
+		AllStateReset();
+		m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+		m_isDown = true;
+		if (m_currentState == m_animationStateMap["Down"])
+		{
+			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 5.f);
+		}
+		if (currentTP / maxTP >= 0.5f)
+		{
+			m_playOnce = true;
+			m_isDown = false;
+		}
+	}
+	else
+	{
+
+	}
+}
+
