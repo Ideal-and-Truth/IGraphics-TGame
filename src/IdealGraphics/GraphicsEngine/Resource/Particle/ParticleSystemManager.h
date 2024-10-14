@@ -12,6 +12,7 @@ namespace Ideal
 	class D3D12DynamicConstantBufferAllocator;
 	class ParticleSystem;
 	class D3D12Shader;
+	class D3D12VertexBuffer;
 }
 
 namespace Ideal
@@ -34,6 +35,9 @@ namespace Ideal
 		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 
+		void SetDefaultParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer);
+		std::shared_ptr<Ideal::D3D12VertexBuffer> GetParticleVertexBuffer();
+
 	private:
 		void CreateRootSignature(ComPtr<ID3D12Device> Device);
 
@@ -49,6 +53,8 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_MESH_VS;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_VS;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_GS;
+
+		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 
 	private:
 		std::vector<std::shared_ptr<Ideal::ParticleSystem>> m_particlesNoTransparency;

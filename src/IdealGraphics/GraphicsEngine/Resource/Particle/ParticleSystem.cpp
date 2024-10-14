@@ -169,6 +169,11 @@ void Ideal::ParticleSystem::SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> S
 	m_RENDER_MODE_BILLBOARD_GS = Shader;
 }
 
+void Ideal::ParticleSystem::SetParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer)
+{
+	m_particleVertexBuffer = ParticleVertexBuffer;
+}
+
 void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
@@ -673,7 +678,24 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 
 void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
+	// CB_ParticleSystem
+	{
+		UpdateCustomData();
+		UpdateColorOverLifetime();
+		//if (m_currentTime > 1.0) m_currentTime = 1.0;
+		m_cbParticleSystem.Time = m_currentTime;
+		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
+		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
+		auto handle2 = DescriptorHeap->Allocate();
+		Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData, handle2.GetGpuHandle());
+	}
 
+	CommandList->SetPipelineState(m_RENDER_MODE_BILLBOARD_pipelineState.Get());
+	CommandList->IASetVertexBuffers(0, 1, &m_particleVertexBuffer.lock()->GetView());
+	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+	// TODO: ÀÓ½Ã 10000°³
+	CommandList->DrawInstanced(100, 1, 0, 0);
 }
 
 void Ideal::ParticleSystem::UpdateCustomData()

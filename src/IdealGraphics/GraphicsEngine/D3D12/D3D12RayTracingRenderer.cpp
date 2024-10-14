@@ -380,10 +380,6 @@ finishAdapter:
 	CreateUIDescriptorHeap();
 	CreateCanvas();
 
-	//------------------Particle System Manager-------------------//
-	CreateParticleSystemManager();
-
-
 	//---------------Create Managers---------------//
 	CompileShader(L"../Shaders/Texture/CS_GenerateMips.hlsl", L"../Shaders/Texture/", L"GenerateMipsCS", L"cs_6_3", L"Main", L"../Shaders/Texture/");
 
@@ -435,6 +431,9 @@ finishAdapter:
 
 	m_textManager = std::make_shared<Ideal::D2DTextManager>();
 	m_textManager->Init(m_device, m_commandQueue);
+
+	//------------------Particle System Manager-------------------//
+	CreateParticleSystemManager();
 
 
 	//------------------Debug Mesh Manager-------------------//
@@ -1267,6 +1266,7 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 	NewParticleSystem->SetMeshVS(m_particleSystemManager->GetMeshVS());
 	NewParticleSystem->SetBillboardVS(m_particleSystemManager->GetBillboardVS());
 	NewParticleSystem->SetBillboardGS(m_particleSystemManager->GetBillboardGS());
+	NewParticleSystem->SetParticleVertexBuffer(m_particleSystemManager->GetParticleVertexBuffer());
 
 	if (GetParticleMaterial->GetTransparency())
 	{
@@ -2125,6 +2125,7 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 	m_particleSystemManager->SetMeshVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleMeshVS));
 	m_particleSystemManager->SetBillboardVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleBillboardVS));
 	m_particleSystemManager->SetBillboardGS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleBillboardGS));
+	m_particleSystemManager->SetDefaultParticleVertexBuffer(m_resourceManager->GetParticleVertexBuffer());
 }
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()

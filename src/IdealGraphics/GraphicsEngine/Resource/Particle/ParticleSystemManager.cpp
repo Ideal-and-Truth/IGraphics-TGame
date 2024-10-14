@@ -101,6 +101,16 @@ void Ideal::ParticleSystemManager::SetBillboardGS(std::shared_ptr<Ideal::D3D12Sh
 	m_RENDER_MODE_BILLBOARD_GS = Shader;
 }
 
+void Ideal::ParticleSystemManager::SetDefaultParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer)
+{
+	m_particleVertexBuffer = ParticleVertexBuffer;
+}
+
+std::shared_ptr<Ideal::D3D12VertexBuffer> Ideal::ParticleSystemManager::GetParticleVertexBuffer()
+{
+	return m_particleVertexBuffer;
+}
+
 void Ideal::ParticleSystemManager::AddParticleSystemNoTransparency(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)
 {
 	m_particlesNoTransparency.push_back(ParticleSystem);

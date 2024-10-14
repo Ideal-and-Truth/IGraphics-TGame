@@ -20,6 +20,7 @@ namespace Ideal
 	class D3D12PipelineStateObject;
 	class D3D12DescriptorHeap;
 	class D3D12DynamicConstantBufferAllocator;
+	class D3D12VertexBuffer;
 }
 
 namespace Ideal
@@ -56,6 +57,7 @@ namespace Ideal
 		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void SetParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer);
 
 	private:
 		void RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device);
@@ -71,6 +73,8 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_GS;
 		std::shared_ptr<Ideal::D3D12Shader> m_ps;
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_pso;
+
+		std::weak_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 
 		//----------------------------Interface---------------------------//
 	public:

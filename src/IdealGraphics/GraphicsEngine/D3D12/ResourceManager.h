@@ -27,7 +27,6 @@ namespace Ideal
 	class DeferredDeleteManager;
 	class IMesh;
 	class D3D12DynamicConstantBufferAllocator;
-	class GenerateMips;
 }
 
 namespace Ideal
@@ -238,12 +237,15 @@ namespace Ideal
 		//std::shared_ptr<Ideal::D3D12VertexBuffer> GetDebugLineIB();
 
 	public:
-		// GenerateMipsInfo
-		void GenerateMips(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12Texture> Texture, uint32 GenerateMipsNum);
+		// Particle
+		void CreateParticleVertexBuffer();
+		void CreateParticleBuffers();
+		std::shared_ptr<Ideal::D3D12VertexBuffer> GetParticleVertexBuffer();
 
 	private:
-		void InitGenerateMipsManager(ComPtr<ID3D12Device> Device);
+		// ±×³É 10000°³ ¸¸µé¾îº­·È~
+		const uint32 ParticleCount = 100;
 
-		std::shared_ptr<Ideal::GenerateMips> m_generateMipsManager;
+		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 	};
 }

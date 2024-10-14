@@ -25,8 +25,7 @@ void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<GSParticleDra
         output.UV = g_texcoords[i];
         SpriteStream.Append(output);
     }
-    SpriteStream.RestartStrip();
-
+    SpriteStream.RestartStrip();    // 삼각형 목록을 초기화
 }
 
 // TEST
