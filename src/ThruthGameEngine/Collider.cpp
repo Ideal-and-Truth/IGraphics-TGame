@@ -238,7 +238,7 @@ void Truth::Collider::ApplyTransform()
 		return;
 	}
 	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
-	Matrix tempSzie = Matrix::CreateScale(Vector3(50, 50, 50));
+	Matrix tempSzie = Matrix::CreateScale(m_debugMeshSize);
 	m_globalTM = m_localTM * ownerTM;
 	m_debugMesh->SetTransformMatrix(tempSzie * m_globalTM);
 
@@ -310,12 +310,14 @@ void Truth::Collider::Initialize(const std::wstring& _path /*= L""*/)
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		// m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
+		m_debugMeshSize = { 0.5, 0.5, 0.5 };
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		// m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
+		m_debugMeshSize = { 1, 1, 1 };
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
