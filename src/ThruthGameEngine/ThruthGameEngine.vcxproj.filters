@@ -94,9 +94,6 @@
     <Filter Include="Utils\ImguiTypeUI">
       <UniqueIdentifier>{a0902df5-5f5d-4973-90a9-d85ffe22b24d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utils\ComponentFactory">
-      <UniqueIdentifier>{ea702d86-b2cb-426b-a344-423f6facc789}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\Light">
       <UniqueIdentifier>{a65ba688-b5f5-4941-a366-5a9d0166e587}</UniqueIdentifier>
     </Filter>
@@ -121,14 +118,8 @@
     <Filter Include="Component\Mesh\SkindedMesh">
       <UniqueIdentifier>{1f12477e-c5ec-4050-9948-8154cc431f88}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Mesh\Matarial">
-      <UniqueIdentifier>{b6fad28f-a227-4ace-adf8-870f21691bd6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component\Mesh\StaticMesh">
       <UniqueIdentifier>{af153011-55fd-4105-a6ae-59c7e6d4f705}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Component\Mesh\Texture">
-      <UniqueIdentifier>{bc9727cb-6a5d-4d2d-ae5d-93620a72ff4d}</UniqueIdentifier>
     </Filter>
     <Filter Include="EditorUI\Context">
       <UniqueIdentifier>{2a7ebf82-cfa0-43cb-b031-51218f8e4cf0}</UniqueIdentifier>
@@ -160,9 +151,6 @@
     <Filter Include="Component\UI">
       <UniqueIdentifier>{56aa9117-ed04-4847-847d-5dbba433fa1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Component\Effect">
-      <UniqueIdentifier>{635f4265-3524-4529-9e77-e77c8879a2e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager\Particle">
       <UniqueIdentifier>{e3db038f-f88e-408e-9f1c-a41b2f2485f4}</UniqueIdentifier>
     </Filter>
@@ -171,6 +159,30 @@
     </Filter>
     <Filter Include="Utils\File">
       <UniqueIdentifier>{31f8c7b2-a354-48b8-a224-a789a244d0b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\UI\ButtonBehavior">
+      <UniqueIdentifier>{5843688b-38bf-47b3-8efc-84303c9c2e90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Factory">
+      <UniqueIdentifier>{ea702d86-b2cb-426b-a344-423f6facc789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Factory\Component">
+      <UniqueIdentifier>{3b178c0b-8008-4815-8ce4-87622800a6b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Factory\Button">
+      <UniqueIdentifier>{44fff902-fec8-4017-8097-da454fb53fc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae">
+      <UniqueIdentifier>{4e59a185-7dda-48b1-852a-c744918865f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae\Matarial">
+      <UniqueIdentifier>{b6fad28f-a227-4ace-adf8-870f21691bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae\Texture">
+      <UniqueIdentifier>{bc9727cb-6a5d-4d2d-ae5d-93620a72ff4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgae\UISprite">
+      <UniqueIdentifier>{a2cf1341-5bca-4a44-85d7-930ec194ab70}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -264,9 +276,6 @@
     <ClCompile Include="Controller.cpp">
       <Filter>Component\PlayerController</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentFactory.cpp">
-      <Filter>Utils\ComponentFactory</Filter>
-    </ClCompile>
     <ClCompile Include="EditorCamera.cpp">
       <Filter>EditorUI\EditorCamera</Filter>
     </ClCompile>
@@ -292,10 +301,10 @@
       <Filter>Component\Mesh\SkindedMesh</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
-      <Filter>Component\Mesh\Matarial</Filter>
+      <Filter>Imgae\Matarial</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>Component\Mesh\Texture</Filter>
+      <Filter>Imgae\Texture</Filter>
     </ClCompile>
     <ClCompile Include="EntityHierarchy.cpp">
       <Filter>EditorUI\Context\Hierachy</Filter>
@@ -327,7 +336,6 @@
     <ClCompile Include="MeshCollider.cpp">
       <Filter>Component\Collider\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp" />
     <ClCompile Include="FreeCamera.cpp">
       <Filter>Component\Camera</Filter>
     </ClCompile>
@@ -340,6 +348,24 @@
     </ClCompile>
     <ClCompile Include="TFileUtils.cpp">
       <Filter>Utils\File</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>Component\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Method.cpp">
+      <Filter>Reflection\Advanced</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonBehavior.cpp">
+      <Filter>Component\UI\ButtonBehavior</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentFactory.cpp">
+      <Filter>Utils\Factory\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonFactory.cpp">
+      <Filter>Utils\Factory\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="UISpriteSet.cpp">
+      <Filter>Imgae\UISprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -453,9 +479,6 @@
     <ClInclude Include="Controller.h">
       <Filter>Component\PlayerController</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentFactory.h">
-      <Filter>Utils\ComponentFactory</Filter>
-    </ClInclude>
     <ClInclude Include="EditorCamera.h">
       <Filter>EditorUI\EditorCamera</Filter>
     </ClInclude>
@@ -481,10 +504,10 @@
       <Filter>Component\Mesh\SkindedMesh</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
-      <Filter>Component\Mesh\Matarial</Filter>
+      <Filter>Imgae\Matarial</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Component\Mesh\Texture</Filter>
+      <Filter>Imgae\Texture</Filter>
     </ClInclude>
     <ClInclude Include="EntityHierarchy.h">
       <Filter>EditorUI\Context\Hierachy</Filter>
@@ -517,7 +540,6 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Component\Collider\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h" />
     <ClInclude Include="FreeCamera.h">
       <Filter>Component\Camera</Filter>
     </ClInclude>
@@ -530,6 +552,21 @@
     </ClInclude>
     <ClInclude Include="TFileUtils.h">
       <Filter>Utils\File</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Component\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonBehavior.h">
+      <Filter>Component\UI\ButtonBehavior</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentFactory.h">
+      <Filter>Utils\Factory\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonFactory.h">
+      <Filter>Utils\Factory\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="UISpriteSet.h">
+      <Filter>Imgae\UISprite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

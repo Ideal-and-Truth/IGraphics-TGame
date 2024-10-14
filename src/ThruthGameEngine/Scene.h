@@ -40,9 +40,6 @@ namespace Truth
 		std::wstring m_mapPath;
 
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
-
-		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
-		std::vector<std::shared_ptr<Ideal::ILight>> m_mapLight;
 		std::vector<std::shared_ptr<Entity>> m_mapEntity;
 
 	public:
@@ -90,6 +87,8 @@ namespace Truth
 		void LateUpdate();
 
 		void ApplyTransform();
+
+		void ResizeWindow();
 
 		void Start();
 

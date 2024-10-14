@@ -68,6 +68,7 @@ namespace Truth
 		std::string m_linkBoneName;
 
 		bool m_isDead = false;
+		bool m_isActive = true;
 
 		ComponentMethod m_onCollisionEnter;
 		ComponentMethod m_onCollisionStay;
@@ -86,6 +87,8 @@ namespace Truth
 
 		ComponentMethod m_destroy;
 		ComponentMethod m_applyTransform;
+
+		ComponentMethod m_resizeWindow;
 
 		std::shared_ptr<Transform> m_transform;
 
@@ -138,6 +141,8 @@ namespace Truth
 		void FixedUpdate();
 		void LateUpdate();
 
+		void ResizeWindow();
+
 		void OnCollisionEnter(Collider* _other);
 		void OnCollisionStay(Collider* _other);
 		void OnCollisionExit(Collider* _other);
@@ -186,6 +191,7 @@ namespace Truth
 		_ar& m_components;
 		_ar& m_children;
 		_ar& m_linkBoneName;
+		_ar& m_isActive;
 	}
 
 	template<class Archive>
@@ -199,13 +205,12 @@ namespace Truth
 		_ar& m_layer;
 		_ar& m_components;
 		if (_file_version >= 2)
-		{
 			_ar& m_children;
-		}
 		if (_file_version >= 3)
-		{
 			_ar& m_linkBoneName;
-		}
+		if (_file_version >= 4)
+			_ar& m_isActive;
+
 	}
 
 	/// <summary>
@@ -297,4 +302,4 @@ namespace Truth
 		return result;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Entity, 3)
+BOOST_CLASS_VERSION(Truth::Entity, 4)

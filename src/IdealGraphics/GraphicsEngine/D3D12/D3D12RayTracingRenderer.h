@@ -352,9 +352,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::IdealSprite> m_textSprite;
 		std::shared_ptr<Ideal::IdealText> m_idealText;
 
-		uint32 m_textwidth = 200;
-		uint32 m_textheight = 100;
-
 		void UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight);
 
 		// Particle

@@ -83,8 +83,8 @@ namespace Truth
 
 		void InitalizeMassAndInertia();
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();

@@ -42,7 +42,7 @@ void Truth::PointLight::SetRange()
 	m_pointLight->SetRange(m_radius);
 }
 
-void Truth::PointLight::Initalize()
+void Truth::PointLight::Initialize()
 {
 	SetLight();
 	SetIntensity();

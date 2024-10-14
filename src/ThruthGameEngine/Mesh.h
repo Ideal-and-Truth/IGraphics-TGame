@@ -53,8 +53,8 @@ namespace Truth
 		void SetMesh();
 		void SetRenderable(bool _isRenderable);
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		// METHOD(ApplyTransform);
 		void ApplyTransform();

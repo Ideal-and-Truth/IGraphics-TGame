@@ -24,6 +24,8 @@
     <ClInclude Include="AdvanceReflection.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="ButtonBehavior.h" />
+    <ClInclude Include="ButtonFactory.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="Collider.h" />
@@ -85,12 +87,15 @@
     <ClInclude Include="TypeInfoMacros.h" />
     <ClInclude Include="TypeUI.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="UISpriteSet.h" />
     <ClInclude Include="UnityParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Utils\SimpleMath.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="ButtonBehavior.cpp" />
+    <ClCompile Include="ButtonFactory.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
@@ -103,6 +108,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="DirectionLight.cpp" />
     <ClCompile Include="EntityHierarchy.cpp" />
+    <ClCompile Include="Method.cpp" />
     <ClCompile Include="TFileUtils.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Inspector.cpp" />
@@ -146,6 +152,7 @@
     </ClCompile>
     <ClCompile Include="TypeUI.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="UISpriteSet.cpp" />
     <ClCompile Include="UnityParser.cpp" />
   </ItemGroup>
   <ItemGroup>

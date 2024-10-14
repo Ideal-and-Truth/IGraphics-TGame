@@ -80,11 +80,13 @@ public:
 	{
 		if constexpr (std::is_array_v<T>)
 		{
+			bool isSelect = false;
 			for (int i = 0; i < is_array_custom<T>::size; i++)
 			{
 				auto& obj = Get(_object, i);
-				return TypeUI::DisplayType(obj, _name, _min, _max);
+				isSelect |= TypeUI::DisplayType(obj, _name, _min, _max);
 			}
+			return isSelect;
 		}
 		else if constexpr (IsStdVector<T>::value)
 		{

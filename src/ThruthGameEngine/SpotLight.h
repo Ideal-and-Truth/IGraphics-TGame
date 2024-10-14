@@ -50,8 +50,8 @@ namespace Truth
 		void SetRange();
 		void SetSoftness();
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();

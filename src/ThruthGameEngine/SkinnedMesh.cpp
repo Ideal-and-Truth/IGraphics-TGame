@@ -69,21 +69,21 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 
 	if (m_matPath.empty())
 	{
-// 		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
-// 		{
-// 			std::string matName = m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->GetFBXMaterialName();
-// 			fs::path matPath = "../Resources/Matarial" / meshPath.filename();
-// 
-// 			if (!fs::exists(matPath))
-// 				fs::create_directories(matPath);
-// 
-// 			matPath = matPath.filename() / matName;
-// 
-// 			auto material = m_managers.lock()->Graphics()->CreateMaterial(matPath.generic_string());
-// 			m_mat.push_back(material);
-// 
-// 			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
-// 		}
+		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
+		{
+			std::string matName = m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->GetFBXMaterialName();
+			fs::path matPath = "../Resources/Matarial" / meshPath.filename();
+		
+			if (!fs::exists(matPath))
+				fs::create_directories(matPath);
+		
+			matPath = matPath.filename() / matName;
+		
+			auto material = m_managers.lock()->Graphics()->CreateMaterial(matPath.generic_string());
+			m_mat.push_back(material);
+		
+			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+		}
 	}
 	else
 	{
@@ -131,7 +131,7 @@ void Truth::SkinnedMesh::SetPlayStop(bool playStop)
 	m_skinnedMesh->SetPlayAnimation(playStop);
 }
 
-void Truth::SkinnedMesh::Initalize()
+void Truth::SkinnedMesh::Initialize()
 {
 	SetSkinnedMesh(m_path);
 }

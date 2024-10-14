@@ -90,7 +90,7 @@ void Truth::Camera::DefaultUpdate()
 	}
 }
 
-void Truth::Camera::Initalize()
+void Truth::Camera::Initialize()
 {
 	m_camera = m_managers.lock()->Graphics()->CreateCamera();
 	//m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));

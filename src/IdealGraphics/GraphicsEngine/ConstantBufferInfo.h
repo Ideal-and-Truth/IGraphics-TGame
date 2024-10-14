@@ -16,6 +16,12 @@ struct SceneConstantBuffer
 	uint32 maxShadowRayRecursionDepth;
 	float nearZ;
 	float farZ;
+
+	float resolutionX;
+	float resolutionY;
+
+	float FOV;
+	float pad0;
 };
 
 struct CB_MaterialInfo

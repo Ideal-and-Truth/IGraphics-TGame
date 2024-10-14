@@ -40,8 +40,6 @@ void Truth::Entity::Initialize()
 	{
 		c->SetOwner(shared_from_this());
 		c->SetManager(m_manager);
-
-/*		c->Initalize();*/
 		ApplyComponent(c);
 		c->m_index = index++;
 	}
@@ -181,6 +179,11 @@ void Truth::Entity::FixedUpdate()
 void Truth::Entity::LateUpdate()
 {
 	IterateComponentMethod(m_latedUpdate);
+}
+
+void Truth::Entity::ResizeWindow()
+{
+	IterateComponentMethod(m_resizeWindow);
 }
 
 void Truth::Entity::OnCollisionEnter(Collider* _other)
@@ -351,7 +354,12 @@ void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 			m_applyTransform.push_back(p);
 		}
 
-		if (metName == "Initalize")
+		if (metName == "ResizeWindow")
+		{
+			m_resizeWindow.push_back(p);
+		}
+
+		if (metName == "Initialize")
 		{
 			m->Invoke<void>(_c.get());
 		}

@@ -15,6 +15,9 @@
 #include "ISprite.h"
 #include "Material.h"
 #include "Texture.h"
+#include "ButtonBehavior.h"
+#include "TypeInfo.h"
+#include "UISpriteSet.h"
 
 #define PI 3.1415926
 #define RadToDeg 57.29577951f
@@ -27,6 +30,7 @@ namespace Truth
 	class Entity;
 	class Component;
 	class Scene;
+	class ButtonBehavior;
 }
 #pragma warning(disable : 6387)
 #pragma warning(disable : 6255)
@@ -177,6 +181,53 @@ namespace TypeUI
 				if (ImGui::ImageButton((fileID + "2").c_str(), (ImTextureID)(_val->m_maskMap->GetImageID()), size))
 					_val->ChangeTexture(2);
 			}
+		}
+		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::ButtonBehavior>>)
+		{
+			if (_val != nullptr)
+				ImGui::Text(_val->m_name.c_str());
+
+			const auto& buttonList = TypeInfo::g_buttonFactory->m_buttonList;
+			if (ImGui::CollapsingHeader("Set Button"))
+			{
+				int selectedItem = -1;
+				if (ImGui::ListBox("Button", &selectedItem, buttonList.data(), static_cast<int32>(buttonList.size()), 6))
+					_val = TypeInfo::g_buttonFactory->Create(buttonList[selectedItem]);
+			}
+			return false;
+		}
+		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::UISpriteSet>>)
+		{
+			const ImVec2 size(100, 100);
+			std::string fileID = _val->m_name + "##" + std::to_string(_index);
+			bool isSelect = false;
+			if (_val->m_idealTexture != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "0").c_str(), (ImTextureID)(_val->m_idealTexture->GetImageID()), size))
+				{
+					isSelect |= true;
+					_val->ChangeTexture(0);
+				}
+			}
+			ImGui::SameLine();
+			if (_val->m_overTexture != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "1").c_str(), (ImTextureID)(_val->m_overTexture->GetImageID()), size))
+				{
+					isSelect |= true;
+					_val->ChangeTexture(1);
+				}
+			}
+			ImGui::SameLine();
+			if (_val->m_clickTexture != nullptr)
+			{
+				if (ImGui::ImageButton((fileID + "2").c_str(), (ImTextureID)(_val->m_clickTexture->GetImageID()), size))
+				{
+					isSelect |= true;
+					_val->ChangeTexture(2);
+				}
+			}
+			return isSelect;
 		}
 		return false;
 	}

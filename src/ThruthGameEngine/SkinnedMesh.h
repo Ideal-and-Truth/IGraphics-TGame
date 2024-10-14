@@ -66,8 +66,8 @@ namespace Truth
 		void SetAnimationSpeed(float Speed);
 		void SetPlayStop(bool playStop);
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(FixedUpdate);
 		void FixedUpdate();

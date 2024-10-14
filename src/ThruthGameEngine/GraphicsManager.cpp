@@ -6,7 +6,7 @@
 #include "Texture.h"
 #include "Material.h"
 #include <filesystem>
-
+#include "UISpriteSet.h"
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
@@ -20,6 +20,7 @@ Truth::GraphicsManager::GraphicsManager()
 	: m_renderer(nullptr)
 	, m_aspect(1.0f)
 	, m_mainCamera(nullptr)
+	, m_resolution(1920, 1080)
 {
 
 }
@@ -204,27 +205,28 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 
 std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _a, bool _b)
 {
-	if (m_textureMap.find(_path) == m_textureMap.end())
+	std::filesystem::path p(_path);
+	if (p.is_absolute())
+	{
+		::SetCurrentDirectory(Managers::GetRootPath().c_str());
+		p = fs::relative(_path);
+	}
+	if (m_textureMap.find(p) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
-		std::filesystem::path p(_path);
-		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
-		{
-			int a = 1;
-		}
 		if (_path.empty())
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(_path, _a, _b);
+		tex->m_texture = m_renderer->CreateTexture(p, _a, _b);
 		tex->m_useCount = 1;
-		tex->m_path = _path;
+		tex->m_path = p;
 
 		tex->w = tex->m_texture->GetWidth();
 		tex->h = tex->m_texture->GetHeight();
-		return m_textureMap[_path] = tex;
+		return m_textureMap[p] = tex;
 	}
-	return m_textureMap[_path];
+	return m_textureMap[p];
 }
 
 void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
@@ -274,8 +276,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			mat->m_normalMap = CreateTexture(normal, false, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
 
-			mat->SetTexture();
 			f->Close();
+			mat->SetTexture();
+			mat->SaveMaterial();
 		}
 		else
 		{
@@ -293,9 +296,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			f->Write<float>(1.0f);
 			f->Write<float>(1.0f);
 
-			mat->m_baseMap = CreateTexture(al.generic_wstring());
-			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
-			mat->m_maskMap = CreateTexture(ma.generic_wstring());
+			mat->m_baseMap = CreateTexture(al.generic_wstring(), true, false);
+			mat->m_normalMap = CreateTexture(no.generic_wstring(), true, true);
+			mat->m_maskMap = CreateTexture(ma.generic_wstring(), true, true);
 			mat->SetTexture();
 			f->Close();
 		}
@@ -355,6 +358,15 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::
 	return m_matarialMap[_name];
 }
 
+std::shared_ptr<Truth::UISpriteSet> Truth::GraphicsManager::CreateUISpriteSet()
+{
+	std::shared_ptr<Truth::UISpriteSet> result = std::make_shared<Truth::UISpriteSet>();
+	result->m_gp = this;
+	result->m_hwnd = m_hwnd;
+
+	return result;
+}
+
 void Truth::GraphicsManager::ToggleFullScreen()
 {
 	m_renderer->ToggleFullScreenWindow();
@@ -363,6 +375,29 @@ void Truth::GraphicsManager::ToggleFullScreen()
 void Truth::GraphicsManager::ResizeWindow(uint32 _w, uint32 _h)
 {
 	m_renderer->Resize(_w, _h);
+}
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetContentPosMin()
+{
+	return m_renderer->GetTopLeftEditorPos();
+}
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetContentPosMax()
+{
+	return m_renderer->GetRightBottomEditorPos();
+}
+
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetDisplayResolution()
+{
+	return m_resolution;
+}
+
+RECT Truth::GraphicsManager::GetWindowRect()
+{
+	RECT result;
+	::GetClientRect(m_hwnd, &result);
+	return result;
 }
 
 void Truth::GraphicsManager::BakeStaticMesh()

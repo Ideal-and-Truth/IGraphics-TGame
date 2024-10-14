@@ -126,7 +126,7 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 {
 }
 
-void Truth::Mesh::Initalize()
+void Truth::Mesh::Initialize()
 {
 	SetMesh();
 	ApplyTransform();

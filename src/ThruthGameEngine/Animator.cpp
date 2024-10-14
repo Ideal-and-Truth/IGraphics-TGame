@@ -21,7 +21,7 @@ Truth::Animator::~Animator()
 
 }
 
-void Truth::Animator::Initalize()
+void Truth::Animator::Initialize()
 {
 	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
 }
