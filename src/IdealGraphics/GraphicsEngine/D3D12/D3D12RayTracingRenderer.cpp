@@ -1266,6 +1266,7 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), GetParticleMaterial);
 	NewParticleSystem->SetMeshVS(m_particleSystemManager->GetMeshVS());
 	NewParticleSystem->SetBillboardVS(m_particleSystemManager->GetBillboardVS());
+	NewParticleSystem->SetBillboardGS(m_particleSystemManager->GetBillboardGS());
 
 	if (GetParticleMaterial->GetTransparency())
 	{
@@ -2115,10 +2116,15 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 	CompileShader(L"../Shaders/Particle/DefaultParticleBillboardShader.hlsl", L"../Shaders/Particle/", L"DefaultParticleBillboardShaderVS", L"vs_6_3", L"VSMain", L"../Shaders/Particle/");
 	auto defaultParticleBillboardVS = CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderVS");
 
+	CompileShader(L"../Shaders/Particle/DefaultParticleBillboardShader.hlsl", L"../Shaders/Particle/", L"DefaultParticleBillboardShaderGS", L"gs_6_3", L"GSMain", L"../Shaders/Particle/");
+	auto defaultParticleBillboardGS = CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderGS");
+
+
 	//---Init---//
 	m_particleSystemManager->Init(m_device);
 	m_particleSystemManager->SetMeshVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleMeshVS));
 	m_particleSystemManager->SetBillboardVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleBillboardVS));
+	m_particleSystemManager->SetBillboardGS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleBillboardGS));
 }
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()

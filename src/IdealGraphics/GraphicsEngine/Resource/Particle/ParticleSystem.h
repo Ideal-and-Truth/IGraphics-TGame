@@ -55,6 +55,7 @@ namespace Ideal
 
 		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 
 	private:
 		void RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device);
@@ -67,6 +68,7 @@ namespace Ideal
 		//ComPtr<ID3D12RootSignature> m_RENDER_MODE_BILLBOARD_RootSignature;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_MESH_VS;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_VS;
+		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_GS;
 		std::shared_ptr<Ideal::D3D12Shader> m_ps;
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_pso;
 
@@ -178,7 +180,7 @@ namespace Ideal
 		//------Renderer Menu------//
 		Ideal::ParticleMenu::ERendererMode m_Renderer_Mode;
 		// 만약 아래의 Mesh가 ERendererMode가 Mesh가 아닐 경우 사각형 고정이 될 것이다. 사각형에 띄워야 하니까
-		std::weak_ptr<Ideal::IdealMesh<ParticleVertexTest>> m_Renderer_Mesh;
+		std::weak_ptr<Ideal::IdealMesh<ParticleMeshVertex>> m_Renderer_Mesh;
 		std::weak_ptr<Ideal::ParticleMaterial> m_particleMaterial;
 
 		//----CB Data----//

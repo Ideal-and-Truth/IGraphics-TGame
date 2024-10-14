@@ -100,6 +100,7 @@ namespace Ideal
 				CBV_Global = 0,
 				CBV_Transform,
 				CBV_ParticleSystemData,
+				SRV_ParticlePosBuffer,
 				SRV_ParticleTexture0,
 				SRV_ParticleTexture1,
 				SRV_ParticleTexture2,

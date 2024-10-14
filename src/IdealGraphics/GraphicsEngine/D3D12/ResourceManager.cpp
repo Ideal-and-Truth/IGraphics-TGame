@@ -373,7 +373,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		}
 		else
 		{
-			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_FANT, MipLevels, mipChain), L"Failed to generate MIP maps");
+			//Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_FANT, MipLevels, mipChain), L"Failed to generate MIP maps");
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
 		}
 		img = mipChain.GetImages();
 	}
@@ -1374,7 +1375,7 @@ void ResourceManager::CreateDefaultDebugLine()
 
 std::shared_ptr<Ideal::IMesh> ResourceManager::CreateParticleMesh(const std::wstring& filename)
 {
-	std::shared_ptr<IdealMesh<ParticleVertexTest>> mesh = std::make_shared<IdealMesh<ParticleVertexTest>>();
+	std::shared_ptr<IdealMesh<ParticleMeshVertex>> mesh = std::make_shared<IdealMesh<ParticleMeshVertex>>();
 
 	std::wstring fullPath = m_modelPath + filename + L".pmesh";
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
@@ -1385,11 +1386,11 @@ std::shared_ptr<Ideal::IMesh> ResourceManager::CreateParticleMesh(const std::wst
 	// vertex data
 	{
 		const uint32 count = file->Read<uint32>();
-		std::vector<ParticleVertexTest> vertices;
+		std::vector<ParticleMeshVertex> vertices;
 		vertices.resize(count);
 
 		void* data = vertices.data();
-		file->Read(&data, sizeof(ParticleVertexTest) * count);
+		file->Read(&data, sizeof(ParticleMeshVertex) * count);
 		mesh->AddVertices(vertices);
 	}
 

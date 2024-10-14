@@ -28,9 +28,11 @@ namespace Ideal
 		ComPtr<ID3D12RootSignature> GetRootSignature();
 		std::shared_ptr<Ideal::D3D12Shader> GetMeshVS();
 		std::shared_ptr<Ideal::D3D12Shader> GetBillboardVS();
+		std::shared_ptr<Ideal::D3D12Shader> GetBillboardGS();
 
 		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 
 	private:
 		void CreateRootSignature(ComPtr<ID3D12Device> Device);
@@ -46,6 +48,7 @@ namespace Ideal
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_MESH_VS;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_VS;
+		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_GS;
 
 	private:
 		std::vector<std::shared_ptr<Ideal::ParticleSystem>> m_particlesNoTransparency;

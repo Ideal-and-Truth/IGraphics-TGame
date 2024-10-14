@@ -12,7 +12,7 @@ VSParticleDrawOut VSMain(VSParticleInput input)
 }
 
 [maxvertexcount(4)]
-void GSParticleDraw(point VSParticleDrawOut input[1], inout TriangleStream<GSParticleDrawOut> SpriteStream)
+void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<GSParticleDrawOut> SpriteStream)
 {
     GSParticleDrawOut output;
    
@@ -32,6 +32,8 @@ void GSParticleDraw(point VSParticleDrawOut input[1], inout TriangleStream<GSPar
 // TEST
 float4 PSMain(PSParticleDrawIn input) : SV_Target
 {
-    return float4(1,1,1,1);
+    float4 ret = input.Color;
+    return ret;
 }
+
 #endif

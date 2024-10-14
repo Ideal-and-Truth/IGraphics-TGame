@@ -24,9 +24,15 @@
         float4 g_startColor;
     };
 
-    Texture2D ParticleTexture0 : register(t0);
-    Texture2D ParticleTexture1 : register(t1);
-    Texture2D ParticleTexture2 : register(t2);
+    struct Pos
+    {
+        float4 pos;
+    };
+    StructuredBuffer<Pos> g_bufPos : register(t0);
+
+    Texture2D ParticleTexture0 : register(t1);
+    Texture2D ParticleTexture1 : register(t2);
+    Texture2D ParticleTexture2 : register(t3);
 
     SamplerState LinearWrapSampler : register(s0);
     SamplerState LinearClampSampler : register(s1);

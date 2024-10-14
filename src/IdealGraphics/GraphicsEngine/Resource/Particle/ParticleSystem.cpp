@@ -132,7 +132,6 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 	{
 		case Ideal::ParticleMenu::ERendererMode::Billboard:
 		{
-			__debugbreak();
 
 			if (!m_RENDER_MODE_BILLBOARD_pipelineState)
 			{
@@ -165,10 +164,15 @@ void Ideal::ParticleSystem::SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> S
 	m_RENDER_MODE_BILLBOARD_VS = Shader;
 }
 
+void Ideal::ParticleSystem::SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_BILLBOARD_GS = Shader;
+}
+
 void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.InputLayout = { ParticleVertexTest::InputElements, ParticleVertexTest::InputElementCount };
+	psoDesc.InputLayout = { ParticleMeshVertex::InputElements, ParticleMeshVertex::InputElementCount };
 	psoDesc.pRootSignature = m_rootSignature.Get();
 	psoDesc.VS = m_RENDER_MODE_MESH_VS->GetShaderByteCode();
 	psoDesc.PS = m_ps->GetShaderByteCode();
@@ -249,19 +253,17 @@ void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12De
 	psoDesc.SampleDesc.Count = 1;
 
 	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_RENDER_MODE_MESH_pipelineState.GetAddressOf()));
-	Check(hr, L"Faild to Create Pipeline State");
+	Check(hr, L"Faild to Create Mesh Pipeline State");
 	return;
 }
 
 void Ideal::ParticleSystem::RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3D12Device> Device)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.InputLayout = { ParticleVertexTest::InputElements, ParticleVertexTest::InputElementCount };
+	psoDesc.InputLayout = { ParticleVertex::InputElements, ParticleVertex::InputElementCount };
 	psoDesc.pRootSignature = m_rootSignature.Get();
 	psoDesc.VS = m_RENDER_MODE_BILLBOARD_VS->GetShaderByteCode();
-	//TODO:
-	//psoDesc.GS = 
-	__debugbreak();
+	psoDesc.GS = m_RENDER_MODE_BILLBOARD_GS->GetShaderByteCode();
 	psoDesc.PS = m_ps->GetShaderByteCode();
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	//psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -307,11 +309,6 @@ void Ideal::ParticleSystem::RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3
 			default:
 				break;
 		}
-
-
-
-		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
-		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;	// one // zero 일경우 검은색으로 바뀌어간다.
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 		psoDesc.BlendState = blendDesc;
@@ -323,7 +320,7 @@ void Ideal::ParticleSystem::RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3
 		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	}
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
-
+	
 	if (m_particleMaterial.lock()->GetBackFaceCulling())
 	{
 		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
@@ -333,14 +330,14 @@ void Ideal::ParticleSystem::RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3
 		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	}
 	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	psoDesc.SampleDesc.Count = 1;
 
-	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_RENDER_MODE_MESH_pipelineState.GetAddressOf()));
-	Check(hr, L"Faild to Create Pipeline State");
+	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_RENDER_MODE_BILLBOARD_pipelineState.GetAddressOf()));
+	Check(hr, L"Faild to Create Billboard Pipeline State");
 	return;
 }
 
@@ -523,7 +520,7 @@ void Ideal::ParticleSystem::SetRenderMode(Ideal::ParticleMenu::ERendererMode Par
 void Ideal::ParticleSystem::SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh)
 {
 	// TODO : 예외 처리 Particle Vertex가 아닐 경우
-	m_Renderer_Mesh = std::static_pointer_cast<Ideal::IdealMesh<ParticleVertexTest>>(ParticleRendererMesh);
+	m_Renderer_Mesh = std::static_pointer_cast<Ideal::IdealMesh<ParticleMeshVertex>>(ParticleRendererMesh);
 }
 
 void Ideal::ParticleSystem::SetRenderMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleRendererMaterial)

@@ -1615,13 +1615,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 #pragma region ParticleBillboardTest
 		//----------ParticleBillboardTest effect----------//
-		//std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
-		//billboardMaterialTest->SetShader(billboardTestPS);
-		//billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
-		//
-		//
-		//std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(slashParticleMaterial1);
-		//billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
+		billboardMaterialTest->SetShader(billboardTestPS);
+		billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		
+		
+		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
+		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
 		
 #pragma endregion
 
