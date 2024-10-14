@@ -38,7 +38,7 @@ Truth::Controller::~Controller()
 /// <summary>
 /// √ ±‚»≠
 /// </summary>
-void Truth::Controller::Initalize()
+void Truth::Controller::Initialize()
 {
 
 }

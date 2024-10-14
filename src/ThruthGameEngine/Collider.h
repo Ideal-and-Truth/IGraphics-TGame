@@ -104,7 +104,7 @@ namespace Truth
 		physx::PxRigidDynamic* GetDefaultDynamic();
 		physx::PxRigidStatic* GetDefaultStatic();
 
-		void Initalize(const std::wstring& _path = L"");
+		void Initialize(const std::wstring& _path = L"");
 
 		void SetUpFiltering(uint32 _filterGroup);
 

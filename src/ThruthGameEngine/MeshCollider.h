@@ -24,8 +24,8 @@ namespace Truth
 		MeshCollider(std::string _path);
 		~MeshCollider();
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(Awake);
 		virtual void Awake() override;

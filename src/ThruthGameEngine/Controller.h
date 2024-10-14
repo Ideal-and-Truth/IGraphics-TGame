@@ -65,8 +65,8 @@ namespace Truth
 		Controller();
 		~Controller();
 
-		METHOD(Initalize);
-		virtual void Initalize() override;
+		METHOD(Initialize);
+		virtual void Initialize() override;
 
 		METHOD(Awake);
 		virtual void Awake() override;

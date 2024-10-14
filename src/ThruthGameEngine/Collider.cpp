@@ -299,7 +299,7 @@ physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
 /// 초기화
 /// </summary>
 /// <param name="_path">디버깅 매쉬경로</param>
-void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
+void Truth::Collider::Initialize(const std::wstring& _path /*= L""*/)
 {
 #ifdef EDITOR_MODE
 	if (m_debugMesh != nullptr)

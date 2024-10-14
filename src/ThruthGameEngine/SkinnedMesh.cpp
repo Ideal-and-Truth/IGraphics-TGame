@@ -131,7 +131,7 @@ void Truth::SkinnedMesh::SetPlayStop(bool playStop)
 	m_skinnedMesh->SetPlayAnimation(playStop);
 }
 
-void Truth::SkinnedMesh::Initalize()
+void Truth::SkinnedMesh::Initialize()
 {
 	SetSkinnedMesh(m_path);
 }

@@ -77,7 +77,7 @@ void Truth::SphereCollider::SetRadius(float _radius)
 /// <summary>
 /// 초기화 해당 Component가 생성 될 때 한번 실행됨
 /// </summary>
-void Truth::SphereCollider::Initalize()
+void Truth::SphereCollider::Initialize()
 {
-	Collider::Initalize();
+	Collider::Initialize();
 }

@@ -41,8 +41,8 @@ namespace Truth
 		void SetColor();
 		void SetRange();
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();

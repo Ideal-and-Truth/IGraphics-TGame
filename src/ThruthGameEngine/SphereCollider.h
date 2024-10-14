@@ -27,8 +27,8 @@ namespace Truth
 		METHOD(SetRadius);
 		void SetRadius(float _radius);
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 	};
 
 	template<class Archive>

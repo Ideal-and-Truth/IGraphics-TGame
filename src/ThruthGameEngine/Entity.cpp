@@ -40,8 +40,6 @@ void Truth::Entity::Initialize()
 	{
 		c->SetOwner(shared_from_this());
 		c->SetManager(m_manager);
-
-/*		c->Initalize();*/
 		ApplyComponent(c);
 		c->m_index = index++;
 	}
@@ -351,7 +349,7 @@ void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 			m_applyTransform.push_back(p);
 		}
 
-		if (metName == "Initalize")
+		if (metName == "Initialize")
 		{
 			m->Invoke<void>(_c.get());
 		}

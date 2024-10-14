@@ -48,7 +48,6 @@ namespace Truth
 
 		RECT m_rect;
 
-		PROPERTY(texture);
 		std::shared_ptr<Texture> m_texture[3];
 
 		PROPERTY(size);
@@ -71,10 +70,11 @@ namespace Truth
 		virtual ~UI();
 
 	private:
-		METHOD(Initalize);
-		virtual void Initalize() override;
+		METHOD(Initialize);
+		virtual void Initialize() override;
 
-		// METHOD(Start)
+		METHOD(Start);
+		virtual void Start() override;
 
 		METHOD(Update);
 		virtual void Update() override;
@@ -84,6 +84,9 @@ namespace Truth
 		bool IsActive();
 
 		void SetSpriteActive(BUTTON_STATE _state);
+
+		METHOD(ResizeWindow);
+		void ResizeWindow();
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();

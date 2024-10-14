@@ -41,8 +41,8 @@ namespace Truth
 		void SetDiffuse();
 		void SetAmbient();
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();

@@ -26,8 +26,8 @@ namespace Truth
 		BoxCollider(Vector3 _size, bool _isTrigger = true);
 		BoxCollider(Vector3 _pos, Vector3 _size, bool _isTrigger = true);
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 	};
 
 	template<class Archive>

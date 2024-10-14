@@ -37,7 +37,7 @@ Truth::UI::~UI()
 	}
 }
 
-void Truth::UI::Initalize()
+void Truth::UI::Initialize()
 {
 	auto gp = m_managers.lock()->Graphics();
 
@@ -70,39 +70,13 @@ void Truth::UI::Initalize()
 	m_rect.bottom = static_cast<LONG>(m_position.y + (m_size.y * 0.5f));
 }
 
+void Truth::UI::Start()
+{
+	ResizeWindow();
+}
+
 void Truth::UI::Update()
 {
-#ifdef EDITOR_MODE
-	auto gp = m_managers.lock()->Graphics();
-
-	RECT winRect = gp->GetWindowRect();
-	Vector2 realLT = gp->GetContentPosMin();
-	Vector2 realRB = gp->GetContentPosMax();
-	Vector2 resolution = gp->GetDisplayResolution();
-
-	float contentW = realRB.x - realLT.x;
-	float contentH = realRB.y - realLT.y;
-
-	float winW = resolution.x;
-	float winH = resolution.y;
-
-	float ratioW = contentW / winW;
-	float ratioH = contentH / winH;
-
-	Vector2 editorSize = {};
-	editorSize.x = m_size.x * ratioW;
-	editorSize.y = m_size.y * ratioH;
-
-	Vector2 editorPos = {};
-	editorPos.x = realLT.x + (m_position.x * ratioW);
-	editorPos.y = realLT.y + (m_position.y * ratioH);
-
-	m_rect.left = static_cast<LONG>(editorPos.x - (editorSize.x * 0.5f));
-	m_rect.top = static_cast<LONG>(editorPos.y - (editorSize.y * 0.5f));
-	m_rect.right = static_cast<LONG>(editorPos.x + (editorSize.x * 0.5f));
-	m_rect.bottom = static_cast<LONG>(editorPos.y + (editorSize.y * 0.5f));
-#endif // EDITOR_MODE
-
 	CheckState();
 	switch (m_state)
 	{
@@ -204,17 +178,11 @@ void Truth::UI::SetSpriteActive(BUTTON_STATE _state)
 	}
 }
 
-// void Truth::UI::DefaultBehavior()
-// {
-// 	int a = 1;
-// }
-
-#ifdef EDITOR_MODE
-void Truth::UI::EditorSetValue()
+void Truth::UI::ResizeWindow()
 {
 	auto gp = m_managers.lock()->Graphics();
 
-	RECT winRect = gp->GetWindowRect();
+	// RECT winRect = gp->GetWindowRect();
 	Vector2 realLT = gp->GetContentPosMin();
 	Vector2 realRB = gp->GetContentPosMax();
 	Vector2 resolution = gp->GetDisplayResolution();
@@ -233,13 +201,19 @@ void Truth::UI::EditorSetValue()
 	editorSize.y = m_size.y * ratioH;
 
 	Vector2 editorPos = {};
-	editorPos.x = (m_position.x * ratioW);
-	editorPos.y = (m_position.y * ratioH);
+	editorPos.x = realLT.x + (m_position.x * ratioW);
+	editorPos.y = realLT.y + (m_position.y * ratioH);
 
-	m_rect.left = static_cast<LONG>(editorPos.x - (editorSize.x * 0.5f) + realLT.x);
-	m_rect.top = static_cast<LONG>(editorPos.y - (editorSize.y * 0.5f) + realLT.y);
-	m_rect.right = static_cast<LONG>(editorPos.x + (editorSize.x * 0.5f) + realLT.x);
-	m_rect.bottom = static_cast<LONG>(editorPos.y + (editorSize.y * 0.5f) + realLT.y);
+	m_rect.left = static_cast<LONG>(editorPos.x - (editorSize.x * 0.5f));
+	m_rect.top = static_cast<LONG>(editorPos.y - (editorSize.y * 0.5f));
+	m_rect.right = static_cast<LONG>(editorPos.x + (editorSize.x * 0.5f));
+	m_rect.bottom = static_cast<LONG>(editorPos.y + (editorSize.y * 0.5f));
+}
+
+#ifdef EDITOR_MODE
+void Truth::UI::EditorSetValue()
+{
+	ResizeWindow();
 
 	for (uint32 i = 0; i < 3; i++)
 	{
@@ -252,4 +226,4 @@ void Truth::UI::EditorSetValue()
 		m_sprite[i]->SetZ(m_zDepth);
 	}
 }
-#endif // IFDE
+#endif // EDITOR_MODE

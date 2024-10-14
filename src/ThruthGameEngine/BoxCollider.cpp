@@ -49,8 +49,8 @@ Truth::BoxCollider::BoxCollider(Vector3 _size, bool _isTrigger)
 /// <summary>
 /// 초기화 해당 Component가 생성 될 때 한번 실행됨
 /// </summary>
-void Truth::BoxCollider::Initalize()
+void Truth::BoxCollider::Initialize()
 {
-	Collider::Initalize();
+	Collider::Initialize();
 }
 

@@ -55,7 +55,7 @@ void Truth::SpotLight::SetSoftness()
 	m_spotLight->SetSoftness(m_softness);
 }
 
-void Truth::SpotLight::Initalize()
+void Truth::SpotLight::Initialize()
 {
 	SetLight();
 	SetIntensity();

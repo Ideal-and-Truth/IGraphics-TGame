@@ -44,7 +44,7 @@ void Truth::DirectionLight::SetAmbient()
 	m_directionalLight->SetAmbientColor(m_ambientColor);
 }
 
-void Truth::DirectionLight::Initalize()
+void Truth::DirectionLight::Initialize()
 {
 	SetLight();
 	SetIntensity();

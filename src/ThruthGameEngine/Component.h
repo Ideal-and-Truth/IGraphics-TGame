@@ -69,7 +69,7 @@ namespace Truth
 		virtual void OnTriggerEnter() {};
 		virtual void OnTriggerExit() {};
 		virtual void OnTriggerStay() {};
-		virtual void Initalize() {};
+		virtual void Initialize() {};
 		virtual void ApplyTransform() {};
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue() {};
