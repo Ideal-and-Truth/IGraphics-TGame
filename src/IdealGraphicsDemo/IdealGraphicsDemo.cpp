@@ -621,6 +621,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> defaultTextureParticleShader = gRenderer->CreateAndLoadParticleShader(L"DefaultTextureParticlePS");
 
+
+		// Test
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/DefaultParticleBillboardShader.hlsl",
+			L"../Shaders/Particle/",
+			L"DefaultParticleBillboardShaderPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> billboardTestPS = gRenderer->CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderPS");
+
+
 #pragma endregion
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
@@ -1599,6 +1612,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 1), 0.f);	// 시작 생상
 			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 0), 1.f);	// 끝 색상
 		}
+#pragma endregion
+#pragma region ParticleBillboardTest
+		//----------ParticleBillboardTest effect----------//
+		//std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
+		//billboardMaterialTest->SetShader(billboardTestPS);
+		//billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		//
+		//
+		//std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(slashParticleMaterial1);
+		//billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		
 #pragma endregion
 
 

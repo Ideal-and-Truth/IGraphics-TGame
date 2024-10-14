@@ -31,8 +31,6 @@
     SamplerState LinearWrapSampler : register(s0);
     SamplerState LinearClampSampler : register(s1);
 
-    // Noise Texture?
-
     struct VSInput
     {
         float3 Pos : POSITION;
@@ -46,6 +44,50 @@
         float3 Pos : POSITION;
         float3 Normal : NORMAL;
         float2 UV : TEXCOORD;
+    };
+
+    struct VSParticleInput
+    {
+        float4 Color : COLOR;
+        uint ID : SV_VERTEXID;
+    };
+
+    struct VSParticleDrawOut
+    {
+        float3 Pos : POSITION;
+        float4 Color : COLOR;
+    };
+
+    struct GSParticleDrawOut
+    {
+        float2 UV : TEXCOORD0;
+        float4 Color : COLOR;
+        float4 Pos : SV_POSITION;
+    };
+    
+    struct PSParticleDrawIn
+    {
+        float2 UV : TEXCOORD0;
+        float4 Color : COLOR;
+    };
+
+    cbuffer cbImmutable
+    {
+        static float3 g_positions[4] =
+        {
+            float3(-1, 1, 0),
+            float3(1, 1, 0),
+            float3(-1, -1, 0),
+            float3(1, -1, 0),
+        };
+        
+        static float2 g_texcoords[4] =
+        {
+            float2(0, 0),
+            float2(1, 0),
+            float2(0, 1),
+            float2(1, 1),
+        };
     };
 
     //https://docs.unity3d.com/Packages/com.unity.shadergraph@6.9/manual/Simple-Noise-Node.html

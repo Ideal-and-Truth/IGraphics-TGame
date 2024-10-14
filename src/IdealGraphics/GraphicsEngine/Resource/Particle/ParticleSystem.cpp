@@ -95,13 +95,12 @@ float Ideal::ParticleSystem::GetCurrentDurationTime()
 	return m_currentDurationTime;
 }
 
-void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
+void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
 {
 	m_particleMaterial = ParticleMaterial;
 	m_rootSignature = RootSignature;
-	m_vs = Shader;
 	m_ps = m_particleMaterial.lock()->GetShader();
-	CreatePipelineState(Device);
+	//RENDER_MODE_MESH_CreatePipelineState(Device);
 }
 
 void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
@@ -128,25 +127,50 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 		return;
 	}
 
+	// TODO : root signature deferred delete
 	switch (m_Renderer_Mode)
 	{
 		case Ideal::ParticleMenu::ERendererMode::Billboard:
+		{
+			__debugbreak();
+
+			if (!m_RENDER_MODE_BILLBOARD_pipelineState)
+			{
+				RENDER_MODE_BILLBOARD_CreatePipelineState(Device);
+			}
+			DrawRenderBillboard(Device, CommandList, DescriptorHeap, CBPool);
+		}
 			break;
 		case Ideal::ParticleMenu::ERendererMode::Mesh:
+		{
+			if (!m_RENDER_MODE_MESH_pipelineState)
+			{
+				RENDER_MODE_MESH_CreatePipelineState(Device);
+			}
 			DrawRenderMesh(Device, CommandList, DescriptorHeap, CBPool);
+		}
 			break;
 		default:
 			break;
-
 	}
 }
 
-void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
+void Ideal::ParticleSystem::SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_MESH_VS = Shader;
+}
+
+void Ideal::ParticleSystem::SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_BILLBOARD_VS = Shader;
+}
+
+void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { ParticleVertexTest::InputElements, ParticleVertexTest::InputElementCount };
 	psoDesc.pRootSignature = m_rootSignature.Get();
-	psoDesc.VS = m_vs->GetShaderByteCode();
+	psoDesc.VS = m_RENDER_MODE_MESH_VS->GetShaderByteCode();
 	psoDesc.PS = m_ps->GetShaderByteCode();
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	//psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -224,7 +248,98 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	psoDesc.SampleDesc.Count = 1;
 
-	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_pipelineState.GetAddressOf()));
+	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_RENDER_MODE_MESH_pipelineState.GetAddressOf()));
+	Check(hr, L"Faild to Create Pipeline State");
+	return;
+}
+
+void Ideal::ParticleSystem::RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3D12Device> Device)
+{
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.InputLayout = { ParticleVertexTest::InputElements, ParticleVertexTest::InputElementCount };
+	psoDesc.pRootSignature = m_rootSignature.Get();
+	psoDesc.VS = m_RENDER_MODE_BILLBOARD_VS->GetShaderByteCode();
+	//TODO:
+	//psoDesc.GS = 
+	__debugbreak();
+	psoDesc.PS = m_ps->GetShaderByteCode();
+	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	//psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	{
+		D3D12_BLEND_DESC blendDesc = {};
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		// --- blending mode ---//
+		Ideal::ParticleMaterialMenu::EBlendingMode BlendMode = m_particleMaterial.lock()->GetBlendingMode();
+		switch (BlendMode)
+		{
+			case Ideal::ParticleMaterialMenu::EBlendingMode::Additive:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ZERO;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
+			}
+			break;
+			case Ideal::ParticleMaterialMenu::EBlendingMode::Alpha:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
+			}
+			break;
+			case Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA; // Alpha blending
+			}
+			break;
+			default:
+				break;
+		}
+
+
+
+		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
+		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;	// one // zero 일경우 검은색으로 바뀌어간다.
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		psoDesc.BlendState = blendDesc;
+	}
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	if (m_particleMaterial.lock()->GetWriteDepthBuffer() == false)
+	{
+		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	}
+	psoDesc.DepthStencilState.StencilEnable = FALSE;
+
+	if (m_particleMaterial.lock()->GetBackFaceCulling())
+	{
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	}
+	else
+	{
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	}
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	psoDesc.SampleDesc.Count = 1;
+
+	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_RENDER_MODE_MESH_pipelineState.GetAddressOf()));
 	Check(hr, L"Faild to Create Pipeline State");
 	return;
 }
@@ -399,7 +514,10 @@ Ideal::IBezierCurve& Ideal::ParticleSystem::GetCustomData2W()
 
 void Ideal::ParticleSystem::SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode)
 {
-	m_Renderer_Mode = ParticleRendererMode;
+	if (m_Renderer_Mode != ParticleRendererMode)
+	{
+		m_Renderer_Mode = ParticleRendererMode;
+	}
 }
 
 void Ideal::ParticleSystem::SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh)
@@ -498,7 +616,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 	}
 
 	//Draw Mesh
-	CommandList->SetPipelineState(m_pipelineState.Get());
+	CommandList->SetPipelineState(m_RENDER_MODE_MESH_pipelineState.Get());
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = m_Renderer_Mesh.lock()->GetVertexBufferView();
@@ -554,6 +672,11 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 		}
 	}
 	CommandList->DrawIndexedInstanced(m_Renderer_Mesh.lock()->GetElementCount(), 1, 0, 0, 0);
+}
+
+void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+{
+
 }
 
 void Ideal::ParticleSystem::UpdateCustomData()

@@ -17,10 +17,9 @@ Ideal::ParticleSystemManager::~ParticleSystemManager()
 
 }
 
-void Ideal::ParticleSystemManager::Init(ComPtr<ID3D12Device> Device, std::shared_ptr<D3D12Shader> Shader)
+void Ideal::ParticleSystemManager::Init(ComPtr<ID3D12Device> Device)
 {
 	CreateRootSignature(Device);
-	SetVS(Shader);
 }
 
 Microsoft::WRL::ComPtr<ID3D12RootSignature> Ideal::ParticleSystemManager::GetRootSignature()
@@ -28,9 +27,14 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> Ideal::ParticleSystemManager::GetRoo
 	return m_rootSignature;
 }
 
-std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetVS()
+std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetMeshVS()
 {
-	return m_VS;
+	return m_RENDER_MODE_MESH_VS;
+}
+
+std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetBillboardVS()
+{
+	return m_RENDER_MODE_BILLBOARD_VS;
 }
 
 void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Device)
@@ -76,9 +80,14 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 	m_rootSignature->SetName(L"ParticleSystemRootSignature");
 }
 
-void Ideal::ParticleSystemManager::SetVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+void Ideal::ParticleSystemManager::SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
 {
-	m_VS = Shader;
+	m_RENDER_MODE_MESH_VS = Shader;
+}
+
+void Ideal::ParticleSystemManager::SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_BILLBOARD_VS = Shader;
 }
 
 void Ideal::ParticleSystemManager::AddParticleSystemNoTransparency(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)

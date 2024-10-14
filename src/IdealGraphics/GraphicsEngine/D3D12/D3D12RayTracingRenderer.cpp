@@ -1264,7 +1264,10 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 {
 	std::shared_ptr<Ideal::ParticleSystem> NewParticleSystem = std::make_shared<Ideal::ParticleSystem>();
 	std::shared_ptr<Ideal::ParticleMaterial> GetParticleMaterial = std::static_pointer_cast<Ideal::ParticleMaterial>(ParticleMaterial);
-	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), m_particleSystemManager->GetVS(), GetParticleMaterial);
+	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), GetParticleMaterial);
+	NewParticleSystem->SetMeshVS(m_particleSystemManager->GetMeshVS());
+	NewParticleSystem->SetBillboardVS(m_particleSystemManager->GetBillboardVS());
+
 	if (GetParticleMaterial->GetTransparency())
 	{
 		m_particleSystemManager->AddParticleSystem(NewParticleSystem);
@@ -2108,10 +2111,15 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
 	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
 	CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
-	auto shader = CreateAndLoadParticleShader(L"DefaultParticleVS");
+	auto defaultParticleMeshVS = CreateAndLoadParticleShader(L"DefaultParticleVS");
+
+	CompileShader(L"../Shaders/Particle/DefaultParticleBillboardShader.hlsl", L"../Shaders/Particle/", L"DefaultParticleBillboardShaderVS", L"vs_6_3", L"VSMain", L"../Shaders/Particle/");
+	auto defaultParticleBillboardVS = CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderVS");
 
 	//---Init---//
-	m_particleSystemManager->Init(m_device, std::static_pointer_cast<Ideal::D3D12Shader>(shader));
+	m_particleSystemManager->Init(m_device);
+	m_particleSystemManager->SetMeshVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleMeshVS));
+	m_particleSystemManager->SetBillboardVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleBillboardVS));
 }
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()
