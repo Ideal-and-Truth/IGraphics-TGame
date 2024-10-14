@@ -571,6 +571,7 @@ void BossSkill::DistortedTimeSphere()
 
 void BossSkill::CoolTimeCheck()
 {
+	// Ä®½î±â
 	if (m_bossAnimator->GetTypeInfo().GetProperty("swordShootCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
 	{
 		m_swordShootCoolTime += GetDeltaTime();
@@ -582,6 +583,7 @@ void BossSkill::CoolTimeCheck()
 		}
 	}
 
+	// Ãæ°ÝÆÄ
 	if (m_bossAnimator->GetTypeInfo().GetProperty("shockWaveCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
 	{
 		m_shockWaveCoolTime += GetDeltaTime();
@@ -593,6 +595,7 @@ void BossSkill::CoolTimeCheck()
 		}
 	}
 
+	// ºÒÄ®
 	if (m_bossAnimator->GetTypeInfo().GetProperty("flameSwordCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
 	{
 		m_flameSwordCoolTime += GetDeltaTime();
@@ -604,6 +607,7 @@ void BossSkill::CoolTimeCheck()
 		}
 	}
 
+	// ºÐ½Åµ¹Áø
 	if (m_bossAnimator->GetTypeInfo().GetProperty("lightSpeedDashCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
 	{
 		m_lightSpeedDashCoolTime += GetDeltaTime();
@@ -615,6 +619,7 @@ void BossSkill::CoolTimeCheck()
 		}
 	}
 
+	// ½Ã¿Ö±¸
 	if (m_timeSpheres.empty())
 	{
 		m_createComplete5 = false;
