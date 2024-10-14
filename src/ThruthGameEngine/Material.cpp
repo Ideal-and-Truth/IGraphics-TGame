@@ -15,6 +15,7 @@ void Truth::Material::SetTexture()
 		m_material->SetMaskMap(m_maskMap->m_texture);
 
 	m_material->SetTiling(m_tileX, m_tileY);
+	// SaveMaterial();
 }
 
 void Truth::Material::ChangeTexture(std::wstring _path, int _type)
@@ -97,7 +98,7 @@ void Truth::Material::ChangeTexture(int _type)
 void Truth::Material::SaveMaterial()
 {
 	std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
-	std::filesystem::path matp = "../Resources/Matarial/" + m_name + ".matData";
+	std::filesystem::path matp = m_path;
 	std::filesystem::path testPath = std::filesystem::current_path();
 	bool b = std::filesystem::exists(matp);
 
@@ -108,4 +109,5 @@ void Truth::Material::SaveMaterial()
 
 	f->Write(m_tileX);
 	f->Write(m_tileY);
+	f->Close();
 }

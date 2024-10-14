@@ -205,28 +205,28 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 
 std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _a, bool _b)
 {
-	if (m_textureMap.find(_path) == m_textureMap.end())
+	std::filesystem::path p(_path);
+	if (p.is_absolute())
+	{
+		::SetCurrentDirectory(Managers::GetRootPath().c_str());
+		p = fs::relative(_path);
+	}
+	if (m_textureMap.find(p) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
-		std::filesystem::path p(_path);
-		if (p.is_absolute())
-		{
-			::SetCurrentDirectory(Managers::GetRootPath().c_str());
-			p = fs::relative(_path);
-		}
 		if (_path.empty())
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(_path, _a, _b);
+		tex->m_texture = m_renderer->CreateTexture(p, _a, _b);
 		tex->m_useCount = 1;
-		tex->m_path = _path;
+		tex->m_path = p;
 
 		tex->w = tex->m_texture->GetWidth();
 		tex->h = tex->m_texture->GetHeight();
-		return m_textureMap[_path] = tex;
+		return m_textureMap[p] = tex;
 	}
-	return m_textureMap[_path];
+	return m_textureMap[p];
 }
 
 void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
@@ -276,8 +276,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			mat->m_normalMap = CreateTexture(normal, false, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
 
-			mat->SetTexture();
 			f->Close();
+			mat->SetTexture();
+			mat->SaveMaterial();
 		}
 		else
 		{
