@@ -98,7 +98,7 @@ float2 HitAttribute(float2 vertexAttribute[3], BuiltInTriangleIntersectionAttrib
         attr.barycentrics.y * (vertexAttribute[2] - vertexAttribute[0]);
 }
 
-float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangentColor vertices[3], in MyAttributes attr)
+float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangentColor vertices[3], in MyAttributes attr, in float lod)
 {
     float3 tangent;
     float3 vertexTangents[3] =
@@ -119,16 +119,13 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
         tangent = CalculateTangent(v0, v1, v2, uv0, uv1, uv2);
     }
 
-    // 거리와 법선 벡터의 각도를 기반으로 LOD 값 계산
-    float distance = length(g_sceneCB.cameraPosition.xyz - HitWorldPosition());
-    float lod = log2(distance);  // 거리 기반 LOD
-    lod -= log2(abs(dot(normalize(normal), WorldRayDirection())));  // 각도 기반 조정
 
-    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, saturate(lod)).xyz;
-    //Ideal_NormalStrength_float(texSample, 0.5, texSample);
-
+    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, lod).xyz;
+    float3 newNormal;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
-    float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
+    //Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // 다르게
+    Ideal_NormalStrength_float(bumpNormal, 1, newNormal); // 다르게
+    float3 worldNormal = BumpMapNormalToWorldSpaceNormal(newNormal, normal, tangent);
     return worldNormal;
 }
 RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float tMin = 0.001f, float tMax = 10000.f, bool cullNonOpaque = false)
@@ -275,25 +272,44 @@ void CalculateSpecularAndReflectionCoefficients(
     out float3 Ks,
     out float3 Kr)
 {
-    // 기본 반사율 (비금속성 반사율)
-    const float3 F0_non_metallic = float3(0.04, 0.04, 0.04);
+   
+    // float3 Kr; // 반사율
+    // float3 Ks; // 스펙큘러 반사 계수
 
-    // 금속성 반사율
-    float3 F0 = lerp(F0_non_metallic, Albedo, metallic);
+    // Kr 계산
+    Kr = metallic * Albedo; // 금속성일 경우 색상을 그대로 사용
+    Kr = metallic > 0.001 ? Kr : float3(0.04, 0.04, 0.04); // 비금속일 경우 기본 값 사용
 
-    // Fresnel-Schlick 근사식
-    float3 F = F0 + (1.0 - F0) * pow(1.0 - saturate(dot(N, V)), 5.0);
-    if (metallic > 0.f)
+    // Ks 계산
+    if (metallic > 0.0)
     {
-        Ks = F;
+        Ks = Albedo; // 금속 표면인 경우 Albedo 색상 사용
     }
     else
     {
-        Ks = F0_non_metallic;
+        Ks = float3(1,1,1) - roughness; // 비금속 표면인 경우 Roughness에 따라 조정
     }
+
     
-    float roughnessFactor = pow(1.0 - roughness, 2.0); // Roughness가 높을수록 반사율을 줄임
-    Kr = F * roughnessFactor;
+    //// 기본 반사율 (비금속성 반사율)
+    //const float3 F0_non_metallic = float3(0.04, 0.04, 0.04);
+    //
+    //// 금속성 반사율
+    //float3 F0 = lerp(F0_non_metallic, Albedo, metallic);
+    //
+    //// Fresnel-Schlick 근사식
+    //float3 F = F0 + (1.0 - F0) * pow(1.0 - saturate(dot(N, V)), 5.0);
+    //if (metallic > 0.f)
+    //{
+    //    Ks = F;
+    //}
+    //else
+    //{
+    //    Ks = F0_non_metallic;
+    //}
+    //
+    //float roughnessFactor = pow(1.0 - roughness, 2.0); // Roughness가 높을수록 반사율을 줄임
+    //Kr = F * roughnessFactor;
 }
 
 float3 Shade(
@@ -301,7 +317,8 @@ float3 Shade(
     float2 uv,
     in float3 N,
     in float3 objectNormal,
-    in float3 hitPosition
+    in float3 hitPosition,
+    in float lod
 )
 {
     float3 V = -WorldRayDirection();
@@ -310,10 +327,7 @@ float3 Shade(
     float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
 
     // 거리와 법선 각도를 기반으로 LOD 값 계산
-    float lod = log2(distance); // 거리 기반 LOD
-    lod -= log2(abs(dot(N, V))); // 법선과 광선 벡터의 각도에 따른 조정
-    lod = saturate(lod);
-
+    float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
     float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
     float3 Ks;
     float3 Kr;
@@ -325,65 +339,43 @@ float3 Shade(
 
     metallic = maskSample.x;
     roughness = 1 - maskSample.a;
-
+    float ao = maskSample.g;
+    
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
-  
+    
+
     if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
-        //int pointLightNum = 0;
-        //int spotLightNum = 0;
+    
         // Directional Light
         {
-            float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
-            
-            float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-            
-            bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
-            L += Ideal::Light::ComputeDirectionalLight(
-            Kd,
-            Ks,
-            color,
-            isInShadow, roughness, N, V,
-            direction);
+            float3 LightVector = -g_lightList.DirLight.Direction.xyz;
+            float3 H = normalize(V + LightVector);
+            float3 radiance = g_lightList.DirLight.DiffuseColor.rgb;
+            bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
+            L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
         }
         
-        // Point Light
-        {   //
+        {   
+            // Point Light
             for (int i = 0; i < pointLightNum; ++i)
             {
                 float3 position = g_lightList.PointLights[i].Position.xyz;
                 float3 color = g_lightList.PointLights[i].Color.rgb;
                 float range = g_lightList.PointLights[i].Range;
-                
+                float intensity = g_lightList.PointLights[i].Intensity;
                 float3 direction = normalize(position - hitPosition);
                 float distance = length(position - hitPosition);
-                float att = Ideal::Attenuate(distance, range);
-                float intensity = g_lightList.PointLights[i].Intensity;
-                
                 bool isInShadow = false;
                 if(distance <= range)
                 {
                     isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                    L += PointLight(isInShadow, V, direction, N, distance, color, albedo, roughness, metallic, intensity);
                 }
-                float3 light = Ideal::Light::ComputePointLight
-                (
-                Kd,
-                Ks,
-                color,
-                isInShadow,
-                roughness,
-                N,
-                V,
-                direction,
-                distance,
-                range,
-                intensity
-                );
-                L += light;
             }
-            
+            // SpotLight
             for (int i = 0; i < spotLightNum; ++i)
             {
                 float3 position = g_lightList.SpotLights[i].Position.xyz;
@@ -397,35 +389,18 @@ float3 Shade(
                 float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
                 
                 bool isInShadow = false;
-                if(distance <= range)
+                if (distance <= range)
                 {
                     isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                    L += SpotLight(isInShadow, V, direction, lightDirection, N, distance, color, softness, angle, albedo, roughness, metallic, intensity);
                 }
-                float3 light = Ideal::Light::ComputeSpotLight2(
-                     Kd,
-                     Ks,
-                     color,
-                     isInShadow,
-                     roughness,
-                     N,
-                     V,
-                     direction,
-                     distance,
-                     range,
-                     intensity,
-                     softness,
-                     lightDirection,
-                     angle
-                 );
-            
-                L += light;
             }
         }
     }
 
-    
+    L *= ao;
     // Temp : 0.2는 임시 값
-    L += 0.2f * Kd;
+    L += 0.2f * albedo;
     //return L;
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);
@@ -547,6 +522,13 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         l_vertices[indices[2]].normal 
     };
     
+    float3 vertexPositions[3] =
+    {
+        l_vertices[indices[0]].position,
+        l_vertices[indices[1]].position,
+        l_vertices[indices[2]].position 
+    };
+    
     float3 vertexTangents[3] =
     {
         l_vertices[indices[0]].tangent,
@@ -594,26 +576,36 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         //normal = normalize(mul(objectNormal, (float3x3) ObjectToWorld3x4()));
     }
    
-    //if(l_materialInfo.bUseNormalMap == false)
-    //if(l_materialInfo.bUseNormalMap == true)
+    
+    float lod;
     {
-        normal = NormalMap(normal, uv, vertexInfo, attr);
-        normal = normalize(normal);
+        float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+        ///// calculate lod
+        // calculate alpha
+        float alpha = 2 * atan(g_sceneCB.FOV / g_sceneCB.resolutionY * 2);
+        float coneWidth = 2 * distance * tan(alpha / 2);
 
+        // calculate texLOD
+        float2 vTriUVInfo = TriUVInfoFromRayCone(
+        WorldRayDirection(), normal, coneWidth,
+        vertexTexCoords, vertexPositions, (float3x3) ObjectToWorld3x4()
+        );
+        
+        uint2 texSize;
+        l_texDiffuse.GetDimensions(texSize.x, texSize.y);
+        float MipIndex = TriUVInfoToTexLOD(texSize, vTriUVInfo);
+        lod = MipIndex;
+        lod *= 0.7f;
     }
-    if(dot(-WorldRayDirection(), normal) < 0)
     {
-        //payload.radiance = float3(1,1,1); return;
+        normal = NormalMap(normal, uv, vertexInfo, attr, lod);
     }
-    //payload.radiance = normal; return;
-    //payload.radiance = normal;
-    //return; 
     
     // GBuffer
     payload.gBuffer.tHit = RayTCurrent();
     payload.gBuffer.hitPosition = hitPosition;
 
-    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
+    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod);
 }
 
 [shader("closesthit")]

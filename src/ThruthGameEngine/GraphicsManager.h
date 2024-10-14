@@ -30,7 +30,6 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
-		HWND m_hwnd;
 
 		std::unordered_map<std::wstring, std::shared_ptr<Ideal::IMesh>> m_particleMeshMap;
 
@@ -42,6 +41,8 @@ namespace Truth
 			L"../Resources/Models/",
 			L"../Resources/Textures/"
 		};
+		HWND m_hwnd;
+
 	public:
 		// path / texture
 		std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
@@ -77,10 +78,10 @@ namespace Truth
 
 		void SetMainCamera(Camera* _camera);
 
-		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path);
+		std::shared_ptr<Texture> CreateTexture(const std::wstring& _path, bool _a = false, bool _b = false);
 		void DeleteTexture(std::shared_ptr<Texture> _texture);
 
-		std::shared_ptr<Material> CraeteMatarial(const std::string& _name);
+		std::shared_ptr<Material> CreateMaterial(const std::string& _name, bool _useDefalutPath = true);
 		void DeleteMaterial(std::shared_ptr<Material> _material);
 
 		std::shared_ptr<Ideal::IParticleMaterial> CreateParticleMaterial();

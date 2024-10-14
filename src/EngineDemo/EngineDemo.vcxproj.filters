@@ -153,6 +153,9 @@
     <ClInclude Include="TimeDistortion.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="TestEffectGenerator.h">
+      <Filter>TestEntity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -235,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="TimeDistortion.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TestEffectGenerator.cpp">
+      <Filter>TestEntity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

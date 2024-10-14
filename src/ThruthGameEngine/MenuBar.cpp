@@ -7,6 +7,7 @@
 #include "EditorUI.h"
 #include "LoadMapDataPopup.h"
 #include "ParticleManager.h"
+
 #pragma region test Scene
 #include "Entity.h"
 #include "RigidBody.h"
@@ -96,6 +97,7 @@ void MenuBar::ShowContext(bool* p_open)
 				USES_CONVERSION;
 				m_manager.lock()->Scene()->m_currentScene->m_name = W2A(f.back().c_str());
 			}
+			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
 		if (ImGui::Selectable("Load Scene"))
 		{
@@ -105,6 +107,7 @@ void MenuBar::ShowContext(bool* p_open)
 				std::wstring filepath = m_openFileName.lpstrFile;
 				m_manager.lock()->Scene()->LoadSceneData(filepath);
 			}
+			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
 		if (ImGui::Selectable("Load Map Data"))
 		{
@@ -134,6 +137,7 @@ void MenuBar::ShowContext(bool* p_open)
 
 				currentScene->AddEntity(e);
 			}
+			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
 
 		if (ImGui::Selectable("Create Particle"))

@@ -10,7 +10,7 @@
 
 namespace fs = std::filesystem;
 
-class FileUtils;
+class TFileUtils;
 
 namespace Truth
 {
@@ -53,6 +53,9 @@ namespace Truth
 			fs::path m_albedo;
 			fs::path m_normal;
 			fs::path m_metalicRoughness;
+			
+			float m_tileX = 1.0f;
+			float m_tileY = 1.0f;
 		};
 
 		/// <summary>
@@ -174,6 +177,7 @@ namespace Truth
 		void ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxPath);
 
 		void ParseMatarialFile(GameObject* _GO, const std::string& _matGuid);
+		void CopyTexture(const YAML::Node& _node, fs::path& _output);
 		void ParseOnlyMatarialFile(const fs::path& _matGuid);
 
 		void WriteMaterialData();
@@ -181,10 +185,10 @@ namespace Truth
 		void ConvertUnloadedMesh();
 
 		void WriteData();
-		void WriteColliderData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteMeshData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteLightData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
-		void WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO);
+		void WriteColliderData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteMeshData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteLightData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
+		void WriteLocalTMData(std::shared_ptr<TFileUtils> _file, GameObject* _GO);
 	};
 }
 

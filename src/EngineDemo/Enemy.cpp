@@ -32,6 +32,7 @@ void Enemy::Awake()
 void Enemy::Start()
 {
 	m_currentTP = m_maxTP;
+	m_attackRange = 1.0f;
 }
 
 void Enemy::Update()

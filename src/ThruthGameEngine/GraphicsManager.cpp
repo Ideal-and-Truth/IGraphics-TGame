@@ -10,7 +10,7 @@
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
-#include "FileUtils.h"
+#include "TFileUtils.h"
 
 
 /// <summary>
@@ -81,7 +81,7 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	// 추후에 카메라에 넘겨 줄 시야각
 	m_aspect = static_cast<float>(_wight) / static_cast<float>(_height);
 
-	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
+	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/NightStormMoonGlow.dds");
 
 	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 }
@@ -202,21 +202,23 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 	m_mainCamera = _camera;
 }
 
-std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path)
+std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _a, bool _b)
 {
 	if (m_textureMap.find(_path) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
 		std::filesystem::path p(_path);
+		if (p.is_absolute())
+			return nullptr;
+		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
+		{
+			int a = 1;
+		}
 		if (_path.empty())
 		{
 			return nullptr;
 		}
-// 		else if (p.extension() == ".tga" || p.extension() == ".TGA")
-// 		{
-// 			return nullptr;
-// 		}
-		tex->m_texture = m_renderer->CreateTexture(_path);
+		tex->m_texture = m_renderer->CreateTexture(_path, true, _b);
 		tex->m_useCount = 1;
 		tex->m_path = _path;
 
@@ -232,76 +234,72 @@ void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
 	m_renderer->DeleteTexture(_texture->m_texture);
 }
 
-std::shared_ptr<Truth::Material> Truth::GraphicsManager::CraeteMatarial(const std::string& _name)
+std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const std::string& _name, bool _useDefalutPath)
 {
+	std::filesystem::path matp;
+	if (_useDefalutPath)
+	{
+		matp = m_matSavePath + _name + ".matData";
+	}
+	else
+	{
+		matp = _name;
+		if (matp.is_absolute())
+		{
+			matp = fs::relative(matp);
+		}
+	}
+	std::shared_ptr<Material> mat = std::make_shared<Material>();
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
-		std::filesystem::path matp = m_matSavePath + _name + ".matData";
-		std::shared_ptr<Material> mat = std::make_shared<Material>();
 		mat->m_material = m_renderer->CreateMaterial();
+		mat->m_gp = this;
+		mat->m_hwnd = m_hwnd;
 		mat->m_name = _name;
 		mat->m_baseMap = nullptr;
 		mat->m_normalMap = nullptr;
 		mat->m_maskMap = nullptr;
-		
+		mat->m_path = matp.generic_string();
+
 		if (std::filesystem::exists(matp))
 		{
-			std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
+			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
 			f->Open(matp, Read);
 			std::filesystem::path albedo(f->Read<std::string>());
 			std::filesystem::path normal(f->Read<std::string>());
 			std::filesystem::path metalicRoughness(f->Read<std::string>());
+
+			mat->m_tileX = f->Read<float>();
+			mat->m_tileY = f->Read<float>();
+
 			mat->m_baseMap = CreateTexture(albedo);
-			mat->m_normalMap = CreateTexture(normal);
+			mat->m_normalMap = CreateTexture(normal, false, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness);
+
 			mat->SetTexture();
+			f->Close();
 		}
 		else
 		{
-			OPENFILENAME m_openFileName;
-			TCHAR m_filePathBuffer[256] = L"";
-			TCHAR m_fileBuffer[256] = L"";
-			
-			memset(&m_openFileName, 0, sizeof(OPENFILENAME));
-			m_openFileName.lStructSize = sizeof(OPENFILENAME);
-			m_openFileName.hwndOwner = m_hwnd;
-			m_openFileName.lpstrFile = m_fileBuffer;
-			m_openFileName.nMaxFile = 256;
-			m_openFileName.lpstrInitialDir = L".";
-
-
-			std::shared_ptr<FileUtils> f = std::make_shared<FileUtils>();
+			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
 			f->Open(matp, Write);
 
 			fs::path al = "../Resources/DefaultData/DefaultAlbedo.png";
 			fs::path no = "../Resources/DefaultData/DefaultNormalMap.png";
 			fs::path ma = "../Resources/DefaultData/DefaultBlack.png";
 
-// 			if (GetOpenFileName(&m_openFileName) != 0)
-// 			{
-// 				al = m_openFileName.lpstrFile;
-// 			}
-// 			if (GetOpenFileName(&m_openFileName) != 0)
-// 			{
-// 				no = m_openFileName.lpstrFile;
-// 			}
-// 			if (GetOpenFileName(&m_openFileName) != 0)
-// 			{
-// 				ma = m_openFileName.lpstrFile;
-// 			}
-// 			std::string rootPath = "../Resources/Textures/PlayerRe/adsf/";
-// 
-// 			f->Write(rootPath + al.filename().generic_string());
-// 			f->Write(rootPath + no.filename().generic_string());
-// 			f->Write(rootPath + ma.filename().generic_string());
-// 			std::filesystem::path albedo(rootPath + al.filename().generic_string());
-// 			std::filesystem::path normal(rootPath + no.filename().generic_string());
-// 			std::filesystem::path metalicRoughness(rootPath + ma.filename().generic_string());
-			
+			f->Write<std::string>(al.generic_string());
+			f->Write<std::string>(no.generic_string());
+			f->Write<std::string>(ma.generic_string());
+
+			f->Write<float>(1.0f);
+			f->Write<float>(1.0f);
+
 			mat->m_baseMap = CreateTexture(al.generic_wstring());
-			mat->m_normalMap = CreateTexture(no.generic_wstring());
+			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
 			mat->m_maskMap = CreateTexture(ma.generic_wstring());
 			mat->SetTexture();
+			f->Close();
 		}
 
 		return m_matarialMap[_name] = mat;

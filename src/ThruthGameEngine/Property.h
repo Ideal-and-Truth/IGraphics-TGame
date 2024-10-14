@@ -80,24 +80,25 @@ public:
 	{
 		if constexpr (std::is_array_v<T>)
 		{
-// 			std::string result = "";
-// 			result += "\n";
-// 
-// 			for (int i = 0; i < is_array_custom<T>::size; i++)
-// 			{
-// 				auto& obj = Get(_object, i);
-// 				result += std::string(_indent, '\t');
-// 				result += "[";
-// 				result += StringConverter::ToString(i);
-// 				result += "] : ";
-// 				result += StringConverter::ToString(obj, _indent);
-// 				result += "\n";
-// 			}
+			for (int i = 0; i < is_array_custom<T>::size; i++)
+			{
+				auto& obj = Get(_object, i);
+				return TypeUI::DisplayType(obj, _name, _min, _max);
+			}
+		}
+		else if constexpr (IsStdVector<T>::value)
+		{
+			auto& obj = Get(_object);
+			bool isSelect = false;
+			for (size_t i = 0; i < obj.size(); i++)
+			{
+				auto o = obj[i];
+				isSelect |= TypeUI::DisplayType(o, _name, _min, _max, static_cast<uint32>(i));
+			}
+			return isSelect;
 		}
 		else
-		{
 			return TypeUI::DisplayType(Get(_object), _name, _min, _max);
-		}
 	}
 
 	virtual std::string Dump(void* _object, int _indent = 0) const override

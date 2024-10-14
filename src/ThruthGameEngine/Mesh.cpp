@@ -69,14 +69,23 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 	m_subMesh.clear();
 	m_subMesh.resize(meshSize);
 	m_mat.clear();
-	for (uint32 i = 0; i < meshSize; i++)
+	if (m_matPath.empty())
 	{
-		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
-		std::string s = m_subMesh[i]->GetFBXMaterialName();
-// 		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
-// 		mat->SetTexture();
-		m_mat.push_back(m_managers.lock()->Graphics()->CraeteMatarial(s));
-// 		m_subMesh[i]->SetMaterialObject(mat->m_material);
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
+			std::string s = m_subMesh[i]->GetFBXMaterialName();
+			m_mat.push_back(m_managers.lock()->Graphics()->CreateMaterial(s));
+		}
+	}
+	else
+	{
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
+			m_mat.push_back(mat);
+			m_mesh->GetMeshByIndex(i).lock()->SetMaterialObject(mat->m_material);
+		}
 	}
 }
 
@@ -93,14 +102,23 @@ void Truth::Mesh::SetMesh()
 	m_subMesh.clear();
 	m_subMesh.resize(meshSize);
 	m_mat.clear();
-	for (uint32 i = 0; i < meshSize; i++)
+	if (m_matPath.empty())
 	{
-		m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
-		std::string s = m_subMesh[i]->GetFBXMaterialName();
-// 		auto mat = m_managers.lock()->Graphics()->CraeteMatarial(s);
-// 		mat->SetTexture();
-		m_mat.push_back(m_managers.lock()->Graphics()->CraeteMatarial(s));
-// 		m_subMesh[i]->SetMaterialObject(mat->m_material);
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
+			std::string s = m_subMesh[i]->GetFBXMaterialName();
+			m_mat.push_back(m_managers.lock()->Graphics()->CreateMaterial(s));
+		}
+	}
+	else
+	{
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
+			m_mat.push_back(mat);
+			m_mesh->GetMeshByIndex(i).lock()->SetMaterialObject(mat->m_material);
+		}
 	}
 }
 
@@ -129,10 +147,15 @@ void Truth::Mesh::DeleteMesh()
 void Truth::Mesh::SetMaterialByIndex(uint32 _index, std::string _material)
 {
 	if (_index >= m_subMesh.size())
-	{
 		return;
-	}
-	m_subMesh[_index]->SetMaterialObject(m_managers.lock()->Graphics()->CraeteMatarial(_material)->m_material);
+
+	const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(_material);
+	m_subMesh[_index]->SetMaterialObject(mat->m_material);
+
+	if (_index >= m_matPath.size())
+		return;
+
+	m_matPath[_index] = mat->m_path;
 }
 
 std::vector<uint64> Truth::Mesh::GetMaterialImagesIDByIndex(uint32 _index)
@@ -169,6 +192,7 @@ void Truth::Mesh::SetStatic(bool _isStatic)
 #ifdef EDITOR_MODE
 void Truth::Mesh::EditorSetValue()
 {
+	m_matPath.clear();
 	SetMesh(m_path);
 }
 #endif // EDITOR_MODE

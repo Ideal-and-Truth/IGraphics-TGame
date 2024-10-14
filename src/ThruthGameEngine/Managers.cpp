@@ -11,9 +11,12 @@
 #include "ComponentFactory.h"
 #include <time.h>
 
+fs::path Truth::Managers::ROOT_PATH = fs::path();
+
 Truth::Managers::Managers()
 {
 	DEBUG_PRINT("Create Managers\n");
+	ROOT_PATH = fs::current_path();
 }
 
 Truth::Managers::~Managers()
@@ -82,7 +85,6 @@ void Truth::Managers::FixedUpdate() const
 void Truth::Managers::Render() const
 {
 	clock_t start, finish;
-	double duration;
 
 	start = clock();
 

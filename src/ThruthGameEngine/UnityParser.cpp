@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <iostream>
-#include "FileUtils.h"
+#include "TFileUtils.h"
 #include "GraphicsManager.h"
 
 #include "Entity.h"
@@ -623,81 +623,66 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 			{
 				if (texmap["_NormalMap"].IsDefined())
 				{
-					if (!texmap["_NormalMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_NormalMap"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_normal = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					 CopyTexture(texmap["_NormalMap"], matdata.m_normal);
 				}
+
+				else if (texmap["_BumpMap"].IsDefined())
+				{
+					CopyTexture(texmap["_BumpMap"], matdata.m_normal);
+				}
+
 				else if (texmap["_MainTex"].IsDefined())
 				{
-					if (!texmap["_MainTex"]["m_Texture"]["guid"].IsDefined())
-						continue;
+					CopyTexture(texmap["_MainTex"], matdata.m_albedo);
 
-					std::string texGuid = texmap["_MainTex"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					matdata.m_tileX = texmap["_MainTex"]["m_Scale"]["x"].as<float>();
+					matdata.m_tileY = texmap["_MainTex"]["m_Scale"]["y"].as<float>();
 				}
 				else if (texmap["_MaskMap"].IsDefined())
 				{
-					if (!texmap["_MaskMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_MaskMap"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					CopyTexture(texmap["_MaskMap"], matdata.m_metalicRoughness);
+				}
+				else if (texmap["_MetallicGlossMap"].IsDefined())
+				{
+					CopyTexture(texmap["_MetallicGlossMap"], matdata.m_metalicRoughness);
 				}
 				else if (texmap["_BarkBaseColorMap"].IsDefined())
 				{
-					if (!texmap["_BarkBaseColorMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_BarkBaseColorMap"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					CopyTexture(texmap["_BarkBaseColorMap"], matdata.m_albedo);
 				}
 				else if (texmap["_BarkMaskMap"].IsDefined())
 				{
-					if (!texmap["_BarkMaskMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_BarkMaskMap"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					CopyTexture(texmap["_BarkMaskMap"], matdata.m_metalicRoughness);
 				}
 				else if (texmap["_BarkNormalMap"].IsDefined())
 				{
-					if (!texmap["_BarkNormalMap"]["m_Texture"]["guid"].IsDefined())
-						continue;
-					std::string texGuid = texmap["_BarkNormalMap"]["m_Texture"]["guid"].as<std::string>();
-					fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					if (!fs::exists(p))
-					{
-						fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-					}
-					matdata.m_normal = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
+					CopyTexture(texmap["_BarkNormalMap"], matdata.m_normal);
 				}
 			}
 		}
 	}
 	m_matarialMap[_matGuid] = matdata;
+}
+
+void Truth::UnityParser::CopyTexture(const YAML::Node& _node, fs::path& _output)
+{
+	if (!_node["m_Texture"]["guid"].IsDefined())
+		return;
+	std::string texGuid = _node["m_Texture"]["guid"].as<std::string>();
+	if (m_guidMap.find(texGuid) == m_guidMap.end())
+		return;
+
+	const fs::path originPath = m_guidMap[texGuid]->m_filePath;
+	fs::path parent = originPath.parent_path();
+	fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
+	fs::path copyPath = m_texturePath / m_sceneName / parent.filename();
+
+	if (!fs::exists(copyPath))
+		fs::create_directory(copyPath);
+
+	if (!fs::exists(p))
+		fs::copy(originPath, copyPath, fs::copy_options::skip_existing);
+	_output = copyPath / originPath.filename();
 }
 
 void Truth::UnityParser::ParseOnlyMatarialFile(const fs::path& _matPath)
@@ -766,21 +751,22 @@ void Truth::UnityParser::ParseOnlyMatarialFile(const fs::path& _matPath)
 
 void Truth::UnityParser::WriteMaterialData()
 {
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-
 	fs::create_directories(m_matSavePath);
 
 	for (auto& mat : m_matarialMap)
 	{
+		std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 		fs::path p = m_matSavePath / (mat.second.m_name + ".matData");
-		if (fs::exists(p))
-		{
-			continue;
-		}
 		file->Open(p, FileMode::Write);
-		file->Write<std::string>(mat.second.m_albedo.generic_string());
-		file->Write<std::string>(mat.second.m_normal.generic_string());
-		file->Write<std::string>(mat.second.m_metalicRoughness.generic_string());
+
+		const auto& matData = mat.second;
+
+		file->Write<std::string>(matData.m_albedo.generic_string());
+		file->Write<std::string>(matData.m_normal.generic_string());
+		file->Write<std::string>(matData.m_metalicRoughness.generic_string());
+
+		file->Write<float>(matData.m_tileX);
+		file->Write<float>(matData.m_tileY);
 	}
 }
 
@@ -807,7 +793,7 @@ void Truth::UnityParser::WriteData()
 	ConvertUnloadedMesh();
 	WriteMaterialData();
 
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
+	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 	std::wstring path = m_defaultPath;
 	path += m_sceneName.generic_wstring() + L"/";
 	path += L"Data.map";
@@ -829,7 +815,7 @@ void Truth::UnityParser::WriteData()
 	}
 }
 
-void Truth::UnityParser::WriteColliderData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteColliderData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isCollider);
 	if (_GO->m_isCollider)
@@ -845,7 +831,7 @@ void Truth::UnityParser::WriteColliderData(std::shared_ptr<FileUtils> _file, Gam
 	}
 }
 
-void Truth::UnityParser::WriteMeshData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteMeshData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isMesh);
 	if (_GO->m_isMesh)
@@ -865,7 +851,7 @@ void Truth::UnityParser::WriteMeshData(std::shared_ptr<FileUtils> _file, GameObj
 	}
 }
 
-void Truth::UnityParser::WriteLightData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteLightData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<bool>(_GO->m_isLight);
 	if (_GO->m_isLight)
@@ -881,7 +867,7 @@ void Truth::UnityParser::WriteLightData(std::shared_ptr<FileUtils> _file, GameOb
 	}
 }
 
-void Truth::UnityParser::WriteLocalTMData(std::shared_ptr<FileUtils> _file, GameObject* _GO)
+void Truth::UnityParser::WriteLocalTMData(std::shared_ptr<TFileUtils> _file, GameObject* _GO)
 {
 	_file->Write<float>(_GO->m_position.x);
 	_file->Write<float>(_GO->m_position.y);

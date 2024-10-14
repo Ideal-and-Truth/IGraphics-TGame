@@ -31,14 +31,14 @@ void BezierShooter::Initalize()
 	for (uint32 i = 0; i < 3; i++)
 	{
 		m_drawPoints.push_back(m_managers.lock()->Graphics()->CreateMesh(L"DebugObject/debugCube"));
-		auto mat = m_managers.lock()->Graphics()->CraeteMatarial("DebugMat");
+		auto mat = m_managers.lock()->Graphics()->CreateMaterial("DebugMat");
 
 		m_drawPoints[i]->GetMeshByIndex(0).lock()->SetMaterialObject(mat->m_material);
 		m_drawPoints[i]->SetDrawObject(true);
 	}
 
 	m_obj = m_managers.lock()->Graphics()->CreateMesh(L"DebugObject/debugCube");
-	auto mat = m_managers.lock()->Graphics()->CraeteMatarial("DebugMat");
+	auto mat = m_managers.lock()->Graphics()->CreateMaterial("DebugMat");
 	m_obj->GetMeshByIndex(0).lock()->SetMaterialObject(mat->m_material);
 	m_obj->SetDrawObject(true);
 }
