@@ -40,7 +40,11 @@ BossSkill::BossSkill()
 	, m_deleteSword(false)
 	, m_deleteClone(false)
 	, m_readyToShoot(false)
-	, m_passingTime(0.f)
+	, m_swordShootTime(0.f)
+	, m_shockWaveTime(0.f)
+	, m_flameSwordTime(0.f)
+	, m_lightSpeedDashTime(0.f)
+	, m_timeDistortionTime(0.f)
 	, m_swordShootCoolTime(0.f)
 	, m_shockWaveCoolTime(0.f)
 	, m_flameSwordCoolTime(0.f)
@@ -97,6 +101,17 @@ void BossSkill::Awake()
 
 void BossSkill::Update()
 {
+	/// 작업중 ////////////////////////////////////////////////////////////////////
+
+	if (GetKeyDown(KEY::_8))
+	{
+		m_readyToShoot = true;
+	}
+	LightSpeedDash(true);
+	DeleteCheck();
+	return;
+	/// 작업중 ////////////////////////////////////////////////////////////////////
+
 	m_readyToShoot = m_bossAnimator->GetTypeInfo().GetProperty("isSkillActive")->Get<bool>(m_bossAnimator.get()).Get();
 
 	if (m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_bossAnimator.get()).Get())
@@ -168,7 +183,7 @@ void BossSkill::ShockWave()
 			std::shared_ptr<Truth::Entity> shock = std::make_shared<Truth::Entity>(m_managers.lock());
 			shock->Initialize();
 			shock->m_layer = 1;
-			shock->AddComponent<Truth::BoxCollider>();
+			shock->AddComponent<Truth::SphereCollider>();
 			shock->AddComponent<SimpleDamager>();
 
 			shock->m_name = "ShockWave";
@@ -176,7 +191,7 @@ void BossSkill::ShockWave()
 			m_owner.lock()->AddChild(shock);
 
 			shock->SetPosition({ 0.f,0.f,0.f });
-			shock->SetScale({ 5.f,1.f,5.f });
+			shock->SetScale({ 5.f,3.f,5.f });
 
 
 			//shock->Awake();
@@ -185,15 +200,15 @@ void BossSkill::ShockWave()
 			m_shockWaves.push_back(std::make_pair(shock, false));
 		}
 		m_createComplete1 = true;
-		m_passingTime = 0.5f;
+		m_shockWaveTime = 0.5f;
 	}
 	else
 	{
 		if (m_readyToShoot)
 		{
-			m_passingTime += GetDeltaTime();
+			m_shockWaveTime += GetDeltaTime();
 
-			if (m_passingTime > 0.3f)
+			if (m_shockWaveTime > 0.3f)
 			{
 				float bossHeight = m_owner.lock()->m_transform->m_position.y;
 
@@ -223,7 +238,7 @@ void BossSkill::ShockWave()
 				}
 
 				m_shockCount++;
-				m_passingTime = 0.f;
+				m_shockWaveTime = 0.f;
 
 				if (m_shockCount >= m_shockWavePos.size())
 				{
@@ -258,7 +273,7 @@ void BossSkill::FlameSword()
 			std::shared_ptr<Truth::Entity> flame = std::make_shared<Truth::Entity>(m_managers.lock());
 			flame->Initialize();
 			flame->m_layer = 1;
-			flame->AddComponent<Truth::BoxCollider>();
+			flame->AddComponent<Truth::SphereCollider>();
 			flame->AddComponent<SimpleDamager>();
 
 			flame->m_name = "Flame";
@@ -266,7 +281,7 @@ void BossSkill::FlameSword()
 			m_owner.lock()->AddChild(flame);
 
 			flame->SetPosition({ 0.f,0.f,0.f });
-			flame->SetScale({ 5.f,1.f,5.f });
+			flame->SetScale({ 5.f,3.f,5.f });
 			//flame->SetScale({ 300.f,30.f,300.f });
 
 			flame->Start();
@@ -280,8 +295,8 @@ void BossSkill::FlameSword()
 		if (m_readyToShoot)
 		{
 			float bossHeight = m_owner.lock()->m_transform->m_position.y;
-			m_passingTime += GetDeltaTime();
-			if (m_passingTime > 0.1f && m_flameCount < m_flamePos.size())
+			m_flameSwordTime += GetDeltaTime();
+			if (m_flameSwordTime > 0.1f && m_flameCount < m_flamePos.size())
 			{
 				m_fires[m_flameCount].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_flameCount] });
 				Vector3 worldPos = m_fires[m_flameCount].first->m_transform->m_worldPosition;
@@ -289,14 +304,14 @@ void BossSkill::FlameSword()
 				m_owner.lock().reset();
 				m_fires[m_flameCount].first->m_transform->m_position = worldPos;
 				m_flameCount++;
-				m_passingTime = 0.f;
+				m_flameSwordTime = 0.f;
 
 			}
 			if (m_flameCount >= m_flamePos.size())
 			{
 				m_deleteFire = true;
 				m_flameSword = false;
-				m_passingTime = 0.f;
+				m_flameSwordTime = 0.f;
 				//m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
 			}
 		}
@@ -307,8 +322,8 @@ void BossSkill::SwordShooting()
 {
 	if (!m_createComplete3)
 	{
-		m_passingTime += GetDeltaTime();
-		if (m_passingTime > 0.1f && m_swordCount < m_swordPos.size())
+		m_swordShootTime += GetDeltaTime();
+		if (m_swordShootTime > 0.1f && m_swordCount < m_swordPos.size())
 		{
 			std::shared_ptr<Truth::Entity> sword = std::make_shared<Truth::Entity>(m_managers.lock());
 			sword->Initialize();
@@ -329,7 +344,7 @@ void BossSkill::SwordShooting()
 
 			m_swords.push_back(std::make_pair(sword, false));
 
-			m_passingTime = 0.f;
+			m_swordShootTime = 0.f;
 			m_swordCount++;
 		}
 		if (m_swordCount >= m_swordPos.size())
@@ -370,8 +385,8 @@ void BossSkill::SwordShooting()
 
 		if (m_readyToShoot)
 		{
-			m_passingTime += GetDeltaTime();
-			if (m_swordCount < m_swordPos.size() && m_passingTime > 1.2f)
+			m_swordShootTime += GetDeltaTime();
+			if (m_swordCount < m_swordPos.size() && m_swordShootTime > 1.f)
 			{
 				m_swords[m_swordCount].second = true;
 
@@ -379,7 +394,7 @@ void BossSkill::SwordShooting()
 				m_shootingPos.push_back(playerPos);
 				m_swordCount++;
 
-				m_passingTime = 0.f;
+				m_swordShootTime = 0.f;
 			}
 		}
 
@@ -387,8 +402,8 @@ void BossSkill::SwordShooting()
 		{
 			m_deleteSword = true;
 			m_swordShooting = false;
-			m_passingTime = 0.f;
-			m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
+			m_swordShootTime = 0.f;
+			//m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
 		}
 	}
 
@@ -420,6 +435,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				m_owner.lock()->AddChild(illusion);
 
 				rigid->GetTypeInfo().GetProperty("height")->Set(rigid.get(), 3.f);
+				rigid->GetTypeInfo().GetProperty("radius")->Set(rigid.get(), 1.f);
 				illusion->SetPosition(m_illusionPos[i]);
 				illusion->SetScale({ 1.f,1.f,1.f });
 
@@ -457,15 +473,15 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 			{
 				if (m_readyToShoot)
 				{
-					m_passingTime += GetDeltaTime();
+					m_lightSpeedDashTime += GetDeltaTime();
 
-					if (m_passingTime > 0.8f)
+					if (m_lightSpeedDashTime > 0.8f)
 					{
 						auto skinnedMesh = m_clones[m_cloneCount].first->GetComponent<Truth::SkinnedMesh>().lock();
 
 						m_clones[m_cloneCount].second = true;
 						m_illusionPos[m_cloneCount] = playerPos;
-						m_passingTime = 0.f;
+						m_lightSpeedDashTime = 0.f;
 						skinnedMesh->SetAnimation("AttackLightSpeedDash", false);
 						skinnedMesh->SetAnimationSpeed(1.f);
 
@@ -493,7 +509,8 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				{
 					skinnedMesh->SetAnimationSpeed(0.f);
 
-					//m_readyToShoot = true;
+					/// 테스트
+					m_readyToShoot = true;
 				}
 
 				if (m_clones[i].second)
@@ -527,7 +544,7 @@ void BossSkill::DistortedTimeSphere()
 			std::shared_ptr<Truth::Entity> timeSphere = std::make_shared<Truth::Entity>(m_managers.lock());
 			timeSphere->Initialize();
 			timeSphere->m_layer = 1;
-			timeSphere->AddComponent<Truth::BoxCollider>();
+			timeSphere->AddComponent<Truth::SphereCollider>();
 			timeSphere->AddComponent<TimeDistortion>();
 			timeSphere->m_name = "DistortedTimeSphere";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(timeSphere);
@@ -536,8 +553,6 @@ void BossSkill::DistortedTimeSphere()
 			timeSphere->SetPosition(m_spherePos[i]);
 			timeSphere->SetScale({ 6.f,4.f,6.f });
 
-
-			timeSphere->Start();
 
 			m_timeSpheres.push_back(std::make_pair(timeSphere, false));
 
@@ -672,7 +687,12 @@ void BossSkill::DeleteCheck()
 		m_shootingPos.clear();
 		m_illusionPos.clear();
 
-		m_passingTime = 0.f;
+		m_shockWaveTime = 0.f;
+		m_flameSwordTime = 0.f;
+		m_swordShootTime = 0.f;
+		m_lightSpeedDashTime = 0.f;
+		m_timeDistortionTime = 0.f;
+
 		m_shockCount = 0;
 		m_swordCount = 0;
 		m_flameCount = 0;
@@ -694,9 +714,9 @@ void BossSkill::DeleteCheck()
 	if (m_deleteFire)
 	{
 		m_flameSword = false;
-		m_passingTime += GetDeltaTime();
+		m_flameSwordTime += GetDeltaTime();
 
-		if (m_passingTime > 3.f)
+		if (m_flameSwordTime > 5.f)
 		{
 			for (auto& e : m_fires)
 			{
@@ -716,9 +736,9 @@ void BossSkill::DeleteCheck()
 	if (m_deleteSword)
 	{
 		m_swordShooting = false;
-		m_passingTime += GetDeltaTime();
+		m_swordShootTime += GetDeltaTime();
 
-		if (m_passingTime > 2.f)
+		if (m_swordShootTime > 2.f)
 		{
 			for (auto& e : m_swords)
 			{
@@ -738,9 +758,9 @@ void BossSkill::DeleteCheck()
 
 	if (m_deleteClone)
 	{
-		m_passingTime += GetDeltaTime();
+		m_lightSpeedDashTime += GetDeltaTime();
 
-		if (m_passingTime > 2.f)
+		if (m_lightSpeedDashTime > 1.5f)
 		{
 			m_lightSpeedDash = false;
 
@@ -757,6 +777,7 @@ void BossSkill::DeleteCheck()
 			m_cloneCount = 0;
 			m_paternEnds = true;
 			m_createComplete4 = false;
+			m_readyToShoot = false;
 		}
 	}
 
@@ -780,6 +801,7 @@ void BossSkill::DeleteCheck()
 			}
 			m_timeSpheres.clear();
 			m_deleteSphere = false;
+			m_timeDistortion = false;
 			m_timeDistortionCoolTime = 0.f;
 		}
 	}

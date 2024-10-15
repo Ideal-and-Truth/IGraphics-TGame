@@ -48,12 +48,18 @@ private:
 	bool m_createComplete2;
 	bool m_createComplete3;
 	bool m_createComplete4;
+
+	PROPERTY(createComplete5);
 	bool m_createComplete5;
 
 	bool m_paternEnds;
 	bool m_readyToShoot;
 
-	float m_passingTime;
+	float m_shockWaveTime;
+	float m_flameSwordTime;
+	float m_swordShootTime;
+	float m_lightSpeedDashTime;
+	float m_timeDistortionTime;
 
 	int m_shockCount;
 	int m_swordCount;
