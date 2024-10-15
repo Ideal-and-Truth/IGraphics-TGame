@@ -662,7 +662,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1, handle4.GetGpuHandle());
 			}
 		}
-		// Texture0
+		// Texture2
 		{
 			auto texture = m_particleMaterial.lock()->GetTexture2().lock();
 			if (texture)
@@ -680,9 +680,22 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 {
 	// CB_ParticleSystem
 	{
+		// Transform
+		m_cbTransform.World = m_transform.Transpose();
+		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert();
+		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
+		memcpy(cb1->SystemMemAddr, &m_cbTransform, sizeof(CB_Transform));
+		auto handle1 = DescriptorHeap->Allocate();
+		Device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_Transform, handle1.GetGpuHandle());
+
+		// CustomData
 		UpdateCustomData();
+
+		// Color
 		UpdateColorOverLifetime();
-		//if (m_currentTime > 1.0) m_currentTime = 1.0;
+
+		// ParticleData
 		m_cbParticleSystem.Time = m_currentTime;
 		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
 		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
@@ -690,11 +703,44 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 		Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData, handle2.GetGpuHandle());
 	}
-
+	// SRV
+	if (m_particleMaterial.lock())
+	{
+		// Texture0
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture0().lock();
+			if (texture)
+			{
+				auto handle3 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0, handle3.GetGpuHandle());
+			}
+		}
+		// Texture1
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture1().lock();
+			if (texture)
+			{
+				auto handle4 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle4.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1, handle4.GetGpuHandle());
+			}
+		}
+		// Texture2
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture2().lock();
+			if (texture)
+			{
+				auto handle5 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle5.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2, handle5.GetGpuHandle());
+			}
+		}
+	}
 	CommandList->SetPipelineState(m_RENDER_MODE_BILLBOARD_pipelineState.Get());
 	CommandList->IASetVertexBuffers(0, 1, &m_particleVertexBuffer.lock()->GetView());
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-	// TODO: 임시 10000개
+	// TODO: 임시 100개
 	CommandList->DrawInstanced(100, 1, 0, 0);
 }
 
