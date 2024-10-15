@@ -70,9 +70,9 @@ void BossSkill::Awake()
 	m_player = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player").lock()->GetComponent<Player>().lock();
 
 	m_shockWavePos.push_back(4.2f);
+	m_shockWavePos.push_back(8.2f);
 	m_shockWavePos.push_back(12.2f);
-	m_shockWavePos.push_back(20.2f);
-	m_shockWavePos.push_back(28.2f);
+	m_shockWavePos.push_back(16.2f);
 
 	m_flamePos.push_back(4.2f);
 	m_flamePos.push_back(12.2f);
@@ -103,13 +103,13 @@ void BossSkill::Update()
 {
 	/// 작업중 ////////////////////////////////////////////////////////////////////
 
-	if (GetKeyDown(KEY::_8))
-	{
-		m_readyToShoot = true;
-	}
-	LightSpeedDash(true);
-	DeleteCheck();
-	return;
+// 	if (GetKeyDown(KEY::_8))
+// 	{
+// 		m_readyToShoot = true;
+// 	}
+// 	LightSpeedDash(true);
+// 	DeleteCheck();
+// 	return;
 	/// 작업중 ////////////////////////////////////////////////////////////////////
 
 	m_readyToShoot = m_bossAnimator->GetTypeInfo().GetProperty("isSkillActive")->Get<bool>(m_bossAnimator.get()).Get();
@@ -184,7 +184,8 @@ void BossSkill::ShockWave()
 			shock->Initialize();
 			shock->m_layer = 1;
 			shock->AddComponent<Truth::SphereCollider>();
-			shock->AddComponent<SimpleDamager>();
+			auto damage = shock->AddComponent<SimpleDamager>();
+			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 
 			shock->m_name = "ShockWave";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(shock);
@@ -274,7 +275,8 @@ void BossSkill::FlameSword()
 			flame->Initialize();
 			flame->m_layer = 1;
 			flame->AddComponent<Truth::SphereCollider>();
-			flame->AddComponent<SimpleDamager>();
+			auto damage = flame->AddComponent<SimpleDamager>();
+			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 
 			flame->m_name = "Flame";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flame);
@@ -329,7 +331,8 @@ void BossSkill::SwordShooting()
 			sword->Initialize();
 			sword->m_layer = 1;
 			sword->AddComponent<Truth::BoxCollider>();
-			sword->AddComponent<SimpleDamager>();
+			auto damage = sword->AddComponent<SimpleDamager>();
+			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 
 			sword->m_name = "Sword";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(sword);
@@ -426,7 +429,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				auto skinnedMesh = illusion->AddComponent<Truth::SkinnedMesh>();
 				auto rigid = illusion->AddComponent<Truth::Controller>();
 				auto damage = illusion->AddComponent<SimpleDamager>();
-				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 30.f);
+				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
 				skinnedMesh->AddAnimation("AttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
 				skinnedMesh->AddAnimation("AttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
@@ -510,7 +513,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 					skinnedMesh->SetAnimationSpeed(0.f);
 
 					/// 테스트
-					m_readyToShoot = true;
+					//m_readyToShoot = true;
 				}
 
 				if (m_clones[i].second)
@@ -570,15 +573,18 @@ void BossSkill::DistortedTimeSphere()
 	}
 	else
 	{
-		for (auto& e : m_timeSpheres)
+		if (m_bossAnimator->GetTypeInfo().GetProperty("timeDistortionCoolTime")->Get<bool>(m_bossAnimator.get()).Get())
 		{
-			if (e.first->m_transform->m_position.y > 0.5f)
+			for (auto& e : m_timeSpheres)
 			{
-				e.first->m_transform->m_position.y -= GetDeltaTime() * 2.f;
-			}
-			else
-			{
-				e.first->GetComponent<TimeDistortion>().lock()->GetTypeInfo().GetProperty("active")->Set(e.first->GetComponent<TimeDistortion>().lock().get(), true);
+				if (e.first->m_transform->m_position.y > 0.5f)
+				{
+					e.first->m_transform->m_position.y -= GetDeltaTime() * 2.f;
+				}
+				else
+				{
+					e.first->GetComponent<TimeDistortion>().lock()->GetTypeInfo().GetProperty("active")->Set(e.first->GetComponent<TimeDistortion>().lock().get(), true);
+				}
 			}
 		}
 	}

@@ -1024,18 +1024,26 @@ void BossAttackTimeSphere::OnStateEnter()
 
 void BossAttackTimeSphere::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 14)
+	if (!GetProperty("isSkillActive")->Get<bool>(m_animator).Get() && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 14)
 	{
 		isReset = true;
 		GetProperty("isLockOn")->Set(m_animator, true);
 		GetProperty("isSkillActive")->Set(m_animator, true);
 	}
+
 	if (isReset && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackSmashGround", false);
 		m_isChangePose = true;
+		isReset = false;
 	}
-	if (m_isChangePose && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+
+	if (!isReset && m_isChangePose && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 20)
+	{
+		GetProperty("timeDistortionCoolTime")->Set(m_animator, true);
+	}
+
+	if (!isReset && m_isChangePose && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 41)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
 	}
@@ -1047,7 +1055,6 @@ void BossAttackTimeSphere::OnStateExit()
 	GetProperty("attackTimeSphere")->Set(m_animator, false);
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isSkillActive")->Set(m_animator, false);
-	GetProperty("timeDistortionCoolTime")->Set(m_animator, true);
 	GetProperty("isLockOn")->Set(m_animator, false);
 	isReset = false;
 	m_isChangePose = false;
