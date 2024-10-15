@@ -307,13 +307,13 @@ void Truth::Collider::Initialize(const std::wstring& _path /*= L""*/)
 	case Truth::ColliderShape::BOX:
 	{
 		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
-		m_debugMeshSize = { 0.5, 0.5, 0.5 };
+		m_debugMeshSize = { 50, 50, 50 };
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
 		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
-		m_debugMeshSize = { 1, 1, 1 };
+		m_debugMeshSize = { 0.5, 0.5, 0.5 };
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
