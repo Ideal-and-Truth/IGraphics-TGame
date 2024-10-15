@@ -7,12 +7,12 @@ FBXHeaderExtension:  {
 	CreationTimeStamp:  {
 		Version: 1000
 		Year: 2024
-		Month: 9
-		Day: 27
-		Hour: 11
-		Minute: 52
-		Second: 47
-		Millisecond: 710
+		Month: 10
+		Day: 14
+		Hour: 21
+		Minute: 27
+		Second: 40
+		Millisecond: 452
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\jfpexqs8_55268.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\jfpexqs8_55268.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\5n717yzu_55268.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\5n717yzu_55268.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2489953628576, "Scene", "Scene" {
+	Document: 2921286569088, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,12 +273,12 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2496798021568, "Geometry::Scene", "Mesh" {
+	Geometry: 2923400846656, "Geometry::Scene", "Mesh" {
 		Vertices: *12 {
-			a: -2.49999985098839,-1.9106851409099e-15,-4.37113845119796e-08,-2.49999985098839,2.99999993294477,-8.74227745750744e-08,2.49999985098839,2.99999993294477,-8.74227745750744e-08,2.49999985098839,-1.9106851409099e-15,-4.37113845119796e-08
+			a: 286.0018491745,-0.00109604070530622,-336.588644981384,286.002254486084,-0.00195037155208411,296.068143844604,-138.225591182709,0.000444139732280746,-336.589217185974,-138.225924968719,-0.000209283666663396,296.067500114441
 		} 
-		PolygonVertexIndex: *6 {
-			a: 0,2,-2,0,3,-3
+		PolygonVertexIndex: *4 {
+			a: 0,2,3,-2
 		} 
 		GeometryVersion: 124
 		LayerElementNormal: 0 {
@@ -286,11 +286,11 @@ Objects:  {
 			Name: "Normals"
 			MappingInformationType: "ByPolygonVertex"
 			ReferenceInformationType: "Direct"
-			Normals: *18 {
-				a: -0,0,1,-0,0,1,-0,0,1,-0,0,1,-0,0,1,-0,0,1
+			Normals: *12 {
+				a: 3.63055210073071e-06,1,1.35038374082797e-06,3.86734063795302e-06,1,1.19160517897399e-06,4.10412894780166e-06,1,1.03282673080685e-06,3.86734063795302e-06,1,1.19160517897399e-06
 			} 
-			NormalsW: *6 {
-				a: 1,1,1,1,1,1
+			NormalsW: *4 {
+				a: 1,1,1,1
 			} 
 		}
 		LayerElementBinormal: 0 {
@@ -298,11 +298,11 @@ Objects:  {
 			Name: "Binormals"
 			MappingInformationType: "ByPolygonVertex"
 			ReferenceInformationType: "Direct"
-			Binormals: *18 {
-				a: 0,1,-0,0,1,-0,0,1,-0,0,1,-0,0,1,-0,0,1,-0
+			Binormals: *12 {
+				a: -4.90263862493179e-12,-1.35038374082797e-06,1,-4.60834322091319e-12,-1.19160517897399e-06,1,-4.2388544931049e-12,-1.03282673080685e-06,1,-4.60834322091319e-12,-1.19160517897399e-06,1
 			} 
-			BinormalsW: *6 {
-				a: 1,1,1,1,1,1
+			BinormalsW: *4 {
+				a: 1,1,1,1
 			} 
 
 		}
@@ -311,11 +311,11 @@ Objects:  {
 			Name: "Tangents"
 			MappingInformationType: "ByPolygonVertex"
 			ReferenceInformationType: "Direct"
-			Tangents: *18 {
-				a: 1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0
+			Tangents: *12 {
+				a: -1,3.63055210073071e-06,-3.07041714410835e-19,-1,3.86734063795302e-06,0,-1,4.10412894780166e-06,-4.6967521975914e-19,-1,3.86734063795302e-06,0
 			} 
-			TangentsW: *6 {
-				a: 1,1,1,1,1,1
+			TangentsW: *4 {
+				a: 1,1,1,1
 			} 
 		}
 		LayerElementUV: 0 {
@@ -324,10 +324,10 @@ Objects:  {
 			MappingInformationType: "ByPolygonVertex"
 			ReferenceInformationType: "IndexToDirect"
 			UV: *8 {
-				a: 0.357063710689545,0.00147365347947925,0.357063710689545,0.332071840763092,0.908060371875763,0.332071632146835,0.908060371875763,0.00147359364200383
+				a: -2.860018491745,-3.36588644981384,-2.86002254486084,2.96068143844604,1.38225591182709,-3.36589217185974,1.38225924968719,2.96067500114441
 			} 
-			UVIndex: *6 {
-				a: 0,2,1,0,3,2
+			UVIndex: *4 {
+				a: 0,2,3,1
 			} 
 		}
 		LayerElementMaterial: 0 {
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2488373174032, "Model::SM_wall_brick__1_", "Mesh" {
+	Model: 2914521972736, "Model::SM_brick__10_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.00404846062883735,-30.6116352081299,-0.029429754242301
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",39.3235168457031,39.3235206604004,39.3235206604004
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.9657287597656,145.419143676758,0
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000023841858,1.00000011920929,1.00000011920929
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2490555735920, "Material::M_wall_bigpattern", "" {
+	Material: 2918139128592, "Material::M_ej_walltile_2", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,23 +391,23 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2483704715904, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2909420316064, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
 	}
-	Texture: 2483704714944, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2909420308384, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -420,23 +420,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_wall_brick__1_, Model::RootNode
-	C: "OO",2488373174032,0
+	;Model::SM_brick__10_, Model::RootNode
+	C: "OO",2914521972736,0
 	
-	;Material::M_wall_bigpattern, Model::SM_wall_brick__1_
-	C: "OO",2490555735920,2488373174032
+	;Material::M_ej_walltile_2, Model::SM_brick__10_
+	C: "OO",2918139128592,2914521972736
 	
-	;Geometry::Scene, Model::SM_wall_brick__1_
-	C: "OO",2496798021568,2488373174032
+	;Geometry::Scene, Model::SM_brick__10_
+	C: "OO",2923400846656,2914521972736
 	
-	;Texture::DiffuseColor_Texture, Material::M_wall_bigpattern
-	C: "OO",2483704714944,2490555735920
+	;Texture::DiffuseColor_Texture, Material::M_ej_walltile_2
+	C: "OO",2909420308384,2918139128592
 	
-	;Texture::DiffuseColor_Texture, Material::M_wall_bigpattern
-	C: "OP",2483704714944,2490555735920, "DiffuseColor"
+	;Texture::DiffuseColor_Texture, Material::M_ej_walltile_2
+	C: "OP",2909420308384,2918139128592, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2483704715904,2483704714944
+	C: "OO",2909420316064,2909420308384
 }
 ;Takes section
 ;----------------------------------------------------

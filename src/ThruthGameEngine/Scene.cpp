@@ -565,7 +565,10 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		ltm = flipYZ * flipXY * ltm;
 
 		m_mapEntity[i]->SetLocalTM(ltm);
-
+		if (isMesh)
+		{
+			m_mapEntity[i]->GetComponent<Mesh>().lock()->SetMeshTransformMatrix(ltm);
+		}
 		/// create nav mesh data
 		if (isBoxCollider)
 		{

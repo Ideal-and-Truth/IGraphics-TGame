@@ -150,8 +150,6 @@ namespace Truth
 
 		void Reset();
 
-		void ParseMatarialData();
-
 	private:
 		void ParseFile(fs::path& _path);
 		void ParseDir(fs::path& _path);
@@ -178,7 +176,6 @@ namespace Truth
 
 		void ParseMatarialFile(GameObject* _GO, const std::string& _matGuid);
 		void CopyTexture(const YAML::Node& _node, fs::path& _output);
-		void ParseOnlyMatarialFile(const fs::path& _matGuid);
 
 		void WriteMaterialData();
 

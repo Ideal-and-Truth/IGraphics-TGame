@@ -265,16 +265,28 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 		{
 			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
 			f->Open(matp, Read);
-			std::filesystem::path albedo(f->Read<std::string>());
-			std::filesystem::path normal(f->Read<std::string>());
-			std::filesystem::path metalicRoughness(f->Read<std::string>());
+
+			std::string albedoS = f->Read<std::string>();
+			std::string normalS = f->Read<std::string>();
+			std::string metalicRoughnessS = f->Read<std::string>();
+
+			std::filesystem::path albedo;
+			std::filesystem::path normal;
+			std::filesystem::path metalicRoughness;
+
+			if (!albedoS.empty())
+				albedo = albedoS;
+			if (!normalS.empty())
+				normal = normalS;
+			if (!metalicRoughnessS.empty())
+				metalicRoughness = metalicRoughnessS;
 
 			mat->m_tileX = f->Read<float>();
 			mat->m_tileY = f->Read<float>();
 
-			mat->m_baseMap = CreateTexture(albedo);
-			mat->m_normalMap = CreateTexture(normal, false, true);
-			mat->m_maskMap = CreateTexture(metalicRoughness);
+			mat->m_baseMap = CreateTexture(albedo, true, true);
+			mat->m_normalMap = CreateTexture(normal, true, false);
+			mat->m_maskMap = CreateTexture(metalicRoughness, true, false);
 
 			f->Close();
 			mat->SetTexture();

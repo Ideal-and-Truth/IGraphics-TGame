@@ -62,6 +62,8 @@ namespace Truth
 		METHOD(ApplyTransform);
 		void ApplyTransform();
 
+		void SetMeshTransformMatrix();
+		void SetMeshTransformMatrix(const Matrix& _m);
 
 		METHOD(Update);
 		void Update();
