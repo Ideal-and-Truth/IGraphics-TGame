@@ -365,14 +365,14 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class BossAttackCombo2_2
+class BossAttackCombo3_1
 	: public AnimationState
 {
 private:
 	bool m_isChangePose;
 
 public:
-	BossAttackCombo2_2(Truth::Component* animator)
+	BossAttackCombo3_1(Truth::Component* animator)
 		: AnimationState(animator)
 		, m_isChangePose(false)
 	{
@@ -520,8 +520,8 @@ private:
 	PROPERTY(attackCombo2_1);
 	bool m_attackCombo2_1;
 
-	PROPERTY(attackCombo2_2);
-	bool m_attackCombo2_2;
+	PROPERTY(attackCombo3_1);
+	bool m_attackCombo3_1;
 
 	PROPERTY(attackSwordShoot);
 	bool m_attackSwordShoot;

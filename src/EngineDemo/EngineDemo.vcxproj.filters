@@ -153,14 +153,17 @@
     <ClInclude Include="SimpleDamager.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
-    <ClInclude Include="TimeDistortion.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="TestEffectGenerator.h">
       <Filter>TestEntity</Filter>
     </ClInclude>
     <ClInclude Include="AutoTarget.h">
       <Filter>Component\AutoTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonTest.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeDistortion.h">
+      <Filter>Component\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -242,14 +245,17 @@
     <ClCompile Include="SimpleDamager.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
-    <ClCompile Include="TimeDistortion.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="TestEffectGenerator.cpp">
       <Filter>TestEntity</Filter>
     </ClCompile>
     <ClCompile Include="AutoTarget.cpp">
       <Filter>Component\AutoTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonTest.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeDistortion.cpp">
+      <Filter>Component\Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

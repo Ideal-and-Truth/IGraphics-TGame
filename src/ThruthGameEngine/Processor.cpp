@@ -61,8 +61,20 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
 	// 
-	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
-	ConvertStaticFbxData(L"DebugObject/debugSphere.fbx");
+// 	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+// 	ConvertStaticFbxData(L"DebugObject/debugSphere.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackShockWave.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSpin.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/JumpAttack.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/BlackHoleSummon.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo3-1.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo2-1.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-2.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-1.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Strafe/BossWalk.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Idle/BattleEntrance.fbx");
+// 
+// 	int a = 0;
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
