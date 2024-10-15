@@ -4,22 +4,20 @@
 
 namespace Ideal
 {
-	class ISprite;
 	class IText;
 }
 
 namespace Truth
 {
 	class ButtonBehavior;
-	struct UISpriteSet;
 }
 
 namespace Truth
 {
-	class UI :
+	class TextUI :
 		public Component
 	{
-		GENERATE_CLASS_TYPE_INFO(UI);
+		GENERATE_CLASS_TYPE_INFO(TextUI);
 
 	private:
 		friend class boost::serialization::access;
@@ -30,26 +28,8 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
-		enum class BUTTON_STATE
-		{
-			IDEL,
-			OVER,
-			DOWN,
-			HOLD,
-			UP,
-			END,
-		};
-
 	private:
-		PROPERTY(sprite)
-		std::shared_ptr<UISpriteSet> m_sprite;
-
-		std::string m_texturePath[3];
-
-		BUTTON_STATE m_prevState;
-		BUTTON_STATE m_state;
-
-		RECT m_rect;
+		std::shared_ptr<Ideal::IText> m_textSprite;
 
 		PROPERTY(size);
 		Vector2 m_size;
@@ -60,15 +40,23 @@ namespace Truth
 		PROPERTYM(alpha, 0.0f, 1.0f);
 		float m_alpha;
 
-		PROPERTYM(zDepth, 0.0f, 1.0f);
+		PROPERTYM(zDepth, 0.0f, 0.9f);
 		float m_zDepth;
 
 		PROPERTY(behavior);
 		std::shared_ptr<ButtonBehavior> m_behavior;
 
+		PROPERTY(text);
+		std::wstring m_text;
+
+		PROPERTY(fontSize);
+		float m_fontSize;
+
 	public:
-		UI();
-		virtual ~UI();
+		TextUI();
+		virtual ~TextUI();
+
+		void ChangeText(const std::wstring& _text);
 
 	private:
 		METHOD(Initialize);
@@ -77,14 +65,16 @@ namespace Truth
 		METHOD(Start);
 		virtual void Start() override;
 
+		METHOD(Awake);
+		virtual void Awake() override;
+
 		METHOD(Update);
 		virtual void Update() override;
 
-		void CheckState();
 
 		bool IsActive();
 
-		void SetSpriteActive(BUTTON_STATE _state);
+		void SetSpriteActive(bool _active);
 
 		METHOD(ResizeWindow);
 		void ResizeWindow() override;
@@ -96,36 +86,32 @@ namespace Truth
 
 
 	template<class Archive>
-	void Truth::UI::save(Archive& _ar, const unsigned int file_version) const
+	void Truth::TextUI::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-		for (int i = 0; i < 3; i++)
-			_ar& m_texturePath[i];
-
 		_ar& m_size;
+		_ar& m_text;
 		_ar& m_position;
 		_ar& m_alpha;
 		_ar& m_zDepth;
 		_ar& m_behavior;
+		_ar& m_fontSize;
 	}
 
 	template<class Archive>
-	void Truth::UI::load(Archive& _ar, const unsigned int file_version)
+	void Truth::TextUI::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-		for (int i = 0; i < 3; i++)
-			_ar& m_texturePath[i];
-
 		_ar& m_size;
+		_ar& m_text;
 		_ar& m_position;
 		_ar& m_alpha;
 		_ar& m_zDepth;
-
-		if (file_version >= 1)
-			_ar& m_behavior;
+		_ar& m_behavior;
+		_ar& m_fontSize;
 	}
 }
 
-BOOST_CLASS_EXPORT_KEY(Truth::UI)
-BOOST_CLASS_VERSION(Truth::UI, 1)
+BOOST_CLASS_EXPORT_KEY(Truth::TextUI)
+BOOST_CLASS_VERSION(Truth::TextUI, 0)
 

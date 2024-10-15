@@ -39,6 +39,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="DirectionLight.h" />
     <ClInclude Include="EntityHierarchy.h" />
+    <ClInclude Include="TextUI.h" />
     <ClInclude Include="TFileUtils.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="Inspector.h" />
@@ -109,6 +110,7 @@
     <ClCompile Include="DirectionLight.cpp" />
     <ClCompile Include="EntityHierarchy.cpp" />
     <ClCompile Include="Method.cpp" />
+    <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="TFileUtils.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Inspector.cpp" />

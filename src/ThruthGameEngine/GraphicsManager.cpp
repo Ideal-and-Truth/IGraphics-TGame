@@ -284,9 +284,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			mat->m_tileX = f->Read<float>();
 			mat->m_tileY = f->Read<float>();
 
-			mat->m_baseMap = CreateTexture(albedo, true, true);
-			mat->m_normalMap = CreateTexture(normal, true, false);
-			mat->m_maskMap = CreateTexture(metalicRoughness, true, false);
+			mat->m_baseMap = CreateTexture(albedo, true, false);
+			mat->m_normalMap = CreateTexture(normal, true, true);
+			mat->m_maskMap = CreateTexture(metalicRoughness, true, true);
 
 			f->Close();
 			mat->SetTexture();
@@ -377,6 +377,23 @@ std::shared_ptr<Truth::UISpriteSet> Truth::GraphicsManager::CreateUISpriteSet()
 	result->m_hwnd = m_hwnd;
 
 	return result;
+}
+
+void Truth::GraphicsManager::DeleteUISpriteSet(std::shared_ptr<UISpriteSet> _UISpriteSet)
+{
+	m_renderer->DeleteSprite((*_UISpriteSet)[0]);
+	m_renderer->DeleteSprite((*_UISpriteSet)[1]);
+	m_renderer->DeleteSprite((*_UISpriteSet)[2]);
+}
+
+std::shared_ptr<Ideal::IText> Truth::GraphicsManager::CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _text)
+{
+	return m_renderer->CreateText(_w, _h, _size, _text);
+}
+
+void Truth::GraphicsManager::DeleteTextSprite(std::shared_ptr<Ideal::IText> _textSprite)
+{
+	m_renderer->DeleteText(_textSprite);
 }
 
 void Truth::GraphicsManager::ToggleFullScreen()

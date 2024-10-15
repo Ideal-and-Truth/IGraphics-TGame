@@ -97,8 +97,10 @@ namespace Truth
 		std::shared_ptr<Material> GetMaterial(const std::string& _name);
 
 		std::shared_ptr<UISpriteSet> CreateUISpriteSet();
+		void DeleteUISpriteSet(std::shared_ptr<UISpriteSet> _UISpriteSet);
 
-
+		std::shared_ptr<Ideal::IText> CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _text);
+		void DeleteTextSprite(std::shared_ptr<Ideal::IText> _textSprite);
 		void ToggleFullScreen();
 
 		void ResizeWindow(uint32 _w, uint32 _h);

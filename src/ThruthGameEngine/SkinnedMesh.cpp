@@ -53,6 +53,7 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 
 	if (m_skinnedMesh != nullptr)
 	{
+		DeleteMesh();
 		m_skinnedMesh.reset();
 	}
 
@@ -190,9 +191,17 @@ void Truth::SkinnedMesh::ApplyTransform()
 	m_skinnedMesh->SetDrawObject(m_isRendering);
 }
 
+void Truth::SkinnedMesh::Destroy()
+{
+	DeleteMesh();
+}
+
 void Truth::SkinnedMesh::DeleteMesh()
 {
-	m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
+	if (m_skinnedMesh)
+		m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
+	m_skinnedMesh.reset();
+	m_skinnedMesh = nullptr;
 }
 
 std::weak_ptr<Ideal::IBone> Truth::SkinnedMesh::GetBone(const std::string& _name)

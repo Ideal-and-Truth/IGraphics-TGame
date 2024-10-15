@@ -78,6 +78,9 @@ namespace Truth
 		METHOD(ApplyTransform);
 		void ApplyTransform();
 
+		METHOD(Destroy);
+		void Destroy();
+
 		void DeleteMesh();
 
 		std::weak_ptr<Ideal::IBone> GetBone(const std::string& _name);
