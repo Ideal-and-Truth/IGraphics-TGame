@@ -63,6 +63,8 @@ public:
 	METHOD(Update);
 	void Update();
 
+	float GetCurrentTP() const { return m_currentTP; };
+
 private:
 };
 

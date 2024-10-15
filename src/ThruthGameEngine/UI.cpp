@@ -27,20 +27,16 @@ Truth::UI::UI()
 
 Truth::UI::~UI()
 {
-	for (uint32 i = 0; i < 3; i++)
-	{
-		if ((*m_sprite)[i] != nullptr)
-		{
-			m_managers.lock()->Graphics()->DeleteSprite((*m_sprite)[i]);
-			(*m_sprite)[i] = nullptr;
-		}
-	}
+	m_managers.lock()->Graphics()->DeleteUISpriteSet(m_sprite);
 }
 
 void Truth::UI::Initialize()
 {
 	auto gp = m_managers.lock()->Graphics();
 	m_sprite = gp->CreateUISpriteSet();
+
+	if (m_behavior)
+		m_behavior->Initialize(m_managers.lock().get(), this, m_owner.lock().get());
 
 	for (uint32 i = 0; i < 3; i++)
 	{
@@ -84,6 +80,7 @@ void Truth::UI::Update()
 #endif
 
 	CheckState();
+	m_behavior->Update();
 	switch (m_state)
 	{
 	case BUTTON_STATE::IDEL:

@@ -10,10 +10,13 @@
 #include <boost/serialization/split_member.hpp>
 #include "TypeInfoMacros.h"
 #include <string>
-
+#include <memory>
 namespace Truth
 {
 	class Managers;
+	class UI;
+	class Entity;
+	class TextUI;
 }
 namespace Truth
 {
@@ -23,6 +26,7 @@ namespace Truth
 
 	private:
 		friend class boost::serialization::access;
+		friend class UI;
 
 		BOOST_SERIALIZATION_SPLIT_MEMBER();
 
@@ -31,8 +35,11 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
-	private:
-		std::shared_ptr<Managers> m_managers;
+	protected:
+		Managers* m_managers;
+		UI* m_UI;
+		TextUI* m_TextUI;
+		Entity* m_owner;
 
 	public:
 		std::string m_name;
@@ -42,10 +49,14 @@ namespace Truth
 		virtual ~ButtonBehavior();
 
 	public:
-		virtual void Initialize(std::shared_ptr<Managers> _managers);
+		virtual void Initialize(Managers* _managers, UI* _UI, Entity* _owner);
+		virtual void Initialize(Managers* _managers, TextUI* _UI, Entity* _owner);
 		virtual void OnMouseClick() {};
 		virtual void OnMouseUp() {};
 		virtual void OnMouseOver() {};
+		virtual void Update() {};
+		virtual void Awake() {};
+		virtual void Start() {};
 	};
 
 	template<class Archive>

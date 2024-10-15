@@ -1662,15 +1662,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				//static int tX = 0;
 				//if (GetAsyncKeyState('Z') & 0x8000)
-				//{
-				//	//if (sprite)
-				//		//gRenderer->DeleteSprite(sprite);
-				//	if (text)
-				//	{
-				//		text->ChangeText(L"HELLO WORLDasdf");
-				//		//gRenderer->DeleteText(text);
-				//	}
-				//}
+				{
+					//if (sprite)
+						//gRenderer->DeleteSprite(sprite);
+					if (text)
+					{
+						//text->ChangeText(L"HELLO WORLDasdf");
+						//gRenderer->DeleteText(text);
+						//TextTest(text);
+					}
+				}
 
 				//if (GetAsyncKeyState('C') & 0x8000)
 				{
@@ -2009,7 +2010,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (text)
 						{
-							//TextTest(text);
+							TextTest(text);
 						}
 					}
 					//once++;

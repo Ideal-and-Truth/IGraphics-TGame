@@ -5,6 +5,7 @@
 namespace Ideal
 {
 	class ISprite;
+	class IText;
 }
 
 namespace Truth

@@ -379,6 +379,23 @@ std::shared_ptr<Truth::UISpriteSet> Truth::GraphicsManager::CreateUISpriteSet()
 	return result;
 }
 
+void Truth::GraphicsManager::DeleteUISpriteSet(std::shared_ptr<UISpriteSet> _UISpriteSet)
+{
+	m_renderer->DeleteSprite((*_UISpriteSet)[0]);
+	m_renderer->DeleteSprite((*_UISpriteSet)[1]);
+	m_renderer->DeleteSprite((*_UISpriteSet)[2]);
+}
+
+std::shared_ptr<Ideal::IText> Truth::GraphicsManager::CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _text)
+{
+	return m_renderer->CreateText(_w, _h, _size, _text);
+}
+
+void Truth::GraphicsManager::DeleteTextSprite(std::shared_ptr<Ideal::IText> _textSprite)
+{
+	m_renderer->DeleteText(_textSprite);
+}
+
 void Truth::GraphicsManager::ToggleFullScreen()
 {
 	m_renderer->ToggleFullScreenWindow();
