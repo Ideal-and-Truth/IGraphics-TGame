@@ -102,10 +102,23 @@ void Truth::Material::SaveMaterial()
 	std::filesystem::path testPath = std::filesystem::current_path();
 	bool b = std::filesystem::exists(matp);
 
+	std::string emptyS("");
+
 	f->Open(matp, Write);
-	f->Write(m_baseMap->m_path.generic_string());
-	f->Write(m_normalMap->m_path.generic_string());
-	f->Write(m_maskMap->m_path.generic_string());
+	if (m_baseMap)
+		f->Write(m_baseMap->m_path.generic_string());
+	else
+		f->Write(emptyS);
+
+	if (m_normalMap)
+		f->Write(m_normalMap->m_path.generic_string());
+	else
+		f->Write(emptyS);
+
+	if (m_maskMap)
+		f->Write(m_maskMap->m_path.generic_string());
+	else
+		f->Write(emptyS);
 
 	f->Write(m_tileX);
 	f->Write(m_tileY);

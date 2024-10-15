@@ -143,6 +143,16 @@ void Truth::Mesh::ApplyTransform()
 	}
 }
 
+void Truth::Mesh::SetMeshTransformMatrix()
+{
+	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
+}
+
+void Truth::Mesh::SetMeshTransformMatrix(const Matrix& _m)
+{
+	m_mesh->SetTransformMatrix(_m);
+}
+
 void Truth::Mesh::Update()
 {
 	if (!m_owner.lock()->m_isStatic)

@@ -622,14 +622,10 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 			for (auto& texmap : texNode)
 			{
 				if (texmap["_NormalMap"].IsDefined())
-				{
 					 CopyTexture(texmap["_NormalMap"], matdata.m_normal);
-				}
 
 				else if (texmap["_BumpMap"].IsDefined())
-				{
 					CopyTexture(texmap["_BumpMap"], matdata.m_normal);
-				}
 
 				else if (texmap["_MainTex"].IsDefined())
 				{
@@ -639,25 +635,19 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 					matdata.m_tileY = texmap["_MainTex"]["m_Scale"]["y"].as<float>();
 				}
 				else if (texmap["_MaskMap"].IsDefined())
-				{
 					CopyTexture(texmap["_MaskMap"], matdata.m_metalicRoughness);
-				}
+
 				else if (texmap["_MetallicGlossMap"].IsDefined())
-				{
 					CopyTexture(texmap["_MetallicGlossMap"], matdata.m_metalicRoughness);
-				}
+
 				else if (texmap["_BarkBaseColorMap"].IsDefined())
-				{
 					CopyTexture(texmap["_BarkBaseColorMap"], matdata.m_albedo);
-				}
+
 				else if (texmap["_BarkMaskMap"].IsDefined())
-				{
 					CopyTexture(texmap["_BarkMaskMap"], matdata.m_metalicRoughness);
-				}
+
 				else if (texmap["_BarkNormalMap"].IsDefined())
-				{
 					CopyTexture(texmap["_BarkNormalMap"], matdata.m_normal);
-				}
 			}
 		}
 	}
@@ -683,70 +673,6 @@ void Truth::UnityParser::CopyTexture(const YAML::Node& _node, fs::path& _output)
 	if (!fs::exists(p))
 		fs::copy(originPath, copyPath, fs::copy_options::skip_existing);
 	_output = copyPath / originPath.filename();
-}
-
-void Truth::UnityParser::ParseOnlyMatarialFile(const fs::path& _matPath)
-{
-	fs::create_directories(m_texturePath / m_sceneName);
-
-	MatarialData matdata = MatarialData();
-
-	fs::path matfile = _matPath;
-	std::ifstream matDataFile(matfile);
-
-	matdata.m_name = matfile.filename().replace_extension("").generic_string();
-
-	auto matDoc = YAML::LoadAll(matDataFile);
-	for (auto& matNode : matDoc)
-	{
-		const YAML::Node& texNode = matNode["Material"]["m_SavedProperties"]["m_TexEnvs"];
-		if (texNode.IsDefined() && texNode.IsSequence())
-		{
-			for (auto& texmap : texNode)
-			{
-				if (texmap["_NormalMap"].IsDefined() && texmap["_NormalMap"]["m_Texture"].IsDefined() && texmap["_NormalMap"]["m_Texture"]["guid"].IsDefined())
-				{
-					std::string texGuid = texmap["_NormalMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) != m_guidMap.end())
-					{
-						fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-						if (!fs::exists(p))
-						{
-							fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-						}
-						matdata.m_normal = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					}
-				}
-				else if (texmap["_MainTex"].IsDefined() && texmap["_MainTex"]["m_Texture"].IsDefined() && texmap["_MainTex"]["m_Texture"]["guid"].IsDefined())
-				{
-					std::string texGuid = texmap["_MainTex"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) != m_guidMap.end())
-					{
-						fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-						if (!fs::exists(p))
-						{
-							fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-						}
-						matdata.m_albedo = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					}
-				}
-				else if (texmap["_MaskMap"].IsDefined() && texmap["_MaskMap"]["m_Texture"].IsDefined() && texmap["_MaskMap"]["m_Texture"]["guid"].IsDefined())
-				{
-					std::string texGuid = texmap["_MaskMap"]["m_Texture"]["guid"].as<std::string>();
-					if (m_guidMap.find(texGuid) != m_guidMap.end())
-					{
-						fs::path p = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-						if (!fs::exists(p))
-						{
-							fs::copy(m_guidMap[texGuid]->m_filePath, m_texturePath / m_sceneName, fs::copy_options::skip_existing);
-						}
-						matdata.m_metalicRoughness = m_texturePath / m_sceneName / m_guidMap[texGuid]->m_filePath.filename();
-					}
-				}
-			}
-		}
-	}
-	m_matarialMap[matdata.m_name] = matdata;
 }
 
 void Truth::UnityParser::WriteMaterialData()
@@ -1003,15 +929,5 @@ void Truth::UnityParser::Reset()
 	m_classMap.clear();
 }
 
-void Truth::UnityParser::ParseMatarialData()
-{
-	for (const auto& u : m_guidMap)
-	{
-		if (u.second->m_filePath.extension() == ".mat")
-		{
-			ParseOnlyMatarialFile(u.second->m_filePath);
-		}
-	}
-}
 
 #endif // EDITOR_MODE

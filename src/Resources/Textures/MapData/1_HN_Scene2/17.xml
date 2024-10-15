@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_bistantview</Name>
-        <DiffuseFile>T_brickwall_002_BaseMap-1.png</DiffuseFile>
+        <Name>M_brickwalktile</Name>
+        <DiffuseFile>T_brickwalktile_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
