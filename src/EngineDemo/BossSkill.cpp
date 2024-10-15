@@ -780,6 +780,7 @@ void BossSkill::DeleteCheck()
 			}
 			m_timeSpheres.clear();
 			m_deleteSphere = false;
+			m_timeDistortionCoolTime = 0.f;
 		}
 	}
 }
