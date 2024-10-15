@@ -257,6 +257,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
+		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugSphere.fbx", false);
 		gRenderer->ConvertAssetToMyFormat(L"DebugPlane/Plane.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);

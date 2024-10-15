@@ -36,6 +36,7 @@ namespace Truth
 
 	protected:
 		ColliderShape m_shape;
+		Vector3 m_debugMeshSize;
 
 	public:
 		PROPERTY(isTrigger);

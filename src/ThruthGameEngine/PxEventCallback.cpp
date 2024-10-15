@@ -16,7 +16,7 @@ void Truth::PxEventCallback::onContact(const physx::PxContactPairHeader& _pairHe
 	{
 		const physx::PxContactPair& contactPair = _pairs[i];
 
-		if (contactPair.flags & (physx::PxContactPairFlag::eREMOVED_SHAPE_0 & physx::PxContactPairFlag::eREMOVED_SHAPE_1))
+		if (contactPair.flags & (physx::PxContactPairFlag::eREMOVED_SHAPE_0 | physx::PxContactPairFlag::eREMOVED_SHAPE_1))
 			continue;
 
 		Collider* a = static_cast<Collider*>(contactPair.shapes[0]->userData);

@@ -69,6 +69,7 @@ namespace Truth
 
 		bool m_isDead = false;
 		bool m_isActive = true;
+		bool m_isStatic = false;
 
 		ComponentMethod m_onCollisionEnter;
 		ComponentMethod m_onCollisionStay;

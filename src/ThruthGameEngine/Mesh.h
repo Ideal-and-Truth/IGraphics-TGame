@@ -44,6 +44,9 @@ namespace Truth
 		PROPERTY(isRendering);
 		bool m_isRendering;
 
+		PROPERTY(isStatic);
+		bool m_isStatic;
+
 	public:
 		Mesh();
 		Mesh(std::wstring _path);
@@ -56,8 +59,12 @@ namespace Truth
 		METHOD(Initialize);
 		void Initialize();
 
-		// METHOD(ApplyTransform);
+		METHOD(ApplyTransform);
 		void ApplyTransform();
+
+
+		METHOD(Update);
+		void Update();
 
 		void DeleteMesh();
 
@@ -89,6 +96,8 @@ namespace Truth
 				m_matPath.push_back(matPath);
 			}
 		}
+		if (file_version >= 2)
+			_ar& m_isStatic;
 	}
 
 	template<class Archive>
@@ -101,8 +110,9 @@ namespace Truth
 		{
 			_ar& m->m_path;
 		}
+		_ar& m_isStatic;
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::Mesh)
-BOOST_CLASS_VERSION(Truth::Mesh, 1)
+BOOST_CLASS_VERSION(Truth::Mesh, 2)

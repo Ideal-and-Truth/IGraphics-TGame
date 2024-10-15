@@ -364,7 +364,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	size_t objCount = file->Read<size_t>();
 
 	m_mapEntity.resize(objCount);
-
+	
 	const static std::vector<Vector3> boxPoints =
 	{
 		{ -0.5, -0.5, -0.5 },
@@ -403,12 +403,15 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 		m_mapEntity[i] = std::make_shared<Entity>(m_managers.lock());
 		int32 parent = file->Read<int32>();
 		std::string name = file->Read<std::string>();
+		m_mapEntity[i]->m_isStatic = true;
 		m_mapEntity[i]->m_name = name;
 		m_mapEntity[i]->Initialize();
 
 		std::vector<float> vertexPosition;
 		std::vector<uint32> indices;
 		bool isBoxCollider = false;
+		bool isSphereCollider = false;
+		bool isCapsuleCollider = false;
 		bool isMeshCollider = false;
 
 		if (parent != -1)
@@ -466,16 +469,22 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				coll = std::make_shared<BoxCollider>(center, size, false);
 				break;
 			}
-			// 			case 2:
-			// 			{
-			// 				coll = std::make_shared<SphereCollider>(size, center);
-			// 				break;
-			// 			}
-			// 			case 3:
-			// 			{
-			// 				coll = std::make_shared<CapsuleCollider>(size, center);
-			// 				break;
-			// 			}
+			case 2:
+			{
+				isSphereCollider = true;
+				Vector3 size = file->Read<Vector3>();
+				Vector3 center = file->Read<Vector3>();
+				coll = std::make_shared<SphereCollider>(center, size.x, false);
+				break;
+			}
+			case 3:
+			{
+				isCapsuleCollider = true;
+				Vector3 size = file->Read<Vector3>();
+				Vector3 center = file->Read<Vector3>();
+				coll = std::make_shared<CapsuleCollider>(center, size.x, size.y);
+				break;
+			}
 			case 4:
 			{
 				isMeshCollider = true;
