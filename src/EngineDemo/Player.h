@@ -50,6 +50,8 @@ private:
 
 	float m_passingTime;
 
+	const static fs::path m_dataPath;
+
 public:
 	Player();
 	virtual ~Player();
@@ -64,6 +66,9 @@ public:
 	void Update();
 
 	float GetCurrentTP() const { return m_currentTP; };
+
+	void SavePlayerData(int _slot = 0);
+	void LoadPlayerData(int _slot = 0);
 
 private:
 };

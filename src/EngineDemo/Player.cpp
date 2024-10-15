@@ -1,7 +1,10 @@
 #include "Player.h"
 #include "Collider.h"
+#include <yaml-cpp/yaml.h>
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Player)
+
+const fs::path Player::m_dataPath = "../PlayerData/";
 
 Player::Player()
 	: m_moveSpeed(3.f)
@@ -46,5 +49,46 @@ void Player::Update()
 			m_passingTime = 0.f;
 		}
 	}
+}
+
+void Player::SavePlayerData(int _slot)
+{
+	fs::path savePath = m_dataPath / std::to_string(_slot) / ".player";
+
+	YAML::Node node;
+	YAML::Emitter emitter;
+	emitter << YAML::BeginDoc;
+	emitter << YAML::BeginMap;
+
+	emitter << YAML::Key << "maxTP" << YAML::Value << m_maxTP;
+	emitter << YAML::Key << "maxCP" << YAML::Value << m_maxCP;
+	emitter << YAML::Key << "currentDamage" << YAML::Value << m_currentDamage;
+	emitter << YAML::Key << "currentTP" << YAML::Value << m_currentTP;
+	emitter << YAML::Key << "currentCP" << YAML::Value << m_currentCP;
+	emitter << YAML::Key << "chargingCP" << YAML::Value << m_chargingCP;
+
+	emitter << YAML::EndMap;
+	emitter << YAML::EndDoc;
+
+	std::ofstream fout(m_dataPath);
+	fout << emitter.c_str();
+
+	fout.close();
+}
+
+void Player::LoadPlayerData(int _slot)
+{
+	fs::path savePath = m_dataPath / std::to_string(_slot) / ".player";
+	std::ifstream fin(savePath);
+	auto node = YAML::Load(fin);
+
+	m_maxTP = node["maxTP"].as<float>();
+	m_maxCP = node["maxCP"].as<float>();
+	m_currentDamage = node["currentDamage"].as<float>();
+	m_currentTP = node["currentTP"].as<float>();
+	m_currentCP = node["currentCP"].as<float>();
+	m_chargingCP = node["chargingCP"].as<float>();
+
+	fin.close();
 }
 
