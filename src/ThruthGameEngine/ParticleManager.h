@@ -1,8 +1,12 @@
 #pragma once
 
 #include "Headers.h"
-#include <yaml-cpp/yaml.h>
 #include "IGraph.h"
+
+namespace YAML
+{
+	class Node;
+}
 
 namespace Truth
 {
@@ -58,7 +62,7 @@ namespace Truth
 		void Reset();
 
 	private:
-		void GetControlPoints(const YAML::Node& _node, std::shared_ptr<Ideal::IParticleSystem> _particle, Ideal::IBezierCurve& _graph);
+		void GetControlPoints(const YAML::Node* _node, std::shared_ptr<Ideal::IParticleSystem> _particle, Ideal::IBezierCurve& _graph);
 	};
 }
 

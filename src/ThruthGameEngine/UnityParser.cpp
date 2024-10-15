@@ -616,13 +616,23 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 	auto matDoc = YAML::LoadAll(matDataFile);
 	for (auto& matNode : matDoc)
 	{
+		const YAML::Node& keyWordNode = matNode["Material"]["m_ValidKeywords"];
+		if (keyWordNode.IsDefined() && keyWordNode.IsSequence())
+		{
+			for (auto& keyWord : keyWordNode)
+			{
+				if (keyWord.as<std::string>() == "_ALPHATEST_ON")
+					matdata.m_alphaCulling = true;
+			}
+		}
+
 		const YAML::Node& texNode = matNode["Material"]["m_SavedProperties"]["m_TexEnvs"];
 		if (texNode.IsDefined() && texNode.IsSequence())
 		{
 			for (auto& texmap : texNode)
 			{
 				if (texmap["_NormalMap"].IsDefined())
-					 CopyTexture(texmap["_NormalMap"], matdata.m_normal);
+					CopyTexture(texmap["_NormalMap"], matdata.m_normal);
 
 				else if (texmap["_BumpMap"].IsDefined())
 					CopyTexture(texmap["_BumpMap"], matdata.m_normal);
@@ -681,18 +691,29 @@ void Truth::UnityParser::WriteMaterialData()
 
 	for (auto& mat : m_matarialMap)
 	{
-		std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();
 		fs::path p = m_matSavePath / (mat.second.m_name + ".matData");
-		file->Open(p, FileMode::Write);
-
 		const auto& matData = mat.second;
 
-		file->Write<std::string>(matData.m_albedo.generic_string());
-		file->Write<std::string>(matData.m_normal.generic_string());
-		file->Write<std::string>(matData.m_metalicRoughness.generic_string());
+		YAML::Node node;
+		YAML::Emitter emitter;
+		emitter << YAML::BeginDoc;
+		emitter << YAML::BeginMap;
 
-		file->Write<float>(matData.m_tileX);
-		file->Write<float>(matData.m_tileY);
+		emitter << YAML::Key << "baseMap" << YAML::Value << matData.m_albedo.generic_string();
+		emitter << YAML::Key << "normalMap" << YAML::Value << matData.m_normal.generic_string();
+		emitter << YAML::Key << "maskMap" << YAML::Value << matData.m_metalicRoughness.generic_string();
+
+		emitter << YAML::Key << "tileX" << YAML::Value << matData.m_tileX;
+		emitter << YAML::Key << "tileY" << YAML::Value << matData.m_tileY;
+		emitter << YAML::Key << "alphaCulling" << YAML::Value << matData.m_alphaCulling;
+
+		emitter << YAML::EndMap;
+		emitter << YAML::EndDoc;
+
+		std::ofstream fout(p);
+		fout << emitter.c_str();
+
+		fout.close();
 	}
 }
 

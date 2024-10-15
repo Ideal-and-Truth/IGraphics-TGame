@@ -40,6 +40,8 @@ namespace Truth
 		float m_tileX = 1.0f;
 		float m_tileY = 1.0f;
 
+		bool m_alphaCulling = false;
+
 		void SetTexture();
 		void ChangeTexture(std::wstring _path, int _type);
 		void ChangeMaterial();

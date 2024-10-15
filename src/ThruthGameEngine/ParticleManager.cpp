@@ -2,6 +2,7 @@
 #include "IParticleSystem.h"
 #include "GraphicsManager.h"
 #include "IParticleMaterial.h"
+#include <yaml-cpp/yaml.h>
 
 Truth::ParticleManager::ParticleManager()
 {
@@ -255,69 +256,69 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (node["RotationOverLifetimeAxisXControlPoints"].IsDefined())
 		{
 			const YAML::Node& child = node["RotationOverLifetimeAxisXControlPoints"];
-			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisX());
+			GetControlPoints(&child, particle, particle->GetRotationOverLifetimeAxisX());
 		}
 		/// Rotation Over Life Time Axis Y ControlPoints
 		if (node["RotationOverLifetimeAxisYControlPoints"].IsDefined())
 		{
 			const YAML::Node& child = node["RotationOverLifetimeAxisYControlPoints"];
-			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisY());
+			GetControlPoints(&child, particle, particle->GetRotationOverLifetimeAxisY());
 		}
 		/// Rotation Over Lifetime Axis Z ControlPoints
 		if (node["RotationOverLifetimeAxisZControlPoints"].IsDefined())
 		{
 			const YAML::Node& child = node["RotationOverLifetimeAxisZControlPoints"];
-			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisZ());
+			GetControlPoints(&child, particle, particle->GetRotationOverLifetimeAxisZ());
 		}
 
 		/// Custom Data 1 X
 		if (node["CustomData1X"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1X"];
-			GetControlPoints(child, particle, particle->GetCustomData1X());
+			GetControlPoints(&child, particle, particle->GetCustomData1X());
 		}
 		/// Custom Data 1 Y
 		if (node["CustomData1Y"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1Y"];
-			GetControlPoints(child, particle, particle->GetCustomData1Y());
+			GetControlPoints(&child, particle, particle->GetCustomData1Y());
 		}
 		/// Custom Data 1 Z
 		if (node["CustomData1Z"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1Z"];
-			GetControlPoints(child, particle, particle->GetCustomData1Z());
+			GetControlPoints(&child, particle, particle->GetCustomData1Z());
 		}
 		/// Custom Data 1 W
 		if (node["CustomData1W"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData1W"];
-			GetControlPoints(child, particle, particle->GetCustomData1W());
+			GetControlPoints(&child, particle, particle->GetCustomData1W());
 		}
 
 		/// Custom Data 2 X
 		if (node["CustomData2X"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2X"];
-			GetControlPoints(child, particle, particle->GetCustomData2X());
+			GetControlPoints(&child, particle, particle->GetCustomData2X());
 		}
 		/// Custom Data 2 Y
 		if (node["CustomData2Y"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2Y"];
-			GetControlPoints(child, particle, particle->GetCustomData2Y());
+			GetControlPoints(&child, particle, particle->GetCustomData2Y());
 		}
 		/// Custom Data 2 Z
 		if (node["CustomData2Z"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2Z"];
-			GetControlPoints(child, particle, particle->GetCustomData2Z());
+			GetControlPoints(&child, particle, particle->GetCustomData2Z());
 		}
 		/// Custom Data 2 W
 		if (node["CustomData2W"].IsDefined())
 		{
 			const YAML::Node& child = node["CustomData2W"];
-			GetControlPoints(child, particle, particle->GetCustomData2W());
+			GetControlPoints(&child, particle, particle->GetCustomData2W());
 		}
 
 		/// Color Over Lifetime
@@ -356,19 +357,19 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (node["SizeOverLifetimeAxisX"].IsDefined())
 		{
 			const YAML::Node& child = node["SizeOverLifetimeAxisX"];
-			GetControlPoints(child, particle, particle->GetRotationOverLifetimeAxisX());
+			GetControlPoints(&child, particle, particle->GetRotationOverLifetimeAxisX());
 		}
 		/// Size Over Life Time Axis Y ControlPoints
 		if (node["SizeOverLifetimeAxisY"].IsDefined())
 		{
 			const YAML::Node& child = node["SizeOverLifetimeAxisY"];
-			GetControlPoints(child, particle, particle->GetSizeOverLifetimeAxisY());
+			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisY());
 		}
 		/// Size Over Lifetime Axis Z ControlPoints
 		if (node["SizeOverLifetimeAxisZ"].IsDefined())
 		{
 			const YAML::Node& child = node["SizeOverLifetimeAxisZ"];
-			GetControlPoints(child, particle, particle->GetSizeOverLifetimeAxisZ());
+			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisZ());
 		}
 
 
@@ -446,9 +447,9 @@ void Truth::ParticleManager::Reset()
 	m_particleMatMap.clear();
 }
 
-void Truth::ParticleManager::GetControlPoints(const YAML::Node& _node, std::shared_ptr<Ideal::IParticleSystem> _particle, Ideal::IBezierCurve& _graph)
+void Truth::ParticleManager::GetControlPoints(const YAML::Node* _node, std::shared_ptr<Ideal::IParticleSystem> _particle, Ideal::IBezierCurve& _graph)
 {
-	for (YAML::const_iterator it = _node.begin(); it != _node.end(); ++it)
+	for (YAML::const_iterator it = _node->begin(); it != _node->end(); ++it)
 	{
 		_graph.AddControlPoint(Ideal::Point((*it)["x"].as<float>(), (*it)["y"].as<float>()));
 	}
