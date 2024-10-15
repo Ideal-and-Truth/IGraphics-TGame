@@ -56,7 +56,7 @@ void Truth::PxEventCallback::onTrigger(physx::PxTriggerPair* _pairs, physx::PxU3
 	{
 		const physx::PxTriggerPair& triggerPair = _pairs[i];
 
-		if (triggerPair.flags & (physx::PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER & physx::PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
+		if (triggerPair.flags & (physx::PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER | physx::PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
 			continue;
 
 		Collider* a = nullptr;

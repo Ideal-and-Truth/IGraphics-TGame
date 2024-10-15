@@ -1247,7 +1247,7 @@ void BossAnimator::Phase2()
 
 				if (!m_attackCombo1_3 && !m_attackCombo2_2 && m_currentState == m_animationStateMap["Idle"])
 				{
-					if (random <= 10)
+					if (random <= 14)
 					{
 						random = RandomNumber(1, 20);
 
