@@ -21,9 +21,6 @@ private:
 	PROPERTY(lookRotationDampFactor);
 	float m_lookRotationDampFactor;
 
-	PROPERTY(stopTiming);
-	float m_stopTiming;
-
 	PROPERTY(maxTP);
 	float m_maxTP;
 
@@ -45,10 +42,9 @@ private:
 	PROPERTY(isDecreaseCP);
 	bool m_isDecreaseCP;
 
-	PROPERTY(unlockSkill1);
-	bool m_unlockSkill1;
-
 	float m_passingTime;
+
+	bool m_isInvincible;
 
 public:
 	Player();
@@ -77,7 +73,6 @@ void Player::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& m_moveSpeed;
 		_ar& m_lookRotationDampFactor;
-		_ar& m_stopTiming;
 		_ar& m_maxTP;
 		_ar& m_maxCP;
 		_ar& m_currentDamage;
@@ -94,7 +89,6 @@ void Player::save(Archive& _ar, const unsigned int file_version) const
 
 	_ar& m_moveSpeed;
 	_ar& m_lookRotationDampFactor;
-	_ar& m_stopTiming;
 	_ar& m_maxTP;
 	_ar& m_maxCP;
 	_ar& m_currentDamage;
