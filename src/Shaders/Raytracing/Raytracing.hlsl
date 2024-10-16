@@ -669,7 +669,7 @@ void MyAnyHitShader_ShadowRay(inout ShadowRayPayload payload, in MyAttributes at
     float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
     float2 uv = HitAttribute(vertexTexCoords, attr);
     float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
-    if(alpha < 0.001f)
+    if(alpha < 0.01f)
     {
         IgnoreHit();
     }
