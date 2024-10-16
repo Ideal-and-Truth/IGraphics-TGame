@@ -435,6 +435,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				meshes.push_back(plane);
 				if(x < 10)
 					plane->AlphaClippingCheck();
+				if(y < 10)
+					plane->AlphaClippingCheck();
 			}
 		}
 		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");

@@ -301,7 +301,7 @@ void Ideal::IdealSkinnedMeshObject::AlphaClippingCheck()
 		if (m_skinnedMesh->GetMeshes()[i]->GetMaterial().lock()->GetIsAlphaClipping())
 		{
 			descs[i].Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
-		}
+		}	
 	}
 	auto& geometries = m_BLASInstanceDesc->BLAS->GetGeometries();
 	m_BLASInstanceDesc->BLAS->SetDirty(true);

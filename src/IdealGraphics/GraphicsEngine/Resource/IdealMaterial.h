@@ -119,14 +119,6 @@ namespace Ideal
 		void SetMaskTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_maskTextureInRayTracing = handle; }
 		void AddRefCountInRayTracing() { m_refCountInRayTracing++; }
 
-
-		// 레이트레이싱 도중 머테리얼 정보가 바뀔때를 대비한 함수
-		void RegisterObject(std::shared_ptr<Ideal::IdealStaticMeshObject> Object);
-		void RegisterObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> Object);
-
-		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>>& GetRegisteredStaticMeshObjects();
-		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>>& GetRegisteredSkinnedMeshObjects();
-
 	private:
 		// ray tracing descriptor table handles
 		Ideal::D3D12DescriptorHandle m_diffuseTextureInRayTracing;
