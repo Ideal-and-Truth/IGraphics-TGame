@@ -10,6 +10,8 @@ namespace Ideal
 	class IdealRenderer;
 	class D3D12Texture;
 	class ResourceManager;
+	class IdealStaticMeshObject;
+	class IdealSkinnedMeshObject;
 }
 
 namespace Ideal
@@ -34,6 +36,7 @@ namespace Ideal
 		virtual void SetTiling(float x, float y) override;
 		virtual void SetOffset(float x, float y) override;
 
+		virtual void SetAlphaClipping(bool IsAlphBlending) override;
 	public:
 		void SetAmbient(Color c) { m_ambient = c; }
 		void SetDiffuse(Color c) { m_diffuse = c; }
@@ -72,6 +75,7 @@ namespace Ideal
 
 
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
+		bool GetIsAlphaClipping() { return m_isAlphaClipping; }
 
 	private:
 		Vector2 m_Tiling;
@@ -115,6 +119,14 @@ namespace Ideal
 		void SetMaskTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_maskTextureInRayTracing = handle; }
 		void AddRefCountInRayTracing() { m_refCountInRayTracing++; }
 
+
+		// 레이트레이싱 도중 머테리얼 정보가 바뀔때를 대비한 함수
+		void RegisterObject(std::shared_ptr<Ideal::IdealStaticMeshObject> Object);
+		void RegisterObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> Object);
+
+		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>>& GetRegisteredStaticMeshObjects();
+		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>>& GetRegisteredSkinnedMeshObjects();
+
 	private:
 		// ray tracing descriptor table handles
 		Ideal::D3D12DescriptorHandle m_diffuseTextureInRayTracing;
@@ -135,5 +147,10 @@ namespace Ideal
 		//std::shared_ptr<Ideal::IdealMaterial> m_prevMaterial;
 		//bool m_isMaterialChanged = true;
 		bool m_isTextureChanged = true;
+		bool m_isAlphaClipping = false;
+
+	private:
+		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_REGISTERED_staticMeshObjects;
+		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>> m_REGISTERED_skinnedMeshObjects;
 	};
 }

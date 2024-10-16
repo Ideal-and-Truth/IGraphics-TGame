@@ -150,6 +150,7 @@ namespace Ideal
 		const wchar_t* c_closestHitShaderName[2] = { L"MyClosestHitShader", L"MyClosestHitShader_ShadowRay" };
 		const wchar_t* c_missShaderName[2] = { L"MyMissShader", L"MyMissShader_ShadowRay" };
 		const wchar_t* c_hitGroupName[2] = { L"MyHitGroup", L"MyHitGroup_ShadowRay" };
+		const wchar_t* c_anyHitShaderName[2] = { L"MyAnyHitShader", L"MyAnyHitShader_ShadowRay" };
 
 	public:
 		RaytracingManager();
@@ -160,6 +161,19 @@ namespace Ideal
 		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, CB_LightList* LightCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture);
 		void Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
 
+		// TODO :
+		void AddObject(
+			std::shared_ptr<Ideal::IdealStaticMeshObject> Object,
+			std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer,
+			ComPtr<ID3D12Device5> Device,
+			std::shared_ptr<Ideal::ResourceManager> ResourceManager,
+			std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager,
+			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+			std::shared_ptr<Ideal::IMeshObject> MeshObject,
+			std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager,
+			const wchar_t* Name,
+			bool IsSkinnedData = false
+		);
 		//---UAV Render Target---//
 		void CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height);
 		ComPtr<ID3D12Resource> GetRaytracingOutputResource();
@@ -243,6 +257,7 @@ namespace Ideal
 		void UpdateTexture(ComPtr<ID3D12Device5> Device);
 		void CreateMaterialInRayTracing(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::weak_ptr<Ideal::IdealMaterial> NewMaterial);
 		void DeleteMaterialInRayTracing(std::shared_ptr<Ideal::IMaterial> Material);
+
 	private:
 		// 중복되는 Material 관리..?
 		std::unordered_map<uint64, std::weak_ptr<Ideal::IdealMaterial>> m_materialMapInFixedDescriptorTable;
