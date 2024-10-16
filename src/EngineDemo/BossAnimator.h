@@ -225,14 +225,14 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class BossAttackJumpSmashGround
+class BossAttackJump
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
-	BossAttackJumpSmashGround(Truth::Component* animator)
+	BossAttackJump(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -499,8 +499,6 @@ private:
 	PROPERTY(attackCharge);
 	bool m_attackCharge;
 
-	PROPERTY(attackJumpSmashGround);
-	bool m_attackJumpSmashGround;
 
 	PROPERTY(attackSpin);
 	bool m_attackSpin;
@@ -531,6 +529,9 @@ private:
 
 	PROPERTY(attackTimeSphere);
 	bool m_attackTimeSphere;
+
+	PROPERTY(jumpAttack);
+	bool m_jumpAttack;
 
 	PROPERTY(isDamage);
 	bool m_isDamage;

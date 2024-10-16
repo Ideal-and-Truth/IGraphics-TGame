@@ -28,7 +28,7 @@ BossAnimator::BossAnimator()
 	, m_attackChargeCombo(false)
 	, m_attackSmashGround(false)
 	, m_attackCharge(false)
-	, m_attackJumpSmashGround(false)
+	, m_jumpAttack(false)
 	, m_attackSpin(false)
 	, m_attackDoubleUpperCut(false)
 	, m_attackCombo1_1(false)
@@ -85,7 +85,7 @@ void BossAnimator::Awake()
 	m_animationStateMap["AttackChargeCombo"] = new BossAttackChargeCombo(this);
 	m_animationStateMap["AttackSmashGround"] = new BossAttackSmashGround(this);
 	m_animationStateMap["AttackCharge"] = new BossAttackCharge(this);
-	m_animationStateMap["AttackJumpSmashGround"] = new BossAttackJumpSmashGround(this);
+	m_animationStateMap["AttackJump"] = new BossAttackJump(this);
 	m_animationStateMap["AttackSpin"] = new BossAttackSpin(this);
 	m_animationStateMap["AttackDoubleUpperCut"] = new BossAttackDoubleUpperCut(this);
 	m_animationStateMap["AttackCombo1_1"] = new BossAttackCombo1_1(this);
@@ -113,7 +113,6 @@ void BossAnimator::Start()
 	m_skinnedMesh->AddAnimation("BossAttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
 	m_skinnedMesh->AddAnimation("BossAttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
 	m_skinnedMesh->AddAnimation("BossAttackChargedCombo", L"BossAnimations/Attacks/AttackChargedCombo");
-	m_skinnedMesh->AddAnimation("BossAttackJumpSmashGround", L"BossAnimations/Attacks/AttackJumpSmashGround");
 	m_skinnedMesh->AddAnimation("BossBlackHole", L"BossAnimations/Attacks/BlackHoleSummon");
 	m_skinnedMesh->AddAnimation("BossSwordShoot", L"BossAnimations/Attacks/BossSwordShoot");
 	m_skinnedMesh->AddAnimation("BossJumpAttack", L"BossAnimations/Attacks/JumpAttack");
@@ -329,10 +328,6 @@ void BossIdle::OnStateUpdate()
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackCharge");
 	}
-	if (GetProperty("attackJumpSmashGround")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackJumpSmashGround");
-	}
 	if (GetProperty("attackDoubleUpperCut")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackDoubleUpperCut");
@@ -364,6 +359,10 @@ void BossIdle::OnStateUpdate()
 	if (GetProperty("attackTimeSphere")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackTimeSphere");
+	}
+	if (GetProperty("jumpAttack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackJump");
 	}
 	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
 	{
@@ -671,23 +670,41 @@ void BossAttackCharge::OnStateExit()
 	isReset = false;
 }
 
-void BossAttackJumpSmashGround::OnStateEnter()
+void BossAttackJump::OnStateEnter()
 {
-	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackJumpSmashGround", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossJumpAttack", false);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
-void BossAttackJumpSmashGround::OnStateUpdate()
+void BossAttackJump::OnStateUpdate()
 {
-	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isReset = true;
+	}
+
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 53 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 115)
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(true);
+	}
+
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 115)
+	{
+		GetProperty("isLockOn")->Set(m_animator, true);
+	}
+
+	if (isReset && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
+		isReset = false;
 	}
 }
 
-void BossAttackJumpSmashGround::OnStateExit()
+void BossAttackJump::OnStateExit()
 {
-	GetProperty("attackJumpSmashGround")->Set(m_animator, false);
+	GetProperty("jumpAttack")->Set(m_animator, false);
+	GetProperty("isLockOn")->Set(m_animator, false);
+	isReset = false;
 }
 
 void BossAttackSpin::OnStateEnter()
@@ -1070,7 +1087,7 @@ void BossAnimator::AllStateReset()
 	m_attackChargeCombo = false;
 	m_attackSmashGround = false;
 	m_attackCharge = false;
-	m_attackJumpSmashGround = false;
+	m_jumpAttack = false;
 	m_attackSpin = false;
 	m_attackDoubleUpperCut = false;
 	m_attackCombo1_1 = false;
@@ -1352,7 +1369,6 @@ void BossAnimator::Phase3()
 	float maxTP = m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get();
 
 	int random = RandomNumber(1, 20);
-	/// 작업중 ////////////////////////////////////////////////////////////////////
 
 	if (!m_playOnce)
 	{
@@ -1367,12 +1383,123 @@ void BossAnimator::Phase3()
 		{
 			m_playOnce = true;
 			m_isDown = false;
+			m_jumpAttack = true;
 		}
 	}
-	/// 작업중 ////////////////////////////////////////////////////////////////////
-
 	else
 	{
+		if (!m_isAttacking)
+		{
+			m_passingTime += GetDeltaTime();
 
+			// 근접일때
+			if (m_isInRange)
+			{
+				// 평타 3번치면 백스텝
+				if (m_attackCount < 3)
+				{
+					if (m_attackCombo1_1)
+					{
+						if (random <= 7)
+						{
+							m_attackCombo1_2 = true;
+							m_attackCombo1_3 = false;
+						}
+						else if (random > 7 && random <= 13)
+						{
+							m_attackCombo2_1 = true;
+						}
+						else
+						{
+							m_attackSpin = true;
+						}
+					}
+
+					if (m_passingTime < 1.f)
+					{
+						m_strafeMove = true;
+						m_isPursuit = false;
+					}
+					else
+					{
+						m_strafeMove = false;
+						if (random <= 10)
+						{
+							m_attackCombo1_1 = true;
+						}
+						else
+						{
+							m_attackCombo2_1 = true;
+						}
+					}
+				}
+				// 백스텝용
+				else
+				{
+					m_isDodge = true;
+				}
+			}
+			// 원거리일때
+			else
+			{
+				if (m_attackCombo1_1)
+				{
+					m_attackCombo1_3 = true;
+					m_attackCombo1_2 = false;
+					m_attackSpin = false;
+				}
+
+				if (!m_attackCombo1_3 && m_currentState == m_animationStateMap["Idle"])
+				{
+					if (random <= 14)
+					{
+						random = RandomNumber(1, 20);
+
+						if (random <= 4 && !m_swordShootCoolTime)
+						{
+							m_attackSwordShoot = true;
+						}
+						else if (random > 4 && random <= 8 && !m_shockWaveCoolTime)
+						{
+							m_attackShockWave = true;
+						}
+						else if (random > 8 && random <= 12 && !m_timeDistortionCoolTime)
+						{
+							m_attackTimeSphere = true;
+						}
+						else if (random > 12 && random <= 16 && !m_lightSpeedDashCoolTime)
+						{
+							m_attackCharge = true;
+						}
+						else if (random > 16)
+						{
+							m_jumpAttack = true;
+						}
+					}
+					else
+					{
+						random = RandomNumber(1, 20);
+
+						if (random <= 10)
+						{
+							m_strafeMove = false;
+							m_isPursuit = true;
+						}
+						else if (random > 10 && random <= 16)
+						{
+							m_attackRunning = true;
+						}
+						else if (random > 16 && random <= 20)
+						{
+							m_strafeMove = true;
+						}
+					}
+				}
+			}
+		}
+		if (m_currentState == m_animationStateMap["AttackCharge"] || m_currentState == m_animationStateMap["AttackRunning"])
+		{
+			m_passingTime += GetDeltaTime();
+		}
 	}
 }
