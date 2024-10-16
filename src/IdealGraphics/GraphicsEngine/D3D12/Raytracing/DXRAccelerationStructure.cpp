@@ -139,14 +139,24 @@ void Ideal::DXRBottomLevelAccelerationStructure::BuildGeometries(std::vector<BLA
 	m_geometryDescs.clear();
 	for (BLASGeometry& geometry : Geometries)
 	{
-		//D3D12_GPU_VIRTUAL_ADDRESS ibAddress = geometry.IndexBuffer->GetResource()->GetGPUVirtualAddress();
-		//uint32 indexCount = geometry.IndexBuffer->GetElementCount();
-		//D3D12_GPU_VIRTUAL_ADDRESS vbAddress = geometry.VertexBuffer->GetResource()->GetGPUVirtualAddress();
-		//uint32 vertexCount = geometry.VertexBuffer->GetElementCount();
-		//uint64 vertexStride = geometry.VertexBuffer->GetElementSize();
-
 		D3D12_RAYTRACING_GEOMETRY_DESC& geometryDesc = geometryDescTemplate;
-		// TEMP : 임시 모두 불투명
+
+
+		// 2024.10.16 보류. 일관성이 보장 안된다. 예를 들어 같은 BLAS를 쓰고 있는데 어떤오브젝트를 처음에 생성하고 alphaclipping체크를 실행하면
+		// 다음 인스턴스들은 무조건 투명이 된다. alpha clipping 체크를 안해도. 따라서 그냥 처음은 무조건 오파크로 만들고 alpha clipping 체크로 
+		// 투명을 결정하게 한다.
+		// 여기서 투명 오브젝트인지 검사하여 Flag를 결정한다.
+		//bool IsAlphaClipping = geometry.Material.lock()->GetIsAlphaClipping();
+		//if (IsAlphaClipping)
+		//{
+		//	// Any Hit Shader 실행
+		//	geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
+		//}
+		//else
+		//{
+		//	// Any Hit Shader 무시
+		//	geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+		//}
 		geometryDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
 		geometryDesc.Triangles.IndexBuffer = geometry.IndexBufferGPUAddress;
 		geometryDesc.Triangles.IndexCount = geometry.IndexCount;
