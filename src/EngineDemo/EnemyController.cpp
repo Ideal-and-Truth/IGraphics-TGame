@@ -118,9 +118,19 @@ void EnemyController::Update()
 	Vector3 moveVec = { 0.f,0.f,0.f };
 	m_controller.lock()->Move(moveVec);
 
-	if (isTargetIn && !m_bossAnimator->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_bossAnimator.get()).Get())
+	if (m_bossAnimator)
 	{
-		m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+		if (isTargetIn && !m_bossAnimator->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_bossAnimator.get()).Get())
+		{
+			m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+		}
+	}
+	else
+	{
+		if (isTargetIn)
+		{
+			m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+		}
 	}
 
 	if (!isTargetIn)

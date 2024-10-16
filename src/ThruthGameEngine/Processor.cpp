@@ -60,7 +60,16 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/FieldMob.fbx");
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
-	// 
+	
+// 	ConvertAniFbxData(L"PlayerAnimations/Skill/SlashSkill.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Skill/TimeStop.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAbility.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Guard/GuardHit.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Guard/GuardLoop.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalVariation1.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalVariation2.fbx");
+
+
 // 	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
 // 	ConvertStaticFbxData(L"DebugObject/debugSphere.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackShockWave.fbx");
@@ -74,7 +83,11 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"BossAnimations/Strafe/BossWalk.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Idle/BattleEntrance.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Attacks/BossSwordShoot.fbx");
-// 
+
+// 	ConvertStaticFbxData(L"EnemyAnimations/RangeEnemy/Weapon/SM_mon_bow.fbx");
+// 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_shield.fbx");
+// 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_sword.fbx");
+
 // 	int a = 0;
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
