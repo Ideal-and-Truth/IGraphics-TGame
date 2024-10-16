@@ -641,6 +641,9 @@ public:
 	void ChangeState(std::string stateName);
 
 	void SetEnemyDamage(float damage);
+
+	void SetEnemySpeed(float speed);
+
 };
 
 template<class Archive>

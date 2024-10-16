@@ -126,25 +126,6 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class NormalAttack5
-	: public AnimationState
-{
-private:
-	bool isReset = false;
-
-public:
-	NormalAttack5(Truth::Component* animator)
-		: AnimationState(animator)
-	{
-
-	}
-
-public:
-	virtual void OnStateEnter() override;
-	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
-};
-
 class NormalAttack6
 	: public AnimationState
 {
@@ -281,6 +262,7 @@ class PlayerGuard
 	: public AnimationState
 {
 private:
+	bool isHit = false;
 
 public:
 	PlayerGuard(Truth::Component* animator)
@@ -435,9 +417,6 @@ private:
 
 	PROPERTY(normalAttack4);
 	bool m_normalAttack4;
-
-	PROPERTY(normalAttack5);
-	bool m_normalAttack5;
 
 	PROPERTY(normalAttack6);
 	bool m_normalAttack6;

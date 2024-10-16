@@ -38,7 +38,6 @@ PlayerAnimator::PlayerAnimator()
 	, m_normalAttack2(false)
 	, m_normalAttack3(false)
 	, m_normalAttack4(false)
-	, m_normalAttack5(false)
 	, m_normalAttack6(false)
 	, m_forwardInput(0.f)
 	, m_sideInput(0.f)
@@ -67,7 +66,6 @@ void PlayerAnimator::Awake()
 
 	m_animationStateMap["NormalAttack4"] = new NormalAttack4(this);
 
-	m_animationStateMap["NormalAttack5"] = new NormalAttack5(this);
 
 	m_animationStateMap["NormalAttack6"] = new NormalAttack6(this);
 
@@ -134,18 +132,23 @@ void PlayerAnimator::Start()
 	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations/NormalAttack/NormalAttack2");
 	m_skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations/NormalAttack/NormalAttack3");
 	m_skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations/NormalAttack/NormalAttack4");
-	m_skinnedMesh->AddAnimation("NormalAttack5", L"PlayerAnimations/NormalAttack/NormalAttack5");
 	m_skinnedMesh->AddAnimation("NormalAttack6", L"PlayerAnimations/NormalAttack/NormalAttack6");
+	m_skinnedMesh->AddAnimation("NormalVariation1", L"PlayerAnimations/NormalAttack/NormalVariation1");
+	m_skinnedMesh->AddAnimation("NormalVariation2", L"PlayerAnimations/NormalAttack/NormalVariation2");
 	m_skinnedMesh->AddAnimation("ChargedAttack1", L"PlayerAnimations/ChargedAttack/ChargedAttack1");
 	m_skinnedMesh->AddAnimation("ChargedAttack2", L"PlayerAnimations/ChargedAttack/ChargedAttack2");
 	m_skinnedMesh->AddAnimation("ChargedAttack3", L"PlayerAnimations/ChargedAttack/ChargedAttack3");
 	m_skinnedMesh->AddAnimation("ChargedAttack4", L"PlayerAnimations/ChargedAttack/ChargedAttack4");
 	m_skinnedMesh->AddAnimation("ChargedAttack5", L"PlayerAnimations/ChargedAttack/ChargedAttack5");
+	m_skinnedMesh->AddAnimation("ChargedAbility", L"PlayerAnimations/ChargedAttack/ChargedAbility");
 	m_skinnedMesh->AddAnimation("ComboReady", L"PlayerAnimations/ComboAttackReady/ComboAttackReady");
-	m_skinnedMesh->AddAnimation("Guard", L"PlayerAnimations/Guard/Guard");
+	m_skinnedMesh->AddAnimation("Guard", L"PlayerAnimations/Guard/GuardLoop");
+	m_skinnedMesh->AddAnimation("GuardHit", L"PlayerAnimations/Guard/GuardHit");
 	m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations/Hit/Hit");
 	m_skinnedMesh->AddAnimation("Dodge", L"PlayerAnimations/Dodge/Dodge");
 	m_skinnedMesh->AddAnimation("DodgeAttack", L"PlayerAnimations/Dodge/DodgeAttack");
+	m_skinnedMesh->AddAnimation("SlashSkill", L"PlayerAnimations/Skill/SlashSkill");
+	m_skinnedMesh->AddAnimation("TimeStop", L"PlayerAnimations/Skill/TimeStop");
 
 
 	m_currentState->OnStateEnter();
@@ -232,23 +235,6 @@ void PlayerAnimator::Update()
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
 
 		effectRot.z += (3.141592 / 180.f) * -25.f;
-
-		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
-		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
-		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
-		p->SetActive(true);
-		p->SetSimulationSpeed(2.f);
-		p->Play();
-		p->SetDeltaTime(GetDeltaTime());
-	}
-	if (m_normalAttack5)
-	{
-		m_normalAttack5 = false;
-
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
-
-		effectRot.z += (3.141592 / 180.f) * -60.f;
 
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
@@ -737,12 +723,8 @@ void NormalAttack4::OnStateUpdate()
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack6");
 	}
-	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 17 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 41))
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack5");
-		GetProperty("isAttack")->Set(m_animator, false);
-	}
-	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		if (GetProperty("isComboReady")->Get<bool>(m_animator).Get())
 		{
@@ -756,61 +738,6 @@ void NormalAttack4::OnStateUpdate()
 }
 
 void NormalAttack4::OnStateExit()
-{
-	isReset = false;
-	GetProperty("isRun")->Set(m_animator, false);
-	GetProperty("isAttacking")->Set(m_animator, false);
-	GetProperty("isNormalAttack")->Set(m_animator, false);
-}
-
-void NormalAttack5::OnStateEnter()
-{
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack5", false);
-	GetProperty("hitStopTime")->Set(m_animator, 0.03f);
-	GetProperty("isAttacking")->Set(m_animator, true);
-	GetProperty("isNormalAttack")->Set(m_animator, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
-}
-
-void NormalAttack5::OnStateUpdate()
-{
-	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
-	}
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
-	{
-		isReset = true;
-	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 18)
-	{
-		GetProperty("isAttacking")->Set(m_animator, false);
-		isReset = false;
-		GetProperty("normalAttack5")->Set(m_animator, true);
-	}
-	if (GetProperty("isCharged")->Get<float>(m_animator).Get() > 0.3f && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 26 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 37))
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack6");
-	}
-	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 26 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 37))
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack6");
-		GetProperty("isAttack")->Set(m_animator, false);
-	}
-	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
-	{
-		if (GetProperty("isComboReady")->Get<bool>(m_animator).Get())
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("ComboReady");
-		}
-		else
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		}
-	}
-}
-
-void NormalAttack5::OnStateExit()
 {
 	isReset = false;
 	GetProperty("isRun")->Set(m_animator, false);
@@ -833,10 +760,12 @@ void NormalAttack6::OnStateUpdate()
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
 	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
 	}
+
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 23)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
@@ -844,6 +773,7 @@ void NormalAttack6::OnStateUpdate()
 		isReset = false;
 		GetProperty("normalAttack6")->Set(m_animator, true);
 	}
+
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 60 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 71))
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
@@ -878,6 +808,19 @@ void PlayerGuard::OnStateEnter()
 
 void PlayerGuard::OnStateUpdate()
 {
+	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardHit", false);
+		isHit = true;
+		GetProperty("isHit")->Set(m_animator, false);
+	}
+
+	if (isHit && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Guard", false);
+		isHit = false;
+	}
+
 	if (!GetProperty("isGuard")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
@@ -920,6 +863,7 @@ void ChargedAttack1::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
 }
 
 void ChargedAttack1::OnStateUpdate()
@@ -962,6 +906,7 @@ void ChargedAttack2::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
 }
 
 void ChargedAttack2::OnStateUpdate()

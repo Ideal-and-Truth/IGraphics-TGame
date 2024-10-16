@@ -281,6 +281,11 @@ void BossAnimator::SetEnemyDamage(float damage)
 	m_enemy->GetTypeInfo().GetProperty("currentDamage")->Set(m_enemy.get(), damage);
 }
 
+void BossAnimator::SetEnemySpeed(float speed)
+{
+	m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), speed);
+}
+
 void BossIdle::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossIdle", false);
@@ -673,11 +678,14 @@ void BossAttackCharge::OnStateExit()
 void BossAttackJump::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossJumpAttack", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SetEnemySpeed(6.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
 void BossAttackJump::OnStateUpdate()
 {
+	GetProperty("strafeMove")->Set(m_animator, false);
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -702,6 +710,7 @@ void BossAttackJump::OnStateUpdate()
 
 void BossAttackJump::OnStateExit()
 {
+	dynamic_cast<BossAnimator*>(m_animator)->SetEnemySpeed(3.f);
 	GetProperty("jumpAttack")->Set(m_animator, false);
 	GetProperty("isLockOn")->Set(m_animator, false);
 	isReset = false;
