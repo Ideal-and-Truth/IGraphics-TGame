@@ -234,8 +234,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
 
-		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
-		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
+		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		//gRenderer->ToggleFullScreenWindow();
 #pragma endregion
@@ -420,7 +420,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		garlandMaterial->SetAlphaClipping(true);
 
 		DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		//DebugPlayer->AlphaClippingCheck();
+		DebugPlayer->AlphaClippingCheck();
 		//std::shared_ptr<Ideal::IMeshObject> garland = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//garland->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 		//garland->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 5, 0)));
@@ -433,10 +433,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
 				meshes.push_back(plane);
-				if(x < 10)
-					plane->AlphaClippingCheck();
-				if(y < 10)
-					plane->AlphaClippingCheck();
+				plane->AlphaClippingCheck();
 			}
 		}
 		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
