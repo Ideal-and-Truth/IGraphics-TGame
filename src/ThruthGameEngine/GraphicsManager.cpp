@@ -11,6 +11,7 @@
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
 #include "TFileUtils.h"
+#include <yaml-cpp/yaml.h>
 
 
 /// <summary>
@@ -263,56 +264,68 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 
 		if (std::filesystem::exists(matp))
 		{
-			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
-			f->Open(matp, Read);
+			std::ifstream fin(matp);
 
-			std::string albedoS = f->Read<std::string>();
-			std::string normalS = f->Read<std::string>();
-			std::string metalicRoughnessS = f->Read<std::string>();
+			YAML::Node node = YAML::Load(fin);
 
 			std::filesystem::path albedo;
 			std::filesystem::path normal;
 			std::filesystem::path metalicRoughness;
 
-			if (!albedoS.empty())
-				albedo = albedoS;
-			if (!normalS.empty())
-				normal = normalS;
-			if (!metalicRoughnessS.empty())
-				metalicRoughness = metalicRoughnessS;
+			if (node["baseMap"].IsDefined())
+				albedo = node["baseMap"].as<std::string>();
+			if (node["normalMap"].IsDefined())
+				normal = node["normalMap"].as<std::string>();
+			if (node["maskMap"].IsDefined())
+				metalicRoughness = node["maskMap"].as<std::string>();
 
-			mat->m_tileX = f->Read<float>();
-			mat->m_tileY = f->Read<float>();
+			mat->m_tileX = node["tileX"].as<float>();
+			mat->m_tileY = node["tileY"].as<float>();
+
+			mat->m_alphaCulling = node["alphaCulling"].as<bool>();
 
 			mat->m_baseMap = CreateTexture(albedo, true, false);
 			mat->m_normalMap = CreateTexture(normal, true, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness, true, true);
 
-			f->Close();
 			mat->SetTexture();
 			mat->SaveMaterial();
+
+			fin.close();
 		}
 		else
 		{
-			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
-			f->Open(matp, Write);
+			YAML::Node node;
+			YAML::Emitter emitter;
+			emitter << YAML::BeginDoc;
+			emitter << YAML::BeginMap;
 
 			fs::path al = "../Resources/DefaultData/DefaultAlbedo.png";
 			fs::path no = "../Resources/DefaultData/DefaultNormalMap.png";
 			fs::path ma = "../Resources/DefaultData/DefaultBlack.png";
 
-			f->Write<std::string>(al.generic_string());
-			f->Write<std::string>(no.generic_string());
-			f->Write<std::string>(ma.generic_string());
+			emitter << YAML::Key << "baseMap" << YAML::Value << al.generic_string();
+			emitter << YAML::Key << "normalMap" << YAML::Value << no.generic_string();
+			emitter << YAML::Key << "maskMap" << YAML::Value << ma.generic_string();
 
-			f->Write<float>(1.0f);
-			f->Write<float>(1.0f);
+			emitter << YAML::Key << "tileX" << YAML::Value << (1.0f);
+			emitter << YAML::Key << "tileY" << YAML::Value << (1.0f);
+
+			emitter << YAML::Key << "alphaCulling" << YAML::Value << false;
 
 			mat->m_baseMap = CreateTexture(al.generic_wstring(), true, false);
 			mat->m_normalMap = CreateTexture(no.generic_wstring(), true, true);
 			mat->m_maskMap = CreateTexture(ma.generic_wstring(), true, true);
+
 			mat->SetTexture();
-			f->Close();
+
+			emitter << YAML::EndMap;
+			emitter << YAML::EndDoc;
+
+			std::ofstream fout(matp);
+			fout << emitter.c_str();
+
+			fout.close();
 		}
 
 		return m_matarialMap[_name] = mat;

@@ -1,14 +1,3 @@
-//*********************************************************
-//
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//*********************************************************
-
 #ifndef RAYTRACING_HLSL
 #define RAYTRACING_HLSL
 
@@ -152,7 +141,8 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     //rayDesc.TMax = g_sceneCB.farZ;
     
     //UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
-    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;
+    UINT rayFlags;// = RAY_FLAG_CULL_NON_OPAQUE;
+
     //rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     
     //UINT rayFlags = 0;
@@ -213,7 +203,8 @@ bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRay
     
     ShadowRayPayload shadowPayload = { TMax };
     
-    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE; // 투명 오브젝트 스킵
+    //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE; // 투명 오브젝트 스킵
+    UINT rayFlags = 0; // RAY_FLAG_CULL_NON_OPAQUE; // 투명 오브젝트 스킵
     bool acceptFirstHit = !retrieveTHit;
     if (acceptFirstHit)
     {
@@ -327,8 +318,10 @@ float3 Shade(
     float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
 
     // 거리와 법선 각도를 기반으로 LOD 값 계산
-    float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
-    float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
+    float4 baseTex = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod);
+    float3 albedo = baseTex.xyz;
+
+    float3 Kd = baseTex.xyz;
     float3 Ks;
     float3 Kr;
     const float3 Kt;
@@ -398,7 +391,7 @@ float3 Shade(
         }
     }
 
-    // L *= ao;
+    //L *= ao;
     // Temp : 0.2는 임시 값
     L += 0.2f * albedo;
     //return L;
@@ -627,4 +620,58 @@ void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
     rayPayload.tHit = HitDistanceOnMiss;
 }
 
+[shader("anyhit")]
+void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
+{
+    float3 hitPosition = HitWorldPosition();
+    uint baseIndex = PrimitiveIndex() * 3;
+    const uint3 indices = uint3(
+         l_indices[baseIndex],
+         l_indices[baseIndex + 1],
+         l_indices[baseIndex + 2]
+     );
+    PositionNormalUVTangentColor vertexInfo[3] =
+    {
+        l_vertices[indices[0]],
+        l_vertices[indices[1]],
+        l_vertices[indices[2]]
+    };
+    float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
+    float2 uv = HitAttribute(vertexTexCoords, attr);
+    float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
+    if(alpha < 0.5f)    // threshold
+    {
+        IgnoreHit();
+    }
+}
+
+[shader("anyhit")]
+void MyAnyHitShader_ShadowRay(inout ShadowRayPayload payload, in MyAttributes attr)
+{
+    payload.tHit = RayTCurrent();
+    float3 hitPosition = HitWorldPosition();
+    uint baseIndex = PrimitiveIndex() * 3;
+    const uint3 indices = uint3(
+         l_indices[baseIndex],
+         l_indices[baseIndex + 1],
+         l_indices[baseIndex + 2]
+     );
+    PositionNormalUVTangentColor vertexInfo[3] =
+    {
+        l_vertices[indices[0]],
+        l_vertices[indices[1]],
+        l_vertices[indices[2]]
+    };
+    float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
+    float2 uv = HitAttribute(vertexTexCoords, attr);
+    float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
+    if(alpha < 0.5f)    // threshold
+    {
+        IgnoreHit();
+    }
+    //elsef
+    //{
+    //    AcceptHitAndEndSearch();
+    //}
+}
 #endif // RAYTRACING_HLSL

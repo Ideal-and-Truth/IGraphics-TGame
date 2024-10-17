@@ -10,6 +10,8 @@ namespace Ideal
 	class IdealRenderer;
 	class D3D12Texture;
 	class ResourceManager;
+	class IdealStaticMeshObject;
+	class IdealSkinnedMeshObject;
 }
 
 namespace Ideal
@@ -34,6 +36,7 @@ namespace Ideal
 		virtual void SetTiling(float x, float y) override;
 		virtual void SetOffset(float x, float y) override;
 
+		virtual void SetAlphaClipping(bool IsAlphBlending) override;
 	public:
 		void SetAmbient(Color c) { m_ambient = c; }
 		void SetDiffuse(Color c) { m_diffuse = c; }
@@ -72,6 +75,7 @@ namespace Ideal
 
 
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
+		bool GetIsAlphaClipping() { return m_isAlphaClipping; }
 
 	private:
 		Vector2 m_Tiling;
@@ -135,5 +139,10 @@ namespace Ideal
 		//std::shared_ptr<Ideal::IdealMaterial> m_prevMaterial;
 		//bool m_isMaterialChanged = true;
 		bool m_isTextureChanged = true;
+		bool m_isAlphaClipping = false;
+
+	private:
+		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_REGISTERED_staticMeshObjects;
+		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>> m_REGISTERED_skinnedMeshObjects;
 	};
 }

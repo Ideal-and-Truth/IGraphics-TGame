@@ -28,6 +28,7 @@
     <ClInclude Include="ButtonFactory.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
+    <ClInclude Include="ClassDataSaver.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentFactory.h" />
@@ -99,6 +100,7 @@
     <ClCompile Include="ButtonFactory.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
+    <ClCompile Include="classDataSaver.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentFactory.cpp" />

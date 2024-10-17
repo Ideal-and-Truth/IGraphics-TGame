@@ -106,6 +106,7 @@ namespace Ideal
 
 		uint64 GetGeometrySize() { return m_geometries.size(); }
 		std::vector<BLASGeometry>& GetGeometries() { return m_geometries; }
+		std::vector<D3D12_RAYTRACING_GEOMETRY_DESC>& GetGeometryDescs() { return m_geometryDescs; }
 
 		bool IsDirty() { return m_isDirty; }
 		void SetDirty(bool Dirty) { m_isDirty = Dirty; }

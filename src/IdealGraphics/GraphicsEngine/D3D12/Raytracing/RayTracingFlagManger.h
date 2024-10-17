@@ -3,6 +3,11 @@
 
 namespace Ideal
 {
+	class IdealMaterial;
+}
+
+namespace Ideal
+{
 	namespace Singleton
 	{
 		class RayTracingFlagManger
@@ -37,7 +42,6 @@ namespace Ideal
 				m_isTextureChanged = false;
 				return ret;
 			}
-
 		private:
 			bool m_isTextureChanged = false;
 			bool m_isMaterialChanged = false;
