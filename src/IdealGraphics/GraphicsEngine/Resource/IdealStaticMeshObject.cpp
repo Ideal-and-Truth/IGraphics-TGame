@@ -133,10 +133,10 @@ void Ideal::IdealStaticMeshObject::AlphaClippingCheck()
 	auto& descs = m_BLASInstanceDesc->BLAS->GetGeometryDescs();
 	for (uint32 i = 0; i < size; ++i)
 	{
-		if (m_staticMesh->GetMeshes()[i]->GetMaterial().lock()->GetIsAlphaClipping())
+		if (m_staticMesh->GetMeshes()[i]->GetMaterial().lock()->GetIsAlphaClipping() ||
+		m_staticMesh->GetMeshes()[i]->GetMaterial().lock()->GetIsTransmissive())
 		{
 			descs[i].Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
-			int a = 3;
 		}
 	}
 	auto& geometries = m_BLASInstanceDesc->BLAS->GetGeometries();
