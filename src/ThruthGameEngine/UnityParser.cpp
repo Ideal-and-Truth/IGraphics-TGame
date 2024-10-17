@@ -623,6 +623,8 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 			{
 				if (keyWord.as<std::string>() == "_ALPHATEST_ON")
 					matdata.m_alphaCulling = true;
+				if (keyWord.as<std::string>() == "_SURFACE_TYPE_TRANSPARENT")
+					matdata.m_transparent = true;
 			}
 		}
 
@@ -706,6 +708,7 @@ void Truth::UnityParser::WriteMaterialData()
 		emitter << YAML::Key << "tileX" << YAML::Value << matData.m_tileX;
 		emitter << YAML::Key << "tileY" << YAML::Value << matData.m_tileY;
 		emitter << YAML::Key << "alphaCulling" << YAML::Value << matData.m_alphaCulling;
+		emitter << YAML::Key << "transparent" << YAML::Value << matData.m_transparent;
 
 		emitter << YAML::EndMap;
 		emitter << YAML::EndDoc;
