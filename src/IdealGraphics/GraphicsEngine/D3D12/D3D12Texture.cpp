@@ -122,9 +122,10 @@ Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetUAV(uint32 i /*= 0*/)
 	return returnHandle;
 }
 
-void Ideal::D3D12Texture::SetUploadBuffer(ComPtr<ID3D12Resource> UploadBuffer)
+void Ideal::D3D12Texture::SetUploadBuffer(ComPtr<ID3D12Resource> UploadBuffer, uint64 UploadBufferSize)
 {
 	m_uploadBuffer = UploadBuffer;
+	m_uploadBufferSize = UploadBufferSize;
 }
 
 void Ideal::D3D12Texture::UpdateTexture(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList)
@@ -153,6 +154,9 @@ void Ideal::D3D12Texture::UpdateTexture(ComPtr<ID3D12Device> Device, ComPtr<ID3D
 			D3D12_RESOURCE_STATE_COPY_DEST
 		);
 		CommandList->ResourceBarrier(1, &ShaderResourceToCopyDestBarrier);
+
+
+
 		for (DWORD i = 0; i < Desc.MipLevels; ++i)
 		{
 			D3D12_TEXTURE_COPY_LOCATION destLocation = {};
@@ -168,6 +172,7 @@ void Ideal::D3D12Texture::UpdateTexture(ComPtr<ID3D12Device> Device, ComPtr<ID3D
 
 			CommandList->CopyTextureRegion(&destLocation, 0, 0, 0, &srcLocation, nullptr);
 		}
+
 		CD3DX12_RESOURCE_BARRIER copyToShaderResourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
 			m_resource.Get(),
 			D3D12_RESOURCE_STATE_COPY_DEST,

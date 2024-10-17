@@ -92,3 +92,13 @@ void Ideal::IdealText::UpdateDynamicTextureWithImage(ComPtr<ID3D12Device> Device
 	Texture.lock()->SetUpdated();
 }
 
+void Ideal::IdealText::Resize(uint32 Width, uint32 Height)
+{
+	m_textSprite->ReSize(Width, Height);
+}
+
+void Ideal::IdealText::ResizeTexture(float Width, float Height)
+{
+
+}
+

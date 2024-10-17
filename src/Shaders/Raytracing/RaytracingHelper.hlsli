@@ -664,12 +664,7 @@ float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float d
     float3 specular = numerator / max(denominator, 0.001);
     float NdotL = max(dot(N, Direction), 0.0);
     Lo += (kD * albedo / PI + specular) * radiance * NdotL;
-        
-    //float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
-    //float3 color = ambient + Lo;
-    //color += 0.2 * albedo;
-    //Lo = color;
-    
+
     return Lo;
 }
 

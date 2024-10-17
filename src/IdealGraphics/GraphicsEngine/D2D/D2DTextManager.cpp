@@ -81,7 +81,7 @@ bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHe
 		m_d2dDeviceContext->DrawTextLayout(D2D1::Point2F(0.f, 0.f), textLayout.Get(), m_whiteBrush.Get());
 		// We ignore D2DERR_RECREATE_TARGET here. This error indicates that the device
 		// is lost. It will be handled during the next call to Present.
-		m_d2dDeviceContext->EndDraw();
+		Check(m_d2dDeviceContext->EndDraw(), L"Failed To End Draw D2D");
 
 		// 救萍举府绢教 葛靛 汗备
 		m_d2dDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_DEFAULT);

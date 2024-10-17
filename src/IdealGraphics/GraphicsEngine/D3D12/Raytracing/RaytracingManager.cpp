@@ -195,10 +195,20 @@ void Ideal::RaytracingManager::AddObject(std::shared_ptr<Ideal::IdealStaticMeshO
 	// 기존과 차이점은 이름으로 부르지 않는다.
 	//auto blas = m_raytracingManager->GetBLASByName(obj->GetName().c_str());
 	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas;
+	blas = GetBLASByName(Object->GetName().c_str());
 	bool ShouldBuildShaderTable = true;
 
-	// 안에서 add ref count를 실행시키긴 함. ....
-	blas = AddBLAS(Renderer, Device, ResourceManager, DescriptorManager, CBPool, Object, Object->GetName().c_str(), false);
+	if (blas != nullptr)
+	{
+		Object->SetBLAS(blas);
+		blas->AddRefCount();
+		ShouldBuildShaderTable = false;
+	}
+	else
+	{
+		// 안에서 add ref count를 실행시키긴 함. ....
+		blas = AddBLAS(Renderer, Device, ResourceManager, DescriptorManager, CBPool, Object, Object->GetName().c_str(), false);
+	}
 
 	if (ShouldBuildShaderTable)
 	{

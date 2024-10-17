@@ -234,9 +234,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
 
-		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
-		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		//gRenderer->ToggleFullScreenWindow();
 #pragma endregion
 
@@ -506,10 +506,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//---Text---//
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
-		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 30);	// 기본 tahoma 글꼴임
-		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(55, 65, 30, L"times new roman");
-		text->ChangeText(L"UI\n Test");
-		text->SetPosition(Vector2(0, 500));
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 100, 30);	// 기본 tahoma 글꼴임
+		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(55, 65, 30, L"times new roman");
+		//text->ChangeText(L"UI\n Test");
+		text->ChangeText(L"Test");
+		text->SetPosition(Vector2(500, 500));
+		text->SetZ(0.2);
+		
 #pragma endregion
 
 #pragma region CreateLight
@@ -2039,7 +2042,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						}
 						if (text)
 						{
-							TextTest(text);
+							// 매 루프마다 실행하지 말 것 -> 성능 하락
+							//TextTest(text);
 						}
 					}
 					//once++;

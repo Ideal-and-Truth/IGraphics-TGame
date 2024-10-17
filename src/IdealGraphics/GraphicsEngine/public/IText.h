@@ -26,5 +26,7 @@ namespace Ideal
 		virtual void SetColor(const DirectX::SimpleMath::Color&) abstract;
 		//virtual void SetTexture(std::weak_ptr<Ideal::ITexture>) abstract;
 
+		virtual void ResizeTexture(float Width, float Height) abstract;
+
 	};
 }

@@ -1202,6 +1202,7 @@ std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 
 	{
 		//Sprite
 		std::shared_ptr<Ideal::IdealSprite> sprite = std::make_shared<Ideal::IdealSprite>();
+		sprite->SetScreenSize(Vector2(m_width, m_height));
 		sprite->SetMesh(m_resourceManager->GetDefaultQuadMesh());
 		sprite->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
 		text->SetSprite(sprite);
