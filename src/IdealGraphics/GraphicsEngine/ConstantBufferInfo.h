@@ -37,8 +37,8 @@ struct CB_MaterialInfo
 	Vector2 tiling;
 	Vector2 offset;
 
+	uint32 bIsTransmissive;
 	float pad0;
-	float pad1;
 };
 
 struct CB_Bone
