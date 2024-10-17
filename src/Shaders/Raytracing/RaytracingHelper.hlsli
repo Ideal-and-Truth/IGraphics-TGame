@@ -686,7 +686,7 @@ float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float d
     return Lo;
 }
 
-float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirection, float3 N, float distance, float3 LightColor,float softness, float angle, float3 albedo, float roughness, float metallic, float lightIntensity)
+float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirection, float3 N, float distance, float3 LightColor,float softness, float angle, float3 albedo, float roughness, float metallic, float lightIntensity, float range)
 {
     if (isInShadow)
         return float3(0, 0, 0);
@@ -705,7 +705,8 @@ float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirect
         F0 = lerp(F0, albedo, metallic);
         float3 H = normalize(V + Direction);
     
-        float attenuation = 1.0 / (distance * distance);
+        //float attenuation = 1.0 / (distance * distance);
+        float attenuation = Ideal::Attenuate(distance, range);
         float newIntensity = lightIntensity * attenuation * smoothFactor;
         float3 radiance = LightColor * newIntensity * attenuation;
     
