@@ -24,7 +24,7 @@ namespace Ideal
 		~IdealText();
 
 	public:
-		virtual void ChangeText(const std::wstring& Text) override;
+		virtual void ChangeText(const std::wstring& Text, const DirectX::SimpleMath::Color& Color = DirectX::SimpleMath::Color(1, 1, 1, 1)) override;
 		std::shared_ptr<Ideal::IdealSprite> GetSprite();
 		void SetSprite(std::shared_ptr<Ideal::IdealSprite> Sprite);
 		// 자기만의 텍스쳐를 가진다.

@@ -10,7 +10,7 @@ namespace Ideal
 		virtual ~IText() {}
 
 	public:
-		virtual void ChangeText(const std::wstring&) abstract;
+		virtual void ChangeText(const std::wstring& text, const DirectX::SimpleMath::Color& Color = DirectX::SimpleMath::Color(1,1,1,1)) abstract;
 
 	public:
 		// Sprite Change

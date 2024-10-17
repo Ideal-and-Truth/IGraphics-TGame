@@ -506,7 +506,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//---Text---//
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
-		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 100, 30);	// 기본 tahoma 글꼴임
+		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
 		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(55, 65, 30, L"times new roman");
 		//text->ChangeText(L"UI\n Test");
 		text->ChangeText(L"Test");

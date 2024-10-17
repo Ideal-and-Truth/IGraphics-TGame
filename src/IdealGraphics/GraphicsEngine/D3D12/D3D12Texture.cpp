@@ -80,7 +80,7 @@ void Ideal::D3D12Texture::EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle)
 
 Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetSRV()
 {
-	if(m_srvHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+	if (m_srvHandle.GetCpuHandle().ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 	{
 		__debugbreak();
 	}
@@ -107,7 +107,7 @@ Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetDSV()
 
 Ideal::D3D12DescriptorHandle Ideal::D3D12Texture::GetUAV(uint32 i /*= 0*/)
 {
-	if (i > m_uavHandles.size()  - 1)
+	if (i > m_uavHandles.size() - 1)
 	{
 		// 현재 가지고 있는 UAV handle이 원하는 개수보다 적을떄
 		__debugbreak();
@@ -155,10 +155,14 @@ void Ideal::D3D12Texture::UpdateTexture(ComPtr<ID3D12Device> Device, ComPtr<ID3D
 		);
 		CommandList->ResourceBarrier(1, &ShaderResourceToCopyDestBarrier);
 
-
+		//BYTE* data;
+		//m_uploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(&data));
+		//ZeroMemory(data, static_cast<size_t>(m_uploadBufferSize));
+		//m_uploadBuffer->Unmap(0, nullptr);
 
 		for (DWORD i = 0; i < Desc.MipLevels; ++i)
 		{
+
 			D3D12_TEXTURE_COPY_LOCATION destLocation = {};
 			destLocation.PlacedFootprint = footPrint[i];
 			destLocation.pResource = m_resource.Get();
