@@ -17,6 +17,8 @@ namespace Truth
 		NavGeom();
 		~NavGeom();
 
+		void Destroy();
+
 		void Load(const std::wstring& _path);
 		void Load(const std::vector<float>& _points, const std::vector<uint32>& _indices);
 	};

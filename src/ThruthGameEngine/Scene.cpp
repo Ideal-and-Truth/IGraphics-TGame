@@ -124,7 +124,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	{
 		LoadEntity(e);
 	}
-	LoadUnityData(L"1_HN_Scene2");
+	LoadUnityData(m_mapPath);
 }
 
 
@@ -328,7 +328,26 @@ void Truth::Scene::Enter()
 /// </summary>
 void Truth::Scene::Exit()
 {
-	ClearEntity();
+	if (m_navMesh)
+	{
+		m_navMesh->Destroy();
+		m_navMesh = nullptr;
+	}
+	for (auto& e : m_mapEntity)
+	{
+		e->Destroy();
+		e.reset();
+		e = nullptr;
+	}
+	for (auto& e : m_entities)
+	{
+		e->Destroy();
+		e.reset();
+		e = nullptr;
+	}
+
+	m_mapEntity.clear();
+	m_entities.clear();
 }
 
 /// <summary>
@@ -342,11 +361,7 @@ void Truth::Scene::ClearEntity()
 void Truth::Scene::LoadUnityData(const std::wstring& _path)
 {
 	if (_path.empty())
-	{
 		return;
-	}
-
-
 
 	auto gp = m_managers.lock()->Graphics();
 

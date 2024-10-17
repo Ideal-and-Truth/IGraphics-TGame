@@ -1,8 +1,0 @@
----
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/Textures/T_flower_cornflower_01_A_M.tga
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/Textures/T_flower_cornflower_01_N.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/Textures/T_flower_cornflower_01_AO_SM.tga
-tileX: 1
-tileY: 1
-alphaCulling: false
-...
