@@ -1,0 +1,8 @@
+---
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/windowwall/T_windowwall15_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/windowwall/T_windowwall15_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/windowwall/T_windowwall15_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+...

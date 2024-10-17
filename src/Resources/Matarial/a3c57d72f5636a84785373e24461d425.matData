@@ -1,0 +1,8 @@
+---
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/walltile/T_bosswalltile_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/walltile/T_bosswalltile_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/walltile/T_bosswalltile_MaskMap.png
+tileX: 0.200000003
+tileY: 0.200000003
+alphaCulling: false
+...

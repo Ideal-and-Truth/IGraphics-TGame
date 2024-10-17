@@ -1,0 +1,8 @@
+---
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ej_window/T_town_edge_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ej_window/T_town_edge_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ej_window/T_town_edge_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+...

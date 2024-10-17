@@ -1,0 +1,8 @@
+---
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ceillinginside/Treal_ceillingtop_low_ceillingtop_BaseColor.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ceillinginside/Treal_ceillingtop_low_ceillingtop_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ceillinginside/Treal_ceillingtop_low_ceillingtop_OcclusionRoughnessMetallic.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+...
