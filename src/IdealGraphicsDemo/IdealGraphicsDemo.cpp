@@ -378,7 +378,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere7->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 2.5f, 0.f)));
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
 
-		//std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> cart2 = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
@@ -445,7 +445,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
 				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
 				meshes.push_back(plane);
-				//plane->AlphaClippingCheck();
+				plane->AlphaClippingCheck();
 			}
 		}
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
@@ -460,7 +460,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-		//cart->SetTransformMatrix(Matrix::CreateScale(0.2f) * Matrix::CreateRotationY(15.f) * Matrix::CreateRotationZ(15.f) * Matrix::CreateTranslation(Vector3(0, 0, 20)));
+		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, -2, 0)));
 		//cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion

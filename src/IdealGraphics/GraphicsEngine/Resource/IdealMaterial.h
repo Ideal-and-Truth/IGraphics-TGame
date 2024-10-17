@@ -78,7 +78,7 @@ namespace Ideal
 
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
 		bool GetIsAlphaClipping() { return m_isAlphaClipping; }
-
+		bool GetIsTransmissive() { return m_cbMaterialInfo.bIsTransmissive; }
 	private:
 		Vector2 m_Tiling;
 		Vector2 m_Offset;

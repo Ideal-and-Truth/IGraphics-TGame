@@ -662,6 +662,14 @@ void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
 [shader("anyhit")]
 void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
 {
+
+   if(l_materialInfo.bIsTransmissive)
+    {
+        //IgnoreHit();
+        AcceptHitAndEndSearch();
+        return;
+    }
+
     float3 hitPosition = HitWorldPosition();
     uint baseIndex = PrimitiveIndex() * 3;
     const uint3 indices = uint3(
@@ -687,6 +695,13 @@ void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
 [shader("anyhit")]
 void MyAnyHitShader_ShadowRay(inout ShadowRayPayload payload, in MyAttributes attr)
 {
+
+    if(l_materialInfo.bIsTransmissive)
+    {
+        IgnoreHit();
+        return;
+    }
+
     payload.tHit = RayTCurrent();
     float3 hitPosition = HitWorldPosition();
     uint baseIndex = PrimitiveIndex() * 3;
@@ -704,13 +719,11 @@ void MyAnyHitShader_ShadowRay(inout ShadowRayPayload payload, in MyAttributes at
     float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
     float2 uv = HitAttribute(vertexTexCoords, attr);
     float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
+
     if(alpha < 0.5f)    // threshold
     {
         IgnoreHit();
+        return;
     }
-    //elsef
-    //{
-    //    AcceptHitAndEndSearch();
-    //}
 }
 #endif // RAYTRACING_HLSL
