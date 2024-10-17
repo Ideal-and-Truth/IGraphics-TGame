@@ -4,5 +4,6 @@ normalMap: ../Resources/Textures/MapData/2_JS_Scene2/EJ_wall/T_town_wall_brick_N
 maskMap: ../Resources/Textures/MapData/2_JS_Scene2/EJ_wall/T_town_wall_brick_MaskMap.png
 tileX: 1
 tileY: 1
-alphaCulling: true
+alphaCulling: false
+transparent: false
 ...

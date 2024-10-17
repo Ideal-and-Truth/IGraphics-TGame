@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/2_JS_Scene2/LPGcylinder/T_LPGcylinder_Mas
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

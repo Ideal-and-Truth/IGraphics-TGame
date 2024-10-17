@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossroad/T_bossroadmain_Ma
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/2_JS_Scene2/bench/T_bench_body_MaskMap.pn
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

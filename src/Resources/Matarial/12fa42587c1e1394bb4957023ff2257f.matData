@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/2_JS_Scene2/fedora/T_Fedora_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

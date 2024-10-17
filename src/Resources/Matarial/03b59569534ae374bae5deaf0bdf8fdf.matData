@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/1_HN_Scene2/candle/T_candleset_MaskMap.pn
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

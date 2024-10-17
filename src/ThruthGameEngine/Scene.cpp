@@ -650,6 +650,13 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			Matrix rotMat = Matrix::CreateFromQuaternion(rot);
 			Vector3 dir = { 0.0f, 0.0f, 1.0f };
 			dir = Vector3::Transform(dir, rotMat);
+			if (pos.x < 1 && pos.x > -1 &&
+				pos.y < 1 && pos.y > -1 &&
+				pos.z < 1 && pos.z > -1)
+			{
+				int a = 1;
+			}
+
 			switch (lightType)
 			{
 			case 0:

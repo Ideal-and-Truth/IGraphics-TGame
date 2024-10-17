@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/2_JS_Scene2/tree bottom/T_town_treebot_bi
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

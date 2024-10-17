@@ -2,5 +2,6 @@
 baseMap: ../Resources/Textures/MapData/1_HN_Scene2/candle/flame.png
 tileX: 1
 tileY: 1
-alphaCulling: true
+alphaCulling: false
+transparent: false
 ...

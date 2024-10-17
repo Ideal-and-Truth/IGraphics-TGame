@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/2_JS_Scene2/1F_LR/T_JShouse_1F_L_R_MaskMa
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

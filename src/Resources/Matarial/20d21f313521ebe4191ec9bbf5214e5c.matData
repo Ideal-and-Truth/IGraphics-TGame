@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/2_JS_Scene2/archtile/T_archtile_MaskMap.p
 tileX: 30
 tileY: 30
 alphaCulling: false
+transparent: false
 ...

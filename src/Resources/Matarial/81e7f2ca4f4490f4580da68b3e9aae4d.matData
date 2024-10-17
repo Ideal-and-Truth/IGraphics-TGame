@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/1_HN_Scene2/brickwalltile/T_brickwall_002
 tileX: 2
 tileY: 2
 alphaCulling: false
+transparent: false
 ...

@@ -4,5 +4,6 @@ normalMap: ../Resources/Textures/MapData/2_JS_Scene2/chulstairs/T_chulstairs_Nor
 maskMap: ../Resources/Textures/MapData/2_JS_Scene2/chulstairs/T_chulstairs_MaskMap.png
 tileX: 1
 tileY: 1
-alphaCulling: true
+alphaCulling: false
+transparent: false
 ...

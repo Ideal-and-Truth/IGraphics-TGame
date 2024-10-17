@@ -696,6 +696,11 @@ void Truth::UnityParser::WriteMaterialData()
 		fs::path p = m_matSavePath / (mat.second.m_name + ".matData");
 		const auto& matData = mat.second;
 
+		if (matData.m_transparent)
+		{
+			int a = 1;
+		}
+
 		YAML::Node node;
 		YAML::Emitter emitter;
 		emitter << YAML::BeginDoc;

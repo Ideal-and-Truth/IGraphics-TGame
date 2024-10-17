@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossroomtile/T_castlemarbl
 tileX: 0.150000006
 tileY: 0.150000006
 alphaCulling: false
+transparent: false
 ...

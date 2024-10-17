@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/1_HN_Scene2/potandtile/T_potandtile_MaskM
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...
