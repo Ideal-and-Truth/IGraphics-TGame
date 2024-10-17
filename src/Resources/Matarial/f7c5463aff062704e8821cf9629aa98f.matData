@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Ground/T_forest_ground_grass_01_A_SM.tga
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/Ground/T_forest_ground_grass_01_N.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/Ground/T_forest_ground_grass_01_AO_H_SM.tga
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/Ground/T_forest_ground_grass_01_A_SM.tga
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/Ground/T_forest_ground_grass_01_N.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/Ground/T_forest_ground_grass_01_AO_H_SM.tga
 tileX: 1
 tileY: 1
 alphaCulling: false

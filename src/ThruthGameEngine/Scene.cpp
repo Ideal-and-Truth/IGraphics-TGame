@@ -379,7 +379,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	size_t objCount = file->Read<size_t>();
 
 	m_mapEntity.resize(objCount);
-	
+
 	const static std::vector<Vector3> boxPoints =
 	{
 		{ -0.5, -0.5, -0.5 },
@@ -410,7 +410,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	std::vector<float> vPositions;
 	std::vector<uint32> vIndices;
 
-	m_navMesh = std::make_shared<NavMeshGenerater>();
+	if (m_useNavMesh)
+		m_navMesh = std::make_shared<NavMeshGenerater>();
 
 	for (size_t i = 0; i < objCount; ++i)
 	{
@@ -611,7 +612,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 			uint32 meshSize = posFile->Read<uint32>();
 			uint32 vertexSize = posFile->Read<uint32>();
-			for (uint32 i = 0; i < vertexSize ; i++)
+			for (uint32 i = 0; i < vertexSize; i++)
 			{
 				Vector3 v;
 				v.x = posFile->Read<float>();
@@ -625,7 +626,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			}
 
 			uint32 indexSize = posFile->Read<uint32>();
-			for (uint32 i = 0; i < indexSize ; i++)
+			for (uint32 i = 0; i < indexSize; i++)
 			{
 				vIndices.push_back(static_cast<uint32>(offset) + posFile->Read<uint32>());
 			}
@@ -693,16 +694,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	}
 
 	/// create nav mesh
-	m_navMesh->Initalize(vPositions, vIndices);
-
-	// 	auto comp = [](std::shared_ptr<Entity> _a, std::shared_ptr<Entity> _b) -> bool
-	// 		{
-	// 			return _a->m_name > _b->m_name;
-	// 		};
-	// 
-	// 	sort(m_mapEntity.begin(), m_mapEntity.end(), comp);
-
-		// gp->BakeStaticMesh();
+	if (m_useNavMesh)
+		m_navMesh->Initalize(vPositions, vIndices);
 
 	for (auto& e : m_mapEntity)
 	{
