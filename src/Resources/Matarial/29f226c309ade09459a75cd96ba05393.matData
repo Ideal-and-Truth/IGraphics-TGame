@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/restaurant/T_restaurant_pillar_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/restaurant/T_restaurant_pillar_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/restaurant/T_restaurant_pillar_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/restaurant/T_restaurant_pillar_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/restaurant/T_restaurant_pillar_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/restaurant/T_restaurant_pillar_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
