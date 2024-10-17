@@ -12,7 +12,16 @@ Truth::NavGeom::NavGeom()
 
 Truth::NavGeom::~NavGeom()
 {
+	Destroy();
+}
 
+void Truth::NavGeom::Destroy()
+{
+	m_ver.clear();
+	m_inx.clear();
+
+	m_bmin.clear();
+	m_bmax.clear();
 }
 
 void Truth::NavGeom::Load(const std::wstring& _path)

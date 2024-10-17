@@ -172,6 +172,11 @@ void Truth::Mesh::SetMaterialByIndex(uint32 _index, std::string _material)
 	const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(_material);
 	m_subMesh[_index]->SetMaterialObject(mat->m_material);
 
+	if (mat->m_alphaCulling)
+	{
+		m_mesh->AlphaClippingCheck();
+	}
+
 	if (_index >= m_matPath.size())
 		return;
 

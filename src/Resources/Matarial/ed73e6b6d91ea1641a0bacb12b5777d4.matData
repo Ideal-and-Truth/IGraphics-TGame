@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/3F/T_town_support_low_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/3F/T_town_support_low_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/3F/T_town_support_low_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/3F/T_town_support_low_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/3F/T_town_support_low_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/3F/T_town_support_low_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

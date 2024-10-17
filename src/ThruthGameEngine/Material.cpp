@@ -16,6 +16,7 @@ void Truth::Material::SetTexture()
 		m_material->SetMaskMap(m_maskMap->m_texture);
 
 	m_material->SetTiling(m_tileX, m_tileY);
+	m_material->SetAlphaClipping(m_alphaCulling);
 }
 
 void Truth::Material::ChangeTexture(std::wstring _path, int _type)

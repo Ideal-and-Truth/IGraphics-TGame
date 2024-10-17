@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/3F_M/T_JShouse_3F_M_white_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/3F_M/T_JShouse_3F_M_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/3F_M/T_JShouse_3F_M_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/3F_M/T_JShouse_3F_M_white_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/3F_M/T_JShouse_3F_M_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/3F_M/T_JShouse_3F_M_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
