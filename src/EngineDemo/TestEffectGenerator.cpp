@@ -187,16 +187,53 @@ void TestEffectGenerator::Update()
 	}
 
 	/// ¹ß»ç
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
+		p->SetDeltaTime(GetDeltaTime());
+		p->SetTransformMatrix(Matrix::CreateScale(0.8f) 
+			* Matrix::CreateRotationX(1.57f) 
+			* Matrix::CreateRotationY(-1.57f) 
+			* Matrix::CreateTranslation(Vector3(0, 3, -0.2f))
+		);
+
+
+		p->SetActive(true);
+		p->Play();
+	}
+
+	/// ºö
 // 	if (GetKeyDown(KEY::P))
 // 	{
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
 // 		p->SetDeltaTime(GetDeltaTime());
-// 		p->SetTransformMatrix(Matrix::CreateScale(0.8f) 
-// 			* Matrix::CreateRotationX(1.57f) 
-// 			* Matrix::CreateRotationY(-1.57f) 
-// 			* Matrix::CreateTranslation(Vector3(0, 3, -0.2f))
+// 		p->SetTransformMatrix(
+// 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+// 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
 // 		);
 // 
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		p->SetTransformMatrix(
+// 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+// 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
+// 		);
+// 
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		
 // 
 // 		p->SetActive(true);
 // 		p->Play();

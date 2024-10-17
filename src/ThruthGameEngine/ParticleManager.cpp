@@ -365,7 +365,7 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (node["SizeOverLifetimeAxisX"].IsDefined())
 		{
 			const YAML::Node& child = node["SizeOverLifetimeAxisX"];
-			GetControlPoints(&child, particle, particle->GetRotationOverLifetimeAxisX());
+			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisX());
 		}
 		/// Size Over Life Time Axis Y ControlPoints
 		if (node["SizeOverLifetimeAxisY"].IsDefined())
