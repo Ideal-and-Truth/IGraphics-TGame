@@ -29,14 +29,6 @@ struct ID3D12CommandAllocator;
 struct ID3D12GraphicsCommandList;
 struct ID3D12Fence;
 
-struct cbViewport
-{
-	float left;
-	float top;
-	float right;
-	float bottom;
-};
-
 namespace Ideal
 {
 	class ResourceManager;
@@ -175,7 +167,7 @@ namespace Ideal
 		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
 
 		// Shader
-		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") override;	// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
+		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"", bool HasEntry = true) override;	// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
 		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) override;
 		std::shared_ptr<Ideal::D3D12Shader> CreateAndLoadShader(const std::wstring& FilePath);
 
@@ -232,8 +224,6 @@ namespace Ideal
 	private:
 		uint32 m_width = 0;
 		uint32 m_height = 0;
-		//uint32 m_postWindowWidth = 0;
-		//uint32 m_postWindowHeight = 0;
 		Ideal::Resolution::EDisplayResolutionOption m_displayResolutionIndex = Ideal::Resolution::EDisplayResolutionOption::R_800_600;
 		HWND m_hwnd;
 
@@ -293,19 +283,25 @@ namespace Ideal
 		std::vector<std::shared_ptr<Ideal::IdealSpotLight>> m_spotLights;
 		std::vector<std::shared_ptr<Ideal::IdealPointLight>> m_pointLights;
 
+	// InitShaders
+	public:
+		void CompileDefaultShader();
 
+	// Shaders
+	private:
+		std::shared_ptr<Ideal::D3D12Shader> m_raytracingShader;
+		std::shared_ptr<Ideal::D3D12Shader> m_animationShader;
+		std::shared_ptr<Ideal::D3D12Shader> m_DebugMeshManagerVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DebugMeshManagerPS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderPS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderVS;
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
-		//std::shared_ptr<Ideal::ShaderManager> m_shaderManager;
-		void CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob);
 		ComPtr<IDxcCompiler3> m_compiler3;
 		ComPtr<IDxcUtils> m_dxcUtils;
 		ComPtr<IDxcBlob> m_testBlob;
-
-		std::shared_ptr<Ideal::D3D12Shader> m_myShader;
-		std::shared_ptr<Ideal::D3D12Shader> m_myShader2;
-		std::shared_ptr<Ideal::D3D12Shader> m_animationShader;
 
 	private:
 		// AS
@@ -384,33 +380,5 @@ namespace Ideal
 		Vector2 m_mainCameraEditorTopLeft;
 		Vector2 m_mainCameraEditorBottomRight;
 		Vector2 m_mainCameraEditorWindowSize;
-		// Optimization
-	public:
-		virtual void BakeOption(int32 MaxBakeCount, float MinSpaceSize) override;
-		virtual void BakeStaticMeshObject() override;
-		virtual void ReBuildBLASFlagOn() override;
-
-	private:
-		void ReBuildBLAS();
-		void InitModifyVertexBufferShader();
-		void CreateModifyVertexBufferRootSignature();
-		void CreateModifyVertexBufferCSPipelineState();
-		void DispatchModifyVertexBuffer(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh, CB_Transform TransformData, std::shared_ptr<Ideal::D3D12UAVBuffer> UAVBuffer);
-		void ReleaseBakedObject();
-		bool m_ReBuildBLASFlag = false;
-
-		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedObjects;
-
-		ComPtr<ID3D12RootSignature> m_ModifyVertexBufferRootSignature;
-		ComPtr<ID3D12PipelineState> m_ModifyVertexBufferPipelineState;
-		std::shared_ptr<Ideal::D3D12Shader> m_ModifyVertexBufferCS;
-
-		Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_Octree;
-		
-		int32 m_maxBakeCount = 32;
-		float m_octreeMinSpaceSize = 5.f;
-
-		std::vector<std::shared_ptr<Ideal::D3D12UAVBuffer>> m_tempUAVS;
-		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_bakedMesh;
 	};
 }

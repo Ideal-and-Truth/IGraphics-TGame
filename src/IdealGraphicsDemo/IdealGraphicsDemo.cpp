@@ -1974,20 +1974,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//	}
 				//}
 
-				// --- Optimization Ray Tracing --- //
-				if (GetAsyncKeyState('N') & 0x8000)
-				{
-					static int once = 0;
-					if (once < 1)
-					{
-						once++;
-
-						gRenderer->BakeOption(32, 20.f);
-						gRenderer->BakeStaticMeshObject();
-						gRenderer->ReBuildBLASFlagOn();
-					}
-				}
-
 				//-----ImGui Test-----//
 				gRenderer->ClearImGui();
 				//if (isEditor)

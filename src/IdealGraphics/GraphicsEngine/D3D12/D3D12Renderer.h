@@ -114,7 +114,7 @@ namespace Ideal
 		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) override;
 
 		// Shader
-		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") override;
+		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"", bool HasEntry = true) override;
 		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) override;
 
 		// Particle
@@ -286,16 +286,5 @@ namespace Ideal
 		// Editor RTV // 2024.06.01
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> m_editorRTVHeap;
 		std::shared_ptr<Ideal::D3D12Texture> m_editorTexture;
-
-
-		// 2024.07.08 : object 관리 수정
-		//std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
-		//std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
-
-		// Ray Tracing Optimization // Do not use In Rasterizer Renderer
-	private:
-		virtual void BakeOption(int MaxBakeCount, float MinSpaceSize) override;
-		virtual void BakeStaticMeshObject() override;
-		virtual void ReBuildBLASFlagOn() override;
 	};
 }

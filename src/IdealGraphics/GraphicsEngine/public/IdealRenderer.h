@@ -99,7 +99,7 @@ namespace Ideal
 		virtual void DeleteText(std::shared_ptr<Ideal::IText>& Text) abstract;
 
 		// Shader
-		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"") abstract;	// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
+		virtual void CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint = L"Main", const std::wstring& IncludeFilePath = L"", bool HasEntry = true) abstract;// 셰이더를 컴파일하여 저장. 한 번만 하면 됨.
 		// 이름으로 컴파일 된 셰이더를 불러와 Shader 객체를 반환한다.
 		virtual std::shared_ptr<Ideal::IShader> CreateAndLoadParticleShader(const std::wstring& Name) abstract;	// 이름을 파일 경로로 할까
 
@@ -113,13 +113,6 @@ namespace Ideal
 
 		// ParticleMesh
 		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) abstract;
-
-	public:
-		// Ray Tracing Optimization
-		// 최대 한번에 BLAS로 합칠 개수, 공간분할 할 때 최소 길이
-		virtual void BakeOption(int MaxBakeCount, float MinSpaceSize) abstract;
-		virtual void BakeStaticMeshObject() abstract;
-		virtual void ReBuildBLASFlagOn() abstract;
 
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
