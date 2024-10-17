@@ -96,6 +96,11 @@ void Ideal::IdealMaterial::SetAlphaClipping(bool IsAlphClipping)
 	m_isAlphaClipping = IsAlphClipping;
 }
 
+void Ideal::IdealMaterial::SetSurfaceTypeTransparent(bool IsTransparent)
+{
+	m_cbMaterialInfo.bIsTransmissive = IsTransparent;
+}
+
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
 	//std::shared_ptr<Ideal::D3D12Renderer> d3d12Renderer = std::static_pointer_cast<Ideal::D3D12Renderer>(ResourceManager);

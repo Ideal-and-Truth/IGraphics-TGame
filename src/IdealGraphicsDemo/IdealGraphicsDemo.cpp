@@ -234,9 +234,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
 
-		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
+		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
-		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		//gRenderer->ToggleFullScreenWindow();
 #pragma endregion
 
@@ -404,6 +404,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
 		planeMaterial->SetNormalMap(planeNormalTexture);
+		planeMaterial->SetSurfaceTypeTransparent(true);
 		
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
@@ -418,28 +419,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		garlandMaterial->SetNormalMap(garlandNormalTex);
 		garlandMaterial->SetMaskMap(garlandMaskTex);
 		garlandMaterial->SetAlphaClipping(true);
-
-		DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		DebugPlayer->AlphaClippingCheck();
+		garlandMaterial->SetSurfaceTypeTransparent(true);
+		DebugPlayer->GetMeshByIndex(4).lock()->SetMaterialObject(garlandMaterial);
+		//DebugPlayer->AlphaClippingCheck();
 		//std::shared_ptr<Ideal::IMeshObject> garland = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//garland->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 		//garland->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 5, 0)));
+
+		auto windowMaterial = gRenderer->CreateMaterial();
+		auto windowBase = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_BaseMap.png");
+		auto windowNormal = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_Normal.png");
+		auto windowMask = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_MaskMap.png");
+		windowMaterial->SetBaseMap(windowBase);
+		windowMaterial->SetNormalMap(windowNormal);
+		windowMaterial->SetMaskMap(windowMask);
+		//garlandMaterial->SetAlphaClipping(true);
+		windowMaterial->SetSurfaceTypeTransparent(true);
 
 		for(int y = 0 ; y < 20;y++)
 		{
 			for (int x = 0; x < 20; x++)
 			{
 				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-				plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
+				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
+				plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
 				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
 				meshes.push_back(plane);
-				plane->AlphaClippingCheck();
+				//plane->AlphaClippingCheck();
 			}
 		}
-		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-		plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		plane->AlphaClippingCheck();
-		plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(2, 0, 2)));
+		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
+		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
+		//plane->AlphaClippingCheck();
+		//plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(2, 0, 2)));
 
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 		//plane->AlphaClippingCheck();
@@ -2013,7 +2025,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//if (playerRe)
 						//{
 						//	//SkinnedMeshObjectBoneInfoTest(playerRe);
-						//SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+						SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 
 						//if (DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
