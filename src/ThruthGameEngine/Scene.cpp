@@ -119,7 +119,9 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 /// <param name="_manager"></param>
 void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 {
-	m_managers = _manager;
+	if (m_managers.expired())
+		m_managers = _manager;
+
 	for (auto& e : m_rootEntities)
 	{
 		LoadEntity(e);
@@ -317,7 +319,7 @@ void Truth::Scene::Enter()
 	for (auto& e : m_entities)
 	{
 		e->m_index = index++;
-	}
+}
 #ifndef EDITOR_MODE
 	Start();
 #endif // EDITOR_MODE

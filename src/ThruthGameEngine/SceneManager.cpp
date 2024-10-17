@@ -105,8 +105,9 @@ void Truth::SceneManager::ChangeScene(const std::string& _name)
 	inputArchive >> s;
 
 	m_currentScene.reset();
-	m_currentScene->Initalize(m_mangers);
 	m_currentScene = s;
+	m_currentScene->Initalize(m_mangers);
+	m_currentScene->Enter();
 }
 
 /// <summary>

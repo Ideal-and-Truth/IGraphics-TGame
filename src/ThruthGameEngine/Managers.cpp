@@ -99,14 +99,10 @@ void Truth::Managers::Render() const
 	start = clock();
 #ifdef EDITOR_MODE
 	if (m_isEdit)
-	{
 		m_graphicsManager->Render();
-	}
 	else
-	{
 		// m_graphicsManager->CompleteCamera();
 		m_graphicsManager->Render();
-	}
 #else
 	m_graphicsManager->Render();
 #endif // EDITOR_MODE
