@@ -44,7 +44,7 @@ void Truth::Managers::Update() const
 	{
 		m_soundManager->Update();
 		m_physXManager->Update();
-		m_sceneManager->Update();
+		m_sceneManager->Update(); 
 		m_eventManager->Update();
 	}
 	else

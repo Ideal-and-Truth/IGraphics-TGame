@@ -19,6 +19,8 @@ namespace Truth
 		std::weak_ptr<Managers> m_mangers;
 		const std::string m_savedFilePath = "../Scene/";
 
+		bool m_sceneChangeFlag = false;
+		std::string m_nextSceneName;
 	public:
 		std::shared_ptr<Scene> m_currentScene;
 
@@ -27,7 +29,7 @@ namespace Truth
 
 		void Initalize(std::shared_ptr<Managers> _mangers);
 
-		void Update() const;
+		void Update();
 		void FixedUpdate() const;
 		void LateUpdate() const;
 
@@ -36,6 +38,8 @@ namespace Truth
 		void StartGameScene() const;
 
 		void ChangeScene(const std::string& _name);
+		void ChangeScene();
+
 		void ResetScene() const;
 		void SetCurrnetScene(std::shared_ptr<Scene> _scene);
 

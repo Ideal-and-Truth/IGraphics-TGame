@@ -218,16 +218,16 @@ namespace Ideal
     }
     float Attenuate(float distance, float range)
     {
-        float att = saturate(1.f - (distance * distance / (range * range)));
-        return att * att;
+        // float att = saturate(1.f - (distance * distance / (range * range)));
+       // return att * att;
         
-        //float numer = distance / range;
-        //numer = numer * numer;
-        //numer = numer * numer;
-        //numer = saturate(1 - numer);
-        //numer = numer * numer;
-        //float denom = dist * dist + 1;
-        //return (numer / denom);
+        float numer = distance / range;
+        numer = numer * numer;
+        numer = numer * numer;
+        numer = saturate(1 - numer);
+        numer = numer * numer;
+        float denom = distance * distance + 1;
+        return (numer / denom);
     }
     
     namespace Light

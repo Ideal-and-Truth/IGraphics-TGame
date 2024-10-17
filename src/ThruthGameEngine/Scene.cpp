@@ -350,6 +350,9 @@ void Truth::Scene::Exit()
 
 	m_mapEntity.clear();
 	m_entities.clear();
+	m_rootEntities.clear();
+
+	m_managers.lock()->Physics()->ResetPhysX();
 }
 
 /// <summary>
