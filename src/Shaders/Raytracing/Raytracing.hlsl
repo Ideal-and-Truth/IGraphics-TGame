@@ -413,7 +413,7 @@ float3 Shade(
                 if (distance <= range)
                 {
                     isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-                    L += SpotLight(isInShadow, V, direction, lightDirection, N, distance, color, softness, angle, albedo, roughness, metallic, intensity);
+                    L += SpotLight(isInShadow, V, direction, lightDirection, N, distance, color, softness, angle, albedo, roughness, metallic, intensity, range);
                 }
             }
         }

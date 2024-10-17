@@ -550,6 +550,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
 		pointLight->SetIntensity(0.f);
 
+		std::vector< std::shared_ptr<Ideal::IPointLight>> plights;
+		std::vector< std::shared_ptr<Ideal::ISpotLight>> slights;
+		for (int i = 0; i < 300; i++)
+		{
+			std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+			pointLight->SetPosition(Vector3(i, 3.f, 3.f));
+			pointLight->SetRange(6.f);
+			pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+			pointLight->SetIntensity(3.f);
+			plights.push_back(pointLight);
+
+			std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+			spotLight->SetPosition(Vector3(i, 3.f, 8.f));
+			spotLight->SetRange(6.f);
+			spotLight->SetLightColor(Color(0.f, 0.f, 1.f, 1.f));
+			spotLight->SetIntensity(1.f);
+			spotLight->SetDirection(Vector3(0, -1, 0));
+			slights.push_back(spotLight);
+		}
 #pragma endregion
 
 #pragma region CompileShader
