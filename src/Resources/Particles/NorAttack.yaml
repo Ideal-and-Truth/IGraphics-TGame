@@ -1,0 +1,58 @@
+MaxCount: 10
+MatName: defaultMat
+EBlendingMode: 1
+Shader: SwordSlash
+Texture0: ../Resources/Textures/0_Particle/Smoke12.png
+Texture1: ../Resources/Textures/0_Particle/Crater62.png
+Texture2: ../Resources/Textures/0_Particle/Noise43b.png
+Mesh: 0_Particle/Slash
+StartColor:
+  - 1
+  - 1
+  - 1
+  - 1
+StartLifetime: 1
+Loop: false
+Duration: 2
+StopEnd: true
+RenderMode: 1
+RotationOverLifeTime: true
+RotationOverLifetimeAxisYControlPoints:
+  - x: 0
+    y: 1
+  - x: 0.5
+    y: 0
+  - x: 1
+    y: 0
+CustomData1X:
+  - x: 0
+    y: 0
+  - x: 0.100000001
+    y: 2
+  - x: 0.300000012
+    y: 0.600000024
+  - x: 1
+    y: 0
+CustomData1Y:
+  - x: 1
+    y: 1
+CustomData2Z:
+  - x: 0
+    y: 0
+CustomData2W:
+  - x: 0
+    y: 0.200000003
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 1
+    position: 0
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 0
+    position: 1

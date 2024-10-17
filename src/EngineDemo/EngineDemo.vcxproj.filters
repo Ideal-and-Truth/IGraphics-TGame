@@ -64,6 +64,9 @@
     <Filter Include="Component\AutoTarget">
       <UniqueIdentifier>{52c87665-16dc-484c-861c-f6fa6129208e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Effect">
+      <UniqueIdentifier>{10adbfe9-94d3-420f-a326-b3649a822262}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -165,6 +168,9 @@
     <ClInclude Include="TimeDistortion.h">
       <Filter>Component\Boss</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerHPTextUI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -256,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="TimeDistortion.cpp">
       <Filter>Component\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHPTextUI.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

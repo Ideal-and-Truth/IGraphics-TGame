@@ -181,7 +181,7 @@ void PlayerAnimator::Update()
 	{
 		m_normalAttack1 = false;
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
 		effectRot.z += (3.141592 / 180.f) * -45.f;
 
@@ -198,7 +198,7 @@ void PlayerAnimator::Update()
 	{
 		m_normalAttack2 = false;
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
 		effectRot.z += (3.141592 / 180.f) * 180.f;
 
@@ -215,7 +215,7 @@ void PlayerAnimator::Update()
 	{
 		m_normalAttack3 = false;
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
 		effectRot.z += (3.141592 / 180.f) * 45.f;
 
@@ -232,7 +232,7 @@ void PlayerAnimator::Update()
 	{
 		m_normalAttack4 = false;
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
 		effectRot.z += (3.141592 / 180.f) * -25.f;
 
@@ -249,7 +249,7 @@ void PlayerAnimator::Update()
 	{
 		m_normalAttack6 = false;
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EmptyParticle.yaml");
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
 		effectRot.z += (3.141592 / 180.f) * 200.f;
 

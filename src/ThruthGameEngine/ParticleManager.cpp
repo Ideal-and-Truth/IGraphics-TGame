@@ -160,6 +160,8 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (m_particleMatMap.find(matName) != m_particleMatMap.end())
 		{
 			particle = m_grapics->CreateParticle(m_particleMatMap[matName]);
+			particle->SetActive(false);
+			particle->SetTransformMatrix(Matrix::Identity);
 		}
 		else
 		{
@@ -225,6 +227,12 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (node["PlayOnWake"].IsDefined())
 		{
 			particle->SetPlayOnWake(node["PlayOnWake"].as<bool>());
+		}
+		/// Start Size
+		if (node["StartSize"].IsDefined())
+		{
+			const YAML::Node& cNode = node["StartSize"];
+			particle->SetStartSize(cNode.as<float>());
 		}
 		/// Start Color
 		if (node["StartColor"].IsDefined())

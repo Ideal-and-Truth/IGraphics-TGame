@@ -1,0 +1,64 @@
+MaxCount: 10
+MatName: BlackHole
+EBlendingMode: 2
+Shader: BossBlackHolePS
+Texture0: ../Resources/Textures/0_Particle/BossBlackHole/PerlinMap_1.png
+Texture1: ../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png
+Texture2: ../Resources/Textures/0_Particle/BossBlackHole/Normal_5.png
+Mesh: 0_Particle/Circle_2
+BackFaceCulling: false
+StartSize: 0.1
+StartColor:
+  - 1
+  - 1
+  - 1
+  - 1
+StartLifetime: 8
+Loop: false
+Duration: 8
+StopEnd: true
+RenderMode: 1
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 0
+      - 0
+      - 0
+      - 0
+    position: 0
+  - Color:
+      - 0
+      - 0.4
+      - 1
+      - 1
+    position: 0.01025
+  - Color:
+      - 0
+      - 0.4
+      - 1
+      - 1
+    position: 0.115
+  - Color:
+      - 0.8
+      - 0.6
+      - 0
+      - 1
+    position: 0.375
+  - Color:
+      - 0.8
+      - 0.6
+      - 0
+      - 1
+    position: 0.625
+  - Color:
+      - 1
+      - 0.1
+      - 0
+      - 1
+    position: 0.75
+  - Color:
+      - 1
+      - 0.1
+      - 0
+      - 1
+    position: 1

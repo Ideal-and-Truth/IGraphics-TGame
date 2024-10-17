@@ -1,0 +1,52 @@
+MaxCount: 20
+MatName: MagicCircle
+EBlendingMode: 2
+Shader: DefaultTextureParticlePS
+Texture0: ../Resources/Textures/0_Particle/Enemy/MagicCircle51.png
+Mesh: 0_Particle/Plane
+BackFaceCulling: false
+StartColor:
+  - 1
+  - 1
+  - 1
+  - 1
+StartLifetime: 2.5
+Loop: true
+Duration: 2.5
+RenderMode: 1
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 1
+    position: 0
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 1
+    position: 0.2
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 0
+    position: 1
+SizeOverLifeTime: true
+SizeOverLifetimeAxisXControlPoints:
+  - x: 0
+    y: 0.7
+  - x: 2.5
+    y: 0.9
+SizeOverLifetimeAxisYControlPoints:
+  - x: 0
+    y: 1
+  - x: 2.5
+    y: 1
+SizeOverLifetimeAxisZControlPoints:
+  - x: 0
+    y: 0.7
+  - x: 2.5
+    y: 0.9
