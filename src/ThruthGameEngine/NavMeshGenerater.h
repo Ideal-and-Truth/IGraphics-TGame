@@ -96,6 +96,8 @@ namespace Truth
 		void Initalize(std::wstring _path);
 		void Initalize(const std::vector<float>& _points, const std::vector<uint32>& _indices);
 
+		void Destroy();
+
 		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size);
 
 	private:

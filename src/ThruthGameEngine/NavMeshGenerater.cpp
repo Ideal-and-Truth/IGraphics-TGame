@@ -67,6 +67,33 @@ void Truth::NavMeshGenerater::Initalize(const std::vector<float>& _points, const
 	Initalize();
 }
 
+void Truth::NavMeshGenerater::Destroy()
+{
+	delete m_solid;
+	delete m_chf;
+	delete m_cset;
+	delete m_pmesh;
+	delete m_cfg;
+	delete m_dmesh;
+	delete m_ctx;
+	delete m_navMesh;
+	delete m_navQuery;
+	delete m_filter;
+
+	m_solid = nullptr;
+	m_chf = nullptr;
+	m_cset = nullptr;
+	m_pmesh = nullptr;
+	m_cfg = nullptr;
+	m_dmesh = nullptr;
+	m_ctx = nullptr;
+	m_navMesh = nullptr;
+	m_navQuery = nullptr;
+	m_filter = nullptr;
+
+	m_geom.Destroy();
+}
+
 Vector3 Truth::NavMeshGenerater::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
 {
 	if (!m_navMesh)
