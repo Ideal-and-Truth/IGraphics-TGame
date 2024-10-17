@@ -1924,20 +1924,6 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerUpdate()
 
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerAddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj)
 {
-	m_raytracingManager->AddObject(
-		obj,
-		shared_from_this(),
-		m_device,
-		m_resourceManager,
-		m_descriptorManager,
-		m_cbAllocator[m_currentContextIndex],
-		obj,
-		m_deferredDeleteManager,
-		obj->GetName().c_str(),
-		false
-	);
-	return;
-
 	//ResetCommandList();
 	auto blas = m_raytracingManager->GetBLASByName(obj->GetName().c_str());
 	//std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas = nullptr;

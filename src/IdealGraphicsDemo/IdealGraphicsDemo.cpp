@@ -397,56 +397,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region TestPlane
 		auto planeMaterial = gRenderer->CreateMaterial();
 		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_BaseMap.png", true);
-		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_MaskMap.png", true);
-		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png");
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_MaskMap.png", true);
+		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png", true, true);
 		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_Normal.png", true, true);
 		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
 		planeMaterial->SetNormalMap(planeNormalTexture);
 		
-		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
-		//plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(2, 8, 2)));
-		//meshes.push_back(plane);
-
-		auto garlandMaterial = gRenderer->CreateMaterial();
-		auto garlandBaseTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_BaseMap.png");
-		auto garlandNormalTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_Normal.png");
-		auto garlandMaskTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_MaskMap.png");
-		garlandMaterial->SetBaseMap(garlandBaseTex);
-		garlandMaterial->SetNormalMap(garlandNormalTex);
-		garlandMaterial->SetMaskMap(garlandMaskTex);
-		garlandMaterial->SetAlphaClipping(true);
-
-		DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		//DebugPlayer->AlphaClippingCheck();
-		//std::shared_ptr<Ideal::IMeshObject> garland = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-		//garland->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		//garland->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 5, 0)));
-
 		for(int y = 0 ; y < 20;y++)
 		{
 			for (int x = 0; x < 20; x++)
 			{
 				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-				plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
+				plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
 				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
 				meshes.push_back(plane);
-				if(x < 10)
-					plane->AlphaClippingCheck();
-				if(y < 10)
-					plane->AlphaClippingCheck();
 			}
 		}
-		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-		plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		plane->AlphaClippingCheck();
-		plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(2, 0, 2)));
-
-		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		//plane->AlphaClippingCheck();
-
 #pragma endregion
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");

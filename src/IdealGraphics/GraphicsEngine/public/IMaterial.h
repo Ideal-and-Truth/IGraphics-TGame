@@ -26,7 +26,5 @@ namespace Ideal
 
 		virtual void SetTiling(float x, float y) abstract;
 		virtual void SetOffset(float x, float y) abstract;
-
-		virtual void SetAlphaClipping(bool IsAlphClipping) abstract;
 	};
 }

@@ -25,7 +25,7 @@ namespace Ideal
 
 namespace Ideal
 {
-	class IdealStaticMeshObject : public IMeshObject, public std::enable_shared_from_this<IdealStaticMeshObject>
+	class IdealStaticMeshObject : public IMeshObject
 	{
 	public:
 		IdealStaticMeshObject();
@@ -67,8 +67,6 @@ namespace Ideal
 		CB_Color m_cbDebugColor;
 		bool m_isStaticWhenRuntime = false;
 		//------Raytracing Info------//
-	public:
-		virtual void AlphaClippingCheck() override;
 	public:
 		void UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager);
 		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);

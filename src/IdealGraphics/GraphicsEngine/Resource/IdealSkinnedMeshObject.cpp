@@ -20,7 +20,6 @@
 #include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructureManager.h"
 #include "GraphicsEngine/VertexInfo.h"
-#include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
 #include <d3dx12.h>
 //#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
@@ -290,21 +289,6 @@ void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::
 		// SkinnedMesh"Object"가 가지고 있는 본의 정보
 		m_bones[boneIdx]->SetTransform(resultFrame);
 	}
-}
-
-void Ideal::IdealSkinnedMeshObject::AlphaClippingCheck()
-{
-	uint32 size = m_BLASInstanceDesc->BLAS->GetGeometryDescs().size();
-	auto& descs = m_BLASInstanceDesc->BLAS->GetGeometryDescs();
-	for (uint32 i = 0; i < size; ++i)
-	{
-		if (m_skinnedMesh->GetMeshes()[i]->GetMaterial().lock()->GetIsAlphaClipping())
-		{
-			descs[i].Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
-		}	
-	}
-	auto& geometries = m_BLASInstanceDesc->BLAS->GetGeometries();
-	m_BLASInstanceDesc->BLAS->SetDirty(true);
 }
 
 void Ideal::IdealSkinnedMeshObject::CreateUAVVertexBuffer(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager)

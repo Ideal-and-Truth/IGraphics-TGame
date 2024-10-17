@@ -42,7 +42,7 @@ enum class EAnimationState
 
 namespace Ideal
 {
-	class IdealSkinnedMeshObject : public ISkinnedMeshObject, public std::enable_shared_from_this<IdealSkinnedMeshObject>
+	class IdealSkinnedMeshObject : public ISkinnedMeshObject
 	{
 	public:
 		IdealSkinnedMeshObject();
@@ -86,8 +86,6 @@ namespace Ideal
 		Matrix m_transform;
 
 		//------Raytracing Info------//
-	public:
-		virtual void AlphaClippingCheck() override;
 	public:
 		void CreateUAVVertexBuffer(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		std::shared_ptr<Ideal::IdealSkinnedMesh> GetSkinnedMesh() { return m_skinnedMesh; }
