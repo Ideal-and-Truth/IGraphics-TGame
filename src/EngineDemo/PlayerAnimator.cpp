@@ -39,6 +39,12 @@ PlayerAnimator::PlayerAnimator()
 	, m_normalAttack3(false)
 	, m_normalAttack4(false)
 	, m_normalAttack6(false)
+	, m_chargedAttack1(false)
+	, m_chargedAttack2(false)
+	, m_chargedAttack3(false)
+	, m_chargedAttack4(false)
+	, m_chargedAttack5(false)
+	, m_dodgeAttack(false)
 	, m_forwardInput(0.f)
 	, m_sideInput(0.f)
 {
@@ -236,8 +242,10 @@ void PlayerAnimator::Update()
 
 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
 	{
-		if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() != 0.f
-			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() != 0.f)
+		if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() > 0.f
+			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() > 0.f
+			|| m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() < 0.f
+			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() < 0.f)
 		{
 			m_isRun = true;
 
@@ -823,6 +831,7 @@ void ChargedAttack2::OnStateEnter()
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	GetProperty("chargedAttack2")->Set(m_animator, true);
 }
 
 void ChargedAttack2::OnStateUpdate()
@@ -874,9 +883,14 @@ void ChargedAttack3::OnStateUpdate()
 	{
 		isReset = true;
 	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
+	{
+		GetProperty("chargedAttack3")->Set(m_animator, true);
+	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 33)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
+		isReset = false;
 	}
 	if (GetProperty("isCharged")->Get<float>(m_animator).Get() > 0.3f && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 33 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 48))
 	{
@@ -917,6 +931,10 @@ void ChargedAttack4::OnStateUpdate()
 	{
 		isReset = true;
 	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 8)
+	{
+		GetProperty("chargedAttack4")->Set(m_animator, true);
+	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 25)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
@@ -956,6 +974,10 @@ void ChargedAttack5::OnStateUpdate()
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
+	{
+		GetProperty("chargedAttack5")->Set(m_animator, true);
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 24)
 	{
@@ -1013,6 +1035,11 @@ void PlayerDodgeAttack::OnStateEnter()
 
 void PlayerDodgeAttack::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get()==13)
+	{
+		GetProperty("dodgeAttack")->Set(m_animator, true);
+	}
+
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
@@ -1022,6 +1049,7 @@ void PlayerDodgeAttack::OnStateUpdate()
 void PlayerDodgeAttack::OnStateExit()
 {
 	GetProperty("isAttacking")->Set(m_animator, false);
+	GetProperty("isRun")->Set(m_animator, false);
 }
 
 void ComboReady::OnStateEnter()
@@ -1159,6 +1187,7 @@ void PlayerAnimator::PlayEffects()
 				* traslationMT
 			);
 			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
 
@@ -1171,6 +1200,7 @@ void PlayerAnimator::PlayEffects()
 				* traslationMT
 			);
 			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
 
@@ -1181,6 +1211,7 @@ void PlayerAnimator::PlayEffects()
 				* traslationMT
 			);
 			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
 	}
@@ -1202,6 +1233,7 @@ void PlayerAnimator::PlayEffects()
 				* Matrix::CreateTranslation(effectPos)
 			);
 			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
 
@@ -1216,6 +1248,175 @@ void PlayerAnimator::PlayEffects()
 				* Matrix::CreateTranslation(effectPos)
 			);
 			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_chargedAttack2)
+	{
+		m_chargedAttack2 = false;
+
+		{
+			effectRot.z += (3.141592 / 180.f) * 45.f;
+			effectRot.y += (3.141592 / 180.f) * 170.f;
+			effectRot.x += (3.141592 / 180.f) * 70.f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+
+		{
+			effectRot.y += (3.141592 / 180.f) * -20.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_chargedAttack3)
+	{
+		m_chargedAttack3 = false;
+
+		{
+			effectRot.z += (3.141592 / 180.f) * 90.f;
+			effectRot.y += (3.141592 / 180.f) * 20.f;
+			effectRot.x += (3.141592 / 180.f) * 20.f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+
+		{
+			effectRot.y += (3.141592 / 180.f) * -20.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_chargedAttack4)
+	{
+		m_chargedAttack4 = false;
+
+		{
+			effectRot.z += (3.141592 / 180.f) * -20.f;
+			effectRot.y += (3.141592 / 180.f) * -160.f;
+			//effectRot.x += (3.141592 / 180.f) * 70.f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+
+		{
+			effectRot.y += (3.141592 / 180.f) * -20.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_chargedAttack5)
+	{
+		m_chargedAttack5 = false;
+
+		{
+			effectRot.z += (3.141592 / 180.f) * 90.f;
+			effectRot.y += (3.141592 / 180.f) * 20.f;
+			effectRot.x += (3.141592 / 180.f) * 90.f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+
+		{
+			effectRot.y += (3.141592 / 180.f) * -20.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_dodgeAttack)
+	{
+		m_dodgeAttack = false;
+
+		{
+			effectRot.y += (3.141592 / 180.f) * -90.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\DodgeAttack.yaml");
+			p->SetDeltaTime(GetDeltaTime());
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
 	}

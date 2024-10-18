@@ -16,7 +16,7 @@ Loop: false
 Duration: 2
 StopEnd: true
 RenderMode: 1
-SizeOverLifeTime: true
+SizeOverLifetime: true
 SizeOverLifetimeAxisXControlPoints:
   - x: 0
     y: 1

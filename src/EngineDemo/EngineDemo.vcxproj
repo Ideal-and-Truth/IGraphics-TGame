@@ -160,7 +160,6 @@
     <ClInclude Include="CombatZone.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="DamageSystem.h" />
-    <ClInclude Include="EffectGenerator.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
@@ -200,7 +199,6 @@
     <ClCompile Include="CombatZone.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="DamageSystem.cpp" />
-    <ClCompile Include="EffectGenerator.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />

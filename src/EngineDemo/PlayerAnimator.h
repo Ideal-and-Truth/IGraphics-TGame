@@ -436,6 +436,9 @@ private:
 	PROPERTY(chargedAttack5);
 	bool m_chargedAttack5;
 
+	PROPERTY(dodgeAttack);
+	bool m_dodgeAttack;
+
 	float m_lastHp;
 
 	float m_passingTime;
