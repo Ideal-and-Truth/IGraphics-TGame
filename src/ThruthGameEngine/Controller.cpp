@@ -132,7 +132,7 @@ void Truth::Controller::AddImpulse(Vector3& _disp)
 /// <returns>성공 여부</returns>
 bool Truth::Controller::SetPosition(Vector3& _disp)
 {
-	return m_controller->setPosition(physx::PxExtendedVec3(_disp.x, _disp.y, _disp.z));
+	return m_controller->setFootPosition(physx::PxExtendedVec3(_disp.x, _disp.y, _disp.z));
 }
 
 /// <summary>

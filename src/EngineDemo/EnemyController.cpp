@@ -36,6 +36,7 @@ void EnemyController::Start()
 	m_target = m_enemy.lock().get()->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.lock().get()).Get();
 	m_homePos = m_owner.lock()->GetWorldPosition();
 	m_bossAnimator = m_owner.lock()->GetComponent<BossAnimator>().lock();
+	m_controller.lock()->SetPosition(m_homePos);
 }
 
 void EnemyController::Update()
