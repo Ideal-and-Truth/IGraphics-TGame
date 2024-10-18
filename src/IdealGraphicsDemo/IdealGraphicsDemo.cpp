@@ -559,7 +559,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			pointLight->SetPosition(Vector3(i, 3.f, 3.f));
 			pointLight->SetRange(6.f);
 			pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
-			pointLight->SetIntensity(3.f);
+			//pointLight->SetIntensity(257.f);
+			pointLight->SetIntensity(1.f);
 			plights.push_back(pointLight);
 
 			std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();

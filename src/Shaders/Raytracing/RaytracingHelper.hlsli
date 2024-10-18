@@ -218,16 +218,25 @@ namespace Ideal
     }
     float Attenuate(float distance, float range)
     {
-        float att = saturate(1.f - (distance * distance / (range * range)));
-        return att * att;
+        //float att = saturate(1.f - (distance * distance / (range * range)));
+        //return att * att;
         
-        //float numer = distance / range;
-        //numer = numer * numer;
-        //numer = numer * numer;
-        //numer = saturate(1 - numer);
-        //numer = numer * numer;
-        //float denom = dist * dist + 1;
-        //return (numer / denom);
+        float numer = distance / range;
+        numer = numer * numer;
+        numer = numer * numer;
+        numer = saturate(1 - numer);
+        numer = numer * numer;
+        float denom = distance * distance + 1;
+        return (numer / denom);
+    }
+    
+    float LinearAttenuate(float distance, float range)
+    {
+        float rangeFactor = 1.0 / (range * range);
+        float epsilon = 0.001;  // division by zero ¹æÁö
+        
+        float attenuation = 1.0 / (distance * distance + rangeFactor * distance + epsilon);
+        return attenuation;
     }
     
     namespace Light
@@ -656,7 +665,7 @@ float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 Li
     return Lo;
 }
 
-float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float distance, float3 LightColor, float3 albedo, float roughness, float metallic, float lightIntensity)
+float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float distance, float3 LightColor, float3 albedo, float roughness, float metallic, float lightIntensity, float range)
 {
     if(isInShadow)
         return float3(0, 0, 0);
@@ -667,8 +676,10 @@ float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float d
     F0 = lerp(F0, albedo, metallic);
     float3 H = normalize(V + Direction);
     
-    float attenuation = 1.0 / (distance * distance);
-    float3 radiance = LightColor * lightIntensity* attenuation;
+    //float attenuation = 1.0 / (distance * distance);
+    float attenuation = Ideal::Attenuate(distance, range);
+    //float attenuation = Ideal::LinearAttenuate(distance, range);
+    float3 radiance = LightColor * lightIntensity * attenuation;
     
     float NDF = DistributionGGX(N, H, roughness);
     float G = GeometrySmith(N, V, Direction, roughness);
@@ -706,7 +717,8 @@ float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirect
         float3 H = normalize(V + Direction);
     
         //float attenuation = 1.0 / (distance * distance);
-        float attenuation = Ideal::Attenuate(distance, range);
+        //float attenuation = Ideal::Attenuate(distance, range);
+        float attenuation = Ideal::LinearAttenuate(distance, range);
         float newIntensity = lightIntensity * attenuation * smoothFactor;
         float3 radiance = LightColor * newIntensity * attenuation;
     
