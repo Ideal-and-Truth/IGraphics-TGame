@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/Monster/T_Eunji_monster_head_BaseMap.png
+normalMap: ../Resources/Textures/Monster/T_Eunji_monster_head_Normal.png
+maskMap: ../Resources/Textures/Monster/T_Eunji_monster_head_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

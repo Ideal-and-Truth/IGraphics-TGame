@@ -12,8 +12,8 @@ float4 PSMain(VSOutput input) : SV_TARGET
         float4 SampleEmissionTex = ParticleTexture1.Sample(LinearClampSampler, emissionTiling);
         
         float3 hueOut0;
-        //Ideal_Hue_Radians_float(SampleEmissionTex.xyz, g_CustomData2.z, hueOut0);
-        Ideal_Hue_Radians_float(SampleEmissionTex.xyz, 0, hueOut0);
+        Ideal_Hue_Radians_float(SampleEmissionTex.xyz, g_CustomData2.z, hueOut0);
+        //Ideal_Hue_Radians_float(SampleEmissionTex.xyz, 0.3, hueOut0);
             
         float3 saturation0;
         float desaturation0 = 0;
@@ -28,6 +28,7 @@ float4 PSMain(VSOutput input) : SV_TARGET
         float3 mul0 = clamp0 * EmissionData;
         
         float4 AddColorData = float4(0.0113418, 0, 0.1981132, 0);
+        //float4 AddColorData = float4(0.1037736, 0.07531176, 0.06020825, 0);
         float4 mul1 = g_startColor * AddColorData;
         float3 mul2 = g_startColor.xyz * mul0;
         float3 add0 = mul1.xyz + mul2;

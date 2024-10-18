@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/candlestick/T_candle_BaseMap.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/candlestick/T_candle_Normal.png
+maskMap: ../Resources/Textures/MapData/1_HN_Scene2/candlestick/T_candle_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

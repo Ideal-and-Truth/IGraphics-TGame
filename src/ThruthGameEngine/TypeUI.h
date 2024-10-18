@@ -86,8 +86,17 @@ namespace TypeUI
 		}
 		else if constexpr (std::is_same_v<T, std::string>)
 		{
-			char* cMeshPath = (char*)_val.c_str();
-			return ImGui::InputText(_name, cMeshPath, 128, ImGuiInputTextFlags_EnterReturnsTrue);
+			USES_CONVERSION;
+			std::string sval(_val.c_str());
+
+			sval.resize(128);
+
+			bool success = ImGui::InputText(_name, (char*)sval.c_str(), 128, ImGuiInputTextFlags_EnterReturnsTrue);
+			if (success)
+			{
+				_val = sval.c_str();
+			}
+			return success;
 		}
 		else if constexpr (std::is_same_v<T, std::wstring>)
 		{

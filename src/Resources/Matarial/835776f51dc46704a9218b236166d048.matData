@@ -4,6 +4,6 @@ normalMap: ../Resources/Textures/MapData/2_JS_Scene2/fence/T_town_fence_Normal.p
 maskMap: ../Resources/Textures/MapData/2_JS_Scene2/fence/T_town_fence_MaskMap.png
 tileX: 1
 tileY: 1
-alphaCulling: false
+alphaCulling: true
 transparent: false
 ...

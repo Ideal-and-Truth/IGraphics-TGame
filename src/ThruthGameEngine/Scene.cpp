@@ -65,7 +65,9 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 /// <param name="_p"></param>
 void Truth::Scene::CreateEntity(std::shared_ptr<Entity> _p)
 {
+	_p->m_index = m_entities.size();
 	m_awakedEntity.push(_p);
+	_p->m_isAdded = false;
 }
 
 /// <summary>
@@ -130,7 +132,8 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		}
 		LoadEntity(e);
 	}
-	LoadUnityData(m_mapPath);
+
+	 LoadUnityData(m_mapPath);
 }
 
 
@@ -224,10 +227,11 @@ void Truth::Scene::Update()
 	{
 		auto& e = m_awakedEntity.front();
 		e->m_index = static_cast<int32>(m_entities.size());
-		// m_entities.push_back(e);
-#ifdef EDITOR_MODE
-		// m_rootEntities.push_back(e);
-#endif // EDITOR_MODE
+		if (!e->m_isAdded)
+		{
+			m_entities.push_back(e);
+			m_rootEntities.push_back(e);
+		}
 		m_startedEntity.push(e);
 		e->Awake();
 		m_awakedEntity.pop();
@@ -326,6 +330,7 @@ void Truth::Scene::Enter()
 	}
 #ifndef EDITOR_MODE
 	Start();
+	ApplyTransform();
 #endif // EDITOR_MODE
 }
 

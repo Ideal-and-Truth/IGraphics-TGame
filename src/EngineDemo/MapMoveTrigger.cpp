@@ -7,7 +7,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(MapMoveTrigger)
 MapMoveTrigger::MapMoveTrigger()
 	: m_nextMap("Stage2")
 {
-
+	m_nextMap;
 }
 
 MapMoveTrigger::~MapMoveTrigger()
