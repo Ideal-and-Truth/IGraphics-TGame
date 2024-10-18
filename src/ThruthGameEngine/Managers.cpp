@@ -46,6 +46,7 @@ void Truth::Managers::Update() const
 		m_physXManager->Update();
 		m_sceneManager->Update(); 
 		m_eventManager->Update();
+		m_particleManager->Update();
 	}
 	else
 	{
@@ -187,5 +188,5 @@ void Truth::Managers::InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 
 	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();
 	m_graphicsManager->Initalize(_hwnd, _width, _height);
-	m_particleManager->Initalize(m_graphicsManager);
+	m_particleManager->Initalize(m_graphicsManager, m_timeManager);
 }

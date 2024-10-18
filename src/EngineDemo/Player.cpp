@@ -19,6 +19,7 @@ Player::Player()
 	, m_passingTime(0.f)
 	, m_isDecreaseCP(false)
 	, m_unlockSkill1(false)
+	, m_isInvincible(false)
 {
 	m_name = "Player";
 }
@@ -40,6 +41,17 @@ void Player::Start()
 
 void Player::Update()
 {
+	if (GetKey(KEY::O) && GetKeyDown(KEY::P))
+	{
+		m_isInvincible = !m_isInvincible;
+	}
+
+	if (m_isInvincible)
+	{
+		m_currentTP = m_maxTP;
+		return;
+	}
+
 	if (m_currentTP > 0.f)
 	{
 		m_passingTime += GetDeltaTime();

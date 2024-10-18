@@ -367,16 +367,22 @@ float3 Shade(
 
     if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
+        int dirLightNum = g_lightList.DirLightNum;
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
     
         // Directional Light
         {
-            float3 LightVector = -g_lightList.DirLight.Direction.xyz;
-            float3 H = normalize(V + LightVector);
-            float3 radiance = g_lightList.DirLight.DiffuseColor.rgb;
-            bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
-            L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
+            for(int i = 0; i < dirLightNum; ++i)
+            {
+                float3 LightVector = -g_lightList.DirLights[i].Direction.xyz;
+                float3 H = normalize(V + LightVector);
+                float3 radiance = g_lightList.DirLights[i].DiffuseColor.rgb;
+                float intensity = g_lightList.DirLights[i].Intensity;
+                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
+                //L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
+                L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, intensity);
+            }
         }
         
         {   

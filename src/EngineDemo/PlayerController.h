@@ -40,6 +40,15 @@ private:
 	PROPERTY(canMove);
 	bool m_canMove;
 
+	PROPERTY(impulsePower);
+	float m_impulsePower;
+
+	PROPERTY(useImpulse);
+	bool m_useImpulse;
+
+	PROPERTY(needRot);
+	bool m_needRot;
+
 public:
 	PlayerController();
 	virtual ~PlayerController();

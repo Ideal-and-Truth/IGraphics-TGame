@@ -56,7 +56,7 @@ void Truth::Controller::Awake()
 	decs.position = MathUtil::ConvertEx(m_owner.lock()->GetLocalPosition() + Vector3{ 0.0f, m_height, 0.0f });
 
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
-
+	
 	// create rigidbody to access physx body
 	m_rigidbody = std::make_shared<RigidBody>();
 
@@ -70,8 +70,7 @@ void Truth::Controller::Awake()
 	m_controller->getActor()->userData = m_rigidbody.get();
 
 	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
-
+	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
 	// create collider to access physx shape
 	m_collider = std::make_shared<CapsuleCollider>();
 	m_collider->m_transform = m_owner.lock()->GetComponent<Transform>();
@@ -167,4 +166,9 @@ bool Truth::Controller::IsCollisionUp()
 bool Truth::Controller::IsCollisionSide()
 {
 	return static_cast<physx::PxControllerCollisionFlag::Enum>(m_flag) & physx::PxControllerCollisionFlag::eCOLLISION_SIDES;
+}
+
+void Truth::Controller::PhysxAwake()
+{
+	m_rigidbody->m_body->wakeUp();
 }

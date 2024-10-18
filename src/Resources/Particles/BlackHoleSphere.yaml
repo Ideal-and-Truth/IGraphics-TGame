@@ -1,0 +1,15 @@
+MaxCount: 10
+MatName: BlackHoleSphere
+EBlendingMode: 1
+Shader: BossBlackHoleSpherePS
+Mesh: 0_Particle/UVSphere
+StartSize: 15
+StartColor:
+  - 1
+  - 1
+  - 1
+  - 1
+StartLifetime: 22
+Loop: false
+Duration: 22
+RenderMode: 1

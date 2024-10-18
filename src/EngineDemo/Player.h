@@ -50,6 +50,8 @@ private:
 
 	float m_passingTime;
 
+	bool m_isInvincible;
+
 	const static fs::path m_dataPath;
 
 public:

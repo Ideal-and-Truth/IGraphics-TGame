@@ -6,6 +6,7 @@ class Player;
 class PlayerAnimator;
 class Enemy;
 class EnemyAnimator;
+class BossAnimator;
 
 class MeleeWeapon :
 	public Truth::Component
@@ -23,6 +24,7 @@ private:
 
 	std::shared_ptr<Enemy> m_enemy;
 	std::shared_ptr<EnemyAnimator> m_enemyAnimator;
+	std::shared_ptr<BossAnimator> m_bossAnimator;
 
 	std::vector<std::shared_ptr<Truth::Entity>> m_onHitEnemys;
 

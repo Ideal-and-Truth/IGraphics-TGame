@@ -322,7 +322,7 @@ void Truth::Collider::Initialize(const std::wstring& _path /*= L""*/)
 	}
 	case Truth::ColliderShape::MESH:
 	{
-		// m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(_path);
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(_path);
 		break;
 	}
 	default:

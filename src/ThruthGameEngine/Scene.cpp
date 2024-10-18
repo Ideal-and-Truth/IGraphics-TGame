@@ -124,9 +124,13 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 
 	for (auto& e : m_rootEntities)
 	{
+		if (e->HasParent())
+		{
+			continue;
+		}
 		LoadEntity(e);
 	}
-	LoadUnityData(m_mapPath);
+	//LoadUnityData(L"1_HN_Scene2");
 }
 
 

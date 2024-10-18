@@ -2,6 +2,7 @@
 #include "IParticleSystem.h"
 #include "GraphicsManager.h"
 #include "IParticleMaterial.h"
+#include "TimeManager.h"
 #include <yaml-cpp/yaml.h>
 
 Truth::ParticleManager::ParticleManager()
@@ -14,10 +15,23 @@ Truth::ParticleManager::~ParticleManager()
 
 }
 
-void Truth::ParticleManager::Initalize(std::shared_ptr<GraphicsManager> _grapics)
+void Truth::ParticleManager::Initalize(std::shared_ptr<GraphicsManager> _grapics, std::shared_ptr<TimeManager> _timeManager)
 {
 	m_grapics = _grapics;
+	m_timeManager = _timeManager;
 	ReloadAllParticle();
+}
+
+void Truth::ParticleManager::Update()
+{
+	for (auto& pool : m_particleMap)
+	{
+		for (auto& e : pool.second->m_pool)
+		{
+			e->SetDeltaTime(m_timeManager->GetDT());
+		}
+	}
+
 }
 
 void Truth::ParticleManager::Finalize()
@@ -55,7 +69,7 @@ void Truth::ParticleManager::CreateEmptyParticle()
 	emitter << YAML::Key << "Duration" << YAML::Value << 2.0f;
 	emitter << YAML::Key << "StopEnd" << YAML::Value << true;
 	emitter << YAML::Key << "RenderMode" << YAML::Value << 1;
-	emitter << YAML::Key << "RotationOverLifeTime" << YAML::Value << true;
+	emitter << YAML::Key << "RotationOverLifetime" << YAML::Value << true;
 
 	emitter << YAML::Key << "RotationOverLifetimeAxisYControlPoints" << YAML::BeginSeq <<
 		YAML::BeginMap <<
@@ -160,6 +174,8 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (m_particleMatMap.find(matName) != m_particleMatMap.end())
 		{
 			particle = m_grapics->CreateParticle(m_particleMatMap[matName]);
+			particle->SetActive(false);
+			particle->SetTransformMatrix(Matrix::Identity);
 		}
 		else
 		{
@@ -226,6 +242,12 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		{
 			particle->SetPlayOnWake(node["PlayOnWake"].as<bool>());
 		}
+		/// Start Size
+		if (node["StartSize"].IsDefined())
+		{
+			const YAML::Node& cNode = node["StartSize"];
+			particle->SetStartSize(cNode.as<float>());
+		}
 		/// Start Color
 		if (node["StartColor"].IsDefined())
 		{
@@ -247,9 +269,9 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		}
 
 		/// Rotation Over Life Time
-		if (node["RotationOverLifeTime"].IsDefined())
+		if (node["RotationOverLifetime"].IsDefined())
 		{
-			particle->SetRotationOverLifetime(node["RotationOverLifeTime"].as<bool>());
+			particle->SetRotationOverLifetime(node["RotationOverLifetime"].as<bool>());
 		}
 
 		/// Rotation Over Life Time Axis X ControlPoints
@@ -357,7 +379,7 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		if (node["SizeOverLifetimeAxisX"].IsDefined())
 		{
 			const YAML::Node& child = node["SizeOverLifetimeAxisX"];
-			GetControlPoints(&child, particle, particle->GetRotationOverLifetimeAxisX());
+			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisX());
 		}
 		/// Size Over Life Time Axis Y ControlPoints
 		if (node["SizeOverLifetimeAxisY"].IsDefined())

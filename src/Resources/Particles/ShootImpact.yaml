@@ -1,0 +1,36 @@
+MaxCount: 10
+MatName: ShootImpact
+EBlendingMode: 2
+Shader: DefaultTextureParticlePS
+Texture0: ../Resources/Textures/0_Particle/Enemy/FX_117.png
+Mesh: 0_Particle/Plane
+BackFaceCulling: false
+StartColor:
+  - 1
+  - 1
+  - 1
+  - 1
+StartLifetime: 2.5
+Loop: true
+Duration: 2.5
+RenderMode: 1
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 1
+    position: 0
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 1
+    position: 0.2
+  - Color:
+      - 1
+      - 1
+      - 1
+      - 0
+    position: 1

@@ -46,6 +46,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class BossStrafe
@@ -73,7 +74,7 @@ class BossDodge
 	: public AnimationState
 {
 private:
-
+	bool isPlay = false;
 
 public:
 	BossDodge(Truth::Component* animator)
@@ -85,6 +86,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class BossDown
@@ -150,7 +152,7 @@ class BossAttackUpperCut
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
 	BossAttackUpperCut(Truth::Component* animator)
@@ -223,14 +225,14 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class BossAttackJumpSmashGround
+class BossAttackJump
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
-	BossAttackJumpSmashGround(Truth::Component* animator)
+	BossAttackJump(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -363,14 +365,14 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class BossAttackCombo2_2
+class BossAttackCombo3_1
 	: public AnimationState
 {
 private:
 	bool m_isChangePose;
 
 public:
-	BossAttackCombo2_2(Truth::Component* animator)
+	BossAttackCombo3_1(Truth::Component* animator)
 		: AnimationState(animator)
 		, m_isChangePose(false)
 	{
@@ -425,6 +427,26 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class BossAttackTimeSphere
+	: public AnimationState
+{
+private:
+	bool m_isChangePose;
+	bool isReset = false;
+
+public:
+	BossAttackTimeSphere(Truth::Component* animator)
+		: AnimationState(animator)
+		, m_isChangePose(false)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class BossAnimator :
@@ -456,9 +478,6 @@ private:
 	PROPERTY(strafeMove);
 	bool m_strafeMove;
 
-	PROPERTY(isReturn);
-	bool m_isReturn;
-
 	PROPERTY(isInRange);
 	bool m_isInRange;
 
@@ -480,8 +499,6 @@ private:
 	PROPERTY(attackCharge);
 	bool m_attackCharge;
 
-	PROPERTY(attackJumpSmashGround);
-	bool m_attackJumpSmashGround;
 
 	PROPERTY(attackSpin);
 	bool m_attackSpin;
@@ -501,8 +518,8 @@ private:
 	PROPERTY(attackCombo2_1);
 	bool m_attackCombo2_1;
 
-	PROPERTY(attackCombo2_2);
-	bool m_attackCombo2_2;
+	PROPERTY(attackCombo3_1);
+	bool m_attackCombo3_1;
 
 	PROPERTY(attackSwordShoot);
 	bool m_attackSwordShoot;
@@ -510,20 +527,33 @@ private:
 	PROPERTY(attackShockWave);
 	bool m_attackShockWave;
 
+	PROPERTY(attackTimeSphere);
+	bool m_attackTimeSphere;
+
+	PROPERTY(jumpAttack);
+	bool m_jumpAttack;
+
 	PROPERTY(isDamage);
 	bool m_isDamage;
 
 	PROPERTY(isDown);
 	bool m_isDown;
 
+	PROPERTY(isDodge);
+	bool m_isDodge;
+
 	PROPERTY(isDeath);
 	bool m_isDeath;
 
+	/// 상태 조건을 위한 것들
 	PROPERTY(isSkillActive);
 	bool m_isSkillActive;
 
 	PROPERTY(isAttacking);
 	bool m_isAttacking;
+
+	PROPERTY(isLockOn);
+	bool m_isLockOn;
 
 	PROPERTY(skillCoolTime);
 	bool m_skillCoolTime;
@@ -531,9 +561,27 @@ private:
 	PROPERTY(sideMove);
 	float m_sideMove;
 
+	PROPERTY(attackCount);
+	int m_attackCount;
+
 	/// ----------------------------------------
 	PROPERTY(passingTime);
 	float m_passingTime;
+
+	PROPERTY(swordShootCoolTime);
+	bool m_swordShootCoolTime;
+
+	PROPERTY(shockWaveCoolTime);
+	bool m_shockWaveCoolTime;
+
+	PROPERTY(flameSwordCoolTime);
+	bool m_flameSwordCoolTime;
+
+	PROPERTY(lightSpeedDashCoolTime);
+	bool m_lightSpeedDashCoolTime;
+
+	PROPERTY(timeDistortionCoolTime);
+	bool m_timeDistortionCoolTime;
 
 	float m_lastHp;
 
@@ -560,6 +608,11 @@ private:
 
 private:
 	int RandomNumber(int _min, int _max);
+	void AllStateReset();
+
+	void Phase1();
+	void Phase2();
+	void Phase3();
 
 public:
 	BossAnimator();
@@ -575,6 +628,8 @@ public:
 	void Update();
 
 
+	void SetImpulse(float power, float pL_mR_M);
+
 	void SetCanMove(bool canMove);
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
@@ -586,6 +641,9 @@ public:
 	void ChangeState(std::string stateName);
 
 	void SetEnemyDamage(float damage);
+
+	void SetEnemySpeed(float speed);
+
 };
 
 template<class Archive>

@@ -2,6 +2,7 @@
 #include "Controller.h"
 #include "Enemy.h"
 #include "Transform.h"
+#include "BossAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(EnemyController)
 
@@ -13,8 +14,12 @@ EnemyController::EnemyController()
 	, m_isDead(false)
 	, m_canMove(true)
 	, m_strafeMove(false)
+	, m_attackCharge(false)
+	, m_useImpulse(false)
 	, m_passingTime(0.f)
 	, m_sideMove(1.f)
+	, m_impulsePower(0.f)
+	, m_sideImpulse(0.f)
 {
 	m_name = "EnemyController";
 }
@@ -29,7 +34,8 @@ void EnemyController::Start()
 	m_controller = m_owner.lock()->GetComponent<Truth::Controller>();
 	m_enemy = m_owner.lock()->GetComponent<Enemy>();
 	m_target = m_enemy.lock().get()->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.lock().get()).Get();
-	m_homePos = m_owner.lock()->m_transform->m_position;
+	m_homePos = m_owner.lock()->GetWorldPosition();
+	m_bossAnimator = m_owner.lock()->GetComponent<BossAnimator>().lock();
 }
 
 void EnemyController::Update()
@@ -43,28 +49,98 @@ void EnemyController::Update()
 	m_speed = m_enemy.lock().get()->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.lock().get()).Get();
 	m_passingTime += GetDeltaTime();
 
-	if (isTargetIn)
+	// 적 회전
+	Vector3 pos = m_owner.lock()->GetWorldPosition();
+
+	Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
+		pos,
+		m_target.lock()->GetWorldPosition(),
+		GetScale()
+	);
+
+	Vector3 playerPos = m_target.lock()->GetWorldPosition();
+
+	Vector3 dir = targetPos - pos;
+
+	float distance = (playerPos - pos).Length();
+	float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
+
+	dir.Normalize(dir);
+	dir.y = 0.0f;
+
+	Quaternion lookRot;
+	Quaternion::LookRotation(dir, Vector3::Up, lookRot);
+
+	if (distance > attackRange)
 	{
-		// 적 회전
-		Vector3 pos = m_owner.lock()->GetWorldPosition();
-// 		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
-// 			pos,
-// 			m_target.lock()->GetWorldPosition(),
-// 			GetScale()
-// 		);
-		Vector3 targetPos = m_target.lock()->m_transform->m_position;
-		Vector3 dir = targetPos - pos;
-		dir.Normalize(dir);
-		dir.y = 0.0f;
-		Quaternion lookRot;
-		Quaternion::LookRotation(dir, Vector3::Up, lookRot);
-		m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+		m_isBackStep = false;
+		m_isAttackReady = false;
 	}
 	else
+	{
+		m_isBackStep = false;
+		m_isAttackReady = true;
+	}
+
+	if (m_useImpulse)
+	{
+		Vector3 power(playerPos - pos);
+		power.y = 0.f;
+		power.Normalize();
+		power.y = -100.f;
+		power *= GetDeltaTime();
+		power.x *= m_impulsePower;
+		power.y *= abs(m_impulsePower);
+		power.z *= m_impulsePower;
+		Vector3 p = power;
+		if (m_sideImpulse > 0.f)
+		{
+			p.x = power.z;
+			p.z = -power.x;
+		}
+		else if (m_sideImpulse < 0.f)
+		{
+			p.x = -power.z;
+			p.z = power.x;
+		}
+		else if (m_sideImpulse == 0.f)
+		{
+			p = power;
+		}
+
+		m_controller.lock()->AddImpulse(p);
+
+		m_useImpulse = false;
+		m_impulsePower = 0.f;
+		m_sideImpulse = 0.f;
+	}
+
+	Vector3 moveVec = { 0.f,0.f,0.f };
+	m_controller.lock()->Move(moveVec);
+
+	if (m_bossAnimator)
+	{
+		if (isTargetIn && !m_bossAnimator->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_bossAnimator.get()).Get())
+		{
+			m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+		}
+	}
+	else
+	{
+		if (isTargetIn)
+		{
+			m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+		}
+	}
+
+	if (!isTargetIn)
 	{
 		ComeBackHome();
 		return;
 	}
+
+
+
 
 	if (m_canMove)
 	{
@@ -79,48 +155,50 @@ void EnemyController::FollowTarget()
 		m_isComeBack = false;
 
 		Vector3 pos = m_owner.lock()->GetWorldPosition();
+
 		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
 			pos,
 			m_target.lock()->GetWorldPosition(),
 			GetScale()
 		);
 
-		Vector3 playerPos = m_target.lock()->m_transform->m_position;
+		Vector3 playerPos = m_target.lock()->GetWorldPosition();
+		
 
 		Vector3 dir = targetPos - pos;
-		
+
 		float distance = (playerPos - pos).Length();
 		float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
 
 
 		// 일정거리까지 추적 후 멈춤
-		if (distance > attackRange)
-		{
-			m_isBackStep = false;
-			m_isAttackReady = false;
-		}
-		// 뒷걸음질
-// 		else if (distance < attackRange - 1.f)
+// 		if (distance > attackRange)
 // 		{
+// 			m_isBackStep = false;
+// 			m_isAttackReady = false;
+// 		}
+// 		// 뒷걸음질
+// //		else if (distance < attackRange - 1.f)
+// //		{
 // // 			m_isBackStep = true;
 // // 			m_isAttackReady = false;
-// // 
+// //
 // // 			Vector3 backDir = dir;
 // // 			backDir.y = 0.0f;
 // // 			backDir.Normalize(backDir);
 // // 			backDir.y = -100.0f;
 // // 			backDir *= GetDeltaTime() * m_speed;
-// // 
+// //
 // // 			backDir.x *= -1.f;
 // // 			backDir.z *= -1.f;
 // // 			m_controller.lock()->Move(backDir);
+// //		}
+// 		// 간보기
+// 		else
+// 		{
+// 			m_isBackStep = false;
+// 			m_isAttackReady = true;
 // 		}
-		// 간보기
-		else
-		{
-			m_isBackStep = false;
-			m_isAttackReady = true;
-		}
 
 		if (m_isAttackReady || m_strafeMove)
 		{
@@ -143,7 +221,6 @@ void EnemyController::FollowTarget()
 		}
 		else if (!m_isAttackReady && !m_strafeMove)
 		{
-			/// 잠시 지우기
 			dir.y = 0.0f;
 			dir.Normalize(dir);
 			dir.y = -100.0f;

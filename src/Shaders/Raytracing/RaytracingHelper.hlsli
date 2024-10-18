@@ -624,7 +624,7 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
     return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
 }
 
-float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 LightColor, float3 albedo, float roughness, float metallic, float ao)
+float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 LightColor, float3 albedo, float roughness, float metallic, float intensity)
 {
     if(isInShadow)
         return float3(0, 0, 0);
@@ -634,7 +634,7 @@ float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 Li
     float3 F0 = float3(0.04f, 0.04f, 0.04f);
     F0 = lerp(F0, albedo, metallic);
     float3 H = normalize(V + L);
-    float3 radiance = LightColor;
+    float3 radiance = LightColor * intensity;
     float NDF = DistributionGGX(N, H, roughness);
     float G = GeometrySmith(N, V, L, roughness);
     float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
@@ -648,7 +648,7 @@ float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 Li
     float NdotL = max(dot(N, L), 0.0);
     Lo += (kD * albedo / PI + specular) * radiance * NdotL;
         
-    float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
+    float3 ambient = float3(0.03, 0.03, 0.03) * albedo;
     float3 color = ambient + Lo;
     //color += 0.2 * albedo;
     Lo = color;
