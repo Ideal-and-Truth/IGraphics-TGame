@@ -279,7 +279,7 @@ namespace Ideal
 		// Light
 		void UpdateLightListCBData();
 
-		std::shared_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
+		std::vector<std::shared_ptr<Ideal::IdealDirectionalLight>> m_directionalLights;
 		std::vector<std::shared_ptr<Ideal::IdealSpotLight>> m_spotLights;
 		std::vector<std::shared_ptr<Ideal::IdealPointLight>> m_pointLights;
 

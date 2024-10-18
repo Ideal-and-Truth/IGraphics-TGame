@@ -161,6 +161,7 @@ void RendererSizeTest();
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
 float lightAngleY = 0.f;
+float lightIntensity = 1.f;
 
 float g_cameraSpeed = 0.04f;
 bool g_CameraMove = true;
@@ -531,7 +532,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//--------------------Create Light----------------------//
 		std::shared_ptr<Ideal::IDirectionalLight> dirLight = gRenderer->CreateDirectionalLight();
 		dirLight->SetDirection(Vector3(0.f, 1.f, 0.f));
-
+		dirLight->SetIntensity(1.f);
 		//Matrix dir = Matrix::Identity;
 		//dir *= Matrix::CreateRotationX(3.874f);
 		//dirLight->SetDirection(dir.Forward());
@@ -557,7 +558,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
 			pointLight->SetPosition(Vector3(i, 3.f, 3.f));
 			pointLight->SetRange(6.f);
-			pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+			pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
 			pointLight->SetIntensity(3.f);
 			plights.push_back(pointLight);
 
@@ -2528,11 +2529,14 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	ImGui::SliderFloat("Y", &lightAngleY, 0.f, 6.28f);
 	mat *= Matrix::CreateRotationY(lightAngleY);
 
+	ImGui::SliderFloat("Intensity", &lightIntensity, 0.f, 10.f);
+	
 	Vector3 rot = mat.Forward();
 	if (DirLight)
 	{
 		DirLight->SetDirection(rot);
 		DirLight->SetDiffuseColor(Color(lightColor[0], lightColor[1], lightColor[2], 1.f));
+		DirLight->SetIntensity(lightIntensity);
 	}
 
 	ImGui::End();

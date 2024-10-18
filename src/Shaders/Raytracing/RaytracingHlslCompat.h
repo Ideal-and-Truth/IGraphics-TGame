@@ -127,12 +127,12 @@ struct SpotLight
 
 struct LightList
 {
+    int DirLightNum;
     int PointLightNum;
     int SpotLightNum;
 	float pad;
-	float pad1;
 
-    DirectionalLight DirLight;
+    DirectionalLight DirLights[10];
     PointLight PointLights[100];  //TEMP
     SpotLight SpotLights[100];    //TEMP
 };

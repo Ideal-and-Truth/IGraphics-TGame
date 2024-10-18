@@ -25,7 +25,6 @@
 #include "GraphicsEngine/ConstantBufferInfo.h"
 
 #include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
-
 Ideal::IdealRenderScene::IdealRenderScene()
 	: m_width(0),
 	m_height(0)
@@ -277,7 +276,8 @@ void Ideal::IdealRenderScene::AddLight(std::shared_ptr<Ideal::ILight> Light)
 		case ELightType::Directional:
 		{
 			// Directional Light는 그냥 바꿔준다.
-			m_directionalLight = std::static_pointer_cast<IdealDirectionalLight>(Light);
+			//m_directionalLight = std::static_pointer_cast<IdealDirectionalLight>(Light);
+			m_directionalLights.push_back(std::static_pointer_cast<IdealDirectionalLight>(Light));
 		}
 		break;
 		case ELightType::Spot:
@@ -644,10 +644,16 @@ void Ideal::IdealRenderScene::UpdateLightCBData(std::shared_ptr<IdealRenderer> R
 	ComPtr<ID3D12Device> device = d3d12Renderer->GetDevice();
 
 	//----------------Directional Light-----------------//
-	if (m_directionalLight)
+	uint32 directionalLightNum = m_directionalLights.size();
+	if (directionalLightNum > MAX_DIRECTIONAL_LIGHT_NUM)
 	{
-		m_cbLightList->DirLight = m_directionalLight->GetDirectionalLightDesc();
+		directionalLightNum = MAX_DIRECTIONAL_LIGHT_NUM;
 	}
+	for (uint32 i = 0; i < directionalLightNum; ++i)
+	{
+		m_cbLightList->DirLights[i] = m_directionalLights[i]->GetDirectionalLightDesc();
+	}
+	m_cbLightList->DirLightNum = directionalLightNum;
 
 	//----------------Spot Light-----------------//
 	uint32 spotLightNum = m_spotLights.size();

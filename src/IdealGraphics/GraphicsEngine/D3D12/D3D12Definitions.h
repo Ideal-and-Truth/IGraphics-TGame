@@ -8,6 +8,12 @@
 
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
+
+//------------Light-----------//
+#define MAX_DIRECTIONAL_LIGHT_NUM 10
+#define MAX_POINT_LIGHT_NUM 100
+#define MAX_SPOT_LIGHT_NUM 100
+
 // SWAP CHAIN & MAX PENDING
 
 #define G_SWAP_CHAIN_NUM 4
