@@ -224,9 +224,9 @@ void Truth::Scene::Update()
 	{
 		auto& e = m_awakedEntity.front();
 		e->m_index = static_cast<int32>(m_entities.size());
-		m_entities.push_back(e);
+		// m_entities.push_back(e);
 #ifdef EDITOR_MODE
-		m_rootEntities.push_back(e);
+		// m_rootEntities.push_back(e);
 #endif // EDITOR_MODE
 		m_startedEntity.push(e);
 		e->Awake();
@@ -323,7 +323,7 @@ void Truth::Scene::Enter()
 	for (auto& e : m_entities)
 	{
 		e->m_index = index++;
-}
+	}
 #ifndef EDITOR_MODE
 	Start();
 #endif // EDITOR_MODE

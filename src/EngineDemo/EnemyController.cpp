@@ -261,7 +261,7 @@ void EnemyController::ComeBackHome()
 
 		float distance = (pos - m_homePos).Length();
 		// 돌아가기
-		if (distance > 0.1f)
+		if (distance > 1.0f)
 		{
 			m_isComeBack = true;
 			backDir.y = 0.0f;

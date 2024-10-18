@@ -67,6 +67,9 @@
     <Filter Include="Component\Effect">
       <UniqueIdentifier>{10adbfe9-94d3-420f-a326-b3649a822262}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\MapMove">
+      <UniqueIdentifier>{048e812f-4b82-4b77-b246-8ec49669dafb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -171,6 +174,9 @@
     <ClInclude Include="TestEffectGenerator.h">
       <Filter>Component\Effect</Filter>
     </ClInclude>
+    <ClInclude Include="MapMoveTrigger.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -265,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="TestEffectGenerator.cpp">
       <Filter>Component\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMoveTrigger.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

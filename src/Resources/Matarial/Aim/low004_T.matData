@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/DefaultData/DefaultAlbedo.png
-normalMap: ../Resources/DefaultData/DefaultNormalMap.png
-maskMap: ../Resources/DefaultData/DefaultBlack.png
+baseMap: ../Resources/Textures/Monster/T_Eunji_monster_cape, belt_BaseMap.png
+normalMap: ../Resources/Textures/Monster/T_Eunji_monster_cape, belt_Normal.png
+maskMap: ../Resources/Textures/Monster/T_Eunji_monster_cape, belt_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
