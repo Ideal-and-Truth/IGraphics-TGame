@@ -245,17 +245,22 @@ void EnemyController::ComeBackHome()
 			GetScale()
 		);
 
+		Vector3 homepos = m_managers.lock()->Scene()->m_currentScene->FindPath(
+			pos,
+			m_homePos,
+			GetScale()
+		);
 
 		Vector3 dir = targetPos - pos;
-		Vector3 backDir = m_homePos - pos;
+		Vector3 backDir = homepos - pos;
 
 		Quaternion lookRot;
 		Quaternion rot = m_owner.lock()->m_transform->m_rotation;
 
 
-		float distance = sqrt(pow(backDir.x, 2.f) + pow(backDir.z, 2.f));
+		float distance = (pos - m_homePos).Length();
 		// 돌아가기
-		if (distance > 1.f)
+		if (distance > 0.1f)
 		{
 			m_isComeBack = true;
 			backDir.y = 0.0f;

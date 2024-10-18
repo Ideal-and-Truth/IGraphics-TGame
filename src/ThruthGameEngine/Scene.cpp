@@ -26,7 +26,7 @@
 Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 	: m_managers(_managers)
 	, m_name("No Name Scene")
-	, m_mapPath(L"SampleScene")
+	, m_mapPath(L"")
 {
 }
 
@@ -130,7 +130,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		}
 		LoadEntity(e);
 	}
-	//LoadUnityData(L"1_HN_Scene2");
+	LoadUnityData(m_mapPath);
 }
 
 
