@@ -1,14 +1,3 @@
-//*********************************************************
-//
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//*********************************************************
-
 #ifndef RAYTRACING_HLSL
 #define RAYTRACING_HLSL
 
@@ -98,7 +87,7 @@ float2 HitAttribute(float2 vertexAttribute[3], BuiltInTriangleIntersectionAttrib
         attr.barycentrics.y * (vertexAttribute[2] - vertexAttribute[0]);
 }
 
-float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangentColor vertices[3], in MyAttributes attr)
+float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangentColor vertices[3], in MyAttributes attr, in float lod)
 {
     float3 tangent;
     float3 vertexTangents[3] =
@@ -120,9 +109,12 @@ float3 NormalMap(in float3 normal, in float2 texCoord, in PositionNormalUVTangen
     }
 
 
-    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, 0).xyz;
+    float3 texSample = l_texNormal.SampleLevel(LinearWrapSampler, texCoord, lod).xyz;
+    float3 newNormal;
     float3 bumpNormal = normalize(texSample * 2.f - 1.f);
-    float3 worldNormal = BumpMapNormalToWorldSpaceNormal(bumpNormal, normal, tangent);
+    //Ideal_NormalStrength_float(bumpNormal, 0.2, newNormal); // 다르게
+    Ideal_NormalStrength_float(bumpNormal, 1, newNormal); // 다르게
+    float3 worldNormal = BumpMapNormalToWorldSpaceNormal(newNormal, normal, tangent);
     return worldNormal;
 }
 RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float tMin = 0.001f, float tMax = 10000.f, bool cullNonOpaque = false)
@@ -148,8 +140,9 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     //rayDesc.TMin = g_sceneCB.nearZ;
     //rayDesc.TMax = g_sceneCB.farZ;
     
-    //UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
-    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE;
+    UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
+    //UINT rayFlags;// = RAY_FLAG_CULL_NON_OPAQUE;
+
     //rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     
     //UINT rayFlags = 0;
@@ -187,6 +180,33 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, inout RayPa
     float tMax = TMax;
 
     rayPayload = TraceRadianceRay(ray, rayPayload.rayRecursionDepth, tMin, tMax);
+    if(rayPayload.gBuffer.tHit != HitDistanceOnMiss)
+    {
+        rayPayload.gBuffer.tHit += RayTCurrent() + tOffset;
+    }
+
+    return rayPayload.radiance;
+}
+
+float3 TraceRefractedGBufferRay(in float3 hitPosition, in float3 wt, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in float TMax = 10000)
+{
+    float tOffset = 0.001f;
+    float3 offsetAlongRay = tOffset * wt;
+    float3 adjustedHitposition = hitPosition + offsetAlongRay;
+    Ray ray = {adjustedHitposition, wt};
+    float tMin = 0;
+    float tMax = TMax;
+   
+    bool cullNonOpaque = true;
+    int recursionDepth = rayPayload.rayRecursionDepth;
+    // recursionDepth = clamp(recursionDepth - 1, 0, 2);  // 0보단 작아지지 않게
+    //rayPayload = TraceRadianceRay(ray, rayPayload.rayRecursionDepth, tMin, tMax, cullNonOpaque);
+    rayPayload = TraceRadianceRay(ray, recursionDepth, tMin, tMax, cullNonOpaque);
+
+    if(rayPayload.gBuffer.tHit != HitDistanceOnMiss)
+    {
+        rayPayload.gBuffer.tHit += RayTCurrent() + tOffset;
+    }
 
     return rayPayload.radiance;
 }
@@ -210,7 +230,8 @@ bool TraceShadowRayAndReportIfHit(out float tHit, in Ray ray, in UINT currentRay
     
     ShadowRayPayload shadowPayload = { TMax };
     
-    UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE; // 투명 오브젝트 스킵
+    //UINT rayFlags = RAY_FLAG_CULL_NON_OPAQUE; // 투명 오브젝트 스킵
+    UINT rayFlags = 0; // RAY_FLAG_CULL_NON_OPAQUE; // 투명 오브젝트 스킵
     bool acceptFirstHit = !retrieveTHit;
     if (acceptFirstHit)
     {
@@ -286,7 +307,6 @@ void CalculateSpecularAndReflectionCoefficients(
     {
         Ks = float3(1,1,1) - roughness; // 비금속 표면인 경우 Roughness에 따라 조정
     }
-
     
     //// 기본 반사율 (비금속성 반사율)
     //const float3 F0_non_metallic = float3(0.04, 0.04, 0.04);
@@ -314,7 +334,8 @@ float3 Shade(
     float2 uv,
     in float3 N,
     in float3 objectNormal,
-    in float3 hitPosition
+    in float3 hitPosition,
+    in float lod
 )
 {
     float3 V = -WorldRayDirection();
@@ -323,14 +344,15 @@ float3 Shade(
     float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
 
     // 거리와 법선 각도를 기반으로 LOD 값 계산
-    float lod = log2(distance); // 거리 기반 LOD
-    lod -= log2(abs(dot(N, V))); // 법선과 광선 벡터의 각도에 따른 조정
-    //lod = saturate(lod);
-    float3 albedo = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
-    float3 Kd = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod).xyz;
+    float4 baseTex = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, lod);
+    float3 albedo = baseTex.xyz;
+
+    float3 Kd = baseTex.xyz;
     float3 Ks;
     float3 Kr;
-    const float3 Kt;
+    const float3 Kt = float3(1,1,1);
+    //const float3 Kt = float3(0.7,0.7,0.7);
+    //const float3 Kt = float3(0.1,0.1,0.1);
     float metallic;
     float roughness;
 
@@ -342,155 +364,80 @@ float3 Shade(
     
     CalculateSpecularAndReflectionCoefficients(Kd, metallic, roughness, V, N, Ks, Kr);
     
-    //roughness = 1.f;
-    //metallic = 0.f;
-    //Kr = 0;
-    float3 Lo = float3(0, 0, 0);
-    {
-  
-        float3 F0 = float3(0.04f, 0.04f, 0.04f);
-        F0 = lerp(F0, albedo, metallic);
-        
-        float3 L = -g_lightList.DirLight.Direction.xyz;
-        float3 H = normalize(V + L);
-        float3 radiance = g_lightList.DirLight.DiffuseColor.rgb;
-        
-        bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, L, N, rayPayload);
-        if(!isInShadow)
-        {
-            float NDF = DistributionGGX(N, H, roughness);
-            float G = GeometrySmith(N, V, L, roughness);
-            float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-        
-            float3 kS = F;
-            float3 nkD = float3(1.f, 1.f, 1.f) - kS;
-            nkD *= 1.0 - metallic;
-            float3 numerator = NDF * G * F;
-            float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-            float3 specular = numerator / max(denominator, 0.001);
-            float NdotL = max(dot(N, L), 0.0);
-            Lo += (nkD * albedo / PI + specular) * radiance * NdotL;
-        
-            float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
-            float3 color = ambient + Lo;
-            color += 0.2 * albedo;
-        //return color;
-            Lo = color;
-        }
-        else
-        {
-            Lo = 0.2 * albedo;
-        }
-    }
-    L = Lo;
-    
+
     if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
+        int dirLightNum = g_lightList.DirLightNum;
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
-        //int pointLightNum = 0;
-        //int spotLightNum = 0;
+    
         // Directional Light
-        //{
-        //    float3 direction = normalize(g_lightList.DirLight.Direction.xyz);
-        //    
-        //    float3 color = g_lightList.DirLight.DiffuseColor.rgb;
-        //    
-        //    bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, -direction, N, rayPayload);
-        //    L += Ideal::Light::ComputeDirectionalLight(
-        //    Kd,
-        //    Ks,
-        //    color,
-        //    isInShadow, roughness, N, V,
-        //    direction);
-        //}
+        {
+            for(int i = 0; i < dirLightNum; ++i)
+            {
+                float3 LightVector = -g_lightList.DirLights[i].Direction.xyz;
+                float3 H = normalize(V + LightVector);
+                float3 radiance = g_lightList.DirLights[i].DiffuseColor.rgb;
+                float intensity = g_lightList.DirLights[i].Intensity;
+                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
+                //L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
+                L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, intensity);
+            }
+        }
         
-        // Point Light
-        {   ////
-            //for (int i = 0; i < pointLightNum; ++i)
-            //{
-            //    float3 position = g_lightList.PointLights[i].Position.xyz;
-            //    float3 color = g_lightList.PointLights[i].Color.rgb;
-            //    float range = g_lightList.PointLights[i].Range;
-            //    
-            //    float3 direction = normalize(position - hitPosition);
-            //    float distance = length(position - hitPosition);
-            //    float att = Ideal::Attenuate(distance, range);
-            //    float intensity = g_lightList.PointLights[i].Intensity;
-            //    
-            //    bool isInShadow = false;
-            //    if(distance <= range)
-            //    {
-            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-            //    }
-            //    float3 light = Ideal::Light::ComputePointLight
-            //    (
-            //    Kd,
-            //    Ks,
-            //    color,
-            //    isInShadow,
-            //    roughness,
-            //    N,
-            //    V,
-            //    direction,
-            //    distance,
-            //    range,
-            //    intensity
-            //    );
-            //    L += light;
-            //}
-            //
-            //for (int i = 0; i < spotLightNum; ++i)
-            //{
-            //    float3 position = g_lightList.SpotLights[i].Position.xyz;
-            //    float3 color = g_lightList.SpotLights[i].Color.rgb;
-            //    float range = g_lightList.SpotLights[i].Range;
-            //    float angle = g_lightList.SpotLights[i].SpotAngle;
-            //    float intensity = g_lightList.SpotLights[i].Intensity;
-            //    float softness = g_lightList.SpotLights[i].Softness;
-            //    float3 direction = normalize(position - hitPosition);
-            //    float distance = length(position - hitPosition);
-            //    float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
-            //    
-            //    bool isInShadow = false;
-            //    if(distance <= range)
-            //    {
-            //        isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-            //    }
-            //    float3 light = Ideal::Light::ComputeSpotLight2(
-            //         Kd,
-            //         Ks,
-            //         color,
-            //         isInShadow,
-            //         roughness,
-            //         N,
-            //         V,
-            //         direction,
-            //         distance,
-            //         range,
-            //         intensity,
-            //         softness,
-            //         lightDirection,
-            //         angle
-            //     );
-            //
-            //    L += light;
-            //}
+        {   
+            // Point Light
+            for (int i = 0; i < pointLightNum; ++i)
+            {
+                float3 position = g_lightList.PointLights[i].Position.xyz;
+                float3 color = g_lightList.PointLights[i].Color.rgb;
+                float range = g_lightList.PointLights[i].Range;
+                float intensity = g_lightList.PointLights[i].Intensity;
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                bool isInShadow = false;
+                if(distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                    L += PointLight(isInShadow, V, direction, N, distance, color, albedo, roughness, metallic, intensity);
+                }
+            }
+            // SpotLight
+            for (int i = 0; i < spotLightNum; ++i)
+            {
+                float3 position = g_lightList.SpotLights[i].Position.xyz;
+                float3 color = g_lightList.SpotLights[i].Color.rgb;
+                float range = g_lightList.SpotLights[i].Range;
+                float angle = g_lightList.SpotLights[i].SpotAngle;
+                float intensity = g_lightList.SpotLights[i].Intensity;
+                float softness = g_lightList.SpotLights[i].Softness;
+                float3 direction = normalize(position - hitPosition);
+                float distance = length(position - hitPosition);
+                float3 lightDirection = normalize(g_lightList.SpotLights[i].Direction.xyz);
+                
+                bool isInShadow = false;
+                if (distance <= range)
+                {
+                    isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
+                    L += SpotLight(isInShadow, V, direction, lightDirection, N, distance, color, softness, angle, albedo, roughness, metallic, intensity, range);
+                }
+            }
         }
     }
 
-    
+    //L *= ao;
     // Temp : 0.2는 임시 값
-    //L += 0.2f * Kd;
+    L += 0.2f * albedo;
     //return L;
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);
     //bool isReflective = Ideal::CheckReflect(Kr);
-    bool isTransmissive = !BxDF::IsBlack(Kt); // 일단 굴절은 뺄까?
+    //bool isTransmissive = !BxDF::IsBlack(Kt); // 일단 굴절은 뺄까?
+    bool isTransmissive = l_materialInfo.bIsTransmissive;
     
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
-    if (isReflective)
+    if (isReflective || isTransmissive)
     {
         float range = 3000.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);
         if (isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
@@ -516,6 +463,16 @@ float3 Shade(
                 //float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
                 //L += result;
                 
+            }
+            if(isTransmissive)
+            {
+                if(baseTex.a < 0.5f)
+                {
+                    float3 wt;
+                    float3 Ft = Kt * BxDF::Specular::Transmission::Sample_Ft(V, wt, N, Fo);
+                    RayPayload refractedRayPayLoad = rayPayload;
+                    L += Ft * TraceRefractedGBufferRay(hitPosition, wt, N, objectNormal, refractedRayPayLoad);
+                }
             }
         }
     }
@@ -603,6 +560,13 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         l_vertices[indices[2]].normal 
     };
     
+    float3 vertexPositions[3] =
+    {
+        l_vertices[indices[0]].position,
+        l_vertices[indices[1]].position,
+        l_vertices[indices[2]].position 
+    };
+    
     float3 vertexTangents[3] =
     {
         l_vertices[indices[0]].tangent,
@@ -650,24 +614,36 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         //normal = normalize(mul(objectNormal, (float3x3) ObjectToWorld3x4()));
     }
    
-    //if(l_materialInfo.bUseNormalMap == false)
-    //if(l_materialInfo.bUseNormalMap == true)
+    
+    float lod;
     {
-        normal = NormalMap(normal, uv, vertexInfo, attr);
+        float distance = length(g_sceneCB.cameraPosition.xyz - hitPosition);
+        ///// calculate lod
+        // calculate alpha
+        float alpha = 2 * atan(g_sceneCB.FOV / g_sceneCB.resolutionY * 2);
+        float coneWidth = 2 * distance * tan(alpha / 2);
+
+        // calculate texLOD
+        float2 vTriUVInfo = TriUVInfoFromRayCone(
+        WorldRayDirection(), normal, coneWidth,
+        vertexTexCoords, vertexPositions, (float3x3) ObjectToWorld3x4()
+        );
+        
+        uint2 texSize;
+        l_texDiffuse.GetDimensions(texSize.x, texSize.y);
+        float MipIndex = TriUVInfoToTexLOD(texSize, vTriUVInfo);
+        lod = MipIndex;
+        lod *= 0.7f;
     }
-    if(dot(-WorldRayDirection(), normal) < 0)
     {
-        //payload.radiance = float3(1,1,1); return;
+        normal = NormalMap(normal, uv, vertexInfo, attr, lod);
     }
-    //payload.radiance = normal; return;
-    //payload.radiance = normal;
-    //return; 
     
     // GBuffer
     payload.gBuffer.tHit = RayTCurrent();
     payload.gBuffer.hitPosition = hitPosition;
 
-    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition);
+    payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod);
 }
 
 [shader("closesthit")]
@@ -689,4 +665,71 @@ void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
     rayPayload.tHit = HitDistanceOnMiss;
 }
 
+[shader("anyhit")]
+void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
+{
+
+   if(l_materialInfo.bIsTransmissive)
+    {
+        //IgnoreHit();
+        AcceptHitAndEndSearch();
+        return;
+    }
+
+    float3 hitPosition = HitWorldPosition();
+    uint baseIndex = PrimitiveIndex() * 3;
+    const uint3 indices = uint3(
+         l_indices[baseIndex],
+         l_indices[baseIndex + 1],
+         l_indices[baseIndex + 2]
+     );
+    PositionNormalUVTangentColor vertexInfo[3] =
+    {
+        l_vertices[indices[0]],
+        l_vertices[indices[1]],
+        l_vertices[indices[2]]
+    };
+    float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
+    float2 uv = HitAttribute(vertexTexCoords, attr);
+    float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
+    if(alpha < 0.5f)    // threshold
+    {
+        IgnoreHit();
+    }
+}
+
+[shader("anyhit")]
+void MyAnyHitShader_ShadowRay(inout ShadowRayPayload payload, in MyAttributes attr)
+{
+
+    if(l_materialInfo.bIsTransmissive)
+    {
+        IgnoreHit();
+        return;
+    }
+
+    payload.tHit = RayTCurrent();
+    float3 hitPosition = HitWorldPosition();
+    uint baseIndex = PrimitiveIndex() * 3;
+    const uint3 indices = uint3(
+         l_indices[baseIndex],
+         l_indices[baseIndex + 1],
+         l_indices[baseIndex + 2]
+     );
+    PositionNormalUVTangentColor vertexInfo[3] =
+    {
+        l_vertices[indices[0]],
+        l_vertices[indices[1]],
+        l_vertices[indices[2]]
+    };
+    float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
+    float2 uv = HitAttribute(vertexTexCoords, attr);
+    float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
+
+    if(alpha < 0.5f)    // threshold
+    {
+        IgnoreHit();
+        return;
+    }
+}
 #endif // RAYTRACING_HLSL

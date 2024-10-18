@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/chain/T_chain_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/chain/T_chain_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/chain/T_chain_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

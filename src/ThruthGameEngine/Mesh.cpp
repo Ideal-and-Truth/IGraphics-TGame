@@ -73,21 +73,21 @@ void Truth::Mesh::SetMesh(std::wstring _path)
 	m_mat.clear();
 	if (m_matPath.empty())
 	{
-// 		for (uint32 i = 0; i < meshSize; i++)
-// 		{
-// 			m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
-// 			std::string s = m_subMesh[i]->GetFBXMaterialName();
-// 			m_mat.push_back(m_managers.lock()->Graphics()->CreateMaterial(s));
-// 		}
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
+			std::string s = m_subMesh[i]->GetFBXMaterialName();
+			m_mat.push_back(m_managers.lock()->Graphics()->CreateMaterial(s));
+		}
 	}
 	else
 	{
-// 		for (uint32 i = 0; i < meshSize; i++)
-// 		{
-// 			const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
-// 			m_mat.push_back(mat);
-// 			m_mesh->GetMeshByIndex(i).lock()->SetMaterialObject(mat->m_material);
-// 		}
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
+			m_mat.push_back(mat);
+			m_mesh->GetMeshByIndex(i).lock()->SetMaterialObject(mat->m_material);
+		}
 	}
 }
 
@@ -106,21 +106,21 @@ void Truth::Mesh::SetMesh()
 	m_mat.clear();
 	if (m_matPath.empty())
 	{
-// 		for (uint32 i = 0; i < meshSize; i++)
-// 		{
-// 			m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
-// 			std::string s = m_subMesh[i]->GetFBXMaterialName();
-// 			m_mat.push_back(m_managers.lock()->Graphics()->CreateMaterial(s));
-// 		}
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			m_subMesh[i] = m_mesh->GetMeshByIndex(i).lock();
+			std::string s = m_subMesh[i]->GetFBXMaterialName();
+			m_mat.push_back(m_managers.lock()->Graphics()->CreateMaterial(s));
+		}
 	}
 	else
 	{
-// 		for (uint32 i = 0; i < meshSize; i++)
-// 		{
-// 			const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
-// 			m_mat.push_back(mat);
-// 			m_mesh->GetMeshByIndex(i).lock()->SetMaterialObject(mat->m_material);
-// 		}
+		for (uint32 i = 0; i < meshSize; i++)
+		{
+			const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
+			m_mat.push_back(mat);
+			m_mesh->GetMeshByIndex(i).lock()->SetMaterialObject(mat->m_material);
+		}
 	}
 }
 
@@ -172,10 +172,8 @@ void Truth::Mesh::SetMaterialByIndex(uint32 _index, std::string _material)
 	const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(_material);
 	m_subMesh[_index]->SetMaterialObject(mat->m_material);
 
-	if (mat->m_alphaCulling)
-	{
+	if (mat->m_alphaCulling || mat->m_transparent)
 		m_mesh->AlphaClippingCheck();
-	}
 
 	if (_index >= m_matPath.size())
 		return;

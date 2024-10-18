@@ -83,6 +83,24 @@ namespace BxDF
             }
         }
         
+        namespace Transmission
+        {
+
+            // Calculates transmitted ray wt and return BRDF value for that direction.
+            // Assumptions: V and N are in the same hemisphere.
+            // Note: to avoid unnecessary precision issues and for the sake of performance the function doesn't divide by the cos term
+            // so as to nullify the cos term in the rendering equation. Therefore the caller should skip the cos term in the rendering equation.
+            float3 Sample_Ft(in float3 V, out float3 wt, in float3 N, in float3 Fo)
+            {
+                float ior = 1;
+                wt = -V; // TODO: refract(-V, N, ior);
+                float cos_thetai = dot(V, N);
+                float3 Kr = Fresnel(Fo, cos_thetai);
+
+                return (1 - Kr);
+            }
+        }
+        
         namespace GGX
         {
              // Compute the value of BRDF
@@ -200,16 +218,16 @@ namespace Ideal
     }
     float Attenuate(float distance, float range)
     {
-        float att = saturate(1.f - (distance * distance / (range * range)));
-        return att * att;
+        // float att = saturate(1.f - (distance * distance / (range * range)));
+       // return att * att;
         
-        //float numer = distance / range;
-        //numer = numer * numer;
-        //numer = numer * numer;
-        //numer = saturate(1 - numer);
-        //numer = numer * numer;
-        //float denom = dist * dist + 1;
-        //return (numer / denom);
+        float numer = distance / range;
+        numer = numer * numer;
+        numer = numer * numer;
+        numer = saturate(1 - numer);
+        numer = numer * numer;
+        float denom = distance * distance + 1;
+        return (numer / denom);
     }
     
     namespace Light
@@ -565,6 +583,7 @@ void Ideal_TilingAndOffset_float(float2 UV, float2 Tiling, float2 Offset, out fl
 
 
 ///////////////////////////////////////////////////////////
+// https://github.com/nfginola/dx11_pbr/blob/main/shaders/ForwardPBR_PS.hlsl
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
     float a = roughness * roughness;
@@ -604,4 +623,139 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
 }
+
+float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 LightColor, float3 albedo, float roughness, float metallic, float intensity)
+{
+    if(isInShadow)
+        return float3(0, 0, 0);
+    
+    float3 Lo = float3(0, 0, 0);
+    
+    float3 F0 = float3(0.04f, 0.04f, 0.04f);
+    F0 = lerp(F0, albedo, metallic);
+    float3 H = normalize(V + L);
+    float3 radiance = LightColor * intensity;
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, L, roughness);
+    float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        
+    float3 kS = F;
+    float3 kD = float3(1.f, 1.f, 1.f) - kS;
+    kD *= 1.0 - metallic;
+    float3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+    float3 specular = numerator / max(denominator, 0.001);
+    float NdotL = max(dot(N, L), 0.0);
+    Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+        
+    float3 ambient = float3(0.03, 0.03, 0.03) * albedo;
+    float3 color = ambient + Lo;
+    //color += 0.2 * albedo;
+    Lo = color;
+    
+    return Lo;
+}
+
+float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float distance, float3 LightColor, float3 albedo, float roughness, float metallic, float lightIntensity)
+{
+    if(isInShadow)
+        return float3(0, 0, 0);
+    
+    float3 Lo = float3(0.f, 0.f, 0.f);
+    
+    float3 F0 = float3(0.04f, 0.04f, 0.04f);
+    F0 = lerp(F0, albedo, metallic);
+    float3 H = normalize(V + Direction);
+    
+    float attenuation = 1.0 / (distance * distance);
+    float3 radiance = LightColor * lightIntensity* attenuation;
+    
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, Direction, roughness);
+    float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        
+    float3 kS = F;
+    float3 kD = float3(1.f, 1.f, 1.f) - kS;
+    kD *= 1.0 - metallic;
+    float3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, Direction), 0.0);
+    float3 specular = numerator / max(denominator, 0.001);
+    float NdotL = max(dot(N, Direction), 0.0);
+    Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+
+    return Lo;
+}
+
+float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirection, float3 N, float distance, float3 LightColor,float softness, float angle, float3 albedo, float roughness, float metallic, float lightIntensity, float range)
+{
+    if (isInShadow)
+        return float3(0, 0, 0);
+    
+    
+    float spotEffect = dot(normalize(-Direction), LightDirection);
+    float cutoff = cos(radians(angle * 0.5));
+    float SpotSoftness = softness;
+    float outerCutoff = cos(radians((angle * 0.5) + SpotSoftness));
+    float smoothFactor = smoothstep(outerCutoff, cutoff, spotEffect);
+    float3 Lo = float3(0.f, 0.f, 0.f);
+    if (spotEffect > outerCutoff)
+    {
+    
+        float3 F0 = float3(0.04f, 0.04f, 0.04f);
+        F0 = lerp(F0, albedo, metallic);
+        float3 H = normalize(V + Direction);
+    
+        //float attenuation = 1.0 / (distance * distance);
+        float attenuation = Ideal::Attenuate(distance, range);
+        float newIntensity = lightIntensity * attenuation * smoothFactor;
+        float3 radiance = LightColor * newIntensity * attenuation;
+    
+        float NDF = DistributionGGX(N, H, roughness);
+        float G = GeometrySmith(N, V, Direction, roughness);
+        float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        
+        float3 kS = F;
+        float3 kD = float3(1.f, 1.f, 1.f) - kS;
+        kD *= 1.0 - metallic;
+        float3 numerator = NDF * G * F;
+        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, Direction), 0.0);
+        float3 specular = numerator / max(denominator, 0.001);
+        float NdotL = max(dot(N, Direction), 0.0);
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+    }
+    
+    return Lo;
+}
+
+void Ideal_NormalStrength_float(float3 In, float Strength, out float3 Out)
+{
+    //Out = {precision}3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
+    Out = float3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
+}
+
+float2 TriUVInfoFromRayCone(
+float3 vRayDir, float3 vWorldNormal, float vRayConeWidth,
+float2 aUV[3], float3 aPos[3], float3x3 matWorld
+)
+{
+    float2 vUV10 = aUV[1] - aUV[0];
+    float2 vUV20 = aUV[2] - aUV[0];
+    float fTriUVArea = abs(vUV10.x * vUV20.y - vUV20.x * vUV10.y);
+    
+    float3 vEdge10 = mul(aPos[1] - aPos[0], matWorld);
+    float3 vEdge20 = mul(aPos[2] - aPos[0], matWorld);
+    float3 vFaceNrm = cross(vEdge10, vEdge20);
+    
+    float fTriLODOffset = 0.5f * log2(fTriUVArea / length(vFaceNrm));
+    float fDistTerm = vRayConeWidth * vRayConeWidth;
+    float fNormalTerm = dot(vRayDir, vWorldNormal);
+    
+    return float2(fTriLODOffset, fDistTerm / (fNormalTerm * fNormalTerm));
+}
+
+float TriUVInfoToTexLOD(uint2 vTexSize, float2 vUVInfo)
+{
+    return vUVInfo.x + 0.5f * log2(vTexSize.x * vTexSize.y * vUVInfo.y);
+}
+
 #endif

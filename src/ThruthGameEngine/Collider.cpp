@@ -103,6 +103,13 @@ void Truth::Collider::Destroy()
 /// </summary>
 void Truth::Collider::Awake()
 {
+	SetCenter(m_center);
+	SetSize(m_size);
+
+	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
+	Matrix tempSzie = Matrix::CreateScale(m_debugMeshSize);
+	m_globalTM = m_localTM * ownerTM;
+
 	if (m_shape == ColliderShape::MESH)
 	{
 		return;
@@ -111,8 +118,6 @@ void Truth::Collider::Awake()
 	Vector3 finalSize = {};
 	Vector3 finalPos = {};
 	Quaternion temp = {};
-
-
 
 	bool isSRT = (m_localTM * m_owner.lock()->GetWorldTM()).Decompose(finalSize, temp, finalPos);
 
@@ -164,10 +169,30 @@ void Truth::Collider::Awake()
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
+
+		Vector3 p = m_owner.lock()->GetWorldPosition();
+		Quaternion r = m_owner.lock()->GetWorldRotation();
+
+		physx::PxTransform wt(
+			MathUtil::Convert(m_owner.lock()->GetWorldPosition()),
+			MathUtil::Convert(m_owner.lock()->GetWorldRotation())
+		);
+		m_body->setGlobalPose(wt);
+
 		return;
 	}
 
 	m_body = m_rigidbody.lock()->m_body;
+
+	Vector3 p = m_owner.lock()->GetWorldPosition();
+	Quaternion r = m_owner.lock()->GetWorldRotation();
+
+	physx::PxTransform t(
+		MathUtil::Convert(m_owner.lock()->GetWorldPosition()),
+		MathUtil::Convert(m_owner.lock()->GetWorldRotation())
+	);
+	m_body->setGlobalPose(t);
+
 }
 
 void Truth::Collider::FixedUpdate()

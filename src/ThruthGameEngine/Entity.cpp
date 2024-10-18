@@ -53,6 +53,8 @@ void Truth::Entity::Initialize()
 	{
 		LinkBone(m_linkBoneName);
 	}
+
+	m_transform->ApplyTransform();
 }
 
 void Truth::Entity::SetPosition(const Vector3& _pos) const

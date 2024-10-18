@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/DefaultData/DefaultAlbedo.png
-normalMap: ../Resources/DefaultData/DefaultNormalMap.png
-maskMap: ../Resources/DefaultData/DefaultBlack.png
+baseMap: ../Resources/Textures/BossMonster/T_Boss_arm_BaseMap.png
+normalMap: ../Resources/Textures/BossMonster/T_Boss_arm_Normal.png
+maskMap: ../Resources/Textures/BossMonster/T_Boss_arm_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

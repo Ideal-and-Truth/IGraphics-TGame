@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/potandtile/T_potandtile_BaseMap.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/potandtile/T_potandtile_Normal.png
+maskMap: ../Resources/Textures/MapData/1_HN_Scene2/potandtile/T_potandtile_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

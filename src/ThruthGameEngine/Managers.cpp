@@ -58,6 +58,7 @@ void Truth::Managers::Update() const
 	m_physXManager->Update();
 	m_sceneManager->Update();
 	m_eventManager->Update();
+	m_particleManager->Update();
 #endif // EDITOR_MODE
 
 }

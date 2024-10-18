@@ -1,0 +1,18 @@
+MaxCount: 40
+MatName: Beam
+EBlendingMode: 0
+Shader: BossFX_1Beam
+Texture0: ../Resources/Textures/0_Particle/boss/PerlinMap_4.png
+Texture1: ../Resources/Textures/0_Particle/boss/GausianNoise_3.png
+Mesh: 0_Particle/Cylinder_01
+StartSize: 0.35
+SimulationSpeed: 2
+StartColor:
+  - 0.1080087
+  - 0.5713133
+  - 2.544206
+  - 1
+Loop: false
+Duration: 2
+StopEnd: true
+RenderMode: 1

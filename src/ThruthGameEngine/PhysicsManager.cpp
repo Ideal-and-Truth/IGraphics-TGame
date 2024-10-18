@@ -55,17 +55,13 @@ void Truth::PhysicsManager::Initalize()
 	m_foundation = ::PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
 
 	// visual debugger 생성 
-#ifdef EDITOR_MODE
 	m_pvd = physx::PxCreatePvd(*m_foundation);
 	m_trasport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
-#endif // EDITOR_MODE
 
 	// physx에서 실제 물리 연산을 할 객체를 생성하는 physics 클래스
 	m_physics = ::PxCreatePhysics(PX_PHYSICS_VERSION, *m_foundation, physx::PxTolerancesScale(), true, m_pvd);
-#ifdef EDITOR_MODE
 	::PxInitExtensions(*m_physics, m_pvd);
-#endif // EDITOR_MODE
 
 	// 이벤트 콜백 함수
 	collisionCallback = new Truth::PxEventCallback();
@@ -164,10 +160,8 @@ void Truth::PhysicsManager::ResetPhysX()
 
 	CreatePhysxScene();
 
-#ifdef EDITOR_MODE
 	m_pvd->disconnect();
 	m_pvd->connect(*m_trasport, physx::PxPvdInstrumentationFlag::eALL);
-#endif // EDITOR_MODE
 }
 
 /// <summary>
@@ -442,19 +436,16 @@ void Truth::PhysicsManager::CreatePhysxScene()
 	// 씬 생성
 	m_scene = m_physics->createScene(sceneDesc);
 
-#ifdef EDITOR_MODE
 	// 출력 할 디버깅 정보
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eBODY_MASS_AXES, 1.0f);
 	m_scene->setVisualizationParameter(physx::PxVisualizationParameter::eACTOR_AXES, 4.0f);
 	physx::PxPvdSceneClient* pvdClient = m_scene->getScenePvdClient();
-#endif // EDITOR_MODE
 
 	auto s = m_scene->getBounceThresholdVelocity();
 	m_scene->setBounceThresholdVelocity(100.0f);
 
-#ifdef EDITOR_MODE
 	// 디버거 플래그
 	if (pvdClient)
 	{
@@ -462,13 +453,12 @@ void Truth::PhysicsManager::CreatePhysxScene()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-#endif // EDITOR_MODE
 
 
 	// 기본 바닥 만들기 (필요없는 경우 없애면 된다)
  	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
-	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
-	m_scene->addActor(*groundPlane);
+	// physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
+	// m_scene->addActor(*groundPlane);
 
 	// 컨트롤러 매니저 만들기
 	m_CCTManager = PxCreateControllerManager(*m_scene);
