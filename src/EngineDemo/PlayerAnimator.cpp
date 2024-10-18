@@ -1412,7 +1412,6 @@ void PlayerAnimator::PlayEffects()
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\DodgeAttack.yaml");
-			p->SetDeltaTime(GetDeltaTime());
 			p->SetTransformMatrix(
 				rotationMT
 				* Matrix::CreateTranslation(effectPos)

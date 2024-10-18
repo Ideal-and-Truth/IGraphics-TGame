@@ -869,7 +869,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
-			p->SetDeltaTime(GetDeltaTime());
 			p->SetTransformMatrix(
 				Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
 				Matrix::CreateRotationX(3.14f * 0.5f) *
@@ -882,7 +881,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
-			p->SetDeltaTime(GetDeltaTime());
 			p->SetTransformMatrix(
 				Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
 				Matrix::CreateRotationX(3.14f * 0.5f) *
@@ -895,7 +893,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
-			p->SetDeltaTime(GetDeltaTime());
 			p->SetTransformMatrix(
 				Matrix::CreateTranslation(pos)
 			);
@@ -911,7 +908,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
-			p->SetDeltaTime(GetDeltaTime());
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
 				* Matrix::CreateScale(Vector3(2.5, 2.5, 1) * 2.f)
@@ -926,7 +922,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact1.yaml");
-			p->SetDeltaTime(GetDeltaTime());
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
 				* Matrix::CreateScale(Vector3(3, 3, 1) * 2.f)
@@ -941,7 +936,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact2.yaml");
-			p->SetDeltaTime(GetDeltaTime());
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
 				* Matrix::CreateScale(Vector3(1, 1, 2) * 2.f)
