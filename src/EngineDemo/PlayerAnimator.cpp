@@ -313,7 +313,8 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 			}
 		}
 	}
-	else if (_other->GetOwner().lock()->GetComponent<SimpleDamager>().lock() && !m_isDodge)
+
+	if (_other->GetOwner().lock()->GetComponent<SimpleDamager>().lock() && !m_isDodge)
 	{
 		auto damager = _other->GetOwner().lock()->GetComponent<SimpleDamager>().lock();
 		if (!damager->GetTypeInfo().GetProperty("onlyHitOnce")->Get<bool>(damager.get()).Get())
