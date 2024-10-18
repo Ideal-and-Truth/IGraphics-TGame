@@ -34,7 +34,7 @@ void EnemyController::Start()
 	m_controller = m_owner.lock()->GetComponent<Truth::Controller>();
 	m_enemy = m_owner.lock()->GetComponent<Enemy>();
 	m_target = m_enemy.lock().get()->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.lock().get()).Get();
-	m_homePos = m_owner.lock()->m_transform->m_position;
+	m_homePos = m_owner.lock()->GetWorldPosition();
 	m_bossAnimator = m_owner.lock()->GetComponent<BossAnimator>().lock();
 }
 
@@ -58,7 +58,7 @@ void EnemyController::Update()
 		GetScale()
 	);
 
-	Vector3 playerPos = m_target.lock()->m_transform->m_position;
+	Vector3 playerPos = m_target.lock()->GetWorldPosition();
 
 	Vector3 dir = targetPos - pos;
 
@@ -162,7 +162,8 @@ void EnemyController::FollowTarget()
 			GetScale()
 		);
 
-		Vector3 playerPos = m_target.lock()->m_transform->m_position;
+		Vector3 playerPos = m_target.lock()->GetWorldPosition();
+		
 
 		Vector3 dir = targetPos - pos;
 

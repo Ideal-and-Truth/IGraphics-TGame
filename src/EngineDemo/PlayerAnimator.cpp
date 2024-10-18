@@ -167,102 +167,15 @@ void PlayerAnimator::Update()
 	}
 
 
+
 	m_isLockOn = m_playerCamera->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_playerCamera.get()).Get();
 	m_forwardInput = m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get();
 	m_sideInput = m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get();
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 
-	Vector3 effectPos = m_owner.lock()->m_transform->m_position;
-	Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
-	effectPos.y += 1.f;
 
-	if (m_normalAttack1)
-	{
-		m_normalAttack1 = false;
-
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
-
-		effectRot.z += (3.141592 / 180.f) * -45.f;
-
-		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
-		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
-		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
-		p->SetActive(true);
-		p->SetSimulationSpeed(3.f);
-		p->Play();
-		p->SetDeltaTime(GetDeltaTime());
-	}
-	if (m_normalAttack2)
-	{
-		m_normalAttack2 = false;
-
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
-
-		effectRot.z += (3.141592 / 180.f) * 180.f;
-
-		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
-		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
-		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
-		p->SetActive(true);
-		p->SetSimulationSpeed(3.f);
-		p->Play();
-		p->SetDeltaTime(GetDeltaTime());
-	}
-	if (m_normalAttack3)
-	{
-		m_normalAttack3 = false;
-
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
-
-		effectRot.z += (3.141592 / 180.f) * 45.f;
-
-		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
-		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
-		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
-		p->SetActive(true);
-		p->SetSimulationSpeed(2.f);
-		p->Play();
-		p->SetDeltaTime(GetDeltaTime());
-	}
-	if (m_normalAttack4)
-	{
-		m_normalAttack4 = false;
-
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
-
-		effectRot.z += (3.141592 / 180.f) * -25.f;
-
-		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
-		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
-		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
-		p->SetActive(true);
-		p->SetSimulationSpeed(2.f);
-		p->Play();
-		p->SetDeltaTime(GetDeltaTime());
-	}
-	if (m_normalAttack6)
-	{
-		m_normalAttack6 = false;
-
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
-
-		effectRot.z += (3.141592 / 180.f) * 200.f;
-
-		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
-		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
-		p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
-		p->SetActive(true);
-		p->SetSimulationSpeed(1.f);
-		p->Play();
-		p->SetDeltaTime(GetDeltaTime());
-	}
-
+	PlayEffects();
 
 	if (m_isAttack)
 	{
@@ -864,6 +777,8 @@ void ChargedAttack1::OnStateEnter()
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	GetProperty("chargedAttack1")->Set(m_animator, true);
+
 }
 
 void ChargedAttack1::OnStateUpdate()
@@ -874,6 +789,7 @@ void ChargedAttack1::OnStateUpdate()
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 20)
 	{
+		isReset = false;
 		GetProperty("isAttacking")->Set(m_animator, false);
 	}
 	if (GetProperty("isCharged")->Get<float>(m_animator).Get() > 0.3f && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 20 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 33))
@@ -1149,85 +1065,158 @@ void ComboReady::OnStateExit()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 }
 
-
-
-/* »èÁ¦µÈ °È±â
-void PlayerWalk::OnStateEnter()
+void PlayerAnimator::PlayEffects()
 {
-	if (GetProperty("isLockOn")->Get<bool>(m_animator).Get())
+	Vector3 effectPos = m_owner.lock()->m_transform->m_position;
+	Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
+	effectPos.y += 1.f;
+
+	if (m_normalAttack1)
 	{
-		if (GetProperty("forwardInput")->Get<float>(m_animator).Get() >= 0.f)
+		m_normalAttack1 = false;
+
 		{
-			if (GetProperty("sideInput")->Get<float>(m_animator).Get() < 0.f)
-			{
-				dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("StrafeL", false);
-			}
-			else if (GetProperty("sideInput")->Get<float>(m_animator).Get() > 0.f)
-			{
-				dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("StrafeR", false);
-			}
-			else
-			{
-				dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Walk", false);
-			}
-		}
-		else
-		{
-			if (GetProperty("sideInput")->Get<float>(m_animator).Get() < 0.f)
-			{
-				dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("BackStrafeL", false);
-			}
-			else if (GetProperty("sideInput")->Get<float>(m_animator).Get() > 0.f)
-			{
-				dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("BackStrafeR", false);
-			}
-			else
-			{
-				dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("BackStep", false);
-			}
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
+
+			effectRot.z += (3.141592 / 180.f) * 45.f;
+			effectRot.x += (3.141592 / 180.f) * 180.f;
+
+			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+			Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+			p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+			p->SetActive(true);
+			p->SetSimulationSpeed(3.f);
+			p->Play();
 		}
 	}
-	else
+	if (m_normalAttack2)
 	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Walk", false);
+		m_normalAttack2 = false;
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
+
+			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+			Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+			p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+			p->SetActive(true);
+			p->SetSimulationSpeed(3.f);
+			p->Play();
+		}
+	}
+	if (m_normalAttack3)
+	{
+		m_normalAttack3 = false;
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
+
+			effectRot.z += (3.141592 / 180.f) * -45.f;
+			effectRot.x += (3.141592 / 180.f) * 180.f;
+
+			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+			Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+			p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+	if (m_normalAttack4)
+	{
+		m_normalAttack4 = false;
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
+
+			effectRot.x += (3.141592 / 180.f) * 180.f;
+			effectRot.z += (3.141592 / 180.f) * 45.f;
+
+			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+			Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+			p->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+	if (m_normalAttack6)
+	{
+		m_normalAttack6 = false;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack_S.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5, 3, 1.5))
+				* Matrix::CreateRotationZ(0.13f)
+				* traslationMT
+			);
+			p->SetActive(true);
+			p->Play();
+		}
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack_S.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5, 3, 1.5))
+				* Matrix::CreateRotationY(2.44f)
+				* Matrix::CreateRotationZ(-0.13f)
+				* traslationMT
+			);
+			p->SetActive(true);
+			p->Play();
+		}
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack_S.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateRotationY(2.44f)
+				* traslationMT
+			);
+			p->SetActive(true);
+			p->Play();
+		}
 	}
 
-	m_lastForwardInput = GetProperty("forwardInput")->Get<float>(m_animator).Get();
-	m_lastSideInput = GetProperty("sideInput")->Get<float>(m_animator).Get();
+	if (m_chargedAttack1)
+	{
+		m_chargedAttack1 = false;
+
+		{
+			effectRot.z += (3.141592 / 180.f) * 45.f;
+			effectRot.y += (3.141592 / 180.f) * 170.f;
+			effectRot.x += (3.141592 / 180.f) * 160.f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->Play();
+		}
+
+		{
+			effectRot.y += (3.141592 / 180.f) * -20.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->Play();
+		}
+	}
 }
-
-void PlayerWalk::OnStateUpdate()
-{
-	if (m_lastForwardInput != GetProperty("forwardInput")->Get<float>(m_animator).Get() || m_lastSideInput != GetProperty("sideInput")->Get<float>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Walk");
-	}
-
-	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
-	}
-
-	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
-	}
-
-	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("NormalAttack1");
-		GetProperty("isAttack")->Set(m_animator, false);
-	}
-
-	if (GetProperty("isRun")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Run");
-	}
-
-	if (!GetProperty("isWalk")->Get<bool>(m_animator).Get() && !GetProperty("isRun")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-	}
-}
-*/
-

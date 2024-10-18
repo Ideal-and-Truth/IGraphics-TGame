@@ -420,7 +420,22 @@ private:
 
 	PROPERTY(normalAttack6);
 	bool m_normalAttack6;
-	
+
+	PROPERTY(chargedAttack1);
+	bool m_chargedAttack1;
+
+	PROPERTY(chargedAttack2);
+	bool m_chargedAttack2;
+
+	PROPERTY(chargedAttack3);
+	bool m_chargedAttack3;
+
+	PROPERTY(chargedAttack4);
+	bool m_chargedAttack4;
+
+	PROPERTY(chargedAttack5);
+	bool m_chargedAttack5;
+
 	float m_lastHp;
 
 	float m_passingTime;
@@ -440,6 +455,9 @@ private:
 
 	PROPERTY(currentFrame);
 	int m_currentFrame;
+
+private:
+	void PlayEffects();
 
 public:
 	PlayerAnimator();

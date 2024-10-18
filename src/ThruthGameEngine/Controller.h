@@ -81,6 +81,9 @@ namespace Truth
 		bool IsCollisionDown();
 		bool IsCollisionUp();
 		bool IsCollisionSide();
+
+		void PhysxAwake();
+
 		std::shared_ptr<Truth::RigidBody> GetRigidbody() const { return m_rigidbody; }
 	};
 

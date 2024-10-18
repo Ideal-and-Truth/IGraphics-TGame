@@ -11,6 +11,7 @@ namespace YAML
 namespace Truth
 {
 	class GraphicsManager;
+	class TimeManager;
 }
 
 namespace Ideal
@@ -27,7 +28,7 @@ namespace Truth
 		uint32 m_ind = 0;
 		uint32 m_maxCount;
 		std::shared_ptr<GraphicsManager> m_grapics;
-
+		
 	public:
 		ParticePool(std::shared_ptr<GraphicsManager> _graphic);
 		~ParticePool();
@@ -44,12 +45,13 @@ namespace Truth
 
 		std::unordered_map<fs::path, std::shared_ptr<ParticePool>> m_particleMap;
 		std::unordered_map<std::string, std::shared_ptr<Ideal::IParticleMaterial>> m_particleMatMap;
-
+		std::shared_ptr<TimeManager> m_timeManager;
 	public:
 		ParticleManager();
 		~ParticleManager();
 
-		void Initalize(std::shared_ptr<GraphicsManager> _grapics);
+		void Initalize(std::shared_ptr<GraphicsManager> _grapics, std::shared_ptr<TimeManager> _timeManager);
+		void Update();
 		void Finalize();
 		
 		void CreateEmptyParticle();

@@ -134,30 +134,33 @@ void TestEffectGenerator::Update()
 // 	}
 
 	/// 강화평타
-// 	if (GetKeyDown(KEY::P))
-// 	{
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
-// 		p->SetTransformMatrix(
-// 			Matrix::CreateRotationY(-2.7925f)
-// 			* Matrix::CreateTranslation(Vector3(6, 0, 0))
-// 		);
-// 		p->SetActive(true);
-// 		p->Play();
-// 	}
-// 
-// 	if (GetKeyDown(KEY::P))
-// 	{
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
-// 		p->SetTransformMatrix(
-// 			Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
-// 			* Matrix::CreateRotationY(-3.14f)
-// 			* Matrix::CreateTranslation(Vector3(6, 0, 0))
-// 		);
-// 		p->SetActive(true);
-// 		p->Play();
-// 	}
+//작은년
+	if (GetKeyDown(KEY::O))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+		p->SetDeltaTime(GetDeltaTime());
+		p->SetTransformMatrix(
+			Matrix::CreateRotationY(-2.7925f)
+			//Matrix::CreateRotationY(-3.14f)
+
+			*Matrix::CreateTranslation(Vector3(6, 0, 0))
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	if (GetKeyDown(KEY::O))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+		p->SetDeltaTime(GetDeltaTime());
+		p->SetTransformMatrix(
+			Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+			*Matrix::CreateRotationY(-3.14f)
+			 *Matrix::CreateTranslation(Vector3(6, 0, 0))
+		);
+		p->SetActive(true);
+		p->Play();
+	}
 
 	/// 회피평타
 // 	if (GetKeyDown(KEY::P))
@@ -173,34 +176,34 @@ void TestEffectGenerator::Update()
 // 	}
 
 	/// 마법진
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\MagicCircle.yaml");
-		p->SetDeltaTime(GetDeltaTime());
-		p->SetTransformMatrix(Matrix::CreateScale(0.5f) 
-			* Matrix::CreateRotationX(1.57f) 
-			* Matrix::CreateTranslation(Vector3(0, 3, 0))
-		);
-
-		p->SetActive(true);
-		p->Play();
-	}
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\MagicCircle.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		p->SetTransformMatrix(Matrix::CreateScale(0.5f) 
+// 			* Matrix::CreateRotationX(1.57f) 
+// 			* Matrix::CreateTranslation(Vector3(0, 3, 0))
+// 		);
+// 
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
 
 	/// 발사
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
-		p->SetDeltaTime(GetDeltaTime());
-		p->SetTransformMatrix(Matrix::CreateScale(0.8f) 
-			* Matrix::CreateRotationX(1.57f) 
-			* Matrix::CreateRotationY(-1.57f) 
-			* Matrix::CreateTranslation(Vector3(0, 3, -0.2f))
-		);
-
-
-		p->SetActive(true);
-		p->Play();
-	}
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		p->SetTransformMatrix(Matrix::CreateScale(0.8f) 
+// 			* Matrix::CreateRotationX(1.57f) 
+// 			* Matrix::CreateRotationY(-1.57f) 
+// 			* Matrix::CreateTranslation(Vector3(0, 3, -0.2f))
+// 		);
+// 
+// 
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
 
 	/// 빔
 // 	if (GetKeyDown(KEY::P))

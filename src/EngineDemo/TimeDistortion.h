@@ -37,6 +37,10 @@ private:
 	float m_passingTime;
 	float m_damage;
 	float m_playerSpeed;
+	int m_playCount;
+
+private:
+	void PlayEffect();
 
 public:
 	TimeDistortion();

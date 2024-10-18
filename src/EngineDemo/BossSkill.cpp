@@ -75,10 +75,10 @@ void BossSkill::Awake()
 	m_shockWavePos.push_back(16.2f);
 
 	m_flamePos.push_back(4.2f);
-	m_flamePos.push_back(12.2f);
-	m_flamePos.push_back(20.2f);
-	m_flamePos.push_back(28.2f);
-	m_flamePos.push_back(36.2f);
+	m_flamePos.push_back(7.2f);
+	m_flamePos.push_back(10.2f);
+	m_flamePos.push_back(13.2f);
+	m_flamePos.push_back(16.2f);
 
 	m_swordPos.push_back({ 0.f,3.7f,0.f });
 	m_swordPos.push_back({ 1.1f,4.2f,0.f });
@@ -107,7 +107,7 @@ void BossSkill::Update()
 // 	{
 // 		m_readyToShoot = true;
 // 	}
-// 	LightSpeedDash(true);
+// 	DistortedTimeSphere();
 // 	DeleteCheck();
 // 	return;
 	/// ÀÛ¾÷Áß ////////////////////////////////////////////////////////////////////
@@ -554,7 +554,7 @@ void BossSkill::DistortedTimeSphere()
 			m_owner.lock()->AddChild(timeSphere);
 
 			timeSphere->SetPosition(m_spherePos[i]);
-			timeSphere->SetScale({ 6.f,4.f,6.f });
+			timeSphere->SetScale({ 6.f,6.f,6.f });
 
 
 			m_timeSpheres.push_back(std::make_pair(timeSphere, false));

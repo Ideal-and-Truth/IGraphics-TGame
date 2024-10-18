@@ -9,7 +9,7 @@ StartColor:
   - 1
   - 1
   - 1
-StartLifetime: 8
+StartLifetime: 22
 Loop: false
-Duration: 8
+Duration: 22
 RenderMode: 1

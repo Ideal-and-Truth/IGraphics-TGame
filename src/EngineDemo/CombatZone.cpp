@@ -32,7 +32,6 @@ void CombatZone::Update()
 
 void CombatZone::OnTriggerEnter(Truth::Collider* _other)
 {
-	int a = 0;
 	if (_other->GetOwner().lock()->m_name == "Player")
 	{
 		for (auto& e : m_owner.lock()->m_children)
@@ -48,7 +47,6 @@ void CombatZone::OnTriggerEnter(Truth::Collider* _other)
 
 void CombatZone::OnTriggerExit(Truth::Collider* _other)
 {
-	int a1 = 0;
 	if (_other->GetOwner().lock()->m_name == "Player")
 	{
 		for (auto& e : m_owner.lock()->m_children)

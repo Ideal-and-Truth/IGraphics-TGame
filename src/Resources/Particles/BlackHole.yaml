@@ -13,9 +13,9 @@ StartColor:
   - 1
   - 1
   - 1
-StartLifetime: 8
+StartLifetime: 16
 Loop: false
-Duration: 8
+Duration: 16
 StopEnd: true
 RenderMode: 1
 ColorOverLifetime: true
@@ -31,13 +31,7 @@ ColorOverLifetimeGradientGraph:
       - 0.4
       - 1
       - 1
-    position: 0.01025
-  - Color:
-      - 0
-      - 0.4
-      - 1
-      - 1
-    position: 0.115
+    position: 0.1875
   - Color:
       - 0.8
       - 0.6
@@ -45,11 +39,11 @@ ColorOverLifetimeGradientGraph:
       - 1
     position: 0.375
   - Color:
-      - 0.8
-      - 0.6
       - 0
+      - 0.4
       - 1
-    position: 0.625
+      - 1
+    position: 0.5625
   - Color:
       - 1
       - 0.1
@@ -61,4 +55,4 @@ ColorOverLifetimeGradientGraph:
       - 0.1
       - 0
       - 1
-    position: 1
+    position: 1898
