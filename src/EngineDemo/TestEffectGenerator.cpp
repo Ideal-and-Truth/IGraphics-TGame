@@ -135,32 +135,32 @@ void TestEffectGenerator::Update()
 
 	/// 강화평타
 //작은년
-	if (GetKeyDown(KEY::O))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
-		p->SetDeltaTime(GetDeltaTime());
-		p->SetTransformMatrix(
-			Matrix::CreateRotationY(-2.7925f)
-			//Matrix::CreateRotationY(-3.14f)
-
-			*Matrix::CreateTranslation(Vector3(6, 0, 0))
-		);
-		p->SetActive(true);
-		p->Play();
-	}
-
-	if (GetKeyDown(KEY::O))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
-		p->SetDeltaTime(GetDeltaTime());
-		p->SetTransformMatrix(
-			Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
-			*Matrix::CreateRotationY(-3.14f)
-			 *Matrix::CreateTranslation(Vector3(6, 0, 0))
-		);
-		p->SetActive(true);
-		p->Play();
-	}
+// 	if (GetKeyDown(KEY::O))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationY(-2.7925f)
+// 			//Matrix::CreateRotationY(-3.14f)
+// 
+// 			*Matrix::CreateTranslation(Vector3(6, 0, 0))
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::O))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+// 			*Matrix::CreateRotationY(-3.14f)
+// 			 *Matrix::CreateTranslation(Vector3(6, 0, 0))
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
 
 	/// 회피평타
 // 	if (GetKeyDown(KEY::P))
@@ -206,39 +206,39 @@ void TestEffectGenerator::Update()
 // 	}
 
 	/// 빔
-// 	if (GetKeyDown(KEY::P))
-// 	{
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
-// 		p->SetTransformMatrix(
-// 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
-// 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
-// 		);
-// 
-// 		p->SetActive(true);
-// 		p->Play();
-// 	}
-// 
-// 	if (GetKeyDown(KEY::P))
-// 	{
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
-// 		p->SetTransformMatrix(
-// 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
-// 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
-// 		);
-// 
-// 		p->SetActive(true);
-// 		p->Play();
-// 	}
-// 
-// 	if (GetKeyDown(KEY::P))
-// 	{
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
-// 		
-// 
-// 		p->SetActive(true);
-// 		p->Play();
-// 	}
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
+		p->SetDeltaTime(GetDeltaTime());
+		p->SetTransformMatrix(
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
+		);
+
+		p->SetActive(true);
+		p->Play();
+	}
+
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
+		p->SetDeltaTime(GetDeltaTime());
+		p->SetTransformMatrix(
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
+		);
+
+		p->SetActive(true);
+		p->Play();
+	}
+
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
+		p->SetDeltaTime(GetDeltaTime());
+		
+
+		p->SetActive(true);
+		p->Play();
+	}
 }
