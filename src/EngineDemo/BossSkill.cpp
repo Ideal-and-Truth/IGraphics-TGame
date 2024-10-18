@@ -543,7 +543,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 						power.Normalize();
 						power.y = -100.f;
 						power *= GetDeltaTime();
-						power *= 120.f;
+						power *= 1000.f;
 
 						rigid->AddImpulse(power);
 

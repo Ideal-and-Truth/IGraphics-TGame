@@ -37,6 +37,15 @@ void PlayerController::Start()
 	m_player = m_owner.lock().get()->GetComponent<Player>();
 }
 
+void PlayerController::FixedUpdate()
+{
+	if (!m_canMove)
+	{
+		m_moveVec = Vector3::Zero;
+	}
+	m_controller.lock()->Move(m_moveVec);
+}
+
 void PlayerController::Update()
 {
 	PlayerMove(nullptr);
@@ -133,9 +142,9 @@ void PlayerController::PlayerMove(const void*)
 		Vector3 power(m_playerDirection.x, -100.f, m_playerDirection.z);
 		power *= m_impulsePower;
 		power *= 0.01f;
-		
+
 		m_controller.lock()->AddImpulse(power);
-		
+
 		if (m_needRot)
 		{
 			Quaternion lookRot;
@@ -149,11 +158,13 @@ void PlayerController::PlayerMove(const void*)
 		m_impulsePower = 0.f;
 	}
 
+
 	if (!m_canMove)
 	{
-		finalMovement = { 0.f,0.f,0.f };
+		m_moveVec = { 0.f,0.f,0.f };
 	}
-	m_controller.lock()->Move(finalMovement);
+	m_moveVec = finalMovement;
+	//	m_controller.lock()->Move(finalMovement);
 
 	if (m_faceDirection == Vector3::Zero || !m_canMove)
 	{

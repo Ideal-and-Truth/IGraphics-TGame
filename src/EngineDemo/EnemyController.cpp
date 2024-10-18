@@ -39,6 +39,16 @@ void EnemyController::Start()
 	m_controller.lock()->SetPosition(m_homePos);
 }
 
+void EnemyController::FixedUpdate()
+{
+	if (!m_canMove)
+	{
+		m_moveVec = Vector3::Zero;
+	}
+	m_controller.lock()->Move(m_moveVec);
+	m_moveVec = Vector3::Zero;
+}
+
 void EnemyController::Update()
 {
 	if (m_isDead)
@@ -116,9 +126,6 @@ void EnemyController::Update()
 		m_sideImpulse = 0.f;
 	}
 
-	Vector3 moveVec = { 0.f,0.f,0.f };
-	m_controller.lock()->Move(moveVec);
-
 	if (m_bossAnimator)
 	{
 		if (isTargetIn && !m_bossAnimator->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_bossAnimator.get()).Get())
@@ -164,7 +171,7 @@ void EnemyController::FollowTarget()
 		);
 
 		Vector3 playerPos = m_target.lock()->GetWorldPosition();
-		
+
 
 		Vector3 dir = targetPos - pos;
 
@@ -218,7 +225,8 @@ void EnemyController::FollowTarget()
 			right *= m_sideMove;
 			right *= GetDeltaTime() * m_speed;
 
-			m_controller.lock()->Move(right);
+			m_moveVec = right;
+			//m_controller.lock()->Move(right);
 		}
 		else if (!m_isAttackReady && !m_strafeMove)
 		{
@@ -226,7 +234,9 @@ void EnemyController::FollowTarget()
 			dir.Normalize(dir);
 			dir.y = -100.0f;
 			dir *= GetDeltaTime() * m_speed * 2.f;
-			m_controller.lock()->Move(dir);
+
+			m_moveVec = dir;
+			//m_controller.lock()->Move(dir);
 		}
 
 
@@ -246,15 +256,20 @@ void EnemyController::ComeBackHome()
 			GetScale()
 		);
 
+		Vector3 homePos = m_managers.lock()->Scene()->m_currentScene->FindPath(
+			pos,
+			m_homePos,
+			GetScale()
+		);
 
 		Vector3 dir = targetPos - pos;
-		Vector3 backDir = m_homePos - pos;
+		Vector3 backDir = homePos - pos;
 
 		Quaternion lookRot;
 		Quaternion rot = m_owner.lock()->m_transform->m_rotation;
 
 
-		float distance = sqrt(pow(backDir.x, 2.f) + pow(backDir.z, 2.f));
+		float distance = (m_homePos - pos).Length();
 		// 돌아가기
 		if (distance > 1.f)
 		{
@@ -262,8 +277,10 @@ void EnemyController::ComeBackHome()
 			backDir.y = 0.0f;
 			backDir.Normalize(backDir);
 			backDir.y = -100.0f;
-			backDir *= GetDeltaTime() * m_speed;
+			backDir *= GetDeltaTime() * m_speed * 0.5f;
 			m_controller.lock()->Move(backDir);
+			m_moveVec = backDir;
+			//m_controller.lock()->Move(backDir);
 			// 적 회전
 			backDir.y = 0.0f;
 			Quaternion::LookRotation(backDir, Vector3::Up, lookRot);

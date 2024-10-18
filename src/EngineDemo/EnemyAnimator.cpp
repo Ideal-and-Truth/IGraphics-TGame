@@ -204,6 +204,12 @@ void EnemyAnimator::SetEnemyDamage(float damage)
 	m_enemy->GetTypeInfo().GetProperty("currentDamage")->Set(m_enemy.get(), damage);
 }
 
+void EnemyAnimator::SetImpulse(float power)
+{
+	m_enemyController->GetTypeInfo().GetProperty("useImpulse")->Set(m_enemyController.get(), true);
+	m_enemyController->GetTypeInfo().GetProperty("impulsePower")->Set(m_enemyController.get(), power);
+}
+
 void EnemyIdle::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeIdle", false);
@@ -326,6 +332,7 @@ void EnemyAttackReady::OnStateUpdate()
 void EnemyAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeAttack", false);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(50.f);
 }
 
 void EnemyAttack::OnStateUpdate()
@@ -367,6 +374,7 @@ void EnemyAttack::OnStateExit()
 void EnemyParriableAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrongAttack", false);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(150.f);
 }
 
 void EnemyParriableAttack::OnStateUpdate()

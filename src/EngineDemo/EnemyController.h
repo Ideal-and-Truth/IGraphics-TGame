@@ -27,6 +27,7 @@ private:
 	std::weak_ptr<Enemy> m_enemy;
 	std::weak_ptr<Truth::Entity> m_target;
 
+	Vector3 m_moveVec;
 	Vector3 m_homePos;
 	float m_speed;
 	float m_passingTime;
@@ -70,6 +71,9 @@ public:
 
 	METHOD(Start);
 	void Start();
+
+	METHOD(FixedUpdate);
+	void FixedUpdate();
 
 	METHOD(Update);
 	void Update();

@@ -34,6 +34,8 @@ private:
 	PROPERTY(playerDirection);
 	Vector3 m_playerDirection;
 
+	Vector3 m_moveVec;
+
 	PROPERTY(angle);
 	Vector3 m_angle;
 
@@ -58,6 +60,9 @@ public:
 
 	METHOD(Start);
 	void Start();
+
+	METHOD(FixedUpdate);
+	void FixedUpdate();
 
 	METHOD(Update);
 	void Update();

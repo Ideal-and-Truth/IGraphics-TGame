@@ -208,6 +208,10 @@ void PlayerAnimator::Update()
 			{
 				m_isComboReady = false;
 			}
+			else
+			{
+				m_isComboReady = true;
+			}
 		}
 	}
 
@@ -457,7 +461,7 @@ void NormalAttack1::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.1f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void NormalAttack1::OnStateUpdate()
@@ -512,7 +516,7 @@ void NormalAttack2::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.01f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void NormalAttack2::OnStateUpdate()
@@ -567,7 +571,7 @@ void NormalAttack3::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void NormalAttack3::OnStateUpdate()
@@ -622,7 +626,7 @@ void NormalAttack4::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.01f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void NormalAttack4::OnStateUpdate()
@@ -673,7 +677,7 @@ void NormalAttack6::OnStateEnter()
 	GetProperty("hitStopTime")->Set(m_animator, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(3.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(10.f, true);
 }
 
 void NormalAttack6::OnStateUpdate()
@@ -785,7 +789,7 @@ void ChargedAttack1::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	GetProperty("chargedAttack1")->Set(m_animator, true);
 
 }
@@ -831,7 +835,7 @@ void ChargedAttack2::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	GetProperty("chargedAttack2")->Set(m_animator, true);
 }
 
@@ -875,7 +879,7 @@ void ChargedAttack3::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void ChargedAttack3::OnStateUpdate()
@@ -923,7 +927,7 @@ void ChargedAttack4::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void ChargedAttack4::OnStateUpdate()
@@ -967,7 +971,7 @@ void ChargedAttack5::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(2.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void ChargedAttack5::OnStateUpdate()
@@ -1004,7 +1008,7 @@ void ChargedAttack5::OnStateExit()
 void PlayerDodge::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(8.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(30.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Dodge", false);
 }
 
@@ -1032,7 +1036,7 @@ void PlayerDodgeAttack::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("DodgeAttack", false);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("hitStopTime")->Set(m_animator, 0.07f);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(3.f, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
 void PlayerDodgeAttack::OnStateUpdate()
@@ -1240,7 +1244,7 @@ void PlayerAnimator::PlayEffects()
 		}
 
 		{
-			effectRot.y += (3.141592 / 180.f) * -20.f;
+			//effectRot.y += (3.141592 / 180.f) * -20.f;
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
@@ -1277,7 +1281,7 @@ void PlayerAnimator::PlayEffects()
 		}
 
 		{
-			effectRot.y += (3.141592 / 180.f) * -20.f;
+			//effectRot.y += (3.141592 / 180.f) * -20.f;
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
@@ -1314,7 +1318,7 @@ void PlayerAnimator::PlayEffects()
 		}
 
 		{
-			effectRot.y += (3.141592 / 180.f) * -20.f;
+			//effectRot.y += (3.141592 / 180.f) * -20.f;
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
@@ -1351,7 +1355,7 @@ void PlayerAnimator::PlayEffects()
 		}
 
 		{
-			effectRot.y += (3.141592 / 180.f) * -20.f;
+			//effectRot.y += (3.141592 / 180.f) * -20.f;
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
@@ -1388,7 +1392,7 @@ void PlayerAnimator::PlayEffects()
 		}
 
 		{
-			effectRot.y += (3.141592 / 180.f) * -20.f;
+			//effectRot.y += (3.141592 / 180.f) * -20.f;
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
