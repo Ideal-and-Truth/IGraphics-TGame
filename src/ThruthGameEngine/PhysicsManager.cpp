@@ -418,8 +418,8 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 	rayCastBuffer.nbTouches;
 	if (hitCheck)
 	{
-		int a = 1;
-		return MathUtil::Convert(rayCastBuffer.block.position) - _direction * 2;
+		// int a = 1;
+		return MathUtil::Convert(rayCastBuffer.block.position);
 		// return _start + (_direction * _range);
 	}
 	else
