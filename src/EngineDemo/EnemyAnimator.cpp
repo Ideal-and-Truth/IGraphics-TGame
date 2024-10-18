@@ -79,7 +79,7 @@ void EnemyAnimator::Start()
 	m_skinnedMesh->AddAnimation("EnemyMeleeStrafeR", L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeR");
 	m_skinnedMesh->AddAnimation("EnemyMeleeStrongAttack", L"EnemyAnimations/MeleeEnemy/StrongAttack/StrongAttack");
 
-	
+
 	// 과거의 잔재
 // 	m_skinnedMesh->AddAnimation("EnemyIdle", L"Kachujin/Idle");
 // 	m_skinnedMesh->AddAnimation("EnemyWalk", L"Kachujin/Sword And Shield Walk");
@@ -97,6 +97,23 @@ void EnemyAnimator::Start()
 
 void EnemyAnimator::Update()
 {
+	if (m_isDead)
+	{
+		for (auto& e : m_owner.lock()->m_children)
+		{
+			if (e)
+			{
+				m_owner.lock()->DeleteChild(e);
+				m_owner.lock().reset();
+				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e);
+			}
+		}
+		/// 런타임 중 리지드바디 삭제시 오류
+		m_managers.lock()->Scene()->m_currentScene->DeleteEntity(m_owner.lock());
+		// m_owner.lock()->m_transform->m_scale = { 0.f,0.f,0.f };
+		return;
+	}
+
 	if (m_isDead)
 	{
 		return;
@@ -413,10 +430,10 @@ void EnemyDeath::OnStateEnter()
 
 void EnemyDeath::OnStateUpdate()
 {
-// 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 116)
-// 	{
-// 		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimationPlay(false);
-// 	}
+	// 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 116)
+	// 	{
+	// 		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimationPlay(false);
+	// 	}
 }
 
 

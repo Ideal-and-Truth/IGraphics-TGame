@@ -1031,6 +1031,7 @@ void PlayerDodgeAttack::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("DodgeAttack", false);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("hitStopTime")->Set(m_animator, 0.07f);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(3.f, true);
 }
 
 void PlayerDodgeAttack::OnStateUpdate()
