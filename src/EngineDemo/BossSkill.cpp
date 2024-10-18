@@ -380,7 +380,7 @@ void BossSkill::SwordShooting()
 
 			sword->SetPosition(m_swordPos[m_swordCount]);
 			//sword->SetScale({ 30.f,30.f,300.f });
-			sword->SetScale({ 0.8f,0.8f,2.f });
+			sword->SetScale({ 1.5f,1.5f,3.f });
 
 
 			sword->Start();
@@ -429,6 +429,7 @@ void BossSkill::SwordShooting()
 					m_playSpear = true;
 					m_spearImpactCount++;
 					PlayEffect(m_swords[i].first->m_transform->m_position);
+					m_swords[i].first->GetComponent<SimpleDamager>().lock()->GetTypeInfo().GetProperty("onlyHitOnce")->Set(m_swords[i].first->GetComponent<SimpleDamager>().lock().get(), true);
 				}
 			}
 		}
