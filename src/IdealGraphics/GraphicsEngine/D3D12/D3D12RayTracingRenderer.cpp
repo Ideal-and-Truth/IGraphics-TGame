@@ -248,9 +248,6 @@ Ideal::D3D12RayTracingRenderer::D3D12RayTracingRenderer(HWND hwnd, uint32 Width,
 
 Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 {
-	// 최적화 되었던 오브젝트 삭제
-	ReleaseBakedObject();
-
 	Fence();
 	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
@@ -376,6 +373,9 @@ finishAdapter:
 	CreatePostScreenRootSignature();
 	CreatePostScreenPipelineState();
 
+	//---------------Compile Default Shader---------------//
+	CompileDefaultShader();
+
 	//------------------UI-------------------//
 	CreateUIDescriptorHeap();
 	CreateCanvas();
@@ -383,9 +383,7 @@ finishAdapter:
 	//------------------Particle System Manager-------------------//
 	CreateParticleSystemManager();
 
-
 	//---------------Create Managers---------------//
-	CompileShader(L"../Shaders/Texture/CS_GenerateMips.hlsl", L"../Shaders/Texture/", L"GenerateMipsCS", L"cs_6_3", L"Main", L"../Shaders/Texture/");
 
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
 
@@ -397,42 +395,6 @@ finishAdapter:
 	m_resourceManager->CreateDefaultTextures();
 	m_resourceManager->CreateDefaultMaterial();
 
-	{
-		std::shared_ptr<Ideal::ShaderManager> m_shaderManager = std::make_shared<Ideal::ShaderManager>();
-		m_shaderManager->Init();
-		m_shaderManager->AddIncludeDirectories(L"../Shaders/Raytracing/");
-
-		// shader test
-		//InitShader();
-		//CompileShader2(L"../Shaders/Raytracing/Raytracing.hlsl", m_raygenShaderName, m_testBlob);
-		//m_shaderManager->CompileShader(L"../Shaders/Raytracing/Raytracing.hlsl", L"lib_6_3", m_testBlob);
-		m_shaderManager->CompileShaderAndSave(
-			L"../Shaders/Raytracing/Raytracing.hlsl",
-			L"../Shaders/Raytracing/",
-			L"Raytracing",
-			L"lib_6_3",
-			m_testBlob
-		);
-		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/Raytracing.shader", m_myShader);
-	}
-
-	{
-		std::shared_ptr<Ideal::ShaderManager> m_shaderManager = std::make_shared<Ideal::ShaderManager>();
-		m_shaderManager->Init();
-		m_shaderManager->AddIncludeDirectories(L"../Shaders/Raytracing/");
-
-		m_shaderManager->CompileShaderAndSave(
-			L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.hlsl",
-			L"../Shaders/Raytracing/",
-			L"CS_ComputeAnimationVertexBuffer",
-			L"cs_6_3",
-			m_testBlob,
-			L"ComputeSkinnedVertex",
-			true
-		);
-		m_shaderManager->LoadShaderFile(L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.shader", m_animationShader);
-	}
-
 	m_textManager = std::make_shared<Ideal::D2DTextManager>();
 	m_textManager->Init(m_device, m_commandQueue);
 
@@ -442,11 +404,7 @@ finishAdapter:
 	{
 		CreateDebugMeshManager();
 	}
-	//----CompileShader----//
-	InitModifyVertexBufferShader();
-	CreateModifyVertexBufferRootSignature();
-	CreateModifyVertexBufferCSPipelineState();
-
+	
 	//---------------Editor---------------//
 	if (m_isEditor)
 	{
@@ -541,12 +499,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_globalCB.eyePos = m_mainCamera->GetPosition();
 
 	UpdateLightListCBData();
-	if (m_directionalLight)
-	{
-		//m_sceneCB.color = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
-		//m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
-		//m_sceneCB.lightDiffuse = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
-	}
+	
 	ResetCommandList();
 
 #ifdef _DEBUG
@@ -558,11 +511,6 @@ void Ideal::D3D12RayTracingRenderer::Render()
 #endif
 
 	BeginRender();
-
-	if (m_ReBuildBLASFlag)
-	{
-		ReBuildBLAS();
-	}
 
 	//---------------------Raytracing-------------------------//
 	for (auto& mesh : m_staticMeshObject)
@@ -968,7 +916,7 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimati
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12RayTracingRenderer::CreateDirectionalLight()
 {
 	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
-	m_directionalLight = std::static_pointer_cast<Ideal::IdealDirectionalLight>(newLight);
+	m_directionalLights.push_back(std::static_pointer_cast<Ideal::IdealDirectionalLight>(newLight));
 	return newLight;
 }
 
@@ -1202,6 +1150,7 @@ std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 
 	{
 		//Sprite
 		std::shared_ptr<Ideal::IdealSprite> sprite = std::make_shared<Ideal::IdealSprite>();
+		sprite->SetScreenSize(Vector2(m_width, m_height));
 		sprite->SetMesh(m_resourceManager->GetDefaultQuadMesh());
 		sprite->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
 		text->SetSprite(sprite);
@@ -1219,7 +1168,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& T
 		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
 }
 
-void Ideal::D3D12RayTracingRenderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/)
+void Ideal::D3D12RayTracingRenderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/, bool HasEntry /*= true*/)
 {
 	ComPtr<IDxcBlob> blob;
 	// TODO : 쉐이더를 컴파일 해야 한다.
@@ -1233,7 +1182,7 @@ void Ideal::D3D12RayTracingRenderer::CompileShader(const std::wstring& FilePath,
 		ShaderVersion,
 		blob,
 		EntryPoint, //entry
-		true
+		HasEntry
 	);
 }
 
@@ -1746,13 +1695,17 @@ void Ideal::D3D12RayTracingRenderer::DrawPostScreen()
 void Ideal::D3D12RayTracingRenderer::UpdateLightListCBData()
 {
 	//----------------Directional Light-----------------//
-	if (m_directionalLight)
+	uint32 directionalLightNum = m_directionalLights.size();
+	if (directionalLightNum > MAX_DIRECTIONAL_LIGHT_NUM)
 	{
-		m_lightListCB.DirLight = m_directionalLight->GetDirectionalLightDesc();
-		//m_lightListCB.DirLight.AmbientColor = m_directionalLight->GetDirectionalLightDesc().AmbientColor;
-		//m_lightListCB.DirLight.DiffuseColor = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
-		//m_lightListCB.DirLight.Direction = m_directionalLight->GetDirectionalLightDesc().Direction;
+		directionalLightNum = MAX_DIRECTIONAL_LIGHT_NUM;
 	}
+	for (uint32 i = 0; i < directionalLightNum; ++i)
+	{
+		m_lightListCB.DirLights[i] = m_directionalLights[i]->GetDirectionalLightDesc();
+	}
+	m_lightListCB.DirLightNum = directionalLightNum;
+
 
 	//----------------Spot Light-----------------//
 	uint32 spotLightNum = m_spotLights.size();
@@ -1783,48 +1736,39 @@ void Ideal::D3D12RayTracingRenderer::UpdateLightListCBData()
 	}
 }
 
-void Ideal::D3D12RayTracingRenderer::CompileShader2(const std::wstring& FilePath, const std::wstring& EntryPoint, ComPtr<IDxcBlob>& OutBlob)
+void Ideal::D3D12RayTracingRenderer::CompileDefaultShader()
 {
-	ComPtr<IDxcCompiler3> compiler;
-	ComPtr<IDxcUtils> utils;
-	ComPtr<IDxcIncludeHandler> includeHandler;
-	// Create compiler
-	Check(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)), L"Failed To Create DXC Compiler Instance");
-	Check(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils)), L"Failed To Create DXC Compiler Instance");
-	std::ifstream shaderFile(FilePath, std::ios::binary);
-	// temp
-	std::vector<char> shaderSource((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
+	//---Ray Tracing Shader---//
+	CompileShader(L"../Shaders/Raytracing/Raytracing.hlsl",
+		L"../Shaders/Raytracing/",
+		L"Raytracing",
+		L"lib_6_3", L"", L"../Shaders/Raytracing/", false);
+	m_raytracingShader = CreateAndLoadShader(L"../Shaders/Raytracing/Raytracing.shader");
 
-	// hlsl compile
-	DxcBuffer sourceBuffer;
-	sourceBuffer.Ptr = shaderSource.data();
-	sourceBuffer.Size = shaderSource.size();
-	sourceBuffer.Encoding = DXC_CP_UTF8;
-
-	// header
-	ComPtr<IDxcBlob> includeSource = nullptr;
-	utils->CreateDefaultIncludeHandler(&includeHandler);
-	//includeHandler->LoadSource(L"../Shaders/Raytracing/RaytracingHlslCompat.h", &includeSource);
-	//includeHandler->LoadSource(L"RaytracingHlslCompat.h", &includeSource);
-
-	LPCWSTR args[] = {
-		//L"-E", EntryPoint.c_str(),	// raytracing 쉐이더는 엔트리포인트가 필요 없음
-		L"-T", L"lib_6_3",
-		L"-I", L"../Shaders/Raytracing/"
-	};
-	ComPtr<IDxcResult> result;
-	//compiler->Compile(&sourceBuffer, nullptr, 0, includeHandler.Get()e, IID_PPV_ARGS(&result));
-	compiler->Compile(&sourceBuffer, args, _countof(args), includeHandler.Get(), IID_PPV_ARGS(&result));
+	CompileShader(L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.hlsl",
+		L"../Shaders/Raytracing/",
+		L"CS_ComputeAnimationVertexBuffer",
+		L"cs_6_3",
+		L"ComputeSkinnedVertex",
+		L"../Shaders/Raytracing/",
+		true);
+	m_animationShader = CreateAndLoadShader(L"../Shaders/Raytracing/CS_ComputeAnimationVertexBuffer.shader");
 
 
-	ComPtr<IDxcBlobEncoding> encoding = nullptr;
-	result->GetErrorBuffer(&encoding);
-	if (encoding)
-	{
-		auto a = (char*)encoding->GetBufferPointer();
-	}
+	//---Debug Mesh Shader---//
+	CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderVS", L"vs_6_3", L"VSMain");
+	CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderPS", L"ps_6_3", L"PSMain");
+	m_DebugMeshManagerVS = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderVS.shader");
+	m_DebugMeshManagerPS = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderPS.shader");
 
-	result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&OutBlob), nullptr);
+	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderVS", L"vs_6_3", L"VSMain");
+	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderPS", L"ps_6_3", L"PSMain");
+
+	m_DebugLineShaderVS = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderVS.shader");
+	m_DebugLineShaderPS = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderPS.shader");
+
+	CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	m_DefaultParticleShaderVS = std::static_pointer_cast<Ideal::D3D12Shader>(CreateAndLoadParticleShader(L"DefaultParticleVS"));
 }
 
 void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
@@ -1901,7 +1845,7 @@ void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToUAV()
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init(m_device, m_resourceManager, m_myShader, m_animationShader, m_descriptorManager, m_width, m_height);
+	m_raytracingManager->Init(m_device, m_resourceManager, m_raytracingShader, m_animationShader, m_descriptorManager, m_width, m_height);
 
 	//ResetCommandList();
 
@@ -2116,15 +2060,11 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 {
 	m_particleSystemManager = std::make_shared<Ideal::ParticleSystemManager>();
 
-	//---VertexShader---//
-	// TEMP: 일단 그냥 여기서 컴파일 한다.
-	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
-	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
-	CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
-	auto shader = CreateAndLoadParticleShader(L"DefaultParticleVS");
+	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	//auto shader = CreateAndLoadParticleShader(L"DefaultParticleVS");
 
 	//---Init---//
-	m_particleSystemManager->Init(m_device, std::static_pointer_cast<Ideal::D3D12Shader>(shader));
+	m_particleSystemManager->Init(m_device, std::static_pointer_cast<Ideal::D3D12Shader>(m_DefaultParticleShaderVS));
 }
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()
@@ -2150,23 +2090,24 @@ void Ideal::D3D12RayTracingRenderer::CreateDebugMeshManager()
 {
 	m_debugMeshManager = std::make_shared<Ideal::DebugMeshManager>();
 
-	CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderVS", L"vs_6_3", L"VSMain");
-	CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderPS", L"ps_6_3", L"PSMain");
+	//CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderVS", L"vs_6_3", L"VSMain");
+	//CompileShader(L"../Shaders/DebugMesh/DebugMeshShader.hlsl", L"../Shaders/DebugMesh/", L"DebugMeshShaderPS", L"ps_6_3", L"PSMain");
+	//
+	//auto vs = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderVS.shader");
+	//auto ps = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderPS.shader");
 
-	auto vs = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderVS.shader");
-	auto ps = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugMeshShaderPS.shader");
+	m_debugMeshManager->SetVS(m_DebugMeshManagerVS);
+	m_debugMeshManager->SetPS(m_DebugMeshManagerPS);
 
-	m_debugMeshManager->SetVS(vs);
-	m_debugMeshManager->SetPS(ps);
+	//CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderVS", L"vs_6_3", L"VSMain");
+	//CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderPS", L"ps_6_3", L"PSMain");
+	//
+	//auto vsLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderVS.shader");
+	//auto psLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderPS.shader");
 
-	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderVS", L"vs_6_3", L"VSMain");
-	CompileShader(L"../Shaders/DebugMesh/DebugLineShader.hlsl", L"../Shaders/DebugMesh/", L"DebugLineShaderPS", L"ps_6_3", L"PSMain");
+	m_debugMeshManager->SetVSLine(m_DebugLineShaderVS);
+	m_debugMeshManager->SetPSLine(m_DebugLineShaderPS);
 
-	auto vsLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderVS.shader");
-	auto psLine = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderPS.shader");
-
-	m_debugMeshManager->SetVSLine(vsLine);
-	m_debugMeshManager->SetPSLine(psLine);
 	m_debugMeshManager->SetDebugLineVB(m_resourceManager->GetDebugLineVB());
 
 	m_debugMeshManager->Init(m_device);
@@ -2331,456 +2272,5 @@ void Ideal::D3D12RayTracingRenderer::CreateEditorRTV(uint32 Width, uint32 Height
 			}
 			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
-	}
-}
-
-void Ideal::D3D12RayTracingRenderer::BakeOption(int32 MaxBakeCount, float MinSpaceSize)
-{
-	m_maxBakeCount = MaxBakeCount;
-	m_octreeMinSpaceSize = MinSpaceSize;
-}
-
-void Ideal::D3D12RayTracingRenderer::BakeStaticMeshObject()
-{
-//#define OctreePosition
-#define OctreeAABB
-	m_Octree = Octree<std::shared_ptr<Ideal::IdealStaticMeshObject>>();
-	for (auto& object : m_staticMeshObject)
-	{
-		if (object->GetIsStaticWhenRunTime())
-		{
-#ifdef OctreePosition
-			Vector3 position;
-			position.x = object->GetTransformMatrix()._41;
-			position.y = object->GetTransformMatrix()._42;
-			position.z = object->GetTransformMatrix()._43;
-			m_Octree.AddObject(object, position);
-#endif
-#ifdef OctreeAABB
-			//Vector3 position;
-			//position.x = object->GetTransformMatrix()._41;
-			//position.y = object->GetTransformMatrix()._42;
-			//position.z = object->GetTransformMatrix()._43;
-			
-			Bounds bounds;
-			Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
-			Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-			bounds.SetMinMax(minBounds, maxBounds);
-			auto mesh = object->GetStaticMesh();
-			auto submeshes = mesh->GetMeshes();
-			for (auto m : submeshes)
-			{
-				Vector3 min = m->GetMinBound();
-				Vector3 max = m->GetMaxBound();
-
-				// 바운드의 최소 및 최대 값을 업데이트합니다.
-				minBounds = Vector3::Min(minBounds, min);
-				maxBounds = Vector3::Max(maxBounds, max);
-
-				// 8개의 코너 포인트를 계산합니다.
-				std::vector<Vector3> corners = {
-					Vector3(min.x, min.y, min.z),
-					Vector3(min.x, min.y, max.z),
-					Vector3(min.x, max.y, min.z),
-					Vector3(min.x, max.y, max.z),
-					Vector3(max.x, min.y, min.z),
-					Vector3(max.x, min.y, max.z),
-					Vector3(max.x, max.y, min.z),
-					Vector3(max.x, max.y, max.z)
-				};
-
-				// 각 코너 포인트를 변환하여 바운딩 박스에 캡슐화합니다.
-				for (auto& corner : corners)
-				{
-					corner = Vector3::Transform(corner, object->GetTransformMatrix());
-					bounds.Encapsulate(corner);
-				}
-			}
-
-			// 최소 및 최대 바운드 변환
-			Vector3 transformedMin = Vector3::Transform(minBounds, object->GetTransformMatrix());
-			Vector3 transformedMax = Vector3::Transform(maxBounds, object->GetTransformMatrix());
-
-			// 바운딩 박스에 최소 및 최대 값을 캡슐화합니다.
-			bounds.Encapsulate(transformedMin);
-			bounds.Encapsulate(transformedMax);
-
-			// 바운딩 박스의 엣지를 추가합니다.
-			auto edges = bounds.GetEdges();
-			// for (const auto& e : edges)
-			// {
-			// 	m_debugMeshManager->AddDebugLine(e.first, e.second);
-			// }
-
-			m_Octree.AddObject(object, bounds);
-#endif
-		}
-	}
-#ifdef OctreePosition
-	m_Octree.Bake(m_octreeMinSpaceSize);
-#endif
-
-#ifdef OctreeAABB
-	m_Octree.BakeBoundVer(m_octreeMinSpaceSize);
-#endif
-
-	//for (auto& object : m_staticMeshObject)
-	//{
-	//	if (object->GetIsStaticWhenRunTime())
-	//	{
-	//		Bounds bounds;
-	//		auto mesh = object->GetStaticMesh();
-	//		auto submeshes = mesh->GetMeshes();
-	//		for (auto m : submeshes)
-	//		{
-	//			Vector3 min = m->GetMinBound();
-	//			Vector3 max = m->GetMaxBound();
-	//			min = Vector3::Transform(min, object->GetTransformMatrix());
-	//			max = Vector3::Transform(max, object->GetTransformMatrix());
-	//			bounds.SetMinMax(min, max);
-	//		}
-	//	}
-	//}
-
-#ifdef _DEBUG
-	{
-		//// 라인 그리기
-		//std::vector<std::pair<Vector3, Vector3>> lines;
-		//m_Octree.ForeachNodeInternal(
-		//	[&](std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>> Node)
-		//	{
-		//		Bounds bound = Node->GetBounds();
-		//		auto edges = bound.GetEdges();
-		//		for (auto& e : edges)
-		//		{
-		//			m_debugMeshManager->AddDebugLine(e.first, e.second);
-		//		}
-		//	}
-		//);
-
-		//int a = 3;
-	}
-#endif
-}
-
-void Ideal::D3D12RayTracingRenderer::ReBuildBLASFlagOn()
-{
-	m_ReBuildBLASFlag = true;
-}
-
-void Ideal::D3D12RayTracingRenderer::ReBuildBLAS()
-{
-	//return;
-
-	m_ReBuildBLASFlag = false;
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//static int once = 0;
-	//if (once > 0) return;
-	//once++;
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// TODO : 기존 baked object 삭제?
-	//struct Obj
-	//{
-	//	std::shared_ptr<Ideal::IdealStaticMeshObject> staticMesh;
-	//	Bounds bounds;
-	//};
-	//std::vector<Obj> boundsVector;
-	//for (auto& object : m_staticMeshObject)
-	//{
-	//	if (object->GetIsStaticWhenRunTime())
-	//	{
-	//		Bounds bounds;
-	//		Vector3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
-	//		Vector3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-	//		bounds.SetMinMax(minBounds, maxBounds);
-	//		auto mesh = object->GetStaticMesh();
-	//		auto submeshes = mesh->GetMeshes();
-	//		for (auto m : submeshes)
-	//		{
-	//			Vector3 min = m->GetMinBound();
-	//			Vector3 max = m->GetMaxBound();
-	//			min = Vector3::Transform(min, object->GetTransformMatrix());
-	//			max = Vector3::Transform(max, object->GetTransformMatrix());
-	//			bounds.Encapsulate(min);
-	//			bounds.Encapsulate(max);
-	//		}
-	//		Obj obj;
-	//		obj.staticMesh = object;
-	//		obj.bounds = bounds;
-	//		boundsVector.push_back(obj);
-	//	}
-	//}
-	//std::vector<std::vector<Obj>> mergedGroups; // 병합된 그룹 리스트
-	//std::vector<bool> visited(boundsVector.size(), false);
-	//
-	//std::shared_ptr<Ideal::IdealStaticMeshObject> current;
-	//
-	//for (size_t i = 0; i < boundsVector.size(); ++i) {
-	//	if (visited[i]) continue;
-	//
-	//	std::vector<Obj> group;
-	//	group.push_back(boundsVector[i]);
-	//	visited[i] = true;
-	//
-	//	for (size_t j = i + 1; j < boundsVector.size(); ++j) {
-	//		if (visited[j]) continue;
-	//
-	//		// 겹치는지 확인
-	//		if (boundsVector[i].bounds.Intersects(boundsVector[j].bounds)) {
-	//			group.push_back(boundsVector[j]);
-	//			visited[j] = true;
-	//		}
-	//	}
-	//
-	//	mergedGroups.push_back(group);
-	//}
-
-	int b = 3;
-
-	std::vector<std::shared_ptr<OctreeNode<std::shared_ptr<Ideal::IdealStaticMeshObject>>>> nodes;
-	m_Octree.GetFinalNodes(nodes);
-
-	for (auto& node : nodes)
-	//for (auto& groups : mergedGroups)
-	{
-		uint32 BlasGeometryMaxSize = m_maxBakeCount;
-		uint32 BlasGeometryCurrentSize = 0;
-		auto& objects = node->GetObjects();
-		//auto& objects = groups;
-
-		// 09.25
-		// 여기서 BLAS에 들어갈 Geometry들을 구해야 한다.
-		// 이거 ComputeShader 사용해서 Vertex Buffer를 다시 구해야 할 것 같다.
-		// 해야 하는 것이 결국 BLAS 하나를 만드는 것
-		// 기존에 걸려있던 object의 BLAS를 일단 자르고 - 삭제하고
-		// object들이 가지고 있는 Transform과 VertexBuffer를 곱해서 새로운 Vertex Buffer를 만들어서
-		// Geometry정보에 넘겨준다면?
-		//  (/^^)/  개쌉 계획은 완벽해보임	\(^^\)
-		// Root Signature 만들고 PipelineState 만들고 Compute Shader 만들고 UAV 만들고...
-		// Dispatch도 때려주고~ 졸라 계획 완벽하다.
-
-		//09.26A
-		/// tlqkf 진짜 졸라안쳐되네
-
-		// 09.25 
-		// 됐다. 이거 32개씩 나눠준다. 이제
-		std::shared_ptr<Ideal::IdealStaticMeshObject> BakedMeshObject = std::make_shared<Ideal::IdealStaticMeshObject>();
-		std::shared_ptr<Ideal::IdealStaticMesh> BakedStaticMesh = std::make_shared<Ideal::IdealStaticMesh>();
-		BakedMeshObject->SetStaticMesh(BakedStaticMesh);
-		for (auto& obj : objects)
-		{
-			//auto& obj = object.staticMesh;
-
-			RaytracingManagerDeleteObject(obj);
-
-			auto& meshes = obj->GetStaticMesh()->GetMeshes();
-			CB_Transform transform;
-			transform.World = obj->GetTransformMatrix().Transpose();
-			transform.WorldInvTranspose = transform.World.Transpose().Invert();
-			int meshSize = meshes.size();
-
-
-			for (int i = 0; i < meshSize; ++i)
-			{
-				auto& mesh = meshes[i];
-				std::shared_ptr<Ideal::D3D12UAVBuffer> newVertexBufferUAV = std::make_shared<Ideal::D3D12UAVBuffer>();
-				std::wstring name = L"UAV_ModifiedVertexBuffer";
-				uint32 vertexCount = mesh->GetElementCount();
-				uint32 size = vertexCount * sizeof(BasicVertex);
-				newVertexBufferUAV->Create(m_device.Get(), size, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, name.c_str());
-				std::shared_ptr<Ideal::D3D12UnorderedAccessView> uav = m_resourceManager->CreateUAV(newVertexBufferUAV, vertexCount, sizeof(BasicVertex));
-				newVertexBufferUAV->SetUAV(uav);
-				DispatchModifyVertexBuffer(mesh, transform, newVertexBufferUAV);
-
-				// NewMesh
-				std::shared_ptr<Ideal::D3D12VertexBuffer> newVertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
-				newVertexBuffer->CreateAndCopyResource
-				(
-					m_device,
-					sizeof(BasicVertex),
-					vertexCount,
-					m_commandLists[m_currentContextIndex],
-					newVertexBufferUAV,
-					D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
-				);
-
-				m_tempUAVS.push_back(newVertexBufferUAV);
-				uav->GetHandle().Free();
-				//m_deferredDeleteManager->AddD3D12ResourceToDelete(newVertexBufferUAV->GetResourceComPtr());
-
-				std::shared_ptr <Ideal::IdealMesh<BasicVertex>> newMesh = std::make_shared<Ideal::IdealMesh<BasicVertex>>();
-				newMesh->SetName(mesh->GetName());
-				// 기존은 기본 머테리얼이지만 다시
-				// newMesh->SetMaterial(m_resourceManager->GetDefaultMaterial());
-				// 
-				newMesh->TransferMaterialInfo(mesh);
-
-				newMesh->SetVertexBuffer(newVertexBuffer);
-				newMesh->SetIndexBuffer(mesh->GetIndexBuffer());
-				BakedStaticMesh->AddMesh(newMesh);
-
-
-				BlasGeometryCurrentSize++;
-				if (BlasGeometryCurrentSize >= BlasGeometryMaxSize)
-				{
-					BlasGeometryCurrentSize = 0;
-					m_bakedMesh.push_back(BakedMeshObject);
-					RaytracingManagerAddBakedObject(BakedMeshObject);
-
-					BakedMeshObject = std::make_shared<Ideal::IdealStaticMeshObject>();
-					BakedStaticMesh = std::make_shared<Ideal::IdealStaticMesh>();
-					BakedMeshObject->SetStaticMesh(BakedStaticMesh);
-				}
-			}
-
-			m_resourceManager->DeleteStaticMeshObject(obj);
-			auto it = std::find(m_staticMeshObject.begin(), m_staticMeshObject.end(), obj);
-			{
-				if (it != m_staticMeshObject.end())
-				{
-					*it = std::move(m_staticMeshObject.back());
-					m_deferredDeleteManager->AddMeshObjectToDeferredDelete(obj);
-					m_staticMeshObject.pop_back();
-				}
-			}
-		}
-		m_bakedMesh.push_back(BakedMeshObject);
-		RaytracingManagerAddBakedObject(BakedMeshObject);
-	}
-}
-
-void Ideal::D3D12RayTracingRenderer::InitModifyVertexBufferShader()
-{
-	CompileShader(L"../Shaders/ModifyVertexBuffer/CS_ModifyVertexBuffer.hlsl", L"../Shaders/ModifyVertexBuffer/", L"ModifyVertexBufferCS", L"cs_6_3", L"CSMain");
-	m_ModifyVertexBufferCS = CreateAndLoadShader(L"../Shaders/ModifyVertexBuffer/ModifyVertexBufferCS.shader");
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateModifyVertexBufferRootSignature()
-{
-	CD3DX12_DESCRIPTOR_RANGE ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::Count];
-	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 : vertices
-	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0 : transform
-	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // b1 : vertex Count
-	ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0); // u0 : output vertices
-
-	CD3DX12_ROOT_PARAMETER rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::Count];
-	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices]);
-	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform]);
-	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount]);
-	rootParameters[Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices].InitAsDescriptorTable(1, &ranges[Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices]);
-
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(
-		ARRAYSIZE(rootParameters), rootParameters, 0, nullptr
-	);
-
-	ComPtr<ID3DBlob> blob;
-	ComPtr<ID3DBlob> error;
-
-	HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error);
-	if (error)
-	{
-		const wchar_t* msg = static_cast<wchar_t*>(error->GetBufferPointer());
-		Check(hr, msg);
-	}
-	Check(m_device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&m_ModifyVertexBufferRootSignature)), L"Failed To Create Modify VB CS Rootsignature");
-
-	m_ModifyVertexBufferRootSignature->SetName(L"ModifyVertexBufferRootSignature");
-}
-
-void Ideal::D3D12RayTracingRenderer::CreateModifyVertexBufferCSPipelineState()
-{
-	D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineStateDesc = {};
-	computePipelineStateDesc.pRootSignature = m_ModifyVertexBufferRootSignature.Get();
-	// TODO: Shader 만들어줘야한다.
-	computePipelineStateDesc.CS = m_ModifyVertexBufferCS->GetShaderByteCode();
-
-	Check(
-		m_device->CreateComputePipelineState(&computePipelineStateDesc, IID_PPV_ARGS(&m_ModifyVertexBufferPipelineState))
-		, L"Failed To Create Modify Vertex Buffer Compute Pipeline State"
-	);
-}
-
-void Ideal::D3D12RayTracingRenderer::DispatchModifyVertexBuffer(std::shared_ptr<Ideal::IdealMesh<BasicVertex>> Mesh, CB_Transform TransformData, std::shared_ptr<Ideal::D3D12UAVBuffer> UAVBuffer)
-{
-	//ComPtr<ID3D12CommandAllocator> CommandAllocator = m_commandAllocators[m_currentContextIndex];
-	ComPtr<ID3D12GraphicsCommandList> CommandList = m_commandLists[m_currentContextIndex];
-	//
-	//Check(CommandAllocator->Reset(), L"Failed to reset commandAllocator!");
-	//Check(CommandList->Reset(CommandAllocator.Get(), nullptr), L"Failed to reset commandList");
-
-	std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap = m_mainDescriptorHeaps[m_currentContextIndex];
-	std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool = m_cbAllocator[m_currentContextIndex];
-
-	std::shared_ptr<Ideal::D3D12VertexBuffer> VertexBuffer = Mesh->GetVertexBuffer();
-
-	CommandList->SetComputeRootSignature(m_ModifyVertexBufferRootSignature.Get());
-	CommandList->SetPipelineState(m_ModifyVertexBufferPipelineState.Get());
-
-	CommandList->SetDescriptorHeaps(1, DescriptorHeap->GetDescriptorHeap().GetAddressOf());
-
-	// Parameter0 : SRV_Vertices
-	auto handle0 = DescriptorHeap->Allocate();
-	auto vertexSRV = m_resourceManager->CreateSRV(VertexBuffer, VertexBuffer->GetElementCount(), VertexBuffer->GetElementSize());
-	m_device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), vertexSRV->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::SRV_Vertices, handle0.GetGpuHandle());
-
-	// Parameter1 : CBV_Transform
-	auto handle1 = DescriptorHeap->Allocate();
-	auto cb1 = CBPool->Allocate(m_device.Get(), sizeof(CB_Transform));
-	memcpy(cb1->SystemMemAddr, &TransformData, sizeof(CB_Transform));
-	m_device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_Transform, handle1.GetGpuHandle());
-
-	// Parameter2 : CBV_VertexCount
-	auto handle2 = DescriptorHeap->Allocate();
-	auto cb2 = CBPool->Allocate(m_device.Get(), sizeof(uint32));
-	uint32 vertexCount = VertexBuffer->GetElementCount();
-	memcpy(cb2->SystemMemAddr, &vertexCount, sizeof(uint32));
-	m_device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::CBV_VertexCount, handle2.GetGpuHandle());
-
-	// Parameter3: UAV_OutputVertices
-	auto handle3 = DescriptorHeap->Allocate();
-	auto uav = UAVBuffer->GetUAV();
-	m_device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), uav->GetHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CommandList->SetComputeRootDescriptorTable(Ideal::ModifyVertexBufferCSRootSignature::Slot::UAV_OutputVertices, handle3.GetGpuHandle());
-
-	// Barrier0
-	CD3DX12_RESOURCE_BARRIER barrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
-		UAVBuffer->GetResource(),
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-	);
-	CommandList->ResourceBarrier(1, &barrier0);
-
-	// Dispatch
-	uint32 elementCount = VertexBuffer->GetElementCount();
-	uint32 threadsPreGroup = 1024;
-	uint32 dispatchX = (elementCount + threadsPreGroup - 1) / threadsPreGroup;
-	CommandList->Dispatch(dispatchX, 1, 1);
-
-	// Barrier1
-	CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::UAV(UAVBuffer->GetResource());
-	CommandList->ResourceBarrier(1, &barrier1);
-
-	// Barrier2
-	CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
-		UAVBuffer->GetResource(),
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
-	);
-	CommandList->ResourceBarrier(1, &barrier2);
-}
-
-void Ideal::D3D12RayTracingRenderer::ReleaseBakedObject()
-{
-	//for (auto& uav : m_tempUAVS)
-	//{
-	//	uav->GetUAV()->GetHandle().Free();
-	//}
-	for (auto& mesh : m_bakedMesh)
-	{
-		RaytracingManagerDeleteObject(mesh);
 	}
 }

@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/stone/T_town_fence_one_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/stone/T_town_fence_one_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/stone/T_town_fence_one_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/stone/T_town_fence_one_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/stone/T_town_fence_one_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/stone/T_town_fence_one_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

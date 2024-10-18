@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/Textures/Streetlamp_low_DefaultMaterial_AlbedoTransparency.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/Textures/Streetlamp_low_DefaultMaterial_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/Textures/Streetlamp_low_DefaultMaterial_MetallicSmoothness.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/Streetlamp_low_DefaultMaterial_AlbedoTransparency.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/Streetlamp_low_DefaultMaterial_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/Streetlamp_low_DefaultMaterial_MetallicSmoothness.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

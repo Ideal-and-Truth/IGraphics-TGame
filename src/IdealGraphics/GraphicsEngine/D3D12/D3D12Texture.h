@@ -53,7 +53,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle GetDSV();
 		Ideal::D3D12DescriptorHandle GetUAV(uint32 i = 0);
 
-		void SetUploadBuffer(ComPtr<ID3D12Resource> UploadBuffer);
+		void SetUploadBuffer(ComPtr<ID3D12Resource> UploadBuffer, uint64 UploadBufferSize);
 		ComPtr<ID3D12Resource> GetUploadBuffer() { return m_uploadBuffer; }
 		void SetUpdated() { m_updated = true; }
 		bool GetIsUpdated() { return m_updated; }
@@ -72,6 +72,7 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_srvHandleInEditor;
 
 		ComPtr<ID3D12Resource> m_uploadBuffer;
+		uint64 m_uploadBufferSize = 0;
 
 		std::weak_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager;
 

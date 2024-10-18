@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/1_HN_Scene2/Ground/T_ground_meadow_grass_
 tileX: 3
 tileY: 3
 alphaCulling: false
+transparent: false
 ...

@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/1_HN_Scene2/Ground/T_ground_meadow_soil_w
 tileX: 0.100000001
 tileY: 0.100000001
 alphaCulling: false
+transparent: false
 ...

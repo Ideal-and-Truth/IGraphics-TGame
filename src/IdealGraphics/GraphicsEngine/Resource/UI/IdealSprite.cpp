@@ -159,5 +159,5 @@ void Ideal::IdealSprite::ReSize(uint32 Width, uint32 Height)
 
 	// 생각해보니 offset 계산을 Resize때 다시 안할려고 한건데 
 	// 그래서 삭제. 
-	//CalculatePositionOffset();
+	// CalculatePositionOffset();
 }

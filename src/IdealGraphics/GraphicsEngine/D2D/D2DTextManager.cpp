@@ -19,12 +19,12 @@ void Ideal::D2DTextManager::Init(ComPtr<ID3D12Device> D3D12Device, ComPtr<ID3D12
 	CreateDWrite(1024, 256, 96.f);	// Temp
 }
 
-void Ideal::D2DTextManager::WriteTextToBitmap(BYTE* pDestImage, uint32 DestWidth, uint32 DestHeight, uint32 DestPitch, std::shared_ptr<Ideal::FontHandle> FontHandle, const std::wstring& Text)
+void Ideal::D2DTextManager::WriteTextToBitmap(BYTE* pDestImage, uint32 DestWidth, uint32 DestHeight, uint32 DestPitch, std::shared_ptr<Ideal::FontHandle> FontHandle, const std::wstring& Text, const DirectX::SimpleMath::Color& Color)
 {
 	uint32 textWidth = 0;
 	uint32 textHeight = 0;
 
-	bool bResult = CreateBitmapFromText(&textWidth, &textHeight, FontHandle->TextFormat, Text);
+	bool bResult = CreateBitmapFromText(&textWidth, &textHeight, FontHandle->TextFormat, Text, Color);
 	if (bResult)
 	{
 		if (textWidth > (uint32)DestWidth)
@@ -52,7 +52,7 @@ void Ideal::D2DTextManager::WriteTextToBitmap(BYTE* pDestImage, uint32 DestWidth
 	}
 }
 
-bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHeight, ComPtr<IDWriteTextFormat> TextFormat, const std::wstring& Text)
+bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHeight, ComPtr<IDWriteTextFormat> TextFormat, const std::wstring& Text, const DirectX::SimpleMath::Color& Color)
 {
 	bool result = false;
 
@@ -68,6 +68,10 @@ bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHe
 	DWRITE_TEXT_METRICS metrics = {};
 	if (textLayout)
 	{
+		ComPtr<ID2D1SolidColorBrush> ColorBrush;
+		D2D1::ColorF d2d1Color(Color.R(), Color.G(), Color.B(), Color.A());
+		Check(m_d2dDeviceContext->CreateSolidColorBrush(d2d1Color, ColorBrush.GetAddressOf()));
+
 		textLayout->GetMetrics(&metrics);
 		// 타겟 설정
 		m_d2dDeviceContext->SetTarget(m_d2dTargetBitmap.Get());
@@ -78,10 +82,10 @@ bool Ideal::D2DTextManager::CreateBitmapFromText(uint32* OutWidth, uint32* OutHe
 		//m_d2dDeviceContext->Clear(D2D1::ColorF(D2D1::ColorF::Black));	// 검은색으로 클리어. 여기서 바꾸면 투명도 될 것 같음
 		m_d2dDeviceContext->Clear(D2D1::ColorF(0,0,0,0));	// 검은색으로 클리어. 여기서 바꾸면 투명도 될 것 같음
 		m_d2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
-		m_d2dDeviceContext->DrawTextLayout(D2D1::Point2F(0.f, 0.f), textLayout.Get(), m_whiteBrush.Get());
+		m_d2dDeviceContext->DrawTextLayout(D2D1::Point2F(0.f, 0.f), textLayout.Get(), ColorBrush.Get());
 		// We ignore D2DERR_RECREATE_TARGET here. This error indicates that the device
 		// is lost. It will be handled during the next call to Present.
-		m_d2dDeviceContext->EndDraw();
+		Check(m_d2dDeviceContext->EndDraw(), L"Failed To End Draw D2D");
 
 		// 안티앨리어싱 모드 복구
 		m_d2dDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_DEFAULT);

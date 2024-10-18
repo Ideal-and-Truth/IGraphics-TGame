@@ -42,6 +42,8 @@ namespace Truth
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
 		std::vector<std::shared_ptr<Entity>> m_mapEntity;
 
+		bool m_useNavMesh = true;
+
 	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);

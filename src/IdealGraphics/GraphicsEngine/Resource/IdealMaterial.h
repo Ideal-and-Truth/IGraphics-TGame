@@ -37,6 +37,8 @@ namespace Ideal
 		virtual void SetOffset(float x, float y) override;
 
 		virtual void SetAlphaClipping(bool IsAlphBlending) override;
+		virtual void SetSurfaceTypeTransparent(bool IsTransparent) override;
+
 	public:
 		void SetAmbient(Color c) { m_ambient = c; }
 		void SetDiffuse(Color c) { m_diffuse = c; }
@@ -76,7 +78,7 @@ namespace Ideal
 
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
 		bool GetIsAlphaClipping() { return m_isAlphaClipping; }
-
+		bool GetIsTransmissive() { return m_cbMaterialInfo.bIsTransmissive; }
 	private:
 		Vector2 m_Tiling;
 		Vector2 m_Offset;

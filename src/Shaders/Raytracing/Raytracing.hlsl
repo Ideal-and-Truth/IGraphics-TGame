@@ -140,8 +140,8 @@ RayPayload TraceRadianceRay(in Ray ray, in UINT currentRayRecursionDepth, float 
     //rayDesc.TMin = g_sceneCB.nearZ;
     //rayDesc.TMax = g_sceneCB.farZ;
     
-    //UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
-    UINT rayFlags;// = RAY_FLAG_CULL_NON_OPAQUE;
+    UINT rayFlags = (cullNonOpaque ? RAY_FLAG_CULL_NON_OPAQUE : 0);
+    //UINT rayFlags;// = RAY_FLAG_CULL_NON_OPAQUE;
 
     //rayFlags |= RAY_FLAG_CULL_BACK_FACING_TRIANGLES;
     
@@ -180,6 +180,33 @@ float3 TraceReflectedGBufferRay(in float3 hitPosition, in float3 wi, inout RayPa
     float tMax = TMax;
 
     rayPayload = TraceRadianceRay(ray, rayPayload.rayRecursionDepth, tMin, tMax);
+    if(rayPayload.gBuffer.tHit != HitDistanceOnMiss)
+    {
+        rayPayload.gBuffer.tHit += RayTCurrent() + tOffset;
+    }
+
+    return rayPayload.radiance;
+}
+
+float3 TraceRefractedGBufferRay(in float3 hitPosition, in float3 wt, in float3 N, in float3 objectNormal, inout RayPayload rayPayload, in float TMax = 10000)
+{
+    float tOffset = 0.001f;
+    float3 offsetAlongRay = tOffset * wt;
+    float3 adjustedHitposition = hitPosition + offsetAlongRay;
+    Ray ray = {adjustedHitposition, wt};
+    float tMin = 0;
+    float tMax = TMax;
+   
+    bool cullNonOpaque = true;
+    int recursionDepth = rayPayload.rayRecursionDepth;
+    // recursionDepth = clamp(recursionDepth - 1, 0, 2);  // 0보단 작아지지 않게
+    //rayPayload = TraceRadianceRay(ray, rayPayload.rayRecursionDepth, tMin, tMax, cullNonOpaque);
+    rayPayload = TraceRadianceRay(ray, recursionDepth, tMin, tMax, cullNonOpaque);
+
+    if(rayPayload.gBuffer.tHit != HitDistanceOnMiss)
+    {
+        rayPayload.gBuffer.tHit += RayTCurrent() + tOffset;
+    }
 
     return rayPayload.radiance;
 }
@@ -280,7 +307,6 @@ void CalculateSpecularAndReflectionCoefficients(
     {
         Ks = float3(1,1,1) - roughness; // 비금속 표면인 경우 Roughness에 따라 조정
     }
-
     
     //// 기본 반사율 (비금속성 반사율)
     //const float3 F0_non_metallic = float3(0.04, 0.04, 0.04);
@@ -324,7 +350,9 @@ float3 Shade(
     float3 Kd = baseTex.xyz;
     float3 Ks;
     float3 Kr;
-    const float3 Kt;
+    const float3 Kt = float3(1,1,1);
+    //const float3 Kt = float3(0.7,0.7,0.7);
+    //const float3 Kt = float3(0.1,0.1,0.1);
     float metallic;
     float roughness;
 
@@ -339,16 +367,22 @@ float3 Shade(
 
     if (!BxDF::IsBlack(Kd) || !BxDF::IsBlack(Ks))
     {
+        int dirLightNum = g_lightList.DirLightNum;
         int pointLightNum = g_lightList.PointLightNum;
         int spotLightNum = g_lightList.SpotLightNum;
     
         // Directional Light
         {
-            float3 LightVector = -g_lightList.DirLight.Direction.xyz;
-            float3 H = normalize(V + LightVector);
-            float3 radiance = g_lightList.DirLight.DiffuseColor.rgb;
-            bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
-            L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
+            for(int i = 0; i < dirLightNum; ++i)
+            {
+                float3 LightVector = -g_lightList.DirLights[i].Direction.xyz;
+                float3 H = normalize(V + LightVector);
+                float3 radiance = g_lightList.DirLights[i].DiffuseColor.rgb;
+                float intensity = g_lightList.DirLights[i].Intensity;
+                bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
+                //L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
+                L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, intensity);
+            }
         }
         
         {   
@@ -385,7 +419,7 @@ float3 Shade(
                 if (distance <= range)
                 {
                     isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
-                    L += SpotLight(isInShadow, V, direction, lightDirection, N, distance, color, softness, angle, albedo, roughness, metallic, intensity);
+                    L += SpotLight(isInShadow, V, direction, lightDirection, N, distance, color, softness, angle, albedo, roughness, metallic, intensity, range);
                 }
             }
         }
@@ -398,11 +432,12 @@ float3 Shade(
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);
     //bool isReflective = Ideal::CheckReflect(Kr);
-    bool isTransmissive = !BxDF::IsBlack(Kt); // 일단 굴절은 뺄까?
+    //bool isTransmissive = !BxDF::IsBlack(Kt); // 일단 굴절은 뺄까?
+    bool isTransmissive = l_materialInfo.bIsTransmissive;
     
     float smallValue = 1e-6f;
     isReflective = dot(V, N) > smallValue ? isReflective : false;
-    if (isReflective)
+    if (isReflective || isTransmissive)
     {
         float range = 3000.f * pow(maskSample.a * 0.9f + 0.1f, 4.0f);
         if (isReflective && (BxDF::Specular::Reflection::IsTotalInternalReflection(V, N)))
@@ -428,6 +463,16 @@ float3 Shade(
                 //float3 result = Fr * TraceReflectedGBufferRay(hitPosition, wi, N, objectNormal, reflectedRayPayLoad);
                 //L += result;
                 
+            }
+            if(isTransmissive)
+            {
+                if(baseTex.a < 0.5f)
+                {
+                    float3 wt;
+                    float3 Ft = Kt * BxDF::Specular::Transmission::Sample_Ft(V, wt, N, Fo);
+                    RayPayload refractedRayPayLoad = rayPayload;
+                    L += Ft * TraceRefractedGBufferRay(hitPosition, wt, N, objectNormal, refractedRayPayLoad);
+                }
             }
         }
     }
@@ -623,6 +668,14 @@ void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
 [shader("anyhit")]
 void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
 {
+
+   if(l_materialInfo.bIsTransmissive)
+    {
+        //IgnoreHit();
+        AcceptHitAndEndSearch();
+        return;
+    }
+
     float3 hitPosition = HitWorldPosition();
     uint baseIndex = PrimitiveIndex() * 3;
     const uint3 indices = uint3(
@@ -648,6 +701,13 @@ void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
 [shader("anyhit")]
 void MyAnyHitShader_ShadowRay(inout ShadowRayPayload payload, in MyAttributes attr)
 {
+
+    if(l_materialInfo.bIsTransmissive)
+    {
+        IgnoreHit();
+        return;
+    }
+
     payload.tHit = RayTCurrent();
     float3 hitPosition = HitWorldPosition();
     uint baseIndex = PrimitiveIndex() * 3;
@@ -665,13 +725,11 @@ void MyAnyHitShader_ShadowRay(inout ShadowRayPayload payload, in MyAttributes at
     float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
     float2 uv = HitAttribute(vertexTexCoords, attr);
     float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
+
     if(alpha < 0.5f)    // threshold
     {
         IgnoreHit();
+        return;
     }
-    //elsef
-    //{
-    //    AcceptHitAndEndSearch();
-    //}
 }
 #endif // RAYTRACING_HLSL

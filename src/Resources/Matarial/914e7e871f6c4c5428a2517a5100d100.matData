@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/1F/T_town_building_1F_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/1F/T_town_building_1F_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/1F/T_town_building_1F_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/1F/T_town_building_1F_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/1F/T_town_building_1F_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/1F/T_town_building_1F_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

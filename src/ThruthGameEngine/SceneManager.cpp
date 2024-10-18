@@ -54,13 +54,18 @@ void Truth::SceneManager::Finalize()
 /// <summary>
 /// 업데이트
 /// </summary>
-void Truth::SceneManager::Update() const
+void Truth::SceneManager::Update()
 {
+	if (m_sceneChangeFlag)
+	{
+		m_sceneChangeFlag = false;
+		ChangeScene();
+	}
+
 	m_currentScene->Update();
 #ifdef EDITOR_MODE
 	m_currentScene->EditorUpdate();
 #endif // EDITOR_MODE
-
 }
 
 void Truth::SceneManager::FixedUpdate() const
@@ -95,18 +100,25 @@ void Truth::SceneManager::StartGameScene() const
 /// <param name="_p">변경할 Scene</param>
 void Truth::SceneManager::ChangeScene(const std::string& _name)
 {
-	m_eventManager.lock()->RemoveAllEvents();
+	m_sceneChangeFlag = true;
+	m_nextSceneName = _name;
+}
 
+void Truth::SceneManager::ChangeScene()
+{
+	m_eventManager.lock()->RemoveAllEvents();
+	
 	m_currentScene->Exit();
 
-	std::ifstream inputstream(m_savedFilePath + _name + ".scene");
+	std::ifstream inputstream(m_savedFilePath + m_nextSceneName + ".scene");
 	boost::archive::text_iarchive inputArchive(inputstream);
 	std::shared_ptr<Truth::Scene> s;
 	inputArchive >> s;
 
 	m_currentScene.reset();
-	m_currentScene->Initalize(m_mangers);
 	m_currentScene = s;
+	m_currentScene->Initalize(m_mangers);
+	m_currentScene->Enter();
 }
 
 /// <summary>

@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/cafe prop/T_town_cafe_parasol_chair_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/cafe prop/T_town_cafe_parasol_chair_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/cafe prop/T_town_cafe_parasol_chair_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/cafe prop/T_town_cafe_parasol_chair_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/cafe prop/T_town_cafe_parasol_chair_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/cafe prop/T_town_cafe_parasol_chair_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

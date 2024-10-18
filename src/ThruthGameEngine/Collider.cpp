@@ -114,11 +114,11 @@ void Truth::Collider::Awake()
 
 
 
-	bool isSRT = (m_owner.lock()->GetWorldTM() * m_localTM).Decompose(finalSize, temp, finalPos);
+	bool isSRT = (m_localTM * m_owner.lock()->GetWorldTM()).Decompose(finalSize, temp, finalPos);
 
 	if (!isSRT)
 	{
-		MathUtil::DecomposeNonSRT(finalSize, temp, finalPos, (m_owner.lock()->GetWorldTM() * m_localTM));
+		MathUtil::DecomposeNonSRT(finalSize, temp, finalPos, (m_localTM * m_owner.lock()->GetWorldTM()));
 	}
 
 // 	if (finalSize == Vector3::Zero)

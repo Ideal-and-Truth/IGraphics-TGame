@@ -1,7 +1,8 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/stairset/T_stairset_BaseMap002.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/stairset/T_stairset_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/stairset/T_stairset_BaseMap002.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/stairset/T_stairset_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/Roof/T_JShouse_roof_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/Roof/T_JShouse_roof_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/Roof/T_JShouse_roof_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Roof/T_JShouse_roof_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/Roof/T_JShouse_roof_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/Roof/T_JShouse_roof_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

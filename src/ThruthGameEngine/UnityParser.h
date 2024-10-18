@@ -58,6 +58,7 @@ namespace Truth
 			float m_tileY = 1.0f;
 
 			bool m_alphaCulling = false;
+			bool m_transparent = false;
 		};
 
 		/// <summary>

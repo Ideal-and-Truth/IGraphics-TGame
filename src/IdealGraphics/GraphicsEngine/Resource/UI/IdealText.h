@@ -24,14 +24,14 @@ namespace Ideal
 		~IdealText();
 
 	public:
-		virtual void ChangeText(const std::wstring& Text) override;
+		virtual void ChangeText(const std::wstring& Text, const DirectX::SimpleMath::Color& Color = DirectX::SimpleMath::Color(1, 1, 1, 1)) override;
 		std::shared_ptr<Ideal::IdealSprite> GetSprite();
 		void SetSprite(std::shared_ptr<Ideal::IdealSprite> Sprite);
 		// 자기만의 텍스쳐를 가진다.
 		void SetTexture(std::shared_ptr<Ideal::D3D12Texture> Texture);
 		void SetFontHandle(std::shared_ptr<Ideal::FontHandle> FontHandle);
 		void UpdateDynamicTextureWithImage(ComPtr<ID3D12Device> Device);
-
+		void Resize(uint32 Width, uint32 Height);
 	public:
 		// Sprite Interface
 		virtual void SetActive(bool b) override { m_textSprite->SetActive(b); }
@@ -46,6 +46,7 @@ namespace Ideal
 		virtual void SetColor(const DirectX::SimpleMath::Color& Color) override { m_textSprite->SetColor(Color); };
 		//virtual void SetTexture(std::weak_ptr<Ideal::ITexture> Texture) override { m_textSprite->SetTexture(Texture); };
 
+		virtual void ResizeTexture(float Width, float Height) override;
 	private:
 		std::weak_ptr<Ideal::D2DTextManager> m_textManager;
 		std::shared_ptr<Ideal::D3D12Texture> m_texture;

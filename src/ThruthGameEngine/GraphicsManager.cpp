@@ -282,7 +282,10 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			mat->m_tileX = node["tileX"].as<float>();
 			mat->m_tileY = node["tileY"].as<float>();
 
-			mat->m_alphaCulling = node["alphaCulling"].as<bool>();
+			if (node["alphaCulling"].IsDefined())
+				mat->m_alphaCulling = node["alphaCulling"].as<bool>();
+			if (node["transparent"].IsDefined())
+				mat->m_transparent = node["transparent"].as<bool>();
 
 			mat->m_baseMap = CreateTexture(albedo, true, false);
 			mat->m_normalMap = CreateTexture(normal, true, true);
@@ -444,9 +447,9 @@ RECT Truth::GraphicsManager::GetWindowRect()
 
 void Truth::GraphicsManager::BakeStaticMesh()
 {
-	m_renderer->BakeOption(32, 10.f);
-	m_renderer->BakeStaticMeshObject();
-	m_renderer->ReBuildBLASFlagOn();
+	// 	m_renderer->BakeOption(32, 10.f);
+	// 	m_renderer->BakeStaticMeshObject();
+	// 	m_renderer->ReBuildBLASFlagOn();
 }
 
 #ifdef EDITOR_MODE

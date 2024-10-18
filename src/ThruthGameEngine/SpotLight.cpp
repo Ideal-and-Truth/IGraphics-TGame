@@ -27,6 +27,12 @@ Truth::SpotLight::~SpotLight()
 
 void Truth::SpotLight::SetLight()
 {
+	if (m_position.x < 1 && m_position.x > -1 &&
+		m_position.y < 1 && m_position.y > -1 &&
+		m_position.z < 1 && m_position.z > -1)
+	{
+		int a = 1;
+	}
 	m_spotLight = m_managers.lock()->Graphics()->CreateSpotLight();
 }
 
@@ -55,6 +61,17 @@ void Truth::SpotLight::SetSoftness()
 	m_spotLight->SetSoftness(m_softness);
 }
 
+void Truth::SpotLight::SetPosition()
+{
+	m_spotLight->SetPosition(m_position);
+
+}
+
+void Truth::SpotLight::SetDirection()
+{
+	m_spotLight->SetDirection(m_direction);
+}
+
 void Truth::SpotLight::Initialize()
 {
 	SetLight();
@@ -63,12 +80,8 @@ void Truth::SpotLight::Initialize()
 	SetSoftness();
 	SetRange();
 	SetAngle();
-}
-
-void Truth::SpotLight::ApplyTransform()
-{
-	m_spotLight->SetPosition(m_position);
-	m_spotLight->SetDirection(m_direction);
+	SetPosition();
+	SetDirection();
 }
 
 #ifdef EDITOR_MODE
@@ -79,6 +92,8 @@ void Truth::SpotLight::EditorSetValue()
 	SetSoftness();
 	SetRange();
 	SetAngle();
+	SetPosition();
+	SetDirection();
 }
 #endif // _DEBUG
 

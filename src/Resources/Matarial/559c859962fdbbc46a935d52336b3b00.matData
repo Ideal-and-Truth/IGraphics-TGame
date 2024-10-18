@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/poster/T_poster_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/poster/T_poster_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/poster/T_poster_MaskMap.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/poster/T_poster_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/poster/T_poster_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/poster/T_poster_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

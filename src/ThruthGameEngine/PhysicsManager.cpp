@@ -130,8 +130,8 @@ void Truth::PhysicsManager::FixedUpdate()
 					pos = MathUtil::Convert(rigidbody->GetController()->getFootPosition());
 					rot = rigidbody->GetRotation();
 					Vector3 rotv = rot.ToEuler();
-// 					rotv.x = 0;
-// 					rotv.z = 0;
+ 					rotv.x = 0;
+ 					rotv.z = 0;
 					rot = Quaternion::CreateFromYawPitchRoll(rotv);
 				}
 				else
@@ -417,15 +417,9 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 
 	rayCastBuffer.nbTouches;
 	if (hitCheck)
-	{
-		int a = 1;
-		return MathUtil::Convert(rayCastBuffer.block.position) - _direction * 2;
-		// return _start + (_direction * _range);
-	}
+		return MathUtil::Convert(rayCastBuffer.block.position);
 	else
-	{
 		return _start + (_direction * _range);
-	}
 }
 
 /// <summary>
@@ -472,7 +466,7 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 
 	// 기본 바닥 만들기 (필요없는 경우 없애면 된다)
-	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
+ 	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
 	m_scene->addActor(*groundPlane);
 

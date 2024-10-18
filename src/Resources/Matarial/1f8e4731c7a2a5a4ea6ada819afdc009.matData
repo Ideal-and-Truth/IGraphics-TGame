@@ -1,6 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/Hannatile/T_brickwall_002_BaseMap-1.png
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Hannatile/T_brickwall_002_BaseMap-1.png
 tileX: -0.379999995
 tileY: 1.85000002
 alphaCulling: false
+transparent: false
 ...
