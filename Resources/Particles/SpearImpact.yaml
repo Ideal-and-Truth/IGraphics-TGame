@@ -1,0 +1,53 @@
+MaxCount: 10
+MatName: SpearImpact
+EBlendingMode: 2
+Shader: BossSphereImpactPS
+Texture0: ../Resources/Textures/0_Particle/bossSpearImpact/PerlinNoise_9.png
+Texture1: ../Resources/Textures/0_Particle/bossSpearImpact/Normal_13.png
+Texture2: ../Resources/Textures/0_Particle/bossSpearImpact/mask_4.png
+Mesh: 0_Particle/UVSphere
+BackFaceCulling: false
+StartColor:
+  - 0
+  - 0.6506
+  - 5.8796
+  - 1
+StartLifetime: 3
+Loop: false
+Duration: 3
+RenderMode: 1
+CustomData1X:
+  - x: 0
+    y: 0.1
+CustomData1Y:
+  - x: 0
+    y: 5
+CustomData1Z:
+  - x: 0
+    y: 7.5
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 0
+      - 0.6506
+      - 5.8796
+      - 0
+    position: 0
+  - Color:
+      - 0
+      - 0.6506
+      - 5.8796
+      - 1
+    position: 0.059
+  - Color:
+      - 0
+      - 0.6506
+      - 5.8796
+      - 1
+    position: 0.309
+  - Color:
+      - 0
+      - 0.6506
+      - 5.8796
+      - 0
+    position: 1
