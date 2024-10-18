@@ -10,8 +10,12 @@
 #include "SimpleDamager.h"
 #include "TimeDistortion.h"
 #include "Controller.h"
+#include "ParticleManager.h"
+#include "IParticleSystem.h"
+
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
+
 
 int BossSkill::RandomNumber(int _min, int _max)
 {
@@ -40,6 +44,8 @@ BossSkill::BossSkill()
 	, m_deleteSword(false)
 	, m_deleteClone(false)
 	, m_readyToShoot(false)
+	, m_playShock(false)
+	, m_spearImpactCount(0)
 	, m_swordShootTime(0.f)
 	, m_shockWaveTime(0.f)
 	, m_flameSwordTime(0.f)
@@ -225,6 +231,23 @@ void BossSkill::ShockWave()
 					m_shockWaves[5].first->SetPosition({ pos,bossHeight,-pos });
 					m_shockWaves[6].first->SetPosition({ -pos,bossHeight,pos });
 					m_shockWaves[7].first->SetPosition({ -pos,bossHeight,-pos });
+
+					m_playShock = true;
+					PlayEffect(m_shockWaves[0].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[1].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[2].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[3].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[4].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[5].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[6].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[7].first->GetWorldPosition());
 				}
 				else if (m_shockCount % 2 == 1)
 				{
@@ -236,6 +259,23 @@ void BossSkill::ShockWave()
 					m_shockWaves[13].first->SetPosition({ pos,bossHeight,-pos });
 					m_shockWaves[14].first->SetPosition({ -pos,bossHeight,pos });
 					m_shockWaves[15].first->SetPosition({ -pos,bossHeight,-pos });
+
+					m_playShock = true;
+					PlayEffect(m_shockWaves[8].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[9].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[10].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[11].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[12].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[13].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[14].first->GetWorldPosition());
+					m_playShock = true;
+					PlayEffect(m_shockWaves[15].first->GetWorldPosition());
 				}
 
 				m_shockCount++;
@@ -362,6 +402,7 @@ void BossSkill::SwordShooting()
 				e.first->m_transform->m_position = worldPos;
 			}
 		}
+		m_spearImpactCount = 0;
 	}
 	else
 	{
@@ -380,9 +421,15 @@ void BossSkill::SwordShooting()
 				Quaternion::LookRotation(dir, Vector3::Up, lookRot);
 				m_swords[i].first->m_transform->m_rotation = Quaternion::Slerp(m_swords[i].first->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
 			}
-			if (m_swords[i].second)
+			if (m_swords[i].second && m_spearImpactCount == i)
 			{
 				m_swords[i].first->m_transform->m_position += (m_shootingPos[i] - m_swords[i].first->m_transform->m_position) * GetDeltaTime() * 10.f;
+				if (m_swords[i].first->m_transform->m_position.y <= m_owner.lock()->GetWorldPosition().y + 0.2f)
+				{
+					m_playSpear = true;
+					m_spearImpactCount++;
+					PlayEffect(m_swords[i].first->m_transform->m_position);
+				}
 			}
 		}
 
@@ -401,7 +448,7 @@ void BossSkill::SwordShooting()
 			}
 		}
 
-		if (m_swords[m_swords.size() - 1].first->m_transform->m_position.y <= 0.1f)
+		if (m_swords[m_swords.size() - 1].first->m_transform->m_position.y <= m_owner.lock()->GetWorldPosition().y + 0.2f)
 		{
 			m_deleteSword = true;
 			m_swordShooting = false;
@@ -577,7 +624,7 @@ void BossSkill::DistortedTimeSphere()
 		{
 			for (auto& e : m_timeSpheres)
 			{
-				if (e.first->m_transform->m_position.y > 0.5f)
+				if (e.first->m_transform->m_position.y > m_owner.lock()->GetWorldPosition().y + 0.5f)
 				{
 					e.first->m_transform->m_position.y -= GetDeltaTime() * 2.f;
 				}
@@ -811,5 +858,101 @@ void BossSkill::DeleteCheck()
 			m_timeDistortionCoolTime = 0.f;
 		}
 	}
+}
+
+void BossSkill::PlayEffect(Vector3 pos)
+{
+	if (m_playShock)
+	{
+		m_playShock = false;
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
+			p->SetDeltaTime(GetDeltaTime());
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+				Matrix::CreateRotationX(3.14f * 0.5f) *
+				Matrix::CreateTranslation(pos)
+			);
+
+			p->SetActive(true);
+			p->Play();
+		}
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
+			p->SetDeltaTime(GetDeltaTime());
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+				Matrix::CreateRotationX(3.14f * 0.5f) *
+				Matrix::CreateTranslation(pos)
+			);
+
+			p->SetActive(true);
+			p->Play();
+		}
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
+			p->SetDeltaTime(GetDeltaTime());
+			p->SetTransformMatrix(
+				Matrix::CreateTranslation(pos)
+			);
+
+			p->SetActive(true);
+			p->Play();
+		}
+	}
+
+	if (m_playSpear)
+	{
+		m_playSpear = false;
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
+			p->SetDeltaTime(GetDeltaTime());
+			p->SetTransformMatrix(
+				Matrix::CreateScale(35.f)
+				* Matrix::CreateScale(Vector3(2.5, 2.5, 1) * 2.f)
+				* Matrix::CreateRotationX(3.1415 * 0.5)
+				* Matrix::CreateTranslation(pos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(3.f);
+
+			p->Play();
+		}
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact1.yaml");
+			p->SetDeltaTime(GetDeltaTime());
+			p->SetTransformMatrix(
+				Matrix::CreateScale(35.f)
+				* Matrix::CreateScale(Vector3(3, 3, 1) * 2.f)
+				* Matrix::CreateRotationX(3.1415 * 0.5)
+				* Matrix::CreateTranslation(pos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(3.f);
+
+			p->Play();
+		}
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact2.yaml");
+			p->SetDeltaTime(GetDeltaTime());
+			p->SetTransformMatrix(
+				Matrix::CreateScale(35.f)
+				* Matrix::CreateScale(Vector3(1, 1, 2) * 2.f)
+				* Matrix::CreateRotationX(3.1415 * 0.5)
+				* Matrix::CreateTranslation(pos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(3.f);
+
+			p->Play();
+		}
+	}
+
 }
 
