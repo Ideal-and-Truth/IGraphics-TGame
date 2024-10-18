@@ -431,11 +431,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		auto windowBase = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_BaseMap.png");
 		auto windowNormal = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_Normal.png");
 		auto windowMask = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_MaskMap.png");
+		auto fireEmissive = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/flame2.jpg");
 		windowMaterial->SetBaseMap(windowBase);
 		windowMaterial->SetNormalMap(windowNormal);
 		windowMaterial->SetMaskMap(windowMask);
+		windowMaterial->SetEmissiveMap(fireEmissive);
 		//garlandMaterial->SetAlphaClipping(true);
 		windowMaterial->SetSurfaceTypeTransparent(true);
+
+		//auto fireMaterial = gRenderer->CreateMaterial();
+		//auto fireBase = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/flame.png");
+		//auto fireNormal = gRenderer->CreateTexture(L"../");
+		//auto fireMask = gRenderer->CreateTexture(L"");
+		//
+		//fireMaterial->SetBaseMap(fireBase);
+		//fireMaterial->SetNormalMap(fireNormal);
+		//fireMaterial->SetMaskMap(fireMask);
+		//fireMaterial->SetEmissiveMap(fireEmissive);
+		//fireMaterial->SetSurfaceTypeTransparent(true);
 
 		for(int y = 0 ; y < 20;y++)
 		{

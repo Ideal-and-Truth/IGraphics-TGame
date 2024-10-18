@@ -31,6 +31,7 @@ struct CB_MaterialInfo
 	uint32 bUseNormalMap;
 	uint32 bUseMetallicMap;
 	uint32 bUseRoughnessMap;
+	uint32 bUseEmissiveMap;
 
 	float metallicFactor;
 	float roughnessFactor;
@@ -39,7 +40,6 @@ struct CB_MaterialInfo
 	Vector2 offset;
 
 	uint32 bIsTransmissive;
-	float pad0;
 };
 
 struct CB_Bone

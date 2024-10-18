@@ -34,6 +34,7 @@ namespace Ideal
 	{
 		float tHit;
 		Vector3 hitPosition;
+		Vector4 emissive;
 	};
 
 	struct RayPayload
@@ -72,6 +73,7 @@ namespace Ideal
 
 				UAV_GBufferPosition,
 				UAV_GBufferDepth,
+				UAV_GBufferEmissive,
 
 				Count
 			};
@@ -91,6 +93,7 @@ namespace Ideal
 				//SRV_Metalic,
 				//SRV_Roughness,
 				SRV_Mask,
+				SRV_Emissive,
 				CBV_MaterialInfo,
 				Count
 			};
@@ -103,10 +106,12 @@ namespace Ideal
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_Vertices;
 			// Diffuse Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
-			// Normal Textures
+			// Normal Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_NormalTexture;
 			// Mask Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MaskTexture;
+			// Emissive Texture
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_EmissiveTexture;
 
 			//D3D12_GPU_DESCRIPTOR_HANDLE CBV_MaterialInfo;
 			CB_MaterialInfo CBV_MaterialInfo;
@@ -294,6 +299,7 @@ namespace Ideal
 	private:
 		std::shared_ptr<Ideal::D3D12Texture> m_gBufferPosition;
 		std::shared_ptr<Ideal::D3D12Texture> m_gBufferDepth;
+		std::shared_ptr<Ideal::D3D12Texture> m_gBufferEmissive;
 
 		std::shared_ptr<Ideal::D3D12Texture> m_CopyDepthBuffer;	// raytracing으로 뽑은 depth buffer를 옮길 dsv
 																// 이유는 uav와 dsv 동시 허용하여 생성을 못한다.
