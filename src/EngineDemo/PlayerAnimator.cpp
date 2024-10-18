@@ -313,7 +313,8 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 			}
 		}
 	}
-	else if (_other->GetOwner().lock()->GetComponent<SimpleDamager>().lock() && !m_isDodge)
+
+	if (_other->GetOwner().lock()->GetComponent<SimpleDamager>().lock() && !m_isDodge)
 	{
 		auto damager = _other->GetOwner().lock()->GetComponent<SimpleDamager>().lock();
 		if (!damager->GetTypeInfo().GetProperty("onlyHitOnce")->Get<bool>(damager.get()).Get())
@@ -1036,7 +1037,7 @@ void PlayerDodgeAttack::OnStateEnter()
 
 void PlayerDodgeAttack::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get()==13)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 13)
 	{
 		GetProperty("dodgeAttack")->Set(m_animator, true);
 	}
