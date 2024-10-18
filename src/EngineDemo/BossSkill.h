@@ -66,8 +66,11 @@ private:
 	int m_flameCount;
 	int m_cloneCount;
 
-
 	int m_currentPhase;
+
+	bool m_playShock;
+	bool m_playSpear;
+	int m_spearImpactCount;
 
 	std::vector<float> m_shockWavePos;
 	std::vector<float> m_flamePos;
@@ -97,6 +100,8 @@ private:
 
 	void CoolTimeCheck();
 	void DeleteCheck();
+
+	void PlayEffect(Vector3 pos);
 };
 
 template<class Archive>
