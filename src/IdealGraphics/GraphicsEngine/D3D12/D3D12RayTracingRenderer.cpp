@@ -499,12 +499,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_globalCB.eyePos = m_mainCamera->GetPosition();
 
 	UpdateLightListCBData();
-	if (m_directionalLight)
-	{
-		//m_sceneCB.color = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
-		//m_sceneCB.color = Vector4(1.f, 1.f, 1.f, 1.f);
-		//m_sceneCB.lightDiffuse = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
-	}
+	
 	ResetCommandList();
 
 #ifdef _DEBUG
@@ -921,7 +916,7 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimati
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12RayTracingRenderer::CreateDirectionalLight()
 {
 	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
-	m_directionalLight = std::static_pointer_cast<Ideal::IdealDirectionalLight>(newLight);
+	m_directionalLights.push_back(std::static_pointer_cast<Ideal::IdealDirectionalLight>(newLight));
 	return newLight;
 }
 
@@ -1700,13 +1695,17 @@ void Ideal::D3D12RayTracingRenderer::DrawPostScreen()
 void Ideal::D3D12RayTracingRenderer::UpdateLightListCBData()
 {
 	//----------------Directional Light-----------------//
-	if (m_directionalLight)
+	uint32 directionalLightNum = m_directionalLights.size();
+	if (directionalLightNum > MAX_DIRECTIONAL_LIGHT_NUM)
 	{
-		m_lightListCB.DirLight = m_directionalLight->GetDirectionalLightDesc();
-		//m_lightListCB.DirLight.AmbientColor = m_directionalLight->GetDirectionalLightDesc().AmbientColor;
-		//m_lightListCB.DirLight.DiffuseColor = m_directionalLight->GetDirectionalLightDesc().DiffuseColor;
-		//m_lightListCB.DirLight.Direction = m_directionalLight->GetDirectionalLightDesc().Direction;
+		directionalLightNum = MAX_DIRECTIONAL_LIGHT_NUM;
 	}
+	for (uint32 i = 0; i < directionalLightNum; ++i)
+	{
+		m_lightListCB.DirLights[i] = m_directionalLights[i]->GetDirectionalLightDesc();
+	}
+	m_lightListCB.DirLightNum = directionalLightNum;
+
 
 	//----------------Spot Light-----------------//
 	uint32 spotLightNum = m_spotLights.size();

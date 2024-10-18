@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Core.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
 #define MAX_BONE_TRANSFORMS 600
 #define MAX_MODEL_KEYFRAMES 600
@@ -91,10 +92,6 @@ struct CB_GenerateMipsInfo
 	Vector2 TexelSize;
 };
 
-//------------Light-----------//
-#define MAX_POINT_LIGHT_NUM 100
-#define MAX_SPOT_LIGHT_NUM 100
-
 struct PointLight
 {
 	Color Color;
@@ -129,12 +126,12 @@ struct SpotLight
 
 struct CB_LightList
 {
+	int32 DirLightNum;
 	int32 PointLightNum;
 	int32 SpotLightNum;
-	float pad;
-	float pad1;
+	float pad0;
 
-	DirectionalLight DirLight;
+	DirectionalLight DirLights[MAX_DIRECTIONAL_LIGHT_NUM];
 	PointLight PointLights[MAX_POINT_LIGHT_NUM];
 	SpotLight SpotLights[MAX_SPOT_LIGHT_NUM];
 };
