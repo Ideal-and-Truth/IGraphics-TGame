@@ -467,8 +467,8 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 	// 기본 바닥 만들기 (필요없는 경우 없애면 된다)
  	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
-	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
-	m_scene->addActor(*groundPlane);
+// 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(-1, 1, 0, 0), *m_material);
+// 	m_scene->addActor(*groundPlane);
 
 	// 컨트롤러 매니저 만들기
 	m_CCTManager = PxCreateControllerManager(*m_scene);

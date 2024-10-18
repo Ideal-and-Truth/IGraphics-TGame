@@ -250,6 +250,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			matp = fs::relative(matp);
 		}
 	}
+
+	fs::create_directories(matp.parent_path());
+
 	std::shared_ptr<Material> mat = std::make_shared<Material>();
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
@@ -292,7 +295,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			mat->m_maskMap = CreateTexture(metalicRoughness, true, true);
 
 			mat->SetTexture();
-			mat->SaveMaterial();
+			// mat->SaveMaterial();
 
 			fin.close();
 		}
@@ -315,6 +318,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			emitter << YAML::Key << "tileY" << YAML::Value << (1.0f);
 
 			emitter << YAML::Key << "alphaCulling" << YAML::Value << false;
+			emitter << YAML::Key << "transparent" << YAML::Value << false;
 
 			mat->m_baseMap = CreateTexture(al.generic_wstring(), true, false);
 			mat->m_normalMap = CreateTexture(no.generic_wstring(), true, true);
