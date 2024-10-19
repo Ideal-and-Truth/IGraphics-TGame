@@ -173,6 +173,19 @@ namespace Ideal
 		}
 	}
 
+	namespace PostProcessDownSampleRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Input = 0,
+				UAV_Output,
+				CBV_Treshold,
+				Count
+			};
+		}
+	}
 	namespace PostProcessBlurRootSignature
 	{
 		namespace Slot

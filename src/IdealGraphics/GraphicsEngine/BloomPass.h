@@ -28,7 +28,7 @@ namespace Ideal
 		void InitBloomPass(
 			ComPtr<ID3D12Device> Device,
 			std::shared_ptr<Ideal::ResourceManager> ResourceManager,
-			std::shared_ptr<Ideal::D3D12Shader> BlurShaderVS,
+			std::shared_ptr<Ideal::D3D12Shader> DownSampleShader,
 			std::shared_ptr<Ideal::D3D12Shader> BlurShaderPS,
 			std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> QuadMesh,
 			uint32 Width, uint32 Height
@@ -48,7 +48,10 @@ namespace Ideal
 
 	private:
 		void CreateBlurRootSignature(ComPtr<ID3D12Device> Device);
+		void CreateDownSampleRootSignature(ComPtr<ID3D12Device> Device);
 		void CreateBlurPipelineState(ComPtr<ID3D12Device> Device);
+		void CreateDownSamplePipelineState(ComPtr<ID3D12Device> Device);
+
 
 	private:
 		void PostProcess_BLUR(
@@ -59,15 +62,33 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap,
 			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool
 		);
-
+		void PostProcess_DownSample(
+			std::shared_ptr<Ideal::D3D12Texture> BloomTexture,
+			std::shared_ptr<Ideal::D3D12Texture> OutTexture,
+			float Threshold
+		,
+			ComPtr<ID3D12Device> Device,
+			ComPtr<ID3D12GraphicsCommandList> CommandList,
+			std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap,
+			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+			uint32 Width
+		,
+			uint32 Height
+		);
 	private:
+		uint32 m_width;
+		uint32 m_height;
+
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_quadMesh;
 
 		std::shared_ptr<Ideal::D3D12Shader> m_blurShaderVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_blurShaderPS;
+		std::shared_ptr<Ideal::D3D12Shader> m_downSampleCS;
 		ComPtr<ID3D12RootSignature> m_blurRootSignature;
 		ComPtr<ID3D12PipelineState> m_blurPipelineState;
 
+		ComPtr<ID3D12RootSignature> m_downSampleRootSignature;
+		ComPtr<ID3D12PipelineState> m_downSamplePipelineState;
 	private:
 		// Blur Texture
 		std::shared_ptr<Ideal::D3D12Viewport> m_viewportBlur0;

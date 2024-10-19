@@ -1788,6 +1788,9 @@ void Ideal::D3D12RayTracingRenderer::CompileDefaultShader()
 
 	CompileShader(L"../Shaders/Screen/Screen.hlsl", L"../Shaders/Screen/", L"ScreenPS", L"ps_6_3", L"PS", L"../Shaders/Screen/");
 	m_screenPS = CreateAndLoadShader(L"../Shaders/Screen/ScreenPS.shader");
+
+	CompileShader(L"../Shaders/PostProcess/CS_DownSample.hlsl", L"../Shaders/PostProcess/", L"DownSampleCS", L"cs_6_3", L"ThresholdAndDownsample", L"../Shaders/PostProcess/");
+	m_downSampleCS = CreateAndLoadShader(L"../Shaders/PostProcess/DownSampleCS.shader");
 }
 
 void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
@@ -2005,7 +2008,7 @@ void Ideal::D3D12RayTracingRenderer::InitPostProcessManager()
 {
 	m_bloomPassManager = std::make_shared<Ideal::BloomPass>();
 	//m_bloomPassManager->InitBloomPass(m_device, m_resourceManager, m_blurVS, m_blurPS, m_resourceManager->GetDefaultQuadMesh(), m_width, m_height);
-	m_bloomPassManager->InitBloomPass(m_device, m_resourceManager, m_screenVS, m_screenPS, m_resourceManager->GetDefaultQuadMesh2(), m_width, m_height);
+	m_bloomPassManager->InitBloomPass(m_device, m_resourceManager, m_downSampleCS, m_screenPS, m_resourceManager->GetDefaultQuadMesh2(), m_width, m_height);
 
 }
 

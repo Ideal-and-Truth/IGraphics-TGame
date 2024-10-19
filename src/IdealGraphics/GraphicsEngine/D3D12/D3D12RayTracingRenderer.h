@@ -304,6 +304,7 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::D3D12Shader> m_blurVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_blurPS;
+		std::shared_ptr<Ideal::D3D12Shader> m_downSampleCS;
 
 		// RAY TRACING FRAMEWORK
 	private:
