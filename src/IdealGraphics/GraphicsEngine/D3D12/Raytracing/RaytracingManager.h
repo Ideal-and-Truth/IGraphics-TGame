@@ -234,9 +234,6 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_raytracingOutputSRV;
 		Ideal::D3D12DescriptorHandle m_raytracingOutputRTV;
 
-		// 2024.08.12 Render Target //
-		std::shared_ptr<Ideal::D3D12Texture> m_raytracingOutput2 = nullptr;
-
 		//---Root Signature---//
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature = nullptr;
 		ComPtr<ID3D12RootSignature> m_raytracingLocalRootSignature = nullptr;

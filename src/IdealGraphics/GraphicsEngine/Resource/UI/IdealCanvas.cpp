@@ -151,7 +151,7 @@ void Ideal::IdealCanvas::SetCanvasSize(uint32 Width, uint32 Height)
 void Ideal::IdealCanvas::CreateRootSignature(ComPtr<ID3D12Device> Device)
 {
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::RectRootSignature::Slot::Count];
-	ranges[Ideal::RectRootSignature::Slot::SRV_Sprite].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);		// t1 : Sprite
+	ranges[Ideal::RectRootSignature::Slot::SRV_Sprite].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);		// t0 : Sprite
 	ranges[Ideal::RectRootSignature::Slot::CBV_RectInfo].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);	// b0 : RectInfo
 
 	CD3DX12_ROOT_PARAMETER1 rootParameters[Ideal::RectRootSignature::Slot::Count];

@@ -29,7 +29,8 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
 #include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
-#include "GraphicsEngine/BloomPass.h"
+#include "GraphicsEngine/PostProcess/BloomPass.h"
+#include "GraphicsEngine/PostProcess/CompositePass.h"
 
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
@@ -1794,6 +1795,12 @@ void Ideal::D3D12RayTracingRenderer::CompileDefaultShader()
 
 	CompileShader(L"../Shaders/PostProcess/CS_Blur.hlsl", L"../Shaders/PostProcess/", L"BlurCS", L"cs_6_3", L"Blur", L"../Shaders/PostProcess/");
 	m_blurCS = CreateAndLoadShader(L"../Shaders/PostProcess/BlurCS.shader");
+
+	CompileShader(L"../Shaders/PostProcess/CompositePass.hlsl", L"../Shaders/PostProcess/", L"CompositePassVS", L"vs_6_3", L"VS", L"../Shaders/PostProcess/");
+	m_compositeVS = CreateAndLoadShader(L"../Shaders/PostProcess/CompositePassVS.shader");
+
+	CompileShader(L"../Shaders/PostProcess/CompositePass.hlsl", L"../Shaders/PostProcess/", L"CompositePassPS", L"ps_6_3", L"PS", L"../Shaders/PostProcess/");
+	m_compositePS = CreateAndLoadShader(L"../Shaders/PostProcess/CompositePassPS.shader");
 }
 
 void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
@@ -2010,9 +2017,10 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 void Ideal::D3D12RayTracingRenderer::InitPostProcessManager()
 {
 	m_bloomPassManager = std::make_shared<Ideal::BloomPass>();
-	//m_bloomPassManager->InitBloomPass(m_device, m_resourceManager, m_blurVS, m_blurPS, m_resourceManager->GetDefaultQuadMesh(), m_width, m_height);
 	m_bloomPassManager->InitBloomPass(m_device, m_resourceManager, m_downSampleCS, m_blurCS, m_resourceManager->GetDefaultQuadMesh2(), m_width, m_height);
 
+	m_compositePassManager = std::make_shared<Ideal::CompositePass>();
+	m_compositePassManager->InitCompositePass(m_compositeVS, m_compositePS, m_device, m_resourceManager, m_resourceManager->GetDefaultQuadMesh2(), m_width, m_height);
 }
 
 void Ideal::D3D12RayTracingRenderer::PostProcess()
@@ -2037,7 +2045,6 @@ void Ideal::D3D12RayTracingRenderer::PostProcess()
 		m_viewport,
 		m_device,
 		m_commandLists[m_currentContextIndex],
-		//m_descriptorHeaps[m_currentContextIndex],
 		m_mainDescriptorHeaps[m_currentContextIndex],
 		m_cbAllocator[m_currentContextIndex]
 	);
@@ -2048,6 +2055,17 @@ void Ideal::D3D12RayTracingRenderer::PostProcess()
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier1);
+
+	//m_compositePassManager->PostProcess(
+	//	nullptr,
+	//	m_raytracingManager->GetRaytracingOutputSRVHandle(),
+	//	m_bloomPassManager->GetBlurTexture(),
+	//	m_viewport,
+	//	m_device,
+	//	m_commandLists[m_currentContextIndex],
+	//	m_mainDescriptorHeaps[m_currentContextIndex],
+	//	m_cbAllocator[m_currentContextIndex]
+	//);
 
 }
 

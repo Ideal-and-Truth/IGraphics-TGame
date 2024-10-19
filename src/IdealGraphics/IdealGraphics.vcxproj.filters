@@ -227,7 +227,8 @@
     <ClInclude Include="Misc\Utils\Octree\Octree.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
     <ClInclude Include="GraphicsEngine\D3D12\GenerateMips.h" />
-    <ClInclude Include="GraphicsEngine\BloomPass.h" />
+    <ClInclude Include="GraphicsEngine\PostProcess\BloomPass.h" />
+    <ClInclude Include="GraphicsEngine\PostProcess\CompositePass.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -338,7 +339,8 @@
     <ClCompile Include="Misc\Utils\Octree\Octree.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\GenerateMips.cpp" />
-    <ClCompile Include="GraphicsEngine\BloomPass.cpp" />
+    <ClCompile Include="GraphicsEngine\PostProcess\BloomPass.cpp" />
+    <ClCompile Include="GraphicsEngine\PostProcess\CompositePass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

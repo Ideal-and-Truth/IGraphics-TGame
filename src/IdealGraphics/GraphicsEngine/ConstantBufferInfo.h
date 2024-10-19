@@ -194,3 +194,8 @@ struct CB_Blur
 	int radius;     // must be <= MAX_GAUSSIAN_RADIUS
 	int direction;  // 0 = horizontal, 1 = vertical
 };
+
+struct CB_Composite
+{
+	float coefficient;
+};

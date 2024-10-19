@@ -53,6 +53,7 @@ namespace Ideal
 	class IdealCanvas;
 	class IdealSprite;
 
+	class CompositePass;
 	class BloomPass;
 
 	class ParticleSystemManager;
@@ -305,6 +306,9 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_blurCS;
 		std::shared_ptr<Ideal::D3D12Shader> m_downSampleCS;
 
+		std::shared_ptr<Ideal::D3D12Shader> m_compositeVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_compositePS;
+
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
@@ -348,6 +352,7 @@ namespace Ideal
 		void PostProcess();
 
 	private:
+		std::shared_ptr<Ideal::CompositePass> m_compositePassManager;
 		std::shared_ptr<Ideal::BloomPass> m_bloomPassManager;
 
 		// UI

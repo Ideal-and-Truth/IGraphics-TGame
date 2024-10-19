@@ -199,14 +199,15 @@ namespace Ideal
 			};
 		}
 	}
-	namespace PostProssBloomRootSignature
+	namespace PostProcessCompositeRootSignature
 	{
 		namespace Slot
 		{
 			enum Enum
 			{
-				SRV_BeforeTexture = 0,
-				SRV_BloomTexture,
+				SRV_Blur0 = 0,
+				SRV_Blur1,
+				CBV_Bloom,
 				Count
 			};
 		}
