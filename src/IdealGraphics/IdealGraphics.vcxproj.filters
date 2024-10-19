@@ -227,6 +227,7 @@
     <ClInclude Include="Misc\Utils\Octree\Octree.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
     <ClInclude Include="GraphicsEngine\D3D12\GenerateMips.h" />
+    <ClInclude Include="GraphicsEngine\BloomPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -337,6 +338,7 @@
     <ClCompile Include="Misc\Utils\Octree\Octree.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\GenerateMips.cpp" />
+    <ClCompile Include="GraphicsEngine\BloomPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

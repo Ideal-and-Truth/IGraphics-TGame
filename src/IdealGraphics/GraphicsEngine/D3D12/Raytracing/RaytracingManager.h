@@ -186,6 +186,9 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle GetRaytracingOutputRTVHandle();
 		Ideal::D3D12DescriptorHandle GetRaytracingOutputSRVHandle();
 
+		//---GBUffer---//
+		std::shared_ptr<Ideal::D3D12Texture> GetEmissiveTexture();
+
 		//---AS---//
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLASByName(const std::wstring& Name);
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);

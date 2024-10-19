@@ -53,6 +53,8 @@ namespace Ideal
 	class IdealCanvas;
 	class IdealSprite;
 
+	class BloomPass;
+
 	class ParticleSystemManager;
 	class ParticleSystem;
 	class ParticleMaterial;
@@ -296,6 +298,13 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderPS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderVS;
+
+		std::shared_ptr<Ideal::D3D12Shader> m_screenVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_screenPS;
+
+		std::shared_ptr<Ideal::D3D12Shader> m_blurVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_blurPS;
+
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
@@ -332,6 +341,14 @@ namespace Ideal
 
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
+
+		// PostProcess
+	private:
+		void InitPostProcessManager();
+		void PostProcess();
+
+	private:
+		std::shared_ptr<Ideal::BloomPass> m_bloomPassManager;
 
 		// UI
 	private:

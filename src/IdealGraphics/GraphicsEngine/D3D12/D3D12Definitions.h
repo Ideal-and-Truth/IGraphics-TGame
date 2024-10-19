@@ -172,4 +172,28 @@ namespace Ideal
 			};
 		}
 	}
+
+	namespace PostProcessBlurRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_BlurPS = 0,
+				Count
+			};
+		}
+	}
+	namespace PostProssBloomRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_BeforeTexture = 0,
+				SRV_BloomTexture,
+				Count
+			};
+		}
+	}
 }

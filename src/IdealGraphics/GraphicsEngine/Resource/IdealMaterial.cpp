@@ -24,6 +24,7 @@ Ideal::IdealMaterial::IdealMaterial()
 	m_cbMaterialInfo.bUseNormalMap = false;
 	m_cbMaterialInfo.bUseRoughnessMap = false;
 	m_cbMaterialInfo.bUseMetallicMap = false;
+	m_cbMaterialInfo.emissiveIntensity = 1.f;
 	SetTiling(1, 1);
 	SetOffset(0, 0);
 }
@@ -68,6 +69,11 @@ void Ideal::IdealMaterial::SetEmissiveMap(std::shared_ptr<Ideal::ITexture> Textu
 	m_emissiveTexture = std::static_pointer_cast<Ideal::D3D12Texture>(Texture);
 	m_isTextureChanged = true;
 	m_cbMaterialInfo.bUseEmissiveMap = true;
+}
+
+void Ideal::IdealMaterial::SetEmissiveIntensity(float Intensity)
+{
+	m_cbMaterialInfo.emissiveIntensity = Intensity;
 }
 
 std::weak_ptr<Ideal::ITexture> Ideal::IdealMaterial::GetBaseMap()

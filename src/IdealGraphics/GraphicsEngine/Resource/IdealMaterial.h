@@ -29,6 +29,7 @@ namespace Ideal
 		// R : Metallic, A : Smoothness
 		virtual void SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture) override;
 		virtual void SetEmissiveMap(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void SetEmissiveIntensity(float Intensity) override;
 
 		virtual std::weak_ptr<Ideal::ITexture> GetBaseMap() override;
 		virtual std::weak_ptr<Ideal::ITexture> GetNomralMap() override;

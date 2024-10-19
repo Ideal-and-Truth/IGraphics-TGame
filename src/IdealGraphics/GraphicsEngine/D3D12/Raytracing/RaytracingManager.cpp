@@ -181,6 +181,9 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 
 	//CommandList->SetPipelineState1(m_dxrStateObject.Get());
 	CommandList->DispatchRays(&dispatchRayDesc);
+	
+	//CD3DX12_RESOURCE_BARRIER emissiveBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_gBufferEmissive->GetResource());
+	//CommandList->ResourceBarrier(1, &emissiveBarrier);
 
 	CopyDepthBuffer(CommandList);
 }
@@ -282,6 +285,11 @@ Ideal::D3D12DescriptorHandle Ideal::RaytracingManager::GetRaytracingOutputRTVHan
 Ideal::D3D12DescriptorHandle Ideal::RaytracingManager::GetRaytracingOutputSRVHandle()
 {
 	return m_raytracingOutputSRV;
+}
+
+std::shared_ptr<Ideal::D3D12Texture> Ideal::RaytracingManager::GetEmissiveTexture()
+{
+	return m_gBufferEmissive;
 }
 
 std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::RaytracingManager::GetBLASByName(const std::wstring& Name)

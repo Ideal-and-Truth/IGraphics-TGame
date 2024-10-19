@@ -102,11 +102,6 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	CreateDefaultQuadMesh();
 	CreateDefaultQuadMesh2();
 	CreateDefaultDebugLine();
-
-	// generate mips manager init
-	auto shader = CreateAndLoadShader(L"../Shaders/Texture/GenerateMipsCS.shader");
-	m_generateMipsManager = std::make_shared<Ideal::GenerateMips>();
-	m_generateMipsManager->Init(Device, shader);
 }
 
 void ResourceManager::Fence()
@@ -1683,33 +1678,4 @@ void ResourceManager::CreateDefaultQuadMesh2()
 std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> ResourceManager::GetDefaultQuadMesh2()
 {
 	return m_defaultQuadMesh2;
-}
-
-void ResourceManager::InitGenerateMipsManager(ComPtr<ID3D12Device> Device)
-{
-	m_generateMipsManager = std::make_shared<Ideal::GenerateMips>();
-	//m_generateMipsManager->Init(Device);
-}
-
-void Ideal::ResourceManager::GenerateMips(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12Texture> Texture, uint32 GenerateMipsNum)
-{
-	auto resourceDesc = Texture->GetResource()->GetDesc();
-	if (resourceDesc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D ||
-		resourceDesc.DepthOrArraySize != 1 ||
-		resourceDesc.SampleDesc.Count > 1)
-	{
-		__debugbreak();
-	}
-
-	//auto resourceDesc = Texture->GetResource()->GetDesc();
-
-	CB_GenerateMipsInfo generateMipInfo;
-	//generateMipInfo.
-	generateMipInfo.IsSRGB = true;	// TEMP
-	generateMipInfo.SrcMipLevel = 0;
-	generateMipInfo.NumMipLevels = GenerateMipsNum;
-	generateMipInfo.TexelSize.x = 1 / resourceDesc.Width;
-	generateMipInfo.TexelSize.y = 1 / resourceDesc.Height;
-
-	m_generateMipsManager->Generate(Device, CommandList, DescriptorHeap, CBPool, Texture, &generateMipInfo);
 }

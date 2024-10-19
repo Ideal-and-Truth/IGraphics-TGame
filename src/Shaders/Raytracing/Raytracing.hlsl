@@ -655,7 +655,24 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
             //float3 emissiveColor = emissive.xyz * emissive.a;
            // payload.gBuffer.emissive = float4(emissiveColor, 0);
         //}
-        payload.gBuffer.emissive = l_texEmissive.SampleLevel(LinearWrapSampler, uv, 0);
+        //payload.gBuffer.emissive = l_texEmissive.SampleLevel(LinearWrapSampler, uv, 0);
+        
+        if (l_materialInfo.bUseEmissiveMap)
+        {
+            float4 emissive = l_texEmissive.SampleLevel(LinearWrapSampler, uv, 0);
+
+            float luminance = dot(emissive.rgb, float3(0.299, 0.587, 0.114)); // 밝기 계산
+            float lowerThreshold = 0.6; // 밝기 하한
+            float upperThreshold = 0.9; // 밝기 상한
+    
+    // 밝기가 lowerThreshold와 upperThreshold 사이에서 부드럽게 전환
+            float mask = smoothstep(lowerThreshold, upperThreshold, luminance);
+    
+    // mask 값에 따라 부드럽게 emissive 값 적용
+            float3 emissiveColor = emissive.rgb * mask * l_materialInfo.emissiveIntensity;
+            //float3 emissiveColor = emissive.rgb * mask * 10.f;
+            payload.gBuffer.emissive = float4(emissiveColor, 1.f);
+        }
     }
 
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod);

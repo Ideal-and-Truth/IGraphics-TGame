@@ -235,15 +235,5 @@ namespace Ideal
 
 	private:
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_debugLineVertexBuffer;
-		//std::shared_ptr<Ideal::D3D12VertexBuffer> GetDebugLineIB();
-
-	public:
-		// GenerateMipsInfo
-		void GenerateMips(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12Texture> Texture, uint32 GenerateMipsNum);
-
-	private:
-		void InitGenerateMipsManager(ComPtr<ID3D12Device> Device);
-
-		std::shared_ptr<Ideal::GenerateMips> m_generateMipsManager;
 	};
 }

@@ -40,6 +40,11 @@ struct CB_MaterialInfo
 	Vector2 offset;
 
 	uint32 bIsTransmissive;
+
+	float emissiveIntensity;
+	float pad0;
+	float pad1;
+	float pad2;
 };
 
 struct CB_Bone

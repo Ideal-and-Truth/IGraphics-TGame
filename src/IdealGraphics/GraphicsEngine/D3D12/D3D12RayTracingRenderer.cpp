@@ -29,6 +29,8 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorManager.h"
 #include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
+#include "GraphicsEngine/BloomPass.h"
+
 #include "GraphicsEngine/Resource/Light/IdealDirectionalLight.h"
 #include "GraphicsEngine/Resource/Light/IdealSpotLight.h"
 #include "GraphicsEngine/Resource/Light/IdealPointLight.h"
@@ -398,6 +400,8 @@ finishAdapter:
 	m_textManager = std::make_shared<Ideal::D2DTextManager>();
 	m_textManager->Init(m_device, m_commandQueue);
 
+	//------------------Post Process-------------------//
+	InitPostProcessManager();
 
 	//------------------Debug Mesh Manager-------------------//
 	if (m_isEditor)
@@ -539,6 +543,12 @@ void Ideal::D3D12RayTracingRenderer::Render()
 		m_cbAllocator[m_currentContextIndex],
 		m_sceneCB, &m_lightListCB, m_skyBoxTexture);
 
+
+	ID3D12DescriptorHeap* descriptorHeap[] = { m_mainDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
+	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
+
+	PostProcess();
+
 #ifdef BeforeRefactor
 	CopyRaytracingOutputToBackBuffer();
 #else
@@ -559,6 +569,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	DrawCanvas();
 #ifndef BeforeRefactor
 	TransitionRayTracingOutputToSRV();
+
 	// Final
 	DrawPostScreen();
 #endif
@@ -695,8 +706,9 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 		CreateEditorRTV(Width, Height);
 	}
 
-	// ray tracing / UI //
+	// ray tracing / UI // post process
 	//m_raytracingManager->Resize(m_device, Width, Height);
+	m_bloomPassManager->Resize(Width, Height, m_deferredDeleteManager, m_resourceManager);
 	m_UICanvas->SetCanvasSize(Width, Height);
 	//
 	SetDisplayResolutionOption(m_displayResolutionIndex);
@@ -792,6 +804,7 @@ void Ideal::D3D12RayTracingRenderer::SetDisplayResolutionOption(const Resolution
 	//m_depthStencil.Reset();
 	CreateDSV(resolutionWidth, resolutionHeight);
 	m_raytracingManager->Resize(m_resourceManager, m_device, resolutionWidth, resolutionHeight);
+	m_bloomPassManager->Resize(resolutionWidth, resolutionHeight, m_deferredDeleteManager, m_resourceManager);
 	m_UICanvas->SetCanvasSize(resolutionWidth, resolutionHeight);
 }
 
@@ -1769,6 +1782,12 @@ void Ideal::D3D12RayTracingRenderer::CompileDefaultShader()
 
 	CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
 	m_DefaultParticleShaderVS = std::static_pointer_cast<Ideal::D3D12Shader>(CreateAndLoadParticleShader(L"DefaultParticleVS"));
+
+	CompileShader(L"../Shaders/Screen/Screen.hlsl", L"../Shaders/Screen/", L"ScreenVS", L"vs_6_3", L"VS", L"../Shaders/Screen/");
+	m_screenVS = CreateAndLoadShader(L"../Shaders/Screen/ScreenVS.shader");
+
+	CompileShader(L"../Shaders/Screen/Screen.hlsl", L"../Shaders/Screen/", L"ScreenPS", L"ps_6_3", L"PS", L"../Shaders/Screen/");
+	m_screenPS = CreateAndLoadShader(L"../Shaders/Screen/ScreenPS.shader");
 }
 
 void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
@@ -1982,6 +2001,50 @@ void Ideal::D3D12RayTracingRenderer::RaytracingManagerDeleteObject(std::shared_p
 	//obj.reset();
 }
 
+void Ideal::D3D12RayTracingRenderer::InitPostProcessManager()
+{
+	m_bloomPassManager = std::make_shared<Ideal::BloomPass>();
+	//m_bloomPassManager->InitBloomPass(m_device, m_resourceManager, m_blurVS, m_blurPS, m_resourceManager->GetDefaultQuadMesh(), m_width, m_height);
+	m_bloomPassManager->InitBloomPass(m_device, m_resourceManager, m_screenVS, m_screenPS, m_resourceManager->GetDefaultQuadMesh2(), m_width, m_height);
+
+}
+
+void Ideal::D3D12RayTracingRenderer::PostProcess()
+{
+	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
+	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
+
+	// TEMP
+	ComPtr<ID3D12Resource> emssive = m_raytracingManager->GetEmissiveTexture()->GetResource();
+	CD3DX12_RESOURCE_BARRIER barrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
+		emssive.Get(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier0);
+
+	// TEST
+	m_bloomPassManager->PostProcess(
+		nullptr,
+		m_raytracingManager->GetEmissiveTexture(),
+		nullptr,
+		m_viewport,
+		m_device,
+		m_commandLists[m_currentContextIndex],
+		//m_descriptorHeaps[m_currentContextIndex],
+		m_mainDescriptorHeaps[m_currentContextIndex],
+		m_cbAllocator[m_currentContextIndex]
+	);
+
+	CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
+		emssive.Get(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier1);
+
+}
+
 void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
 {
 	//------UI Descriptor Heap------//
@@ -2069,8 +2132,9 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()
 {
-	ID3D12DescriptorHeap* descriptorHeap[] = { m_mainDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
-	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
+	// 10.19 한번에 처리하려고 아래 두줄 주석
+	//ID3D12DescriptorHeap* descriptorHeap[] = { m_mainDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
+	//m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 
 	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
 

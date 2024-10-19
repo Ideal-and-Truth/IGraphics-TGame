@@ -63,6 +63,11 @@ struct MaterialInfoConstantBuffer
     float OffsetY;
 
     unsigned int bIsTransmissive;
+
+	float emissiveIntensity;
+	float pad0;
+	float pad1;
+	float pad2;
 };
 
 struct CubeConstantBuffer

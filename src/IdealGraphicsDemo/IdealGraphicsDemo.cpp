@@ -437,6 +437,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		windowMaterial->SetMaskMap(windowMask);
 		windowMaterial->SetEmissiveMap(fireEmissive);
 		//garlandMaterial->SetAlphaClipping(true);
+		windowMaterial->SetEmissiveIntensity(40.f);
 		windowMaterial->SetSurfaceTypeTransparent(true);
 
 		//auto fireMaterial = gRenderer->CreateMaterial();
