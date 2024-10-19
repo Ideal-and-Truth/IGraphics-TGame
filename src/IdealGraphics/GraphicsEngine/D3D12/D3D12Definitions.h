@@ -192,7 +192,9 @@ namespace Ideal
 		{
 			enum Enum
 			{
-				SRV_BlurPS = 0,
+				SRV_Input = 0,
+				UAV_Output,
+				CBV_BlurParameter,
 				Count
 			};
 		}
