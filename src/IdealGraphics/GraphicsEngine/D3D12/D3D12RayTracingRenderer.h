@@ -326,10 +326,10 @@ namespace Ideal
 		void CopyRaytracingOutputToBackBuffer();
 		void TransitionRayTracingOutputToRTV();
 		void TransitionRayTracingOutputToSRV();
-		void TransitionRayTracingOutputToUAV();
 
 		// AS Manager
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
+		std::shared_ptr<Ideal::D3D12Texture> m_raytracingRenderTarget;
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
 

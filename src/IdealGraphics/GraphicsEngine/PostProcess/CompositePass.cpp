@@ -66,13 +66,13 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 		// Parameter : SRV_Blur0
 		auto handle = DescriptorHeap->Allocate();
 		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), BlurTexture0->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		CommandList->SetComputeRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur0, handle.GetGpuHandle());
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur0, handle.GetGpuHandle());
 	}
 	{
 		// Parameter : SRV_Blur1
 		auto handle = DescriptorHeap->Allocate();
 		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), BlurTexture1->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		CommandList->SetComputeRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur1, handle.GetGpuHandle());
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur1, handle.GetGpuHandle());
 	}
 	{
 		//https://github.com/aaronscherzinger/directx11_bloom/blob/master/src/main.cpp
@@ -83,7 +83,7 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 		auto cb = CBPool->Allocate(Device.Get(), sizeof(float));
 		memcpy(cb->SystemMemAddr, &compParams, sizeof(float));
 		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		CommandList->SetComputeRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom, handle.GetGpuHandle());
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom, handle.GetGpuHandle());
 	}
 
 	// Barrier

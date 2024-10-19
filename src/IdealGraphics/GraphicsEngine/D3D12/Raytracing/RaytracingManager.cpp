@@ -85,7 +85,7 @@ Ideal::RaytracingManager::~RaytracingManager()
 	m_gBufferDepth->Free();
 }
 
-void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height)
+void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height, std::shared_ptr<Ideal::D3D12Texture> RenderTargetTexture)
 {
 	m_width = Width;
 	m_height = Height;
@@ -96,6 +96,7 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 	m_RTV_raytracingOutputDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
 	m_RTV_raytracingOutputDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
 
+	m_raytracingOutput = RenderTargetTexture->GetResource();
 	CreateRenderTarget(Device, Width, Height);	//device, width, height
 	CreateGBufferTexture(ResourceManager, Width, Height);
 	CreateRootSignature(Device);	//device
@@ -188,12 +189,13 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	CopyDepthBuffer(CommandList);
 }
 
-void Ideal::RaytracingManager::Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height)
+void Ideal::RaytracingManager::Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height, std::shared_ptr<Ideal::D3D12Texture> RaytracingRenderTargetTexture)
 {
 	m_width = Width;
 	m_height = Height;
 	m_raytracingOutputDescriptorHeap->Reset();
 	m_RTV_raytracingOutputDescriptorHeap->Reset();
+	m_raytracingOutput = RaytracingRenderTargetTexture->GetResource();
 	CreateRenderTarget(Device, Width, Height);
 	CreateGBufferTexture(ResourceManager, Width, Height);
 }
@@ -229,21 +231,21 @@ void Ideal::RaytracingManager::AddObject(std::shared_ptr<Ideal::IdealStaticMeshO
 
 void Ideal::RaytracingManager::CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height)
 {
-	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, Width, Height, 1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS | D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-	D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	Check(
-		Device->CreateCommittedResource(
-			&heapProp,
-			D3D12_HEAP_FLAG_NONE,
-			&desc,
-			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-			nullptr,
-			IID_PPV_ARGS(&m_raytracingOutput)
-		),
-		L"Failed to create Raytracing Output Resource"
-	);
-	m_raytracingOutput->SetName(L"RaytracingOutput");
+	//DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, Width, Height, 1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS | D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+	//D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	//Check(
+	//	Device->CreateCommittedResource(
+	//		&heapProp,
+	//		D3D12_HEAP_FLAG_NONE,
+	//		&desc,
+	//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+	//		nullptr,
+	//		IID_PPV_ARGS(&m_raytracingOutput)
+	//	),
+	//	L"Failed to create Raytracing Output Resource"
+	//);
+	//m_raytracingOutput->SetName(L"RaytracingOutput");
 
 	{
 		auto handle = m_raytracingOutputDescriptorHeap->Allocate();

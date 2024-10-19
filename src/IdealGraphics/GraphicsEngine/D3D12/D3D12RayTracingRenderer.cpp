@@ -707,9 +707,18 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 		CreateEditorRTV(Width, Height);
 	}
 
+	if (m_raytracingRenderTarget)
+	{
+		m_deferredDeleteManager->AddTextureToDeferredDelete(m_raytracingRenderTarget);
+		m_raytracingRenderTarget = std::make_shared<Ideal::D3D12Texture>();
+		Ideal::IdealTextureTypeFlag texFlag = IDEAL_TEXTURE_RTV | IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_UAV;
+		m_resourceManager->CreateEmptyTexture2D(m_raytracingRenderTarget, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, texFlag, L"RaytracingRenderTargetTexture");
+	}
+
 	// ray tracing / UI // post process
 	//m_raytracingManager->Resize(m_device, Width, Height);
 	m_bloomPassManager->Resize(Width, Height, m_deferredDeleteManager, m_resourceManager);
+	m_compositePassManager->Resize(Width, Height, m_deferredDeleteManager, m_resourceManager);
 	m_UICanvas->SetCanvasSize(Width, Height);
 	//
 	SetDisplayResolutionOption(m_displayResolutionIndex);
@@ -802,11 +811,21 @@ void Ideal::D3D12RayTracingRenderer::SetDisplayResolutionOption(const Resolution
 	}
 
 	// ray tracing / UI //
+	if (m_raytracingRenderTarget)
+	{
+		m_deferredDeleteManager->AddTextureToDeferredDelete(m_raytracingRenderTarget);
+		m_raytracingRenderTarget = std::make_shared<Ideal::D3D12Texture>();
+		Ideal::IdealTextureTypeFlag texFlag = IDEAL_TEXTURE_RTV | IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_UAV;
+		m_resourceManager->CreateEmptyTexture2D(m_raytracingRenderTarget, resolutionWidth, resolutionHeight, DXGI_FORMAT_R8G8B8A8_UNORM, texFlag, L"RaytracingRenderTargetTexture");
+	}
 	//m_depthStencil.Reset();
 	CreateDSV(resolutionWidth, resolutionHeight);
-	m_raytracingManager->Resize(m_resourceManager, m_device, resolutionWidth, resolutionHeight);
+	m_raytracingManager->Resize(m_resourceManager, m_device, resolutionWidth, resolutionHeight, m_raytracingRenderTarget);
 	m_bloomPassManager->Resize(resolutionWidth, resolutionHeight, m_deferredDeleteManager, m_resourceManager);
+	m_compositePassManager->Resize(resolutionWidth, resolutionHeight, m_deferredDeleteManager, m_resourceManager);
 	m_UICanvas->SetCanvasSize(resolutionWidth, resolutionHeight);
+
+
 }
 
 std::shared_ptr<Ideal::ICamera> Ideal::D3D12RayTracingRenderer::CreateCamera()
@@ -1862,22 +1881,14 @@ void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToSRV()
 
 }
 
-void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToUAV()
-{
-	return;
-	ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		raytracingOutput.Get(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-	);
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
-}
-
 void Ideal::D3D12RayTracingRenderer::RaytracingManagerInit()
 {
+	Ideal::IdealTextureTypeFlag texFlag = IDEAL_TEXTURE_RTV | IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_UAV;
+	m_resourceManager->CreateEmptyTexture2D(m_raytracingRenderTarget, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, texFlag, L"RaytracingRenderTargetTexture");
+
 	m_raytracingManager = std::make_shared<Ideal::RaytracingManager>();
-	m_raytracingManager->Init(m_device, m_resourceManager, m_raytracingShader, m_animationShader, m_descriptorManager, m_width, m_height);
+
+	m_raytracingManager->Init(m_device, m_resourceManager, m_raytracingShader, m_animationShader, m_descriptorManager, m_width, m_height, m_raytracingRenderTarget);
 
 	//ResetCommandList();
 
@@ -2056,16 +2067,16 @@ void Ideal::D3D12RayTracingRenderer::PostProcess()
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier1);
 
-	//m_compositePassManager->PostProcess(
-	//	nullptr,
-	//	m_raytracingManager->GetRaytracingOutputSRVHandle(),
-	//	m_bloomPassManager->GetBlurTexture(),
-	//	m_viewport,
-	//	m_device,
-	//	m_commandLists[m_currentContextIndex],
-	//	m_mainDescriptorHeaps[m_currentContextIndex],
-	//	m_cbAllocator[m_currentContextIndex]
-	//);
+	m_compositePassManager->PostProcess(
+		nullptr,
+		m_raytracingRenderTarget,
+		m_bloomPassManager->GetBlurTexture(),
+		m_viewport,
+		m_device,
+		m_commandLists[m_currentContextIndex],
+		m_mainDescriptorHeaps[m_currentContextIndex],
+		m_cbAllocator[m_currentContextIndex]
+	);
 
 }
 
