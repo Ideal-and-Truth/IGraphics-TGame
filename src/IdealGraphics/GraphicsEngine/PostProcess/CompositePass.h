@@ -48,6 +48,8 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool
 		);
 
+		void Free();
+
 		std::shared_ptr<Ideal::D3D12Texture> GetTexture();
 
 	private:

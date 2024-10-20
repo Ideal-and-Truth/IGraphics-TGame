@@ -109,6 +109,11 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 	//CommandList->ResourceBarrier(1, &outputBarrier1);
 }
 
+void Ideal::CompositePass::Free()
+{
+	m_compositeTexture->Free();
+}
+
 std::shared_ptr<Ideal::D3D12Texture> Ideal::CompositePass::GetTexture()
 {
 	return m_compositeTexture;

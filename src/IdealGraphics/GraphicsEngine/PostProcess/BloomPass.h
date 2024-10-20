@@ -46,6 +46,8 @@ namespace Ideal
 
 		void Resize(uint32 Width, uint32 Height, std::shared_ptr<DeferredDeleteManager> DeferredDeleteManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
+		void Free();
+
 		std::shared_ptr<Ideal::D3D12Texture> GetBlurTexture();
 
 	private:

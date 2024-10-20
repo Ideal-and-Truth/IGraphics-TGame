@@ -95,9 +95,10 @@ void Ideal::RaytracingManager::Init(ComPtr<ID3D12Device5> Device, std::shared_pt
 
 	m_RTV_raytracingOutputDescriptorHeap = std::make_shared<Ideal::D3D12DescriptorHeap>();
 	m_RTV_raytracingOutputDescriptorHeap->Create(Device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 1);
-
+	
+	m_renderTargetTexture = RenderTargetTexture;
 	m_raytracingOutput = RenderTargetTexture->GetResource();
-	CreateRenderTarget(Device, Width, Height);	//device, width, height
+	//CreateRenderTarget(Device, Width, Height);	//device, width, height
 	CreateGBufferTexture(ResourceManager, Width, Height);
 	CreateRootSignature(Device);	//device
 	CreateRaytracingPipelineStateObject(Device, RaytracingShader); // device, shader
@@ -120,7 +121,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	// Parameter 0
 	auto handle0 = DescriptorManager->Allocate(CurrentFrameIndex);
 	//Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), OutputUAVHandle.GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_raytacingOutputResourceUAVCpuDescriptorHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	Device->CopyDescriptorsSimple(1, handle0.GetCpuHandle(), m_renderTargetTexture->GetUAV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CommandList->SetComputeRootDescriptorTable(Ideal::GlobalRootSignature::Slot::UAV_Output, handle0.GetGpuHandle());
 
 	// Parameter 1
@@ -193,10 +194,8 @@ void Ideal::RaytracingManager::Resize(std::shared_ptr<Ideal::ResourceManager> Re
 {
 	m_width = Width;
 	m_height = Height;
-	m_raytracingOutputDescriptorHeap->Reset();
-	m_RTV_raytracingOutputDescriptorHeap->Reset();
-	m_raytracingOutput = RaytracingRenderTargetTexture->GetResource();
-	CreateRenderTarget(Device, Width, Height);
+	m_renderTargetTexture = RaytracingRenderTargetTexture;
+	//CreateRenderTarget(Device, Width, Height);
 	CreateGBufferTexture(ResourceManager, Width, Height);
 }
 
@@ -229,64 +228,10 @@ void Ideal::RaytracingManager::AddObject(std::shared_ptr<Ideal::IdealStaticMeshO
 	Object->SetBLASInstanceDesc(instanceDesc);
 }
 
-void Ideal::RaytracingManager::CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height)
-{
-	//DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, Width, Height, 1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS | D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-	//D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	//Check(
-	//	Device->CreateCommittedResource(
-	//		&heapProp,
-	//		D3D12_HEAP_FLAG_NONE,
-	//		&desc,
-	//		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-	//		nullptr,
-	//		IID_PPV_ARGS(&m_raytracingOutput)
-	//	),
-	//	L"Failed to create Raytracing Output Resource"
-	//);
-	//m_raytracingOutput->SetName(L"RaytracingOutput");
-
-	{
-		auto handle = m_raytracingOutputDescriptorHeap->Allocate();
-		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-		Device->CreateUnorderedAccessView(m_raytracingOutput.Get(), nullptr, &uavDesc, handle.GetCpuHandle());
-		m_raytacingOutputResourceUAVCpuDescriptorHandle = handle.GetCpuHandle();
-	}
-	{
-		m_raytracingOutputSRV = m_raytracingOutputDescriptorHeap->Allocate();
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = 1;
-		Device->CreateShaderResourceView(m_raytracingOutput.Get(), &srvDesc, m_raytracingOutputSRV.GetCpuHandle());
-	}
-	{
-		m_raytracingOutputRTV = m_RTV_raytracingOutputDescriptorHeap->Allocate();
-		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-		rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-		rtvDesc.Texture2D.MipSlice = 0;
-		Device->CreateRenderTargetView(m_raytracingOutput.Get(), &rtvDesc, m_raytracingOutputRTV.GetCpuHandle());
-	}
-}
-
 Microsoft::WRL::ComPtr<ID3D12Resource> Ideal::RaytracingManager::GetRaytracingOutputResource()
 {
 	return m_raytracingOutput;
 	//return m_gBufferEmissive->GetResource();
-}
-
-Ideal::D3D12DescriptorHandle Ideal::RaytracingManager::GetRaytracingOutputRTVHandle()
-{
-	return m_raytracingOutputRTV;
-}
-
-Ideal::D3D12DescriptorHandle Ideal::RaytracingManager::GetRaytracingOutputSRVHandle()
-{
-	return m_raytracingOutputSRV;
 }
 
 std::shared_ptr<Ideal::D3D12Texture> Ideal::RaytracingManager::GetEmissiveTexture()

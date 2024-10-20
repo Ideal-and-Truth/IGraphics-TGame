@@ -73,6 +73,13 @@ void Ideal::BloomPass::Resize(uint32 Width, uint32 Height, std::shared_ptr<Defer
 	}
 }
 
+void Ideal::BloomPass::Free()
+{
+	m_downSampleTexture0->Free();
+	m_blurTexture[0]->Free();
+	m_blurTexture[1]->Free();
+}
+
 std::shared_ptr<Ideal::D3D12Texture> Ideal::BloomPass::GetBlurTexture()
 {
 	return m_blurTexture[1];

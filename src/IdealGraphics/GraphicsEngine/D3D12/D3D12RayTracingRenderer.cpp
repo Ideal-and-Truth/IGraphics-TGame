@@ -265,6 +265,9 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 
 	m_skyBoxTexture.reset();
 
+	m_bloomPassManager->Free();
+	m_compositePassManager->Free();
+
 	if (m_isEditor)
 	{
 		m_imguiSRVHandle.Free();
@@ -712,7 +715,8 @@ void Ideal::D3D12RayTracingRenderer::Resize(UINT Width, UINT Height)
 
 	if (m_raytracingRenderTarget)
 	{
-		m_deferredDeleteManager->AddTextureToDeferredDelete(m_raytracingRenderTarget);
+		//m_deferredDeleteManager->AddTextureToDeferredDelete(m_raytracingRenderTarget);
+		m_raytracingRenderTarget->Free(); 
 		m_raytracingRenderTarget = std::make_shared<Ideal::D3D12Texture>();
 		Ideal::IdealTextureTypeFlag texFlag = IDEAL_TEXTURE_RTV | IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_UAV;
 		m_resourceManager->CreateEmptyTexture2D(m_raytracingRenderTarget, m_width, m_height, DXGI_FORMAT_R8G8B8A8_UNORM, texFlag, L"RaytracingRenderTargetTexture");
