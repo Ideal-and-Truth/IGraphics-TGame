@@ -430,7 +430,9 @@ float3 Shade(
 
     //L *= ao;
     // Temp : 0.2는 임시 값
-    L += 0.2f * albedo;
+    
+    //L += 0.2f * albedo;
+    
     //return L;
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);

@@ -205,8 +205,8 @@ namespace Ideal
 		{
 			enum Enum
 			{
-				SRV_Blur0 = 0,
-				SRV_Blur1,
+				SRV_Origin = 0,
+				SRV_Blur,
 				CBV_Bloom,
 				Count
 			};

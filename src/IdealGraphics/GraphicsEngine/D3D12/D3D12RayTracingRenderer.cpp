@@ -548,28 +548,31 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	ID3D12DescriptorHeap* descriptorHeap[] = { m_mainDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
 	m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
 
+
+	//
 	PostProcess();
 
-#ifdef BeforeRefactor
-	CopyRaytracingOutputToBackBuffer();
-#else
-	TransitionRayTracingOutputToRTV();
-#endif
 	//---------Particle---------//
-	DrawParticle();
+//	DrawParticle();
 
 	//----Debug Mesh Draw----//
 	if (m_isEditor)
 	{
-		DrawDebugMeshes();
+//		DrawDebugMeshes();
 	}
 
 	//-----------UI-----------//
 	// Update Text Or Dynamic Texture 
 	// Draw Text and Texture
-	DrawCanvas();
+//	DrawCanvas();
+	CD3DX12_RESOURCE_BARRIER srvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_compositePassManager->GetTexture()->GetResource(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &srvBarrier);
 #ifndef BeforeRefactor
-	TransitionRayTracingOutputToSRV();
+	//TransitionRayTracingOutputToSRV();
 
 	// Final
 	DrawPostScreen();
@@ -1709,20 +1712,15 @@ void Ideal::D3D12RayTracingRenderer::DrawPostScreen()
 
 	m_commandLists[m_currentContextIndex]->IASetVertexBuffers(0, 1, &defaultQuadMesh->GetVertexBufferView());
 	m_commandLists[m_currentContextIndex]->IASetIndexBuffer(&defaultQuadMesh->GetIndexBufferView());
-	auto handle = m_mainDescriptorHeaps[m_currentContextIndex]->Allocate();
-	m_device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), m_raytracingManager->GetRaytracingOutputSRVHandle().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	m_commandLists[m_currentContextIndex]->SetGraphicsRootDescriptorTable(Ideal::PostScreenRootSignature::Slot::SRV_Scene, handle.GetGpuHandle());
+
+	{
+		auto handle = m_mainDescriptorHeaps[m_currentContextIndex]->Allocate();
+		m_device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), m_compositePassManager->GetTexture()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		m_commandLists[m_currentContextIndex]->SetGraphicsRootDescriptorTable(Ideal::PostScreenRootSignature::Slot::SRV_Scene, handle.GetGpuHandle());
+	}
 	m_commandLists[m_currentContextIndex]->DrawIndexedInstanced(defaultQuadMesh->GetElementCount(), 1, 0, 0, 0);
-	//m_commandLists[m_currentContextIndex]->DrawInstanced(4, 1, 0, 0);
 
 	auto raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
-
-	CD3DX12_RESOURCE_BARRIER postCopyBarriers = CD3DX12_RESOURCE_BARRIER::Transition(
-		raytracingOutput.Get(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-	);
-	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &postCopyBarriers);
 }
 
 void Ideal::D3D12RayTracingRenderer::UpdateLightListCBData()
@@ -1862,7 +1860,7 @@ void Ideal::D3D12RayTracingRenderer::TransitionRayTracingOutputToRTV()
 	ComPtr<ID3D12Resource> raytracingOutput = m_raytracingManager->GetRaytracingOutputResource();
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		raytracingOutput.Get(),
-		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier);
@@ -2048,7 +2046,6 @@ void Ideal::D3D12RayTracingRenderer::PostProcess()
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier0);
 
-	// TEST
 	m_bloomPassManager->PostProcess(
 		nullptr,
 		m_raytracingManager->GetEmissiveTexture(),
@@ -2067,17 +2064,28 @@ void Ideal::D3D12RayTracingRenderer::PostProcess()
 	);
 	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrier1);
 
+	CD3DX12_RESOURCE_BARRIER barrierRenderTarget0 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_raytracingRenderTarget->GetResource(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrierRenderTarget0);
+
 	m_compositePassManager->PostProcess(
-		nullptr,
 		m_raytracingRenderTarget,
 		m_bloomPassManager->GetBlurTexture(),
 		m_viewport,
 		m_device,
 		m_commandLists[m_currentContextIndex],
 		m_mainDescriptorHeaps[m_currentContextIndex],
-		m_cbAllocator[m_currentContextIndex]
-	);
+		m_cbAllocator[m_currentContextIndex]);
 
+	CD3DX12_RESOURCE_BARRIER barrierRenderTarget1 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_raytracingRenderTarget->GetResource(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+	);
+	m_commandLists[m_currentContextIndex]->ResourceBarrier(1, &barrierRenderTarget1);
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateUIDescriptorHeap()
@@ -2107,11 +2115,8 @@ void Ideal::D3D12RayTracingRenderer::DrawCanvas()
 	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
 	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-#ifdef BeforeRefactor
-	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &renderTarget->GetRTV().GetCpuHandle(), FALSE, &dsvHandle);
-#else
-	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &dsvHandle);
-#endif
+	// ui dsv
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_compositePassManager->GetTexture()->GetRTV().GetCpuHandle(), FALSE, &dsvHandle);
 	m_UICanvas->DrawCanvas(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex]);
 }
 
@@ -2167,21 +2172,13 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()
 {
-	// 10.19 한번에 처리하려고 아래 두줄 주석
-	//ID3D12DescriptorHeap* descriptorHeap[] = { m_mainDescriptorHeaps[m_currentContextIndex]->GetDescriptorHeap().Get() };
-	//m_commandLists[m_currentContextIndex]->SetDescriptorHeaps(_countof(descriptorHeap), descriptorHeap);
-
 	std::shared_ptr<Ideal::D3D12Texture> renderTarget = m_renderTargets[m_frameIndex];
 
 	m_commandLists[m_currentContextIndex]->RSSetViewports(1, &m_viewport->GetViewport());
 	m_commandLists[m_currentContextIndex]->RSSetScissorRects(1, &m_viewport->GetScissorRect());
-	//CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetGPUDescriptorHandleForHeapStart());
 	// TODO : DSV SET
 	auto depthBuffer = m_raytracingManager->GetDepthBuffer();
-	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets()
-	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
-	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
-	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, NULL);
+	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_compositePassManager->GetTexture()->GetRTV().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
 	m_particleSystemManager->DrawParticles(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex], &m_globalCB);
 }
 

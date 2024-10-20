@@ -39,11 +39,22 @@ void Ideal::CompositePass::Resize(uint32 Width, uint32 Height, std::shared_ptr<D
 	}
 }
 
-void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture0, std::shared_ptr<Ideal::D3D12Texture> BlurTexture1, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
 	// IA SET Primitive
 	// VB IB
 	// rs pso
+
+
+	// Barrier
+	CD3DX12_RESOURCE_BARRIER outputBarrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_compositeTexture->GetResource(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	CommandList->ResourceBarrier(1, &outputBarrier0);
+	float clear[4] = { 0,0,0,0 };
+	CommandList->ClearRenderTargetView(m_compositeTexture->GetRTV().GetCpuHandle(), clear, 0, nullptr);
 
 	CommandList->RSSetViewports(1, &Viewport->GetViewport());
 	CommandList->RSSetScissorRects(1, &Viewport->GetScissorRect());
@@ -63,59 +74,56 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 
 	// Bind Shader
 	{
-		// Parameter : SRV_Blur0
+		// Parameter : SRV_Origin
 		auto handle = DescriptorHeap->Allocate();
-		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), BlurTexture0->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur0, handle.GetGpuHandle());
+		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), OriginTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin, handle.GetGpuHandle());
 	}
 	{
-		// Parameter : SRV_Blur1
+		// Parameter : SRV_Blur
 		auto handle = DescriptorHeap->Allocate();
-		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), BlurTexture1->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur1, handle.GetGpuHandle());
+		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), BlurTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur, handle.GetGpuHandle());
 	}
 	{
 		//https://github.com/aaronscherzinger/directx11_bloom/blob/master/src/main.cpp
 		// 336줄
 		// Parameter : CBV_Bloom
 		auto handle = DescriptorHeap->Allocate();
-		float compParams = 0.75f;	// TEmp
+		float compParams = 0.75f;	// Temp
 		auto cb = CBPool->Allocate(Device.Get(), sizeof(float));
 		memcpy(cb->SystemMemAddr, &compParams, sizeof(float));
 		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), cb->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom, handle.GetGpuHandle());
 	}
 
-	// Barrier
-	CD3DX12_RESOURCE_BARRIER outputBarrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_compositeTexture->GetResource(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	CommandList->ResourceBarrier(1, &outputBarrier0);
-
 	// Draw
 	CommandList->DrawIndexedInstanced(m_quadMesh->GetElementCount(), 1, 0, 0, 0);
 	
 	// Barrier
-	CD3DX12_RESOURCE_BARRIER outputBarrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_compositeTexture->GetResource(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	);
-	CommandList->ResourceBarrier(1, &outputBarrier1);
+	//CD3DX12_RESOURCE_BARRIER outputBarrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
+	//	m_compositeTexture->GetResource(),
+	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
+	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	//);
+	//CommandList->ResourceBarrier(1, &outputBarrier1);
+}
+
+std::shared_ptr<Ideal::D3D12Texture> Ideal::CompositePass::GetTexture()
+{
+	return m_compositeTexture;
 }
 
 void Ideal::CompositePass::CreateCompositeRootSignature(ComPtr<ID3D12Device> Device)
 {
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::PostProcessCompositeRootSignature::Slot::Count];
-	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
-	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1
+	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
+	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1
 	ranges[Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0
 
 	CD3DX12_ROOT_PARAMETER1 rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::Count];
-	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur0].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur0]);
-	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur1].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur1]);
+	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin]);
+	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur]);
 	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom]);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
@@ -152,13 +160,20 @@ void Ideal::CompositePass::CreateCompositePipelineState(ComPtr<ID3D12Device> Dev
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = FALSE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
-		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		//blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		//blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		//blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		//blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
+		//blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		//blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 		psoDesc.BlendState = blendDesc;
 	}
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
