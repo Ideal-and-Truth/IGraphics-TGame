@@ -21,49 +21,15 @@ void Ideal::CompositePass::InitCompositePass(std::shared_ptr<Ideal::D3D12Shader>
 
 	m_quadMesh = QuadMesh;
 
-	Ideal::IdealTextureTypeFlag textureFlag = IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_RTV;
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
-	{
-		ResourceManager->CreateEmptyTexture2D(m_compositeTexture[i], Width, Height, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_CompositePassTexture");
-	}
 	CreateCompositeRootSignature(Device);
 	CreateCompositePipelineState(Device);
 }
 
-void Ideal::CompositePass::Resize(uint32 Width, uint32 Height, std::shared_ptr<DeferredDeleteManager> DeferredDeleteManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager)
+void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture, std::shared_ptr<Ideal::D3D12Texture> RenderTarget, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, uint32 CurrentContextIndex)
 {
-	Ideal::IdealTextureTypeFlag textureFlag = IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_RTV;
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
-	{
-		if (m_compositeTexture[i])
-		{
-			DeferredDeleteManager->AddTextureToDeferredDelete(m_compositeTexture[i]);
-			m_compositeTexture[i] = std::make_shared<Ideal::D3D12Texture>();
-			ResourceManager->CreateEmptyTexture2D(m_compositeTexture[i], Width, Height, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_CompositePassTexture");
-		}
-	}
-}
-
-void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, uint32 CurrentContextIndex)
-{
-	// IA SET Primitive
-	// VB IB
-	// rs pso
-
-
-	// Barrier
-	CD3DX12_RESOURCE_BARRIER outputBarrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_compositeTexture[CurrentContextIndex]->GetResource(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_RENDER_TARGET
-	);
-	CommandList->ResourceBarrier(1, &outputBarrier0);
-	float clear[4] = { 0,0,0,0 };
-	CommandList->ClearRenderTargetView(m_compositeTexture[CurrentContextIndex]->GetRTV().GetCpuHandle(), clear, 0, nullptr);
-
 	CommandList->RSSetViewports(1, &Viewport->GetViewport());
 	CommandList->RSSetScissorRects(1, &Viewport->GetScissorRect());
-	CommandList->OMSetRenderTargets(1, &m_compositeTexture[CurrentContextIndex]->GetRTV().GetCpuHandle(), TRUE, nullptr);
+	CommandList->OMSetRenderTargets(1, &RenderTarget->GetRTV().GetCpuHandle(), FALSE, nullptr);
 
 
 	CommandList->SetGraphicsRootSignature(m_compositeRootSignature.Get());
@@ -104,27 +70,6 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 
 	// Draw
 	CommandList->DrawIndexedInstanced(m_quadMesh->GetElementCount(), 1, 0, 0, 0);
-	
-	// Barrier
-	//CD3DX12_RESOURCE_BARRIER outputBarrier1 = CD3DX12_RESOURCE_BARRIER::Transition(
-	//	m_compositeTexture->GetResource(),
-	//	D3D12_RESOURCE_STATE_RENDER_TARGET,
-	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	//);
-	//CommandList->ResourceBarrier(1, &outputBarrier1);
-}
-
-void Ideal::CompositePass::Free()
-{
-	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
-	{
-		m_compositeTexture[i]->Free();
-	}
-}
-
-std::shared_ptr<Ideal::D3D12Texture> Ideal::CompositePass::GetTexture(uint32 CurrentContextIndex)
-{
-	return m_compositeTexture[CurrentContextIndex];
 }
 
 void Ideal::CompositePass::CreateCompositeRootSignature(ComPtr<ID3D12Device> Device)
@@ -180,13 +125,7 @@ void Ideal::CompositePass::CreateCompositePipelineState(ComPtr<ID3D12Device> Dev
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-		//blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-		//blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-		//blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-		//blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
-		//blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-		//blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		
 		psoDesc.BlendState = blendDesc;
 	}
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);

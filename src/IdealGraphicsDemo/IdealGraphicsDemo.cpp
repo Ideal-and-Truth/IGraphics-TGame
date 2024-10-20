@@ -69,7 +69,7 @@ using namespace std;
 #include "../Utils/SimpleMath.h"
 #include "Test.h"
 
-//#define MAKE_PARTICLE
+#define MAKE_PARTICLE
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;

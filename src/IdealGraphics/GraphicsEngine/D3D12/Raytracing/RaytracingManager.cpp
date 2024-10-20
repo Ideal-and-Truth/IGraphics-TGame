@@ -186,7 +186,12 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 	
 	//CD3DX12_RESOURCE_BARRIER emissiveBarrier = CD3DX12_RESOURCE_BARRIER::UAV(m_gBufferEmissive->GetResource());
 	//CommandList->ResourceBarrier(1, &emissiveBarrier);
-
+	CD3DX12_RESOURCE_BARRIER renderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargetTexture->GetResource(),
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	CommandList->ResourceBarrier(1, &renderTargetBarrier);
 	CopyDepthBuffer(CommandList);
 }
 

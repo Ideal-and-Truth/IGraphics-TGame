@@ -83,7 +83,6 @@ float4 PS(PSInput input) : SV_TARGET
 {
     float4 Blur;
     Blur = mad(coefficient, Blur1.Sample(g_sampler, input.uv), Blur0.Sample(g_sampler, input.uv));
-    
 #ifdef ACES_Filmic
     float3 color = Blur.rgb;
     float a = 2.51f;
