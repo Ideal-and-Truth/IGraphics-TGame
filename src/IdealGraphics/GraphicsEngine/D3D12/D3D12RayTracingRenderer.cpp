@@ -273,6 +273,7 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 	{
 		m_imguiSRVHandle.Free();
 		m_editorTexture->Release();
+		m_editorTexture->Free();
 		m_editorTexture.reset();
 
 		ImGui_ImplDX12_Shutdown();

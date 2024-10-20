@@ -229,6 +229,10 @@ void Ideal::IdealMaterial::FreeInRayTracing()
 		m_diffuseTextureInRayTracing.Free();
 		m_normalTextureInRayTracing.Free();
 		m_maskTextureInRayTracing.Free();
+		if (m_cbMaterialInfo.bUseEmissiveMap)
+		{
+			m_emissiveTextureInRayTracing.Free();
+		}
 	}
 }
 
