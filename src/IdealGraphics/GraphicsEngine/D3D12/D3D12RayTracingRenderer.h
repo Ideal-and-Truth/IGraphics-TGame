@@ -354,6 +354,8 @@ namespace Ideal
 	private:
 		std::shared_ptr<Ideal::CompositePass> m_compositePassManager;
 		std::shared_ptr<Ideal::BloomPass> m_bloomPassManager;
+		std::shared_ptr<Ideal::CompositePass> m_compositePassManagers[MAX_PENDING_FRAME_COUNT];
+		std::shared_ptr<Ideal::BloomPass> m_bloomPassManagers[MAX_PENDING_FRAME_COUNT];
 
 		// UI
 	private:

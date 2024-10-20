@@ -22,8 +22,10 @@ void Ideal::CompositePass::InitCompositePass(std::shared_ptr<Ideal::D3D12Shader>
 	m_quadMesh = QuadMesh;
 
 	Ideal::IdealTextureTypeFlag textureFlag = IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_RTV;
-	ResourceManager->CreateEmptyTexture2D(m_compositeTexture, Width, Height, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_CompositePassTexture");
-
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		ResourceManager->CreateEmptyTexture2D(m_compositeTexture[i], Width, Height, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_CompositePassTexture");
+	}
 	CreateCompositeRootSignature(Device);
 	CreateCompositePipelineState(Device);
 }
@@ -31,15 +33,18 @@ void Ideal::CompositePass::InitCompositePass(std::shared_ptr<Ideal::D3D12Shader>
 void Ideal::CompositePass::Resize(uint32 Width, uint32 Height, std::shared_ptr<DeferredDeleteManager> DeferredDeleteManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager)
 {
 	Ideal::IdealTextureTypeFlag textureFlag = IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_RTV;
-	if (m_compositeTexture)
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
-		DeferredDeleteManager->AddTextureToDeferredDelete(m_compositeTexture);
-		m_compositeTexture = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateEmptyTexture2D(m_compositeTexture, Width, Height, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_CompositePassTexture");
+		if (m_compositeTexture[i])
+		{
+			DeferredDeleteManager->AddTextureToDeferredDelete(m_compositeTexture[i]);
+			m_compositeTexture[i] = std::make_shared<Ideal::D3D12Texture>();
+			ResourceManager->CreateEmptyTexture2D(m_compositeTexture[i], Width, Height, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_CompositePassTexture");
+		}
 	}
 }
 
-void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, uint32 CurrentContextIndex)
 {
 	// IA SET Primitive
 	// VB IB
@@ -48,17 +53,17 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 
 	// Barrier
 	CD3DX12_RESOURCE_BARRIER outputBarrier0 = CD3DX12_RESOURCE_BARRIER::Transition(
-		m_compositeTexture->GetResource(),
+		m_compositeTexture[CurrentContextIndex]->GetResource(),
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
 	CommandList->ResourceBarrier(1, &outputBarrier0);
 	float clear[4] = { 0,0,0,0 };
-	CommandList->ClearRenderTargetView(m_compositeTexture->GetRTV().GetCpuHandle(), clear, 0, nullptr);
+	CommandList->ClearRenderTargetView(m_compositeTexture[CurrentContextIndex]->GetRTV().GetCpuHandle(), clear, 0, nullptr);
 
 	CommandList->RSSetViewports(1, &Viewport->GetViewport());
 	CommandList->RSSetScissorRects(1, &Viewport->GetScissorRect());
-	CommandList->OMSetRenderTargets(1, &m_compositeTexture->GetRTV().GetCpuHandle(), TRUE, nullptr);
+	CommandList->OMSetRenderTargets(1, &m_compositeTexture[CurrentContextIndex]->GetRTV().GetCpuHandle(), TRUE, nullptr);
 
 
 	CommandList->SetGraphicsRootSignature(m_compositeRootSignature.Get());
@@ -111,12 +116,15 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 
 void Ideal::CompositePass::Free()
 {
-	m_compositeTexture->Free();
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		m_compositeTexture[i]->Free();
+	}
 }
 
-std::shared_ptr<Ideal::D3D12Texture> Ideal::CompositePass::GetTexture()
+std::shared_ptr<Ideal::D3D12Texture> Ideal::CompositePass::GetTexture(uint32 CurrentContextIndex)
 {
-	return m_compositeTexture;
+	return m_compositeTexture[CurrentContextIndex];
 }
 
 void Ideal::CompositePass::CreateCompositeRootSignature(ComPtr<ID3D12Device> Device)

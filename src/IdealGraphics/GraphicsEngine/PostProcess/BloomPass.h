@@ -24,6 +24,9 @@ namespace Ideal
 {
 	class BloomPass
 	{
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = G_SWAP_CHAIN_NUM;
+		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
+
 	public:
 		void InitBloomPass(
 			ComPtr<ID3D12Device> Device,
@@ -41,14 +44,15 @@ namespace Ideal
 			ComPtr<ID3D12Device> Device,
 			ComPtr<ID3D12GraphicsCommandList> CommandList,
 			std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap,
-			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool
+			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+			uint32 CurrentContextIndex
 		);
 
 		void Resize(uint32 Width, uint32 Height, std::shared_ptr<DeferredDeleteManager> DeferredDeleteManager, std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 
 		void Free();
 
-		std::shared_ptr<Ideal::D3D12Texture> GetBlurTexture();
+		std::shared_ptr<Ideal::D3D12Texture> GetBlurTexture(uint32 CurrentContextIndex);
 
 	private:
 		void CreateDownSampleRootSignature(ComPtr<ID3D12Device> Device);
@@ -102,13 +106,13 @@ namespace Ideal
 	private:
 		// DownSample
 		float m_threshold = 0.5f;
-		std::shared_ptr<Ideal::D3D12Texture> m_downSampleTexture0;
+		std::shared_ptr<Ideal::D3D12Texture> m_downSampleTexture0[MAX_PENDING_FRAME_COUNT];
 
 	private:
 		// Blur
 		void InitBlurCB();
 
-		std::shared_ptr<Ideal::D3D12Texture> m_blurTexture[2];
+		std::shared_ptr<Ideal::D3D12Texture> m_blurTexture[MAX_PENDING_FRAME_COUNT][2];
 		CB_Blur m_cbBlur;
 	};
 }

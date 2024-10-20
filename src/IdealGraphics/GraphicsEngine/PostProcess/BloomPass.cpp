@@ -19,11 +19,13 @@ void Ideal::BloomPass::InitBloomPass(ComPtr<ID3D12Device> Device, std::shared_pt
 	m_height = Height;
 	// Texture 만들기 -> 다운샘플링
 	Ideal::IdealTextureTypeFlag textureFlag = IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_UAV;
-	ResourceManager->CreateEmptyTexture2D(m_downSampleTexture0, Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
-	// Texture 만들기 -> 블러처리
-	ResourceManager->CreateEmptyTexture2D(m_blurTexture[0], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
-	ResourceManager->CreateEmptyTexture2D(m_blurTexture[1], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
-
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		ResourceManager->CreateEmptyTexture2D(m_downSampleTexture0[i], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
+		// Texture 만들기 -> 블러처리
+		ResourceManager->CreateEmptyTexture2D(m_blurTexture[i][0], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
+		ResourceManager->CreateEmptyTexture2D(m_blurTexture[i][1], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
+	}
 	m_quadMesh = QuadMesh;
 
 	m_downSampleCS = DownSampleShader;
@@ -38,17 +40,17 @@ void Ideal::BloomPass::InitBloomPass(ComPtr<ID3D12Device> Device, std::shared_pt
 	InitBlurCB();
 }
 
-void Ideal::BloomPass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> BeforeTexture, std::shared_ptr<Ideal::D3D12Texture> BloomTexture, std::shared_ptr<Ideal::D3D12Texture> RenderTarget, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+void Ideal::BloomPass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> BeforeTexture, std::shared_ptr<Ideal::D3D12Texture> BloomTexture, std::shared_ptr<Ideal::D3D12Texture> RenderTarget, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, uint32 CurrentContextIndex)
 {
 	{
-		PostProcess_DownSample(BloomTexture, m_downSampleTexture0, m_threshold, Device, CommandList, DescriptorHeap, CBPool, m_width, m_height);
+		PostProcess_DownSample(BloomTexture, m_downSampleTexture0[CurrentContextIndex], m_threshold, Device, CommandList, DescriptorHeap, CBPool, m_width, m_height);
 	}
 
 	{
 		uint32 direction = 0;
-		PostProcess_Blur(m_downSampleTexture0, m_blurTexture[0], direction, Device, CommandList, DescriptorHeap, CBPool, m_width, m_height);
+		PostProcess_Blur(m_downSampleTexture0[CurrentContextIndex], m_blurTexture[CurrentContextIndex][0], direction, Device, CommandList, DescriptorHeap, CBPool, m_width, m_height);
 		direction = 1;
-		PostProcess_Blur(m_blurTexture[0], m_blurTexture[1], direction, Device, CommandList, DescriptorHeap, CBPool, m_width, m_height);
+		PostProcess_Blur(m_blurTexture[CurrentContextIndex][0], m_blurTexture[CurrentContextIndex][1], direction, Device, CommandList, DescriptorHeap, CBPool, m_width, m_height);
 	}
 }
 
@@ -59,30 +61,36 @@ void Ideal::BloomPass::Resize(uint32 Width, uint32 Height, std::shared_ptr<Defer
 
 
 	Ideal::IdealTextureTypeFlag textureFlag = IDEAL_TEXTURE_SRV | IDEAL_TEXTURE_UAV;
-	if (m_downSampleTexture0)
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
 	{
-		DeferredDeleteManager->AddTextureToDeferredDelete(m_downSampleTexture0);
-		m_downSampleTexture0 = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateEmptyTexture2D(m_downSampleTexture0, Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
-	}
-	for (uint32 i = 0; i < 2; ++i)
-	{
-		DeferredDeleteManager->AddTextureToDeferredDelete(m_blurTexture[i]);
-		m_blurTexture[i] = std::make_shared<Ideal::D3D12Texture>();
-		ResourceManager->CreateEmptyTexture2D(m_blurTexture[i], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
+		if (m_downSampleTexture0[i])
+		{
+			DeferredDeleteManager->AddTextureToDeferredDelete(m_downSampleTexture0[i]);
+			m_downSampleTexture0[i] = std::make_shared<Ideal::D3D12Texture>();
+			ResourceManager->CreateEmptyTexture2D(m_downSampleTexture0[i], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
+		}
+		for (uint32 direction = 0; direction < 2; ++direction)
+		{
+			DeferredDeleteManager->AddTextureToDeferredDelete(m_blurTexture[i][direction]);
+			m_blurTexture[i][direction] = std::make_shared<Ideal::D3D12Texture>();
+			ResourceManager->CreateEmptyTexture2D(m_blurTexture[i][direction], Width * m_threshold, Height * m_threshold, DXGI_FORMAT_R16G16B16A16_FLOAT, textureFlag, L"PostProcess_BlurTexture0");
+		}
 	}
 }
 
 void Ideal::BloomPass::Free()
 {
-	m_downSampleTexture0->Free();
-	m_blurTexture[0]->Free();
-	m_blurTexture[1]->Free();
+	for (uint32 i = 0; i < MAX_PENDING_FRAME_COUNT; ++i)
+	{
+		m_downSampleTexture0[i]->Free();
+		m_blurTexture[i][0]->Free();
+		m_blurTexture[i][1]->Free();
+	}
 }
 
-std::shared_ptr<Ideal::D3D12Texture> Ideal::BloomPass::GetBlurTexture()
+std::shared_ptr<Ideal::D3D12Texture> Ideal::BloomPass::GetBlurTexture(uint32 CurrentContextIndex)
 {
-	return m_blurTexture[1];
+	return m_blurTexture[CurrentContextIndex][1];
 }
 
 

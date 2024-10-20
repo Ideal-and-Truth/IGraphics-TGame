@@ -25,6 +25,9 @@ namespace Ideal
 	// 모든 포스트 프로세싱을 관리? 또는 합치기 위한 클래스
 	class CompositePass
 	{
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = G_SWAP_CHAIN_NUM;
+		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
+
 	public:
 		void InitCompositePass(
 			std::shared_ptr<Ideal::D3D12Shader> CompositeVS,
@@ -45,12 +48,13 @@ namespace Ideal
 			ComPtr<ID3D12Device> Device,
 			ComPtr<ID3D12GraphicsCommandList> CommandList,
 			std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap,
-			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool
+			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
+			uint32 CurrentContextIndex
 		);
 
 		void Free();
 
-		std::shared_ptr<Ideal::D3D12Texture> GetTexture();
+		std::shared_ptr<Ideal::D3D12Texture> GetTexture(uint32 CurrentContextIndex);
 
 	private:
 		void CreateCompositeRootSignature(ComPtr<ID3D12Device> Device);
@@ -62,7 +66,7 @@ namespace Ideal
 
 	private:
 		std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> m_quadMesh;
-		std::shared_ptr<Ideal::D3D12Texture> m_compositeTexture;
+		std::shared_ptr<Ideal::D3D12Texture> m_compositeTexture[MAX_PENDING_FRAME_COUNT];
 
 		std::shared_ptr<Ideal::D3D12Shader> m_compositeVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_compositePS;

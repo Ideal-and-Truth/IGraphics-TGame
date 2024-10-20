@@ -453,18 +453,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//fireMaterial->SetEmissiveMap(fireEmissive);
 		//fireMaterial->SetSurfaceTypeTransparent(true);
 
-		//for(int y = 0 ; y < 20;y++)
-		//{
-		//	for (int x = 0; x < 20; x++)
-		//	{
-		//		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-		//		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-		//		plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
-		//		plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
-		//		meshes.push_back(plane);
-		//		plane->AlphaClippingCheck();
-		//	}
-		//}
+		for(int y = 0 ; y < 20;y++)
+		{
+			for (int x = 0; x < 20; x++)
+			{
+				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
+				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
+				plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
+				meshes.push_back(plane);
+				plane->AlphaClippingCheck();
+			}
+		}
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 		//plane->AlphaClippingCheck();
