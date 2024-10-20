@@ -265,6 +265,7 @@ Ideal::D3D12RayTracingRenderer::~D3D12RayTracingRenderer()
 
 	m_skyBoxTexture.reset();
 
+	m_raytracingRenderTarget->Free();
 	m_bloomPassManager->Free();
 	m_compositePassManager->Free();
 

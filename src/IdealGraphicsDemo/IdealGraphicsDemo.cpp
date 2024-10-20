@@ -69,6 +69,7 @@ using namespace std;
 #include "../Utils/SimpleMath.h"
 #include "Test.h"
 
+//#define MAKE_PARTICLE
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -706,6 +707,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
 
+#ifdef MAKE_PARTICLE
 #pragma region Beam1
 		//------------------------Create Particle---------------------------//
 
@@ -1681,7 +1683,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 0), 1.f);	// 끝 색상
 		}
 #pragma endregion
-
+#endif
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -1838,7 +1840,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}*/
 
-
+#ifdef MAKE_PARTICLE
 				if (GetAsyncKeyState('F') & 0x8000)
 				{
 					slashParticleSystem->Pause();
@@ -1930,12 +1932,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					magicCircleParticleSystem->Play();
 					bowAttackParticleSystem->Play();
 				}
-				if (GetAsyncKeyState('G') & 0x8000)
-				{
-					auto a = gRenderer->GetRightBottomEditorPos();
-					auto b =gRenderer->GetTopLeftEditorPos();
-					int c = 3;
-				}
+#endif
+				//if (GetAsyncKeyState('G') & 0x8000)
+				//{
+				//	auto a = gRenderer->GetRightBottomEditorPos();
+				//	auto b =gRenderer->GetTopLeftEditorPos();
+				//	int c = 3;
+				//}
 
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
@@ -1945,6 +1948,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
 				DebugPlayer->AnimationDeltaTime(0.003f);
+
+#ifdef MAKE_PARTICLE
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
@@ -1965,6 +1970,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				dodgeEffect->SetDeltaTime(0.003f);
 				magicCircleParticleSystem->SetDeltaTime(0.003f);
 				bowAttackParticleSystem->SetDeltaTime(0.003f);
+#endif
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -2103,6 +2109,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 
+#ifdef MAKE_PARTICLE
 		gRenderer->DeleteTexture(slashParticleTexture0);
 		slashParticleTexture0.reset();
 		gRenderer->DeleteTexture(slashParticleTexture1);
@@ -2121,6 +2128,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			gRenderer->DeleteTexture(particleTexturesToDelete[i]);
 			particleTexturesToDelete[i].reset();
 		}
+#endif
 		
 		//meshes.clear();
 
@@ -2146,6 +2154,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		DebugStaticEnemy.reset();
 		gRenderer->DeleteMeshObject(cart);
 		cart.reset();
+		gRenderer->DeleteMaterial(planeMaterial);
+		planeMaterial.reset();
+		gRenderer->DeleteTexture(planeAlbedoTexture);
+		planeAlbedoTexture.reset();
+		gRenderer->DeleteTexture(planeNormalTexture);
+		planeNormalTexture.reset();
+		gRenderer->DeleteTexture(planeMaskTexture);
+		planeMaskTexture.reset();
+		gRenderer->DeleteMaterial(garlandMaterial);
+		garlandMaterial.reset();
+		gRenderer->DeleteTexture(garlandBaseTex);
+		garlandBaseTex.reset();
+		gRenderer->DeleteTexture(garlandNormalTex);
+		garlandNormalTex.reset();
+		gRenderer->DeleteTexture(garlandMaskTex);
+		garlandMaskTex.reset();
+		gRenderer->DeleteMaterial(windowMaterial);
+		windowMaterial.reset();
+		gRenderer->DeleteTexture(windowBase);
+		windowBase.reset();
+		gRenderer->DeleteTexture(windowNormal);
+		windowNormal.reset();
+		gRenderer->DeleteTexture(windowMask);
+		windowMask.reset();
+		gRenderer->DeleteTexture(fireEmissive);
+		fireEmissive.reset();
 		gRenderer->DeleteMaterial(kaMaterial);
 		kaMaterial.reset();
 		gRenderer->DeleteMaterial(skirtMaterial);
