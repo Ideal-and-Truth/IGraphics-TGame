@@ -734,7 +734,7 @@ void Ideal::D3D12RayTracingRenderer::ToggleFullScreenWindow()
 {
 	if (m_fullScreenMode)
 	{
-		SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+		SetWindowLong(m_hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME);
 		SetWindowPos(
 			m_hwnd,
 			HWND_NOTOPMOST,
