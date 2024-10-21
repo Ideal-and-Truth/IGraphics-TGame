@@ -10,7 +10,8 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Truth::TextUI)
 
 Truth::TextUI::TextUI()
 	: m_textSprite(nullptr)
-	, m_size{ 100.0f, 100.0f }
+	, m_spriteSize{ 1, 1 }
+	, m_textSize{ 100.f, 100.f }
 	, m_alpha(1.0f)
 	, m_zDepth(0.0f)
 	, m_position(100.0f, 100.0f)
@@ -18,6 +19,7 @@ Truth::TextUI::TextUI()
 	, m_fontSize(20)
 	, m_text(L"test")
 {
+	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
 }
 
 Truth::TextUI::~TextUI()
@@ -27,20 +29,26 @@ Truth::TextUI::~TextUI()
 
 void Truth::TextUI::ChangeText(const std::wstring& _text)
 {
-	m_textSprite->ChangeText(_text);
+	if (!m_text._Equal(_text))
+	{
+		m_textSprite->ChangeText(_text);
+		m_text = _text;
+	}
 }
 
 void Truth::TextUI::Initialize()
 {
 	if (m_behavior)
 		m_behavior->Initialize(m_managers.lock().get(), this, m_owner.lock().get());
-
 	auto gp = m_managers.lock()->Graphics();
-	m_textSprite = gp->CreateTextSprite(m_size.x, m_size.y, 20, m_text);
-	m_textSprite->SetPosition(m_position);
+	m_textSprite = gp->CreateTextSprite(m_textSize.x, m_textSize.y, m_fontSize);
+	m_textSprite->SetScale({ m_spriteSize.x, m_spriteSize.y });
+	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
+	m_textSprite->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });
 	m_textSprite->SetActive(IsActive());
 	m_textSprite->SetAlpha(m_alpha);
 	m_textSprite->SetZ(m_zDepth);
+	m_textSprite->ChangeText(m_text);
 }
 
 void Truth::TextUI::Start()
@@ -105,8 +113,8 @@ void Truth::TextUI::ResizeWindow()
 	float ratioH = contentH / winH;
 
 	Vector2 editorSize = {};
-	editorSize.x = m_size.x * ratioW;
-	editorSize.y = m_size.y * ratioH;
+	editorSize.x = m_spriteSize.x * ratioW;
+	editorSize.y = m_spriteSize.y * ratioH;
 
 	Vector2 editorPos = {};
 	editorPos.x = realLT.x + (m_position.x * ratioW);
@@ -116,10 +124,12 @@ void Truth::TextUI::ResizeWindow()
 #ifdef EDITOR_MODE
 void Truth::TextUI::EditorSetValue()
 {
-	ResizeWindow();
-
-	m_textSprite->SetScale({ m_size.x, m_size.y });
-	m_textSprite->SetPosition({ m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) });
+	auto gp = m_managers.lock()->Graphics();
+	gp->DeleteTextSprite(m_textSprite);
+	m_textSprite = gp->CreateTextSprite(m_textSize.x, m_textSize.y, m_fontSize);
+	m_textSprite->SetScale({ m_spriteSize.x, m_spriteSize.y });
+	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
+	m_textSprite->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });
 	m_textSprite->SetActive(IsActive());
 	m_textSprite->SetAlpha(m_alpha);
 	m_textSprite->SetZ(m_zDepth);

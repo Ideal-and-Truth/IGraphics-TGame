@@ -282,6 +282,7 @@ namespace Truth
 				return component;
 			}
 		}
+
 		return std::weak_ptr<C>();
 	}
 

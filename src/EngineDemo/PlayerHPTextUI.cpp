@@ -19,5 +19,8 @@ void PlayerHPTextUI::Update()
 
 void PlayerHPTextUI::Start()
 {
-	m_player = m_owner->GetComponent<Player>();
+	if (!m_owner->m_parent.expired())
+	{
+		m_player = m_owner->m_parent.lock()->GetComponent<Player>();
+	}
 }

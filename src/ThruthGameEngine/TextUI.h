@@ -31,8 +31,16 @@ namespace Truth
 	private:
 		std::shared_ptr<Ideal::IText> m_textSprite;
 
-		PROPERTY(size);
-		Vector2 m_size;
+		PROPERTY(spriteSize);
+		Vector2 m_spriteSize;
+
+		PROPERTY(textSize);
+		Vector2 m_textSize;
+
+		Vector2 m_finalSize;
+
+		PROPERTY(fontSize);
+		float m_fontSize;
 
 		PROPERTY(position);
 		Vector2 m_position;
@@ -48,9 +56,6 @@ namespace Truth
 
 		PROPERTY(text);
 		std::wstring m_text;
-
-		PROPERTY(fontSize);
-		float m_fontSize;
 
 	public:
 		TextUI();
@@ -89,29 +94,45 @@ namespace Truth
 	void Truth::TextUI::save(Archive& _ar, const unsigned int file_version) const
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-		_ar& m_size;
+
+		_ar& m_spriteSize;
 		_ar& m_text;
 		_ar& m_position;
 		_ar& m_alpha;
 		_ar& m_zDepth;
 		_ar& m_behavior;
 		_ar& m_fontSize;
+		_ar& m_textSize;
 	}
 
 	template<class Archive>
 	void Truth::TextUI::load(Archive& _ar, const unsigned int file_version)
 	{
 		_ar& boost::serialization::base_object<Component>(*this);
-		_ar& m_size;
-		_ar& m_text;
-		_ar& m_position;
-		_ar& m_alpha;
-		_ar& m_zDepth;
-		_ar& m_behavior;
-		_ar& m_fontSize;
+		if (file_version == 0)
+		{
+			_ar& m_spriteSize;
+			_ar& m_text;
+			_ar& m_position;
+			_ar& m_alpha;
+			_ar& m_zDepth;
+			_ar& m_behavior;
+			_ar& m_fontSize;
+		}
+		if (file_version == 1)
+		{
+			_ar& m_spriteSize;
+			_ar& m_text;
+			_ar& m_position;
+			_ar& m_alpha;
+			_ar& m_zDepth;
+			_ar& m_behavior;
+			_ar& m_fontSize;
+			_ar& m_textSize;
+		}
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::TextUI)
-BOOST_CLASS_VERSION(Truth::TextUI, 0)
+BOOST_CLASS_VERSION(Truth::TextUI, 1)
 
