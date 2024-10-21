@@ -31,6 +31,7 @@ struct CB_MaterialInfo
 	uint32 bUseNormalMap;
 	uint32 bUseMetallicMap;
 	uint32 bUseRoughnessMap;
+	uint32 bUseEmissiveMap;
 
 	float metallicFactor;
 	float roughnessFactor;
@@ -39,7 +40,11 @@ struct CB_MaterialInfo
 	Vector2 offset;
 
 	uint32 bIsTransmissive;
+
+	float emissiveIntensity;
 	float pad0;
+	float pad1;
+	float pad2;
 };
 
 struct CB_Bone
@@ -176,4 +181,21 @@ struct CB_ParticleSystem
 	float Time = 0.f;
 	Vector3 pad;
 	Color StartColor;
+};
+
+//-----Post Process-----//
+// 
+// (GAUSSIAN_RADIUS + 1) must be multiple of 4 because of the way we set up the shader
+#define GAUSSIAN_RADIUS 7
+
+struct CB_Blur
+{
+	alignas(16) float coefficients[GAUSSIAN_RADIUS + 1];
+	int radius;     // must be <= MAX_GAUSSIAN_RADIUS
+	int direction;  // 0 = horizontal, 1 = vertical
+};
+
+struct CB_Composite
+{
+	float coefficient;
 };

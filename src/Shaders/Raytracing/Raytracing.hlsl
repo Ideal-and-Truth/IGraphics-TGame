@@ -16,6 +16,7 @@
 RWTexture2D<float4> g_renderTarget : register(u0);
 RWTexture2D<float4> g_rtGBufferPosition : register(u1);
 RWTexture2D<float> g_rtGBufferDepth : register(u2);
+RWTexture2D<float4> g_rtGBufferEmissive : register(u3);
 
 RaytracingAccelerationStructure g_scene : register(t0, space0);
 TextureCube<float4> g_texEnvironmentMap : register(t1);
@@ -30,6 +31,7 @@ StructuredBuffer<PositionNormalUVTangentColor> l_vertices : register(t1, space1)
 Texture2D<float4> l_texDiffuse : register(t2, space1);
 Texture2D<float4> l_texNormal : register(t3, space1);
 Texture2D<float4> l_texMask : register(t4, space1);
+Texture2D<float4> l_texEmissive : register(t5, space1);
 ConstantBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 //StructuredBuffer<MaterialInfoConstantBuffer> l_materialInfo : register(b0, space1);
 
@@ -42,6 +44,7 @@ struct GBuffer
 {
     float tHit;
     float3 hitPosition;
+    float4 emissive;
 };
 
 struct RayPayload
@@ -427,7 +430,9 @@ float3 Shade(
 
     //L *= ao;
     // Temp : 0.2는 임시 값
-    L += 0.2f * albedo;
+    
+    //L += 0.2f * albedo;
+    
     //return L;
     // Specular
     bool isReflective = !BxDF::IsBlack(Kr);
@@ -521,7 +526,6 @@ void MyRaygenShader()
     //--- GBuffer ---//
     
     g_rtGBufferPosition[dispatchRayIndex] = float4(rayPayload.gBuffer.hitPosition, 1);
-    
     bool hasCameraRayHitGeometry = rayPayload.gBuffer.tHit != HitDistanceOnMiss;
     float rayLength = HitDistanceOnMiss;
     if(hasCameraRayHitGeometry)
@@ -532,10 +536,12 @@ void MyRaygenShader()
         //float depth = (ndcPos.z + 1.f) * 0.5;
         float depth = ndcPos.z;
         g_rtGBufferDepth[dispatchRayIndex] = depth;
+        g_rtGBufferEmissive[dispatchRayIndex] = rayPayload.gBuffer.emissive;
     }
     else
     {
         g_rtGBufferDepth[dispatchRayIndex] = 1;
+        g_rtGBufferEmissive[dispatchRayIndex] = float4(0,0,0,0);
     }
     return;
 }
@@ -642,6 +648,34 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     // GBuffer
     payload.gBuffer.tHit = RayTCurrent();
     payload.gBuffer.hitPosition = hitPosition;
+    if(l_materialInfo.bUseEmissiveMap)
+    {   
+        // Temp
+        //float4 emissive = l_texEmissive.SampleLevel(LinearWrapSampler, uv, 0);
+        //if(emissive.a > 0.1)
+        //{
+            //float3 emissiveColor = emissive.xyz * emissive.a;
+           // payload.gBuffer.emissive = float4(emissiveColor, 0);
+        //}
+        //payload.gBuffer.emissive = l_texEmissive.SampleLevel(LinearWrapSampler, uv, 0);
+        
+        if (l_materialInfo.bUseEmissiveMap)
+        {
+            float4 emissive = l_texEmissive.SampleLevel(LinearWrapSampler, uv, 0);
+
+            float luminance = dot(emissive.rgb, float3(0.299, 0.587, 0.114)); // 밝기 계산
+            float lowerThreshold = 0.6; // 밝기 하한
+            float upperThreshold = 0.9; // 밝기 상한
+    
+    // 밝기가 lowerThreshold와 upperThreshold 사이에서 부드럽게 전환
+            float mask = smoothstep(lowerThreshold, upperThreshold, luminance);
+    
+    // mask 값에 따라 부드럽게 emissive 값 적용
+            float3 emissiveColor = emissive.rgb * mask * l_materialInfo.emissiveIntensity;
+            //float3 emissiveColor = emissive.rgb * mask * 10.f;
+            payload.gBuffer.emissive = float4(emissiveColor, 1.f);
+        }
+    }
 
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod);
 }

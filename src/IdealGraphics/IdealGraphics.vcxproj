@@ -175,6 +175,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugConsole|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="GraphicsEngine\PostProcess\CompositePass.h" />
+    <ClInclude Include="GraphicsEngine\PostProcess\BloomPass.h" />
     <ClInclude Include="GraphicsEngine\D3D12\GenerateMips.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
@@ -342,6 +344,8 @@
     <ClInclude Include="ThirdParty\Include\DirectXTK12\XboxDDSTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GraphicsEngine\PostProcess\CompositePass.cpp" />
+    <ClCompile Include="GraphicsEngine\PostProcess\BloomPass.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\GenerateMips.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />

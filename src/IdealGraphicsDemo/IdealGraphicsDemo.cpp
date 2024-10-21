@@ -69,6 +69,7 @@ using namespace std;
 #include "../Utils/SimpleMath.h"
 #include "Test.h"
 
+#define MAKE_PARTICLE
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -431,11 +432,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		auto windowBase = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_BaseMap.png");
 		auto windowNormal = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_Normal.png");
 		auto windowMask = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_MaskMap.png");
+		auto fireEmissive = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/flame2.jpg");
 		windowMaterial->SetBaseMap(windowBase);
 		windowMaterial->SetNormalMap(windowNormal);
 		windowMaterial->SetMaskMap(windowMask);
+		windowMaterial->SetEmissiveMap(fireEmissive);
 		//garlandMaterial->SetAlphaClipping(true);
+		//windowMaterial->SetEmissiveIntensity(40.f);
+		windowMaterial->SetEmissiveIntensity(1.f);
 		windowMaterial->SetSurfaceTypeTransparent(true);
+
+		//auto fireMaterial = gRenderer->CreateMaterial();
+		//auto fireBase = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/flame.png");
+		//auto fireNormal = gRenderer->CreateTexture(L"../");
+		//auto fireMask = gRenderer->CreateTexture(L"");
+		//
+		//fireMaterial->SetBaseMap(fireBase);
+		//fireMaterial->SetNormalMap(fireNormal);
+		//fireMaterial->SetMaskMap(fireMask);
+		//fireMaterial->SetEmissiveMap(fireEmissive);
+		//fireMaterial->SetSurfaceTypeTransparent(true);
 
 		for(int y = 0 ; y < 20;y++)
 		{
@@ -459,8 +475,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma endregion
 #pragma region CreateDebugMesh
-		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
-		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
+		//std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
+		//debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
 		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, -2, 0)));
 		//cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
@@ -553,23 +569,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector< std::shared_ptr<Ideal::IPointLight>> plights;
 		std::vector< std::shared_ptr<Ideal::ISpotLight>> slights;
-		for (int i = 0; i < 300; i++)
-		{
-			std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
-			pointLight->SetPosition(Vector3(i, 3.f, 3.f));
-			pointLight->SetRange(6.f);
-			pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
-			pointLight->SetIntensity(3.f);
-			plights.push_back(pointLight);
-
-			std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-			spotLight->SetPosition(Vector3(i, 3.f, 8.f));
-			spotLight->SetRange(6.f);
-			spotLight->SetLightColor(Color(0.f, 0.f, 1.f, 1.f));
-			spotLight->SetIntensity(1.f);
-			spotLight->SetDirection(Vector3(0, -1, 0));
-			slights.push_back(spotLight);
-		}
+		//for (int i = 0; i < 300; i++)
+		//{
+		//	std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		//	pointLight->SetPosition(Vector3(i, 3.f, 3.f));
+		//	pointLight->SetRange(6.f);
+		//	pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
+		//	pointLight->SetIntensity(3.f);
+		//	plights.push_back(pointLight);
+		//
+		//	std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		//	spotLight->SetPosition(Vector3(i, 3.f, 8.f));
+		//	spotLight->SetRange(6.f);
+		//	spotLight->SetLightColor(Color(0.f, 0.f, 1.f, 1.f));
+		//	spotLight->SetIntensity(1.f);
+		//	spotLight->SetDirection(Vector3(0, -1, 0));
+		//	slights.push_back(spotLight);
+		//}
 #pragma endregion
 
 #pragma region CompileShader
@@ -691,6 +707,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
 
+#ifdef MAKE_PARTICLE
 #pragma region Beam1
 		//------------------------Create Particle---------------------------//
 
@@ -1666,7 +1683,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 0), 1.f);	// 끝 색상
 		}
 #pragma endregion
-
+#endif
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -1823,7 +1840,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}*/
 
-
+#ifdef MAKE_PARTICLE
 				if (GetAsyncKeyState('F') & 0x8000)
 				{
 					slashParticleSystem->Pause();
@@ -1915,12 +1932,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					magicCircleParticleSystem->Play();
 					bowAttackParticleSystem->Play();
 				}
-				if (GetAsyncKeyState('G') & 0x8000)
-				{
-					auto a = gRenderer->GetRightBottomEditorPos();
-					auto b =gRenderer->GetTopLeftEditorPos();
-					int c = 3;
-				}
+#endif
+				//if (GetAsyncKeyState('G') & 0x8000)
+				//{
+				//	auto a = gRenderer->GetRightBottomEditorPos();
+				//	auto b =gRenderer->GetTopLeftEditorPos();
+				//	int c = 3;
+				//}
 
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
@@ -1930,6 +1948,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
 				DebugPlayer->AnimationDeltaTime(0.003f);
+
+#ifdef MAKE_PARTICLE
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
@@ -1950,6 +1970,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				dodgeEffect->SetDeltaTime(0.003f);
 				magicCircleParticleSystem->SetDeltaTime(0.003f);
 				bowAttackParticleSystem->SetDeltaTime(0.003f);
+#endif
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -2088,6 +2109,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 
+#ifdef MAKE_PARTICLE
 		gRenderer->DeleteTexture(slashParticleTexture0);
 		slashParticleTexture0.reset();
 		gRenderer->DeleteTexture(slashParticleTexture1);
@@ -2106,6 +2128,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			gRenderer->DeleteTexture(particleTexturesToDelete[i]);
 			particleTexturesToDelete[i].reset();
 		}
+#endif
 		
 		//meshes.clear();
 
@@ -2125,6 +2148,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//DebugPlayer3.reset();
 		//gRenderer->DeleteMeshObject(playerRe);
 		//playerRe.reset();
+		gRenderer->DeleteMeshObject(DebugPlayer);
+		DebugPlayer.reset();
+		gRenderer->DeleteMeshObject(DebugStaticEnemy);
+		DebugStaticEnemy.reset();
+		gRenderer->DeleteMeshObject(cart);
+		cart.reset();
+		gRenderer->DeleteMaterial(planeMaterial);
+		planeMaterial.reset();
+		gRenderer->DeleteTexture(planeAlbedoTexture);
+		planeAlbedoTexture.reset();
+		gRenderer->DeleteTexture(planeNormalTexture);
+		planeNormalTexture.reset();
+		gRenderer->DeleteTexture(planeMaskTexture);
+		planeMaskTexture.reset();
+		gRenderer->DeleteMaterial(garlandMaterial);
+		garlandMaterial.reset();
+		gRenderer->DeleteTexture(garlandBaseTex);
+		garlandBaseTex.reset();
+		gRenderer->DeleteTexture(garlandNormalTex);
+		garlandNormalTex.reset();
+		gRenderer->DeleteTexture(garlandMaskTex);
+		garlandMaskTex.reset();
+		gRenderer->DeleteMaterial(windowMaterial);
+		windowMaterial.reset();
+		gRenderer->DeleteTexture(windowBase);
+		windowBase.reset();
+		gRenderer->DeleteTexture(windowNormal);
+		windowNormal.reset();
+		gRenderer->DeleteTexture(windowMask);
+		windowMask.reset();
+		gRenderer->DeleteTexture(fireEmissive);
+		fireEmissive.reset();
 		gRenderer->DeleteMaterial(kaMaterial);
 		kaMaterial.reset();
 		gRenderer->DeleteMaterial(skirtMaterial);
@@ -2186,9 +2241,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
 	RECT windowRect = { 0,0, WIDTH, HEIGHT };
-	::AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, false);
+	::AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME, false);
 
-	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME,
 		CW_USEDEFAULT, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr);
 	g_hWnd = hWnd;
 

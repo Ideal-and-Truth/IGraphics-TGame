@@ -172,4 +172,45 @@ namespace Ideal
 			};
 		}
 	}
+
+	namespace PostProcessDownSampleRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Input = 0,
+				UAV_Output,
+				CBV_Treshold,
+				Count
+			};
+		}
+	}
+	namespace PostProcessBlurRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Input = 0,
+				UAV_Output,
+				CBV_BlurParameter,
+				Count
+			};
+		}
+	}
+	namespace PostProcessCompositeRootSignature
+	{
+		namespace Slot
+		{
+			enum Enum
+			{
+				SRV_Origin = 0,
+				SRV_Blur,
+				SRV_Depth,
+				CBV_Bloom,
+				Count
+			};
+		}
+	}
 }

@@ -19,6 +19,8 @@ namespace Ideal
 		virtual void SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture) abstract;
 		// R : Metallic, A : Smoothness
 		virtual void SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture) abstract;
+		virtual void SetEmissiveMap(std::shared_ptr<Ideal::ITexture> Texture) abstract;
+		virtual void SetEmissiveIntensity(float Intensity) abstract;
 
 		virtual std::weak_ptr<Ideal::ITexture> GetBaseMap() abstract;
 		virtual std::weak_ptr<Ideal::ITexture> GetNomralMap() abstract;

@@ -53,6 +53,7 @@ struct MaterialInfoConstantBuffer
     unsigned int bUseNormalMap;
     unsigned int bUseMetallicMap;
     unsigned int bUseRoughnessMap;
+    unsigned int bUseEmissiveMap;
 
 	float metallicFactor;
 	float roughnessFactor;
@@ -62,7 +63,11 @@ struct MaterialInfoConstantBuffer
     float OffsetY;
 
     unsigned int bIsTransmissive;
-    float pad0;
+
+	float emissiveIntensity;
+	float pad0;
+	float pad1;
+	float pad2;
 };
 
 struct CubeConstantBuffer

@@ -28,6 +28,8 @@ namespace Ideal
 		virtual void SetNormalMap(std::shared_ptr<Ideal::ITexture> Texture) override;
 		// R : Metallic, A : Smoothness
 		virtual void SetMaskMap(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void SetEmissiveMap(std::shared_ptr<Ideal::ITexture> Texture) override;
+		virtual void SetEmissiveIntensity(float Intensity) override;
 
 		virtual std::weak_ptr<Ideal::ITexture> GetBaseMap() override;
 		virtual std::weak_ptr<Ideal::ITexture> GetNomralMap() override;
@@ -40,73 +42,30 @@ namespace Ideal
 		virtual void SetSurfaceTypeTransparent(bool IsTransparent) override;
 
 	public:
-		void SetAmbient(Color c) { m_ambient = c; }
-		void SetDiffuse(Color c) { m_diffuse = c; }
-		void SetSpecular(Color c) { m_specular = c; }
-		void SetEmissive(Color c) { m_emissive = c; }
-
-		void SetMetallicFactor(const float& f) { m_metallicFactor = f; }
-		void SetRoughnessFactor(const float& f) { m_roughnessFactor = f; }
-
 		void Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		// Ω¶¿Ã¥ı∂˚ πŸ¿ŒµÂ∏¶ «—¥Ÿ.
 		void BindToShader(std::shared_ptr<Ideal::IdealRenderer> Renderer);
 
-		void SetDiffuseTextureFile(std::wstring& File) { m_diffuseTextureFile = File; }
 		void SetIsUseDiffuse(bool b) { m_cbMaterialInfo.bUseDiffuseMap = b; }
-		void SetSpecularTextureFile(std::wstring& File) { m_specularTextureFile = File; }
-
-		void SetEmissiveTextureFile(std::wstring& File) { m_emissiveTextureFile = File; }
-		void SetNormalTextureFile(std::wstring& File) { m_normalTextureFile = File; }
 		void SetIsUseNormal(bool b) { m_cbMaterialInfo.bUseNormalMap = b; }
-
-		void SetMetallicTextureFile(std::wstring& File) { m_metallicTextureFile = File; }
 		void SetIsUseMetallic(bool b) { m_cbMaterialInfo.bUseMetallicMap = b; }
-		void SetRoughnessTextureFile(std::wstring& File) { m_roughnessTextureFile = File; }
 		void SetIsUseRoughness(bool b) { m_cbMaterialInfo.bUseRoughnessMap = b; }
+		void SetIsUseEmissive(bool b) { m_cbMaterialInfo.bUseEmissiveMap = b; }
 
-		//std::shared_ptr<Ideal::D3D12Texture> GetDiffuseTexture() { return m_diffuseTexture; }
-		//std::shared_ptr<Ideal::D3D12Texture> GetSpecularTexture() { return m_specularTexture; }
-		//std::shared_ptr<Ideal::D3D12Texture> GetEmissiveTexture() { return m_emissiveTexture; }
-		//std::shared_ptr<Ideal::D3D12Texture> GetNormalTexture() { return m_normalTexture; }
-		//
-		//std::shared_ptr<Ideal::D3D12Texture> GetMetallicTexture() { return m_metalicTexture; }
-		//std::shared_ptr<Ideal::D3D12Texture> GetRoughnessTexture() { return m_roughnessTexture; }
-		//
-		//std::shared_ptr<Ideal::D3D12Texture> GetMaskTexture() { return m_maskTexture; }
-
+		bool GetIsUseEmissive() { return m_cbMaterialInfo.bUseEmissiveMap; }
 
 		CB_MaterialInfo const& GetMaterialInfo() { return m_cbMaterialInfo; }
 		bool GetIsAlphaClipping() { return m_isAlphaClipping; }
 		bool GetIsTransmissive() { return m_cbMaterialInfo.bIsTransmissive; }
+
 	private:
 		Vector2 m_Tiling;
 		Vector2 m_Offset;
 
-		Color m_ambient;
-		Color m_diffuse;
-		Color m_specular;
-		Color m_emissive;
-
-		float m_metallicFactor;
-		float m_roughnessFactor;
-
-		std::wstring m_diffuseTextureFile;
-		std::wstring m_specularTextureFile;
-		std::wstring m_emissiveTextureFile;
-		std::wstring m_normalTextureFile;
-
-		std::wstring m_metallicTextureFile;
-		std::wstring m_roughnessTextureFile;
-
 		std::weak_ptr<Ideal::D3D12Texture> m_diffuseTexture;
 		std::shared_ptr<Ideal::D3D12Texture> m_specularTexture;
-		std::shared_ptr<Ideal::D3D12Texture> m_emissiveTexture;
+		std::weak_ptr<Ideal::D3D12Texture> m_emissiveTexture;
 		std::weak_ptr<Ideal::D3D12Texture> m_normalTexture;
-
-		std::weak_ptr<Ideal::D3D12Texture> m_metalicTexture;
-		std::weak_ptr<Ideal::D3D12Texture> m_roughnessTexture;
-
 		std::weak_ptr<Ideal::D3D12Texture> m_maskTexture;
 
 	public:
@@ -116,9 +75,12 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle GetDiffuseTextureHandleInRayTracing() { return m_diffuseTextureInRayTracing; }
 		Ideal::D3D12DescriptorHandle GetNormalTextureHandleInRayTracing() { return m_normalTextureInRayTracing; }
 		Ideal::D3D12DescriptorHandle GetMaskTextureHandleInRayTracing() { return m_maskTextureInRayTracing; }
+		Ideal::D3D12DescriptorHandle GetEmissiveTextureHandleInRayTracing() { return m_emissiveTextureInRayTracing; }
+
 		void SetDiffuseTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_diffuseTextureInRayTracing = handle; }
 		void SetNormalTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_normalTextureInRayTracing = handle; }
 		void SetMaskTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_maskTextureInRayTracing = handle; }
+		void SetEmissiveTextureHandleInRayTracing(Ideal::D3D12DescriptorHandle handle) { m_emissiveTextureInRayTracing = handle; }
 		void AddRefCountInRayTracing() { m_refCountInRayTracing++; }
 
 	private:
@@ -126,10 +88,10 @@ namespace Ideal
 		Ideal::D3D12DescriptorHandle m_diffuseTextureInRayTracing;
 		Ideal::D3D12DescriptorHandle m_normalTextureInRayTracing;
 		Ideal::D3D12DescriptorHandle m_maskTextureInRayTracing;
+		Ideal::D3D12DescriptorHandle m_emissiveTextureInRayTracing;
 		uint64 m_refCountInRayTracing = 0;
 
 	private:
-		CB_Material m_cbMaterialData;
 		CB_MaterialInfo	m_cbMaterialInfo;
 
 	public:

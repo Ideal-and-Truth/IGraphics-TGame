@@ -53,6 +53,9 @@ namespace Ideal
 	class IdealCanvas;
 	class IdealSprite;
 
+	class CompositePass;
+	class BloomPass;
+
 	class ParticleSystemManager;
 	class ParticleSystem;
 	class ParticleMaterial;
@@ -191,6 +194,7 @@ namespace Ideal
 		void CreateDSVHeap();
 		void CreateDSV(uint32 Width, uint32 Height);
 		void CreateFence();
+		void CreateMyDepthBuffer();
 
 	private:
 		void CreateDefaultCamera();
@@ -296,6 +300,16 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderPS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderVS;
+
+		std::shared_ptr<Ideal::D3D12Shader> m_screenVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_screenPS;
+
+		std::shared_ptr<Ideal::D3D12Shader> m_blurCS;
+		std::shared_ptr<Ideal::D3D12Shader> m_downSampleCS;
+
+		std::shared_ptr<Ideal::D3D12Shader> m_compositeVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_compositePS;
+
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
@@ -313,10 +327,15 @@ namespace Ideal
 		void CopyRaytracingOutputToBackBuffer();
 		void TransitionRayTracingOutputToRTV();
 		void TransitionRayTracingOutputToSRV();
-		void TransitionRayTracingOutputToUAV();
 
 		// AS Manager
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
+		std::shared_ptr<Ideal::D3D12Texture> m_raytracingRenderTarget;
+
+		// 아래는 레이트레이싱에서 뽑은 Depth를 DisplayResolution에 맞게 변경한 이미지이다.
+		std::shared_ptr<Ideal::D3D12Texture> m_raytracingDepth[MAX_PENDING_FRAME_COUNT];
+		// 아래는 기존 GBuffer로 뽑은 Depth버퍼를 그대로 쓸 수 없으니 DSV용으로 만든 버퍼이다.
+		std::shared_ptr<Ideal::D3D12Texture> m_myResolutionDepthBuffer[MAX_PENDING_FRAME_COUNT];	
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
 
@@ -332,6 +351,17 @@ namespace Ideal
 
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealStaticMeshObject> obj);
 		void RaytracingManagerDeleteObject(std::shared_ptr<Ideal::IdealSkinnedMeshObject> obj);
+
+		// PostProcess
+	private:
+		void InitPostProcessManager();
+		void PostProcess();
+
+	private:
+		std::shared_ptr<Ideal::CompositePass> m_compositePassManager;
+		std::shared_ptr<Ideal::BloomPass> m_bloomPassManager;
+		std::shared_ptr<Ideal::CompositePass> m_compositePassManagers[MAX_PENDING_FRAME_COUNT];
+		std::shared_ptr<Ideal::BloomPass> m_bloomPassManagers[MAX_PENDING_FRAME_COUNT];
 
 		// UI
 	private:

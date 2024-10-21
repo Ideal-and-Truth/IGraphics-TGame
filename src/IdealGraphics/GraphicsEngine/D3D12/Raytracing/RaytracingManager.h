@@ -34,6 +34,7 @@ namespace Ideal
 	{
 		float tHit;
 		Vector3 hitPosition;
+		Vector4 emissive;
 	};
 
 	struct RayPayload
@@ -72,6 +73,7 @@ namespace Ideal
 
 				UAV_GBufferPosition,
 				UAV_GBufferDepth,
+				UAV_GBufferEmissive,
 
 				Count
 			};
@@ -91,6 +93,7 @@ namespace Ideal
 				//SRV_Metalic,
 				//SRV_Roughness,
 				SRV_Mask,
+				SRV_Emissive,
 				CBV_MaterialInfo,
 				Count
 			};
@@ -103,10 +106,12 @@ namespace Ideal
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_Vertices;
 			// Diffuse Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_DiffuseTexture;
-			// Normal Textures
+			// Normal Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_NormalTexture;
 			// Mask Texture
 			D3D12_GPU_DESCRIPTOR_HANDLE SRV_MaskTexture;
+			// Emissive Texture
+			D3D12_GPU_DESCRIPTOR_HANDLE SRV_EmissiveTexture;
 
 			//D3D12_GPU_DESCRIPTOR_HANDLE CBV_MaterialInfo;
 			CB_MaterialInfo CBV_MaterialInfo;
@@ -157,9 +162,9 @@ namespace Ideal
 		~RaytracingManager();
 
 	public:
-		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height);
+		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12Shader> RaytracingShader, std::shared_ptr<Ideal::D3D12Shader> AnimationShader, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 Width, uint32 Height, std::shared_ptr<Ideal::D3D12Texture> RenderTargetTexture);
 		void DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr<ID3D12GraphicsCommandList4> CommandList, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, uint32 CurrentFrameIndex, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, SceneConstantBuffer SceneCB, CB_LightList* LightCB, std::shared_ptr<Ideal::D3D12Texture> SkyBoxTexture);
-		void Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height);
+		void Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height, std::shared_ptr<Ideal::D3D12Texture> RaytracingRenderTargetTexture);
 
 		// TODO :
 		void AddObject(
@@ -175,12 +180,12 @@ namespace Ideal
 			bool IsSkinnedData = false
 		);
 		//---UAV Render Target---//
-		void CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height);
 		ComPtr<ID3D12Resource> GetRaytracingOutputResource();
 
-		Ideal::D3D12DescriptorHandle GetRaytracingOutputRTVHandle();
-		Ideal::D3D12DescriptorHandle GetRaytracingOutputSRVHandle();
+		std::shared_ptr<Ideal::D3D12Texture> m_renderTargetTexture;
 
+		//---GBUffer---//
+		std::shared_ptr<Ideal::D3D12Texture> GetEmissiveTexture();
 		//---AS---//
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLASByName(const std::wstring& Name);
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> AddBLAS(std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::IMeshObject> MeshObject, const wchar_t* Name, bool IsSkinnedData = false);
@@ -225,9 +230,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_RTV_raytracingOutputDescriptorHeap = nullptr;
 		Ideal::D3D12DescriptorHandle m_raytracingOutputSRV;
 		Ideal::D3D12DescriptorHandle m_raytracingOutputRTV;
-
-		// 2024.08.12 Render Target //
-		std::shared_ptr<Ideal::D3D12Texture> m_raytracingOutput2 = nullptr;
 
 		//---Root Signature---//
 		ComPtr<ID3D12RootSignature> m_raytracingGlobalRootSignature = nullptr;
@@ -288,12 +290,14 @@ namespace Ideal
 	public:
 		void CreateGBufferTexture(std::shared_ptr<Ideal::ResourceManager> ResourceManager, uint32 Width, uint32 Height);
 		std::shared_ptr<Ideal::D3D12Texture> GetDepthBuffer();
+		std::shared_ptr<Ideal::D3D12Texture> GetDepthBuffer2();
 
 		void CopyDepthBuffer( ComPtr<ID3D12GraphicsCommandList4> CommandList);
 
 	private:
 		std::shared_ptr<Ideal::D3D12Texture> m_gBufferPosition;
 		std::shared_ptr<Ideal::D3D12Texture> m_gBufferDepth;
+		std::shared_ptr<Ideal::D3D12Texture> m_gBufferEmissive;
 
 		std::shared_ptr<Ideal::D3D12Texture> m_CopyDepthBuffer;	// raytracing으로 뽑은 depth buffer를 옮길 dsv
 																// 이유는 uav와 dsv 동시 허용하여 생성을 못한다.
