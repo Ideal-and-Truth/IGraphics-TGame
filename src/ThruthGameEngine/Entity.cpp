@@ -99,13 +99,18 @@ const DirectX::SimpleMath::Vector3& Truth::Entity::GetWorldScale() const
 
 void Truth::Entity::ApplyTransform()
 {
+	if (m_isDead)
+	{
+		return;
+	}
 	if (m_transform == nullptr)
 	{
 		return;
 	}
 	m_transform->ApplyTransform();
-	for (auto p = m_applyTransform.begin(); p != m_applyTransform.end() ; p++)
+	for (auto p = m_applyTransform.begin(); p != m_applyTransform.end(); p++)
 	{
+		
 		if (p->first.expired())
 		{
 			if (p == m_applyTransform.end() - 1)
@@ -128,6 +133,8 @@ void Truth::Entity::ApplyTransform()
 		{
 			continue;
 		}
+
+		
 		p->second->Invoke<void>(p->first.lock().get());
 	}
 }
@@ -152,8 +159,32 @@ void Truth::Entity::Destroy()
 		return;
 	}
 	m_isDead = true;
-	IterateComponentMethod(m_destroy);
+	for (auto p = m_destroy.begin(); p != m_destroy.end(); p++)
+	{
+		if (p->first.expired())
+		{
+			auto temp = m_destroy.end() - 1;
+			std::iter_swap(p, temp);
+			m_destroy.pop_back();
+			p = temp;
+
+			if (m_destroy.empty())
+			{
+				return;
+			}
+		}
+		p->second->Invoke<void>(p->first.lock().get());
+	}
 	m_components.clear();
+
+	for (auto& e : m_children)
+	{
+		e->Destroy();
+		e.reset();
+	}
+
+	m_children.clear();
+
 }
 
 void Truth::Entity::Start()
@@ -248,7 +279,7 @@ void Truth::Entity::AddChild(std::shared_ptr<Entity> _entity)
 
 void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
 {
-	for (auto c = m_children.begin(); c != m_children.end() ; c++)
+	for (auto c = m_children.begin(); c != m_children.end(); c++)
 	{
 		if ((*c) == _entity)
 		{
@@ -261,7 +292,7 @@ void Truth::Entity::DeleteChild(std::shared_ptr<Entity> _entity)
 
 void Truth::Entity::LinkBone(const std::string& _boneName)
 {
-	if (m_parent.expired() || 
+	if (m_parent.expired() ||
 		m_parent.lock()->GetComponent<SkinnedMesh>().expired())
 	{
 		m_linkBoneName = "";
@@ -383,6 +414,11 @@ void Truth::Entity::IterateComponentMethod(ComponentMethod& _cm)
 			{
 				return;
 			}
+
+		}
+		if (m_isDead)
+		{
+			break;
 		}
 		p->second->Invoke<void>(p->first.lock().get());
 	}

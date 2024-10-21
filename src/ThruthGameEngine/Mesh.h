@@ -68,6 +68,9 @@ namespace Truth
 		METHOD(Update);
 		void Update();
 
+		METHOD(Destroy);
+		void Destroy();
+
 		void DeleteMesh();
 
 		void SetMaterialByIndex(uint32 _index, std::string _material);

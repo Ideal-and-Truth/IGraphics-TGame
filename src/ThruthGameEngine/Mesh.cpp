@@ -159,9 +159,18 @@ void Truth::Mesh::Update()
 		ApplyTransform();
 }
 
+void Truth::Mesh::Destroy()
+{
+	DeleteMesh();
+}
+
 void Truth::Mesh::DeleteMesh()
 {
-	m_managers.lock()->Graphics()->DeleteMeshObject(m_mesh);
+	if (m_mesh)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m_mesh);
+		m_mesh.reset();
+	}
 }
 
 void Truth::Mesh::SetMaterialByIndex(uint32 _index, std::string _material)

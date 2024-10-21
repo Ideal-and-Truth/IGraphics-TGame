@@ -40,11 +40,19 @@ private:
 	int m_enemyCount;
 
 	float m_passingTime;
+	float m_shakeTime;
+	float m_zoomTime;
 
-	float m_shakeAzimuth;
-	float m_shakeElevation;
+	PROPERTY(zoomOutTime);
+	float m_zoomOutTime;
+
+	float m_lockOnTime;
+
+	PROPERTY(isShaking);
 	bool m_isShaking;
-	bool m_isShaked;
+
+	PROPERTY(shakeCount);
+	float m_shakeCount;
 
 public:
 	PlayerCamera();
@@ -71,7 +79,8 @@ private:
 	void FreeCamera();
 	void LockOnCamera();
 	void SortEnemy();
-	void ShakeCamera();
+	void ShakeCamera(float shakeCount);
+	void ZoomInOut(float timing);
 };
 
 template<class Archive>

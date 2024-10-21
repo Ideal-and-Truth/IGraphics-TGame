@@ -14,12 +14,14 @@ PlayerCamera::PlayerCamera()
 	, m_cameraDistance(10.f)
 	, m_cameraSpeed(0.003f)
 	, m_passingTime(0.f)
-	, m_shakeAzimuth(0.f)
-	, m_shakeElevation(0.f)
+	, m_lockOnTime(0.f)
 	, m_isLockOn(false)
 	, m_isShaking(false)
-	, m_isShaked(false)
 	, m_enemyCount(0)
+	, m_shakeCount(0.f)
+	, m_zoomTime(0.f)
+	, m_shakeTime(0.f)
+	, m_zoomOutTime(0.f)
 {
 	m_name = "PlayerCamera";
 }
@@ -42,11 +44,12 @@ void PlayerCamera::Start()
 	targetPos.z -= m_cameraDistance;
 
 	m_owner.lock()->m_transform->m_position = targetPos;
-	
+
 	m_playerController = m_player.lock()->GetComponent<PlayerController>().lock();
 
-	//m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangerEnemy").lock());
-	//m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
+	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
+	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
+	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
 }
 
 void PlayerCamera::LateUpdate()
@@ -56,9 +59,9 @@ void PlayerCamera::LateUpdate()
 		m_isLockOn = false;
 	}
 
-	if (m_isLockOn)
+	if (m_isLockOn && !m_enemys.empty())
 	{
-		// LockOnCamera();
+		LockOnCamera();
 	}
 	else
 	{
@@ -79,9 +82,10 @@ void PlayerCamera::LateUpdate()
 				m_isLockOn = false;
 				m_passingTime = 0.f;
 				m_enemyCount = 0;
+				m_lockOnTime = 0.f;
 			}
 		}
-		else
+		else if (GetKeyUp(MOUSE::WHEEL) && m_isLockOn)
 		{
 			m_passingTime = 0.f;
 		}
@@ -93,17 +97,21 @@ void PlayerCamera::LateUpdate()
 		if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
 		{
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+			m_lockOnTime = 0.f;
 			break;
 		}
 	}
 	if (GetKeyDown(KEY::P))
 	{
 		//m_isShaking = true;
+		m_zoomOutTime = 0.5f;
 	}
 	if (m_isShaking)
 	{
-		ShakeCamera();
+		ShakeCamera(m_shakeCount);
 	}
+
+	ZoomInOut(m_zoomOutTime);
 }
 
 void PlayerCamera::OnTriggerEnter(Truth::Collider* _other)
@@ -185,17 +193,20 @@ void PlayerCamera::LockOnCamera()
 	if (GetKeyDown(MOUSE::WHEEL))
 	{
 		m_enemyCount++;
+		m_lockOnTime = 0.f;
 	}
 	if (m_enemys.size() <= m_enemyCount)
 	{
 		m_enemyCount = 0;
+		m_lockOnTime = 0.f;
 	}
 
+	m_lockOnTime += GetDeltaTime() * 0.8f;
 
-	Vector3 enemyPos = m_enemys[m_enemyCount]->m_transform->m_position;
-	Vector3 playerPos = m_player.lock()->m_transform->m_position;
+	Vector3 enemyPos = m_enemys[m_enemyCount]->GetWorldPosition();
+	Vector3 playerPos = m_player.lock()->GetWorldPosition();
 	Vector3 targetPos = playerPos + Vector3{ 0.0f, 2.0f, 0.0f };
-	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
+	Vector3 cameraPos = m_owner.lock()->GetWorldPosition();
 
 	// 락온 중일때 각도 계산
 	if (!m_isShaking)
@@ -209,12 +220,17 @@ void PlayerCamera::LockOnCamera()
 		m_azimuth *= -1.f;
 	}
 
-	Vector3 look = enemyPos - playerPos - Vector3{ 0.0f, 5.0f, 0.0f };
+	if (m_lockOnTime >= 1.f)
+	{
+		m_lockOnTime = 1.f;
+	}
+
+	Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 5.0f, 0.0f });
 	look.Normalize(look);
 	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance);
 
-	m_owner.lock()->m_transform->m_position = cameraPos;
-	m_camera.lock()->m_look = look;
+	m_owner.lock()->m_transform->m_position += (cameraPos - m_owner.lock()->m_transform->m_position) * m_lockOnTime;
+	m_camera.lock()->m_look += (look - m_camera.lock()->m_look) * m_lockOnTime;
 
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0.f;
@@ -244,41 +260,51 @@ void PlayerCamera::SortEnemy()
 				std::shared_ptr<Truth::Entity> lastLocked = m_enemys[m_enemyCount];
 				m_enemys[j].swap(m_enemys[i]);
 				m_enemyCount = (int)(find(m_enemys.begin(), m_enemys.end(), lastLocked) - m_enemys.begin());
+				m_lockOnTime = 0.f;
 			}
 		}
 	}
 }
 
-void PlayerCamera::ShakeCamera()
+void PlayerCamera::ShakeCamera(float shakeCount)
 {
-	if (m_shakeAzimuth < 0.3f && !m_isShaked)
-	{
-		m_shakeAzimuth += 5.f * GetDeltaTime();
-		m_shakeElevation += 5.f * GetDeltaTime();
-		m_azimuth += 5.f * GetDeltaTime();
-		m_elevation += 5.f * GetDeltaTime();
-	}
-	else if (m_shakeAzimuth >= 0.3f && !m_isShaked)
-	{
-		m_shakeAzimuth = 0.3f;
-		m_shakeElevation = 0.3f;
-		m_isShaked = true;
-	}
+	m_shakeTime += GetDeltaTime() * 80.f;
 
-	if (m_isShaked)
+	if (m_shakeTime > shakeCount * 6.28f)
 	{
-		m_shakeAzimuth -= 1.f * GetDeltaTime();
-		m_shakeElevation -= 1.f * GetDeltaTime();
-		m_azimuth -= 1.f * GetDeltaTime();
-		m_elevation -= 1.f * GetDeltaTime();
-	}
-
-	if (m_shakeAzimuth <= 0.f)
-	{
+		m_shakeTime = 0.f;
+		m_shakeCount = 0.f;
 		m_isShaking = false;
-		m_isShaked = false;
 	}
+	m_owner.lock()->m_transform->m_position.z += 0.2f * sin(m_shakeTime);
+	m_owner.lock()->m_transform->m_position.y += 0.1f * sin(m_shakeTime);
+	m_owner.lock()->m_transform->m_position.x += 0.2f * cos(m_shakeTime);
+}
 
+void PlayerCamera::ZoomInOut(float timing)
+{
+	if (timing > 0.f)
+	{
+		m_zoomTime += GetDeltaTime();
 
+		if (m_zoomTime > timing)
+		{
+			m_cameraDistance -= (2.f / m_zoomTime - timing) * GetDeltaTime();
+		}
+		else
+		{
+			m_cameraDistance += (2.f / timing) * GetDeltaTime();
+		}
+
+		if (m_zoomTime > 2.f)
+		{
+			m_zoomTime = 0.f;
+			m_zoomOutTime = 0.f;
+		}
+	}
+	else
+	{
+		m_cameraDistance = 10.f;
+	}
 }
 

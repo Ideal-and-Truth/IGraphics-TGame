@@ -133,7 +133,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		LoadEntity(e);
 	}
 
-	 LoadUnityData(m_mapPath);
+	LoadUnityData(m_mapPath);
 }
 
 
@@ -244,7 +244,7 @@ void Truth::Scene::Update()
 	}
 	for (auto& e : m_entities)
 	{
-		if (!e->m_isDead)
+		if ((e->m_isDead) == false)
 		{
 			e->Update();
 		}

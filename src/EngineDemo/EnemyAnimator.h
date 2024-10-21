@@ -226,8 +226,8 @@ private:
 	PROPERTY(isDown);
 	bool m_isDown;
 
-	PROPERTY(isDead);
-	bool m_isDead;
+	PROPERTY(isDeath);
+	bool m_isDeath;
 
 	PROPERTY(sideMove);
 	float m_sideMove;

@@ -24,7 +24,7 @@ EnemyAnimator::EnemyAnimator()
 	, m_isParryAttack(false)
 	, m_isDown(false)
 	, m_isDamage(false)
-	, m_isDead(false)
+	, m_isDeath(false)
 	, m_isComeBack(false)
 	, m_isAnimationEnd(false)
 	, m_isBackStep(false)
@@ -97,24 +97,13 @@ void EnemyAnimator::Start()
 
 void EnemyAnimator::Update()
 {
-	if (m_isDead)
+	if (m_isDeath)
 	{
-		for (auto& e : m_owner.lock()->m_children)
-		{
-			if (e)
-			{
-				m_owner.lock()->DeleteChild(e);
-				m_owner.lock().reset();
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e);
-			}
-		}
-		/// 런타임 중 리지드바디 삭제시 오류
-		m_managers.lock()->Scene()->m_currentScene->DeleteEntity(m_owner.lock());
-		// m_owner.lock()->m_transform->m_scale = { 0.f,0.f,0.f };
+		m_owner.lock()->Destroy();
 		return;
 	}
 
-	if (m_isDead)
+	if (m_isDeath)
 	{
 		return;
 	}
@@ -129,7 +118,7 @@ void EnemyAnimator::Update()
 
 	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
 	{
-		m_isDead = true;
+		m_isDeath = true;
 		m_enemyController->GetTypeInfo().GetProperty("isDead")->Set(m_enemyController.get(), true);
 	}
 
@@ -217,7 +206,7 @@ void EnemyIdle::OnStateEnter()
 
 void EnemyIdle::OnStateUpdate()
 {
-	if (GetProperty("isDead")->Get<bool>(m_animator).Get())
+	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
 	}
@@ -238,7 +227,7 @@ void EnemyChase::OnStateEnter()
 
 void EnemyChase::OnStateUpdate()
 {
-	if (GetProperty("isDead")->Get<bool>(m_animator).Get())
+	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
 	}
@@ -264,7 +253,7 @@ void EnemyReturn::OnStateEnter()
 
 void EnemyReturn::OnStateUpdate()
 {
-	if (GetProperty("isDead")->Get<bool>(m_animator).Get())
+	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
 	}
@@ -303,7 +292,7 @@ void EnemyAttackReady::OnStateUpdate()
 		}
 	}
 
-	if (GetProperty("isDead")->Get<bool>(m_animator).Get())
+	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
 	}
@@ -342,7 +331,7 @@ void EnemyAttack::OnStateUpdate()
 		GetProperty("isDamage")->Set(m_animator, false);
 	}
 
-	if (GetProperty("isDead")->Get<bool>(m_animator).Get())
+	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
 	}

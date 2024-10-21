@@ -490,6 +490,8 @@ public:
 	void ChangeState(std::string stateName);
 
 	void SetPlayerDamage(float damage);
+
+	void CameraShake(float shakeCount);
 };
 
 template<class Archive>

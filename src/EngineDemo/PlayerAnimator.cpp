@@ -188,7 +188,7 @@ void PlayerAnimator::Update()
 		m_isAttack = false;
 	}
 
-	if (m_isAttacking && !m_isChargedAttack)
+	if (m_isNormalAttack && !m_isChargedAttack)
 	{
 		if (GetKey(KEY::W) || GetKey(KEY::A) || GetKey(KEY::S) || GetKey(KEY::D))
 		{
@@ -365,6 +365,12 @@ void PlayerAnimator::ChangeState(std::string stateName)
 void PlayerAnimator::SetPlayerDamage(float damage)
 {
 	m_player->GetTypeInfo().GetProperty("currentDamage")->Set(m_player.get(), damage);
+}
+
+void PlayerAnimator::CameraShake(float shakeCount)
+{
+	m_playerCamera->GetTypeInfo().GetProperty("isShaking")->Set(m_playerCamera.get(), true);
+	m_playerCamera->GetTypeInfo().GetProperty("shakeCount")->Set(m_playerCamera.get(), shakeCount);
 }
 
 void PlayerIdle::OnStateEnter()
@@ -698,6 +704,7 @@ void NormalAttack6::OnStateUpdate()
 		GetProperty("downAttack")->Set(m_animator, true);
 		isReset = false;
 		GetProperty("normalAttack6")->Set(m_animator, true);
+		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(5.f);
 	}
 
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get() && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 60 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 71))
@@ -791,7 +798,7 @@ void ChargedAttack1::OnStateEnter()
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	GetProperty("chargedAttack1")->Set(m_animator, true);
-
+	dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 }
 
 void ChargedAttack1::OnStateUpdate()
@@ -837,6 +844,7 @@ void ChargedAttack2::OnStateEnter()
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	GetProperty("chargedAttack2")->Set(m_animator, true);
+	dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 }
 
 void ChargedAttack2::OnStateUpdate()
@@ -890,6 +898,7 @@ void ChargedAttack3::OnStateUpdate()
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
 	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 		GetProperty("chargedAttack3")->Set(m_animator, true);
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 33)
@@ -939,6 +948,7 @@ void ChargedAttack4::OnStateUpdate()
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 8)
 	{
 		GetProperty("chargedAttack4")->Set(m_animator, true);
+		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 25)
 	{
@@ -983,6 +993,7 @@ void ChargedAttack5::OnStateUpdate()
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
 	{
 		GetProperty("chargedAttack5")->Set(m_animator, true);
+		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 24)
 	{

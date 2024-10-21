@@ -709,27 +709,32 @@ void BossSkill::DeleteCheck()
 	{
 		for (auto& e : m_fires)
 		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			e.first->Destroy();
+			//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 		}
 
 		for (auto& e : m_shockWaves)
 		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			e.first->Destroy();
+			//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 		}
 
 		for (auto& e : m_swords)
 		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			e.first->Destroy();
+			//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 		}
 
 		for (auto& e : m_clones)
 		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			e.first->Destroy();
+			//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 		}
 
 		for (auto& e : m_timeSpheres)
 		{
-			m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+			e.first->Destroy();
+			//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 		}
 
 		m_fires.clear();
@@ -774,7 +779,8 @@ void BossSkill::DeleteCheck()
 		{
 			for (auto& e : m_fires)
 			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+				e.first->Destroy();
+				//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 			}
 
 			m_fires.clear();
@@ -796,7 +802,8 @@ void BossSkill::DeleteCheck()
 		{
 			for (auto& e : m_swords)
 			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+				e.first->Destroy();
+				//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 			}
 
 			m_swords.clear();
@@ -820,7 +827,8 @@ void BossSkill::DeleteCheck()
 
 			for (auto& e : m_clones)
 			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+				e.first->Destroy();
+				//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 			}
 
 			m_clones.clear();
@@ -851,7 +859,8 @@ void BossSkill::DeleteCheck()
 		{
 			for (auto& e : m_timeSpheres)
 			{
-				m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
+				e.first->Destroy();
+				//m_managers.lock()->Scene()->m_currentScene->DeleteEntity(e.first);
 			}
 			m_timeSpheres.clear();
 			m_deleteSphere = false;
