@@ -136,7 +136,11 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	 LoadUnityData(m_mapPath);
 }
 
-
+/// <summary>
+/// 엔티티 로드
+/// 엔티티를 초기화 하고 매니저 등록을 해준다.
+/// </summary>
+/// <param name="_entity">로드 할 엔티티</param>
 void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 {
 	m_entities.push_back(_entity);
@@ -151,47 +155,76 @@ void Truth::Scene::LoadEntity(std::shared_ptr<Entity> _entity)
 	}
 }
 
+/// <summary>
+/// nav mesh를 통한 길찾기
+/// 찾은 경로의 다음 포인트를 리턴한다.
+/// </summary>
+/// <param name="_start">시작점</param>
+/// <param name="_end">도착점</param>
+/// <param name="_size">찾을 반경</param>
+/// <returns>다음 포인트</returns>
 DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const
 {
 	if (m_navMesh)
-	{
 		return m_navMesh->FindPath(_start, _end, _size);
-	}
+
 	return _end;
 }
 
+/// <summary>
+/// 엔티티 검색
+/// </summary>
+/// <param name="_name">엔티티 이름</param>
+/// <returns>찾은 엔티티</returns>
 std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
 {
 	for (auto& e : m_entities)
 	{
 		if (e->m_name == _name)
-		{
 			return e;
-		}
 	}
+
 	return std::weak_ptr<Entity>();
 }
 
+/// <summary>
+/// 엔티티 검색
+/// </summary>
+/// <param name="_index">엔티티 인덱스</param>
+/// <returns>엔티티</returns>
+std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(uint32 _index)
+{
+	if (_index < m_entities.size())
+		return m_entities[_index];
+
+	return std::weak_ptr<Entity>();
+}
+
+/// <summary>
+/// 유니티 맵 데이터를 리셋한다.
+/// 자체엔진 개발에 따라 삭제될 함수
+/// </summary>
 void Truth::Scene::ResetMapData()
 {
 	m_managers.lock()->Physics()->ResetPhysX();
 	for (auto& me : m_mapEntity)
-	{
 		DeleteEntity(me);
-	}
+
 	m_mapEntity.clear();
 }
 
 #ifdef EDITOR_MODE
+/// <summary>
+/// 에디터 업데이트
+/// 에디터 하이라키 창의 루트 엔티티 목록을 리셋한다.
+/// </summary>
 void Truth::Scene::EditorUpdate()
 {
 	m_rootEntities.clear();
 	for (auto& e : m_entities)
 	{
 		if (e->m_parent.expired() && !e->m_isDead)
-		{
 			m_rootEntities.push_back(e);
-		}
 	}
 }
 #endif // EDITOR_MODE
@@ -201,11 +234,10 @@ void Truth::Scene::EditorUpdate()
 /// </summary>
 void Truth::Scene::Update()
 {
-	// delete
+	/// delete
 	while (!m_finishDestroy.empty())
-	{
 		m_finishDestroy.pop();
-	}
+
 	while (!m_beginDestroy.empty())
 	{
 		auto& e = m_beginDestroy.front();
@@ -222,7 +254,7 @@ void Truth::Scene::Update()
 		m_beginDestroy.pop();
 	}
 
-	// Create
+	/// Awake
 	while (!m_awakedEntity.empty())
 	{
 		auto& e = m_awakedEntity.front();
@@ -236,52 +268,50 @@ void Truth::Scene::Update()
 		e->Awake();
 		m_awakedEntity.pop();
 	}
+	/// Start
 	while (!m_startedEntity.empty())
 	{
 		auto& e = m_startedEntity.front();
 		e->Start();
 		m_startedEntity.pop();
 	}
+	/// Update
 	for (auto& e : m_entities)
 	{
 		if (!e->m_isDead)
-		{
 			e->Update();
-		}
 		else
-		{
 			m_beginDestroy.push(e);
-		}
 	}
 }
 
+/// <summary>
+/// FixedUpdate
+/// 고정 프레임 시간동안 업데이트 될 내용
+/// </summary>
 void Truth::Scene::FixedUpdate()
 {
 	for (auto& e : m_entities)
 	{
 		if (!e->m_isDead)
-		{
 			e->FixedUpdate();
-		}
 		else
-		{
 			m_beginDestroy.push(e);
-		}
 	}
 }
 
+/// <summary>
+/// 마지막 업데이트
+/// 주로 카메라에 사용할 것
+/// </summary>
 void Truth::Scene::LateUpdate()
 {
 	for (auto& e : m_entities)
 	{
 		if (!e->m_isDead)
-		{
 			e->LateUpdate();
-		}
 		else
-		{
 			m_beginDestroy.push(e);
-		}
 	}
 }
 
@@ -291,17 +321,17 @@ void Truth::Scene::LateUpdate()
 void Truth::Scene::ApplyTransform()
 {
 	for (auto& e : m_entities)
-	{
 		e->ApplyTransform();
-	}
 }
 
+/// <summary>
+/// 윈도우 사이즈 변경
+/// 화면에 영향을 받는 엔티티 처리를 한다.
+/// </summary>
 void Truth::Scene::ResizeWindow()
 {
 	for (auto& e : m_entities)
-	{
 		e->ResizeWindow();
-	}
 }
 
 /// <summary>
@@ -320,6 +350,7 @@ void Truth::Scene::Start()
 
 /// <summary>
 /// 씬 진입 시
+/// 엔티티에 대해 인덱스를 부여한다.
 /// </summary>
 void Truth::Scene::Enter()
 {
@@ -336,6 +367,7 @@ void Truth::Scene::Enter()
 
 /// <summary>
 /// 씬 나갈 시
+/// 모든 데이터를 삭제한다.
 /// </summary>
 void Truth::Scene::Exit()
 {
@@ -344,6 +376,8 @@ void Truth::Scene::Exit()
 		m_navMesh->Destroy();
 		m_navMesh = nullptr;
 	}
+
+	// TODO : 이 부분 지울것
 	for (auto& e : m_mapEntity)
 	{
 		e->Destroy();
@@ -372,6 +406,11 @@ void Truth::Scene::ClearEntity()
 	m_entities.clear();
 }
 
+/// <summary>
+/// 유니티 맵 데이터 로드
+/// 이 기능은 엔진 개발에 따라 삭제할 예정
+/// </summary>
+/// <param name="_path">유니티 데이터 경로</param>
 void Truth::Scene::LoadUnityData(const std::wstring& _path)
 {
 	if (_path.empty())

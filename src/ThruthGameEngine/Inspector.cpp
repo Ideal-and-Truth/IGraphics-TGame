@@ -96,8 +96,6 @@ void Inspector::ShowContext(bool* p_open)
 		for (auto& e : m_selectedEntity.lock()->m_components)
 			TranslateComponent(e);
 
-
-
 		while (!m_deletedComponent.empty())
 		{
 			auto& t = m_deletedComponent.front();
@@ -153,7 +151,7 @@ void Inspector::AddComponentList(std::shared_ptr<Truth::Entity> SelectedEntity)
 	if (ImGui::CollapsingHeader("Add Component"))
 	{
 		int selectedItem = -1;
-		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), static_cast<int32>(m_componentList.size()), 6))
+		if (ImGui::ListBox("Component", &selectedItem, m_componentList.data(), static_cast<int32>(m_componentList.size()), 12))
 			SelectedEntity->AddComponent(TypeInfo::g_componentFactory->Create(m_componentList[selectedItem]));
 	}
 }

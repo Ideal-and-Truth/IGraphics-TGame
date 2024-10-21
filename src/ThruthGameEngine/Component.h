@@ -26,7 +26,7 @@ namespace Truth
 namespace Truth
 {
 	class Component abstract
-		: public EventHandler
+		: public EventHandler, public std::enable_shared_from_this<Component>
 	{
 		GENERATE_CLASS_TYPE_INFO(Component);
 

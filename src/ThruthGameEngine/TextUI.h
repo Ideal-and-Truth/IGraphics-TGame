@@ -12,6 +12,9 @@ namespace Truth
 	class ButtonBehavior;
 }
 
+/// <summary>
+/// 텍스트 렌더를 위한 UI 컴포넌트
+/// </summary>
 namespace Truth
 {
 	class TextUI :
@@ -76,13 +79,9 @@ namespace Truth
 		METHOD(Update);
 		virtual void Update() override;
 
-
 		bool IsActive();
 
 		void SetSpriteActive(bool _active);
-
-		METHOD(ResizeWindow);
-		void ResizeWindow() override;
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();

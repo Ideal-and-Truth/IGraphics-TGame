@@ -11,6 +11,8 @@
 #include "TypeInfoMacros.h"
 #include <string>
 #include <memory>
+#include "Types.h"
+
 namespace Truth
 {
 	class Managers;
@@ -36,10 +38,10 @@ namespace Truth
 		void load(Archive& ar, const unsigned int file_version);
 
 	protected:
-		Managers* m_managers;
-		UI* m_UI;
-		TextUI* m_TextUI;
-		Entity* m_owner;
+		std::weak_ptr<Managers> m_managers;
+		std::weak_ptr<UI> m_UI;
+		std::weak_ptr<TextUI> m_TextUI;
+		std::weak_ptr<Entity> m_owner;
 
 	public:
 		std::string m_name;
@@ -49,8 +51,8 @@ namespace Truth
 		virtual ~ButtonBehavior();
 
 	public:
-		virtual void Initialize(Managers* _managers, UI* _UI, Entity* _owner);
-		virtual void Initialize(Managers* _managers, TextUI* _UI, Entity* _owner);
+		virtual void Initialize(std::weak_ptr<Managers> _managers, std::weak_ptr<UI> _UI, std::weak_ptr<Entity> _owner);
+		virtual void Initialize(std::weak_ptr<Managers> _managers, std::weak_ptr<TextUI> _UI, std::weak_ptr<Entity> _owner);
 		virtual void OnMouseClick() {};
 		virtual void OnMouseUp() {};
 		virtual void OnMouseOver() {};

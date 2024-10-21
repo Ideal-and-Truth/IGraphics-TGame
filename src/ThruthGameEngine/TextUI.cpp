@@ -8,6 +8,9 @@
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::TextUI)
 
+/// <summary>
+/// 생성자
+/// </summary>
 Truth::TextUI::TextUI()
 	: m_textSprite(nullptr)
 	, m_spriteSize{ 1, 1 }
@@ -22,11 +25,19 @@ Truth::TextUI::TextUI()
 	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
 }
 
+/// <summary>
+/// 소멸자
+/// </summary>
 Truth::TextUI::~TextUI()
 {
 	m_managers.lock()->Graphics()->DeleteTextSprite(m_textSprite);
 }
 
+/// <summary>
+/// 텍스트 변경
+/// 기존 텍스트와 같으면 무시한다.
+/// </summary>
+/// <param name="_text">변경할 텍스트</param>
 void Truth::TextUI::ChangeText(const std::wstring& _text)
 {
 	if (!m_text._Equal(_text))
@@ -36,10 +47,13 @@ void Truth::TextUI::ChangeText(const std::wstring& _text)
 	}
 }
 
+/// <summary>
+/// 초기화
+/// </summary>
 void Truth::TextUI::Initialize()
 {
 	if (m_behavior)
-		m_behavior->Initialize(m_managers.lock().get(), this, m_owner.lock().get());
+		m_behavior->Initialize(m_managers, ::Cast<TextUI, Component>(shared_from_this()), m_owner);
 	auto gp = m_managers.lock()->Graphics();
 	m_textSprite = gp->CreateTextSprite(m_textSize.x, m_textSize.y, m_fontSize);
 	m_textSprite->SetScale({ m_spriteSize.x, m_spriteSize.y });
@@ -73,6 +87,11 @@ void Truth::TextUI::Update()
 		m_behavior->Update();
 }
 
+/// <summary>
+/// 해당 엔티티가 현재 활성화인지
+/// TODO: 엔티티 클래스로 기능 이전 예정
+/// </summary>
+/// <returns></returns>
 bool Truth::TextUI::IsActive()
 {
 	auto owner = m_owner.lock();
@@ -89,36 +108,13 @@ bool Truth::TextUI::IsActive()
 	return isActive && isParentActive;
 }
 
+/// <summary>
+/// 스프라이트 렌터 여부
+/// </summary>
+/// <param name="_active">활성화 여부</param>
 void Truth::TextUI::SetSpriteActive(bool _active)
 {
 	m_textSprite->SetActive(_active);
-}
-
-void Truth::TextUI::ResizeWindow()
-{
-	auto gp = m_managers.lock()->Graphics();
-
-	// RECT winRect = gp->GetWindowRect();
-	Vector2 realLT = gp->GetContentPosMin();
-	Vector2 realRB = gp->GetContentPosMax();
-	Vector2 resolution = gp->GetDisplayResolution();
-
-	float contentW = realRB.x - realLT.x;
-	float contentH = realRB.y - realLT.y;
-
-	float winW = resolution.x;
-	float winH = resolution.y;
-
-	float ratioW = contentW / winW;
-	float ratioH = contentH / winH;
-
-	Vector2 editorSize = {};
-	editorSize.x = m_spriteSize.x * ratioW;
-	editorSize.y = m_spriteSize.y * ratioH;
-
-	Vector2 editorPos = {};
-	editorPos.x = realLT.x + (m_position.x * ratioW);
-	editorPos.y = realLT.y + (m_position.y * ratioH);
 }
 
 #ifdef EDITOR_MODE

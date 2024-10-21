@@ -14,13 +14,13 @@ void PlayerHPTextUI::Update()
 	if (m_player.expired())
 		return;
 
-	m_TextUI->ChangeText(std::to_wstring(m_player.lock()->GetCurrentTP()));
+	m_TextUI.lock()->ChangeText(std::to_wstring(m_player.lock()->GetCurrentTP()));
 }
 
 void PlayerHPTextUI::Start()
 {
-	if (!m_owner->m_parent.expired())
+	if (!m_owner.lock()->m_parent.expired())
 	{
-		m_player = m_owner->m_parent.lock()->GetComponent<Player>();
+		m_player = m_owner.lock()->m_parent.lock()->GetComponent<Player>();
 	}
 }

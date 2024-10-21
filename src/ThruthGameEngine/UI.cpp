@@ -36,7 +36,7 @@ void Truth::UI::Initialize()
 	m_sprite = gp->CreateUISpriteSet();
 
 	if (m_behavior)
-		m_behavior->Initialize(m_managers.lock().get(), this, m_owner.lock().get());
+		m_behavior->Initialize(m_managers, ::Cast<UI, Component>(shared_from_this()), m_owner);
 
 	for (uint32 i = 0; i < 3; i++)
 	{

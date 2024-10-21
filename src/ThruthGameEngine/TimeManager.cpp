@@ -42,9 +42,7 @@ void Truth::TimeManager::Initalize(std::shared_ptr<Managers> _managers)
 void Truth::TimeManager::Update()
 {
 	if (m_waitUntilTime > 0.f)
-	{
 		m_waitingTime += m_absDeltaTime;
-	}
 	if (m_waitUntilTime < m_waitingTime)
 	{
 		m_timeScale = 1.0f;
@@ -59,10 +57,10 @@ void Truth::TimeManager::Update()
 
 	// 디버깅시에는 최소 프레임 제한
 #ifdef EDITOR_MODE
-// 	if (delta > 0.16f)
-// 	{
-// 		delta = 0.16f;
-// 	}
+	if (delta > 0.16f)
+	{
+		delta = 0.16f;
+	}
 #endif // _DEBUG
 
 	m_absDeltaTime = delta;
@@ -74,9 +72,7 @@ void Truth::TimeManager::Update()
 
 #ifdef EDITOR_MODE
 	if (m_managers.lock()->m_isEdit)
-	{
 		m_fixedDeltaTime = 0.0f;
-	}
 #endif // _DEBUG
 
 
@@ -108,5 +104,4 @@ void Truth::TimeManager::WaitForSecondsRealtime(float time)
 		m_timeScale = 0.0f;
 		m_waitingTime = 0.0f;
 	}
-	
 }
