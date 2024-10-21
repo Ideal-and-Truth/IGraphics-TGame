@@ -192,7 +192,7 @@ void Ideal::RaytracingManager::DispatchRays(ComPtr<ID3D12Device5> Device, ComPtr
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
 	CommandList->ResourceBarrier(1, &renderTargetBarrier);
-	CopyDepthBuffer(CommandList);
+	//CopyDepthBuffer(CommandList);
 }
 
 void Ideal::RaytracingManager::Resize(std::shared_ptr<Ideal::ResourceManager> ResourceManager, ComPtr<ID3D12Device5> Device, uint32 Width, uint32 Height, std::shared_ptr<Ideal::D3D12Texture> RaytracingRenderTargetTexture)
@@ -876,6 +876,11 @@ void Ideal::RaytracingManager::CreateGBufferTexture(std::shared_ptr<Ideal::Resou
 std::shared_ptr<Ideal::D3D12Texture> Ideal::RaytracingManager::GetDepthBuffer()
 {
 	return m_CopyDepthBuffer;
+}
+
+std::shared_ptr<Ideal::D3D12Texture> Ideal::RaytracingManager::GetDepthBuffer2()
+{
+	return m_gBufferDepth;
 }
 
 void Ideal::RaytracingManager::CopyDepthBuffer(ComPtr<ID3D12GraphicsCommandList4> CommandList)

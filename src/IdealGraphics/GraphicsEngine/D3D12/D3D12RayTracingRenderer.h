@@ -194,6 +194,7 @@ namespace Ideal
 		void CreateDSVHeap();
 		void CreateDSV(uint32 Width, uint32 Height);
 		void CreateFence();
+		void CreateMyDepthBuffer();
 
 	private:
 		void CreateDefaultCamera();
@@ -330,6 +331,11 @@ namespace Ideal
 		// AS Manager
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::shared_ptr<Ideal::D3D12Texture> m_raytracingRenderTarget;
+
+		// 아래는 레이트레이싱에서 뽑은 Depth를 DisplayResolution에 맞게 변경한 이미지이다.
+		std::shared_ptr<Ideal::D3D12Texture> m_raytracingDepth[MAX_PENDING_FRAME_COUNT];
+		// 아래는 기존 GBuffer로 뽑은 Depth버퍼를 그대로 쓸 수 없으니 DSV용으로 만든 버퍼이다.
+		std::shared_ptr<Ideal::D3D12Texture> m_myResolutionDepthBuffer[MAX_PENDING_FRAME_COUNT];	
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
 

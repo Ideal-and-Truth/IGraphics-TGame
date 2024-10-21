@@ -290,6 +290,7 @@ namespace Ideal
 	public:
 		void CreateGBufferTexture(std::shared_ptr<Ideal::ResourceManager> ResourceManager, uint32 Width, uint32 Height);
 		std::shared_ptr<Ideal::D3D12Texture> GetDepthBuffer();
+		std::shared_ptr<Ideal::D3D12Texture> GetDepthBuffer2();
 
 		void CopyDepthBuffer( ComPtr<ID3D12GraphicsCommandList4> CommandList);
 

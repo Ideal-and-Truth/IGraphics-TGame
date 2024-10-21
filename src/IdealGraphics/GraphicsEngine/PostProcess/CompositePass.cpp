@@ -25,11 +25,14 @@ void Ideal::CompositePass::InitCompositePass(std::shared_ptr<Ideal::D3D12Shader>
 	CreateCompositePipelineState(Device);
 }
 
-void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture, std::shared_ptr<Ideal::D3D12Texture> RenderTarget, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, uint32 CurrentContextIndex)
+void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> OriginTexture, std::shared_ptr<Ideal::D3D12Texture> BlurTexture, std::shared_ptr<Ideal::D3D12Texture> DepthBuffer, std::shared_ptr<Ideal::D3D12Texture> RenderTarget, std::shared_ptr<Ideal::D3D12Texture> NewDepth, std::shared_ptr<Ideal::D3D12Viewport> Viewport, ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, uint32 CurrentContextIndex)
 {
 	CommandList->RSSetViewports(1, &Viewport->GetViewport());
 	CommandList->RSSetScissorRects(1, &Viewport->GetScissorRect());
-	CommandList->OMSetRenderTargets(1, &RenderTarget->GetRTV().GetCpuHandle(), FALSE, nullptr);
+	
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle[2] = { RenderTarget->GetRTV().GetCpuHandle(), NewDepth->GetRTV().GetCpuHandle() };
+	CommandList->OMSetRenderTargets(2, rtvHandle, FALSE, nullptr);
+	//CommandList->OMSetRenderTargets(1, &RenderTarget->GetRTV().GetCpuHandle(), FALSE, nullptr);
 
 
 	CommandList->SetGraphicsRootSignature(m_compositeRootSignature.Get());
@@ -41,7 +44,6 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	CommandList->IASetIndexBuffer(&indexBufferView);
-
 
 	// Bind Shader
 	{
@@ -55,6 +57,12 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 		auto handle = DescriptorHeap->Allocate();
 		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), BlurTexture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur, handle.GetGpuHandle());
+	}
+	{
+		// Parameter : SRV_Depth
+		auto handle = DescriptorHeap->Allocate();
+		Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), DepthBuffer->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::PostProcessCompositeRootSignature::Slot::SRV_Depth, handle.GetGpuHandle());
 	}
 	{
 		//https://github.com/aaronscherzinger/directx11_bloom/blob/master/src/main.cpp
@@ -75,13 +83,15 @@ void Ideal::CompositePass::PostProcess(std::shared_ptr<Ideal::D3D12Texture> Orig
 void Ideal::CompositePass::CreateCompositeRootSignature(ComPtr<ID3D12Device> Device)
 {
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::PostProcessCompositeRootSignature::Slot::Count];
-	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
-	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1
+	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 : Origin
+	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1 : blur
+	ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Depth].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2); // t2 : depth
 	ranges[Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0
 
 	CD3DX12_ROOT_PARAMETER1 rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::Count];
 	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Origin]);
 	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Blur]);
+	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Depth].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::SRV_Depth]);
 	rootParameters[Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom].InitAsDescriptorTable(1, &ranges[Ideal::PostProcessCompositeRootSignature::Slot::CBV_Bloom]);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
@@ -134,8 +144,11 @@ void Ideal::CompositePass::CreateCompositePipelineState(ComPtr<ID3D12Device> Dev
 	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	{
+		psoDesc.NumRenderTargets = 2;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;	// Composite
+		psoDesc.RTVFormats[1] = DXGI_FORMAT_R32_FLOAT;	// Depth
+	}
 	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	psoDesc.SampleDesc.Count = 1;
 

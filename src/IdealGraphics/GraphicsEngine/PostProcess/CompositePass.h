@@ -39,7 +39,9 @@ namespace Ideal
 		void PostProcess(
 			std::shared_ptr<Ideal::D3D12Texture> OriginTexture,
 			std::shared_ptr<Ideal::D3D12Texture> BlurTexture,
+			std::shared_ptr<Ideal::D3D12Texture> DepthBuffer,
 			std::shared_ptr<Ideal::D3D12Texture> RenderTarget,
+			std::shared_ptr<Ideal::D3D12Texture> NewDepth,
 			std::shared_ptr<Ideal::D3D12Viewport> Viewport,
 			ComPtr<ID3D12Device> Device,
 			ComPtr<ID3D12GraphicsCommandList> CommandList,

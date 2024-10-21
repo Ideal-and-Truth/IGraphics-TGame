@@ -207,6 +207,7 @@ namespace Ideal
 			{
 				SRV_Origin = 0,
 				SRV_Blur,
+				SRV_Depth,
 				CBV_Bloom,
 				Count
 			};

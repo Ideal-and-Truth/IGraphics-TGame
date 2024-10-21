@@ -20,8 +20,15 @@ struct PSInput
     float2 uv : TEXCOORD;
 };
 
-Texture2D Blur0 : register(t0);
-Texture2D Blur1 : register(t1);
+struct PSOutput
+{
+    float4 Composite : SV_Target0;
+    float Depth : SV_Target1;
+};
+
+Texture2D OriginTex : register(t0);
+Texture2D BlurTex : register(t1);
+Texture2D<float> DepthTex : register(t2);
 
 cbuffer CompositeParams : register(b0)
 {
@@ -79,10 +86,15 @@ PSInput VS(VSInput Input)
     return result;
 }
 
-float4 PS(PSInput input) : SV_TARGET
+PSOutput PS(PSInput input)
 {
+    PSOutput output;
+    //output.Depth = DepthTex.Sample(g_sampler, input.uv).r;
+    output.Depth = DepthTex.Sample(g_sampler, input.uv);
+
     float4 Blur;
-    Blur = mad(coefficient, Blur1.Sample(g_sampler, input.uv), Blur0.Sample(g_sampler, input.uv));
+    Blur = mad(coefficient, BlurTex.Sample(g_sampler, input.uv), OriginTex.Sample(g_sampler, input.uv));
+
 #ifdef ACES_Filmic
     float3 color = Blur.rgb;
     float a = 2.51f;
@@ -93,21 +105,24 @@ float4 PS(PSInput input) : SV_TARGET
     
     color = saturate((color * (a * color + b)) / (color * (c * color + d) + e));
     color = pow(color, 1 / 2.2f);
-    return float4(color.xyz, 1.f);
+    output.Composite = float4(color, 1.f);
+    //return float4(color.xyz, 1.f);
 #endif
+
 #ifdef ACES_Filmic2
-    float3 color = Blur.rgb;
-    color = ACESFitted(color);
-    return float4(color, 1);
+    //float3 color = Blur.rgb;
+    //color = ACESFitted(color);
+    //output.Composite = float4(color, 1.f);
 #endif
+
 #ifdef Reinhard
-    float4 color = Blur;
+    //float4 color = Blur;
     //float k = 1.f;
     //color.xyz = color.xyz / (color.xyz + k);
     //color = pow(color, 1 / 2.2f);
-    return color;
+    //output.Composite = color;
 #endif
-    
-    return Blur;
+    //output.Composite = float4(0, output.Depth, 0, 1);
+    return output;
 }
 #endif
