@@ -78,22 +78,26 @@ void Inspector::ShowContext(bool* p_open)
 	if (!m_selectedEntity.expired())
 	{
 		// Set Entity Name
+
+		auto entity = m_selectedEntity.lock();
+		std::string sEntityName = entity->m_name;
+		char* cEntityName = (char*)sEntityName.c_str();
+
+		if (ImGui::Checkbox("##1", &entity->m_isActive))
 		{
-			std::string sEntityName = m_selectedEntity.lock()->m_name;
-			char* cEntityName = (char*)sEntityName.c_str();
-			bool isShown = true;
-			ImGui::Checkbox("##1", &isShown);
-			ImGui::SameLine();
-			ImGui::InputText("##2", cEntityName, 128);
-			if (m_manager.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
-			{
-				sEntityName = std::string(cEntityName, cEntityName + strlen(cEntityName));
-				m_selectedEntity.lock()->m_name = sEntityName;
-			}
+			entity->SetActive(entity->m_isActive);
+		}
+		ImGui::SameLine();
+		ImGui::InputText("##2", cEntityName, 128);
+		if (m_manager.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+		{
+			sEntityName = std::string(cEntityName, cEntityName + strlen(cEntityName));
+			entity->m_name = sEntityName;
 		}
 
+
 		// Show Components
-		for (auto& e : m_selectedEntity.lock()->m_components)
+		for (auto& e : entity->m_components)
 			TranslateComponent(e);
 
 		while (!m_deletedComponent.empty())

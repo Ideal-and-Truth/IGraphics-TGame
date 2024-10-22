@@ -72,6 +72,7 @@ namespace Truth
 		virtual void Initialize() {};
 		virtual void ApplyTransform() {};
 		virtual void ResizeWindow() {};
+		virtual void SetActive() {};
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue() {};
 #endif // EDITOR_MODE
