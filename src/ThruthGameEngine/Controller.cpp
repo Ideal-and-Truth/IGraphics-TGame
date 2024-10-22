@@ -56,7 +56,7 @@ void Truth::Controller::Awake()
 	decs.position = MathUtil::ConvertEx(m_owner.lock()->GetLocalPosition() + Vector3{ 0.0f, m_height, 0.0f });
 
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
-	
+	// m_controller->setSleepThreshold(0);
 	// create rigidbody to access physx body
 	m_rigidbody = std::make_shared<RigidBody>();
 
@@ -66,18 +66,19 @@ void Truth::Controller::Awake()
 	m_rigidbody->m_controller = m_controller;
 
 
+
 	m_rigidbody->m_body = m_controller->getActor();
 	m_controller->getActor()->userData = m_rigidbody.get();
 
 	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
 	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+	m_rigidbody->m_body->setSleepThreshold(0);
 	// create collider to access physx shape
 	m_collider = std::make_shared<CapsuleCollider>();
 	m_collider->m_transform = m_owner.lock()->GetComponent<Transform>();
 	m_collider->m_owner = m_owner.lock();
 
 	m_collider->m_body = m_controller->getActor();
-
 	uint32 nbs = m_controller->getActor()->getNbShapes();
 	physx::PxShape** tempShapes = new physx::PxShape * [nbs];
 	m_controller->getActor()->getShapes(tempShapes, nbs);
@@ -94,6 +95,14 @@ void Truth::Controller::Awake()
 void Truth::Controller::Start()
 {
 	m_managers.lock()->Physics()->AddScene(m_controller->getActor());
+}
+
+void Truth::Controller::FixedUpdate()
+{
+	// m_rigidbody->m_body->wakeUp();
+// 	Vector3 z = Vector3::Zero;
+// 	z.y += 0.1f;
+// 	Move(z);
 }
 
 /// <summary>
@@ -114,9 +123,7 @@ void Truth::Controller::Move(Vector3& _disp)
 
 	m_impulse -= m_impulse * 0.1f;
 	if (m_impulse.Length() <= 1.0f)
-	{
 		m_impulse = Vector3::Zero;
-	}
 }
 
 void Truth::Controller::AddImpulse(Vector3& _disp)

@@ -74,6 +74,9 @@ namespace Truth
 		METHOD(Start);
 		virtual void Start() override;
 
+		METHOD(FixedUpdate);
+		virtual void FixedUpdate() override;
+
 		void Move(Vector3& _disp);
 		void AddImpulse(Vector3& _disp);
 		bool SetPosition(Vector3& _disp);

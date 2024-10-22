@@ -89,8 +89,8 @@ namespace Truth
 		METHOD(SetSize);
 		void SetSize(Vector3 _size);
 
-		void OnDisable();
-		void OnEnable();
+		METHOD(SetActive);
+		void SetActive();
 
 #ifdef EDITOR_MODE
 		METHOD(ApplyTransform);

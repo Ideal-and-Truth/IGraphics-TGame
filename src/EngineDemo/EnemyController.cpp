@@ -44,6 +44,7 @@ void EnemyController::FixedUpdate()
 	if (!m_canMove)
 	{
 		m_moveVec = Vector3::Zero;
+		m_moveVec.y = -100.0f;
 	}
 	m_controller.lock()->Move(m_moveVec);
 	m_moveVec = Vector3::Zero;
@@ -144,6 +145,8 @@ void EnemyController::Update()
 	if (!isTargetIn)
 	{
 		ComeBackHome();
+		m_moveVec.y = -100.0f;
+
 		return;
 	}
 
@@ -154,6 +157,9 @@ void EnemyController::Update()
 	{
 		FollowTarget();
 	}
+
+
+	m_moveVec.y = -100.0f;
 }
 
 void EnemyController::FollowTarget()
@@ -268,8 +274,9 @@ void EnemyController::ComeBackHome()
 		Quaternion lookRot;
 		Quaternion rot = m_owner.lock()->m_transform->m_rotation;
 
-
-		float distance = (pos - m_homePos).Length();
+		Vector2 disPos = { pos.x, pos.z };
+		Vector2 disHomePos = { m_homePos.x, m_homePos.z };
+		float distance = (disPos - disHomePos).Length();
 		// 돌아가기
 		if (distance > 1.0f)
 		{

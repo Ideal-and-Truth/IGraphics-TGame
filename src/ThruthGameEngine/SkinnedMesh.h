@@ -69,9 +69,6 @@ namespace Truth
 		METHOD(Initialize);
 		void Initialize();
 
-		METHOD(FixedUpdate);
-		void FixedUpdate();
-
 		METHOD(Update);
 		void Update();
 
@@ -80,6 +77,9 @@ namespace Truth
 
 		METHOD(Destroy);
 		void Destroy();
+
+		METHOD(SetActive);
+		void SetActive();
 
 		void DeleteMesh();
 

@@ -99,7 +99,7 @@ namespace Truth
 		std::shared_ptr<UISpriteSet> CreateUISpriteSet();
 		void DeleteUISpriteSet(std::shared_ptr<UISpriteSet> _UISpriteSet);
 
-		std::shared_ptr<Ideal::IText> CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _text);
+		std::shared_ptr<Ideal::IText> CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _font = L"Tahoma");
 		void DeleteTextSprite(std::shared_ptr<Ideal::IText> _textSprite);
 		void ToggleFullScreen();
 

@@ -149,7 +149,6 @@ void Truth::Entity::Awake()
 			met->Invoke<void>(c.get());
 		}
 	}
-	// DEBUG_PRINT(Truth::Entity::StaticTypeInfo().Dump(this).c_str());
 }
 
 void Truth::Entity::Destroy()
@@ -217,6 +216,17 @@ void Truth::Entity::LateUpdate()
 void Truth::Entity::ResizeWindow()
 {
 	IterateComponentMethod(m_resizeWindow);
+}
+
+void Truth::Entity::SetActive(bool _active)
+{
+	m_isActive = _active;
+	IterateComponentMethod(m_setActive);
+
+	for (auto& c : m_children)
+	{
+		c->SetActive(_active);
+	}
 }
 
 void Truth::Entity::OnCollisionEnter(Collider* _other)
@@ -339,63 +349,40 @@ void Truth::Entity::ApplyComponent(std::shared_ptr<Component> _c)
 		auto p = std::make_pair(_c, m);
 
 		if (metName == "OnCollisionEnter")
-		{
 			m_onCollisionEnter.push_back(p);
-		}
 		if (metName == "OnCollisionStay")
-		{
 			m_onCollisionStay.push_back(p);
-		}
 		if (metName == "OnCollisionExit")
-		{
 			m_onCollisionExit.push_back(p);
-		}
 
 		if (metName == "OnTriggerEnter")
-		{
 			m_onTriggerEnter.push_back(p);
-		}
 		if (metName == "OnTriggerStay")
-		{
 			m_onTriggerStay.push_back(p);
-		}
 		if (metName == "OnTriggerExit")
-		{
 			m_onTriggerExit.push_back(p);
-		}
 
 		if (metName == "Update")
-		{
 			m_update.push_back(p);
-		}
 		if (metName == "FixedUpdate")
-		{
 			m_fixedUpdate.push_back(p);
-		}
 		if (metName == "LateUpdate")
-		{
 			m_latedUpdate.push_back(p);
-		}
 
 		if (metName == "Destroy")
-		{
 			m_destroy.push_back(p);
-		}
 
 		if (metName == "ApplyTransform")
-		{
 			m_applyTransform.push_back(p);
-		}
 
 		if (metName == "ResizeWindow")
-		{
 			m_resizeWindow.push_back(p);
-		}
+
+		if (metName == "SetActive")
+			m_setActive.push_back(p);
 
 		if (metName == "Initialize")
-		{
 			m->Invoke<void>(_c.get());
-		}
 	}
 }
 
@@ -411,16 +398,13 @@ void Truth::Entity::IterateComponentMethod(ComponentMethod& _cm)
 			p = temp;
 
 			if (_cm.empty())
-			{
 				return;
-			}
+		}
 
-		}
-		if (m_isDead)
-		{
-			break;
-		}
 		p->second->Invoke<void>(p->first.lock().get());
+
+		if (!m_isActive || m_isDead)
+			return;
 	}
 }
 
@@ -441,5 +425,8 @@ void Truth::Entity::IterateComponentMethod(ComponentMethod& _cm, Collider* _para
 			}
 		}
 		p->second->Invoke<void>(p->first.lock().get(), _param);
+
+		if (!m_isActive || !m_isDead)
+			return;
 	}
 }

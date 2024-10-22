@@ -68,8 +68,12 @@ namespace Truth
 		std::string m_linkBoneName;
 
 		bool m_isDead = false;
+
+		PROPERTY(isActive);
 		bool m_isActive = true;
 		
+		// bool m_parnetAcrive = true;
+
 		bool m_isStatic = false;
 
 		bool m_isAdded = true;
@@ -93,6 +97,7 @@ namespace Truth
 		ComponentMethod m_applyTransform;
 
 		ComponentMethod m_resizeWindow;
+		ComponentMethod m_setActive;
 
 		std::shared_ptr<Transform> m_transform;
 
@@ -146,6 +151,8 @@ namespace Truth
 		void LateUpdate();
 
 		void ResizeWindow();
+
+		void SetActive(bool _active);
 
 		void OnCollisionEnter(Collider* _other);
 		void OnCollisionStay(Collider* _other);
@@ -282,6 +289,7 @@ namespace Truth
 				return component;
 			}
 		}
+
 		return std::weak_ptr<C>();
 	}
 

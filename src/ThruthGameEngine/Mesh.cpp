@@ -159,6 +159,14 @@ void Truth::Mesh::Update()
 		ApplyTransform();
 }
 
+void Truth::Mesh::SetActive()
+{
+	if (m_mesh)
+	{
+		m_mesh->SetDrawObject(false);
+	}
+}
+
 void Truth::Mesh::Destroy()
 {
 	DeleteMesh();

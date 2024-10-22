@@ -203,18 +203,16 @@ public:
 		if constexpr (std::is_base_of_v<Truth::Component, T> && !std::is_abstract_v<T>)
 		{
 			if (g_componentFactory == nullptr)
-			{
 				g_componentFactory = std::make_unique<Truth::ComponentFactory>();
-			}
+
 			g_componentFactory->RegisterType(m_name, []() { return std::make_shared<T>(); });
 		}
 
 		if constexpr (std::is_base_of_v<Truth::ButtonBehavior, T> && !std::is_abstract_v<T>)
 		{
 			if (g_buttonFactory == nullptr)
-			{
 				g_buttonFactory = std::make_unique<Truth::ButtonFactory>();
-			}
+
 			g_buttonFactory->RegisterType(m_name, []() { return std::make_shared<T>(); });
 		}
 	}

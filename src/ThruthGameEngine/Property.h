@@ -136,26 +136,18 @@ public:
 	{
 		// 배열인 경우 인덱스 값을 받아와서 처리
 		if constexpr (std::is_array_v<T>)
-		{
 			return (static_cast<TClass*>(_object)->*m_ptr)[_index];
-		}
 		else
-		{
 			return static_cast<TClass*>(_object)->*m_ptr;
-		}
 	}
 
 	// Setter
 	virtual void Set(void* _object, const ElementType& _value, size_t _index = 0) const override
 	{
 		if constexpr (std::is_array_v<T>)
-		{
 			Set((static_cast<TClass*>(_object)->*m_ptr)[_index], _value);
-		}
 		else
-		{
 			Set(static_cast<TClass*>(_object)->*m_ptr, _value);
-		}
 	}
 
 	// 생성자 
@@ -173,9 +165,7 @@ private:
 	void Set(std::map<KeyType, ValueType, Pred, Alloc>& _dest, const std::map<KeyType, ValueType, Pred, Alloc>& _src) const
 	{
 		if constexpr (std::is_copy_assignable_v<KeyType> && std::is_copy_assignable_v<ValueType>)
-		{
 			_dest = _src;
-		}
 	}
 };
 
@@ -200,25 +190,17 @@ public:
 	virtual ElementType& Get([[maybe_unused]] void* object, size_t index = 0) const override
 	{
 		if constexpr (std::is_array_v<T>)
-		{
 			return (*m_ptr)[index];
-		}
 		else
-		{
 			return *m_ptr;
-		}
 	}
 
 	virtual void Set([[maybe_unused]] void* object, const ElementType& value, size_t index = 0) const override
 	{
 		if constexpr (std::is_array_v<T>)
-		{
 			(*m_ptr)[index] = value;
-		}
 		else
-		{
 			*m_ptr = value;
-		}
 	}
 
 	explicit StaticPropertyHandler(T* ptr) :
@@ -391,9 +373,7 @@ public:
 			concreteHandler.Set(object, value);
 		}
 		else
-		{
 			assert(false && "Property::Set<TClass, T> - Invalied casting");
-		}
 	}
 
 	// 타입 정보 가져오기

@@ -164,6 +164,7 @@
     <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
+    <ClInclude Include="FrameUI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HitStop.h" />
     <ClInclude Include="MapMoveTrigger.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
+    <ClCompile Include="FrameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />
     <ClCompile Include="MapMoveTrigger.cpp" />
     <ClCompile Include="MeleeWeapon.cpp" />

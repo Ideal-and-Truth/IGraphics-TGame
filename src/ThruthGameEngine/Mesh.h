@@ -68,6 +68,9 @@ namespace Truth
 		METHOD(Update);
 		void Update();
 
+		METHOD(SetActive);
+		void SetActive();
+
 		METHOD(Destroy);
 		void Destroy();
 

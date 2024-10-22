@@ -184,6 +184,9 @@
     <Filter Include="Utils\DataSaver">
       <UniqueIdentifier>{3f0e4e25-d4c3-4c98-8aab-569ad3a61a5c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\UI\Text">
+      <UniqueIdentifier>{2f2a9c1b-7bb9-4639-8a75-1b3d60748e47}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -367,9 +370,11 @@
     <ClCompile Include="UISpriteSet.cpp">
       <Filter>Imgae\UISprite</Filter>
     </ClCompile>
-    <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="classDataSaver.cpp">
       <Filter>Utils\DataSaver</Filter>
+    </ClCompile>
+    <ClCompile Include="TextUI.cpp">
+      <Filter>Component\UI\Text</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -572,9 +577,11 @@
     <ClInclude Include="UISpriteSet.h">
       <Filter>Imgae\UISprite</Filter>
     </ClInclude>
-    <ClInclude Include="TextUI.h" />
     <ClInclude Include="ClassDataSaver.h">
       <Filter>Utils\DataSaver</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUI.h">
+      <Filter>Component\UI\Text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
