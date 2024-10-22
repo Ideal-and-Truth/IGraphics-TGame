@@ -55,7 +55,10 @@ void Truth::TextUI::Initialize()
 	if (m_behavior)
 		m_behavior->Initialize(m_managers, ::Cast<TextUI, Component>(shared_from_this()), m_owner);
 	auto gp = m_managers.lock()->Graphics();
-	m_textSprite = gp->CreateTextSprite(m_textSize.x, m_textSize.y, m_fontSize);
+	m_textSprite = gp->CreateTextSprite(
+		static_cast<uint32>(m_textSize.x), 
+		static_cast<uint32>(m_textSize.y),
+		m_fontSize);
 	m_textSprite->SetScale({ m_spriteSize.x, m_spriteSize.y });
 	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
 	m_textSprite->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });
@@ -122,7 +125,10 @@ void Truth::TextUI::EditorSetValue()
 {
 	auto gp = m_managers.lock()->Graphics();
 	gp->DeleteTextSprite(m_textSprite);
-	m_textSprite = gp->CreateTextSprite(m_textSize.x, m_textSize.y, m_fontSize);
+	m_textSprite = gp->CreateTextSprite(
+		static_cast<uint32>(m_textSize.x), 
+		static_cast<uint32>(m_textSize.y),
+		m_fontSize);
 	m_textSprite->SetScale({ m_spriteSize.x, m_spriteSize.y });
 	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
 	m_textSprite->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });

@@ -47,6 +47,7 @@ PlayerAnimator::PlayerAnimator()
 	, m_dodgeAttack(false)
 	, m_forwardInput(0.f)
 	, m_sideInput(0.f)
+	, m_chargedTime()
 {
 	m_name = "PlayerAnimator";
 }
@@ -1112,8 +1113,8 @@ void PlayerAnimator::PlayEffects()
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
-			effectRot.z += (3.141592 / 180.f) * 45.f;
-			effectRot.x += (3.141592 / 180.f) * 180.f;
+			effectRot.z += (3.141592f / 180.f) * 45.f;
+			effectRot.x += (3.141592f / 180.f) * 180.f;
 
 			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
@@ -1147,8 +1148,8 @@ void PlayerAnimator::PlayEffects()
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
-			effectRot.z += (3.141592 / 180.f) * -45.f;
-			effectRot.x += (3.141592 / 180.f) * 180.f;
+			effectRot.z += (3.141592f / 180.f) * -45.f;
+			effectRot.x += (3.141592f / 180.f) * 180.f;
 
 			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
@@ -1165,8 +1166,8 @@ void PlayerAnimator::PlayEffects()
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
-			effectRot.x += (3.141592 / 180.f) * 180.f;
-			effectRot.z += (3.141592 / 180.f) * 45.f;
+			effectRot.x += (3.141592f / 180.f) * 180.f;
+			effectRot.z += (3.141592f / 180.f) * 45.f;
 
 			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
@@ -1227,9 +1228,9 @@ void PlayerAnimator::PlayEffects()
 		m_chargedAttack1 = false;
 
 		{
-			effectRot.z += (3.141592 / 180.f) * 45.f;
-			effectRot.y += (3.141592 / 180.f) * 170.f;
-			effectRot.x += (3.141592 / 180.f) * 160.f;
+			effectRot.z += (3.141592f / 180.f) * 45.f;
+			effectRot.y += (3.141592f / 180.f) * 170.f;
+			effectRot.x += (3.141592f / 180.f) * 160.f;
 
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
@@ -1264,9 +1265,9 @@ void PlayerAnimator::PlayEffects()
 		m_chargedAttack2 = false;
 
 		{
-			effectRot.z += (3.141592 / 180.f) * 45.f;
-			effectRot.y += (3.141592 / 180.f) * 170.f;
-			effectRot.x += (3.141592 / 180.f) * 70.f;
+			effectRot.z += (3.141592f / 180.f) * 45.f;
+			effectRot.y += (3.141592f / 180.f) * 170.f;
+			effectRot.x += (3.141592f / 180.f) * 70.f;
 
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
@@ -1301,9 +1302,9 @@ void PlayerAnimator::PlayEffects()
 		m_chargedAttack3 = false;
 
 		{
-			effectRot.z += (3.141592 / 180.f) * 90.f;
-			effectRot.y += (3.141592 / 180.f) * 20.f;
-			effectRot.x += (3.141592 / 180.f) * 20.f;
+			effectRot.z += (3.141592f / 180.f) * 90.f;
+			effectRot.y += (3.141592f / 180.f) * 20.f;
+			effectRot.x += (3.141592f / 180.f) * 20.f;
 
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
@@ -1338,9 +1339,9 @@ void PlayerAnimator::PlayEffects()
 		m_chargedAttack4 = false;
 
 		{
-			effectRot.z += (3.141592 / 180.f) * -20.f;
-			effectRot.y += (3.141592 / 180.f) * -160.f;
-			//effectRot.x += (3.141592 / 180.f) * 70.f;
+			effectRot.z += (3.141592f / 180.f) * -20.f;
+			effectRot.y += (3.141592f / 180.f) * -160.f;
+			//effectRot.x += (3.141592f / 180.f) * 70.f;
 
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
@@ -1375,9 +1376,9 @@ void PlayerAnimator::PlayEffects()
 		m_chargedAttack5 = false;
 
 		{
-			effectRot.z += (3.141592 / 180.f) * 90.f;
-			effectRot.y += (3.141592 / 180.f) * 20.f;
-			effectRot.x += (3.141592 / 180.f) * 90.f;
+			effectRot.z += (3.141592f / 180.f) * 90.f;
+			effectRot.y += (3.141592f / 180.f) * 20.f;
+			effectRot.x += (3.141592f / 180.f) * 90.f;
 
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
@@ -1412,7 +1413,7 @@ void PlayerAnimator::PlayEffects()
 		m_dodgeAttack = false;
 
 		{
-			effectRot.y += (3.141592 / 180.f) * -90.f;
+			effectRot.y += (3.141592f / 180.f) * -90.f;
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\DodgeAttack.yaml");

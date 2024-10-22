@@ -61,6 +61,8 @@ BossSkill::BossSkill()
 	, m_flameCount(0)
 	, m_cloneCount(0)
 	, m_currentPhase(0)
+	, m_deleteSphere(false)
+	, m_playSpear(false)
 {
 	m_name = "BossSkill";
 }
@@ -870,7 +872,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
 			p->SetTransformMatrix(
-				Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+				Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
 				Matrix::CreateRotationX(3.14f * 0.5f) *
 				Matrix::CreateTranslation(pos)
 			);
@@ -882,7 +884,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
 			p->SetTransformMatrix(
-				Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+				Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
 				Matrix::CreateRotationX(3.14f * 0.5f) *
 				Matrix::CreateTranslation(pos)
 			);
@@ -910,8 +912,8 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(2.5, 2.5, 1) * 2.f)
-				* Matrix::CreateRotationX(3.1415 * 0.5)
+				* Matrix::CreateScale(Vector3(2.5f, 2.5f, 1.f) * 2.f)
+				* Matrix::CreateRotationX(3.1415f * 0.5f)
 				* Matrix::CreateTranslation(pos)
 			);
 			p->SetActive(true);
@@ -924,8 +926,8 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact1.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(3, 3, 1) * 2.f)
-				* Matrix::CreateRotationX(3.1415 * 0.5)
+				* Matrix::CreateScale(Vector3(3.f, 3.f, 1.f) * 2.f)
+				* Matrix::CreateRotationX(3.1415f * 0.5f)
 				* Matrix::CreateTranslation(pos)
 			);
 			p->SetActive(true);
@@ -938,8 +940,8 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact2.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(1, 1, 2) * 2.f)
-				* Matrix::CreateRotationX(3.1415 * 0.5)
+				* Matrix::CreateScale(Vector3(1.f, 1.f, 2.f) * 2.f)
+				* Matrix::CreateRotationX(3.1415f * 0.5)
 				* Matrix::CreateTranslation(pos)
 			);
 			p->SetActive(true);

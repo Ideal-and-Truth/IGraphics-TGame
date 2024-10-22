@@ -211,7 +211,7 @@ void TestEffectGenerator::Update()
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
 		p->SetDeltaTime(GetDeltaTime());
 		p->SetTransformMatrix(
-			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
 		);
 
@@ -224,7 +224,7 @@ void TestEffectGenerator::Update()
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
 		p->SetDeltaTime(GetDeltaTime());
 		p->SetTransformMatrix(
-			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4, 0.4, 1)) *
+			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
 		);
 
