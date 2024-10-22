@@ -22,6 +22,7 @@ Truth::UI::UI()
 	, m_scale(1.0f, 1.0f)
 	, m_minSampling(0.f, 0.f)
 	, m_maxSampling(1.0f, 1.0f)
+	, m_isButton(false)
 {
 	m_texturePath[0] = "../Resources/Textures/UI/title_button_basic.png";
 	m_texturePath[1] = "../Resources/Textures/UI/title_button_blue.png";
@@ -33,7 +34,7 @@ Truth::UI::~UI()
 	m_managers.lock()->Graphics()->DeleteUISpriteSet(m_sprite);
 }
 
-void Truth::UI::SetScale(const Vector2& _scale)
+void Truth::UI::SetScale(const Vector2& _scale, bool _centerPos)
 {
 	m_scale = _scale;
 	for (uint32 i = 0; i < 3; i++)
@@ -41,7 +42,33 @@ void Truth::UI::SetScale(const Vector2& _scale)
 		auto tex = m_sprite->GetTex(i);
 		float w = static_cast<float>(tex->w);
 		float h = static_cast<float>(tex->h);
+
+		Vector2 gpScale = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
+		Vector2 gpPosition = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
 		(*m_sprite)[i]->SetScale({ (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y });
+		if (_centerPos)
+			(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * m_scale.x * 0.5f), m_position.y - (m_size.y * m_scale.y * 0.5f) });
+	}
+}
+
+void Truth::UI::SetSampling(const Vector2& _min, const Vector2& _max)
+{
+	m_minSampling = _min;
+	m_maxSampling = _max;
+
+	for (uint32 i = 0; i < 3; i++)
+	{
+		auto tex = m_sprite->GetTex(i);
+		float w = static_cast<float>(tex->w);
+		float h = static_cast<float>(tex->h);
+
+		(*m_sprite)[i]->SetSampleRect(
+			{
+				static_cast<uint32>(w * m_minSampling.x),
+				static_cast<uint32>(h * m_minSampling.y),
+				static_cast<uint32>(w * m_maxSampling.x),
+				static_cast<uint32>(h * m_maxSampling.y)
+			});
 	}
 }
 
@@ -53,6 +80,7 @@ void Truth::UI::SetOnlyUI()
 void Truth::UI::SetButton()
 {
 	m_isButton = true;
+
 }
 
 void Truth::UI::Initialize()
@@ -74,7 +102,7 @@ void Truth::UI::Initialize()
 			float w = static_cast<float>(tex->w);
 			float h = static_cast<float>(tex->h);
 
-			Vector2 gpScale = { m_size.x / w, m_size.y / h };
+			Vector2 gpScale = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
 			Vector2 gpPosition = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
 
 			(*m_sprite)[i]->SetTexture(tex->m_texture);

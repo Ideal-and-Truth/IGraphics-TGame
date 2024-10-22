@@ -80,9 +80,11 @@ namespace Truth
 		UI();
 		virtual ~UI();
 
-		void SetScale(const Vector2& _scale);
+		void SetScale(const Vector2& _scale, bool _centerPos = false);
+		void SetSampling(const Vector2& _min, const Vector2& _max);
 		void SetOnlyUI();
 		void SetButton();
+
 	private:
 		METHOD(Initialize);
 		virtual void Initialize() override;

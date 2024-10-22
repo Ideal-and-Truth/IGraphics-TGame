@@ -13,7 +13,8 @@ void BossHPUI::Update()
 
 		float rate = currentTP / maxTP;
 
-		m_UI.lock()->SetScale({ rate, 1.0f });
+		m_UI.lock()->SetScale({ rate, 1.0f }, true);
+		m_UI.lock()->SetSampling({ 1.f - rate, 0.f }, { rate, 1.f });
 	}
 }
 
