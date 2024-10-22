@@ -1,6 +1,6 @@
 #pragma once
 #pragma warning(disable : 4251)
-#pragma warning(disable : 4257)
+#pragma warning(disable : 4275)
 
 #include "EditorDefine.h"
 

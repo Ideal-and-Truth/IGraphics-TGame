@@ -183,6 +183,9 @@
     <ClInclude Include="MapMoveTrigger.h">
       <Filter>Component\MapMove</Filter>
     </ClInclude>
+    <ClInclude Include="BossHPUI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -283,6 +286,9 @@
     </ClCompile>
     <ClCompile Include="MapMoveTrigger.cpp">
       <Filter>Component\MapMove</Filter>
+    </ClCompile>
+    <ClCompile Include="BossHPUI.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
