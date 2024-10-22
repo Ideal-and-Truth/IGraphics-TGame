@@ -72,6 +72,8 @@ namespace Truth
 		PROPERTY(isActive);
 		bool m_isActive = true;
 		
+		// bool m_parnetAcrive = true;
+
 		bool m_isStatic = false;
 
 		bool m_isAdded = true;

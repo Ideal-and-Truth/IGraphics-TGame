@@ -191,6 +191,11 @@ void Truth::Entity::SetActive(bool _active)
 {
 	m_isActive = _active;
 	IterateComponentMethod(m_setActive);
+
+	for (auto& c : m_children)
+	{
+		c->SetActive(_active);
+	}
 }
 
 void Truth::Entity::OnCollisionEnter(Collider* _other)
