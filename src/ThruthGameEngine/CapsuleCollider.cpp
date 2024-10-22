@@ -98,7 +98,7 @@ void Truth::CapsuleCollider::SetHeight(float _height)
 /// <summary>
 /// 초기화 해당 Component가 생성 될 때 한번 실행됨
 /// </summary>
-void Truth::CapsuleCollider::Initalize()
+void Truth::CapsuleCollider::Initialize()
 {
-	Collider::Initalize();
+	Collider::Initialize();
 }

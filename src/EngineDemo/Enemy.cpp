@@ -32,15 +32,14 @@ void Enemy::Awake()
 void Enemy::Start()
 {
 	m_currentTP = m_maxTP;
-	m_attackRange = 1.0f;
 }
 
 void Enemy::Update()
 {
-	if (GetKeyDown(KEY::_9))
-	{
-		m_isTargetIn = !m_isTargetIn;
-	}
+// 	if (GetKeyDown(KEY::_9))
+// 	{
+// 		m_isTargetIn = !m_isTargetIn;
+// 	}
 
 	if (!m_isTargetIn)
 	{

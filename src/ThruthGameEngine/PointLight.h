@@ -40,12 +40,11 @@ namespace Truth
 		void SetIntensity();
 		void SetColor();
 		void SetRange();
+		void SetPosition();
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
-		METHOD(ApplyTransform);
-		void ApplyTransform();
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();

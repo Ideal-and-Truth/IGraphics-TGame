@@ -4,6 +4,7 @@
 #include "GraphicsManager.h"
 #include "TFileUtils.h"
 #include "managers.h"
+#include <yaml-cpp/yaml.h>
 
 void Truth::Material::SetTexture()
 {
@@ -15,6 +16,8 @@ void Truth::Material::SetTexture()
 		m_material->SetMaskMap(m_maskMap->m_texture);
 
 	m_material->SetTiling(m_tileX, m_tileY);
+	m_material->SetAlphaClipping(m_alphaCulling);
+	m_material->SetSurfaceTypeTransparent(m_transparent);
 }
 
 void Truth::Material::ChangeTexture(std::wstring _path, int _type)
@@ -97,15 +100,32 @@ void Truth::Material::ChangeTexture(int _type)
 void Truth::Material::SaveMaterial()
 {
 	std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
-	std::filesystem::path matp = "../Resources/Matarial/" + m_name + ".matData";
+	std::filesystem::path matp = m_path;
 	std::filesystem::path testPath = std::filesystem::current_path();
 	bool b = std::filesystem::exists(matp);
 
-	f->Open(matp, Write);
-	f->Write(m_baseMap->m_path.generic_string());
-	f->Write(m_normalMap->m_path.generic_string());
-	f->Write(m_maskMap->m_path.generic_string());
+	YAML::Node node;
+	YAML::Emitter emitter;
+	emitter << YAML::BeginDoc;
+	emitter << YAML::BeginMap;
 
-	f->Write(m_tileX);
-	f->Write(m_tileY);
+	if (m_baseMap)
+		emitter << YAML::Key << "baseMap" << YAML::Value << m_baseMap->m_path.generic_string();
+	if (m_normalMap)
+		emitter << YAML::Key << "normalMap" << YAML::Value << m_normalMap->m_path.generic_string();
+	if (m_maskMap)
+		emitter << YAML::Key << "maskMap" << YAML::Value << m_maskMap->m_path.generic_string();
+
+	emitter << YAML::Key << "tileX" << YAML::Value << m_tileX;
+	emitter << YAML::Key << "tileY" << YAML::Value << m_tileY;
+	emitter << YAML::Key << "alphaCulling" << YAML::Value << m_alphaCulling;
+	emitter << YAML::Key << "transparent" << YAML::Value << m_transparent;
+
+	emitter << YAML::EndMap;
+	emitter << YAML::EndDoc;
+
+	std::ofstream fout(matp);
+	fout << emitter.c_str();
+
+	fout.close();
 }

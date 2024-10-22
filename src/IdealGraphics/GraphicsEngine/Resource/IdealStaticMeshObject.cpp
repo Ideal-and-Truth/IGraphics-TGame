@@ -12,6 +12,7 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+#include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
 
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
@@ -124,6 +125,22 @@ bool Ideal::IdealStaticMeshObject::GetIsStaticWhenRunTime()
 void Ideal::IdealStaticMeshObject::SetDebugMeshColor(DirectX::SimpleMath::Color& Color)
 {
 	m_cbDebugColor.color = Color;
+}
+
+void Ideal::IdealStaticMeshObject::AlphaClippingCheck()
+{
+	uint32 size = m_BLASInstanceDesc->BLAS->GetGeometryDescs().size();
+	auto& descs = m_BLASInstanceDesc->BLAS->GetGeometryDescs();
+	for (uint32 i = 0; i < size; ++i)
+	{
+		if (m_staticMesh->GetMeshes()[i]->GetMaterial().lock()->GetIsAlphaClipping() ||
+		m_staticMesh->GetMeshes()[i]->GetMaterial().lock()->GetIsTransmissive())
+		{
+			descs[i].Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
+		}
+	}
+	auto& geometries = m_BLASInstanceDesc->BLAS->GetGeometries();
+	m_BLASInstanceDesc->BLAS->SetDirty(true);
 }
 
 void Ideal::IdealStaticMeshObject::UpdateBLASInstance(std::shared_ptr<Ideal::RaytracingManager> RaytracingManager)

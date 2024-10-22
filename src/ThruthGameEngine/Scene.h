@@ -40,10 +40,9 @@ namespace Truth
 		std::wstring m_mapPath;
 
 		std::shared_ptr<NavMeshGenerater> m_navMesh;
-
-		std::vector<std::shared_ptr<Ideal::IMeshObject>> m_mapMesh;
-		std::vector<std::shared_ptr<Ideal::ILight>> m_mapLight;
 		std::vector<std::shared_ptr<Entity>> m_mapEntity;
+
+		bool m_useNavMesh = true;
 
 	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
@@ -79,6 +78,7 @@ namespace Truth
 		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size) const;
 
 		std::weak_ptr<Entity> FindEntity(std::string _name);
+		std::weak_ptr<Entity> FindEntity(uint32 _index);
 
 
 #ifdef EDITOR_MODE
@@ -90,6 +90,8 @@ namespace Truth
 		void LateUpdate();
 
 		void ApplyTransform();
+
+		void ResizeWindow();
 
 		void Start();
 

@@ -103,7 +103,7 @@ namespace Ideal
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObjects;
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_debugMeshObjects;
 
-		std::shared_ptr<Ideal::IdealDirectionalLight> m_directionalLight;
+		std::vector<std::shared_ptr<Ideal::IdealDirectionalLight>> m_directionalLights;
 		std::vector<std::shared_ptr<Ideal::IdealSpotLight>> m_spotLights;
 		std::vector<std::shared_ptr<Ideal::IdealPointLight>> m_pointLights;
 

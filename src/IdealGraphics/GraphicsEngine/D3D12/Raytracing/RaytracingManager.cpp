@@ -190,6 +190,35 @@ void Ideal::RaytracingManager::Resize(std::shared_ptr<Ideal::ResourceManager> Re
 	CreateGBufferTexture(ResourceManager, Width, Height);
 }
 
+void Ideal::RaytracingManager::AddObject(std::shared_ptr<Ideal::IdealStaticMeshObject> Object, std::shared_ptr<Ideal::D3D12RayTracingRenderer> Renderer, ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::IMeshObject> MeshObject, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager, const wchar_t* Name, bool IsSkinnedData /*= false */)
+{
+	// 기존과 차이점은 이름으로 부르지 않는다.
+	//auto blas = m_raytracingManager->GetBLASByName(obj->GetName().c_str());
+	std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> blas;
+	blas = GetBLASByName(Object->GetName().c_str());
+	bool ShouldBuildShaderTable = true;
+
+	if (blas != nullptr)
+	{
+		Object->SetBLAS(blas);
+		blas->AddRefCount();
+		ShouldBuildShaderTable = false;
+	}
+	else
+	{
+		// 안에서 add ref count를 실행시키긴 함. ....
+		blas = AddBLAS(Renderer, Device, ResourceManager, DescriptorManager, CBPool, Object, Object->GetName().c_str(), false);
+	}
+
+	if (ShouldBuildShaderTable)
+	{
+		BuildShaderTables(Device, DeferredDeleteManager);
+	}
+
+	auto instanceDesc = AllocateInstanceByBLAS(blas);
+	Object->SetBLASInstanceDesc(instanceDesc);
+}
+
 void Ideal::RaytracingManager::CreateRenderTarget(ComPtr<ID3D12Device5> Device, const uint32& Width, const uint32& Height)
 {
 	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -538,6 +567,10 @@ void Ideal::RaytracingManager::CreateRaytracingPipelineStateObject(ComPtr<ID3D12
 		{
 			hitGroup->SetClosestHitShaderImport(c_closestHitShaderName[rayType]);
 		}
+		if (c_anyHitShaderName[rayType])
+		{
+			hitGroup->SetAnyHitShaderImport(c_anyHitShaderName[rayType]);
+		}
 		hitGroup->SetHitGroupExport(c_hitGroupName[rayType]);
 		hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
 	}
@@ -706,6 +739,16 @@ void Ideal::RaytracingManager::UpdateMaterial(ComPtr<ID3D12Device5> Device, std:
 	{
 		BuildShaderTables(Device, DeferredDeleteManager);
 	}
+
+	//bool materialAlphaChanged = Ideal::Singleton::RayTracingFlagManger::GetInstance().GetMaterialAlphaClippingChangedAndOffFlag();
+	//if (materialAlphaChanged)
+	//{
+	//	for ( : )
+	//	{
+	//		// Geometry가 가지고 있는 머테리얼에서 GetAlphaClipping을 가져온다.
+	//		// 만약 true인데 Getometry Flag가 None이 아닐 경우 다시 만든다?
+	//	}
+	//}
 }
 
 void Ideal::RaytracingManager::UpdateTexture(ComPtr<ID3D12Device5> Device)

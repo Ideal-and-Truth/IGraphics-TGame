@@ -501,6 +501,28 @@ void ResourceManager::CreateDynamicTexture(std::shared_ptr<Ideal::D3D12Texture>&
 
 	uint64 uploadBufferSize = GetRequiredIntermediateSize(TextureResource.Get(), 0, 1);
 
+	//---------Upload Buffer----------//
+	//Ideal::D3D12UploadBuffer uploadBuffer;
+	//uploadBuffer.Create(m_device.Get(), (uint32)uploadBufferSize);
+	//void* data = uploadBuffer.Map();
+	//{
+	//	void* mappedData = uploadBuffer.Map();
+	//	//memcpy(mappedData, Vertices.data(), bufferSize);
+	//	ZeroMemory(mappedData, uploadBufferSize);
+	//	uploadBuffer.UnMap();
+	//}
+	//
+	//m_commandList->CopyBufferRegion(TextureResource.Get(), 0, uploadBuffer.GetResource(), 0, uploadBufferSize);
+	//
+	//CD3DX12_RESOURCE_BARRIER resourceBarrier
+	//	= CD3DX12_RESOURCE_BARRIER::Transition(
+	//		TextureResource.Get(),
+	//		D3D12_RESOURCE_STATE_COPY_DEST,
+	//		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER
+	//	);
+
+
+
 	CD3DX12_HEAP_PROPERTIES heapPropUpload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
 	Check(m_device->CreateCommittedResource(
@@ -511,9 +533,15 @@ void ResourceManager::CreateDynamicTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		nullptr,
 		IID_PPV_ARGS(UploadBuffer.GetAddressOf())
 	));
+
+	//BYTE* data;
+	//UploadBuffer->Map(0, nullptr, reinterpret_cast<void**>(&data));
+	//ZeroMemory(data, static_cast<size_t>(uploadBufferSize));
+	//UploadBuffer->Unmap(0, nullptr);
+
 	OutTexture = std::make_shared<Ideal::D3D12Texture>();
 	OutTexture->Create(TextureResource, m_deferredDeleteManager);
-	OutTexture->SetUploadBuffer(UploadBuffer);
+	OutTexture->SetUploadBuffer(UploadBuffer, uploadBufferSize);
 
 	// srv
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

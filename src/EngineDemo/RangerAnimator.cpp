@@ -111,13 +111,15 @@ void RangerAnimator::Update()
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
 	m_isPursuit = m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get();
 	m_isAttack = m_enemyController->GetTypeInfo().GetProperty("isAttackReady")->Get<bool>(m_enemyController.get()).Get();
+	m_isReturn = m_enemyController->GetTypeInfo().GetProperty("isComeBack")->Get<bool>(m_enemyController.get()).Get();
 
 	if (m_isReload)
 	{
 		m_passingTime += GetDeltaTime();
 	}
 
-	if (m_isAttack)
+	if (m_isAttack || m_currentState == m_animationStateMap["Aim"] || m_currentState == m_animationStateMap["Reload"] || m_currentState == m_animationStateMap["Attack"]
+		|| m_currentState == m_animationStateMap["Damage"] || m_currentState == m_animationStateMap["Down"])
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 	}
@@ -232,6 +234,11 @@ void RangerPursuit::OnStateUpdate()
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Death");
 	}
+
+	if (GetProperty("isReturn")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Return");
+	}
 }
 
 void RangerReturn::OnStateEnter()
@@ -291,6 +298,10 @@ void RangerAttack::OnStateUpdate()
 		{
 			dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Idle");
 		}
+		else if (GetProperty("isReturn")->Get<bool>(m_animator).Get())
+		{
+			dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Return");
+		}
 	}
 
 	// Any State
@@ -337,6 +348,10 @@ void RangerAim::OnStateUpdate()
 	}
 
 	// Any State
+	else if (GetProperty("isReturn")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Return");
+	}
 	else if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Damage");
@@ -373,6 +388,10 @@ void RangerReload::OnStateUpdate()
 	}
 
 	// Any State
+	else if (GetProperty("isReturn")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Return");
+	}
 	else if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Damage");

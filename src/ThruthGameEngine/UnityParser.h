@@ -56,6 +56,9 @@ namespace Truth
 			
 			float m_tileX = 1.0f;
 			float m_tileY = 1.0f;
+
+			bool m_alphaCulling = false;
+			bool m_transparent = false;
 		};
 
 		/// <summary>
@@ -150,8 +153,6 @@ namespace Truth
 
 		void Reset();
 
-		void ParseMatarialData();
-
 	private:
 		void ParseFile(fs::path& _path);
 		void ParseDir(fs::path& _path);
@@ -178,7 +179,6 @@ namespace Truth
 
 		void ParseMatarialFile(GameObject* _GO, const std::string& _matGuid);
 		void CopyTexture(const YAML::Node& _node, fs::path& _output);
-		void ParseOnlyMatarialFile(const fs::path& _matGuid);
 
 		void WriteMaterialData();
 

@@ -21,6 +21,7 @@ Truth::Mesh::Mesh(std::wstring _path)
 	, m_path(_path)
 	, m_isRendering(true)
 	, m_mesh(nullptr)
+	, m_isStatic(false)
 {
 	m_name = "Mesh Filter";
 }
@@ -33,6 +34,7 @@ Truth::Mesh::Mesh()
 	, m_path(L"DebugObject/debugCube")
 	, m_isRendering(true)
 	, m_mesh(nullptr)
+	, m_isStatic(false)
 {
 	m_name = "Mesh Filter";
 }
@@ -126,7 +128,7 @@ void Truth::Mesh::SetRenderable(bool _isRenderable)
 {
 }
 
-void Truth::Mesh::Initalize()
+void Truth::Mesh::Initialize()
 {
 	SetMesh();
 	ApplyTransform();
@@ -134,9 +136,35 @@ void Truth::Mesh::Initalize()
 
 void Truth::Mesh::ApplyTransform()
 {
-	m_owner.lock()->ApplyTransform();
+	if (!m_owner.lock()->m_isStatic)
+	{
+		m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
+		m_mesh->SetDrawObject(m_isRendering);
+	}
+}
+
+void Truth::Mesh::SetMeshTransformMatrix()
+{
 	m_mesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
-	m_mesh->SetDrawObject(m_isRendering);
+}
+
+void Truth::Mesh::SetMeshTransformMatrix(const Matrix& _m)
+{
+	m_mesh->SetTransformMatrix(_m);
+}
+
+void Truth::Mesh::Update()
+{
+	if (!m_owner.lock()->m_isStatic)
+		ApplyTransform();
+}
+
+void Truth::Mesh::SetActive()
+{
+	if (m_mesh)
+	{
+		m_mesh->SetDrawObject(false);
+	}
 }
 
 void Truth::Mesh::DeleteMesh()
@@ -151,6 +179,9 @@ void Truth::Mesh::SetMaterialByIndex(uint32 _index, std::string _material)
 
 	const auto& mat = m_managers.lock()->Graphics()->CreateMaterial(_material);
 	m_subMesh[_index]->SetMaterialObject(mat->m_material);
+
+	if (mat->m_alphaCulling || mat->m_transparent)
+		m_mesh->AlphaClippingCheck();
 
 	if (_index >= m_matPath.size())
 		return;

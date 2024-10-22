@@ -50,7 +50,7 @@ Truth::RigidBody::~RigidBody()
 /// 초기화
 /// body 생성 / transform 연동
 /// </summary>
-void Truth::RigidBody::Initalize()
+void Truth::RigidBody::Initialize()
 {
 	m_body = m_managers.lock()->Physics()->CreateDefaultRigidDynamic();
 	m_transform = m_owner.lock()->GetComponent<Transform>();

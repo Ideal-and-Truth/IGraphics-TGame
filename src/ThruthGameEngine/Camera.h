@@ -63,8 +63,8 @@ namespace Truth
 		METHOD(RotateY);
 		void RotateY(float angle);
 
-		METHOD(Initalize);
-		virtual void Initalize();
+		METHOD(Initialize);
+		virtual void Initialize();
 
 		void CompleteCamera();
 

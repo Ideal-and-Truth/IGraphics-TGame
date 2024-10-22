@@ -9,16 +9,16 @@
 Truth::NavMeshGenerater::NavMeshGenerater()
 	: m_cellSize(0.3f)
 	, m_cellHeight(0.2f)
-	, m_agentMaxSlope(60.0f)
+	, m_agentMaxSlope(50.0f)
 	, m_agentHeight(2.0f)
 	, m_agentMaxClimb(1.0f)
 	, m_agentRadius(0.1f)
 	, m_edgeMaxLen(12.0f)
 	, m_edgeMaxError(1.3f)
-	, m_regionMinSize(8.0f)
-	, m_regionMergeSize(20.0f)
+	, m_regionMinSize(0.1f)
+	, m_regionMergeSize(1.0f)
 	, m_vertsPerPoly(3.0f)
-	, m_detailSampleDist(6.0f)
+	, m_detailSampleDist(2.0f)
 	, m_detailSampleMaxError(1.0f)
 	, m_partitionType(0)
 	, m_filterLowHangingObstacles(true)
@@ -138,6 +138,33 @@ Vector3 Truth::NavMeshGenerater::FindPath(Vector3 _start, Vector3 _end, Vector3 
 	delete[] straightPathPolys;
 
 	return result;
+}
+
+void Truth::NavMeshGenerater::Destroy()
+{
+	delete m_solid;
+	delete m_chf;
+	delete m_cset;
+	delete m_pmesh;
+	delete m_cfg;
+	delete m_dmesh;
+	delete m_ctx;
+	delete m_navMesh;
+	delete m_navQuery;
+	delete m_filter;
+
+	m_solid = nullptr;
+	m_chf = nullptr;
+	m_cset = nullptr;
+	m_pmesh = nullptr;
+	m_cfg = nullptr;
+	m_dmesh = nullptr;
+	m_ctx = nullptr;
+	m_navMesh = nullptr;
+	m_navQuery = nullptr;
+	m_filter = nullptr;
+
+	m_geom.Destroy();
 }
 
 void Truth::NavMeshGenerater::Initalize()

@@ -1,0 +1,8 @@
+---
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/sign/T_town_signparasol_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/sign/T_town_signparasol_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/sign/T_town_signparasol_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+...

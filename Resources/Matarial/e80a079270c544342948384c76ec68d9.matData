@@ -1,0 +1,8 @@
+---
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/archtile/T_archtile_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/archtile/T_archtile_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/archtile/T_archtile_MaskMap.png
+tileX: 0.600000024
+tileY: 0.600000024
+alphaCulling: false
+...

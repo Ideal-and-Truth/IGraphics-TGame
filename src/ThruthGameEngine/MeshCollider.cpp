@@ -28,9 +28,9 @@ Truth::MeshCollider::~MeshCollider()
 
 }
 
-void Truth::MeshCollider::Initalize()
+void Truth::MeshCollider::Initialize()
 {
-	Collider::Initalize(m_path);
+	Collider::Initialize(m_path);
 }
 
 void Truth::MeshCollider::Awake()

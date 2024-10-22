@@ -3,6 +3,7 @@
 #include "PlayerAnimator.h"
 #include "Player.h"
 #include "EnemyAnimator.h"
+#include "BossAnimator.h"
 #include "Enemy.h"
 #include "Transform.h"
 
@@ -37,6 +38,7 @@ void MeleeWeapon::Start()
 	{
 		m_enemy = m_owner.lock()->m_parent.lock().get()->GetComponent<Enemy>().lock();
 		m_enemyAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<EnemyAnimator>().lock();
+		m_bossAnimator = m_owner.lock()->m_parent.lock().get()->GetComponent<BossAnimator>().lock();
 		auto target = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
 		m_playerAnimator = target->GetComponent<PlayerAnimator>().lock();
 	}
@@ -59,7 +61,14 @@ void MeleeWeapon::Update()
 	}
 	else if (m_enemy)
 	{
-		m_isAttacking = m_enemyAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_enemyAnimator.get()).Get();
+		if (m_enemyAnimator)
+		{
+			m_isAttacking = m_enemyAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_enemyAnimator.get()).Get();
+		}
+		else
+		{
+			m_isAttacking = m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_bossAnimator.get()).Get();
+		}
 	}
 
 	for (auto& e : m_onHitEnemys)
@@ -114,7 +123,14 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 					if (_other->GetOwner().lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(_other->GetOwner().lock()->GetComponent<Player>().lock().get()).Get() > 0.f)
 					{
 						m_onHitEnemys.push_back(_other->GetOwner().lock());
-						WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
+						if (m_bossAnimator)
+						{
+							WaitForSecondsRealtime(m_bossAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_bossAnimator.get()).Get());
+						}
+						else
+						{
+							WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
+						}
 					}
 				}
 			}

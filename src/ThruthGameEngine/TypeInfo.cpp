@@ -2,7 +2,8 @@
 #include "Method.h"
 #include "Property.h"
 
-std::unique_ptr<Truth::ComponentFactory> TypeInfo::g_factory;
+std::unique_ptr<Truth::ComponentFactory> TypeInfo::g_componentFactory;
+std::unique_ptr<Truth::ButtonFactory> TypeInfo::g_buttonFactory;
 
 const TypeInfo* TypeInfo::GetSuper() const
 {

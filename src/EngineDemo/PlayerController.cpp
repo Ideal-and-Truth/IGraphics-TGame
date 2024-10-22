@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Controller.h"
 #include "Player.h"
+#include "PlayerAnimator.h"
 #include "PlayerCamera.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
@@ -10,6 +11,9 @@ BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 PlayerController::PlayerController()
 	: m_forwardInput(0.f)
 	, m_sideInput(0.f)
+	, m_impulsePower(0.f)
+	, m_useImpulse(true)
+	, m_needRot(true)
 	, m_canMove(true)
 {
 	m_name = "PlayerController";
@@ -31,6 +35,15 @@ void PlayerController::Start()
 
 	m_controller = m_owner.lock().get()->GetComponent<Truth::Controller>();
 	m_player = m_owner.lock().get()->GetComponent<Player>();
+}
+
+void PlayerController::FixedUpdate()
+{
+	if (!m_canMove)
+	{
+		m_moveVec = Vector3::Zero;
+	}
+	m_controller.lock()->Move(m_moveVec);
 }
 
 void PlayerController::Update()
@@ -56,13 +69,6 @@ void PlayerController::PlayerMove(const void*)
 
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
 
-
-	if (!m_canMove)
-	{
-		m_forwardInput = 0.f;
-		m_sideInput = 0.f;
-		return;
-	}
 
 	if (GetKey(KEY::W))
 	{
@@ -99,28 +105,72 @@ void PlayerController::PlayerMove(const void*)
 		m_sideInput = 0.f;
 	}
 
+	if (GetKey(KEY::W) && GetKey(KEY::A))
+	{
+		m_forwardInput = 0.6f;
+		m_sideInput = -0.6f;
+	}
+	else if (GetKey(KEY::W) && GetKey(KEY::D))
+	{
+		m_forwardInput = 0.6f;
+		m_sideInput = 0.6f;
+	}
 
+	if (GetKey(KEY::S) && GetKey(KEY::A))
+	{
+		m_forwardInput = -0.6f;
+		m_sideInput = -0.6f;
+	}
+	else if (GetKey(KEY::S) && GetKey(KEY::D))
+	{
+		m_forwardInput = -0.6f;
+		m_sideInput = 0.6f;
+	}
 
 
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
 	Vector3 disp2 = right * m_sideInput * playerSpeed;
 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f);
 	Vector3 finalMovement = (disp + disp2 + gravity) * GetDeltaTime();
-	m_controller.lock()->Move(finalMovement);
 
 	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
 	m_faceDirection = { playerDir.x ,0, playerDir.z };
-	if (m_faceDirection == Vector3::Zero)
+
+
+	if (m_useImpulse)
+	{
+		Vector3 power(m_playerDirection.x, -100.f, m_playerDirection.z);
+		power *= m_impulsePower;
+		power *= 0.01f;
+
+		m_controller.lock()->AddImpulse(power);
+
+		if (m_needRot)
+		{
+			Quaternion lookRot;
+			Quaternion::LookRotation(m_playerDirection, Vector3::Up, lookRot);
+			auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+			m_owner.lock()->m_transform->m_rotation = lookRot;
+		}
+
+		m_needRot = false;
+		m_useImpulse = false;
+		m_impulsePower = 0.f;
+	}
+
+
+	if (!m_canMove)
+	{
+		m_moveVec = { 0.f,0.f,0.f };
+	}
+	m_moveVec = finalMovement;
+	//	m_controller.lock()->Move(finalMovement);
+
+	if (m_faceDirection == Vector3::Zero || !m_canMove)
 	{
 		return;
 	}
 
-	if (GetKeyDown(KEY::SPACE))
-	{
-		Vector3 power(finalMovement);
-		power *= 5.f;
-		m_controller.lock()->AddImpulse(power);
-	}
 
 	m_playerDirection = playerDir;
 	Quaternion lookRot;

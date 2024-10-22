@@ -159,10 +159,10 @@ void EntityHierarchy::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 			std::weak_ptr<Truth::Entity> payload_n = *(const std::weak_ptr<Truth::Entity>*)payload->Data;
 
 			if (!payload_n.lock()->m_parent.expired())
-			{
 				payload_n.lock()->m_parent.lock()->DeleteChild(payload_n.lock());
-			}
 			_entity.lock()->AddChild(payload_n.lock());
+
+			m_manager.lock()->Scene()->m_currentScene->EditorUpdate();
 		}
 		ImGui::EndDragDropTarget();
 	}

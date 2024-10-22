@@ -10,7 +10,7 @@ namespace Truth
 #ifdef EDITOR_MODE
 	class EditorCamera;
 #endif // EDITOR_MODE
-
+	struct UISpriteSet;
 }
 
 namespace Ideal
@@ -30,6 +30,7 @@ namespace Truth
 		Camera* m_mainCamera;
 		float m_aspect;
 
+		Vector2 m_resolution;
 
 		std::unordered_map<std::wstring, std::shared_ptr<Ideal::IMesh>> m_particleMeshMap;
 
@@ -95,10 +96,21 @@ namespace Truth
 
 		std::shared_ptr<Material> GetMaterial(const std::string& _name);
 
+		std::shared_ptr<UISpriteSet> CreateUISpriteSet();
+		void DeleteUISpriteSet(std::shared_ptr<UISpriteSet> _UISpriteSet);
+
+		std::shared_ptr<Ideal::IText> CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _font = L"Tahoma");
+		void DeleteTextSprite(std::shared_ptr<Ideal::IText> _textSprite);
 		void ToggleFullScreen();
 
 		void ResizeWindow(uint32 _w, uint32 _h);
 
+		Vector2 GetContentPosMin();
+		Vector2 GetContentPosMax();
+
+		// void SetDisplayResolution();
+		Vector2 GetDisplayResolution();
+		RECT GetWindowRect();
 		void BakeStaticMesh();
 
 #ifdef EDITOR_MODE

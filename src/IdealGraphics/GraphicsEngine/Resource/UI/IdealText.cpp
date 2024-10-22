@@ -18,7 +18,7 @@ Ideal::IdealText::~IdealText()
 	}
 }
 
-void Ideal::IdealText::ChangeText(const std::wstring& Text)
+void Ideal::IdealText::ChangeText(const std::wstring& Text, const DirectX::SimpleMath::Color& Color)
 {
 	m_text = Text;
 	m_isChanged = true;
@@ -33,7 +33,7 @@ void Ideal::IdealText::ChangeText(const std::wstring& Text)
 	}
 	textImage = new BYTE[width * height * 4];
 
-	m_textManager.lock()->WriteTextToBitmap(textImage, width, height, width * 4, m_fontHandle, Text.c_str());
+	m_textManager.lock()->WriteTextToBitmap(textImage, width, height, width * 4, m_fontHandle, Text.c_str(), Color);
 
 }
 
@@ -90,5 +90,15 @@ void Ideal::IdealText::UpdateDynamicTextureWithImage(ComPtr<ID3D12Device> Device
 	}
 	Texture.lock()->GetUploadBuffer()->Unmap(0, nullptr);
 	Texture.lock()->SetUpdated();
+}
+
+void Ideal::IdealText::Resize(uint32 Width, uint32 Height)
+{
+	m_textSprite->ReSize(Width, Height);
+}
+
+void Ideal::IdealText::ResizeTexture(float Width, float Height)
+{
+
 }
 

@@ -1,0 +1,8 @@
+---
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/bollard/T_bollard_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/bollard/T_bollard_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/bollard/T_bollard_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+...

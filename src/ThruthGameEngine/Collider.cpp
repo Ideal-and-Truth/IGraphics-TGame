@@ -90,11 +90,11 @@ void Truth::Collider::Destroy()
 	}
 
 #ifdef EDITOR_MODE
-	// 	if (m_debugMesh != nullptr)
-	// 	{
-	// 		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
-	// 		m_debugMesh = nullptr;
-	// 	}
+	if (m_debugMesh != nullptr)
+	{
+		m_managers.lock()->Graphics()->DeleteMeshObject(m_debugMesh);
+		m_debugMesh = nullptr;
+	}
 #endif // EDITOR_MODE
 }
 
@@ -103,6 +103,13 @@ void Truth::Collider::Destroy()
 /// </summary>
 void Truth::Collider::Awake()
 {
+	SetCenter(m_center);
+	SetSize(m_size);
+
+	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
+	Matrix tempSzie = Matrix::CreateScale(m_debugMeshSize);
+	m_globalTM = m_localTM * ownerTM;
+
 	if (m_shape == ColliderShape::MESH)
 	{
 		return;
@@ -112,19 +119,17 @@ void Truth::Collider::Awake()
 	Vector3 finalPos = {};
 	Quaternion temp = {};
 
-
-
-	bool isSRT = (m_owner.lock()->GetWorldTM() * m_localTM).Decompose(finalSize, temp, finalPos);
+	bool isSRT = (m_localTM * m_owner.lock()->GetWorldTM()).Decompose(finalSize, temp, finalPos);
 
 	if (!isSRT)
 	{
-		MathUtil::DecomposeNonSRT(finalSize, temp, finalPos, (m_owner.lock()->GetWorldTM() * m_localTM));
+		MathUtil::DecomposeNonSRT(finalSize, temp, finalPos, (m_localTM * m_owner.lock()->GetWorldTM()));
 	}
 
-// 	if (finalSize == Vector3::Zero)
-// 	{
-// 		(m_owner.lock()->GetWorldTM() * m_localTM * Matrix::CreateScale(Vector3{0.1f, 0.1f, 0.1f})).Decompose(finalSize, temp, finalPos);
-// 	}
+	// 	if (finalSize == Vector3::Zero)
+	// 	{
+	// 		(m_owner.lock()->GetWorldTM() * m_localTM * Matrix::CreateScale(Vector3{0.1f, 0.1f, 0.1f})).Decompose(finalSize, temp, finalPos);
+	// 	}
 
 	Vector3 onwerSize = m_owner.lock()->GetWorldScale();
 	m_collider = CreateCollider(m_shape, (finalSize) / 2);
@@ -135,6 +140,8 @@ void Truth::Collider::Awake()
 	));
 
 	SetUpFiltering(m_owner.lock()->m_layer);
+
+	bool active = m_enable && m_owner.lock()->m_isActive;
 
 	m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 	m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
@@ -164,10 +171,22 @@ void Truth::Collider::Awake()
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
+		m_body->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
 		return;
 	}
 
 	m_body = m_rigidbody.lock()->m_body;
+	m_body->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
+
+	Vector3 p = m_owner.lock()->GetWorldPosition();
+	Quaternion r = m_owner.lock()->GetWorldRotation();
+
+	physx::PxTransform t(
+		MathUtil::Convert(m_owner.lock()->GetWorldPosition()),
+		MathUtil::Convert(m_owner.lock()->GetWorldRotation())
+	);
+	m_body->setGlobalPose(t);
+
 }
 
 void Truth::Collider::FixedUpdate()
@@ -201,30 +220,45 @@ void Truth::Collider::SetSize(Vector3 _size)
 	m_localTM *= Matrix::CreateTranslation(m_center);
 }
 
-/// <summary>
-/// 충돌 처리를 하지 않는다
-/// </summary>
-void Truth::Collider::OnDisable()
+void Truth::Collider::SetActive()
 {
-	if (m_enable == true)
-	{
-		return;
-	}
-	m_enable = false;
-	m_body->detachShape(*m_collider);
-}
+	bool active = m_enable && m_owner.lock()->m_isActive;
+	if (m_body)
+		m_body->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
 
-/// <summary>
-/// 충돌 처리를 재개한다
-/// </summary>
-void Truth::Collider::OnEnable()
-{
-	if (m_enable == false)
+#ifdef EDITOR_MODE
+	if (m_debugMesh && !active)
 	{
-		return;
+		m_managers.lock()->Graphics()->DeleteDebugMeshObject(m_debugMesh);
+		m_debugMesh.reset();
 	}
-	m_enable = true;
-	m_body->attachShape(*m_collider);
+	else if (!m_debugMesh && active)
+	{
+		switch (m_shape)
+		{
+		case Truth::ColliderShape::BOX:
+		{
+			m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
+			m_debugMeshSize = { 50, 50, 50 };
+			break;
+		}
+		case Truth::ColliderShape::SPHERE:
+		{
+			m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
+			m_debugMeshSize = { 0.5, 0.5, 0.5 };
+			break;
+		}
+		default:
+			break;
+		}
+	}
+#endif // EDITOR_MODE
+
+//	if (m_collider)
+// 	{
+// 		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger && active);
+// 		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger && active);
+// 	}
 }
 
 #ifdef EDITOR_MODE
@@ -238,7 +272,7 @@ void Truth::Collider::ApplyTransform()
 		return;
 	}
 	const Matrix& ownerTM = m_owner.lock()->GetWorldTM();
-	Matrix tempSzie = Matrix::CreateScale(Vector3(50, 50, 50));
+	Matrix tempSzie = Matrix::CreateScale(m_debugMeshSize);
 	m_globalTM = m_localTM * ownerTM;
 	m_debugMesh->SetTransformMatrix(tempSzie * m_globalTM);
 
@@ -252,14 +286,7 @@ void Truth::Collider::EditorSetValue()
 	SetCenter(m_center);
 	SetSize(m_size);
 
-	if (m_enable)
-	{
-		OnDisable();
-	}
-	else
-	{
-		OnEnable();
-	}
+	SetActive();
 }
 #endif // EDITOR_MODE
 
@@ -299,7 +326,7 @@ physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
 /// 초기화
 /// </summary>
 /// <param name="_path">디버깅 매쉬경로</param>
-void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
+void Truth::Collider::Initialize(const std::wstring& _path /*= L""*/)
 {
 #ifdef EDITOR_MODE
 	if (m_debugMesh != nullptr)
@@ -310,21 +337,14 @@ void Truth::Collider::Initalize(const std::wstring& _path /*= L""*/)
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		// m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
+		m_debugMeshSize = { 50, 50, 50 };
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		// m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
-		break;
-	}
-	case Truth::ColliderShape::CAPSULE:
-	{
-		break;
-	}
-	case Truth::ColliderShape::MESH:
-	{
-		// m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(_path);
+		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
+		m_debugMeshSize = { 0.5, 0.5, 0.5 };
 		break;
 	}
 	default:

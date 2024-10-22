@@ -158,6 +158,7 @@ private:
 	const CallableBase& m_callable;
 
 public:
+
 	const std::string Dump(void* _object, int _indent = 0) const 
 	{
 		std::string result = "";
@@ -349,3 +350,4 @@ public:
 		}
 	}
 };
+

@@ -10,6 +10,10 @@
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::SkinnedMesh)
 
+/// <summary>
+/// 경로를 지정한 생성자
+/// </summary>
+/// <param name="_path">매쉬 정보가 있는 경로</param>
 Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	: Component()
 	, m_path(_path)
@@ -25,7 +29,10 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	m_name = "Skinned Mesh Filter";
 }
 
-
+/// <summary>
+/// 경로가 지정되지 않은 생성자
+/// 기본 카츄진 매쉬로 생성해준다.
+/// </summary>
 Truth::SkinnedMesh::SkinnedMesh()
 	: Component()
 	, m_path(L"Kachujin/Mesh")
@@ -41,32 +48,44 @@ Truth::SkinnedMesh::SkinnedMesh()
 	m_name = "Skinned Mesh Filter";
 }
 
+/// <summary>
+/// 소멸자
+/// </summary>
 Truth::SkinnedMesh::~SkinnedMesh()
 {
 	DeleteMesh();
 }
 
+/// <summary>
+/// 매쉬 세팅 함수
+/// 경로에 있는 매쉬 데이터로 매쉬를 설정해준다.
+/// </summary>
+/// <param name="_path">매쉬 데이터 경로</param>
 void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 {
 	m_path = _path;
 	fs::path meshPath = m_path;
 
+	// 이미 매쉬가 있다면 지우고 새로 만든다.
 	if (m_skinnedMesh != nullptr)
 	{
+		DeleteMesh();
 		m_skinnedMesh.reset();
 	}
-
+	// 매쉬 생성
 	m_skinnedMesh = m_managers.lock()->Graphics()->CreateSkinnedMesh(_path);
 
+	// 본 정보 리로드
 	m_boneMap.clear();
 	uint32 boneSize = m_skinnedMesh->GetBonesSize();
-
 	for (uint32 i = 0; i < boneSize; i++)
 	{
 		std::weak_ptr<Ideal::IBone> bone = m_skinnedMesh->GetBoneByIndex(i);
 		m_boneMap[bone.lock()->GetName()] = bone;
 	}
 
+	// 머테리얼 정보가 저장되어있지 않다면
+	// 기본 머테리얼을 정보를 생성하여 저장한다.
 	if (m_matPath.empty())
 	{
 		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
@@ -85,6 +104,7 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
 		}
 	}
+	// 저장되어 있는 머테리얼 정보를 불러온다.
 	else
 	{
 		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
@@ -97,21 +117,28 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 	}
 }
 
+/// <summary>
+/// 매쉬에 애니메이션 추가
+/// </summary>
+/// <param name="_name">애니메이션 이름</param>
+/// <param name="_path">애니메이션 데이터 경로</param>
+/// <param name="_offset">애니메이션 오프셋 매트릭스</param>
 void Truth::SkinnedMesh::AddAnimation(std::string _name, std::wstring _path, const Matrix& _offset /*= Matrix::Identity*/)
 {
 	if (m_animation != nullptr)
-	{
 		m_animation.reset();
-	}
 
 	m_animation = m_managers.lock()->Graphics()->CreateAnimation(_path, _offset);
 
 	if (m_skinnedMesh != nullptr)
-	{
 		m_skinnedMesh->AddAnimation(_name, m_animation);
-	}
 }
 
+/// <summary>
+/// 현재 재생할 애니메이션 설정
+/// </summary>
+/// <param name="_name">애니메이션 이름</param>
+/// <param name="WhenCurrentAnimationFinished">현재 애니메이션이 종료 되고 재생할지 여부</param>
 void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
 {
 	if (m_animation != nullptr)
@@ -121,24 +148,29 @@ void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrent
 	}
 }
 
+/// <summary>
+/// 애니메이션 재생 속도 지정
+/// </summary>
+/// <param name="Speed">속도 (배율)</param>
 void Truth::SkinnedMesh::SetAnimationSpeed(float Speed)
 {
 	m_skinnedMesh->SetAnimationSpeed(Speed);
 }
 
+/// <summary>
+/// 애니메이션 재생 여부 지정
+/// </summary>
+/// <param name="playStop">재생 여부</param>
 void Truth::SkinnedMesh::SetPlayStop(bool playStop)
 {
 	m_skinnedMesh->SetPlayAnimation(playStop);
 }
 
-void Truth::SkinnedMesh::Initalize()
+void Truth::SkinnedMesh::Initialize()
 {
 	SetSkinnedMesh(m_path);
-}
-
-void Truth::SkinnedMesh::FixedUpdate()
-{
-
+	if (m_skinnedMesh)
+		m_skinnedMesh->SetDrawObject(m_owner.lock()->m_isActive);
 }
 
 void Truth::SkinnedMesh::Update()
@@ -190,11 +222,33 @@ void Truth::SkinnedMesh::ApplyTransform()
 	m_skinnedMesh->SetDrawObject(m_isRendering);
 }
 
-void Truth::SkinnedMesh::DeleteMesh()
+void Truth::SkinnedMesh::Destroy()
 {
-	m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
+	DeleteMesh();
 }
 
+void Truth::SkinnedMesh::SetActive()
+{
+	if (m_skinnedMesh)
+		m_skinnedMesh->SetDrawObject(m_owner.lock()->m_isActive);
+}
+
+/// <summary>
+/// 매쉬 삭제
+/// </summary>
+void Truth::SkinnedMesh::DeleteMesh()
+{
+	if (m_skinnedMesh)
+		m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
+	m_skinnedMesh.reset();
+	m_skinnedMesh = nullptr;
+}
+
+/// <summary>
+/// 이름으로 본을 검색해서 리턴한다.
+/// </summary>
+/// <param name="_name">이름</param>
+/// <returns>본</returns>
 std::weak_ptr<Ideal::IBone> Truth::SkinnedMesh::GetBone(const std::string& _name)
 {
 	if (m_boneMap.find(_name) == m_boneMap.end())

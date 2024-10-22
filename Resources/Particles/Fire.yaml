@@ -1,0 +1,19 @@
+MaxCount: 10
+MatName: Fire
+EBlendingMode: 0
+Shader: BossFX_FileProjectilePS
+Texture0: ../Resources/Textures/0_Particle/bossProjectile/mask_4.png
+Texture1: ../Resources/Textures/0_Particle/bossProjectile/Fire_Single_2.png
+Mesh: 0_Particle/UVSphere
+BackFaceCulling: false
+StartSize: 35
+StartColor:
+  - 3.5
+  - 0.03
+  - 0
+  - 1
+StartLifetime: 3
+Loop: false
+Duration: 3
+RenderMode: 1
+

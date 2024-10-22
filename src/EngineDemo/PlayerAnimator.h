@@ -32,26 +32,6 @@ public:
 	virtual void OnStateUpdate() override;
 };
 
-// 
-// class PlayerWalk
-// 	: public AnimationState
-// {
-// private:
-// 	float m_lastForwardInput = 0.f;
-// 	float m_lastSideInput = 0.f;
-// 
-// public:
-// 	PlayerWalk(Truth::Component* animator)
-// 		: AnimationState(animator)
-// 	{
-// 
-// 	}
-// 
-// public:
-// 	virtual void OnStateEnter() override;
-// 	virtual void OnStateUpdate() override;
-// };
-
 class PlayerRun
 	: public AnimationState
 {
@@ -135,25 +115,6 @@ private:
 
 public:
 	NormalAttack4(Truth::Component* animator)
-		: AnimationState(animator)
-	{
-
-	}
-
-public:
-	virtual void OnStateEnter() override;
-	virtual void OnStateUpdate() override;
-	virtual void OnStateExit() override;
-};
-
-class NormalAttack5
-	: public AnimationState
-{
-private:
-	bool isReset = false;
-
-public:
-	NormalAttack5(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -301,6 +262,7 @@ class PlayerGuard
 	: public AnimationState
 {
 private:
+	bool isHit = false;
 
 public:
 	PlayerGuard(Truth::Component* animator)
@@ -393,9 +355,6 @@ private:
 	/// <param name=""></param>
 	/// 
 	/// ----------------------------------------
-// 	PROPERTY(isWalk);
-// 	bool m_isWalk;
-
 	PROPERTY(isRun);
 	bool m_isRun;
 
@@ -435,6 +394,9 @@ private:
 	PROPERTY(downAttack);
 	bool m_downAttack;
 
+	PROPERTY(chargedReady);
+	bool m_chargedReady;
+
 	PROPERTY(forwardInput);
 	float m_forwardInput;
 
@@ -456,15 +418,32 @@ private:
 	PROPERTY(normalAttack4);
 	bool m_normalAttack4;
 
-	PROPERTY(normalAttack5);
-	bool m_normalAttack5;
-
 	PROPERTY(normalAttack6);
 	bool m_normalAttack6;
-	
+
+	PROPERTY(chargedAttack1);
+	bool m_chargedAttack1;
+
+	PROPERTY(chargedAttack2);
+	bool m_chargedAttack2;
+
+	PROPERTY(chargedAttack3);
+	bool m_chargedAttack3;
+
+	PROPERTY(chargedAttack4);
+	bool m_chargedAttack4;
+
+	PROPERTY(chargedAttack5);
+	bool m_chargedAttack5;
+
+	PROPERTY(dodgeAttack);
+	bool m_dodgeAttack;
+
 	float m_lastHp;
 
 	float m_passingTime;
+
+	float m_chargedTime;
 
 	PROPERTY(hitStopTime);
 	float m_hitStopTime;
@@ -479,6 +458,9 @@ private:
 
 	PROPERTY(currentFrame);
 	int m_currentFrame;
+
+private:
+	void PlayEffects();
 
 public:
 	PlayerAnimator();
@@ -498,6 +480,8 @@ public:
 
 	METHOD(OnCollisionEnter);
 	void OnCollisionEnter(Truth::Collider* _other);
+
+	void SetImpulse(float power, bool needRot);
 
 	void SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished);
 

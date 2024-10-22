@@ -41,6 +41,7 @@
 #include "SpotLight.h"
 
 #include "UI.h"
+#include "TextUI.h"
 #pragma endregion test Scene
 
 // #define EDITOR_MODE

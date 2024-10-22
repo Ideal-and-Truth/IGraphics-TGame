@@ -13,6 +13,9 @@
 
 #include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
 
+#include "GraphicsEngine/Resource/IdealStaticMeshObject.h"
+#include "GraphicsEngine/Resource/IdealSkinnedMeshObject.h"
+
 #include "ITexture.h"
 
 Ideal::IdealMaterial::IdealMaterial()
@@ -86,6 +89,16 @@ void Ideal::IdealMaterial::SetOffset(float x, float y)
 	m_Offset.x = x;
 	m_Offset.y = y;
 	m_cbMaterialInfo.offset = m_Offset;
+}
+
+void Ideal::IdealMaterial::SetAlphaClipping(bool IsAlphClipping)
+{
+	m_isAlphaClipping = IsAlphClipping;
+}
+
+void Ideal::IdealMaterial::SetSurfaceTypeTransparent(bool IsTransparent)
+{
+	m_cbMaterialInfo.bIsTransmissive = IsTransparent;
 }
 
 void Ideal::IdealMaterial::Create(std::shared_ptr<Ideal::ResourceManager> ResourceManager)

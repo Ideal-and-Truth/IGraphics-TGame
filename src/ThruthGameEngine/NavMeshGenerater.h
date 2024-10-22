@@ -98,6 +98,8 @@ namespace Truth
 
 		Vector3 FindPath(Vector3 _start, Vector3 _end, Vector3 _size);
 
+		void Destroy();
+
 	private:
 		void Initalize();
 	};

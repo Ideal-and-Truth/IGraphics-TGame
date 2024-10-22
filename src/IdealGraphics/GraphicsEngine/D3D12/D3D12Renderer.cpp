@@ -589,7 +589,7 @@ void Ideal::D3D12Renderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
 
 }
 
-void Ideal::D3D12Renderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/)
+void Ideal::D3D12Renderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/, bool HasEntry /*= true */)
 {
 
 }
@@ -1004,21 +1004,6 @@ void Ideal::D3D12Renderer::CreateEditorRTV(uint32 Width, uint32 Height)
 			m_editorTexture->GetResource()->SetName(L"Editor Texture");
 		}
 	}
-}
-
-void Ideal::D3D12Renderer::BakeOption(int MaxBakeCount, float MinSpaceSize)
-{
-
-}
-
-void Ideal::D3D12Renderer::BakeStaticMeshObject()
-{
-
-}
-
-void Ideal::D3D12Renderer::ReBuildBLASFlagOn()
-{
-
 }
 
 void Ideal::D3D12Renderer::CreateAndInitRenderingResources()

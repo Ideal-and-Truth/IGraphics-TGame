@@ -83,6 +83,24 @@ namespace BxDF
             }
         }
         
+        namespace Transmission
+        {
+
+            // Calculates transmitted ray wt and return BRDF value for that direction.
+            // Assumptions: V and N are in the same hemisphere.
+            // Note: to avoid unnecessary precision issues and for the sake of performance the function doesn't divide by the cos term
+            // so as to nullify the cos term in the rendering equation. Therefore the caller should skip the cos term in the rendering equation.
+            float3 Sample_Ft(in float3 V, out float3 wt, in float3 N, in float3 Fo)
+            {
+                float ior = 1;
+                wt = -V; // TODO: refract(-V, N, ior);
+                float cos_thetai = dot(V, N);
+                float3 Kr = Fresnel(Fo, cos_thetai);
+
+                return (1 - Kr);
+            }
+        }
+        
         namespace GGX
         {
              // Compute the value of BRDF
@@ -200,16 +218,16 @@ namespace Ideal
     }
     float Attenuate(float distance, float range)
     {
-        float att = saturate(1.f - (distance * distance / (range * range)));
-        return att * att;
+        // float att = saturate(1.f - (distance * distance / (range * range)));
+       // return att * att;
         
-        //float numer = distance / range;
-        //numer = numer * numer;
-        //numer = numer * numer;
-        //numer = saturate(1 - numer);
-        //numer = numer * numer;
-        //float denom = dist * dist + 1;
-        //return (numer / denom);
+        float numer = distance / range;
+        numer = numer * numer;
+        numer = numer * numer;
+        numer = saturate(1 - numer);
+        numer = numer * numer;
+        float denom = distance * distance + 1;
+        return (numer / denom);
     }
     
     namespace Light
@@ -606,7 +624,7 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
     return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
 }
 
-float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 LightColor, float3 albedo, float roughness, float metallic, float ao)
+float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 LightColor, float3 albedo, float roughness, float metallic, float intensity)
 {
     if(isInShadow)
         return float3(0, 0, 0);
@@ -616,7 +634,7 @@ float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 Li
     float3 F0 = float3(0.04f, 0.04f, 0.04f);
     F0 = lerp(F0, albedo, metallic);
     float3 H = normalize(V + L);
-    float3 radiance = LightColor;
+    float3 radiance = LightColor * intensity;
     float NDF = DistributionGGX(N, H, roughness);
     float G = GeometrySmith(N, V, L, roughness);
     float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
@@ -630,7 +648,7 @@ float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 Li
     float NdotL = max(dot(N, L), 0.0);
     Lo += (kD * albedo / PI + specular) * radiance * NdotL;
         
-    float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
+    float3 ambient = float3(0.03, 0.03, 0.03) * albedo;
     float3 color = ambient + Lo;
     //color += 0.2 * albedo;
     Lo = color;
@@ -664,16 +682,11 @@ float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float d
     float3 specular = numerator / max(denominator, 0.001);
     float NdotL = max(dot(N, Direction), 0.0);
     Lo += (kD * albedo / PI + specular) * radiance * NdotL;
-        
-    //float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
-    //float3 color = ambient + Lo;
-    //color += 0.2 * albedo;
-    //Lo = color;
-    
+
     return Lo;
 }
 
-float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirection, float3 N, float distance, float3 LightColor,float softness, float angle, float3 albedo, float roughness, float metallic, float lightIntensity)
+float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirection, float3 N, float distance, float3 LightColor,float softness, float angle, float3 albedo, float roughness, float metallic, float lightIntensity, float range)
 {
     if (isInShadow)
         return float3(0, 0, 0);
@@ -692,7 +705,8 @@ float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirect
         F0 = lerp(F0, albedo, metallic);
         float3 H = normalize(V + Direction);
     
-        float attenuation = 1.0 / (distance * distance);
+        //float attenuation = 1.0 / (distance * distance);
+        float attenuation = Ideal::Attenuate(distance, range);
         float newIntensity = lightIntensity * attenuation * smoothFactor;
         float3 radiance = LightColor * newIntensity * attenuation;
     

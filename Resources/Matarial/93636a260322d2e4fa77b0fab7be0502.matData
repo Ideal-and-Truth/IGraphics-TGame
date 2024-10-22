@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/2_JS_Scene2/tilefloor_001/T_tilefloor_001_BaseMap.png
+normalMap: ../Resources/Textures/MapData/2_JS_Scene2/tilefloor_001/T_tilefloor_001_Normal.png
+maskMap: ../Resources/Textures/MapData/2_JS_Scene2/tilefloor_001/T_tilefloor_001_MaskMap.png
+tileX: 0.300000012
+tileY: 0.300000012
+alphaCulling: false
+transparent: false
+...

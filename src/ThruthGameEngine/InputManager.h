@@ -110,9 +110,12 @@ namespace Truth
 
 		int m_oldMousePosX;
 		int m_oldMousePosY;
+
+	public:
 		int m_nowMousePosX;
 		int m_nowMousePosY;
 
+	private:
 		int m_mouseDx;
 		int m_mouseDy;
 
@@ -151,6 +154,8 @@ namespace Truth
 
 		int16 GetMouseMoveX() const;
 		int16 GetMouseMoveY() const;
-	};
 
+		int32 GetMousePosX();
+		int32 GetMousePosY();
+	};
 }

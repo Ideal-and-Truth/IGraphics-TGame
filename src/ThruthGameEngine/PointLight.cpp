@@ -24,6 +24,12 @@ Truth::PointLight::~PointLight()
 
 void Truth::PointLight::SetLight()
 {
+	if (m_position.x < 1 && m_position.x > -1 &&
+		m_position.y < 1 && m_position.y > -1 &&
+		m_position.z < 1 && m_position.z > -1)
+	{
+		int a = 1;
+	}
 	m_pointLight = m_managers.lock()->Graphics()->CreatePointLight();
 }
 
@@ -42,18 +48,18 @@ void Truth::PointLight::SetRange()
 	m_pointLight->SetRange(m_radius);
 }
 
-void Truth::PointLight::Initalize()
+void Truth::PointLight::SetPosition()
+{
+	m_pointLight->SetPosition(m_position);
+}
+
+void Truth::PointLight::Initialize()
 {
 	SetLight();
 	SetIntensity();
 	SetColor();
 	SetRange();
-}
-
-void Truth::PointLight::ApplyTransform()
-{
-	m_pointLight->SetPosition(m_position);
-	m_pointLight->SetRange(m_radius);
+	SetPosition();
 }
 
 #ifdef EDITOR_MODE
@@ -62,6 +68,7 @@ void Truth::PointLight::EditorSetValue()
 	SetIntensity();
 	SetColor();
 	SetRange();
+	SetPosition();
 }
 #endif // _DEBUG
 

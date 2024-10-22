@@ -39,6 +39,12 @@ struct SceneConstantBuffer
     unsigned int maxShadowRayRecursionDepth;
     float nearZ;
     float farZ;
+
+    float resolutionX;
+    float resolutionY;
+
+    float FOV;
+    float pad0;
 };
 
 struct MaterialInfoConstantBuffer
@@ -55,8 +61,8 @@ struct MaterialInfoConstantBuffer
     float OffsetX;
     float OffsetY;
 
+    unsigned int bIsTransmissive;
     float pad0;
-    float pad1;
 };
 
 struct CubeConstantBuffer
@@ -121,12 +127,12 @@ struct SpotLight
 
 struct LightList
 {
+    int DirLightNum;
     int PointLightNum;
     int SpotLightNum;
 	float pad;
-	float pad1;
 
-    DirectionalLight DirLight;
+    DirectionalLight DirLights[10];
     PointLight PointLights[100];  //TEMP
     SpotLight SpotLights[100];    //TEMP
 };

@@ -65,14 +65,17 @@ namespace Truth
 		Controller();
 		~Controller();
 
-		METHOD(Initalize);
-		virtual void Initalize() override;
+		METHOD(Initialize);
+		virtual void Initialize() override;
 
 		METHOD(Awake);
 		virtual void Awake() override;
 
 		METHOD(Start);
 		virtual void Start() override;
+
+		METHOD(FixedUpdate);
+		virtual void FixedUpdate() override;
 
 		void Move(Vector3& _disp);
 		void AddImpulse(Vector3& _disp);
@@ -81,6 +84,9 @@ namespace Truth
 		bool IsCollisionDown();
 		bool IsCollisionUp();
 		bool IsCollisionSide();
+
+		void PhysxAwake();
+
 		std::shared_ptr<Truth::RigidBody> GetRigidbody() const { return m_rigidbody; }
 	};
 

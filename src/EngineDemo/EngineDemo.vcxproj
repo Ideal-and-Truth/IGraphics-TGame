@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationState.h" />
+    <ClInclude Include="AutoTarget.h" />
     <ClInclude Include="BezierShooter.h" />
     <ClInclude Include="BossAnimator.h" />
     <ClInclude Include="BossSkill.h" />
@@ -155,6 +156,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="BulletMove.h" />
+    <ClInclude Include="ButtonTest.h" />
     <ClInclude Include="CombatZone.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="DamageSystem.h" />
@@ -162,13 +164,16 @@
     <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
+    <ClInclude Include="FrameUI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HitStop.h" />
+    <ClInclude Include="MapMoveTrigger.h" />
     <ClInclude Include="MeleeWeapon.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAnimator.h" />
     <ClInclude Include="PlayerCamera.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="PlayerHPTextUI.h" />
     <ClInclude Include="RangedWeapon.h" />
     <ClInclude Include="RangerAnimator.h" />
     <ClInclude Include="Resource.h" />
@@ -183,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationState.cpp" />
+    <ClCompile Include="AutoTarget.cpp" />
     <ClCompile Include="BezierShooter.cpp" />
     <ClCompile Include="BossAnimator.cpp" />
     <ClCompile Include="BossSkill.cpp" />
@@ -191,6 +197,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="BulletMove.cpp" />
+    <ClCompile Include="ButtonTest.cpp" />
     <ClCompile Include="CombatZone.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="DamageSystem.cpp" />
@@ -198,12 +205,15 @@
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
+    <ClCompile Include="FrameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />
+    <ClCompile Include="MapMoveTrigger.cpp" />
     <ClCompile Include="MeleeWeapon.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAnimator.cpp" />
     <ClCompile Include="PlayerCamera.cpp" />
     <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="PlayerHPTextUI.cpp" />
     <ClCompile Include="RangedWeapon.cpp" />
     <ClCompile Include="RangerAnimator.cpp" />
     <ClCompile Include="Shooter.cpp" />

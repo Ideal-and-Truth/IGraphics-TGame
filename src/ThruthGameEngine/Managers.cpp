@@ -44,8 +44,9 @@ void Truth::Managers::Update() const
 	{
 		m_soundManager->Update();
 		m_physXManager->Update();
-		m_sceneManager->Update();
+		m_sceneManager->Update(); 
 		m_eventManager->Update();
+		m_particleManager->Update();
 	}
 	else
 	{
@@ -57,6 +58,7 @@ void Truth::Managers::Update() const
 	m_physXManager->Update();
 	m_sceneManager->Update();
 	m_eventManager->Update();
+	m_particleManager->Update();
 #endif // EDITOR_MODE
 
 }
@@ -94,19 +96,15 @@ void Truth::Managers::Render() const
 	std::string temp = std::to_string(finish - start);
 	temp = std::string("update : ") + temp;
 	temp += " / ";
-	DEBUG_PRINT(temp.c_str());
+	// DEBUG_PRINT(temp.c_str());
 
 	start = clock();
 #ifdef EDITOR_MODE
 	if (m_isEdit)
-	{
 		m_graphicsManager->Render();
-	}
 	else
-	{
 		// m_graphicsManager->CompleteCamera();
 		m_graphicsManager->Render();
-	}
 #else
 	m_graphicsManager->Render();
 #endif // EDITOR_MODE
@@ -114,7 +112,7 @@ void Truth::Managers::Render() const
 	temp = std::to_string(finish - start);
 	temp = std::string("render : ") + temp;
 	temp += " \n ";
-	DEBUG_PRINT(temp.c_str());
+	// DEBUG_PRINT(temp.c_str());
 
 }
 
@@ -191,5 +189,5 @@ void Truth::Managers::InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 
 	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();
 	m_graphicsManager->Initalize(_hwnd, _width, _height);
-	m_particleManager->Initalize(m_graphicsManager);
+	m_particleManager->Initalize(m_graphicsManager, m_timeManager);
 }

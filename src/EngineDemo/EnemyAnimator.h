@@ -283,6 +283,8 @@ public:
 	void ChangeState(std::string stateName);
 
 	void SetEnemyDamage(float damage);
+
+	void SetImpulse(float power);
 };
 
 template<class Archive>

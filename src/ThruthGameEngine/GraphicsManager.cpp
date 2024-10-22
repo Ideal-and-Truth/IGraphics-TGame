@@ -6,11 +6,12 @@
 #include "Texture.h"
 #include "Material.h"
 #include <filesystem>
-
+#include "UISpriteSet.h"
 #ifdef EDITOR_MODE
 #include "EditorCamera.h"
 #endif // EDITOR_MODE
 #include "TFileUtils.h"
+#include <yaml-cpp/yaml.h>
 
 
 /// <summary>
@@ -20,6 +21,7 @@ Truth::GraphicsManager::GraphicsManager()
 	: m_renderer(nullptr)
 	, m_aspect(1.0f)
 	, m_mainCamera(nullptr)
+	, m_resolution(1920, 1080)
 {
 
 }
@@ -204,29 +206,28 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 
 std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _a, bool _b)
 {
-	if (m_textureMap.find(_path) == m_textureMap.end())
+	std::filesystem::path p(_path);
+	if (p.is_absolute())
+	{
+		::SetCurrentDirectory(Managers::GetRootPath().c_str());
+		p = fs::relative(_path);
+	}
+	if (m_textureMap.find(p) == m_textureMap.end())
 	{
 		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
-		std::filesystem::path p(_path);
-		if (p.is_absolute())
-			return nullptr;
-		if (p.filename().generic_wstring() == L"T_HNbuilding_Normal.png")
-		{
-			int a = 1;
-		}
 		if (_path.empty())
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(_path, true, _b);
+		tex->m_texture = m_renderer->CreateTexture(p, _a, _b);
 		tex->m_useCount = 1;
-		tex->m_path = _path;
+		tex->m_path = p;
 
 		tex->w = tex->m_texture->GetWidth();
 		tex->h = tex->m_texture->GetHeight();
-		return m_textureMap[_path] = tex;
+		return m_textureMap[p] = tex;
 	}
-	return m_textureMap[_path];
+	return m_textureMap[p];
 }
 
 void Truth::GraphicsManager::DeleteTexture(std::shared_ptr<Texture> _texture)
@@ -249,6 +250,9 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			matp = fs::relative(matp);
 		}
 	}
+
+	fs::create_directories(matp.parent_path());
+
 	std::shared_ptr<Material> mat = std::make_shared<Material>();
 	if (m_matarialMap.find(_name) == m_matarialMap.end())
 	{
@@ -263,43 +267,72 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 
 		if (std::filesystem::exists(matp))
 		{
-			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
-			f->Open(matp, Read);
-			std::filesystem::path albedo(f->Read<std::string>());
-			std::filesystem::path normal(f->Read<std::string>());
-			std::filesystem::path metalicRoughness(f->Read<std::string>());
+			std::ifstream fin(matp);
 
-			mat->m_tileX = f->Read<float>();
-			mat->m_tileY = f->Read<float>();
+			YAML::Node node = YAML::Load(fin);
 
-			mat->m_baseMap = CreateTexture(albedo);
-			mat->m_normalMap = CreateTexture(normal, false, true);
-			mat->m_maskMap = CreateTexture(metalicRoughness);
+			std::filesystem::path albedo;
+			std::filesystem::path normal;
+			std::filesystem::path metalicRoughness;
+
+			if (node["baseMap"].IsDefined())
+				albedo = node["baseMap"].as<std::string>();
+			if (node["normalMap"].IsDefined())
+				normal = node["normalMap"].as<std::string>();
+			if (node["maskMap"].IsDefined())
+				metalicRoughness = node["maskMap"].as<std::string>();
+
+			mat->m_tileX = node["tileX"].as<float>();
+			mat->m_tileY = node["tileY"].as<float>();
+
+			if (node["alphaCulling"].IsDefined())
+				mat->m_alphaCulling = node["alphaCulling"].as<bool>();
+			if (node["transparent"].IsDefined())
+				mat->m_transparent = node["transparent"].as<bool>();
+
+			mat->m_baseMap = CreateTexture(albedo, true, false);
+			mat->m_normalMap = CreateTexture(normal, true, true);
+			mat->m_maskMap = CreateTexture(metalicRoughness, true, true);
 
 			mat->SetTexture();
-			f->Close();
+			// mat->SaveMaterial();
+
+			fin.close();
 		}
 		else
 		{
-			std::shared_ptr<TFileUtils> f = std::make_shared<TFileUtils>();
-			f->Open(matp, Write);
+			YAML::Node node;
+			YAML::Emitter emitter;
+			emitter << YAML::BeginDoc;
+			emitter << YAML::BeginMap;
 
 			fs::path al = "../Resources/DefaultData/DefaultAlbedo.png";
 			fs::path no = "../Resources/DefaultData/DefaultNormalMap.png";
 			fs::path ma = "../Resources/DefaultData/DefaultBlack.png";
 
-			f->Write<std::string>(al.generic_string());
-			f->Write<std::string>(no.generic_string());
-			f->Write<std::string>(ma.generic_string());
+			emitter << YAML::Key << "baseMap" << YAML::Value << al.generic_string();
+			emitter << YAML::Key << "normalMap" << YAML::Value << no.generic_string();
+			emitter << YAML::Key << "maskMap" << YAML::Value << ma.generic_string();
 
-			f->Write<float>(1.0f);
-			f->Write<float>(1.0f);
+			emitter << YAML::Key << "tileX" << YAML::Value << (1.0f);
+			emitter << YAML::Key << "tileY" << YAML::Value << (1.0f);
 
-			mat->m_baseMap = CreateTexture(al.generic_wstring());
-			mat->m_normalMap = CreateTexture(no.generic_wstring(), false, true);
-			mat->m_maskMap = CreateTexture(ma.generic_wstring());
+			emitter << YAML::Key << "alphaCulling" << YAML::Value << false;
+			emitter << YAML::Key << "transparent" << YAML::Value << false;
+
+			mat->m_baseMap = CreateTexture(al.generic_wstring(), true, false);
+			mat->m_normalMap = CreateTexture(no.generic_wstring(), true, true);
+			mat->m_maskMap = CreateTexture(ma.generic_wstring(), true, true);
+
 			mat->SetTexture();
-			f->Close();
+
+			emitter << YAML::EndMap;
+			emitter << YAML::EndDoc;
+
+			std::ofstream fout(matp);
+			fout << emitter.c_str();
+
+			fout.close();
 		}
 
 		return m_matarialMap[_name] = mat;
@@ -357,6 +390,32 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::GetMaterial(const std::
 	return m_matarialMap[_name];
 }
 
+std::shared_ptr<Truth::UISpriteSet> Truth::GraphicsManager::CreateUISpriteSet()
+{
+	std::shared_ptr<Truth::UISpriteSet> result = std::make_shared<Truth::UISpriteSet>();
+	result->m_gp = this;
+	result->m_hwnd = m_hwnd;
+
+	return result;
+}
+
+void Truth::GraphicsManager::DeleteUISpriteSet(std::shared_ptr<UISpriteSet> _UISpriteSet)
+{
+	m_renderer->DeleteSprite((*_UISpriteSet)[0]);
+	m_renderer->DeleteSprite((*_UISpriteSet)[1]);
+	m_renderer->DeleteSprite((*_UISpriteSet)[2]);
+}
+
+std::shared_ptr<Ideal::IText> Truth::GraphicsManager::CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _font)
+{
+	return m_renderer->CreateText(_w, _h, _size, _font);
+}
+
+void Truth::GraphicsManager::DeleteTextSprite(std::shared_ptr<Ideal::IText> _textSprite)
+{
+	m_renderer->DeleteText(_textSprite);
+}
+
 void Truth::GraphicsManager::ToggleFullScreen()
 {
 	m_renderer->ToggleFullScreenWindow();
@@ -367,11 +426,34 @@ void Truth::GraphicsManager::ResizeWindow(uint32 _w, uint32 _h)
 	m_renderer->Resize(_w, _h);
 }
 
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetContentPosMin()
+{
+	return m_renderer->GetTopLeftEditorPos();
+}
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetContentPosMax()
+{
+	return m_renderer->GetRightBottomEditorPos();
+}
+
+
+DirectX::SimpleMath::Vector2 Truth::GraphicsManager::GetDisplayResolution()
+{
+	return m_resolution;
+}
+
+RECT Truth::GraphicsManager::GetWindowRect()
+{
+	RECT result;
+	::GetClientRect(m_hwnd, &result);
+	return result;
+}
+
 void Truth::GraphicsManager::BakeStaticMesh()
 {
-	m_renderer->BakeOption(32, 10.f);
-	m_renderer->BakeStaticMeshObject();
-	m_renderer->ReBuildBLASFlagOn();
+	// 	m_renderer->BakeOption(32, 10.f);
+	// 	m_renderer->BakeStaticMeshObject();
+	// 	m_renderer->ReBuildBLASFlagOn();
 }
 
 #ifdef EDITOR_MODE

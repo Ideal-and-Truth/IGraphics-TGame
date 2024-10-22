@@ -61,6 +61,18 @@
     <Filter Include="Component\Ranger">
       <UniqueIdentifier>{5455936b-ba9c-4982-ac1a-603cd865476c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\AutoTarget">
+      <UniqueIdentifier>{52c87665-16dc-484c-861c-f6fa6129208e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Effect">
+      <UniqueIdentifier>{10adbfe9-94d3-420f-a326-b3649a822262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\MapMove">
+      <UniqueIdentifier>{048e812f-4b82-4b77-b246-8ec49669dafb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\FrameCounter">
+      <UniqueIdentifier>{b1fdbea3-a874-4e31-a1ee-3670ac42fb34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -150,11 +162,26 @@
     <ClInclude Include="SimpleDamager.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
+    <ClInclude Include="AutoTarget.h">
+      <Filter>Component\AutoTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonTest.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="TimeDistortion.h">
+      <Filter>Component\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHPTextUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TestEffectGenerator.h">
-      <Filter>TestEntity</Filter>
+      <Filter>Component\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameUI.h">
+      <Filter>Component\FrameCounter</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMoveTrigger.h">
+      <Filter>Component\MapMove</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,11 +263,26 @@
     <ClCompile Include="SimpleDamager.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
+    <ClCompile Include="AutoTarget.cpp">
+      <Filter>Component\AutoTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonTest.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="TimeDistortion.cpp">
+      <Filter>Component\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHPTextUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TestEffectGenerator.cpp">
-      <Filter>TestEntity</Filter>
+      <Filter>Component\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameUI.cpp">
+      <Filter>Component\FrameCounter</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMoveTrigger.cpp">
+      <Filter>Component\MapMove</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

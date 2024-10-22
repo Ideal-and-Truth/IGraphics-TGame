@@ -2,8 +2,8 @@
 <Materials>
     <Material>
         <Name>DefaultMaterial</Name>
-        <DiffuseFile>DefaulBlack.png</DiffuseFile>
-        <SpecularFile>DefaulBlack.png</SpecularFile>
+        <DiffuseFile>DefaultAlbedo.png</DiffuseFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
         <RoughnessFile>DefaulBlack.png</RoughnessFile>

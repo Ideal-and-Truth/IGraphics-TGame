@@ -16,9 +16,8 @@ namespace physx
 namespace Truth
 {
 	class RigidBody;
+	class Entity;
 }
-
-
 
 namespace Truth
 {
@@ -37,6 +36,7 @@ namespace Truth
 
 	protected:
 		ColliderShape m_shape;
+		Vector3 m_debugMeshSize;
 
 	public:
 		PROPERTY(isTrigger);
@@ -74,7 +74,6 @@ namespace Truth
 		Collider(Vector3 _pos, bool _isTrigger = true);
 		virtual ~Collider();
 
-		METHOD(Destroy);
 		void Destroy();
 
 		METHOD(Awake);
@@ -89,8 +88,8 @@ namespace Truth
 		METHOD(SetSize);
 		void SetSize(Vector3 _size);
 
-		void OnDisable();
-		void OnEnable();
+		METHOD(SetActive);
+		void SetActive();
 
 #ifdef EDITOR_MODE
 		METHOD(ApplyTransform);
@@ -104,7 +103,7 @@ namespace Truth
 		physx::PxRigidDynamic* GetDefaultDynamic();
 		physx::PxRigidStatic* GetDefaultStatic();
 
-		void Initalize(const std::wstring& _path = L"");
+		void Initialize(const std::wstring& _path = L"");
 
 		void SetUpFiltering(uint32 _filterGroup);
 

@@ -42,6 +42,12 @@ public:
 
 	METHOD(OnTriggerExit);
 	void OnTriggerExit(Truth::Collider* _other);
+
+	METHOD(OnCollisionEnter);
+	void OnCollisionEnter(Truth::Collider* _other);
+
+	METHOD(OnCollisionExit);
+	void OnCollisionExit(Truth::Collider* _other);
 };
 
 template<class Archive>

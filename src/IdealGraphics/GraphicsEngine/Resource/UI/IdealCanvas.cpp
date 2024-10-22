@@ -144,7 +144,7 @@ void Ideal::IdealCanvas::SetCanvasSize(uint32 Width, uint32 Height)
 	}
 	for (auto text : m_texts)
 	{
-		//text.lock()->Resize
+		text.lock()->Resize(Width, Height);
 	}
 }
 

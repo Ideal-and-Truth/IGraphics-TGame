@@ -196,8 +196,8 @@ namespace Truth
 		Animator();
 		virtual ~Animator();
 
-		METHOD(Initalize);
-		void Initalize();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(Awake);
 		void Awake();

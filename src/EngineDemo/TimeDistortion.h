@@ -7,6 +7,8 @@ namespace Truth
 	class SkinnedMesh;
 }
 
+class Player;
+
 class TimeDistortion :
 	public Truth::Component
 {
@@ -21,9 +23,24 @@ private:
 
 private:
 	std::shared_ptr<Truth::SkinnedMesh> m_playerMesh;
+	std::shared_ptr<Player> m_player;
+	std::shared_ptr<Truth::Entity> m_playerEntity;
+
+	PROPERTY(active);
+	bool m_active;
+	PROPERTY(delete);
+	bool m_delete;
 
 	bool m_isPlayerIn;
 	bool m_isFaster;
+	int m_count;
+	float m_passingTime;
+	float m_damage;
+	float m_playerSpeed;
+	int m_playCount;
+
+private:
+	void PlayEffect();
 
 public:
 	TimeDistortion();
@@ -31,6 +48,9 @@ public:
 
 	METHOD(Awake);
 	void Awake();
+
+	METHOD(Start);
+	void Start();
 
 	METHOD(Update);
 	void Update();

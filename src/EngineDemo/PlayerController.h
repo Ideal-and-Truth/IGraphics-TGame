@@ -34,11 +34,22 @@ private:
 	PROPERTY(playerDirection);
 	Vector3 m_playerDirection;
 
+	Vector3 m_moveVec;
+
 	PROPERTY(angle);
 	Vector3 m_angle;
 
 	PROPERTY(canMove);
 	bool m_canMove;
+
+	PROPERTY(impulsePower);
+	float m_impulsePower;
+
+	PROPERTY(useImpulse);
+	bool m_useImpulse;
+
+	PROPERTY(needRot);
+	bool m_needRot;
 
 public:
 	PlayerController();
@@ -49,6 +60,9 @@ public:
 
 	METHOD(Start);
 	void Start();
+
+	METHOD(FixedUpdate);
+	void FixedUpdate();
 
 	METHOD(Update);
 	void Update();

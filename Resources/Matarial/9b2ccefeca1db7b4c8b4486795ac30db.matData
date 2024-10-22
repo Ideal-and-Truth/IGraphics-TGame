@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/chronosstatue/T_statuemain_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/chronosstatue/T_statuemain_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/chronosstatue/T_statuebaseclock_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

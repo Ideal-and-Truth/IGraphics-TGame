@@ -38,7 +38,7 @@ Truth::Controller::~Controller()
 /// <summary>
 /// 초기화
 /// </summary>
-void Truth::Controller::Initalize()
+void Truth::Controller::Initialize()
 {
 
 }
@@ -56,7 +56,7 @@ void Truth::Controller::Awake()
 	decs.position = MathUtil::ConvertEx(m_owner.lock()->GetLocalPosition() + Vector3{ 0.0f, m_height, 0.0f });
 
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
-
+	// m_controller->setSleepThreshold(0);
 	// create rigidbody to access physx body
 	m_rigidbody = std::make_shared<RigidBody>();
 
@@ -66,19 +66,19 @@ void Truth::Controller::Awake()
 	m_rigidbody->m_controller = m_controller;
 
 
+
 	m_rigidbody->m_body = m_controller->getActor();
 	m_controller->getActor()->userData = m_rigidbody.get();
 
 	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
-
+	m_rigidbody->m_body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+	m_rigidbody->m_body->setSleepThreshold(0);
 	// create collider to access physx shape
 	m_collider = std::make_shared<CapsuleCollider>();
 	m_collider->m_transform = m_owner.lock()->GetComponent<Transform>();
 	m_collider->m_owner = m_owner.lock();
 
 	m_collider->m_body = m_controller->getActor();
-
 	uint32 nbs = m_controller->getActor()->getNbShapes();
 	physx::PxShape** tempShapes = new physx::PxShape * [nbs];
 	m_controller->getActor()->getShapes(tempShapes, nbs);
@@ -97,6 +97,14 @@ void Truth::Controller::Start()
 	m_managers.lock()->Physics()->AddScene(m_controller->getActor());
 }
 
+void Truth::Controller::FixedUpdate()
+{
+	// m_rigidbody->m_body->wakeUp();
+// 	Vector3 z = Vector3::Zero;
+// 	z.y += 0.1f;
+// 	Move(z);
+}
+
 /// <summary>
 /// 움직임 함수
 /// </summary>
@@ -113,11 +121,9 @@ void Truth::Controller::Move(Vector3& _disp)
 				physx::PxControllerFilters()
 			));
 
-	m_impulse -= m_impulse * 0.01f;
+	m_impulse -= m_impulse * 0.1f;
 	if (m_impulse.Length() <= 1.0f)
-	{
 		m_impulse = Vector3::Zero;
-	}
 }
 
 void Truth::Controller::AddImpulse(Vector3& _disp)
@@ -133,7 +139,7 @@ void Truth::Controller::AddImpulse(Vector3& _disp)
 /// <returns>성공 여부</returns>
 bool Truth::Controller::SetPosition(Vector3& _disp)
 {
-	return m_controller->setPosition(physx::PxExtendedVec3(_disp.x, _disp.y, _disp.z));
+	return m_controller->setFootPosition(physx::PxExtendedVec3(_disp.x, _disp.y, _disp.z));
 }
 
 /// <summary>
@@ -167,4 +173,9 @@ bool Truth::Controller::IsCollisionUp()
 bool Truth::Controller::IsCollisionSide()
 {
 	return static_cast<physx::PxControllerCollisionFlag::Enum>(m_flag) & physx::PxControllerCollisionFlag::eCOLLISION_SIDES;
+}
+
+void Truth::Controller::PhysxAwake()
+{
+	m_rigidbody->m_body->wakeUp();
 }

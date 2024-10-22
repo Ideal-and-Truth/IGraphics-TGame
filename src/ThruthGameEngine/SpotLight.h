@@ -49,12 +49,11 @@ namespace Truth
 		void SetAngle();
 		void SetRange();
 		void SetSoftness();
+		void SetPosition();
+		void SetDirection();
 
-		METHOD(Initalize);
-		void Initalize();
-
-		METHOD(ApplyTransform);
-		void ApplyTransform();
+		METHOD(Initialize);
+		void Initialize();
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();

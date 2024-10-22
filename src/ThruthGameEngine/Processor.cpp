@@ -20,6 +20,7 @@
 
 Ideal::IdealRenderer* Processor::g_Renderer = nullptr;
 Truth::InputManager* Processor::g_inputmanager = nullptr;
+Truth::SceneManager* Processor::g_sceneManager = nullptr;
 
 Processor::Processor()
 	: m_hwnd(nullptr)
@@ -51,7 +52,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	CreateMainWindow(_hInstance);
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
-
+	g_sceneManager = m_manager->Scene().get();
 #ifdef CONVERT_DATA
 	// ConvertData();
 	// ConvertSkelFbxData(L"AsciiAniTest/idelTest.fbx");
@@ -59,8 +60,35 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// ConvertSkelFbxData(L"AsciiAniTest/FieldMob.fbx");
 	// ConvertSkelFbxData(L"AsciiAniTest/Enemy_B_Idle.fbx");
 	// ConvertAniFbxData(L"AsciiAniTest/idelTest.fbx");
-	// 
-	// ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+	
+// 	ConvertAniFbxData(L"PlayerAnimations/Skill/SlashSkill.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Skill/TimeStop.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAbility.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Guard/GuardHit.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/Guard/GuardLoop.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalVariation1.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalVariation2.fbx");
+
+
+// 	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");
+// 	ConvertStaticFbxData(L"DebugObject/debugSphere.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackShockWave.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/AttackSpin.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/JumpAttack.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/BlackHoleSummon.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo3-1.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo2-1.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-2.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-1.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Strafe/BossWalk.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Idle/BattleEntrance.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Attacks/BossSwordShoot.fbx");
+
+// 	ConvertStaticFbxData(L"EnemyAnimations/RangeEnemy/Weapon/SM_mon_bow.fbx");
+// 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_shield.fbx");
+// 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_sword.fbx");
+
+// 	int a = 0;
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
@@ -69,10 +97,12 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	Truth::UnityParser up(m_manager->Graphics().get());
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
-	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
-	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
+//	up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+//	up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\navTest.unity");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\BOSSROOM\\Hanna_BOSSROOM.unity");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\2_JS_Scene2.unity");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
 	// up.ParseMatarialData();
 	m_editor = std::make_unique<EditorUI>(m_manager, m_hwnd);
 #endif // EDITOR_MODE
@@ -164,6 +194,10 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			g_Renderer->Resize(width, height);
 			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		}
+
+		if (g_sceneManager)
+			g_sceneManager->m_currentScene->ResizeWindow();
+
 		break;
 	}
 	case WM_SYSCOMMAND:
@@ -172,14 +206,16 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		{
 			g_Renderer->ToggleFullScreenWindow();
 			g_Renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+			if (g_sceneManager)
+				g_sceneManager->m_currentScene->ResizeWindow();
 		}
+
 		[[fallthrough]];
 	}
 	default:
 		if (g_inputmanager)
-		{
 			g_inputmanager->m_deltaWheel = 0;
-		}
+
 		return DefWindowProc(hWnd, message, wParam, lParam);
 
 	}

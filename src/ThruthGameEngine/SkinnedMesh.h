@@ -66,17 +66,20 @@ namespace Truth
 		void SetAnimationSpeed(float Speed);
 		void SetPlayStop(bool playStop);
 
-		METHOD(Initalize);
-		void Initalize();
-
-		METHOD(FixedUpdate);
-		void FixedUpdate();
+		METHOD(Initialize);
+		void Initialize();
 
 		METHOD(Update);
 		void Update();
 
 		METHOD(ApplyTransform);
 		void ApplyTransform();
+
+		METHOD(Destroy);
+		void Destroy();
+
+		METHOD(SetActive);
+		void SetActive();
 
 		void DeleteMesh();
 

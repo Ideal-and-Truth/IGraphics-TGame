@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/BossMonster/T_bossSword_BaseMap.png
+normalMap: ../Resources/Textures/BossMonster/T_bossSword_Normal.png
+maskMap: ../Resources/Textures/BossMonster/T_bossSword_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <memory>
 #include "ComponentFactory.h"
+#include "ButtonFactory.h"
 
 class Method;
 class Property;
@@ -169,7 +170,8 @@ private:
 	PropertyMap m_propertyMap;
 
 public:
-	static std::unique_ptr<Truth::ComponentFactory> g_factory;
+	static std::unique_ptr<Truth::ComponentFactory> g_componentFactory;
+	static std::unique_ptr<Truth::ButtonFactory> g_buttonFactory;
 
 public:
 	std::string Dump(void* _object, int _indent = 0) const;
@@ -200,17 +202,24 @@ public:
 
 		if constexpr (std::is_base_of_v<Truth::Component, T> && !std::is_abstract_v<T>)
 		{
-			if (g_factory == nullptr)
-			{
-				g_factory = std::make_unique<Truth::ComponentFactory>();
-			}
-			g_factory->RegisterType(m_name, []() { return std::make_shared<T>(); });
+			if (g_componentFactory == nullptr)
+				g_componentFactory = std::make_unique<Truth::ComponentFactory>();
+
+			g_componentFactory->RegisterType(m_name, []() { return std::make_shared<T>(); });
+		}
+
+		if constexpr (std::is_base_of_v<Truth::ButtonBehavior, T> && !std::is_abstract_v<T>)
+		{
+			if (g_buttonFactory == nullptr)
+				g_buttonFactory = std::make_unique<Truth::ButtonFactory>();
+
+			g_buttonFactory->RegisterType(m_name, []() { return std::make_shared<T>(); });
 		}
 	}
 
 	static const std::shared_ptr<Truth::Component> CreateComponent(std::string& _name)
 	{
-		return g_factory->Create(_name);
+		return g_componentFactory->Create(_name);
 	}
 
 	// 부모의 타입 정보 가져오기

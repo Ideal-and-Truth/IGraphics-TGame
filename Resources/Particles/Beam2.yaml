@@ -1,0 +1,32 @@
+MaxCount: 40
+MatName: Beam2
+EBlendingMode: 2
+Shader: BossFX_1BeamRingPS
+Texture0: ../Resources/Textures/0_Particle/boss/Ring_2.png
+Mesh: 0_Particle/Plane
+StartSize: 0.5
+StartLifetime: 1
+SimulationSpeed: 2
+StartColor:
+  - 0.515574
+  - 2.434655
+  - 5.470814
+  - 1
+Loop: false
+Duration: 1
+StopEnd: true
+RenderMode: 1
+SizeOverLifetime: true
+SizeOverLifetimeAxisX:
+  - x: 0
+    y: 0.5
+  - x: 1
+    y: 3
+SizeOverLifetimeAxisY:
+  - x: 0
+    y: 1
+SizeOverLifetimeAxisZ:
+  - x: 0
+    y: 0.5
+  - x: 1
+    y: 3
