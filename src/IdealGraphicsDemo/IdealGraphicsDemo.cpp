@@ -258,9 +258,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugSphere.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"DebugPlane/Plane.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugSphere.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"DebugPlane/Plane.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
@@ -344,10 +344,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> hiphopAnim2 = gRenderer->CreateAnimation(L"Kachujin/HipHop");
 		//ka->AddAnimation("HIP", hiphopAnim2);
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
-		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
+		//std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
+		//std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		//std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		//
 		////std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		////std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
@@ -412,16 +412,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(2, 8, 2)));
 		//meshes.push_back(plane);
 
-		auto garlandMaterial = gRenderer->CreateMaterial();
-		auto garlandBaseTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_BaseMap.png");
-		auto garlandNormalTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_Normal.png");
-		auto garlandMaskTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_MaskMap.png");
-		garlandMaterial->SetBaseMap(garlandBaseTex);
-		garlandMaterial->SetNormalMap(garlandNormalTex);
-		garlandMaterial->SetMaskMap(garlandMaskTex);
-		garlandMaterial->SetAlphaClipping(true);
-		garlandMaterial->SetSurfaceTypeTransparent(true);
-		DebugPlayer->GetMeshByIndex(4).lock()->SetMaterialObject(garlandMaterial);
+		//auto garlandMaterial = gRenderer->CreateMaterial();
+		//auto garlandBaseTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_BaseMap.png");
+		//auto garlandNormalTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_Normal.png");
+		//auto garlandMaskTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_MaskMap.png");
+		//garlandMaterial->SetBaseMap(garlandBaseTex);
+		//garlandMaterial->SetNormalMap(garlandNormalTex);
+		//garlandMaterial->SetMaskMap(garlandMaskTex);
+		//garlandMaterial->SetAlphaClipping(true);
+		//garlandMaterial->SetSurfaceTypeTransparent(true);
+		//DebugPlayer->GetMeshByIndex(4).lock()->SetMaterialObject(garlandMaterial);
 		//DebugPlayer->AlphaClippingCheck();
 		//std::shared_ptr<Ideal::IMeshObject> garland = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//garland->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
@@ -434,7 +434,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		windowMaterial->SetBaseMap(windowBase);
 		windowMaterial->SetNormalMap(windowNormal);
 		windowMaterial->SetMaskMap(windowMask);
-		//garlandMaterial->SetAlphaClipping(true);
 		windowMaterial->SetSurfaceTypeTransparent(true);
 
 		for(int y = 0 ; y < 20;y++)
@@ -553,23 +552,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector< std::shared_ptr<Ideal::IPointLight>> plights;
 		std::vector< std::shared_ptr<Ideal::ISpotLight>> slights;
-		for (int i = 0; i < 300; i++)
-		{
-			std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
-			pointLight->SetPosition(Vector3(i, 3.f, 3.f));
-			pointLight->SetRange(6.f);
-			pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
-			pointLight->SetIntensity(3.f);
-			plights.push_back(pointLight);
-
-			std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-			spotLight->SetPosition(Vector3(i, 3.f, 8.f));
-			spotLight->SetRange(6.f);
-			spotLight->SetLightColor(Color(0.f, 0.f, 1.f, 1.f));
-			spotLight->SetIntensity(1.f);
-			spotLight->SetDirection(Vector3(0, -1, 0));
-			slights.push_back(spotLight);
-		}
+		//for (int i = 0; i < 300; i++)
+		//{
+		//	std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		//	pointLight->SetPosition(Vector3(i, 3.f, 3.f));
+		//	pointLight->SetRange(6.f);
+		//	pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
+		//	pointLight->SetIntensity(3.f);
+		//	plights.push_back(pointLight);
+		//
+		//	std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		//	spotLight->SetPosition(Vector3(i, 3.f, 8.f));
+		//	spotLight->SetRange(6.f);
+		//	spotLight->SetLightColor(Color(0.f, 0.f, 1.f, 1.f));
+		//	spotLight->SetIntensity(1.f);
+		//	spotLight->SetDirection(Vector3(0, -1, 0));
+		//	slights.push_back(spotLight);
+		//}
 #pragma endregion
 
 #pragma region CompileShader
@@ -2016,7 +2015,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						RendererSizeTest();
 						CameraWindow(camera);
-						AnimationTest(slashAnim);
+						//AnimationTest(slashAnim);
 						//SkinnedMeshObjectAnimationTest(ka);
 						if (dirLight)
 						{

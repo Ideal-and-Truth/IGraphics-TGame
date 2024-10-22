@@ -291,6 +291,22 @@ void CalculateSpecularAndReflectionCoefficients(
     out float3 Kr)
 {
    
+  // F0 계산
+    float3 F0 = lerp(float3(0.04, 0.04, 0.04), Albedo.rgb, metallic);
+    
+    // Fresnel-Schlick 근사 반사율 계산
+    float dotNV = saturate(dot(N, V));
+    float3 reflectance = F0 + (1.0 - F0) * pow(1.0 - dotNV, 5.0);
+    
+    // Smoothness를 기반으로 반사율 조정
+    reflectance *= 1 - roughness;//smoothness;
+    
+    // 최종 반사율 사용
+    Ks = reflectance;
+    Kr = reflectance;
+    return;
+
+
     // float3 Kr; // 반사율
     // float3 Ks; // 스펙큘러 반사 계수
 
