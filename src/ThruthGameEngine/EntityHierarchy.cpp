@@ -125,6 +125,9 @@ void EntityHierarchy::ShowContext(bool* p_open)
 
 void EntityHierarchy::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 {
+	if (_entity.expired())
+		return;
+
 	const std::string entityName = _entity.lock()->m_name + "##" + std::to_string(_entity.lock()->m_ID);
 
 	std::shared_ptr<Truth::Scene> currentScene = m_manager.lock()->Scene()->m_currentScene;
@@ -173,6 +176,7 @@ void EntityHierarchy::DisplayEntity(std::weak_ptr<Truth::Entity> _entity)
 		if (ImGui::Selectable("Delete"))
 		{
 			m_manager.lock()->Scene()->m_currentScene->DeleteEntity(_entity.lock());
+			m_manager.lock()->Scene()->m_currentScene->EditorUpdate();
 		}
 		if (ImGui::Selectable("SaveEntity"))
 		{

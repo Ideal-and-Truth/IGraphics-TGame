@@ -10,8 +10,15 @@ void BossHPUI::Update()
 	{
 		float maxTP = m_boss.lock()->GetMaxTP();
 		float currentTP = m_boss.lock()->GetCurrentTP();
+		float rate;
 
-		float rate = currentTP / maxTP;
+		if (maxTP == 0.f)
+			rate = 0.f;
+		else
+			rate = currentTP / maxTP;
+
+		if (currentTP < 0)
+			rate = 0.f;
 
 		m_UI.lock()->SetScale({ rate, 1.0f }, true);
 
