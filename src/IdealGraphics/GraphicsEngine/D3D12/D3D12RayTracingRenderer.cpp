@@ -380,9 +380,6 @@ finishAdapter:
 	CreateUIDescriptorHeap();
 	CreateCanvas();
 
-	//------------------Particle System Manager-------------------//
-	CreateParticleSystemManager();
-
 	//---------------Create Managers---------------//
 
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
