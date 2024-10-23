@@ -46,6 +46,13 @@ namespace Ideal
 			CustomData_z,
 			CustomData_w
 		};
+		
+		enum class EShape
+		{
+			Circle = 0,
+
+
+		};
 	}
 }
 namespace Ideal
@@ -97,6 +104,10 @@ namespace Ideal
 
 		virtual void SetLoop(bool Loop) abstract;	
 		virtual bool GetLoop() abstract;
+
+		//------Shape------//
+		virtual void SetShapeMode(bool UseShape) abstract;
+		virtual void SetShape(const Ideal::ParticleMenu::EShape& Shape) abstract;
 
 		//------Color Over Lifetime------//
 		// 생명 시간 동안 색상 값이 바뀔지를 결정. 그라디언트 그래프를 통해 조작함

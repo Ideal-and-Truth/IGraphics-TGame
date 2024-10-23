@@ -149,6 +149,7 @@ void Ideal::ParticleSystemManager::DeleteParticleSystem(std::shared_ptr<Ideal::P
 	{
 		std::swap(*it, m_particles.back());
 		m_particles.pop_back();
+		__debugbreak(); // 1023. deferred delete manager에게 넘겨준 다음 Free를 실행하도록 합시다.
 	}
 }
 

@@ -11,7 +11,10 @@
 #include "GraphicsEngine/D3D12/D3D12PipelineStateObject.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+#include "GraphicsEngine/D3D12/ResourceManager.h"
+#include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 
+#include <random>
 
 Ideal::ParticleSystem::ParticleSystem()
 {
@@ -103,6 +106,16 @@ void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootS
 	//RENDER_MODE_MESH_CreatePipelineState(Device);
 }
 
+void Ideal::ParticleSystem::Free()
+{
+	m_ParticleStructuredBuffer->Free();
+}
+
+void Ideal::ParticleSystem::SetResourceManager(std::shared_ptr<Ideal::ResourceManager> ResourceManager)
+{
+	m_ResourceManger = ResourceManager;
+}
+
 void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
 	m_currentTime += m_deltaTime;
@@ -172,6 +185,11 @@ void Ideal::ParticleSystem::SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> S
 void Ideal::ParticleSystem::SetParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer)
 {
 	m_particleVertexBuffer = ParticleVertexBuffer;
+}
+
+void Ideal::ParticleSystem::SetBillboardCalculateComputePipelineState(ComPtr<ID3D12PipelineState> PipelineState)
+{
+	m_RENDER_MODE_BILLBOARD_ComputePipelineState = PipelineState;
 }
 
 void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device)
@@ -400,6 +418,49 @@ void Ideal::ParticleSystem::SetLoop(bool Loop)
 bool Ideal::ParticleSystem::GetLoop()
 {
 	return m_isLoop;
+}
+
+void Ideal::ParticleSystem::SetShapeMode(bool UseShape)
+{
+	m_isUseShapeMode = UseShape;
+}
+
+void Ideal::ParticleSystem::SetShape(const Ideal::ParticleMenu::EShape& Shape)
+{
+	m_ShapeMode_shape = Shape;
+}
+
+void Ideal::ParticleSystem::UpdateShape()
+{
+	if (!m_ParticleStructuredBuffer)
+	{
+		UpdateParticleStructuredBuffer();
+	}
+}
+
+void Ideal::ParticleSystem::UpdateParticleStructuredBuffer()
+{
+	if (m_ParticleStructuredBuffer)
+	{
+		m_DeferredDeleteManager.lock()->AddD3D12ResourceToDelete(m_ParticleStructuredBuffer->GetResource());
+	}
+	else
+	{
+		m_ParticleStructuredBuffer = std::make_shared<Ideal::D3D12StructuredBuffer>();
+	}
+
+	std::vector<Vector4> startPos;
+	startPos.resize(100);	// TEMP
+
+	for (uint32 y = 0; y < 10; y++)
+	{
+		for (uint32 x = 0; x < 10; x++)
+		{
+			startPos[y * 10 + x] = Vector4(y, x, 0, 1);
+		}
+	}
+
+	m_ResourceManger.lock()->CreateStructuredBuffer<Vector4>(m_ParticleStructuredBuffer, startPos);
 }
 
 void Ideal::ParticleSystem::SetColorOverLifetime(bool Active)
@@ -678,6 +739,13 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 
 void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
+	// 먼저 컴퓨트 셰이더로 위치 계산을 하겠다. 만약 사용될 버퍼가 없으면 만든다.
+	UpdateShape();
+
+
+
+
+
 	// CB_ParticleSystem
 	{
 		// Transform

@@ -21,6 +21,9 @@ namespace Ideal
 	class D3D12DescriptorHeap;
 	class D3D12DynamicConstantBufferAllocator;
 	class D3D12VertexBuffer;
+	class D3D12StructuredBuffer;
+	class ResourceManager;
+	class DeferredDeleteManager;
 }
 
 namespace Ideal
@@ -52,12 +55,18 @@ namespace Ideal
 		virtual float GetCurrentDurationTime() override;
 	public:
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
+		void Free();
+		void SetResourceManager(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
+
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
 		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer);
+
+		// 파티클 위치 계산용 컴퓨트 파이프라인
+		void SetBillboardCalculateComputePipelineState(ComPtr<ID3D12PipelineState> PipelineState);
 
 	private:
 		void RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device);
@@ -66,6 +75,7 @@ namespace Ideal
 	private:
 		ComPtr<ID3D12PipelineState> m_RENDER_MODE_MESH_pipelineState;
 		ComPtr<ID3D12PipelineState> m_RENDER_MODE_BILLBOARD_pipelineState;
+		ComPtr<ID3D12PipelineState> m_RENDER_MODE_BILLBOARD_ComputePipelineState;
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		//ComPtr<ID3D12RootSignature> m_RENDER_MODE_BILLBOARD_RootSignature;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_MESH_VS;
@@ -94,6 +104,12 @@ namespace Ideal
 
 		virtual void SetLoop(bool Loop) override;
 		virtual bool GetLoop() override;
+
+		//------Shape------//
+		virtual void SetShapeMode(bool UseShape) override;
+		virtual void SetShape(const Ideal::ParticleMenu::EShape& Shape) override;
+		void UpdateShape();
+		void UpdateParticleStructuredBuffer();
 
 		//------Color Over Lifetime------//
 		virtual void SetColorOverLifetime(bool Active) override;
@@ -154,6 +170,11 @@ namespace Ideal
 		float m_startLifetime = 1.f;	//1 은 임시
 		float m_simulationSpeed = 1.f;
 
+		//---------Shape---------//
+		bool m_isUseShapeMode = false;
+		Ideal::ParticleMenu::EShape m_ShapeMode_shape;
+		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_ParticleStructuredBuffer;
+
 		//------Color Over Lifetime------//
 		bool m_isUseColorOverLifetime = false;
 		Ideal::Gradient m_ColorOverLifetimeGradientGraph;
@@ -192,5 +213,9 @@ namespace Ideal
 		CB_ParticleSystem m_cbParticleSystem;
 		CB_Transform m_cbTransform;
 		Matrix m_transform;
+
+	private:
+		std::weak_ptr<Ideal::ResourceManager> m_ResourceManger;
+		std::weak_ptr<Ideal::DeferredDeleteManager> m_DeferredDeleteManager;
 	};
 }

@@ -374,3 +374,61 @@ std::shared_ptr<Ideal::D3D12UnorderedAccessView> D3D12UAVBuffer::GetUAV()
 {
 	return m_uav;
 }
+
+void D3D12StructuredBuffer::Free()
+{
+	m_srvHandle.Free();
+	m_uavHandle.Free();
+}
+
+void D3D12StructuredBuffer::EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle)
+{
+	m_srvHandle = SRVHandle;
+}
+
+void D3D12StructuredBuffer::EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle)
+{
+	m_uavHandle = UAVHandle;
+}
+
+void D3D12StructuredBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, const D3D12UploadBuffer& UploadBuffer)
+{
+	D3D12GPUBuffer::CreateBuffer(Device, ElementSize, ElementCount);
+	D3D12GPUBuffer::SetName(L"StructuredBuffer");
+
+	// 데이터를 복사한다
+	CmdList->CopyBufferRegion(m_resource.Get(), 0, UploadBuffer.GetResource(), 0, m_bufferSize);
+
+	CD3DX12_RESOURCE_BARRIER resourceBarrier
+		= CD3DX12_RESOURCE_BARRIER::Transition(
+			m_resource.Get(),
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		);
+
+	CmdList->ResourceBarrier(1, &resourceBarrier);
+}
+
+void D3D12StructuredBuffer::TransitionToSRV(ID3D12GraphicsCommandList* CmdList)
+{
+	CD3DX12_RESOURCE_BARRIER resourceBarrier
+		= CD3DX12_RESOURCE_BARRIER::Transition(
+			m_resource.Get(),
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		);
+
+	CmdList->ResourceBarrier(1, &resourceBarrier);
+}
+
+void D3D12StructuredBuffer::TransitionToUAV(ID3D12GraphicsCommandList* CmdList)
+{
+	CD3DX12_RESOURCE_BARRIER resourceBarrier
+		= CD3DX12_RESOURCE_BARRIER::Transition(
+			m_resource.Get(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+		);
+
+	CmdList->ResourceBarrier(1, &resourceBarrier);
+}
