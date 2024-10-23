@@ -979,7 +979,7 @@ void AssimpConverter::ReadParticleModelData(aiNode* node, int32 index, int32 par
 	// Vertex
 	for (uint32 v = 0; v < srcMesh->mNumVertices; ++v)
 	{
-		ParticleVertexTest vertex;
+		ParticleMeshVertex vertex;
 		{
 			memcpy(&vertex.Position, &srcMesh->mVertices[v], sizeof(Vector3));
 
@@ -1050,7 +1050,7 @@ void AssimpConverter::WriteParticleModelData(const std::wstring& filePath)
 
 		// vertex
 		file->Write<uint32>((uint32)mesh->vertices.size());
-		file->Write(&mesh->vertices[0], sizeof(ParticleVertexTest) * (uint32)mesh->vertices.size());
+		file->Write(&mesh->vertices[0], sizeof(ParticleMeshVertex) * (uint32)mesh->vertices.size());
 
 		// index
 		file->Write<uint32>((uint32)mesh->indices.size());

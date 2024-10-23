@@ -20,6 +20,7 @@ namespace Ideal
 	class D3D12PipelineStateObject;
 	class D3D12DescriptorHeap;
 	class D3D12DynamicConstantBufferAllocator;
+	class D3D12VertexBuffer;
 }
 
 namespace Ideal
@@ -50,18 +51,30 @@ namespace Ideal
 		virtual void SetPlayOnWake(bool PlayOnWake) override;
 		virtual float GetCurrentDurationTime() override;
 	public:
-		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
+		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
-	private:
-		void CreatePipelineState(ComPtr<ID3D12Device> Device);
+		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void SetParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer);
 
 	private:
-		ComPtr<ID3D12PipelineState> m_pipelineState;
+		void RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device);
+		void RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3D12Device> Device);
+
+	private:
+		ComPtr<ID3D12PipelineState> m_RENDER_MODE_MESH_pipelineState;
+		ComPtr<ID3D12PipelineState> m_RENDER_MODE_BILLBOARD_pipelineState;
 		ComPtr<ID3D12RootSignature> m_rootSignature;
-		std::shared_ptr<Ideal::D3D12Shader> m_vs;
+		//ComPtr<ID3D12RootSignature> m_RENDER_MODE_BILLBOARD_RootSignature;
+		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_MESH_VS;
+		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_VS;
+		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_GS;
 		std::shared_ptr<Ideal::D3D12Shader> m_ps;
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_pso;
+
+		std::weak_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 
 		//----------------------------Interface---------------------------//
 	public:
@@ -122,6 +135,7 @@ namespace Ideal
 
 	private:
 		void DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
+		void DrawRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
 		void UpdateCustomData();
 		void UpdateLifeTime();
@@ -170,7 +184,7 @@ namespace Ideal
 		//------Renderer Menu------//
 		Ideal::ParticleMenu::ERendererMode m_Renderer_Mode;
 		// 만약 아래의 Mesh가 ERendererMode가 Mesh가 아닐 경우 사각형 고정이 될 것이다. 사각형에 띄워야 하니까
-		std::weak_ptr<Ideal::IdealMesh<ParticleVertexTest>> m_Renderer_Mesh;
+		std::weak_ptr<Ideal::IdealMesh<ParticleMeshVertex>> m_Renderer_Mesh;
 		std::weak_ptr<Ideal::ParticleMaterial> m_particleMaterial;
 
 		//----CB Data----//

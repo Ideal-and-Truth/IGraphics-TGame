@@ -380,9 +380,6 @@ finishAdapter:
 	CreateUIDescriptorHeap();
 	CreateCanvas();
 
-	//------------------Particle System Manager-------------------//
-	CreateParticleSystemManager();
-
 	//---------------Create Managers---------------//
 
 	m_deferredDeleteManager = std::make_shared<Ideal::DeferredDeleteManager>();
@@ -397,6 +394,9 @@ finishAdapter:
 
 	m_textManager = std::make_shared<Ideal::D2DTextManager>();
 	m_textManager->Init(m_device, m_commandQueue);
+
+	//------------------Particle System Manager-------------------//
+	CreateParticleSystemManager();
 
 
 	//------------------Debug Mesh Manager-------------------//
@@ -1212,7 +1212,12 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 {
 	std::shared_ptr<Ideal::ParticleSystem> NewParticleSystem = std::make_shared<Ideal::ParticleSystem>();
 	std::shared_ptr<Ideal::ParticleMaterial> GetParticleMaterial = std::static_pointer_cast<Ideal::ParticleMaterial>(ParticleMaterial);
-	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), m_particleSystemManager->GetVS(), GetParticleMaterial);
+	NewParticleSystem->Init(m_device, m_particleSystemManager->GetRootSignature(), GetParticleMaterial);
+	NewParticleSystem->SetMeshVS(m_particleSystemManager->GetMeshVS());
+	NewParticleSystem->SetBillboardVS(m_particleSystemManager->GetBillboardVS());
+	NewParticleSystem->SetBillboardGS(m_particleSystemManager->GetBillboardGS());
+	NewParticleSystem->SetParticleVertexBuffer(m_particleSystemManager->GetParticleVertexBuffer());
+
 	if (GetParticleMaterial->GetTransparency())
 	{
 		m_particleSystemManager->AddParticleSystem(NewParticleSystem);
@@ -2060,11 +2065,26 @@ void Ideal::D3D12RayTracingRenderer::CreateParticleSystemManager()
 {
 	m_particleSystemManager = std::make_shared<Ideal::ParticleSystemManager>();
 
-	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
-	//auto shader = CreateAndLoadParticleShader(L"DefaultParticleVS");
+	//---VertexShader---//
+	// TEMP: 일단 그냥 여기서 컴파일 한다.
+	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	//CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
+	auto defaultParticleMeshVS = CreateAndLoadParticleShader(L"DefaultParticleVS");
+
+	CompileShader(L"../Shaders/Particle/DefaultParticleBillboardShader.hlsl", L"../Shaders/Particle/", L"DefaultParticleBillboardShaderVS", L"vs_6_3", L"VSMain", L"../Shaders/Particle/");
+	auto defaultParticleBillboardVS = CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderVS");
+
+	CompileShader(L"../Shaders/Particle/DefaultParticleBillboardShader.hlsl", L"../Shaders/Particle/", L"DefaultParticleBillboardShaderGS", L"gs_6_3", L"GSMain", L"../Shaders/Particle/");
+	auto defaultParticleBillboardGS = CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderGS");
+
 
 	//---Init---//
-	m_particleSystemManager->Init(m_device, std::static_pointer_cast<Ideal::D3D12Shader>(m_DefaultParticleShaderVS));
+	m_particleSystemManager->Init(m_device);
+	m_particleSystemManager->SetMeshVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleMeshVS));
+	m_particleSystemManager->SetBillboardVS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleBillboardVS));
+	m_particleSystemManager->SetBillboardGS(std::static_pointer_cast<Ideal::D3D12Shader>(defaultParticleBillboardGS));
+	m_particleSystemManager->SetDefaultParticleVertexBuffer(m_resourceManager->GetParticleVertexBuffer());
 }
 
 void Ideal::D3D12RayTracingRenderer::DrawParticle()

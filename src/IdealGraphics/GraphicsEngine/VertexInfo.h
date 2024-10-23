@@ -120,7 +120,7 @@ public:
 //	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 //};
 
-struct ParticleVertexTest
+struct ParticleMeshVertex
 {
 	Vector3 Position;
 	Vector3 Normal;
@@ -130,5 +130,17 @@ struct ParticleVertexTest
 
 public:
 	static const int32 InputElementCount = 3;
+	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
+};
+
+
+struct ParticleVertex
+{
+	Vector4 Color;
+
+	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
+
+public:
+	static const int32 InputElementCount = 1;
 	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 };

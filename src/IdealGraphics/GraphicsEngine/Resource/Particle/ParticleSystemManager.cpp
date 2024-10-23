@@ -17,10 +17,9 @@ Ideal::ParticleSystemManager::~ParticleSystemManager()
 
 }
 
-void Ideal::ParticleSystemManager::Init(ComPtr<ID3D12Device> Device, std::shared_ptr<D3D12Shader> Shader)
+void Ideal::ParticleSystemManager::Init(ComPtr<ID3D12Device> Device)
 {
 	CreateRootSignature(Device);
-	SetVS(Shader);
 }
 
 Microsoft::WRL::ComPtr<ID3D12RootSignature> Ideal::ParticleSystemManager::GetRootSignature()
@@ -28,26 +27,37 @@ Microsoft::WRL::ComPtr<ID3D12RootSignature> Ideal::ParticleSystemManager::GetRoo
 	return m_rootSignature;
 }
 
-std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetVS()
+std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetMeshVS()
 {
-	return m_VS;
+	return m_RENDER_MODE_MESH_VS;
+}
+
+std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetBillboardVS()
+{
+	return m_RENDER_MODE_BILLBOARD_VS;
+}
+
+std::shared_ptr<Ideal::D3D12Shader> Ideal::ParticleSystemManager::GetBillboardGS()
+{
+	return m_RENDER_MODE_BILLBOARD_GS;
 }
 
 void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Device)
 {
-	//CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::ParticleSystemRootSignature::Slot::Count];
 	CD3DX12_DESCRIPTOR_RANGE1 ranges[Ideal::ParticleSystemRootSignature::Slot::Count];
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Global].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Transform].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
 	ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
-	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticlePosBuffer].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
 	
 	CD3DX12_ROOT_PARAMETER1	rootParameters[Ideal::ParticleSystemRootSignature::Slot::Count];
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::CBV_Global].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Global]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::CBV_Transform].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Transform]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData]);
+	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticlePosBuffer].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticlePosBuffer], D3D12_SHADER_VISIBILITY_VERTEX);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2]);
@@ -76,9 +86,29 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 	m_rootSignature->SetName(L"ParticleSystemRootSignature");
 }
 
-void Ideal::ParticleSystemManager::SetVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+void Ideal::ParticleSystemManager::SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
 {
-	m_VS = Shader;
+	m_RENDER_MODE_MESH_VS = Shader;
+}
+
+void Ideal::ParticleSystemManager::SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_BILLBOARD_VS = Shader;
+}
+
+void Ideal::ParticleSystemManager::SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_BILLBOARD_GS = Shader;
+}
+
+void Ideal::ParticleSystemManager::SetDefaultParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer)
+{
+	m_particleVertexBuffer = ParticleVertexBuffer;
+}
+
+std::shared_ptr<Ideal::D3D12VertexBuffer> Ideal::ParticleSystemManager::GetParticleVertexBuffer()
+{
+	return m_particleVertexBuffer;
 }
 
 void Ideal::ParticleSystemManager::AddParticleSystemNoTransparency(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem)

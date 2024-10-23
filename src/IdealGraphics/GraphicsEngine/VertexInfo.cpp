@@ -85,15 +85,26 @@ const D3D12_INPUT_LAYOUT_DESC SimpleVertex::InputLayout =
 	SimpleVertex::InputElementCount
 };
 
-const D3D12_INPUT_ELEMENT_DESC ParticleVertexTest::InputElements[] =
+const D3D12_INPUT_ELEMENT_DESC ParticleMeshVertex::InputElements[] =
 {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 };
 
-const D3D12_INPUT_LAYOUT_DESC ParticleVertexTest::InputLayout =
+const D3D12_INPUT_LAYOUT_DESC ParticleMeshVertex::InputLayout =
 {
-	ParticleVertexTest::InputElements,
-	ParticleVertexTest::InputElementCount
+	ParticleMeshVertex::InputElements,
+	ParticleMeshVertex::InputElementCount
+};
+
+const D3D12_INPUT_ELEMENT_DESC ParticleVertex::InputElements[] =
+{
+	  { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+};
+
+const D3D12_INPUT_LAYOUT_DESC ParticleVertex::InputLayout =
+{
+	ParticleVertex::InputElements,
+	ParticleVertex::InputElementCount
 };
