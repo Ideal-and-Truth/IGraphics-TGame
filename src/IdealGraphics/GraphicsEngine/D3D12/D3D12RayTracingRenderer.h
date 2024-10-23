@@ -296,6 +296,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderPS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderBillboardCS;
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader

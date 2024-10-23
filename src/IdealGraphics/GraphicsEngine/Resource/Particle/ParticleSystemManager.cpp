@@ -6,6 +6,7 @@
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/D3D12ConstantBufferPool.h"
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
+#include "GraphicsEngine/D3D12/D3D12Shader.h"
 
 Ideal::ParticleSystemManager::ParticleSystemManager()
 {
@@ -52,6 +53,7 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
 	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
 	ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+	ranges[Ideal::ParticleSystemRootSignature::Slot::UAV_ParticlePosBuffer].Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);	// u0 : Particle Texture Pos Read Write 
 	
 	CD3DX12_ROOT_PARAMETER1	rootParameters[Ideal::ParticleSystemRootSignature::Slot::Count];
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::CBV_Global].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::CBV_Global]);
@@ -61,6 +63,7 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1]);
 	rootParameters[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2]);
+	rootParameters[Ideal::ParticleSystemRootSignature::Slot::UAV_ParticlePosBuffer].InitAsDescriptorTable(1, &ranges[Ideal::ParticleSystemRootSignature::Slot::UAV_ParticlePosBuffer]);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] =
 	{
@@ -86,6 +89,18 @@ void Ideal::ParticleSystemManager::CreateRootSignature(ComPtr<ID3D12Device> Devi
 	m_rootSignature->SetName(L"ParticleSystemRootSignature");
 }
 
+void Ideal::ParticleSystemManager::CreateCSPipelineState(ComPtr<ID3D12Device> Device)
+{
+	D3D12_COMPUTE_PIPELINE_STATE_DESC computePipelineDesc = {};
+	computePipelineDesc.pRootSignature = m_rootSignature.Get();
+	CD3DX12_SHADER_BYTECODE shader(m_RENDER_MODE_BILLBOARD_CS->GetBufferPointer(), m_RENDER_MODE_BILLBOARD_CS->GetSize());
+	computePipelineDesc.CS = shader;
+	Check(
+		Device->CreateComputePipelineState(&computePipelineDesc, IID_PPV_ARGS(&m_RENDER_MODE_BILLBOARD_PipelineState))
+		, L"Failed to create Particle Billboard Compute Pipeline State"
+	);
+}
+
 void Ideal::ParticleSystemManager::SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
 {
 	m_RENDER_MODE_MESH_VS = Shader;
@@ -99,6 +114,12 @@ void Ideal::ParticleSystemManager::SetBillboardVS(std::shared_ptr<Ideal::D3D12Sh
 void Ideal::ParticleSystemManager::SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader)
 {
 	m_RENDER_MODE_BILLBOARD_GS = Shader;
+}
+
+void Ideal::ParticleSystemManager::SetBillboardCSAndCreatePipelineState(std::shared_ptr<Ideal::D3D12Shader> Shader, ComPtr<ID3D12Device> Device)
+{
+	m_RENDER_MODE_BILLBOARD_CS = Shader;
+	CreateCSPipelineState(Device);
 }
 
 void Ideal::ParticleSystemManager::SetDefaultParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer)

@@ -22,7 +22,12 @@
         float g_Time;
         float3 pad;
         float4 g_startColor;
-    };
+        // Shape
+        float g_Radius;
+        float g_RadiusThickness;
+        float pad0;
+        float pad1;
+};
 
     struct Pos
     {
@@ -33,6 +38,8 @@
     Texture2D ParticleTexture0 : register(t1);
     Texture2D ParticleTexture1 : register(t2);
     Texture2D ParticleTexture2 : register(t3);
+
+    RWStructuredBuffer<Pos> g_RWBufferPos : register(u0);
 
     SamplerState LinearWrapSampler : register(s0);
     SamplerState LinearClampSampler : register(s1);

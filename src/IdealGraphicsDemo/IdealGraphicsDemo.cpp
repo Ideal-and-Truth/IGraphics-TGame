@@ -509,6 +509,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sprite2->SetTexture(eyeTexture);
 		//sprite2->SetSampleRect({ 0, 0, 4096*2, 4096*2 });
 		sprite2->SetSampleRect({ 1024, 0, 2048, 2048 });
+		sprite2->SetSampleRect({ 1024, 0, 4096, 2048 });
+		//sprite2->SetSampleRect({ 0, 0, 4096, 2048 });
 		//sprite2->SetSampleRect({ 1024, 0, 4096, 2048});
 		//sprite2->SetSampleRect({ 0, 0, 1024, 2048 });
 		sprite2->SetScale(Vector2(0.1, 0.1));

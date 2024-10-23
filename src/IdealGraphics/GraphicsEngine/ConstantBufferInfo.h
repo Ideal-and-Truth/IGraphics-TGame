@@ -176,4 +176,10 @@ struct CB_ParticleSystem
 	float Time = 0.f;
 	Vector3 pad;
 	Color StartColor;
+
+	// Shape
+	float Radius;
+	float RadiusThickness;
+	float pad0;
+	float pad1;
 };
