@@ -68,6 +68,10 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"PlayerAnimations/Guard/GuardLoop.fbx");
 // 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalVariation1.fbx");
 // 	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalVariation2.fbx");
+// 	ConvertAniFbxData(L"PlayerAnimations/ComboAttackReady/ComboAttackReady.fbx");
+//	ConvertAniFbxData(L"PlayerAnimations/ChargedAttack/ChargedAbility.fbx");
+//	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/RushAttack.fbx");
+//	ConvertAniFbxData(L"PlayerAnimations/NormalAttack/NormalAbility.fbx");
 
 
 // 	ConvertStaticFbxData(L"DebugObject/debugCube.fbx");

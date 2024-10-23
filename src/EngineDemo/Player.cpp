@@ -52,6 +52,11 @@ void Player::Update()
 		return;
 	}
 
+	if (m_currentCP > m_maxCP)
+	{
+		m_currentCP = m_maxCP;
+	}
+
 	if (m_currentTP > 0.f)
 	{
 		m_passingTime += GetDeltaTime();

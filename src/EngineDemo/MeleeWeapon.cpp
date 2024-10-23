@@ -109,6 +109,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 			{
 				if (_other->GetOwner().lock()->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(_other->GetOwner().lock()->GetComponent<Enemy>().lock().get()).Get() > 0.f)
 				{
+					m_player->GetTypeInfo().GetProperty("currentCP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get() + 5.f);
 					m_onHitEnemys.push_back(_other->GetOwner().lock());
 					WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
 				}

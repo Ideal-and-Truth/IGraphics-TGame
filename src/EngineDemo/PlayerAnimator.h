@@ -145,6 +145,25 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class NormalAbility
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	NormalAbility(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 class ComboReady
 	: public AnimationState
 {
@@ -258,6 +277,25 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class ChargedAbility
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	ChargedAbility(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 class PlayerGuard
 	: public AnimationState
 {
@@ -331,6 +369,61 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class PlayerRushAttack
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerRushAttack(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class PlayerSkillQ
+	: public AnimationState
+{
+private:
+
+public:
+	PlayerSkillQ(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class PlayerSkillE
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+
+public:
+	PlayerSkillE(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class PlayerAnimator :
@@ -360,6 +453,15 @@ private:
 
 	PROPERTY(isAttack);
 	bool m_isAttack;
+
+	PROPERTY(skillQ);
+	bool m_skillQ;
+
+	PROPERTY(skillE);
+	bool m_skillE;
+
+	PROPERTY(coolTimeE);
+	float m_coolTimeE;
 
 	PROPERTY(isNormalAttack);
 	bool m_isNormalAttack;
@@ -421,6 +523,9 @@ private:
 	PROPERTY(normalAttack6);
 	bool m_normalAttack6;
 
+	PROPERTY(normalAbility);
+	bool m_normalAbility;
+
 	PROPERTY(chargedAttack1);
 	bool m_chargedAttack1;
 
@@ -436,8 +541,14 @@ private:
 	PROPERTY(chargedAttack5);
 	bool m_chargedAttack5;
 
+	PROPERTY(chargedAbility);
+	bool m_chargedAbility;
+
 	PROPERTY(dodgeAttack);
 	bool m_dodgeAttack;
+
+	PROPERTY(rushAttack);
+	bool m_rushAttack;
 
 	float m_lastHp;
 
@@ -492,6 +603,8 @@ public:
 	void SetPlayerDamage(float damage);
 
 	void CameraShake(float shakeCount);
+
+	void CameraZoom(float timing);
 };
 
 template<class Archive>
