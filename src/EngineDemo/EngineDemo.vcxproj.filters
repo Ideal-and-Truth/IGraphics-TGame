@@ -183,6 +183,15 @@
     <ClInclude Include="MapMoveTrigger.h">
       <Filter>Component\MapMove</Filter>
     </ClInclude>
+    <ClInclude Include="BossHPUI.h">
+      <Filter>Component\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHPUI.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCPUI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -283,6 +292,15 @@
     </ClCompile>
     <ClCompile Include="MapMoveTrigger.cpp">
       <Filter>Component\MapMove</Filter>
+    </ClCompile>
+    <ClCompile Include="BossHPUI.cpp">
+      <Filter>Component\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHPUI.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCPUI.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

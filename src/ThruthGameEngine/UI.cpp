@@ -19,6 +19,10 @@ Truth::UI::UI()
 	, m_state(BUTTON_STATE::IDEL)
 	, m_rect{}
 	, m_behavior(nullptr)
+	, m_scale(1.0f, 1.0f)
+	, m_minSampling(0.f, 0.f)
+	, m_maxSampling(1.0f, 1.0f)
+	, m_isButton(false)
 {
 	m_texturePath[0] = "../Resources/Textures/UI/title_button_basic.png";
 	m_texturePath[1] = "../Resources/Textures/UI/title_button_blue.png";
@@ -28,6 +32,55 @@ Truth::UI::UI()
 Truth::UI::~UI()
 {
 	m_managers.lock()->Graphics()->DeleteUISpriteSet(m_sprite);
+}
+
+void Truth::UI::SetScale(const Vector2& _scale, bool _centerPos)
+{
+	m_scale = _scale;
+	for (uint32 i = 0; i < 3; i++)
+	{
+		auto tex = m_sprite->GetTex(i);
+		float w = static_cast<float>(tex->w);
+		float h = static_cast<float>(tex->h);
+
+		Vector2 gpScale = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
+		Vector2 gpPosition = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
+		(*m_sprite)[i]->SetScale({ (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y });
+		if (_centerPos)
+			(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * m_scale.x * 0.5f), m_position.y - (m_size.y * m_scale.y * 0.5f) });
+	}
+}
+
+void Truth::UI::SetSampling(const Vector2& _min, const Vector2& _max)
+{
+	m_minSampling = _min;
+	m_maxSampling = _max;
+
+	for (uint32 i = 0; i < 3; i++)
+	{
+		auto tex = m_sprite->GetTex(i);
+		float w = static_cast<float>(tex->w);
+		float h = static_cast<float>(tex->h);
+
+		(*m_sprite)[i]->SetSampleRect(
+			{
+				static_cast<uint32>(w * m_minSampling.x),
+				static_cast<uint32>(h * m_minSampling.y),
+				static_cast<uint32>(w * m_maxSampling.x),
+				static_cast<uint32>(h * m_maxSampling.y)
+			});
+	}
+}
+
+void Truth::UI::SetOnlyUI()
+{
+	m_isButton = false;
+}
+
+void Truth::UI::SetButton()
+{
+	m_isButton = true;
+
 }
 
 void Truth::UI::Initialize()
@@ -49,8 +102,8 @@ void Truth::UI::Initialize()
 			float w = static_cast<float>(tex->w);
 			float h = static_cast<float>(tex->h);
 
-			Vector2 gpScale = { m_size.x / w, m_size.y / h };
-			Vector2 gpPosition = { m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) };
+			Vector2 gpScale = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
+			Vector2 gpPosition = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
 
 			(*m_sprite)[i]->SetTexture(tex->m_texture);
 			(*m_sprite)[i]->SetScale(gpScale);
@@ -58,19 +111,69 @@ void Truth::UI::Initialize()
 			(*m_sprite)[i]->SetActive(IsActive());
 			(*m_sprite)[i]->SetAlpha(m_alpha);
 			(*m_sprite)[i]->SetZ(m_zDepth);
-			(*m_sprite)[i]->SetSampleRect({ 0, 0, tex->w, tex->h });
+			(*m_sprite)[i]->SetSampleRect(
+				{
+					static_cast<uint32>(w * m_minSampling.x),
+					static_cast<uint32>(h * m_minSampling.y),
+					static_cast<uint32>(w * m_maxSampling.x),
+					static_cast<uint32>(h * m_maxSampling.y)
+				});
 		}
 	}
+	for (uint32 i = 0; i < 3; i++)
+	{
+		auto tex = m_sprite->GetTex(i);
+		float w = static_cast<float>(tex->w);
+		float h = static_cast<float>(tex->h);
+		(*m_sprite)[i]->SetScale({ (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y });
+		(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * m_scale.x * 0.5f), m_position.y - (m_size.y * m_scale.y * 0.5f) });
+		(*m_sprite)[i]->SetActive(IsActive());
+		(*m_sprite)[i]->SetAlpha(m_alpha);
+		(*m_sprite)[i]->SetZ(m_zDepth);
+		(*m_sprite)[i]->SetSampleRect(
+			{
+				static_cast<uint32>(w * m_minSampling.x),
+				static_cast<uint32>(h * m_minSampling.y),
+				static_cast<uint32>(w * m_maxSampling.x),
+				static_cast<uint32>(h * m_maxSampling.y)
+			});
 
-	m_rect.left = static_cast<LONG>(m_position.x - (m_size.x * 0.5f));
-	m_rect.top = static_cast<LONG>(m_position.y - (m_size.y * 0.5f));
-	m_rect.right = static_cast<LONG>(m_position.x + (m_size.x * 0.5f));
-	m_rect.bottom = static_cast<LONG>(m_position.y + (m_size.y * 0.5f));
+		m_texturePath[i] = tex->m_path.generic_string();
+	}
+	m_rect.left = static_cast<LONG>(m_position.x - (m_size.x * 0.5f) * m_scale.x);
+	m_rect.top = static_cast<LONG>(m_position.y - (m_size.y * 0.5f) * m_scale.y);
+	m_rect.right = static_cast<LONG>(m_position.x + (m_size.x * 0.5f) * m_scale.x);
+	m_rect.bottom = static_cast<LONG>(m_position.y + (m_size.y * 0.5f) * m_scale.y);
+
+	SetSpriteActive(BUTTON_STATE::IDEL);
 }
 
 void Truth::UI::Start()
 {
 	ResizeWindow();
+	if (m_behavior)
+		m_behavior->Start();
+	for (uint32 i = 0; i < 3; i++)
+	{
+		auto tex = m_sprite->GetTex(i);
+		float w = static_cast<float>(tex->w);
+		float h = static_cast<float>(tex->h);
+		(*m_sprite)[i]->SetScale({ (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y });
+		(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * m_scale.x * 0.5f), m_position.y - (m_size.y * m_scale.y * 0.5f) });
+		(*m_sprite)[i]->SetActive(IsActive());
+		(*m_sprite)[i]->SetAlpha(m_alpha);
+		(*m_sprite)[i]->SetZ(m_zDepth);
+		(*m_sprite)[i]->SetSampleRect(
+			{
+				static_cast<uint32>(w * m_minSampling.x),
+				static_cast<uint32>(h * m_minSampling.y),
+				static_cast<uint32>(w * m_maxSampling.x),
+				static_cast<uint32>(h * m_maxSampling.y)
+			});
+		m_texturePath[i] = tex->m_path.generic_string();
+	}
+	SetSpriteActive(BUTTON_STATE::IDEL);
+
 }
 
 void Truth::UI::Update()
@@ -78,9 +181,16 @@ void Truth::UI::Update()
 #ifdef EDITOR_MODE
 	ResizeWindow();
 #endif
+	if (m_behavior)
+		m_behavior->Update();
+	if (!m_isButton)
+	{
+		SetSpriteActive(BUTTON_STATE::IDEL);
+		return;
+	}
 
 	CheckState();
-	m_behavior->Update();
+
 	switch (m_state)
 	{
 	case BUTTON_STATE::IDEL:
@@ -207,10 +317,10 @@ void Truth::UI::ResizeWindow()
 	editorPos.x = realLT.x + (m_position.x * ratioW);
 	editorPos.y = realLT.y + (m_position.y * ratioH);
 
-	m_rect.left = static_cast<LONG>(editorPos.x - (editorSize.x * 0.5f));
-	m_rect.top = static_cast<LONG>(editorPos.y - (editorSize.y * 0.5f));
-	m_rect.right = static_cast<LONG>(editorPos.x + (editorSize.x * 0.5f));
-	m_rect.bottom = static_cast<LONG>(editorPos.y + (editorSize.y * 0.5f));
+	m_rect.left = static_cast<LONG>(editorPos.x - (editorSize.x * 0.5f) * m_scale.x);
+	m_rect.top = static_cast<LONG>(editorPos.y - (editorSize.y * 0.5f) * m_scale.y);
+	m_rect.right = static_cast<LONG>(editorPos.x + (editorSize.x * 0.5f) * m_scale.x);
+	m_rect.bottom = static_cast<LONG>(editorPos.y + (editorSize.y * 0.5f) * m_scale.y);
 }
 
 #ifdef EDITOR_MODE
@@ -223,13 +333,24 @@ void Truth::UI::EditorSetValue()
 		auto tex = m_sprite->GetTex(i);
 		float w = static_cast<float>(tex->w);
 		float h = static_cast<float>(tex->h);
-		(*m_sprite)[i]->SetScale({ m_size.x / w, m_size.y / h });
-		(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * 0.5f), m_position.y - (m_size.y * 0.5f) });
+		(*m_sprite)[i]->SetScale({ (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y });
+		(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * m_scale.x * 0.5f), m_position.y - (m_size.y * m_scale.y * 0.5f) });
 		(*m_sprite)[i]->SetActive(IsActive());
 		(*m_sprite)[i]->SetAlpha(m_alpha);
 		(*m_sprite)[i]->SetZ(m_zDepth);
+		(*m_sprite)[i]->SetSampleRect(
+			{
+				static_cast<uint32>(w * m_minSampling.x),
+				static_cast<uint32>(h * m_minSampling.y),
+				static_cast<uint32>(w * m_maxSampling.x),
+				static_cast<uint32>(h * m_maxSampling.y)
+			});
 
 		m_texturePath[i] = tex->m_path.generic_string();
 	}
+	SetSpriteActive(BUTTON_STATE::IDEL);
+
+	if (m_behavior)
+		m_behavior->Initialize(m_managers, ::Cast<UI, Component>(shared_from_this()), m_owner);
 }
 #endif // EDITOR_MODE

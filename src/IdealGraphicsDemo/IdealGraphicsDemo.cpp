@@ -258,9 +258,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"cart/SM_cart.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"building/building_dummy3_hanna.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"UVSphere/UVSphere.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugSphere.fbx", false);
-		gRenderer->ConvertAssetToMyFormat(L"DebugPlane/Plane.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugSphere.fbx", false);
+		//gRenderer->ConvertAssetToMyFormat(L"DebugPlane/Plane.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude@T-Pose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"DebugObject/debugCube.fbx", false);
 		//gRenderer->ConvertAssetToMyFormat(L"Kachujin/Mesh.fbx", true);
@@ -344,10 +344,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> hiphopAnim2 = gRenderer->CreateAnimation(L"Kachujin/HipHop");
 		//ka->AddAnimation("HIP", hiphopAnim2);
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> ka2 = gRenderer->CreateSkinnedMeshObject(L"Kachujin/Mesh");
-		std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
-		std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
+		//std::shared_ptr<Ideal::IAnimation> runAnim = gRenderer->CreateAnimation(L"Kachujin/Run");
+		//std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> cat = gRenderer->CreateSkinnedMeshObject(L"CatwalkWalkForward3/CatwalkWalkForward3");
-		std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
+		//std::shared_ptr<Ideal::IAnimation> walkAnim = gRenderer->CreateAnimation(L"CatwalkWalkForward3/CatwalkWalkForward3");
 		//
 		////std::shared_ptr<Ideal::IAnimation> idleAnim = gRenderer->CreateAnimation(L"Kachujin/Idle");
 		////std::shared_ptr<Ideal::IAnimation> slashAnim = gRenderer->CreateAnimation(L"Kachujin/Slash");
@@ -412,16 +412,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(2, 8, 2)));
 		//meshes.push_back(plane);
 
-		auto garlandMaterial = gRenderer->CreateMaterial();
-		auto garlandBaseTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_BaseMap.png");
-		auto garlandNormalTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_Normal.png");
-		auto garlandMaskTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_MaskMap.png");
-		garlandMaterial->SetBaseMap(garlandBaseTex);
-		garlandMaterial->SetNormalMap(garlandNormalTex);
-		garlandMaterial->SetMaskMap(garlandMaskTex);
-		garlandMaterial->SetAlphaClipping(true);
-		garlandMaterial->SetSurfaceTypeTransparent(true);
-		DebugPlayer->GetMeshByIndex(4).lock()->SetMaterialObject(garlandMaterial);
+		//auto garlandMaterial = gRenderer->CreateMaterial();
+		//auto garlandBaseTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_BaseMap.png");
+		//auto garlandNormalTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_Normal.png");
+		//auto garlandMaskTex = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_Garland_MaskMap.png");
+		//garlandMaterial->SetBaseMap(garlandBaseTex);
+		//garlandMaterial->SetNormalMap(garlandNormalTex);
+		//garlandMaterial->SetMaskMap(garlandMaskTex);
+		//garlandMaterial->SetAlphaClipping(true);
+		//garlandMaterial->SetSurfaceTypeTransparent(true);
+		//DebugPlayer->GetMeshByIndex(4).lock()->SetMaterialObject(garlandMaterial);
 		//DebugPlayer->AlphaClippingCheck();
 		//std::shared_ptr<Ideal::IMeshObject> garland = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//garland->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
@@ -434,7 +434,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		windowMaterial->SetBaseMap(windowBase);
 		windowMaterial->SetNormalMap(windowNormal);
 		windowMaterial->SetMaskMap(windowMask);
-		//garlandMaterial->SetAlphaClipping(true);
 		windowMaterial->SetSurfaceTypeTransparent(true);
 
 		for(int y = 0 ; y < 20;y++)
@@ -508,6 +507,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
 		sprite2->SetTexture(eyeTexture);
+		//sprite2->SetSampleRect({ 0, 0, 4096*2, 4096*2 });
+		sprite2->SetSampleRect({ 1024, 0, 2048, 2048 });
+		sprite2->SetSampleRect({ 1024, 0, 4096, 2048 });
+		//sprite2->SetSampleRect({ 0, 0, 4096, 2048 });
+		//sprite2->SetSampleRect({ 1024, 0, 4096, 2048});
+		//sprite2->SetSampleRect({ 0, 0, 1024, 2048 });
 		sprite2->SetScale(Vector2(0.1, 0.1));
 		sprite2->SetPosition(Vector2(400, 50));
 		sprite2->SetZ(0.1);
@@ -553,23 +558,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector< std::shared_ptr<Ideal::IPointLight>> plights;
 		std::vector< std::shared_ptr<Ideal::ISpotLight>> slights;
-		for (int i = 0; i < 300; i++)
-		{
-			std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
-			pointLight->SetPosition(Vector3(i, 3.f, 3.f));
-			pointLight->SetRange(6.f);
-			pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
-			pointLight->SetIntensity(3.f);
-			plights.push_back(pointLight);
-
-			std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
-			spotLight->SetPosition(Vector3(i, 3.f, 8.f));
-			spotLight->SetRange(6.f);
-			spotLight->SetLightColor(Color(0.f, 0.f, 1.f, 1.f));
-			spotLight->SetIntensity(1.f);
-			spotLight->SetDirection(Vector3(0, -1, 0));
-			slights.push_back(spotLight);
-		}
+		//for (int i = 0; i < 300; i++)
+		//{
+		//	std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+		//	pointLight->SetPosition(Vector3(i, 3.f, 3.f));
+		//	pointLight->SetRange(6.f);
+		//	pointLight->SetLightColor(Color(0.f, 0.8f, 0.2f, 1.f));
+		//	pointLight->SetIntensity(3.f);
+		//	plights.push_back(pointLight);
+		//
+		//	std::shared_ptr<Ideal::ISpotLight> spotLight = gRenderer->CreateSpotLight();
+		//	spotLight->SetPosition(Vector3(i, 3.f, 8.f));
+		//	spotLight->SetRange(6.f);
+		//	spotLight->SetLightColor(Color(0.f, 0.f, 1.f, 1.f));
+		//	spotLight->SetIntensity(1.f);
+		//	spotLight->SetDirection(Vector3(0, -1, 0));
+		//	slights.push_back(spotLight);
+		//}
 #pragma endregion
 
 #pragma region CompileShader
@@ -686,6 +691,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Shaders/Particle/"
 		);
 		std::shared_ptr<Ideal::IShader> defaultTextureParticleShader = gRenderer->CreateAndLoadParticleShader(L"DefaultTextureParticlePS");
+
+
+		// Test
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/DefaultParticleBillboardShader.hlsl",
+			L"../Shaders/Particle/",
+			L"DefaultParticleBillboardShaderPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> billboardTestPS = gRenderer->CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderPS");
+
 
 #pragma endregion
 
@@ -1666,6 +1684,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 0), 1.f);	// 끝 색상
 		}
 #pragma endregion
+#pragma region ParticleBillboardTest
+		//----------ParticleBillboardTest effect----------//
+		std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
+		billboardMaterialTest->SetShader(billboardTestPS);
+		billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		
+		
+		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
+		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		
+#pragma endregion
 
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
@@ -2016,7 +2045,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					{
 						RendererSizeTest();
 						CameraWindow(camera);
-						AnimationTest(slashAnim);
+						//AnimationTest(slashAnim);
 						//SkinnedMeshObjectAnimationTest(ka);
 						if (dirLight)
 						{
@@ -2256,7 +2285,8 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	float aspectRatio = float(WIDTH) / HEIGHT;
 	//float aspectRatio = float(1296) / 999.f;
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.01f, 3000.f);
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
 	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));

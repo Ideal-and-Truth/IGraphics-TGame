@@ -42,7 +42,7 @@ namespace Truth
 
 	private:
 		PROPERTY(sprite)
-		std::shared_ptr<UISpriteSet> m_sprite;
+			std::shared_ptr<UISpriteSet> m_sprite;
 
 		std::string m_texturePath[3];
 
@@ -51,8 +51,18 @@ namespace Truth
 
 		RECT m_rect;
 
+		bool m_isButton;
+
 		PROPERTY(size);
 		Vector2 m_size;
+
+		PROPERTY(minSampling);
+		Vector2 m_minSampling;
+		PROPERTY(maxSampling);
+		Vector2 m_maxSampling;
+
+		PROPERTY(scale);
+		Vector2 m_scale;
 
 		PROPERTY(position);
 		Vector2 m_position;
@@ -69,6 +79,11 @@ namespace Truth
 	public:
 		UI();
 		virtual ~UI();
+
+		void SetScale(const Vector2& _scale, bool _centerPos = false);
+		void SetSampling(const Vector2& _min, const Vector2& _max);
+		void SetOnlyUI();
+		void SetButton();
 
 	private:
 		METHOD(Initialize);
@@ -107,6 +122,9 @@ namespace Truth
 		_ar& m_alpha;
 		_ar& m_zDepth;
 		_ar& m_behavior;
+		_ar& m_scale;
+		_ar& m_minSampling;
+		_ar& m_maxSampling;
 	}
 
 	template<class Archive>
@@ -123,9 +141,18 @@ namespace Truth
 
 		if (file_version >= 1)
 			_ar& m_behavior;
+
+		if (file_version >= 2)
+			_ar& m_scale;
+
+		if (file_version >= 3)
+		{
+			_ar& m_minSampling;
+			_ar& m_maxSampling;
+		}
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::UI)
-BOOST_CLASS_VERSION(Truth::UI, 1)
+BOOST_CLASS_VERSION(Truth::UI, 3)
 

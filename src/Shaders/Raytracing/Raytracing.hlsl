@@ -291,6 +291,22 @@ void CalculateSpecularAndReflectionCoefficients(
     out float3 Kr)
 {
    
+  // F0 계산
+    float3 F0 = lerp(float3(0.04, 0.04, 0.04), Albedo.rgb, metallic);
+    
+    // Fresnel-Schlick 근사 반사율 계산
+    float dotNV = saturate(dot(N, V));
+    float3 reflectance = F0 + (1.0 - F0) * pow(1.0 - dotNV, 5.0);
+    
+    // Smoothness를 기반으로 반사율 조정
+    reflectance *= 1 - roughness;//smoothness;
+    
+    // 최종 반사율 사용
+    Ks = reflectance;
+    Kr = reflectance;
+    return;
+
+
     // float3 Kr; // 반사율
     // float3 Ks; // 스펙큘러 반사 계수
 
@@ -668,14 +684,6 @@ void MyMissShader_ShadowRay(inout ShadowRayPayload rayPayload)
 [shader("anyhit")]
 void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
 {
-
-   if(l_materialInfo.bIsTransmissive)
-    {
-        //IgnoreHit();
-        AcceptHitAndEndSearch();
-        return;
-    }
-
     float3 hitPosition = HitWorldPosition();
     uint baseIndex = PrimitiveIndex() * 3;
     const uint3 indices = uint3(
@@ -692,7 +700,7 @@ void MyAnyHitShader(inout RayPayload payload, in MyAttributes attr)
     float2 vertexTexCoords[3] = { vertexInfo[0].uv, vertexInfo[1].uv, vertexInfo[2].uv };
     float2 uv = HitAttribute(vertexTexCoords, attr);
     float alpha = l_texDiffuse.SampleLevel(LinearWrapSampler, uv, 0).a;
-    if(alpha < 0.5f)    // threshold
+    if(alpha < 0.5f && l_materialInfo.bIsTransmissive == false)    // threshold
     {
         IgnoreHit();
     }

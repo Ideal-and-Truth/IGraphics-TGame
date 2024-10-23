@@ -10,7 +10,6 @@
 #include "GraphicsEngine/D3D12/D3D12SRV.h"
 #include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
-#include "GraphicsEngine/D3D12/GenerateMips.h"
 
 #include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
@@ -98,15 +97,11 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	m_dsvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_DSV_HEAP_COUNT);
 
-	// default resource
+	//----default resource----//
 	CreateDefaultQuadMesh();
 	CreateDefaultQuadMesh2();
 	CreateDefaultDebugLine();
-
-	// generate mips manager init
-	auto shader = CreateAndLoadShader(L"../Shaders/Texture/GenerateMipsCS.shader");
-	m_generateMipsManager = std::make_shared<Ideal::GenerateMips>();
-	m_generateMipsManager->Init(Device, shader);
+	CreateParticleVertexBuffer();
 }
 
 void ResourceManager::Fence()
@@ -373,7 +368,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		}
 		else
 		{
-			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_FANT, MipLevels, mipChain), L"Failed to generate MIP maps");
+			//Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_FANT, MipLevels, mipChain), L"Failed to generate MIP maps");
+			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
 		}
 		img = mipChain.GetImages();
 	}
@@ -1402,7 +1398,7 @@ void ResourceManager::CreateDefaultDebugLine()
 
 std::shared_ptr<Ideal::IMesh> ResourceManager::CreateParticleMesh(const std::wstring& filename)
 {
-	std::shared_ptr<IdealMesh<ParticleVertexTest>> mesh = std::make_shared<IdealMesh<ParticleVertexTest>>();
+	std::shared_ptr<IdealMesh<ParticleMeshVertex>> mesh = std::make_shared<IdealMesh<ParticleMeshVertex>>();
 
 	std::wstring fullPath = m_modelPath + filename + L".pmesh";
 	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
@@ -1413,11 +1409,11 @@ std::shared_ptr<Ideal::IMesh> ResourceManager::CreateParticleMesh(const std::wst
 	// vertex data
 	{
 		const uint32 count = file->Read<uint32>();
-		std::vector<ParticleVertexTest> vertices;
+		std::vector<ParticleMeshVertex> vertices;
 		vertices.resize(count);
 
 		void* data = vertices.data();
-		file->Read(&data, sizeof(ParticleVertexTest) * count);
+		file->Read(&data, sizeof(ParticleMeshVertex) * count);
 		mesh->AddVertices(vertices);
 	}
 
@@ -1694,31 +1690,28 @@ std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> ResourceManager::GetDefaultQuadM
 	return m_defaultQuadMesh2;
 }
 
-void ResourceManager::InitGenerateMipsManager(ComPtr<ID3D12Device> Device)
+void ResourceManager::CreateParticleVertexBuffer()
 {
-	m_generateMipsManager = std::make_shared<Ideal::GenerateMips>();
-	//m_generateMipsManager->Init(Device);
-}
-
-void Ideal::ResourceManager::GenerateMips(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::D3D12Texture> Texture, uint32 GenerateMipsNum)
-{
-	auto resourceDesc = Texture->GetResource()->GetDesc();
-	if (resourceDesc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D ||
-		resourceDesc.DepthOrArraySize != 1 ||
-		resourceDesc.SampleDesc.Count > 1)
+	std::vector<ParticleVertex> vertices;
+	vertices.resize(ParticleCount);
+	for (uint32 i = 0; i < ParticleCount; ++i)
 	{
-		__debugbreak();
+		vertices[i].Color = Vector4(1.f, 1.f, 0.2f, 1.f);
 	}
-
-	//auto resourceDesc = Texture->GetResource()->GetDesc();
-
-	CB_GenerateMipsInfo generateMipInfo;
-	//generateMipInfo.
-	generateMipInfo.IsSRGB = true;	// TEMP
-	generateMipInfo.SrcMipLevel = 0;
-	generateMipInfo.NumMipLevels = GenerateMipsNum;
-	generateMipInfo.TexelSize.x = 1 / resourceDesc.Width;
-	generateMipInfo.TexelSize.y = 1 / resourceDesc.Height;
-
-	m_generateMipsManager->Generate(Device, CommandList, DescriptorHeap, CBPool, Texture, &generateMipInfo);
+	m_particleVertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+	CreateVertexBuffer<ParticleVertex>(m_particleVertexBuffer, vertices);
 }
+
+void ResourceManager::CreateParticleBuffers()
+{
+	// 프레임카운트만큼 만들 필요 없다. 어차피 복사해서 쓰기 때문에..
+	// 업로드 버퍼를 만들고
+	// 위치 버퍼를 밀어 넣고
+	// GPU에 업로드하는 버퍼를 만든다.
+}
+
+std::shared_ptr<Ideal::D3D12VertexBuffer> ResourceManager::GetParticleVertexBuffer()
+{
+	return m_particleVertexBuffer;
+}
+

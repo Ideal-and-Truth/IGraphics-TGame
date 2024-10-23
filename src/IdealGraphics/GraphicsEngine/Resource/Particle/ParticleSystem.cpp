@@ -95,13 +95,12 @@ float Ideal::ParticleSystem::GetCurrentDurationTime()
 	return m_currentDurationTime;
 }
 
-void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::D3D12Shader> Shader, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
+void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
 {
 	m_particleMaterial = ParticleMaterial;
 	m_rootSignature = RootSignature;
-	m_vs = Shader;
 	m_ps = m_particleMaterial.lock()->GetShader();
-	CreatePipelineState(Device);
+	//RENDER_MODE_MESH_CreatePipelineState(Device);
 }
 
 void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
@@ -128,25 +127,59 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 		return;
 	}
 
+	// TODO : root signature deferred delete
 	switch (m_Renderer_Mode)
 	{
 		case Ideal::ParticleMenu::ERendererMode::Billboard:
+		{
+
+			if (!m_RENDER_MODE_BILLBOARD_pipelineState)
+			{
+				RENDER_MODE_BILLBOARD_CreatePipelineState(Device);
+			}
+			DrawRenderBillboard(Device, CommandList, DescriptorHeap, CBPool);
+		}
 			break;
 		case Ideal::ParticleMenu::ERendererMode::Mesh:
+		{
+			if (!m_RENDER_MODE_MESH_pipelineState)
+			{
+				RENDER_MODE_MESH_CreatePipelineState(Device);
+			}
 			DrawRenderMesh(Device, CommandList, DescriptorHeap, CBPool);
+		}
 			break;
 		default:
 			break;
-
 	}
 }
 
-void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
+void Ideal::ParticleSystem::SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_MESH_VS = Shader;
+}
+
+void Ideal::ParticleSystem::SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_BILLBOARD_VS = Shader;
+}
+
+void Ideal::ParticleSystem::SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader)
+{
+	m_RENDER_MODE_BILLBOARD_GS = Shader;
+}
+
+void Ideal::ParticleSystem::SetParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer)
+{
+	m_particleVertexBuffer = ParticleVertexBuffer;
+}
+
+void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12Device> Device)
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.InputLayout = { ParticleVertexTest::InputElements, ParticleVertexTest::InputElementCount };
+	psoDesc.InputLayout = { ParticleMeshVertex::InputElements, ParticleMeshVertex::InputElementCount };
 	psoDesc.pRootSignature = m_rootSignature.Get();
-	psoDesc.VS = m_vs->GetShaderByteCode();
+	psoDesc.VS = m_RENDER_MODE_MESH_VS->GetShaderByteCode();
 	psoDesc.PS = m_ps->GetShaderByteCode();
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	//psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -224,8 +257,92 @@ void Ideal::ParticleSystem::CreatePipelineState(ComPtr<ID3D12Device> Device)
 	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	psoDesc.SampleDesc.Count = 1;
 
-	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_pipelineState.GetAddressOf()));
-	Check(hr, L"Faild to Create Pipeline State");
+	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_RENDER_MODE_MESH_pipelineState.GetAddressOf()));
+	Check(hr, L"Faild to Create Mesh Pipeline State");
+	return;
+}
+
+void Ideal::ParticleSystem::RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3D12Device> Device)
+{
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.InputLayout = { ParticleVertex::InputElements, ParticleVertex::InputElementCount };
+	psoDesc.pRootSignature = m_rootSignature.Get();
+	psoDesc.VS = m_RENDER_MODE_BILLBOARD_VS->GetShaderByteCode();
+	psoDesc.GS = m_RENDER_MODE_BILLBOARD_GS->GetShaderByteCode();
+	psoDesc.PS = m_ps->GetShaderByteCode();
+	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	//psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	{
+		D3D12_BLEND_DESC blendDesc = {};
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		// --- blending mode ---//
+		Ideal::ParticleMaterialMenu::EBlendingMode BlendMode = m_particleMaterial.lock()->GetBlendingMode();
+		switch (BlendMode)
+		{
+			case Ideal::ParticleMaterialMenu::EBlendingMode::Additive:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ZERO;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
+			}
+			break;
+			case Ideal::ParticleMaterialMenu::EBlendingMode::Alpha:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
+			}
+			break;
+			case Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive:
+			{
+				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+				blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA; // Alpha blending
+			}
+			break;
+			default:
+				break;
+		}
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		psoDesc.BlendState = blendDesc;
+	}
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	if (m_particleMaterial.lock()->GetWriteDepthBuffer() == false)
+	{
+		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	}
+	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	
+	if (m_particleMaterial.lock()->GetBackFaceCulling())
+	{
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	}
+	else
+	{
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	}
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	psoDesc.SampleDesc.Count = 1;
+
+	HRESULT hr = Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(m_RENDER_MODE_BILLBOARD_pipelineState.GetAddressOf()));
+	Check(hr, L"Faild to Create Billboard Pipeline State");
 	return;
 }
 
@@ -399,13 +516,16 @@ Ideal::IBezierCurve& Ideal::ParticleSystem::GetCustomData2W()
 
 void Ideal::ParticleSystem::SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode)
 {
-	m_Renderer_Mode = ParticleRendererMode;
+	if (m_Renderer_Mode != ParticleRendererMode)
+	{
+		m_Renderer_Mode = ParticleRendererMode;
+	}
 }
 
 void Ideal::ParticleSystem::SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh)
 {
 	// TODO : 예외 처리 Particle Vertex가 아닐 경우
-	m_Renderer_Mesh = std::static_pointer_cast<Ideal::IdealMesh<ParticleVertexTest>>(ParticleRendererMesh);
+	m_Renderer_Mesh = std::static_pointer_cast<Ideal::IdealMesh<ParticleMeshVertex>>(ParticleRendererMesh);
 }
 
 void Ideal::ParticleSystem::SetRenderMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleRendererMaterial)
@@ -498,7 +618,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 	}
 
 	//Draw Mesh
-	CommandList->SetPipelineState(m_pipelineState.Get());
+	CommandList->SetPipelineState(m_RENDER_MODE_MESH_pipelineState.Get());
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = m_Renderer_Mesh.lock()->GetVertexBufferView();
@@ -542,7 +662,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1, handle4.GetGpuHandle());
 			}
 		}
-		// Texture0
+		// Texture2
 		{
 			auto texture = m_particleMaterial.lock()->GetTexture2().lock();
 			if (texture)
@@ -554,6 +674,74 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 		}
 	}
 	CommandList->DrawIndexedInstanced(m_Renderer_Mesh.lock()->GetElementCount(), 1, 0, 0, 0);
+}
+
+void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+{
+	// CB_ParticleSystem
+	{
+		// Transform
+		m_cbTransform.World = m_transform.Transpose();
+		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert();
+		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
+		memcpy(cb1->SystemMemAddr, &m_cbTransform, sizeof(CB_Transform));
+		auto handle1 = DescriptorHeap->Allocate();
+		Device->CopyDescriptorsSimple(1, handle1.GetCpuHandle(), cb1->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_Transform, handle1.GetGpuHandle());
+
+		// CustomData
+		UpdateCustomData();
+
+		// Color
+		UpdateColorOverLifetime();
+
+		// ParticleData
+		m_cbParticleSystem.Time = m_currentTime;
+		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
+		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
+		auto handle2 = DescriptorHeap->Allocate();
+		Device->CopyDescriptorsSimple(1, handle2.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData, handle2.GetGpuHandle());
+	}
+	// SRV
+	if (m_particleMaterial.lock())
+	{
+		// Texture0
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture0().lock();
+			if (texture)
+			{
+				auto handle3 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle3.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture0, handle3.GetGpuHandle());
+			}
+		}
+		// Texture1
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture1().lock();
+			if (texture)
+			{
+				auto handle4 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle4.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture1, handle4.GetGpuHandle());
+			}
+		}
+		// Texture2
+		{
+			auto texture = m_particleMaterial.lock()->GetTexture2().lock();
+			if (texture)
+			{
+				auto handle5 = DescriptorHeap->Allocate();
+				Device->CopyDescriptorsSimple(1, handle5.GetCpuHandle(), texture->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticleTexture2, handle5.GetGpuHandle());
+			}
+		}
+	}
+	CommandList->SetPipelineState(m_RENDER_MODE_BILLBOARD_pipelineState.Get());
+	CommandList->IASetVertexBuffers(0, 1, &m_particleVertexBuffer.lock()->GetView());
+	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+	// TODO: 임시 100개
+	CommandList->DrawInstanced(100, 1, 0, 0);
 }
 
 void Ideal::ParticleSystem::UpdateCustomData()

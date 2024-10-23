@@ -41,8 +41,8 @@ PSInput VS(VSInput Input)
     float2 offset = g_PosOffset; // float 좌표계 기준 지정한 위치
     float2 Pos = Input.Pos.xy * scale + offset;
     result.Pos = float4(Pos.xy * float2(2, -2) + float2(-1, 1), g_Z, 1); // 정규 좌표계로 변환
-
-    float2 texScale = (g_TexSampleSize / g_TexSize);
+    //float2 texScale = (g_TexSampleSize / g_TexSize);  // 이미자가 반복되는 코드
+    float2 texScale = ((g_TexSampleSize - g_TexSamplePos)/g_TexSize);   // 반복되지 않게 바꾸었다.
     float2 texOffset = (g_TexSamplePos / g_TexSize);
     result.TexCoord = Input.TexCoord * texScale + texOffset;
     
