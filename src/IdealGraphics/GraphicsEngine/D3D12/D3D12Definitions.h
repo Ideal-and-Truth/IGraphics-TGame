@@ -110,6 +110,7 @@ namespace Ideal
 				SRV_ParticleTexture0,
 				SRV_ParticleTexture1,
 				SRV_ParticleTexture2,
+				//UAV_ParticlePosBuffer,	// Particle 포지션 위치계산을 적어놓기 위한 버퍼
 				Count
 			};
 		}
