@@ -174,6 +174,7 @@
     <ClInclude Include="PlayerAnimator.h" />
     <ClInclude Include="PlayerCamera.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="PlayerCPUI.h" />
     <ClInclude Include="PlayerHPTextUI.h" />
     <ClInclude Include="PlayerHPUI.h" />
     <ClInclude Include="RangedWeapon.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="PlayerAnimator.cpp" />
     <ClCompile Include="PlayerCamera.cpp" />
     <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="PlayerCPUI.cpp" />
     <ClCompile Include="PlayerHPTextUI.cpp" />
     <ClCompile Include="PlayerHPUI.cpp" />
     <ClCompile Include="RangedWeapon.cpp" />

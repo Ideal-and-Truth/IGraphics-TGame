@@ -70,6 +70,9 @@ public:
 	inline float GetCurrentTP() const { return m_currentTP; };
 	inline float GetMaxTP() const { return m_maxTP; }
 
+	inline float GetCurrentCP() const { return m_currentCP; };
+	inline float GetMaxCP() const { return m_maxCP; }
+
 	void SavePlayerData(int _slot = 0);
 	void LoadPlayerData(int _slot = 0);
 

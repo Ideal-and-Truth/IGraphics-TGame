@@ -350,5 +350,7 @@ void Truth::UI::EditorSetValue()
 	}
 	SetSpriteActive(BUTTON_STATE::IDEL);
 
+	if (m_behavior)
+		m_behavior->Initialize(m_managers, ::Cast<UI, Component>(shared_from_this()), m_owner);
 }
 #endif // EDITOR_MODE
