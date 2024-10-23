@@ -14,7 +14,9 @@ void BossHPUI::Update()
 		float rate = currentTP / maxTP;
 
 		m_UI.lock()->SetScale({ rate, 1.0f }, true);
-		m_UI.lock()->SetSampling({ 1.f - rate, 0.f }, { rate, 1.f });
+
+		float centerUV = 0.5f * rate;
+		m_UI.lock()->SetSampling({ 0.5f - centerUV, 0.f }, { centerUV + 0.5f, 1.f });
 	}
 }
 

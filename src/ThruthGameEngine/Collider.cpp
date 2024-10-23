@@ -191,11 +191,14 @@ void Truth::Collider::Awake()
 
 void Truth::Collider::FixedUpdate()
 {
-	physx::PxTransform t(
-		MathUtil::Convert(m_owner.lock()->GetWorldPosition()),
-		MathUtil::Convert(m_owner.lock()->GetWorldRotation())
-	);
-	m_body->setGlobalPose(t);
+	if (m_body)
+	{
+		physx::PxTransform t(
+			MathUtil::Convert(m_owner.lock()->GetWorldPosition()),
+			MathUtil::Convert(m_owner.lock()->GetWorldRotation())
+		);
+		m_body->setGlobalPose(t);
+	}
 }
 
 /// <summary>
@@ -254,11 +257,11 @@ void Truth::Collider::SetActive()
 	}
 #endif // EDITOR_MODE
 
-//	if (m_collider)
-// 	{
-// 		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger && active);
-// 		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger && active);
-// 	}
+	//	if (m_collider)
+	// 	{
+	// 		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger && active);
+	// 		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger && active);
+	// 	}
 }
 
 #ifdef EDITOR_MODE

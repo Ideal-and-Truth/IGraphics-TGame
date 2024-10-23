@@ -41,13 +41,16 @@ void EnemyController::Start()
 
 void EnemyController::FixedUpdate()
 {
-	if (!m_canMove)
+	if (!m_controller.expired())
 	{
+		if (!m_canMove)
+		{
+			m_moveVec = Vector3::Zero;
+			m_moveVec.y = -100.0f;
+		}
+		m_controller.lock()->Move(m_moveVec);
 		m_moveVec = Vector3::Zero;
-		m_moveVec.y = -100.0f;
 	}
-	m_controller.lock()->Move(m_moveVec);
-	m_moveVec = Vector3::Zero;
 }
 
 void EnemyController::Update()

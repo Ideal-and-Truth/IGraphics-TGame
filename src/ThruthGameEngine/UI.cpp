@@ -172,6 +172,7 @@ void Truth::UI::Start()
 			});
 		m_texturePath[i] = tex->m_path.generic_string();
 	}
+	SetSpriteActive(BUTTON_STATE::IDEL);
 
 }
 
@@ -183,7 +184,10 @@ void Truth::UI::Update()
 	if (m_behavior)
 		m_behavior->Update();
 	if (!m_isButton)
+	{
+		SetSpriteActive(BUTTON_STATE::IDEL);
 		return;
+	}
 
 	CheckState();
 
@@ -344,5 +348,7 @@ void Truth::UI::EditorSetValue()
 
 		m_texturePath[i] = tex->m_path.generic_string();
 	}
+	SetSpriteActive(BUTTON_STATE::IDEL);
+
 }
 #endif // EDITOR_MODE

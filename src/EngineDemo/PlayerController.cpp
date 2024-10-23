@@ -39,11 +39,14 @@ void PlayerController::Start()
 
 void PlayerController::FixedUpdate()
 {
-	if (!m_canMove)
+	if (!m_controller.expired())
 	{
-		m_moveVec = Vector3::Zero;
+		if (!m_canMove)
+		{
+			m_moveVec = Vector3::Zero;
+		}
+		m_controller.lock()->Move(m_moveVec);
 	}
-	m_controller.lock()->Move(m_moveVec);
 }
 
 void PlayerController::Update()
