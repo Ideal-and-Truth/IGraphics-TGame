@@ -183,3 +183,10 @@ struct CB_ParticleSystem
 	float pad0;
 	float pad1;
 };
+
+struct ComputeParticle
+{
+	Vector4 Position;
+	Vector3 Direction;
+	float Speed;
+};

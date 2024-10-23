@@ -96,9 +96,14 @@ void Ideal::ParticleSystemManager::CreateCSPipelineState(ComPtr<ID3D12Device> De
 	CD3DX12_SHADER_BYTECODE shader(m_RENDER_MODE_BILLBOARD_CS->GetBufferPointer(), m_RENDER_MODE_BILLBOARD_CS->GetSize());
 	computePipelineDesc.CS = shader;
 	Check(
-		Device->CreateComputePipelineState(&computePipelineDesc, IID_PPV_ARGS(&m_RENDER_MODE_BILLBOARD_PipelineState))
+		Device->CreateComputePipelineState(&computePipelineDesc, IID_PPV_ARGS(&m_RENDER_MODE_BILLBOARD_Compute_PipelineState))
 		, L"Failed to create Particle Billboard Compute Pipeline State"
 	);
+}
+
+Microsoft::WRL::ComPtr<ID3D12PipelineState> Ideal::ParticleSystemManager::GetParticleComputePipelineState()
+{
+	return m_RENDER_MODE_BILLBOARD_Compute_PipelineState;
 }
 
 void Ideal::ParticleSystemManager::SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader)

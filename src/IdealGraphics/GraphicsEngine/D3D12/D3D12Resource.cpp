@@ -106,14 +106,14 @@ D3D12GPUBuffer::~D3D12GPUBuffer()
 
 }
 
-void D3D12GPUBuffer::CreateBuffer(ID3D12Device* Device, uint32 ElementSize, uint32 ElementCount)
+void Ideal::D3D12GPUBuffer::CreateBuffer(ID3D12Device* Device, uint32 ElementSize, uint32 ElementCount, D3D12_RESOURCE_FLAGS Flags /*= D3D12_RESOURCE_FLAG_NONE*/)
 {
 	m_bufferSize = ElementSize * ElementCount;
 	m_elementSize = ElementSize;
 	m_elementCount = ElementCount;
 
 	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_bufferSize);
+	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(m_bufferSize, Flags);
 	Check(Device->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
@@ -393,7 +393,7 @@ void D3D12StructuredBuffer::EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle)
 
 void D3D12StructuredBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, const D3D12UploadBuffer& UploadBuffer)
 {
-	D3D12GPUBuffer::CreateBuffer(Device, ElementSize, ElementCount);
+	D3D12GPUBuffer::CreateBuffer(Device, ElementSize, ElementCount, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
 	D3D12GPUBuffer::SetName(L"StructuredBuffer");
 
 	// 데이터를 복사한다
@@ -431,4 +431,14 @@ void D3D12StructuredBuffer::TransitionToUAV(ID3D12GraphicsCommandList* CmdList)
 		);
 
 	CmdList->ResourceBarrier(1, &resourceBarrier);
+}
+
+Ideal::D3D12DescriptorHandle D3D12StructuredBuffer::GetSRV()
+{
+	return m_srvHandle;
+}
+
+Ideal::D3D12DescriptorHandle D3D12StructuredBuffer::GetUAV()
+{
+	return m_uavHandle;
 }

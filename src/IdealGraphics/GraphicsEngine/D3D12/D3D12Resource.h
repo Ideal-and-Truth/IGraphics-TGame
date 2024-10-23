@@ -98,7 +98,7 @@ namespace Ideal
 	public:
 		// GPU에서 사용할 버퍼를 만든다.
 		// 만들 때 리소스 스테이트를 COPY_DEST로 초기화 해준다.
-		void CreateBuffer(ID3D12Device* Device, uint32 ElementSize, uint32 ElementCount);
+		void CreateBuffer(ID3D12Device* Device, uint32 ElementSize, uint32 ElementCount, D3D12_RESOURCE_FLAGS Flags = D3D12_RESOURCE_FLAG_NONE);
 
 		// GPU에서 버퍼를 만든다.
 		//void InitializeBuffer();
@@ -121,6 +121,9 @@ namespace Ideal
 
 		void EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle);
 		void EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle);
+
+		Ideal::D3D12DescriptorHandle GetSRV();
+		Ideal::D3D12DescriptorHandle GetUAV();
 
 		void TransitionToSRV(ID3D12GraphicsCommandList* CmdList);
 		void TransitionToUAV(ID3D12GraphicsCommandList* CmdList);

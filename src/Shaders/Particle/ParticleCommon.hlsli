@@ -33,13 +33,20 @@
     {
         float4 pos;
     };
-    StructuredBuffer<Pos> g_bufPos : register(t0);
+
+    struct ComputeParticle
+    {
+        float4 Position;
+        float3 Direction;
+        float Speed;
+    };
+    StructuredBuffer<ComputeParticle> g_bufPos : register(t0);
 
     Texture2D ParticleTexture0 : register(t1);
     Texture2D ParticleTexture1 : register(t2);
     Texture2D ParticleTexture2 : register(t3);
 
-    RWStructuredBuffer<Pos> g_RWBufferPos : register(u0);
+    RWStructuredBuffer<ComputeParticle> g_RWBufferPos : register(u0);
 
     SamplerState LinearWrapSampler : register(s0);
     SamplerState LinearClampSampler : register(s1);

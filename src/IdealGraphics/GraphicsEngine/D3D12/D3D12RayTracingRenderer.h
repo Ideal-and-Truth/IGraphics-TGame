@@ -40,6 +40,7 @@ namespace Ideal
 	class D3D12PipelineStateObject;
 	class D3D12Viewport;
 	class D3D12UAVBuffer;
+	class D3D12StructuredBuffer;
 
 	class IdealCamera;
 	class IdealRenderScene;
@@ -381,5 +382,8 @@ namespace Ideal
 		Vector2 m_mainCameraEditorTopLeft;
 		Vector2 m_mainCameraEditorBottomRight;
 		Vector2 m_mainCameraEditorWindowSize;
+
+
+		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_ParticleStructuredBuffer;
 	};
 }

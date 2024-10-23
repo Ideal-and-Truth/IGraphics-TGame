@@ -57,7 +57,7 @@ namespace Ideal
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
 		void Free();
 		void SetResourceManager(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
-
+		void SetDeferredDeleteManager(std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
 		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
@@ -84,7 +84,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_ps;
 		std::shared_ptr<Ideal::D3D12PipelineStateObject> m_pso;
 
-		std::weak_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
+		//std::weak_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 
 		//----------------------------Interface---------------------------//
 	public:
@@ -109,7 +109,8 @@ namespace Ideal
 		virtual void SetShapeMode(bool UseShape) override;
 		virtual void SetShape(const Ideal::ParticleMenu::EShape& Shape) override;
 		void UpdateShape();
-		void UpdateParticleStructuredBuffer();
+		// 리소스 매니저를 이용하여 수정된 변경사항이 있을경우 다시 만든다.
+		void UpdateParticleVertexBufferAndStructuredBuffer();
 
 		//------Color Over Lifetime------//
 		virtual void SetColorOverLifetime(bool Active) override;
@@ -170,10 +171,13 @@ namespace Ideal
 		float m_startLifetime = 1.f;	//1 은 임시
 		float m_simulationSpeed = 1.f;
 
+		uint32 m_maxParticles = 10000;	// 파티클 개수
+
 		//---------Shape---------//
 		bool m_isUseShapeMode = false;
 		Ideal::ParticleMenu::EShape m_ShapeMode_shape;
 		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_ParticleStructuredBuffer;
+		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 
 		//------Color Over Lifetime------//
 		bool m_isUseColorOverLifetime = false;

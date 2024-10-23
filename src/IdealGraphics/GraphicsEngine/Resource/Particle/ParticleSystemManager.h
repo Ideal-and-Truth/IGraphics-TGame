@@ -40,6 +40,7 @@ namespace Ideal
 		void SetDefaultParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer);
 		std::shared_ptr<Ideal::D3D12VertexBuffer> GetParticleVertexBuffer();
 
+		ComPtr<ID3D12PipelineState> GetParticleComputePipelineState();
 	private:
 		void CreateRootSignature(ComPtr<ID3D12Device> Device);
 
@@ -54,7 +55,7 @@ namespace Ideal
 
 	private:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
-		ComPtr<ID3D12PipelineState> m_RENDER_MODE_BILLBOARD_PipelineState;
+		ComPtr<ID3D12PipelineState> m_RENDER_MODE_BILLBOARD_Compute_PipelineState;
 
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_MESH_VS;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_VS;

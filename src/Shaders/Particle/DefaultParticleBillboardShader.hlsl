@@ -7,7 +7,8 @@ VSParticleDrawOut VSMain(VSParticleInput input)
 {
     VSParticleDrawOut output;
     //output.Pos = float3(0,0,0);
-    output.Pos = float3(input.ID * 10,0,0);
+    //output.Pos = float3(input.ID * 10,0,0);
+    output.Pos = g_bufPos[input.ID].Position.xyz;
     output.Color = float4(1,1,1,1);
     return output;
 }
@@ -53,6 +54,7 @@ void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<GSParticleDra
 float4 PSMain(PSParticleDrawIn input) : SV_Target
 {
     float4 ret = input.Color;
+    ret = ParticleTexture0.Sample(LinearWrapSampler, input.UV);
     return ret;
 }
 

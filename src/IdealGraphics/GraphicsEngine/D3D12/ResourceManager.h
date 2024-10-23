@@ -89,7 +89,7 @@ namespace Ideal
 			m_commandAllocator->Reset();
 			m_commandList->Reset(m_commandAllocator.Get(), nullptr);
 
-			const uint32 elementSize = sizeof(TVertexType);
+			const uint32 elementSize = sizeof(TType);
 			const uint32 elementCount = (uint32)Vertices.size();
 			const uint32 bufferSize = elementSize * elementCount;
 
@@ -124,10 +124,10 @@ namespace Ideal
 			srvDesc.Buffer.NumElements = elementCount;
 			srvDesc.Buffer.StructureByteStride = sizeof(TType);
 			srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-
-			m_device->CreateShaderResourceView(OutStructuredBuffer->GetResource(), &srvDesc, srvHandle);
+			
+			m_device->CreateShaderResourceView(OutStructuredBuffer->GetResource(), &srvDesc, srvHandle.GetCpuHandle());
 			OutStructuredBuffer->EmplaceSRV(srvHandle);
-
+			
 			//-------------UAV--------------//
 			auto uavHandle = m_cbv_srv_uavHeap->Allocate();
 			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
@@ -138,8 +138,8 @@ namespace Ideal
 			uavDesc.Buffer.StructureByteStride = sizeof(TType);
 			uavDesc.Buffer.CounterOffsetInBytes = 0;
 			uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
-
-			m_device->CreateUnorderedAccessView(OutStructuredBuffer->GetResource(), &uavDesc, uavHandle);
+			
+			m_device->CreateUnorderedAccessView(OutStructuredBuffer->GetResource(), nullptr, &uavDesc, uavHandle.GetCpuHandle());
 			OutStructuredBuffer->EmplaceUAV(uavHandle);
 		}
 
@@ -305,7 +305,7 @@ namespace Ideal
 
 	private:
 		// ±×³É 10000°³ ¸¸µé¾îº­·È~
-		const uint32 ParticleCount = 100;
+		const uint32 ParticleCount = 1000;
 
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 	};

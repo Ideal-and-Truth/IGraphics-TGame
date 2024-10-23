@@ -13,6 +13,7 @@
 #include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
+#include "Misc/Utils/RandomValue.h"
 
 #include <random>
 
@@ -116,6 +117,11 @@ void Ideal::ParticleSystem::SetResourceManager(std::shared_ptr<Ideal::ResourceMa
 	m_ResourceManger = ResourceManager;
 }
 
+void Ideal::ParticleSystem::SetDeferredDeleteManager(std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
+{
+	m_DeferredDeleteManager = DeferredDeleteManager;
+}
+
 void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
 	m_currentTime += m_deltaTime;
@@ -152,7 +158,7 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 			}
 			DrawRenderBillboard(Device, CommandList, DescriptorHeap, CBPool);
 		}
-			break;
+		break;
 		case Ideal::ParticleMenu::ERendererMode::Mesh:
 		{
 			if (!m_RENDER_MODE_MESH_pipelineState)
@@ -161,7 +167,7 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 			}
 			DrawRenderMesh(Device, CommandList, DescriptorHeap, CBPool);
 		}
-			break;
+		break;
 		default:
 			break;
 	}
@@ -184,7 +190,7 @@ void Ideal::ParticleSystem::SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> S
 
 void Ideal::ParticleSystem::SetParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer)
 {
-	m_particleVertexBuffer = ParticleVertexBuffer;
+	//m_particleVertexBuffer = ParticleVertexBuffer;
 }
 
 void Ideal::ParticleSystem::SetBillboardCalculateComputePipelineState(ComPtr<ID3D12PipelineState> PipelineState)
@@ -221,7 +227,7 @@ void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12De
 				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ZERO;
 				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;	// one // zero 일경우 검은색으로 바뀌어간다.
 			}
-				break;
+			break;
 			case Ideal::ParticleMaterialMenu::EBlendingMode::Alpha:
 			{
 				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
@@ -230,7 +236,7 @@ void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12De
 				blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
 				blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
 			}
-				break;
+			break;
 			case Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive:
 			{
 				blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
@@ -243,9 +249,9 @@ void Ideal::ParticleSystem::RENDER_MODE_MESH_CreatePipelineState(ComPtr<ID3D12De
 			default:
 				break;
 		}
-		
 
-	
+
+
 		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;	// one // zero 일경우 검은색으로 바뀌어간다.
 		//blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;	// one // zero 일경우 검은색으로 바뀌어간다.
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
@@ -343,7 +349,7 @@ void Ideal::ParticleSystem::RENDER_MODE_BILLBOARD_CreatePipelineState(ComPtr<ID3
 		psoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	}
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
-	
+
 	if (m_particleMaterial.lock()->GetBackFaceCulling())
 	{
 		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
@@ -434,12 +440,36 @@ void Ideal::ParticleSystem::UpdateShape()
 {
 	if (!m_ParticleStructuredBuffer)
 	{
-		UpdateParticleStructuredBuffer();
+		UpdateParticleVertexBufferAndStructuredBuffer();
 	}
 }
 
-void Ideal::ParticleSystem::UpdateParticleStructuredBuffer()
+void Ideal::ParticleSystem::UpdateParticleVertexBufferAndStructuredBuffer()
 {
+	//-------Vertex Buffer Update-------//
+	if (m_particleVertexBuffer)
+	{
+		m_DeferredDeleteManager.lock()->AddD3D12ResourceToDelete(m_particleVertexBuffer->GetResource());
+	}
+	else
+	{
+		m_particleVertexBuffer = std::make_shared<Ideal::D3D12VertexBuffer>();
+
+	}
+
+	std::vector<ParticleVertex> vertices;
+	vertices.resize(m_maxParticles);
+	for (uint32 i = 0; i < m_maxParticles; ++i)
+	{
+		vertices[i].Color = Vector4(1.f, 1.f, 0.2f, 1.f);
+		//vertices[i].Position = Vector4(0.f, 0.f, 0.f, 1.f);
+		//vertices[i].Direction = Vector3(1.f, 0.f, 0.f);
+		//vertices[i].Speed = 1.f;
+	}
+	m_ResourceManger.lock()->CreateVertexBuffer<ParticleVertex>(m_particleVertexBuffer, vertices);
+
+
+	//-------Structured Buffer Update-------//
 	if (m_ParticleStructuredBuffer)
 	{
 		m_DeferredDeleteManager.lock()->AddD3D12ResourceToDelete(m_ParticleStructuredBuffer->GetResource());
@@ -449,18 +479,32 @@ void Ideal::ParticleSystem::UpdateParticleStructuredBuffer()
 		m_ParticleStructuredBuffer = std::make_shared<Ideal::D3D12StructuredBuffer>();
 	}
 
-	std::vector<Vector4> startPos;
-	startPos.resize(100);	// TEMP
+	std::vector<ComputeParticle> startPos;
+	startPos.resize(m_maxParticles);	// TEMP
 
-	for (uint32 y = 0; y < 10; y++)
+	RandomValue randManager;
+	//TEMP : 범위
+	float radius = 50.f;
+	//float radiusThickness = 0.5f;
+	float radiusThickness = 50.f;
+	float pi = 3.1415926535f;
+	for (uint32 i = 0; i < m_maxParticles; ++i)
 	{
-		for (uint32 x = 0; x < 10; x++)
-		{
-			startPos[y * 10 + x] = Vector4(y, x, 0, 1);
-		}
+		startPos[i].Position = Vector4(i, 0, 0, 1);
+		startPos[i].Direction = Vector3(0, 0, 1);
+		startPos[i].Speed = 1.f;
+
+
+		// Temp : Circle
+		float innerRadius = radius - radiusThickness;
+		float theta = randManager.nextFloat(0.f, 2.f * pi);
+		float randRadius = sqrt(randManager.nextFloat(innerRadius * innerRadius, radius * radius));
+		float x = randRadius * cos(theta);
+		float y = randRadius * sin(theta);
+		startPos[i].Position = Vector4(x, y, 0, 1);
 	}
 
-	m_ResourceManger.lock()->CreateStructuredBuffer<Vector4>(m_ParticleStructuredBuffer, startPos);
+	m_ResourceManger.lock()->CreateStructuredBuffer<ComputeParticle>(m_ParticleStructuredBuffer, startPos);
 }
 
 void Ideal::ParticleSystem::SetColorOverLifetime(bool Active)
@@ -512,7 +556,7 @@ void Ideal::ParticleSystem::UpdateSizeOverLifetime()
 	if (!m_isSizeOverLifetime)
 		return;
 
-	
+
 }
 
 void Ideal::ParticleSystem::SetRotationOverLifetime(bool Active)
@@ -625,12 +669,12 @@ void Ideal::ParticleSystem::SetCustomData(Ideal::ParticleMenu::ECustomData Custo
 		{
 			__debugbreak();
 		}
-			break;
+		break;
 		case Ideal::ParticleMenu::ERangeMode::RandomBetweenCurves:
 		{
 			__debugbreak();
 		}
-			break;
+		break;
 		default:
 			break;
 
@@ -639,7 +683,7 @@ void Ideal::ParticleSystem::SetCustomData(Ideal::ParticleMenu::ECustomData Custo
 
 void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
-	
+
 	// Transform Data
 	{
 		// RotationOverLifetime
@@ -741,8 +785,13 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 {
 	// 먼저 컴퓨트 셰이더로 위치 계산을 하겠다. 만약 사용될 버퍼가 없으면 만든다.
 	UpdateShape();
-
-
+	//m_ParticleStructuredBuffer->TransitionToSRV(CommandList.Get());
+	{
+		//auto handle = DescriptorHeap->Allocate();
+		//Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), m_ParticleStructuredBuffer->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		//CommandList->SetComputeRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticlePosBuffer, handle.GetGpuHandle());
+		// TODO : Dispatch
+	}
 
 
 
@@ -774,6 +823,13 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 	// SRV
 	if (m_particleMaterial.lock())
 	{
+		// StructuredBuffer PositionBuffer
+		{
+			auto handle = DescriptorHeap->Allocate();
+			Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), m_ParticleStructuredBuffer->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticlePosBuffer, handle.GetGpuHandle());
+		}
+
 		// Texture0
 		{
 			auto texture = m_particleMaterial.lock()->GetTexture0().lock();
@@ -806,10 +862,10 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 		}
 	}
 	CommandList->SetPipelineState(m_RENDER_MODE_BILLBOARD_pipelineState.Get());
-	CommandList->IASetVertexBuffers(0, 1, &m_particleVertexBuffer.lock()->GetView());
+	CommandList->IASetVertexBuffers(0, 1, &m_particleVertexBuffer->GetView());
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 	// TODO: 임시 100개
-	CommandList->DrawInstanced(100, 1, 0, 0);
+	CommandList->DrawInstanced(m_maxParticles, 1, 0, 0);
 }
 
 void Ideal::ParticleSystem::UpdateCustomData()
@@ -840,6 +896,6 @@ void Ideal::ParticleSystem::UpdateLifeTime()
 {
 	if (m_currentTime > m_startLifetime)
 	{
-		
+
 	}
 }

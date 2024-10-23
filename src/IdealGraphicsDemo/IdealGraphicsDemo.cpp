@@ -1689,7 +1689,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
 		billboardMaterialTest->SetShader(billboardTestPS);
 		billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
-		
+		std::shared_ptr<Ideal::ITexture> particleBillboardAnimationSheet = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossFireFloor/Explosion_1.png");
+		billboardMaterialTest->SetTexture0(particleBillboardAnimationSheet);
 		
 		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
 		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
