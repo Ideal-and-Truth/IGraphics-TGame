@@ -84,7 +84,7 @@ void Truth::Controller::Awake()
 	m_controller->getActor()->getShapes(tempShapes, nbs);
 	m_collider->m_collider = tempShapes[0];
 	m_collider->m_collider->userData = m_collider.get();
-	m_collider->SetUpFiltering(3);
+	// m_collider->SetUpFiltering(3);
 
 	delete[] tempShapes;
 }
@@ -178,4 +178,9 @@ bool Truth::Controller::IsCollisionSide()
 void Truth::Controller::PhysxAwake()
 {
 	m_rigidbody->m_body->wakeUp();
+}
+
+void Truth::Controller::SetUpFiltering(uint32 _filterGroup)
+{
+	m_collider->SetUpFiltering(_filterGroup);
 }

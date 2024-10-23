@@ -139,7 +139,7 @@ void Truth::Collider::Awake()
 		MathUtil::Convert(m_center)
 	));
 
-	SetUpFiltering(m_owner.lock()->m_layer);
+	// SetUpFiltering(m_owner.lock()->m_layer);
 
 	bool active = m_enable && m_owner.lock()->m_isActive;
 
@@ -371,6 +371,11 @@ void Truth::Collider::SetUpFiltering(uint32 _filterGroup)
 	filterData.word0 = _filterGroup;
 	m_collider->setSimulationFilterData(filterData);
 	m_collider->setQueryFilterData(filterData);
+
+	if (!m_managers.expired())
+	{
+		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+	}
 }
 
 

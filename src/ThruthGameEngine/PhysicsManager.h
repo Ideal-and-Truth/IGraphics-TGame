@@ -49,6 +49,19 @@ namespace Truth
 {
 	class PxEventCallback;
 	class TruthPxQueryFilterCallback;
+
+	enum class FILTER_ENUM
+	{
+		GROUND,
+		MONSTER,
+		MONSTER_PASS_PLAYER,
+		PLAYER,
+		BULLET,
+		CAMERA_RAY,
+		PLAYER_WEAPONE,
+		MONSTER_WEAPONE,
+		END
+	};
 }
 
 namespace physx
@@ -124,9 +137,9 @@ namespace Truth
 
 		void CreateMapCollider(const std::wstring& _path);
 
-		Vector3 GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range);
+		Vector3 GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, FILTER_ENUM _filter = FILTER_ENUM::CAMERA_RAY);
 
-
+		void RsetFiltering(physx::PxActor* _actor);
 
 	private:
 		void CreatePhysxScene();

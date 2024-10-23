@@ -105,6 +105,7 @@ namespace Truth
 
 		void Initialize(const std::wstring& _path = L"");
 
+	public:
 		void SetUpFiltering(uint32 _filterGroup);
 
 	private:

@@ -87,6 +87,8 @@ namespace Truth
 
 		void PhysxAwake();
 
+		void SetUpFiltering(uint32 _filterGroup);
+
 		std::shared_ptr<Truth::RigidBody> GetRigidbody() const { return m_rigidbody; }
 	};
 

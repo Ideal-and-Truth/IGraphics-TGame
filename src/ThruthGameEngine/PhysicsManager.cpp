@@ -32,7 +32,34 @@ Truth::PhysicsManager::PhysicsManager()
 		}
 	}
 
-	SetCollisionFilter(3, 0, false);
+	/// 0: grond or wall
+	/// 1: monster (impossible contect to player)
+	/// 2: monster (possible contect to player)
+	/// 3: player controller
+	/// 4: bullet
+	/// 5: camera Ray
+	/// 6: player weapone
+	/// 7: enemy weapone
+	SetCollisionFilter(1, 3, false);
+	SetCollisionFilter(1, 4, false);
+	SetCollisionFilter(1, 5, false);
+	SetCollisionFilter(1, 7, false);
+
+	SetCollisionFilter(2, 4, false);
+	SetCollisionFilter(2, 5, false);
+	SetCollisionFilter(2, 7, false);
+
+	SetCollisionFilter(3, 5, false);
+	SetCollisionFilter(3, 6, false);
+
+	SetCollisionFilter(4, 5, false);
+	SetCollisionFilter(4, 6, false);
+	SetCollisionFilter(4, 7, false);
+
+	SetCollisionFilter(5, 6, false);
+	SetCollisionFilter(5, 7, false);
+
+	SetCollisionFilter(6, 7, false);
 }
 
 /// <summary>
@@ -242,17 +269,17 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material);
+		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
 	{
-		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material);
+		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material);
+		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material, true);
 		break;
 	}
 	default:
@@ -392,13 +419,13 @@ void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 /// <param name="_direction">방향</param>
 /// <param name="_range">범위</param>
 /// <returns>부딫힌 지점</returns>
-DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range)
+DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, FILTER_ENUM _filter)
 {
 	physx::PxRaycastBuffer rayCastBuffer;
 	physx::PxQueryFilterData queryFilterData;
 	queryFilterData.flags |= physx::PxQueryFlag::ePREFILTER;
 	// queryFilterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
-	queryFilterData.data.word0 = 0;
+	queryFilterData.data.word0 = static_cast<uint32>(_filter);
 	bool hitCheck = m_scene->raycast(
 		MathUtil::Convert(_start),
 		MathUtil::Convert(_direction),
@@ -414,6 +441,11 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 		return MathUtil::Convert(rayCastBuffer.block.position);
 	else
 		return _start + (_direction * _range);
+}
+
+void Truth::PhysicsManager::RsetFiltering(physx::PxActor* _actor)
+{
+	m_scene->resetFiltering(*_actor);
 }
 
 /// <summary>
@@ -457,7 +489,15 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 	// 기본 바닥 만들기 (필요없는 경우 없애면 된다)
  	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
-	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
+
+	physx::PxPlane basicPlane = physx::PxPlane(0, 1, 0, 0);
+	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, basicPlane, *m_material);
+	physx::PxShape** planeShape = new physx::PxShape*();
+	physx::PxFilterData filterData;
+	filterData.word0 = 0;
+	groundPlane->getShapes(planeShape, sizeof(physx::PxShape));
+	planeShape[0]->setSimulationFilterData(filterData);
+	planeShape[0]->setQueryFilterData(filterData);
 	m_scene->addActor(*groundPlane);
 
 	// 컨트롤러 매니저 만들기
