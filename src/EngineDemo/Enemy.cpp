@@ -15,6 +15,8 @@ Enemy::Enemy()
 	, m_attackRange(5.f)
 	, m_passingTime(0.f)
 	, m_isTargetIn(false)
+	, m_hitOnce(false)
+	, m_isInvincible(false)
 {
 	m_name = "Enemy";
 }
@@ -36,10 +38,16 @@ void Enemy::Start()
 
 void Enemy::Update()
 {
-// 	if (GetKeyDown(KEY::_9))
-// 	{
-// 		m_isTargetIn = !m_isTargetIn;
-// 	}
+	if (GetKey(KEY::O) && GetKeyDown(KEY::P))
+	{
+		m_isInvincible = !m_isInvincible;
+	}
+
+	if (m_isInvincible)
+	{
+		m_currentTP = m_maxTP;
+		return;
+	}
 
 	if (!m_isTargetIn)
 	{

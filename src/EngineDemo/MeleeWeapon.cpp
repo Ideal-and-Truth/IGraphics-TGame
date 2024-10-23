@@ -73,13 +73,20 @@ void MeleeWeapon::Update()
 
 	for (auto& e : m_onHitEnemys)
 	{
-		if (m_player)
+		if (m_player && e)
 		{
 			auto enemy = e->GetComponent<Enemy>().lock().get();
-			float playerDamage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
-			float enemyHp = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy).Get();
-			float hpLeft = enemyHp - playerDamage;
-			enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
+			if (enemy)
+			{
+				if (!enemy->GetTypeInfo().GetProperty("hitOnce")->Get<bool>(enemy).Get())
+				{
+					float playerDamage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
+					float enemyHp = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy).Get();
+					float hpLeft = enemyHp - playerDamage;
+					enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
+					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, true);
+				}
+			}
 		}
 		else if (m_enemy)
 		{
@@ -96,7 +103,21 @@ void MeleeWeapon::Update()
 		}
 	}
 
-	m_onHitEnemys.clear();
+	if (!m_isAttacking && m_player)
+	{
+		for (auto& e : m_onHitEnemys)
+		{
+			auto enemy = e->GetComponent<Enemy>().lock().get();
+			if (enemy)
+			{
+				if (enemy->GetTypeInfo().GetProperty("hitOnce")->Get<bool>(enemy).Get())
+				{
+					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, false);
+				}
+			}
+		}
+		m_onHitEnemys.clear();
+	}
 }
 
 void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)

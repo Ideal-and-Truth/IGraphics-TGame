@@ -49,6 +49,11 @@ private:
 	PROPERTY(isTargetIn);
 	bool m_isTargetIn;
 
+	PROPERTY(hitOnce);
+	bool m_hitOnce;
+
+	bool m_isInvincible;
+
 	float m_passingTime;
 
 public:

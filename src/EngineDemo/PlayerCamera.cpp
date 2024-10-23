@@ -276,9 +276,9 @@ void PlayerCamera::ShakeCamera(float shakeCount)
 		m_shakeCount = 0.f;
 		m_isShaking = false;
 	}
-	m_owner.lock()->m_transform->m_position.z += 0.2f * sin(m_shakeTime);
-	m_owner.lock()->m_transform->m_position.y += 0.1f * sin(m_shakeTime);
-	m_owner.lock()->m_transform->m_position.x += 0.2f * cos(m_shakeTime);
+	m_owner.lock()->m_transform->m_position.z += 0.08f * sin(m_shakeTime);
+	m_owner.lock()->m_transform->m_position.y += 0.08f * sin(m_shakeTime);
+	m_owner.lock()->m_transform->m_position.x += 0.08f * cos(m_shakeTime);
 }
 
 void PlayerCamera::ZoomInOut(float timing)
