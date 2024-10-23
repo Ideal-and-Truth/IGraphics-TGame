@@ -67,7 +67,8 @@ public:
 	METHOD(Update);
 	void Update();
 
-	float GetCurrentTP() const { return m_currentTP; };
+	inline float GetCurrentTP() const { return m_currentTP; };
+	inline float GetMaxTP() const { return m_maxTP; }
 
 	void SavePlayerData(int _slot = 0);
 	void LoadPlayerData(int _slot = 0);

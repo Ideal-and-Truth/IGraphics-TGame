@@ -184,6 +184,9 @@
       <Filter>Component\MapMove</Filter>
     </ClInclude>
     <ClInclude Include="BossHPUI.h">
+      <Filter>Component\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHPUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -288,6 +291,9 @@
       <Filter>Component\MapMove</Filter>
     </ClCompile>
     <ClCompile Include="BossHPUI.cpp">
+      <Filter>Component\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHPUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
