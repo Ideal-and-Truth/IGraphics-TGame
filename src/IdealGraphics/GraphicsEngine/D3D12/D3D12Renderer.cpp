@@ -541,6 +541,11 @@ std::shared_ptr<Ideal::IPointLight> Ideal::D3D12Renderer::CreatePointLight()
 	return newLight;
 }
 
+void Ideal::D3D12Renderer::DeleteLight(std::shared_ptr<Ideal::ILight> Light)
+{
+
+}
+
 void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
 {
 	// TODO

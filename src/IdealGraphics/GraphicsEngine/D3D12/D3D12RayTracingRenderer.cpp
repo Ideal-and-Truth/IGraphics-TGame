@@ -934,6 +934,57 @@ std::shared_ptr<Ideal::IPointLight> Ideal::D3D12RayTracingRenderer::CreatePointL
 	return newLight;
 }
 
+void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> Light)
+{
+	auto lightType = Light->GetLightType();
+	switch (lightType)
+	{
+		case ELightType::None:
+			break;
+		case ELightType::Directional:
+		{
+			auto castLight = std::static_pointer_cast<Ideal::IDirectionalLight>(Light);
+			auto it = std::find(m_directionalLights.begin(), m_directionalLights.end(), castLight);
+			{
+				if (it != m_directionalLights.end())
+				{
+					*it = std::move(m_directionalLights.back());
+					m_directionalLights.pop_back();
+				}
+			}
+		}
+			break;
+		case ELightType::Spot:
+		{
+			auto castLight = std::static_pointer_cast<Ideal::ISpotLight>(Light);
+			auto it = std::find(m_spotLights.begin(), m_spotLights.end(), castLight);
+			{
+				if (it != m_spotLights.end())
+				{
+					*it = std::move(m_spotLights.back());
+					m_spotLights.pop_back();
+				}
+			}
+		}
+			break;
+		case ELightType::Point:
+		{
+			auto castLight = std::static_pointer_cast<Ideal::IPointLight>(Light);
+			auto it = std::find(m_pointLights.begin(), m_pointLights.end(), castLight);
+			{
+				if (it != m_pointLights.end())
+				{
+					*it = std::move(m_pointLights.back());
+					m_pointLights.pop_back();
+				}
+			}
+		}
+			break;
+		default:
+			break;
+	}
+}
+
 void Ideal::D3D12RayTracingRenderer::SetAssetPath(const std::wstring& AssetPath)
 {
 	m_assetPath = AssetPath;
