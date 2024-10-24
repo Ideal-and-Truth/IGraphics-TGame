@@ -175,7 +175,7 @@ void PlayerCamera::FreeCamera()
 
 	Vector3 look = cameraPos;
 	look.Normalize(look);
-	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance);
+	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
 	// look = targetPos - cameraPos;
 	m_owner.lock()->m_transform->m_position = cameraPos;
 	m_camera.lock()->m_look = look;
@@ -227,7 +227,7 @@ void PlayerCamera::LockOnCamera()
 
 	Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 5.0f, 0.0f });
 	look.Normalize(look);
-	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance);
+	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
 
 	m_owner.lock()->m_transform->m_position += (cameraPos - m_owner.lock()->m_transform->m_position) * m_lockOnTime;
 	m_camera.lock()->m_look += (look - m_camera.lock()->m_look) * m_lockOnTime;

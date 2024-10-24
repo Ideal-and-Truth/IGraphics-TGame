@@ -65,7 +65,7 @@ void Truth::SphereCollider::SetRadius(float _radius)
 		m_collider->release();
 
 		m_collider = CreateCollider(ColliderShape::SPHERE, m_size);
-		SetUpFiltering(m_owner.lock()->m_layer);
+		// SetUpFiltering(m_owner.lock()->m_layer);
 		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 

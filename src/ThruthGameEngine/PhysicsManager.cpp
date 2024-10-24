@@ -24,15 +24,7 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_CCTManager(nullptr)
 	, m_cooking(nullptr)
 {
-	for (uint8 i = 0; i < 8; i++)
-	{
-		for (uint8 j = 0; j < 8; j++)
-		{
-			physx::m_collsionTable[i] += 1 << j;
-		}
-	}
 
-	SetCollisionFilter(3, 0, false);
 }
 
 /// <summary>
@@ -50,7 +42,7 @@ Truth::PhysicsManager::~PhysicsManager()
 void Truth::PhysicsManager::Initalize()
 {
 	m_qCallback = new TruthPxQueryFilterCallback();
-
+	m_cCallback = new TruthPxCCTFilterCallback();
 	// physx 의 기본 요소를 생성하는 foundation
 	m_foundation = ::PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
 
@@ -242,17 +234,17 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material);
+		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
 	{
-		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material);
+		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material);
+		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material, true);
 		break;
 	}
 	default:
@@ -297,26 +289,6 @@ std::vector<physx::PxShape*> Truth::PhysicsManager::CreateMeshCollider(const Vec
 		shape[i] = m_physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_material);
 	}
 	return shape;
-}
-
-/// <summary>
-/// 필터 세팅
-/// </summary>
-/// <param name="_layerA">A 레이어</param>
-/// <param name="_layerB">B 레이어</param>
-/// <param name="_isCollisoin">설정할 충돌 여부</param>
-void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin)
-{
-	if (_isCollisoin)
-	{
-		physx::m_collsionTable[_layerA] |= 1 << _layerB;
-		physx::m_collsionTable[_layerB] |= 1 << _layerA;
-	}
-	else
-	{
-		physx::m_collsionTable[_layerA] &= ~(1 << _layerB);
-		physx::m_collsionTable[_layerB] &= ~(1 << _layerA);
-	}
 }
 
 /// <summary>
@@ -392,13 +364,18 @@ void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 /// <param name="_direction">방향</param>
 /// <param name="_range">범위</param>
 /// <returns>부딫힌 지점</returns>
-DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range)
+DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, uint32 _group, uint32 _mask)
 {
-	physx::PxRaycastBuffer rayCastBuffer;
+	const physx::PxU32 bufferSize = 8;        
+	physx::PxRaycastHit hitBuffer[bufferSize];  
+	physx::PxRaycastBuffer rayCastBuffer(hitBuffer, bufferSize);
+
 	physx::PxQueryFilterData queryFilterData;
 	queryFilterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	// queryFilterData.flags |= physx::PxQueryFlag::eANY_HIT;
 	// queryFilterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
-	queryFilterData.data.word0 = 0;
+	queryFilterData.data.word0 = _group;
+	queryFilterData.data.word1 = _mask;
 	bool hitCheck = m_scene->raycast(
 		MathUtil::Convert(_start),
 		MathUtil::Convert(_direction),
@@ -409,11 +386,15 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 		m_qCallback
 	);
 
-	rayCastBuffer.nbTouches;
-	if (hitCheck)
+	if (rayCastBuffer.hasBlock)
 		return MathUtil::Convert(rayCastBuffer.block.position);
 	else
 		return _start + (_direction * _range);
+}
+
+void Truth::PhysicsManager::RsetFiltering(physx::PxActor* _actor)
+{
+	m_scene->resetFiltering(*_actor);
 }
 
 /// <summary>
@@ -457,7 +438,15 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 	// 기본 바닥 만들기 (필요없는 경우 없애면 된다)
  	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
-	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, physx::PxPlane(0, 1, 0, 0), *m_material);
+
+	physx::PxPlane basicPlane = physx::PxPlane(0, 1, 0, 0);
+	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, basicPlane, *m_material);
+	physx::PxShape** planeShape = new physx::PxShape*();
+	physx::PxFilterData filterData;
+	filterData.word0 = 0;
+	groundPlane->getShapes(planeShape, sizeof(physx::PxShape));
+	planeShape[0]->setSimulationFilterData(filterData);
+	planeShape[0]->setQueryFilterData(filterData);
 	m_scene->addActor(*groundPlane);
 
 	// 컨트롤러 매니저 만들기
@@ -543,7 +532,7 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
 	}
 
-	else if (physx::m_collsionTable[filterData0.word0] & (1 << filterData1.word0))
+	else if (filterData0.word0 & filterData1.word1)
 	{
 		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT
 			| physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
@@ -565,8 +554,15 @@ physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::preFilter(const p
 	{
 		return physx::PxQueryHitType::Enum::eNONE;
 	}
-	
-	if (physx::m_collsionTable[filterData.word0] & 1 << shape->getQueryFilterData().word0)
+	auto w0 = shape->getQueryFilterData().word0;
+	auto w1 = shape->getQueryFilterData().word1;
+
+	if (w0 == 0 || w1 == 0)
+	{
+		int a = 1;
+	}
+
+	if (filterData.word1 & w0)
 	{
 		return physx::PxQueryHitType::Enum::eBLOCK;
 	}
@@ -580,3 +576,14 @@ physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::postFilter(const 
 {
 	return physx::PxQueryHitType::Enum::eBLOCK;
 }
+
+
+bool Truth::TruthPxCCTFilterCallback::filter(const physx::PxController& a, const physx::PxController& b)
+{
+	bool* isA = static_cast<bool*>(a.getUserData());
+	bool* isB = static_cast<bool*>(b.getUserData());
+
+	if (!(*isA) && !(*isB))
+		return true;
+	return false;
+}	

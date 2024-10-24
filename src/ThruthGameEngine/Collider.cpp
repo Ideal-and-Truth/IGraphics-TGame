@@ -27,6 +27,8 @@ Truth::Collider::Collider(bool _isTrigger /*= true*/)
 	, m_shape()
 	, m_enable(true)
 	, m_isController(false)
+	, m_collisionGroup(0)
+	, m_collisionMask(0)
 
 {
 	m_center = { 0.0f, 0.0f, 0.0f };
@@ -139,7 +141,7 @@ void Truth::Collider::Awake()
 		MathUtil::Convert(m_center)
 	));
 
-	SetUpFiltering(m_owner.lock()->m_layer);
+	// SetUpFiltering(m_owner.lock()->m_layer);
 
 	bool active = m_enable && m_owner.lock()->m_isActive;
 
@@ -172,6 +174,8 @@ void Truth::Collider::Awake()
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
 		m_body->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
+		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+		SetUpFiltering();
 		return;
 	}
 
@@ -262,6 +266,16 @@ void Truth::Collider::SetActive()
 	// 		m_collider->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger && active);
 	// 		m_collider->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger && active);
 	// 	}
+}
+
+void Truth::Collider::SetGroup(uint32 _group)
+{
+	m_collisionGroup = _group;
+}
+
+void Truth::Collider::SetMask(uint32 _mask)
+{
+	m_collisionMask = _mask;
 }
 
 #ifdef EDITOR_MODE
@@ -365,12 +379,28 @@ void Truth::Collider::Initialize(const std::wstring& _path /*= L""*/)
 /// 충돌 처리에 예외 사항 등을 나타내는 필터 데이터 세팅
 /// </summary>
 /// <param name="_filterGroup"></param>
-void Truth::Collider::SetUpFiltering(uint32 _filterGroup)
+void Truth::Collider::SetUpFiltering()
 {
 	physx::PxFilterData filterData;
-	filterData.word0 = _filterGroup;
+	filterData.word0 = m_collisionGroup;
+	filterData.word1 = m_collisionMask;
 	m_collider->setSimulationFilterData(filterData);
 	m_collider->setQueryFilterData(filterData);
 }
 
+void Truth::Collider::ChangeGroup(uint32 _group)
+{
+	m_collisionGroup = _group;
+	SetUpFiltering();
+	if (!m_managers.expired())
+		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+}
+
+void Truth::Collider::ChangeMask(uint32 _mask)
+{
+	m_collisionMask = _mask;
+	SetUpFiltering();
+	if (!m_managers.expired())
+		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+}
 

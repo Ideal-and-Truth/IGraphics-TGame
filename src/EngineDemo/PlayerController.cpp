@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "PlayerAnimator.h"
 #include "PlayerCamera.h"
+#include "PhysicsManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerController)
 
@@ -34,6 +35,9 @@ void PlayerController::Start()
 	m_camera = m_managers.lock()->Scene()->m_currentScene->FindEntity("ThirdPersonCamera");
 
 	m_controller = m_owner.lock().get()->GetComponent<Truth::Controller>();
+	m_controller.lock()->SetGroup(static_cast<uint32>(Truth::COLLISION_GROUP::PLAYER));
+	m_controller.lock()->SetMask(static_cast<uint32>(Truth::COLLISION_GROUP::PLAYER_MASK));
+	m_controller.lock()->SetUpFiltering();
 	m_player = m_owner.lock().get()->GetComponent<Player>();
 }
 
@@ -45,6 +49,7 @@ void PlayerController::FixedUpdate()
 		{
 			m_moveVec = Vector3::Zero;
 		}
+		m_moveVec.y = -100.0f;
 		m_controller.lock()->Move(m_moveVec);
 	}
 }
