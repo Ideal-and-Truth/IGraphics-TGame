@@ -1762,6 +1762,56 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma endregion
 
+#pragma region FireExplosionBillboardParticle2
+		std::shared_ptr<Ideal::IParticleSystem> fireExplosionParticle2 = gRenderer->CreateParticleSystem(fireExplosionMaterial);
+		fireExplosionParticle2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		//fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);	-> 테스트용
+		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
+
+		fireExplosionParticle2->SetActive(true);
+		fireExplosionParticle2->SetLoop(false);
+		fireExplosionParticle2->SetDuration(5.f);
+		fireExplosionParticle2->SetStartLifetime(5.f);
+
+		fireExplosionParticle2->SetMaxParticles(100);
+		fireExplosionParticle2->SetShapeMode(true);
+		fireExplosionParticle2->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		fireExplosionParticle2->SetRadius(1.f);
+		fireExplosionParticle2->SetRadiusThickness(0.5f);
+
+		fireExplosionParticle2->SetVelocityOverLifetime(true);
+		//fireExplosionParticle2->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		//fireExplosionParticle2->SetVelocityDirectionRandom(-10.f, 10.f);
+		fireExplosionParticle2->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Const);
+		fireExplosionParticle2->SetVelocityDirectionConst(Vector3(0, 1, 0));
+		fireExplosionParticle2->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		fireExplosionParticle2->SetVelocitySpeedModifierRandom(0.f, 0.9f);
+
+		fireExplosionParticle2->SetRateOverTime(true);
+		fireExplosionParticle2->SetEmissionRateOverTime(25.f);
+
+		// Animation
+		fireExplosionParticle2->SetTextureSheetAnimation(true);
+		fireExplosionParticle2->SetTextureSheetAnimationTiles({ 8,8 });
+		fireExplosionParticle2->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateTranslation(Vector3(0, 3, 0)));
+
+
+		fireExplosionParticle2->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
+		fireExplosionParticle2->SetColorOverLifetime(true);
+		{
+			auto& graph = fireExplosionParticle2->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.12f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.388f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+		}
+
+		{
+			auto& graph = fireExplosionParticle2->GetCustomData1Z();
+			graph.AddControlPoint({ 0,6 });
+		}
+
+#pragma endregion
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -2018,6 +2068,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					fireExplosionParticle->Pause();
 				}
+				if (GetAsyncKeyState('P') & 0x8000)
+				{
+					fireExplosionParticle2->Play();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -2047,6 +2101,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				magicCircleParticleSystem->SetDeltaTime(0.003f);
 				bowAttackParticleSystem->SetDeltaTime(0.003f);
 				fireExplosionParticle->SetDeltaTime(0.003f);
+				fireExplosionParticle2->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);

@@ -12,6 +12,10 @@ void CSMain(uint3 DTid : SV_DispatchThreadID)
     {
         return;
     }
+    if(g_RWBufferPos[index].DelayTime >= g_currentTime)
+    {
+        return;
+    }
     // TODO UAV 연결
     // 포지션, 방향, 속력 계산
     float3 NextPosition = g_RWBufferPos[index].Position.xyz;

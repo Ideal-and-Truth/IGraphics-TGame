@@ -134,6 +134,8 @@ void Ideal::ParticleSystem::SetDeferredDeleteManager(std::shared_ptr<Ideal::Defe
 void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
 	m_currentTime += m_deltaTime;
+	m_cbParticleSystem.CurrentTime = m_currentTime;
+
 	if (m_isPlaying)
 	{
 		m_currentDurationTime += (m_deltaTime * m_simulationSpeed);
@@ -442,9 +444,21 @@ bool Ideal::ParticleSystem::GetLoop()
 	return m_isLoop;
 }
 
-void Ideal::ParticleSystem::SetShapeMode(bool UseShape)
+void Ideal::ParticleSystem::SetRateOverTime(bool Active)
 {
-	m_isUseShapeMode = UseShape;
+	m_isUseRateOverTime = Active;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetEmissionRateOverTime(float Count)
+{
+	m_emissionRateOverTime = Count;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetShapeMode(bool Active)
+{
+	m_isUseShapeMode = Active;
 }
 
 void Ideal::ParticleSystem::SetShape(const Ideal::ParticleMenu::EShape& Shape)
@@ -998,6 +1012,11 @@ void Ideal::ParticleSystem::CreateParticleStartInfo(std::vector<ComputeParticle>
 			float radius = m_radius;
 			float radiusThickness = m_radiusThickness * m_radius;
 			float pi = 3.1415926535f;
+
+			std::vector<uint32> EmissionRateOverTimeCount;
+			uint32 currentRateOverTime_SecondsIndex = 0;	// RateOverTimeCount에 현재 시간 인덱스를 가리키는 인덱스 변수
+			uint32 currentRateOverTime_SecondsCount = 0;	// RateOverTimeCount가 가리키는 인덱스의 현재 만든 개수
+
 			for (uint32 i = 0; i < m_maxParticles; ++i)
 			{
 				Vertices[i].Position = Vector4(i, 0, 0, 1);
@@ -1048,6 +1067,18 @@ void Ideal::ParticleSystem::CreateParticleStartInfo(std::vector<ComputeParticle>
 					//---Rotation---//
 					float angle = randManager.nextFloat(0, 3.141592f);
 					Vertices[i].RotationAngle = angle;
+				}
+				//----Delay Time----//
+				if (m_isUseRateOverTime)
+				{
+					float delayTime = randManager.nextFloat(currentRateOverTime_SecondsIndex, currentRateOverTime_SecondsIndex + 1);
+					Vertices[i].DelayTime = delayTime;
+					currentRateOverTime_SecondsCount++;
+					if (currentRateOverTime_SecondsCount > m_emissionRateOverTime)
+					{
+						currentRateOverTime_SecondsCount = 0;
+						currentRateOverTime_SecondsIndex++;
+					}
 				}
 			}
 		}

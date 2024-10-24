@@ -20,7 +20,8 @@
         float4 g_CustomData1;
         float4 g_CustomData2;
         float g_Time;
-        float3 pad;
+        float g_currentTime;
+        float2 pad;
         float4 g_startColor;
         
         float g_DeltaTime;
@@ -40,6 +41,7 @@
         float3 Direction;
         float Speed;
         float RotationAngle;
+        float DelayTime;
     };
     
     StructuredBuffer<ComputeParticle> g_bufPos : register(t0);

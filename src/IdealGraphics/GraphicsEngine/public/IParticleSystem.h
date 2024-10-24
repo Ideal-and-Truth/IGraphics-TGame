@@ -111,8 +111,13 @@ namespace Ideal
 		virtual void SetLoop(bool Loop) abstract;	
 		virtual bool GetLoop() abstract;
 
+		//-------Emission-------//
+		virtual void SetRateOverTime(bool Active) abstract;
+		// 1초마다 생성할 수 있는 최대 개수
+		virtual void SetEmissionRateOverTime(float Count) abstract;
+
 		//------Shape------//
-		virtual void SetShapeMode(bool UseShape) abstract;
+		virtual void SetShapeMode(bool Active) abstract;
 		virtual void SetShape(const Ideal::ParticleMenu::EShape& Shape) abstract;
 		virtual void SetRadius(float Radius) abstract;
 		// 0~1사이의 비율로 현재 반지름의 두께를 결정한다. 최대 반지름에서 안쪽으로 늘어나는 구조. 
