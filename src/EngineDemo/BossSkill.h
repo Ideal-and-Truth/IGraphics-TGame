@@ -71,6 +71,9 @@ private:
 	bool m_playShock;
 	bool m_playSpear;
 	int m_spearImpactCount;
+	bool m_playFlameShot;
+
+	float m_flameShotPos;
 
 	std::vector<float> m_shockWavePos;
 	std::vector<float> m_flamePos;

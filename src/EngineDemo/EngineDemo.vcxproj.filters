@@ -135,9 +135,6 @@
     <ClInclude Include="RangedWeapon.h">
       <Filter>Component\BattleSystem\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="Bullet.h">
-      <Filter>Component\BattleSystem\Weapon</Filter>
-    </ClInclude>
     <ClInclude Include="SkillTree.h">
       <Filter>Component\BattleSystem\SkillTree</Filter>
     </ClInclude>
@@ -192,6 +189,9 @@
     <ClInclude Include="PlayerCPUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -243,9 +243,6 @@
       <Filter>Component\Base</Filter>
     </ClCompile>
     <ClCompile Include="RangedWeapon.cpp">
-      <Filter>Component\BattleSystem\Weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
       <Filter>Component\BattleSystem\Weapon</Filter>
     </ClCompile>
     <ClCompile Include="SkillTree.cpp">
@@ -301,6 +298,9 @@
     </ClCompile>
     <ClCompile Include="PlayerCPUI.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

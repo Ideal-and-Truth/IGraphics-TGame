@@ -356,7 +356,14 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 		if (!damager->GetTypeInfo().GetProperty("onlyHitOnce")->Get<bool>(damager.get()).Get())
 		{
 			m_isHit = true;
+			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 		}
+	}
+
+	if (_other->GetOwner().lock()->GetComponent<Bullet>().lock() && !m_isDodge)
+	{
+		m_isHit = true;
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 
 }

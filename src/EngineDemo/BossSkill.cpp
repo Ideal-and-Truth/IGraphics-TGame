@@ -44,7 +44,6 @@ BossSkill::BossSkill()
 	, m_deleteSword(false)
 	, m_deleteClone(false)
 	, m_readyToShoot(false)
-	, m_playShock(false)
 	, m_spearImpactCount(0)
 	, m_swordShootTime(0.f)
 	, m_shockWaveTime(0.f)
@@ -56,13 +55,16 @@ BossSkill::BossSkill()
 	, m_flameSwordCoolTime(0.f)
 	, m_lightSpeedDashCoolTime(0.f)
 	, m_timeDistortionCoolTime(0.f)
+	, m_flameShotPos(0.f)
 	, m_shockCount(0)
 	, m_swordCount(0)
 	, m_flameCount(0)
 	, m_cloneCount(0)
 	, m_currentPhase(0)
 	, m_deleteSphere(false)
+	, m_playShock(false)
 	, m_playSpear(false)
+	, m_playFlameShot(false)
 {
 	m_name = "BossSkill";
 }
@@ -332,6 +334,27 @@ void BossSkill::FlameSword()
 
 			m_fires.push_back(std::make_pair(flame, false));
 		}
+		// 투사체용
+		{
+			std::shared_ptr<Truth::Entity> flameShot = std::make_shared<Truth::Entity>(m_managers.lock());
+			flameShot->Initialize();
+			flameShot->m_layer = 1;
+			flameShot->AddComponent<Truth::SphereCollider>();
+			auto damage = flameShot->AddComponent<SimpleDamager>();
+			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
+
+			flameShot->m_name = "FlameShot";
+			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flameShot);
+			m_owner.lock()->AddChild(flameShot);
+
+			flameShot->SetPosition({ 0.f,0.f,0.f });
+			flameShot->SetScale({ 5.f,5.f,5.f });
+			//flame->SetScale({ 300.f,30.f,300.f });
+
+			flameShot->Start();
+
+			m_fires.push_back(std::make_pair(flameShot, false));
+		}
 		m_createComplete2 = true;
 	}
 	else
@@ -340,7 +363,7 @@ void BossSkill::FlameSword()
 		{
 			float bossHeight = m_owner.lock()->m_transform->m_position.y;
 			m_flameSwordTime += GetDeltaTime();
-			if (m_flameSwordTime > 0.1f && m_flameCount < m_flamePos.size())
+			if (m_flameSwordTime > 0.13f && m_flameCount < m_flamePos.size())
 			{
 				m_fires[m_flameCount].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_flameCount] });
 				Vector3 worldPos = m_fires[m_flameCount].first->m_transform->m_worldPosition;
@@ -351,12 +374,35 @@ void BossSkill::FlameSword()
 				m_flameSwordTime = 0.f;
 
 			}
-			if (m_flameCount >= m_flamePos.size())
+			if (m_flameCount >= m_flamePos.size() - 1)
 			{
 				m_deleteFire = true;
 				m_flameSword = false;
 				m_flameSwordTime = 0.f;
 				//m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
+			}
+
+			if (m_fires.size() == 6)
+			{
+				if (m_flameShotPos <= 0.f)
+				{
+					m_playFlameShot = true;
+				}
+
+				m_flameShotPos += GetDeltaTime() * 0.8f;
+				m_fires[5].first->m_transform->m_position.y = m_owner.lock()->m_transform->m_position.y + 1.f;
+				m_fires[5].first->m_transform->m_position.z += -m_flameShotPos;
+
+				PlayEffect(m_fires[5].first->GetWorldPosition());
+
+				if (m_fires[5].first->m_transform->m_position.z < -18.2f)
+				{
+					m_flameShotPos = 0.f;
+					m_owner.lock()->DeleteChild(m_fires[5].first);
+					m_owner.lock().reset();
+					m_fires[5].first->Destroy();
+					m_fires.pop_back();
+				}
 			}
 		}
 	}
@@ -959,6 +1005,46 @@ void BossSkill::PlayEffect(Vector3 pos)
 			p->Play();
 		}
 	}
+
+	{
+		Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
+		effectRot.y += (3.141592f / 180.f) * 180.f;
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+		Matrix m = Matrix::CreateScale(Vector3(1, 1, 1)) * rotationMT * Matrix::CreateTranslation(pos);
+
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(2, 2, 4) * 5.f)
+				* m
+			);
+
+			if (m_playFlameShot)
+			{
+				p->SetActive(true);
+				p->Play();
+			}
+		}
+
+		{
+			auto p1 = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire_1.yaml");
+			p1->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1, 1, 5) * 5.f)
+				* Matrix::CreateTranslation(Vector3(0.f, 0.f, -1.f))
+				* m
+			);
+
+			if (m_playFlameShot)
+			{
+				p1->SetActive(true);
+				p1->Play();
+			}
+
+			m_playFlameShot = false;
+		}
+	}
+
 
 }
 
