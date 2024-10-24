@@ -1695,11 +1695,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
 		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
 		billboardTest->SetActive(true);
-		billboardTest->SetMaxParticles(10000);
+		billboardTest->SetLoop(false);
+		billboardTest->SetDuration(3.f);
+		billboardTest->SetStartLifetime(3.f);
+
+		billboardTest->SetMaxParticles(50);
 		billboardTest->SetShapeMode(true);
 		billboardTest->SetShape(Ideal::ParticleMenu::EShape::Circle);
-		billboardTest->SetRadius(50.f);
-		billboardTest->SetRadiusThickness(1.f);
+		billboardTest->SetRadius(1.f);
+		billboardTest->SetRadiusThickness(0.5f);
+
+		billboardTest->SetVelocityOverLifetime(true);
+		billboardTest->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		billboardTest->SetVelocityDirectionRandom(-10.f, 10.f);
+		billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		billboardTest->SetVelocitySpeedModifierRandom(0.f, 0.3f);
+		//billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
+		//billboardTest->SetVelocitySpeedModifierConst(0.f);
+		//billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
+		billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
+
 
 #pragma endregion
 
@@ -1951,11 +1966,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					magicCircleParticleSystem->Play();
 					bowAttackParticleSystem->Play();
 				}
-				if (GetAsyncKeyState('G') & 0x8000)
+				if (GetAsyncKeyState('I') & 0x8000)
 				{
-					auto a = gRenderer->GetRightBottomEditorPos();
-					auto b =gRenderer->GetTopLeftEditorPos();
-					int c = 3;
+					billboardTest->Play();
 				}
 
 				// Animation // 역재생 안됨

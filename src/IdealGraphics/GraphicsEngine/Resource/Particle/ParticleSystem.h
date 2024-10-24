@@ -115,9 +115,17 @@ namespace Ideal
 		// 0~1사이의 비율로 현재 반지름의 두께를 결정한다. 최대 반지름에서 안쪽으로 늘어나는 구조. 
 		virtual void SetRadiusThickness(float RadiusThickness) override;
 
-		void UpdateShape();
-		// 리소스 매니저를 이용하여 수정된 변경사항이 있을경우 다시 만든다.
-		void UpdateParticleVertexBufferAndStructuredBuffer();
+		//------Velocity Over Lifetime------//
+		// 개별 파티클의 방향을 랜덤 or 동일
+		virtual void SetVelocityOverLifetime(bool Active) override;
+		virtual void SetVelocityDirectionMode(const Ideal::ParticleMenu::EMode& Mode) override;
+		virtual void SetVelocityDirectionRandom(float Min, float Max) override;
+		virtual void SetVelocityDirectionConst(const DirectX::SimpleMath::Vector3& Direction) override;
+		// 개별 파티클의 속도를 랜덤 or 동일
+		virtual void SetVelocitySpeedModifierMode(const Ideal::ParticleMenu::EMode& Mode) override;
+		virtual void SetVelocitySpeedModifierRandom(float Min, float Max) override;
+		virtual void SetVelocitySpeedModifierConst(float Speed) override;
+
 
 		//------Color Over Lifetime------//
 		virtual void SetColorOverLifetime(bool Active) override;
@@ -188,14 +196,27 @@ namespace Ideal
 
 
 		//---------Shape---------//
+		void UpdateShape();
+		// 리소스 매니저를 이용하여 수정된 변경사항이 있을경우 다시 만든다.
+		void UpdateParticleVertexBufferAndStructuredBuffer();
+		void CreateParticleStartInfo(std::vector<ComputeParticle>& Vertices);
 		bool m_isUseShapeMode = false;
 		Ideal::ParticleMenu::EShape m_ShapeMode_shape;
 		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_ParticleStructuredBuffer;
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 		float m_radius = 1.f;
 		float m_radiusThickness = 1.f;
-		void CreateParticleStartPosition(std::vector<ComputeParticle>& Vertices);
 
+		//------Velocity Over Lifetime------//
+		bool m_isUseVelocityOverLifetime = false;
+		Ideal::ParticleMenu::EMode m_velocityDirectionMode = Ideal::ParticleMenu::EMode::Random;
+		Ideal::ParticleMenu::EMode m_velocitySpeedModifierMode = Ideal::ParticleMenu::EMode::Random;
+		float m_velocityRandomDirectionMin = 0.f;
+		float m_velocityRandomDirectionMax = 1.f;
+		Vector3 m_velocityConstDirection;
+		float m_velocityRandomSpeedMin = 0.f;
+		float m_velocityRandomSpeedMax = 1.f;
+		float m_velocityConstSpeed;
 
 		//------Color Over Lifetime------//
 		bool m_isUseColorOverLifetime = false;

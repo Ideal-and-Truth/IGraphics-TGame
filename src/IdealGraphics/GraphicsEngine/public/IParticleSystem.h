@@ -50,8 +50,12 @@ namespace Ideal
 		enum class EShape
 		{
 			Circle = 0,
+		};
 
-
+		enum class EMode
+		{
+			Const = 0,
+			Random
 		};
 	}
 }
@@ -115,7 +119,15 @@ namespace Ideal
 		virtual void SetRadiusThickness(float RadiusThickness) abstract;
 
 		//------Velocity Over Lifetime------//
-		//virtual void SetVelocityOverLifetime(bool Active) abstract;
+		// 개별 파티클의 방향을 랜덤 or 동일
+		virtual void SetVelocityOverLifetime(bool Active) abstract;
+		virtual void SetVelocityDirectionMode(const Ideal::ParticleMenu::EMode& Mode) abstract;
+		virtual void SetVelocityDirectionRandom(float Min, float Max) abstract;
+		virtual void SetVelocityDirectionConst(const DirectX::SimpleMath::Vector3& Direction) abstract;
+		// 개별 파티클의 속도를 랜덤 or 동일
+		virtual void SetVelocitySpeedModifierMode(const Ideal::ParticleMenu::EMode& Mode) abstract;
+		virtual void SetVelocitySpeedModifierRandom(float Min, float Max) abstract;
+		virtual void SetVelocitySpeedModifierConst(float Speed) abstract;
 
 		//------Color Over Lifetime------//
 		// 생명 시간 동안 색상 값이 바뀔지를 결정. 그라디언트 그래프를 통해 조작함

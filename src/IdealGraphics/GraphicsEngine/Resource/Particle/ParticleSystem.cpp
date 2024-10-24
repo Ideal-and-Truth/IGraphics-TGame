@@ -72,6 +72,9 @@ void Ideal::ParticleSystem::Play()
 	m_isPlaying = true;
 	m_currentTime = 0;
 	m_currentDurationTime = 0;
+
+	// 파티클초기화
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
 }
 
 void Ideal::ParticleSystem::Resume()
@@ -451,7 +454,51 @@ void Ideal::ParticleSystem::SetRadius(float Radius)
 
 void Ideal::ParticleSystem::SetRadiusThickness(float RadiusThickness)
 {
-	m_radiusThickness = 1.f;
+	m_radiusThickness = RadiusThickness;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetVelocityOverLifetime(bool Active)
+{
+	m_isUseVelocityOverLifetime = Active;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetVelocityDirectionMode(const Ideal::ParticleMenu::EMode& Mode)
+{
+	m_velocityDirectionMode = Mode;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetVelocityDirectionRandom(float Min, float Max)
+{
+	m_velocityRandomDirectionMin = Min;
+	m_velocityRandomDirectionMax = Max;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetVelocityDirectionConst(const DirectX::SimpleMath::Vector3& Direction)
+{
+	m_velocityConstDirection = Direction;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetVelocitySpeedModifierMode(const Ideal::ParticleMenu::EMode& Mode)
+{
+	m_velocitySpeedModifierMode = Mode;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetVelocitySpeedModifierRandom(float Min, float Max)
+{
+	m_velocityRandomSpeedMin = Min;
+	m_velocityRandomSpeedMax = Max;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetVelocitySpeedModifierConst(float Speed)
+{
+	m_velocityConstSpeed = Speed;
 	m_RENDERM_MODE_BILLBOARD_isDirty = true;
 }
 
@@ -498,7 +545,7 @@ void Ideal::ParticleSystem::UpdateParticleVertexBufferAndStructuredBuffer()
 
 	std::vector<ComputeParticle> startPos;
 	startPos.resize(m_maxParticles);
-	CreateParticleStartPosition(startPos);
+	CreateParticleStartInfo(startPos);
 	
 
 	m_ResourceManger.lock()->CreateStructuredBuffer<ComputeParticle>(m_ParticleStructuredBuffer, startPos);
@@ -923,7 +970,7 @@ void Ideal::ParticleSystem::UpdateLifeTime()
 	}
 }
 
-void Ideal::ParticleSystem::CreateParticleStartPosition(std::vector<ComputeParticle>& Vertices)
+void Ideal::ParticleSystem::CreateParticleStartInfo(std::vector<ComputeParticle>& Vertices)
 {
 	switch (m_ShapeMode_shape)
 	{
@@ -939,29 +986,46 @@ void Ideal::ParticleSystem::CreateParticleStartPosition(std::vector<ComputeParti
 				Vertices[i].Direction = Vector3(0, 0, 1);
 				Vertices[i].Speed = 1.f;
 
-
 				// Temp : Circle
 				float innerRadius = radius - radiusThickness;
 				float theta = randManager.nextFloat(0.f, 2.f * pi);
 				float randRadius = sqrt(randManager.nextFloat(innerRadius * innerRadius, radius * radius));
 				float x = randRadius * cos(theta);
 				float y = randRadius * sin(theta);
-				Vertices[i].Position = Vector4(x, y, 0, 1);
+				//Vertices[i].Position = Vector4(x, y, 0, 1);
 
-				// Direction
+				Matrix local = Matrix::CreateTranslation(Vector3(x, y, 0));
+				Matrix world = local * m_transform;
+				Vertices[i].Position = Vector4(world._41, world._42, world._43, 1.f);
+				if (m_isUseVelocityOverLifetime == true)
 				{
-					float d0 = randManager.nextFloat(-10.f, 10.f);
-					float d1 = randManager.nextFloat(-10.f, 10.f);
-					float d2 = randManager.nextFloat(-10.f, 10.f);
-					Vector3 dir = Vector3(d0, d1, d2);
-					//Vector3 dir = Vector3(0, 1, 0);
-					dir.Normalize();
-					Vertices[i].Direction = dir;
-				}
-				// Speed
-				{
-					float speed = randManager.nextFloat(0.f, 3.f);
-					Vertices[i].Speed = speed;
+					//---Direction---//
+					if(m_velocityDirectionMode == Ideal::ParticleMenu::EMode::Random)
+					{
+						float d0 = randManager.nextFloat(m_velocityRandomDirectionMin, m_velocityRandomDirectionMax);
+						float d1 = randManager.nextFloat(m_velocityRandomDirectionMin, m_velocityRandomDirectionMax);
+						float d2 = randManager.nextFloat(m_velocityRandomDirectionMin, m_velocityRandomDirectionMax);
+						Vector3 dir = Vector3(d0, d1, d2);
+						dir.Normalize();
+						Vertices[i].Direction = dir;
+					}
+					else
+					{
+						Vector3 dir = m_velocityConstDirection;
+						dir.Normalize();
+						Vertices[i].Direction = dir;
+					}
+
+					//---Speed---//
+					if(m_velocitySpeedModifierMode == Ideal::ParticleMenu::EMode::Random)
+					{
+						float speed = randManager.nextFloat(m_velocityRandomSpeedMin, m_velocityRandomSpeedMax);
+						Vertices[i].Speed = speed;
+					}
+					else
+					{
+						Vertices[i].Speed = m_velocityConstSpeed;
+					}
 				}
 			}
 		}
