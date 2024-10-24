@@ -1694,50 +1694,53 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 0), 1.f);	// 끝 색상
 		}
 #pragma endregion
-#pragma region ParticleBillboardTest
+#pragma region FireExplosionBillboardParticle
 		//----------ParticleBillboardTest effect----------//
-		std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
+		std::shared_ptr<Ideal::IParticleMaterial> fireExplosionMaterial = gRenderer->CreateParticleMaterial();
 		//billboardMaterialTest->SetShader(billboardTestPS);
-		billboardMaterialTest->SetShader(bossFireFloorShader);
-		billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		fireExplosionMaterial->SetShader(bossFireFloorShader);
+		fireExplosionMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
 		std::shared_ptr<Ideal::ITexture> particleBillboardAnimationSheet = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossFireFloor/Explosion_1.png");
 		std::shared_ptr<Ideal::ITexture> particleBillboardNormal = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
-		billboardMaterialTest->SetTexture0(particleBillboardAnimationSheet);
-		billboardMaterialTest->SetTexture1(particleBillboardNormal);
-		billboardMaterialTest->SetWriteDepthBuffer(true);
+		fireExplosionMaterial->SetTexture0(particleBillboardAnimationSheet);
+		fireExplosionMaterial->SetTexture1(particleBillboardNormal);
+		fireExplosionMaterial->SetWriteDepthBuffer(true);
 
-		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
-		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
-		billboardTest->SetActive(true);
-		billboardTest->SetLoop(false);
-		billboardTest->SetDuration(1.f);
-		billboardTest->SetStartLifetime(1.f);
+		std::shared_ptr<Ideal::IParticleSystem> fireExplosionParticle = gRenderer->CreateParticleSystem(fireExplosionMaterial);
+		fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+			//fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);	-> 테스트용
+			//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
 
-		billboardTest->SetMaxParticles(200);
-		billboardTest->SetShapeMode(true);
-		billboardTest->SetShape(Ideal::ParticleMenu::EShape::Circle);
-		billboardTest->SetRadius(1.f);
-		billboardTest->SetRadiusThickness(0.5f);
+		fireExplosionParticle->SetActive(true);
+		fireExplosionParticle->SetLoop(false);
+		fireExplosionParticle->SetDuration(1.f);
+		fireExplosionParticle->SetStartLifetime(1.f);
 
-		billboardTest->SetVelocityOverLifetime(true);
-		billboardTest->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
-		billboardTest->SetVelocityDirectionRandom(-10.f, 10.f);
-		billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
-		billboardTest->SetVelocitySpeedModifierRandom(0.f, 0.9f);
+		fireExplosionParticle->SetMaxParticles(200);
+		fireExplosionParticle->SetShapeMode(true);
+		fireExplosionParticle->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		fireExplosionParticle->SetRadius(1.f);
+		fireExplosionParticle->SetRadiusThickness(0.5f);
+
+		fireExplosionParticle->SetVelocityOverLifetime(true);
+		fireExplosionParticle->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		fireExplosionParticle->SetVelocityDirectionRandom(-10.f, 10.f);
+		fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		fireExplosionParticle->SetVelocitySpeedModifierRandom(0.f, 0.9f);
 		//billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
 		//billboardTest->SetVelocitySpeedModifierConst(0.f);
 		//billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
 
 		// Animation
-		billboardTest->SetTextureSheetAnimation(true);
-		billboardTest->SetTextureSheetAnimationTiles({ 8,8 });
-		billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0,3,0)));
+		fireExplosionParticle->SetTextureSheetAnimation(true);
+		fireExplosionParticle->SetTextureSheetAnimationTiles({ 8,8 });
+		fireExplosionParticle->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0,3,0)));
 
 
-		billboardTest->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
-		billboardTest->SetColorOverLifetime(true);
+		fireExplosionParticle->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
+		fireExplosionParticle->SetColorOverLifetime(true);
 		{
-			auto& graph = billboardTest->GetColorOverLifetimeGradientGraph();
+			auto& graph = fireExplosionParticle->GetColorOverLifetimeGradientGraph();
 			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
 			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.12f);
 			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.388f);
@@ -1745,7 +1748,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 		{
-			auto& graph = billboardTest->GetCustomData1Z();
+			auto& graph = fireExplosionParticle->GetCustomData1Z();
 			graph.AddControlPoint({ 0,6 });
 		}
 
@@ -2001,11 +2004,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				if (GetAsyncKeyState('I') & 0x8000)
 				{
-					billboardTest->Play();
+					fireExplosionParticle->Play();
 				}
 				if (GetAsyncKeyState('O') & 0x8000)
 				{
-					billboardTest->Pause();
+					fireExplosionParticle->Pause();
 				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
@@ -2035,7 +2038,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				dodgeEffect->SetDeltaTime(0.003f);
 				magicCircleParticleSystem->SetDeltaTime(0.003f);
 				bowAttackParticleSystem->SetDeltaTime(0.003f);
-				billboardTest->SetDeltaTime(0.003f);
+				fireExplosionParticle->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
