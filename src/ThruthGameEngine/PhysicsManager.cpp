@@ -40,6 +40,8 @@ Truth::PhysicsManager::PhysicsManager()
 	/// 5: camera Ray
 	/// 6: player weapone
 	/// 7: enemy weapone
+	SetCollisionFilter(0, 3, false);
+
 	SetCollisionFilter(1, 3, false);
 	SetCollisionFilter(1, 4, false);
 	SetCollisionFilter(1, 5, false);
@@ -429,28 +431,18 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 	queryFilterData.flags |= physx::PxQueryFlag::ePREFILTER;
 	// queryFilterData.flags |= physx::PxQueryFlag::eANY_HIT;
 	// queryFilterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
-	queryFilterData.data.word0 = static_cast<uint32>(_filter);
+	queryFilterData.data.word0 = 0;
 	bool hitCheck = m_scene->raycast(
 		MathUtil::Convert(_start),
 		MathUtil::Convert(_direction),
 		_range,
 		rayCastBuffer,
-		physx::PxHitFlags(physx::PxHitFlag::eMESH_MULTIPLE),
+		physx::PxHitFlags(physx::PxHitFlag::ePOSITION),
 		queryFilterData,
 		m_qCallback
 	);
 
-	if (rayCastBuffer.getNbAnyHits())
-	{
-		int a = 1;
-	}
-
-	if (rayCastBuffer.nbTouches > 0)
-	{
-		int a = 1;
-	}
-
-	if (hitCheck)
+	if (rayCastBuffer.hasBlock)
 		return MathUtil::Convert(rayCastBuffer.block.position);
 	else
 		return _start + (_direction * _range);
@@ -618,14 +610,10 @@ physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::preFilter(const p
 	{
 		return physx::PxQueryHitType::Enum::eNONE;
 	}
-	auto a = shape->getQueryFilterData().word0;
-	if (a == 0)
+	auto w0 = shape->getQueryFilterData().word0;
+	if (physx::m_collsionTable[filterData.word0] & 1 << w0)
 	{
-		int b = 1;
-	}
-	if (physx::m_collsionTable[filterData.word0] & 1 << shape->getQueryFilterData().word0)
-	{
-		return physx::PxQueryHitType::Enum::eTOUCH;
+		return physx::PxQueryHitType::Enum::eBLOCK;
 	}
 	else
 	{
