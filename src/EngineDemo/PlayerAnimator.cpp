@@ -410,6 +410,11 @@ void PlayerAnimator::CameraZoom(float timing)
 	m_playerCamera->GetTypeInfo().GetProperty("zoomOutTime")->Set(m_playerCamera.get(), timing);
 }
 
+void PlayerAnimator::SetTimeSlow()
+{
+	m_player->GetTypeInfo().GetProperty("slowTime")->Set(m_player.get(), true);
+}
+
 void PlayerIdle::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Idle", false);
@@ -1288,6 +1293,10 @@ void PlayerSkillQ::OnStateEnter()
 
 void PlayerSkillQ::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 12)
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->SetTimeSlow();
+	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");

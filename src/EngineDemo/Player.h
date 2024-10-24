@@ -52,6 +52,9 @@ private:
 
 	bool m_isInvincible;
 
+	PROPERTY(slowTime);
+	bool m_slowTime;
+
 	const static fs::path m_dataPath;
 
 public:

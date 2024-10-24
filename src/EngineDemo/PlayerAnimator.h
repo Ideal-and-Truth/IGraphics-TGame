@@ -605,6 +605,8 @@ public:
 	void CameraShake(float shakeCount);
 
 	void CameraZoom(float timing);
+
+	void SetTimeSlow();
 };
 
 template<class Archive>

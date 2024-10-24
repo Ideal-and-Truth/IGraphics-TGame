@@ -105,6 +105,15 @@ void RangerAnimator::Update()
 	m_isAttack = m_enemyController->GetTypeInfo().GetProperty("isAttackReady")->Get<bool>(m_enemyController.get()).Get();
 	m_isReturn = m_enemyController->GetTypeInfo().GetProperty("isComeBack")->Get<bool>(m_enemyController.get()).Get();
 
+	if (m_enemy->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_enemy.get()).Get())
+	{
+		m_skinnedMesh->SetAnimationSpeed(0.3f);
+	}
+	else
+	{
+		m_skinnedMesh->SetAnimationSpeed(1.f);
+	}
+
 	if (m_isReload)
 	{
 		m_passingTime += GetDeltaTime();

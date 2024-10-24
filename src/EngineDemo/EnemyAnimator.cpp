@@ -116,6 +116,15 @@ void EnemyAnimator::Update()
 	m_isBackStep = m_enemyController->GetTypeInfo().GetProperty("isBackStep")->Get<bool>(m_enemyController.get()).Get();
 	m_sideMove = m_enemyController->GetTypeInfo().GetProperty("sideMove")->Get<float>(m_enemyController.get()).Get();
 
+	if (m_enemy->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_enemy.get()).Get())
+	{
+		m_skinnedMesh->SetAnimationSpeed(0.3f);
+	}
+	else
+	{
+		m_skinnedMesh->SetAnimationSpeed(1.f);
+	}
+
 	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
 	{
 		m_isDeath = true;
@@ -391,14 +400,19 @@ void EnemyParriableAttack::OnStateExit()
 void EnemyHit::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeHit", false);
+	GetProperty("isDamage")->Set(m_animator, false);
 }
 
 void EnemyHit::OnStateUpdate()
 {
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isDamage")->Set(m_animator, false);
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("AttackReady");
+	}
+	else if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeHit", false);
+		GetProperty("isDamage")->Set(m_animator, false);
 	}
 }
 

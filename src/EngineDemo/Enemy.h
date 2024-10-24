@@ -49,12 +49,17 @@ private:
 	PROPERTY(isTargetIn);
 	bool m_isTargetIn;
 
+	PROPERTY(slowTime);
+	bool m_slowTime;
+
 	PROPERTY(hitOnce);
 	bool m_hitOnce;
 
 	bool m_isInvincible;
 
 	float m_passingTime;
+
+	float m_baseSpeed;
 
 public:
 	Enemy();

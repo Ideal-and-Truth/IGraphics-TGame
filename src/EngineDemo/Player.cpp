@@ -18,6 +18,7 @@ Player::Player()
 	, m_passingTime(0.f)
 	, m_isDecreaseCP(false)
 	, m_unlockSkill1(false)
+	, m_slowTime(false)
 	, m_isInvincible(false)
 {
 	m_name = "Player";
@@ -45,15 +46,19 @@ void Player::Update()
 		m_isInvincible = !m_isInvincible;
 	}
 
-	if (m_isInvincible)
-	{
-		m_currentTP = m_maxTP;
-		return;
-	}
-
 	if (m_currentCP > m_maxCP)
 	{
 		m_currentCP = m_maxCP;
+	}
+
+	if (m_slowTime)
+	{
+		m_currentCP -= GetDeltaTime() * 10.f;
+		if (m_currentCP < 0.f)
+		{
+			m_currentCP = 0.f;
+			m_slowTime = false;
+		}
 	}
 
 	if (m_currentTP > 0.f)
@@ -65,6 +70,14 @@ void Player::Update()
 			m_passingTime = 0.f;
 		}
 	}
+
+	if (m_isInvincible)
+	{
+		m_currentTP = m_maxTP;
+		return;
+	}
+
+
 }
 
 void Player::SavePlayerData(int _slot)

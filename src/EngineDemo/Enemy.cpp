@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Player.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Enemy)
 
@@ -14,8 +15,10 @@ Enemy::Enemy()
 	, m_stunGuage(0.f)
 	, m_attackRange(5.f)
 	, m_passingTime(0.f)
+	, m_baseSpeed(0.f)
 	, m_isTargetIn(false)
 	, m_hitOnce(false)
+	, m_slowTime(false)
 	, m_isInvincible(false)
 {
 	m_name = "Enemy";
@@ -34,6 +37,7 @@ void Enemy::Awake()
 void Enemy::Start()
 {
 	m_currentTP = m_maxTP;
+	m_baseSpeed = m_speed;
 }
 
 void Enemy::Update()
@@ -42,6 +46,20 @@ void Enemy::Update()
 	{
 		m_isInvincible = !m_isInvincible;
 	}
+
+	auto player = m_target.lock()->GetComponent<Player>().lock();
+	m_slowTime = player->GetTypeInfo().GetProperty("slowTime")->Get<bool>(player.get()).Get();
+
+	if (m_slowTime)
+	{
+		m_speed = m_baseSpeed * 0.3f;
+		if (player->GetTypeInfo().GetProperty("currentCP")->Get<float>(player.get()).Get() <= 0.f)
+		{
+			m_speed = m_baseSpeed;
+			m_slowTime = false;
+		}
+	}
+
 
 	if (m_isInvincible)
 	{
