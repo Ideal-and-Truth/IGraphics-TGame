@@ -53,12 +53,15 @@ namespace Ideal
 		virtual void SetStopWhenFinished(bool StopWhenFinished) override;
 		virtual void SetPlayOnWake(bool PlayOnWake) override;
 		virtual float GetCurrentDurationTime() override;
+		virtual void SetMaxParticles(unsigned int MaxParticles) override;
+
 	public:
 		void Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial);
 		void Free();
 		void SetResourceManager(std::shared_ptr<Ideal::ResourceManager> ResourceManager);
 		void SetDeferredDeleteManager(std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		void DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
+		void ComputeRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool);
 
 		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
@@ -108,6 +111,10 @@ namespace Ideal
 		//------Shape------//
 		virtual void SetShapeMode(bool UseShape) override;
 		virtual void SetShape(const Ideal::ParticleMenu::EShape& Shape) override;
+		virtual void SetRadius(float Radius) override;
+		// 0~1사이의 비율로 현재 반지름의 두께를 결정한다. 최대 반지름에서 안쪽으로 늘어나는 구조. 
+		virtual void SetRadiusThickness(float RadiusThickness) override;
+
 		void UpdateShape();
 		// 리소스 매니저를 이용하여 수정된 변경사항이 있을경우 다시 만든다.
 		void UpdateParticleVertexBufferAndStructuredBuffer();
@@ -144,6 +151,7 @@ namespace Ideal
 		//--------Renderer---------//
 		// 랜더 모드를 설정 : 매쉬 형태 Or 빌보드 형태인지
 		virtual void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) override;
+		Ideal::ParticleMenu::ERendererMode GetRenderMode();
 		virtual void SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh) override;
 		virtual void SetRenderMaterial(std::shared_ptr<Ideal::IParticleMaterial> ParticleRendererMaterial) override;
 
@@ -171,13 +179,23 @@ namespace Ideal
 		float m_startLifetime = 1.f;	//1 은 임시
 		float m_simulationSpeed = 1.f;
 
-		uint32 m_maxParticles = 10000;	// 파티클 개수
+		uint32 m_maxParticles = 1;	// 파티클 개수
+
+		// System
+		// 아래는 체크용. 인터페이스에서 뭔가 바뀌어질때 체크용
+		bool m_RENDERM_MODE_BILLBOARD_isDirty = true;
+		//void SetStartPositionInCircle();
+
 
 		//---------Shape---------//
 		bool m_isUseShapeMode = false;
 		Ideal::ParticleMenu::EShape m_ShapeMode_shape;
 		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_ParticleStructuredBuffer;
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
+		float m_radius = 1.f;
+		float m_radiusThickness = 1.f;
+		void CreateParticleStartPosition(std::vector<ComputeParticle>& Vertices);
+
 
 		//------Color Over Lifetime------//
 		bool m_isUseColorOverLifetime = false;

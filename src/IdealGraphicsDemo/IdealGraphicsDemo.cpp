@@ -1694,7 +1694,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
 		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
-		
+		billboardTest->SetActive(true);
+		billboardTest->SetMaxParticles(10000);
+		billboardTest->SetShapeMode(true);
+		billboardTest->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		billboardTest->SetRadius(50.f);
+		billboardTest->SetRadiusThickness(1.f);
+
 #pragma endregion
 
 
@@ -1980,6 +1986,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				dodgeEffect->SetDeltaTime(0.003f);
 				magicCircleParticleSystem->SetDeltaTime(0.003f);
 				bowAttackParticleSystem->SetDeltaTime(0.003f);
+				billboardTest->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -2286,8 +2293,9 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	float aspectRatio = float(WIDTH) / HEIGHT;
 	//float aspectRatio = float(1296) / 999.f;
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.01f, 3000.f);
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.1f, 3000.f);
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.01f, 3000.f);
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.001f, 3000.f);
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
 	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));

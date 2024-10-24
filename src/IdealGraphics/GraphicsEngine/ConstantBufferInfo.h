@@ -177,9 +177,8 @@ struct CB_ParticleSystem
 	Vector3 pad;
 	Color StartColor;
 
-	// Shape
-	float Radius;
-	float RadiusThickness;
+	float DeltaTime;
+	float MaxParticles;
 	float pad0;
 	float pad1;
 };

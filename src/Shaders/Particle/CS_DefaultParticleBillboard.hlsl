@@ -7,16 +7,18 @@
 void CSMain(uint3 DTid : SV_DispatchThreadID)
 {
     uint index = DTid.x;
-    // TEMP Particle MaxCount
-    uint maxParticleCount = 100;
-    if(index >= maxParticleCount)
+    // Particle MaxCount
+    if(index >= g_MaxParticles)
     {
         return;
     }
-    
-   
     // TODO UAV 연결
-    g_RWBufferPos[index].Position = float4(position, 1.f);
+    // 포지션, 방향, 속력 계산
+    float3 NextPosition = g_RWBufferPos[index].Position.xyz;
+    NextPosition += (g_RWBufferPos[index].Direction * g_RWBufferPos[index].Speed * g_DeltaTime);
+    //NextPosition += (g_RWBufferPos[index].Direction * g_RWBufferPos[index].Speed);// * g_DeltaTime);
+    g_RWBufferPos[index].Position = float4(NextPosition, 1.f);
+    //g_RWBufferPos[index].Position = float4(1.f,1.f,1.f,1.f);
 }
 
 #endif

@@ -14,9 +14,9 @@ VSParticleDrawOut VSMain(VSParticleInput input)
 }
 
 [maxvertexcount(4)]
-void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<GSParticleDrawOut> SpriteStream)
+void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<VSOutput> SpriteStream)
 {
-    GSParticleDrawOut output;
+    VSOutput output;
    
 
     // 빌보드를 만들겠다
@@ -42,8 +42,11 @@ void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<GSParticleDra
         //position = mul(position, (float3x3)WorldInvTranspose) + input[0].Pos;
         float3 position = v[i].xyz;
         position = mul(position, (float3x3)WorldInvTranspose);// + input[0].Pos;
-        output.Pos = mul(float4(position, 1.0), mul(World, ViewProj));
-        output.Color = input[0].Color;
+        output.PosH = mul(float4(position, 1.0), mul(World, ViewProj));
+        output.Pos = position;
+        //output.Color = input[0].Color;
+        // TEMP : 노말값 대충
+        output.Normal = float3(1.f,0.f,0.f);
         output.UV = g_texcoords[i];
         SpriteStream.Append(output);
     }
@@ -51,9 +54,9 @@ void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<GSParticleDra
 }
 
 // TEST
-float4 PSMain(PSParticleDrawIn input) : SV_Target
+float4 PSMain(VSOutput input) : SV_Target
 {
-    float4 ret = input.Color;
+    float4 ret;
     ret = ParticleTexture0.Sample(LinearWrapSampler, input.UV);
     return ret;
 }

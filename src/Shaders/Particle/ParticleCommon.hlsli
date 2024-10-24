@@ -22,9 +22,9 @@
         float g_Time;
         float3 pad;
         float4 g_startColor;
-        // Shape
-        float g_Radius;
-        float g_RadiusThickness;
+        
+        float g_DeltaTime;
+        float g_MaxParticles;
         float pad0;
         float pad1;
 };
@@ -80,15 +80,18 @@
 
     struct GSParticleDrawOut
     {
+        float4 Pos : SV_POSITION;
         float2 UV : TEXCOORD0;
         float4 Color : COLOR;
-        float4 Pos : SV_POSITION;
     };
     
     struct PSParticleDrawIn
     {
-        float2 UV : TEXCOORD0;
-        float4 Color : COLOR;
+        //float2 UV : TEXCOORD0;
+        //float4 Color : COLOR;
+        float3 Pos : POSITION;
+        float3 Normal : NORMAL;
+        float2 UV : TEXCOORD;
     };
 
     cbuffer cbImmutable

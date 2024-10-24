@@ -84,6 +84,8 @@ namespace Ideal
 
 		virtual float GetCurrentDurationTime() abstract;
 
+		virtual void SetMaxParticles(unsigned int MaxParticles) abstract;
+
 	public:
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
 		virtual DirectX::SimpleMath::Color& GetStartColor() abstract;
@@ -108,6 +110,12 @@ namespace Ideal
 		//------Shape------//
 		virtual void SetShapeMode(bool UseShape) abstract;
 		virtual void SetShape(const Ideal::ParticleMenu::EShape& Shape) abstract;
+		virtual void SetRadius(float Radius) abstract;
+		// 0~1사이의 비율로 현재 반지름의 두께를 결정한다. 최대 반지름에서 안쪽으로 늘어나는 구조. 
+		virtual void SetRadiusThickness(float RadiusThickness) abstract;
+
+		//------Velocity Over Lifetime------//
+		//virtual void SetVelocityOverLifetime(bool Active) abstract;
 
 		//------Color Over Lifetime------//
 		// 생명 시간 동안 색상 값이 바뀔지를 결정. 그라디언트 그래프를 통해 조작함

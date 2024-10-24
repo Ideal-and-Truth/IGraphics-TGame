@@ -160,6 +160,28 @@ void Ideal::ParticleSystemManager::DeleteParticleSystem(std::shared_ptr<Ideal::P
 
 void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData)
 {
+	// 먼저 위치 계산부터 하겠음
+	CommandList->SetComputeRootSignature(m_rootSignature.Get());
+	for (auto& p : m_particles)
+	{
+		if (p->GetActive())
+		{
+			if (p->GetRenderMode() == Ideal::ParticleMenu::ERendererMode::Billboard)
+			{
+				p->ComputeRenderBillboard(Device, CommandList, DescriptorHeap, CBPool);
+			}
+		}
+	}
+	for (auto& p : m_particlesNoTransparency)
+	{
+		if (p->GetActive())
+		{
+			if (p->GetRenderMode() == Ideal::ParticleMenu::ERendererMode::Billboard)
+			{
+				p->ComputeRenderBillboard(Device, CommandList, DescriptorHeap, CBPool);
+			}
+		}
+	}
 
 	CommandList->SetGraphicsRootSignature(m_rootSignature.Get());
 	/// Bind To Shader

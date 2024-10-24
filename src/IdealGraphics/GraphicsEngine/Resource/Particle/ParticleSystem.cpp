@@ -99,6 +99,12 @@ float Ideal::ParticleSystem::GetCurrentDurationTime()
 	return m_currentDurationTime;
 }
 
+void Ideal::ParticleSystem::SetMaxParticles(unsigned int MaxParticles)
+{
+	m_maxParticles = MaxParticles;
+	m_cbParticleSystem.MaxParticles = m_maxParticles;
+}
+
 void Ideal::ParticleSystem::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D12RootSignature> RootSignature, std::shared_ptr<Ideal::ParticleMaterial> ParticleMaterial)
 {
 	m_particleMaterial = ParticleMaterial;
@@ -434,12 +440,26 @@ void Ideal::ParticleSystem::SetShapeMode(bool UseShape)
 void Ideal::ParticleSystem::SetShape(const Ideal::ParticleMenu::EShape& Shape)
 {
 	m_ShapeMode_shape = Shape;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetRadius(float Radius)
+{
+	m_radius = Radius;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
+}
+
+void Ideal::ParticleSystem::SetRadiusThickness(float RadiusThickness)
+{
+	m_radiusThickness = 1.f;
+	m_RENDERM_MODE_BILLBOARD_isDirty = true;
 }
 
 void Ideal::ParticleSystem::UpdateShape()
 {
-	if (!m_ParticleStructuredBuffer)
+	if (m_RENDERM_MODE_BILLBOARD_isDirty == true)
 	{
+		m_RENDERM_MODE_BILLBOARD_isDirty = false;
 		UpdateParticleVertexBufferAndStructuredBuffer();
 	}
 }
@@ -462,9 +482,6 @@ void Ideal::ParticleSystem::UpdateParticleVertexBufferAndStructuredBuffer()
 	for (uint32 i = 0; i < m_maxParticles; ++i)
 	{
 		vertices[i].Color = Vector4(1.f, 1.f, 0.2f, 1.f);
-		//vertices[i].Position = Vector4(0.f, 0.f, 0.f, 1.f);
-		//vertices[i].Direction = Vector3(1.f, 0.f, 0.f);
-		//vertices[i].Speed = 1.f;
 	}
 	m_ResourceManger.lock()->CreateVertexBuffer<ParticleVertex>(m_particleVertexBuffer, vertices);
 
@@ -480,29 +497,9 @@ void Ideal::ParticleSystem::UpdateParticleVertexBufferAndStructuredBuffer()
 	}
 
 	std::vector<ComputeParticle> startPos;
-	startPos.resize(m_maxParticles);	// TEMP
-
-	RandomValue randManager;
-	//TEMP : 범위
-	float radius = 50.f;
-	//float radiusThickness = 0.5f;
-	float radiusThickness = 50.f;
-	float pi = 3.1415926535f;
-	for (uint32 i = 0; i < m_maxParticles; ++i)
-	{
-		startPos[i].Position = Vector4(i, 0, 0, 1);
-		startPos[i].Direction = Vector3(0, 0, 1);
-		startPos[i].Speed = 1.f;
-
-
-		// Temp : Circle
-		float innerRadius = radius - radiusThickness;
-		float theta = randManager.nextFloat(0.f, 2.f * pi);
-		float randRadius = sqrt(randManager.nextFloat(innerRadius * innerRadius, radius * radius));
-		float x = randRadius * cos(theta);
-		float y = randRadius * sin(theta);
-		startPos[i].Position = Vector4(x, y, 0, 1);
-	}
+	startPos.resize(m_maxParticles);
+	CreateParticleStartPosition(startPos);
+	
 
 	m_ResourceManger.lock()->CreateStructuredBuffer<ComputeParticle>(m_ParticleStructuredBuffer, startPos);
 }
@@ -555,8 +552,6 @@ void Ideal::ParticleSystem::UpdateSizeOverLifetime()
 {
 	if (!m_isSizeOverLifetime)
 		return;
-
-
 }
 
 void Ideal::ParticleSystem::SetRotationOverLifetime(bool Active)
@@ -625,6 +620,11 @@ void Ideal::ParticleSystem::SetRenderMode(Ideal::ParticleMenu::ERendererMode Par
 	{
 		m_Renderer_Mode = ParticleRendererMode;
 	}
+}
+
+Ideal::ParticleMenu::ERendererMode Ideal::ParticleSystem::GetRenderMode()
+{
+	return m_Renderer_Mode;
 }
 
 void Ideal::ParticleSystem::SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh)
@@ -783,17 +783,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 
 void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
-	// 먼저 컴퓨트 셰이더로 위치 계산을 하겠다. 만약 사용될 버퍼가 없으면 만든다.
-	UpdateShape();
-	//m_ParticleStructuredBuffer->TransitionToSRV(CommandList.Get());
-	{
-		//auto handle = DescriptorHeap->Allocate();
-		//Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), m_ParticleStructuredBuffer->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		//CommandList->SetComputeRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::SRV_ParticlePosBuffer, handle.GetGpuHandle());
-		// TODO : Dispatch
-	}
-
-
+	m_ParticleStructuredBuffer->TransitionToSRV(CommandList.Get());
 
 	// CB_ParticleSystem
 	{
@@ -814,6 +804,7 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 
 		// ParticleData
 		m_cbParticleSystem.Time = m_currentTime;
+		m_cbParticleSystem.DeltaTime = m_deltaTime;
 		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
 		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
 		auto handle2 = DescriptorHeap->Allocate();
@@ -868,6 +859,38 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 	CommandList->DrawInstanced(m_maxParticles, 1, 0, 0);
 }
 
+void Ideal::ParticleSystem::ComputeRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+{
+	// 먼저 컴퓨트 셰이더로 위치 계산을 하겠다. 만약 사용될 버퍼가 없으면 만든다.
+	UpdateShape();
+	m_ParticleStructuredBuffer->TransitionToUAV(CommandList.Get());
+	{
+		//CommandList->SetComputeRootSignature(m_RENDER_MODE_BILLBOARD_ComputePipelineState.Get())
+		CommandList->SetPipelineState(m_RENDER_MODE_BILLBOARD_ComputePipelineState.Get());
+
+		{
+			auto handle = DescriptorHeap->Allocate();
+			Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), m_ParticleStructuredBuffer->GetUAV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			CommandList->SetComputeRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::UAV_ParticlePosBuffer, handle.GetGpuHandle());
+		}
+		{
+			// ParticleData
+			m_cbParticleSystem.Time = m_currentTime;
+			m_cbParticleSystem.DeltaTime = m_deltaTime;
+			auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
+			memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
+			auto handle = DescriptorHeap->Allocate();
+			Device->CopyDescriptorsSimple(1, handle.GetCpuHandle(), cb2->CBVHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			CommandList->SetComputeRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_ParticleSystemData, handle.GetGpuHandle());
+		}
+
+		// TODO : Dispatch
+		const uint32 threadPerGroup = 256;
+		uint32 threadGroupX = (m_maxParticles + threadPerGroup - 1) / threadPerGroup;
+		CommandList->Dispatch(threadGroupX, 1, 1);
+	}
+}
+
 void Ideal::ParticleSystem::UpdateCustomData()
 {
 	{
@@ -896,6 +919,55 @@ void Ideal::ParticleSystem::UpdateLifeTime()
 {
 	if (m_currentTime > m_startLifetime)
 	{
+
+	}
+}
+
+void Ideal::ParticleSystem::CreateParticleStartPosition(std::vector<ComputeParticle>& Vertices)
+{
+	switch (m_ShapeMode_shape)
+	{
+		case Ideal::ParticleMenu::EShape::Circle:
+		{
+			RandomValue randManager;
+			float radius = m_radius;
+			float radiusThickness = m_radiusThickness * m_radius;
+			float pi = 3.1415926535f;
+			for (uint32 i = 0; i < m_maxParticles; ++i)
+			{
+				Vertices[i].Position = Vector4(i, 0, 0, 1);
+				Vertices[i].Direction = Vector3(0, 0, 1);
+				Vertices[i].Speed = 1.f;
+
+
+				// Temp : Circle
+				float innerRadius = radius - radiusThickness;
+				float theta = randManager.nextFloat(0.f, 2.f * pi);
+				float randRadius = sqrt(randManager.nextFloat(innerRadius * innerRadius, radius * radius));
+				float x = randRadius * cos(theta);
+				float y = randRadius * sin(theta);
+				Vertices[i].Position = Vector4(x, y, 0, 1);
+
+				// Direction
+				{
+					float d0 = randManager.nextFloat(-10.f, 10.f);
+					float d1 = randManager.nextFloat(-10.f, 10.f);
+					float d2 = randManager.nextFloat(-10.f, 10.f);
+					Vector3 dir = Vector3(d0, d1, d2);
+					//Vector3 dir = Vector3(0, 1, 0);
+					dir.Normalize();
+					Vertices[i].Direction = dir;
+				}
+				// Speed
+				{
+					float speed = randManager.nextFloat(0.f, 3.f);
+					Vertices[i].Speed = speed;
+				}
+			}
+		}
+			break;
+		default:
+			break;
 
 	}
 }
