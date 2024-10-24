@@ -50,24 +50,25 @@ namespace Truth
 	class PxEventCallback;
 	class TruthPxQueryFilterCallback;
 
-	enum class FILTER_ENUM
+	enum class COLLISION_GROUP
 	{
-		GROUND,
-		MONSTER,
-		MONSTER_PASS_PLAYER,
-		PLAYER,
-		BULLET,
-		CAMERA_RAY,
-		PLAYER_WEAPONE,
-		MONSTER_WEAPONE,
-		END
+		ENV = 1 << 0,
+		PLAYER = 1 << 1,
+		ENEMY = 1 << 2,
+		CAMERA = 1 << 3,
+		ENEMY_PASS_PLAYER = 1 << 4,
+		ENEMY_ATTACK = 1 << 5,
+		PLAYER_ATTACK = 1 << 6,
+
+		ALL = (ENV | PLAYER | ENEMY | CAMERA),
+		PLAYER_MASK = (ENV | ENEMY | ENEMY_ATTACK),
+		PLAYER_ATTACK_MASK = (ENEMY),
+		ENEMY_MASK = (ENV | PLAYER | PLAYER_ATTACK),
+		ENEMY_ATTACK_MASK = (PLAYER),
+		ENEMY_PASS_MASK = (ENV | PLAYER_ATTACK),
+		CAMERA_MASK = (ENV),
 	};
 }
-
-namespace physx
-{
-	static uint8 m_collsionTable[8];
-};
 
 /// <summary>
 /// PhysX 라이브러리를 사용하는 매니저
@@ -129,15 +130,13 @@ namespace Truth
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
 		std::vector<physx::PxShape*> CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points = std::vector<std::vector<Vector3>>());
 
-		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
-
 		physx::PxController* CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc);
 
 		physx::PxMaterial* CreateMaterial(Vector3 _val);
 
 		void CreateMapCollider(const std::wstring& _path);
 
-		Vector3 GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, FILTER_ENUM _filter = FILTER_ENUM::CAMERA_RAY);
+		Vector3 GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, uint32 _group, uint32 _mask);
 
 		void RsetFiltering(physx::PxActor* _actor);
 

@@ -66,6 +66,10 @@ void RangedWeapon::Update()
 		bullet->AddComponent<Truth::BoxCollider>(false);
 		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
 
+		auto c = bullet->GetComponent<Truth::BoxCollider>().lock().get();
+		c->SetGroup(1 << 5);
+		c->SetMask(1 << 1);
+
 		auto bulletComponent = bullet->AddComponent<Bullet>();
 		float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
 		bulletComponent->GetTypeInfo().GetProperty("bulletDamage")->Set(bulletComponent.get(), enemyDamage);

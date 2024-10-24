@@ -22,7 +22,6 @@ Bullet::~Bullet()
 
 void Bullet::Start()
 {
-	m_owner.lock()->GetComponent<Truth::Collider>().lock()->SetUpFiltering(4);
 	m_owner.lock()->GetComponent<Truth::RigidBody>().lock()->AddImpulse(m_power);
 }
 

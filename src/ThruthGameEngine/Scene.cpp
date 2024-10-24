@@ -17,6 +17,7 @@
 #include "PointLight.h"
 #include "DirectionLight.h"
 #include "SpotLight.h"
+#include "PhysicsManager.h"
 #include <algorithm>
 
 /// <summary>
@@ -566,7 +567,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 			if (coll)
 			{
-				// coll->SetUpFiltering(0);
+				coll->SetGroup(static_cast<uint32>(COLLISION_GROUP::ENV));
+				coll->SetMask(static_cast<uint32>(COLLISION_GROUP::ALL));
 				m_mapEntity[i]->AddComponent(coll);
 			}
 		}

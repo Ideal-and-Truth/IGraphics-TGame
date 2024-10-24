@@ -24,44 +24,7 @@ Truth::PhysicsManager::PhysicsManager()
 	, m_CCTManager(nullptr)
 	, m_cooking(nullptr)
 {
-	for (uint8 i = 0; i < 8; i++)
-	{
-		for (uint8 j = 0; j < 8; j++)
-		{
-			physx::m_collsionTable[i] += 1 << j;
-		}
-	}
 
-	/// 0: grond or wall
-	/// 1: monster (impossible contect to player)
-	/// 2: monster (possible contect to player)
-	/// 3: player controller
-	/// 4: bullet
-	/// 5: camera Ray
-	/// 6: player weapone
-	/// 7: enemy weapone
-	SetCollisionFilter(0, 3, false);
-
-	SetCollisionFilter(1, 3, false);
-	SetCollisionFilter(1, 4, false);
-	SetCollisionFilter(1, 5, false);
-	SetCollisionFilter(1, 7, false);
-
-	SetCollisionFilter(2, 4, false);
-	SetCollisionFilter(2, 5, false);
-	SetCollisionFilter(2, 7, false);
-
-	SetCollisionFilter(3, 5, false);
-	SetCollisionFilter(3, 6, false);
-
-	SetCollisionFilter(4, 5, false);
-	SetCollisionFilter(4, 6, false);
-	SetCollisionFilter(4, 7, false);
-
-	SetCollisionFilter(5, 6, false);
-	SetCollisionFilter(5, 7, false);
-
-	SetCollisionFilter(6, 7, false);
 }
 
 /// <summary>
@@ -329,26 +292,6 @@ std::vector<physx::PxShape*> Truth::PhysicsManager::CreateMeshCollider(const Vec
 }
 
 /// <summary>
-/// 필터 세팅
-/// </summary>
-/// <param name="_layerA">A 레이어</param>
-/// <param name="_layerB">B 레이어</param>
-/// <param name="_isCollisoin">설정할 충돌 여부</param>
-void Truth::PhysicsManager::SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin)
-{
-	if (_isCollisoin)
-	{
-		physx::m_collsionTable[_layerA] |= 1 << _layerB;
-		physx::m_collsionTable[_layerB] |= 1 << _layerA;
-	}
-	else
-	{
-		physx::m_collsionTable[_layerA] &= ~(1 << _layerB);
-		physx::m_collsionTable[_layerB] &= ~(1 << _layerA);
-	}
-}
-
-/// <summary>
 /// 컨트롤러 생성
 /// </summary>
 /// <param name="_desc">생성 구조체</param>
@@ -421,7 +364,7 @@ void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 /// <param name="_direction">방향</param>
 /// <param name="_range">범위</param>
 /// <returns>부딫힌 지점</returns>
-DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, FILTER_ENUM _filter)
+DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, uint32 _group, uint32 _mask)
 {
 	const physx::PxU32 bufferSize = 8;        
 	physx::PxRaycastHit hitBuffer[bufferSize];  
@@ -431,7 +374,8 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 	queryFilterData.flags |= physx::PxQueryFlag::ePREFILTER;
 	// queryFilterData.flags |= physx::PxQueryFlag::eANY_HIT;
 	// queryFilterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
-	queryFilterData.data.word0 = 0;
+	queryFilterData.data.word0 = _group;
+	queryFilterData.data.word1 = _mask;
 	bool hitCheck = m_scene->raycast(
 		MathUtil::Convert(_start),
 		MathUtil::Convert(_direction),
@@ -588,7 +532,7 @@ physx::PxFilterFlags Truth::FilterShaderExample(physx::PxFilterObjectAttributes 
 		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
 	}
 
-	else if (physx::m_collsionTable[filterData0.word0] & (1 << filterData1.word0))
+	else if (filterData0.word0 & filterData1.word1)
 	{
 		pairFlags = physx::PxPairFlag::eSOLVE_CONTACT
 			| physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
@@ -611,7 +555,14 @@ physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::preFilter(const p
 		return physx::PxQueryHitType::Enum::eNONE;
 	}
 	auto w0 = shape->getQueryFilterData().word0;
-	if (physx::m_collsionTable[filterData.word0] & 1 << w0)
+	auto w1 = shape->getQueryFilterData().word1;
+
+	if (w0 == 0 || w1 == 0)
+	{
+		int a = 1;
+	}
+
+	if (filterData.word1 & w0)
 	{
 		return physx::PxQueryHitType::Enum::eBLOCK;
 	}

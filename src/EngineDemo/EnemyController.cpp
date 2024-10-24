@@ -38,7 +38,8 @@ void EnemyController::Start()
 	m_homePos = m_owner.lock()->GetWorldPosition();
 	m_bossAnimator = m_owner.lock()->GetComponent<BossAnimator>().lock();
 	m_controller.lock()->SetPosition(m_homePos);
-	m_controller.lock()->SetUpFiltering(static_cast<uint32>(Truth::FILTER_ENUM::MONSTER));
+	m_controller.lock()->SetGroup(static_cast<uint32>(Truth::COLLISION_GROUP::ENEMY));
+	m_controller.lock()->SetMask(static_cast<uint32>(Truth::COLLISION_GROUP::ENEMY_MASK));
 }
 
 void EnemyController::FixedUpdate()

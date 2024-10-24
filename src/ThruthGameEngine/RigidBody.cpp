@@ -84,6 +84,7 @@ void Truth::RigidBody::Start()
 	for (auto& c : m_colliders)
 	{
 		m_body->attachShape(*(c.lock()->m_collider));
+		c.lock()->SetUpFiltering();
 		m_managers.lock()->Physics()->RsetFiltering(c.lock()->m_collider->getActor());
 	}
 	InitalizeMassAndInertia();
