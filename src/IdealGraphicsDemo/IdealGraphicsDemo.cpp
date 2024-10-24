@@ -692,6 +692,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> defaultTextureParticleShader = gRenderer->CreateAndLoadParticleShader(L"DefaultTextureParticlePS");
 
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossFireFloor.hlsl",
+			L"../Shaders/Particle/",
+			L"BossFireFloorPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossFireFloorShader = gRenderer->CreateAndLoadParticleShader(L"BossFireFloorPS");
+
 
 		// Test
 		gRenderer->CompileShader(
@@ -1687,11 +1697,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region ParticleBillboardTest
 		//----------ParticleBillboardTest effect----------//
 		std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
-		billboardMaterialTest->SetShader(billboardTestPS);
-		billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		//billboardMaterialTest->SetShader(billboardTestPS);
+		billboardMaterialTest->SetShader(bossFireFloorShader);
+		billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
 		std::shared_ptr<Ideal::ITexture> particleBillboardAnimationSheet = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossFireFloor/Explosion_1.png");
+		std::shared_ptr<Ideal::ITexture> particleBillboardNormal = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
 		billboardMaterialTest->SetTexture0(particleBillboardAnimationSheet);
-		
+		billboardMaterialTest->SetTexture1(particleBillboardNormal);
+		billboardMaterialTest->SetWriteDepthBuffer(true);
+
 		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
 		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
 		billboardTest->SetActive(true);
@@ -1699,7 +1713,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		billboardTest->SetDuration(1.f);
 		billboardTest->SetStartLifetime(1.f);
 
-		billboardTest->SetMaxParticles(50);
+		billboardTest->SetMaxParticles(200);
 		billboardTest->SetShapeMode(true);
 		billboardTest->SetShape(Ideal::ParticleMenu::EShape::Circle);
 		billboardTest->SetRadius(1.f);
@@ -1709,7 +1723,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		billboardTest->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
 		billboardTest->SetVelocityDirectionRandom(-10.f, 10.f);
 		billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
-		billboardTest->SetVelocitySpeedModifierRandom(0.f, 0.3f);
+		billboardTest->SetVelocitySpeedModifierRandom(0.f, 0.9f);
 		//billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
 		//billboardTest->SetVelocitySpeedModifierConst(0.f);
 		//billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
@@ -1717,8 +1731,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Animation
 		billboardTest->SetTextureSheetAnimation(true);
 		billboardTest->SetTextureSheetAnimationTiles({ 8,8 });
-		billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
+		billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0,3,0)));
 
+
+		billboardTest->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
+		billboardTest->SetColorOverLifetime(true);
+		{
+			auto& graph = billboardTest->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.12f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.388f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+		}
+
+		{
+			auto& graph = billboardTest->GetCustomData1Z();
+			graph.AddControlPoint({ 0,6 });
+		}
 
 #pragma endregion
 
@@ -1974,7 +2003,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					billboardTest->Play();
 				}
-
+				if (GetAsyncKeyState('O') & 0x8000)
+				{
+					billboardTest->Pause();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);

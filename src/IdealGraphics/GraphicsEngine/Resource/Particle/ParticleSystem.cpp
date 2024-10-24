@@ -155,6 +155,13 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 		return;
 	}
 
+
+	if (m_isTextureSheetAnimation)
+	{
+		// Animation 업데이트
+		UpdateAnimationUV();
+	}
+
 	// TODO : root signature deferred delete
 	switch (m_Renderer_Mode)
 	{
@@ -840,11 +847,6 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 
 void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
-	if (m_isTextureSheetAnimation)
-	{
-		// Animation 업데이트
-		UpdateAnimationUV();
-	}
 
 	m_ParticleStructuredBuffer->TransitionToSRV(CommandList.Get());
 
@@ -1060,6 +1062,7 @@ void Ideal::ParticleSystem::UpdateAnimationUV()
 {
 	uint32 gridX = m_animationTiles.x;
 	uint32 gridY = m_animationTiles.y;
+	
 	// 총 애니메이션 프레임 개수
 	uint32 totalFrames = gridX * gridY;
 
@@ -1068,13 +1071,17 @@ void Ideal::ParticleSystem::UpdateAnimationUV()
 	// 현재 프레임 계산
 	uint32 currentFrame = static_cast<uint32>(m_currentTime / frameDuration);
 
+	if (currentFrame == 20)
+	{
+		int a = 3;
+	}
+
 	// 경계를 초과하는 경우 마지막 프레임으로 고정
 	currentFrame = std::min<uint32>(currentFrame, totalFrames - 1);
 
 	// 현재 프레임의 행과 열 계산
 	float FrameRow = currentFrame / gridX;
 	float FrameCol = currentFrame % gridX;
-
 
 	// UV 계산
 	float uStart = FrameCol / static_cast<float>(gridX);

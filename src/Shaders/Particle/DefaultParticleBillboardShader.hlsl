@@ -70,6 +70,7 @@ float4 PSMain(VSOutput input) : SV_Target
     float2 animationUV = g_AnimationUV_Offset + (input.UV * g_AnimationUV_Scale); 
     //ret = ParticleTexture0.Sample(LinearWrapSampler, input.UV);
     ret = ParticleTexture0.Sample(LinearWrapSampler, animationUV);
+    clip(ret.a - 0.1f);
     return ret;
 }
 
