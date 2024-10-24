@@ -177,6 +177,7 @@
     <ClInclude Include="PlayerCPUI.h" />
     <ClInclude Include="PlayerHPTextUI.h" />
     <ClInclude Include="PlayerHPUI.h" />
+    <ClInclude Include="PlayerSkill.h" />
     <ClInclude Include="RangedWeapon.h" />
     <ClInclude Include="RangerAnimator.h" />
     <ClInclude Include="Resource.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="PlayerCPUI.cpp" />
     <ClCompile Include="PlayerHPTextUI.cpp" />
     <ClCompile Include="PlayerHPUI.cpp" />
+    <ClCompile Include="PlayerSkill.cpp" />
     <ClCompile Include="RangedWeapon.cpp" />
     <ClCompile Include="RangerAnimator.cpp" />
     <ClCompile Include="Shooter.cpp" />

@@ -196,6 +196,7 @@ void BossSkill::ShockWave()
 			shock->AddComponent<Truth::SphereCollider>();
 			auto damage = shock->AddComponent<SimpleDamager>();
 			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
+			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 
 			shock->m_name = "ShockWave";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(shock);
@@ -321,6 +322,7 @@ void BossSkill::FlameSword()
 			flame->AddComponent<Truth::SphereCollider>();
 			auto damage = flame->AddComponent<SimpleDamager>();
 			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
+			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 
 			flame->m_name = "Flame";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flame);
@@ -342,6 +344,7 @@ void BossSkill::FlameSword()
 			flameShot->AddComponent<Truth::SphereCollider>();
 			auto damage = flameShot->AddComponent<SimpleDamager>();
 			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
+			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 
 			flameShot->m_name = "FlameShot";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flameShot);
@@ -421,6 +424,7 @@ void BossSkill::SwordShooting()
 			sword->AddComponent<Truth::BoxCollider>();
 			auto damage = sword->AddComponent<SimpleDamager>();
 			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
+			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 
 			sword->m_name = "Sword";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(sword);
@@ -526,6 +530,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				auto rigid = illusion->AddComponent<Truth::Controller>();
 				auto damage = illusion->AddComponent<SimpleDamager>();
 				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
+				damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
 				skinnedMesh->AddAnimation("AttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
 				skinnedMesh->AddAnimation("AttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");

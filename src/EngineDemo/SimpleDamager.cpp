@@ -1,6 +1,7 @@
 #include "SimpleDamager.h"
 #include "Player.h"
 #include "PlayerAnimator.h"
+#include "Enemy.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(SimpleDamager)
 
@@ -43,9 +44,22 @@ void SimpleDamager::Update()
 
 void SimpleDamager::OnTriggerEnter(Truth::Collider* _other)
 {
-	if (_other->GetOwner().lock()->m_name == "Player")
+	if (m_user->m_name == "Player")
 	{
-		m_isPlayerIn = true;
+		if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
+		{
+			auto enemy = _other->GetOwner().lock()->GetComponent<Enemy>().lock();
+			float currentTP = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy.get()).Get();
+			enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy.get(), currentTP - m_damage);
+		}
+	}
+
+	if (m_user->GetComponent<Enemy>().lock())
+	{
+		if (_other->GetOwner().lock()->m_name == "Player")
+		{
+			m_isPlayerIn = true;
+		}
 	}
 }
 

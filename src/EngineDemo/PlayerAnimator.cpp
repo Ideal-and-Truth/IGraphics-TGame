@@ -50,6 +50,7 @@ PlayerAnimator::PlayerAnimator()
 	, m_chargedAbility(false)
 	, m_skillQ(false)
 	, m_skillE(false)
+	, m_swordBeam(false)
 	, m_coolTimeE(10.f)
 	, m_chargedTime(0.f)
 	, m_forwardInput(0.f)
@@ -1332,7 +1333,7 @@ void PlayerSkillE::OnStateUpdate()
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
 	{
-		GetProperty("chargedAttack5")->Set(m_animator, true);
+		GetProperty("swordBeam")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 24)

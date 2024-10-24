@@ -28,27 +28,27 @@ void TestEffectGenerator::Update()
 // 	}
 
 	/// ºÒ
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire.yaml");
-		p->SetDeltaTime(GetDeltaTime());
-		p->SetTransformMatrix(
-			DirectX::SimpleMath::Matrix::CreateScale(Vector3(2, 2, 4))
-		);
-		p->SetActive(true);
-		p->Play();
-	}
-
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire_1.yaml");
-		p->SetDeltaTime(GetDeltaTime());
-		p->SetTransformMatrix(Matrix::CreateScale(Vector3(1, 1, 5))
-			* DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 0, -1))
-			);
-		p->SetActive(true);
-		p->Play();
-	}
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		p->SetTransformMatrix(
+// 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(2, 2, 4))
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire_1.yaml");
+// 		p->SetDeltaTime(GetDeltaTime());
+// 		p->SetTransformMatrix(Matrix::CreateScale(Vector3(1, 1, 5))
+// 			* DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 0, -1))
+// 			);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
 
 	/// Ã¢
 // 	if (GetKeyDown(KEY::P))

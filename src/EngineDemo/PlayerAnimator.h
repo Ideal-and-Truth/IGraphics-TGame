@@ -550,6 +550,9 @@ private:
 	PROPERTY(rushAttack);
 	bool m_rushAttack;
 
+	PROPERTY(swordBeam);
+	bool m_swordBeam;
+
 	float m_lastHp;
 
 	float m_passingTime;

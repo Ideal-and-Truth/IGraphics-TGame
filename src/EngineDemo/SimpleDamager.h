@@ -19,6 +19,10 @@ private:
 
 private:
 	std::shared_ptr<Player> m_player;
+
+	PROPERTY(user);
+	std::shared_ptr<Truth::Entity> m_user;
+
 	bool m_isPlayerIn;
 
 	PROPERTY(onlyHitOnce);

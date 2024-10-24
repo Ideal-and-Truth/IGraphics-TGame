@@ -192,6 +192,9 @@
     <ClInclude Include="Bullet.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerSkill.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -301,6 +304,9 @@
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSkill.cpp">
+      <Filter>Component\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
