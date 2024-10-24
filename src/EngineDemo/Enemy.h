@@ -63,6 +63,9 @@ public:
 
 	METHOD(Update);
 	void Update();
+
+	inline float GetMaxTP() { return m_maxTP; };
+	inline float GetCurrentTP() { return m_currentTP; };
 };
 
 template<class Archive>

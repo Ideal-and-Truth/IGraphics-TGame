@@ -66,6 +66,10 @@ void RangedWeapon::Update()
 		bullet->AddComponent<Truth::BoxCollider>(false);
 		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
 
+		auto c = bullet->GetComponent<Truth::BoxCollider>().lock().get();
+		c->SetGroup(1 << 5);
+		c->SetMask(1 << 1);
+
 		auto bulletComponent = bullet->AddComponent<Bullet>();
 		float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
 		bulletComponent->GetTypeInfo().GetProperty("bulletDamage")->Set(bulletComponent.get(), enemyDamage);
@@ -75,8 +79,8 @@ void RangedWeapon::Update()
 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
 		bullet->SetScale({ 1.f,1.f,1.f });
 
-		bullet->Awake();
-		bullet->Start();
+// 		bullet->Awake();
+// 		bullet->Start();
 		auto r = bullet->GetComponent<Truth::RigidBody>().lock().get();
 
 		Vector3 targetPos = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock()->m_transform->m_worldPosition;
@@ -87,7 +91,10 @@ void RangedWeapon::Update()
 
 		Vector3 power(direction);
 		power *= 100000.f;
-		r->AddImpulse(power);
+		
+		bulletComponent->m_power = power;
+		
+		// r->AddImpulse(power);
 
 		m_bullets.push_back(std::make_pair(bullet, 0.f));
 

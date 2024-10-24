@@ -1,7 +1,6 @@
 #include "Player.h"
 #include "Collider.h"
 #include <yaml-cpp/yaml.h>
-
 BOOST_CLASS_EXPORT_IMPLEMENT(Player)
 
 const fs::path Player::m_dataPath = "../PlayerData/";

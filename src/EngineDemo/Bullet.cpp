@@ -1,6 +1,9 @@
 #include "Bullet.h"
 #include "Player.h"
 #include "PlayerAnimator.h"
+#include "BoxCollider.h"
+#include "PhysicsManager.h"
+#include "RigidBody.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Bullet)
 
@@ -17,9 +20,9 @@ Bullet::~Bullet()
 
 }
 
-void Bullet::Awake()
+void Bullet::Start()
 {
-
+	m_owner.lock()->GetComponent<Truth::RigidBody>().lock()->AddImpulse(m_power);
 }
 
 void Bullet::Update()

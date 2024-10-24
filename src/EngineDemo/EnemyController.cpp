@@ -3,6 +3,7 @@
 #include "Enemy.h"
 #include "Transform.h"
 #include "BossAnimator.h"
+#include "PhysicsManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(EnemyController)
 
@@ -37,17 +38,23 @@ void EnemyController::Start()
 	m_homePos = m_owner.lock()->GetWorldPosition();
 	m_bossAnimator = m_owner.lock()->GetComponent<BossAnimator>().lock();
 	m_controller.lock()->SetPosition(m_homePos);
+	m_controller.lock()->SetGroup(static_cast<uint32>(Truth::COLLISION_GROUP::ENEMY));
+	m_controller.lock()->SetMask(static_cast<uint32>(Truth::COLLISION_GROUP::ENEMY_MASK));
+	m_controller.lock()->SetUpFiltering();
 }
 
 void EnemyController::FixedUpdate()
 {
-	if (!m_canMove)
+	if (!m_controller.expired())
 	{
+		if (!m_canMove)
+		{
+			m_moveVec = Vector3::Zero;
+			m_moveVec.y = -100.0f;
+		}
+		m_controller.lock()->Move(m_moveVec);
 		m_moveVec = Vector3::Zero;
-		m_moveVec.y = -100.0f;
 	}
-	m_controller.lock()->Move(m_moveVec);
-	m_moveVec = Vector3::Zero;
 }
 
 void EnemyController::Update()

@@ -201,7 +201,12 @@ namespace TypeUI
 			{
 				int selectedItem = -1;
 				if (ImGui::ListBox("Button", &selectedItem, buttonList.data(), static_cast<int32>(buttonList.size()), 6))
+				{
+					if (_val)
+						_val.reset();
 					_val = TypeInfo::g_buttonFactory->Create(buttonList[selectedItem]);
+					return true;
+				}
 			}
 			return false;
 		}

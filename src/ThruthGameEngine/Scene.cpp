@@ -17,6 +17,7 @@
 #include "PointLight.h"
 #include "DirectionLight.h"
 #include "SpotLight.h"
+#include "PhysicsManager.h"
 #include <algorithm>
 
 /// <summary>
@@ -65,7 +66,7 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 /// <param name="_p"></param>
 void Truth::Scene::CreateEntity(std::shared_ptr<Entity> _p)
 {
-	_p->m_index = m_entities.size();
+	_p->m_index = static_cast<int32>(m_entities.size());
 	m_awakedEntity.push(_p);
 	_p->m_isAdded = false;
 }
@@ -566,6 +567,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 			if (coll)
 			{
+				coll->SetGroup(static_cast<uint32>(COLLISION_GROUP::ENV));
+				coll->SetMask(static_cast<uint32>(COLLISION_GROUP::ALL));
 				m_mapEntity[i]->AddComponent(coll);
 			}
 		}

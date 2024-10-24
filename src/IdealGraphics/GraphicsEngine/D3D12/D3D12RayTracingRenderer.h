@@ -138,6 +138,9 @@ namespace Ideal
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight() override;
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight() override;
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight() override;
+		void DeleteLight(std::shared_ptr<Ideal::ILight> Light) override;
+
+
 		void SetAssetPath(const std::wstring& AssetPath) override;
 		void SetModelPath(const std::wstring& ModelPath) override;
 		void SetTexturePath(const std::wstring& TexturePath) override;

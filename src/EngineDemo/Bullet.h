@@ -21,12 +21,15 @@ private:
 	PROPERTY(isHit);
 	bool m_isHit;
 
+
 public:
+	Vector3 m_power;
+
 	Bullet();
 	virtual ~Bullet();
 
-	METHOD(Awake);
-	void Awake();
+	METHOD(Start);
+	void Start();
 
 	METHOD(Update);
 	void Update();

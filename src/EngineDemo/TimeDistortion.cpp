@@ -138,7 +138,7 @@ void TimeDistortion::PlayEffect()
 	}
 
 	auto p1 = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BlackHole.yaml");
-	effectRot.x += (3.141592 / 180.f) * 90.f;
+	effectRot.x += (3.141592f / 180.f) * 90.f;
 
 	Matrix scaleMT1 = Matrix::CreateScale(4.f, 4.f, 4.f);
 	Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));

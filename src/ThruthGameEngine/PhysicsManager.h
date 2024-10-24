@@ -49,12 +49,26 @@ namespace Truth
 {
 	class PxEventCallback;
 	class TruthPxQueryFilterCallback;
-}
+	class TruthPxCCTFilterCallback;
+	enum class COLLISION_GROUP
+	{
+		ENV = 1 << 0,
+		PLAYER = 1 << 1,
+		ENEMY = 1 << 2,
+		CAMERA = 1 << 3,
+		ENEMY_PASS_PLAYER = 1 << 4,
+		ENEMY_ATTACK = 1 << 5,
+		PLAYER_ATTACK = 1 << 6,
 
-namespace physx
-{
-	static uint8 m_collsionTable[8];
-};
+		ALL = (ENV | PLAYER | ENEMY | CAMERA),
+		PLAYER_MASK = (ENV | ENEMY_ATTACK),
+		PLAYER_ATTACK_MASK = (ENEMY),
+		ENEMY_MASK = (ENV | PLAYER | PLAYER_ATTACK),
+		ENEMY_ATTACK_MASK = (PLAYER),
+		ENEMY_PASS_MASK = (ENV | PLAYER_ATTACK),
+		CAMERA_MASK = (ENV),
+	};
+}
 
 /// <summary>
 /// PhysX 라이브러리를 사용하는 매니저
@@ -65,7 +79,6 @@ namespace Truth
 	class PhysicsManager
 	{
 	private:
-		Truth::PxEventCallback* collisionCallback;
 
 		// Foundation 생성
 		physx::PxFoundation* m_foundation;
@@ -88,9 +101,12 @@ namespace Truth
 		// physx::PxOmniPvd* m_oPvd;
 
 		physx::PxCooking* m_cooking;
-		TruthPxQueryFilterCallback* m_qCallback;
 		bool m_isInteractive = false;
+
 	public:
+		Truth::PxEventCallback* collisionCallback;
+		TruthPxQueryFilterCallback* m_qCallback;
+		TruthPxCCTFilterCallback* m_cCallback;
 
 	public:
 		PhysicsManager();
@@ -116,17 +132,15 @@ namespace Truth
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
 		std::vector<physx::PxShape*> CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points = std::vector<std::vector<Vector3>>());
 
-		void SetCollisionFilter(uint8 _layerA, uint8 _layerB, bool _isCollisoin);
-
 		physx::PxController* CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc);
 
 		physx::PxMaterial* CreateMaterial(Vector3 _val);
 
 		void CreateMapCollider(const std::wstring& _path);
 
-		Vector3 GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range);
+		Vector3 GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, uint32 _group, uint32 _mask);
 
-
+		void RsetFiltering(physx::PxActor* _actor);
 
 	private:
 		void CreatePhysxScene();
@@ -164,6 +178,12 @@ namespace Truth
 
 	};
 
-	
+	class TruthPxCCTFilterCallback
+		: public physx::PxControllerFilterCallback
+	{
+	public:
+		virtual bool filter(const physx::PxController& a, const physx::PxController& b) override;
+
+	};
 }
 

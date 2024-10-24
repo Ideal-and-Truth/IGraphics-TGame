@@ -151,6 +151,7 @@
     <ClInclude Include="BezierShooter.h" />
     <ClInclude Include="BossAnimator.h" />
     <ClInclude Include="BossSkill.h" />
+    <ClInclude Include="BossHPUI.h" />
     <ClInclude Include="Bullet.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -173,7 +174,9 @@
     <ClInclude Include="PlayerAnimator.h" />
     <ClInclude Include="PlayerCamera.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="PlayerCPUI.h" />
     <ClInclude Include="PlayerHPTextUI.h" />
+    <ClInclude Include="PlayerHPUI.h" />
     <ClInclude Include="RangedWeapon.h" />
     <ClInclude Include="RangerAnimator.h" />
     <ClInclude Include="Resource.h" />
@@ -192,6 +195,7 @@
     <ClCompile Include="BezierShooter.cpp" />
     <ClCompile Include="BossAnimator.cpp" />
     <ClCompile Include="BossSkill.cpp" />
+    <ClCompile Include="BossHPUI.cpp" />
     <ClCompile Include="Bullet.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -213,7 +217,9 @@
     <ClCompile Include="PlayerAnimator.cpp" />
     <ClCompile Include="PlayerCamera.cpp" />
     <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="PlayerCPUI.cpp" />
     <ClCompile Include="PlayerHPTextUI.cpp" />
+    <ClCompile Include="PlayerHPUI.cpp" />
     <ClCompile Include="RangedWeapon.cpp" />
     <ClCompile Include="RangerAnimator.cpp" />
     <ClCompile Include="Shooter.cpp" />

@@ -63,6 +63,9 @@ namespace Truth
 
 		bool m_isController;
 
+		uint32 m_collisionMask;
+		uint32 m_collisionGroup;
+
 #ifdef EDITOR_MODE
 		std::shared_ptr<Ideal::IMeshObject> m_debugMesh;
 #endif // EDITOR_MODE
@@ -91,6 +94,9 @@ namespace Truth
 		METHOD(SetActive);
 		void SetActive();
 
+		void SetGroup(uint32 _group);
+		void SetMask(uint32 _mask);
+
 #ifdef EDITOR_MODE
 		METHOD(ApplyTransform);
 		void ApplyTransform();
@@ -104,8 +110,12 @@ namespace Truth
 		physx::PxRigidStatic* GetDefaultStatic();
 
 		void Initialize(const std::wstring& _path = L"");
+		
+	public:
+		void SetUpFiltering();
 
-		void SetUpFiltering(uint32 _filterGroup);
+		void ChangeGroup(uint32 _group);
+		void ChangeMask(uint32 _mask);
 
 	private:
 	};
