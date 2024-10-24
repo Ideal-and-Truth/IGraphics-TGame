@@ -4,6 +4,8 @@
 namespace physx
 {
 	class PxController;
+	struct PxControllerFilters;
+	struct PxFilterData;
 }
 
 namespace Truth
@@ -29,7 +31,12 @@ namespace Truth
 		void load(Archive& ar, const unsigned int file_version);
 
 	private:
+		bool m_CCTPass = false;
+
 		physx::PxController* m_controller;
+		physx::PxControllerFilters* m_controllerFilter;
+		physx::PxFilterData* m_filterData;
+
 		std::shared_ptr<RigidBody> m_rigidbody;
 		std::shared_ptr<Collider> m_collider;
 
@@ -90,6 +97,12 @@ namespace Truth
 		void SetUpFiltering();
 		void SetGroup(uint32 _group);
 		void SetMask(uint32 _mask);
+
+		void ChangeGroup(uint32 _group);
+		void ChangeMask(uint32 _mask);
+
+		void SetUserData(bool _data);
+
 		std::shared_ptr<Truth::RigidBody> GetRigidbody() const { return m_rigidbody; }
 	};
 

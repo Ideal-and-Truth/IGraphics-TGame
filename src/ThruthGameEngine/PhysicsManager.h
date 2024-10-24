@@ -49,7 +49,7 @@ namespace Truth
 {
 	class PxEventCallback;
 	class TruthPxQueryFilterCallback;
-
+	class TruthPxCCTFilterCallback;
 	enum class COLLISION_GROUP
 	{
 		ENV = 1 << 0,
@@ -61,7 +61,7 @@ namespace Truth
 		PLAYER_ATTACK = 1 << 6,
 
 		ALL = (ENV | PLAYER | ENEMY | CAMERA),
-		PLAYER_MASK = (ENV | ENEMY | ENEMY_ATTACK),
+		PLAYER_MASK = (ENV | ENEMY_ATTACK),
 		PLAYER_ATTACK_MASK = (ENEMY),
 		ENEMY_MASK = (ENV | PLAYER | PLAYER_ATTACK),
 		ENEMY_ATTACK_MASK = (PLAYER),
@@ -79,7 +79,6 @@ namespace Truth
 	class PhysicsManager
 	{
 	private:
-		Truth::PxEventCallback* collisionCallback;
 
 		// Foundation »ý¼º
 		physx::PxFoundation* m_foundation;
@@ -102,9 +101,12 @@ namespace Truth
 		// physx::PxOmniPvd* m_oPvd;
 
 		physx::PxCooking* m_cooking;
-		TruthPxQueryFilterCallback* m_qCallback;
 		bool m_isInteractive = false;
+
 	public:
+		Truth::PxEventCallback* collisionCallback;
+		TruthPxQueryFilterCallback* m_qCallback;
+		TruthPxCCTFilterCallback* m_cCallback;
 
 	public:
 		PhysicsManager();
@@ -176,6 +178,12 @@ namespace Truth
 
 	};
 
-	
+	class TruthPxCCTFilterCallback
+		: public physx::PxControllerFilterCallback
+	{
+	public:
+		virtual bool filter(const physx::PxController& a, const physx::PxController& b) override;
+
+	};
 }
 

@@ -40,6 +40,7 @@ void EnemyController::Start()
 	m_controller.lock()->SetPosition(m_homePos);
 	m_controller.lock()->SetGroup(static_cast<uint32>(Truth::COLLISION_GROUP::ENEMY));
 	m_controller.lock()->SetMask(static_cast<uint32>(Truth::COLLISION_GROUP::ENEMY_MASK));
+	m_controller.lock()->SetUpFiltering();
 }
 
 void EnemyController::FixedUpdate()

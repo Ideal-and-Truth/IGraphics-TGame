@@ -23,6 +23,8 @@ Truth::Controller::Controller()
 	, m_material(1.0f, 1.0f, 0.05f)
 {
 	m_name = "TestController";
+	m_controllerFilter = new physx::PxControllerFilters();
+	m_filterData = new physx::PxFilterData();
 }
 
 Truth::Controller::~Controller()
@@ -33,6 +35,8 @@ Truth::Controller::~Controller()
 		m_rigidbody->m_body = nullptr;
 		m_collider->m_collider = nullptr;
 	}
+	delete m_controllerFilter;
+	delete m_filterData;
 }
 
 /// <summary>
@@ -40,7 +44,8 @@ Truth::Controller::~Controller()
 /// </summary>
 void Truth::Controller::Initialize()
 {
-
+	// m_controllerFilter->mFilterCallback = m_managers.lock()->Physics()->m_qCallback;
+	m_controllerFilter->mCCTFilterCallback = m_managers.lock()->Physics()->m_cCallback;
 }
 
 void Truth::Controller::Awake()
@@ -56,6 +61,8 @@ void Truth::Controller::Awake()
 	decs.position = MathUtil::ConvertEx(m_owner.lock()->GetLocalPosition() + Vector3{ 0.0f, m_height, 0.0f });
 
 	m_controller = m_managers.lock()->Physics()->CreatePlayerController(decs);
+	m_controller->setUserData(&m_CCTPass);
+
 	// m_controller->setSleepThreshold(0);
 	// create rigidbody to access physx body
 	m_rigidbody = std::make_shared<RigidBody>();
@@ -103,6 +110,13 @@ void Truth::Controller::FixedUpdate()
 // 	Vector3 z = Vector3::Zero;
 // 	z.y += 0.1f;
 // 	Move(z);
+	auto sf = m_collider->m_collider->getSimulationFilterData();
+	m_filterData->word0 = sf.word0;
+	m_filterData->word1 = sf.word1;
+	m_filterData->word2 = sf.word2;
+	m_filterData->word3 = sf.word3;
+
+	m_controllerFilter->mFilterData = m_filterData;
 }
 
 /// <summary>
@@ -118,7 +132,7 @@ void Truth::Controller::Move(Vector3& _disp)
 				MathUtil::Convert(_disp + m_impulse),
 				m_minmumDistance,
 				1.0f / 60.0f,
-				physx::PxControllerFilters()
+				*m_controllerFilter
 			));
 
 	m_impulse -= m_impulse * 0.1f;
@@ -187,10 +201,29 @@ void Truth::Controller::SetUpFiltering()
 
 void Truth::Controller::SetGroup(uint32 _group)
 {
-	m_collider->SetGroup(_group);
+	if (m_collider)
+		m_collider->SetGroup(_group);
 }
 
 void Truth::Controller::SetMask(uint32 _mask)
 {
-	m_collider->SetMask(_mask);
+	if (m_collider)
+		m_collider->SetMask(_mask);
+}
+
+void Truth::Controller::ChangeGroup(uint32 _group)
+{
+	if (m_collider)
+		m_collider->ChangeGroup(_group);
+}
+
+void Truth::Controller::ChangeMask(uint32 _mask)
+{
+	if (m_collider)
+		m_collider->ChangeMask(_mask);
+}
+
+void Truth::Controller::SetUserData(bool _data)
+{
+	m_CCTPass = _data;
 }

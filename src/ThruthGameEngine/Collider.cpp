@@ -388,4 +388,19 @@ void Truth::Collider::SetUpFiltering()
 	m_collider->setQueryFilterData(filterData);
 }
 
+void Truth::Collider::ChangeGroup(uint32 _group)
+{
+	m_collisionGroup = _group;
+	SetUpFiltering();
+	if (!m_managers.expired())
+		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+}
+
+void Truth::Collider::ChangeMask(uint32 _mask)
+{
+	m_collisionMask = _mask;
+	SetUpFiltering();
+	if (!m_managers.expired())
+		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+}
 

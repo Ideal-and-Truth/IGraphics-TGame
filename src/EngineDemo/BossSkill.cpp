@@ -12,7 +12,8 @@
 #include "Controller.h"
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
-
+#include "Controller.h"
+#include "PhysicsManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -111,14 +112,26 @@ void BossSkill::Update()
 {
 	/// 작업중 ////////////////////////////////////////////////////////////////////
 
-// 	if (GetKeyDown(KEY::_8))
-// 	{
-// 		m_readyToShoot = true;
-// 	}
-// 	DistortedTimeSphere();
-// 	DeleteCheck();
-// 	return;
-	/// 작업중 ////////////////////////////////////////////////////////////////////
+	if (GetKeyDown(KEY::_8))
+	{
+		static bool testBool = true;
+		// m_readyToShoot = true;
+		auto e = m_owner.lock()->GetComponent<Truth::Controller>();
+		if (testBool)
+		{
+			e.lock()->SetUserData(true);
+			testBool = false;
+		}
+		else
+		{
+			e.lock()->SetUserData(false);
+			testBool = true;
+		}
+	}
+	// 	DistortedTimeSphere();
+	// 	DeleteCheck();
+	// 	return;
+		/// 작업중 ////////////////////////////////////////////////////////////////////
 
 	m_readyToShoot = m_bossAnimator->GetTypeInfo().GetProperty("isSkillActive")->Get<bool>(m_bossAnimator.get()).Get();
 

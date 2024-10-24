@@ -114,6 +114,9 @@ namespace Truth
 	public:
 		void SetUpFiltering();
 
+		void ChangeGroup(uint32 _group);
+		void ChangeMask(uint32 _mask);
+
 	private:
 	};
 

@@ -42,7 +42,7 @@ Truth::PhysicsManager::~PhysicsManager()
 void Truth::PhysicsManager::Initalize()
 {
 	m_qCallback = new TruthPxQueryFilterCallback();
-
+	m_cCallback = new TruthPxCCTFilterCallback();
 	// physx 의 기본 요소를 생성하는 foundation
 	m_foundation = ::PxCreateFoundation(PX_PHYSICS_VERSION, m_allocator, m_errorCallback);
 
@@ -576,3 +576,14 @@ physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::postFilter(const 
 {
 	return physx::PxQueryHitType::Enum::eBLOCK;
 }
+
+
+bool Truth::TruthPxCCTFilterCallback::filter(const physx::PxController& a, const physx::PxController& b)
+{
+	bool* isA = static_cast<bool*>(a.getUserData());
+	bool* isB = static_cast<bool*>(b.getUserData());
+
+	if (!(*isA) && !(*isB))
+		return true;
+	return false;
+}	
