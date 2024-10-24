@@ -163,6 +163,7 @@ void Truth::PhysicsManager::ResetPhysX()
 void Truth::PhysicsManager::AddScene(physx::PxActor* _actor)
 {
 	m_scene->addActor(*_actor);
+	// m_scene->resetFiltering(*_actor);
 }
 
 /// <summary>

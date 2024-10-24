@@ -94,12 +94,12 @@ void PlayerCamera::LateUpdate()
 
 	for (auto& e : m_enemys)
 	{
-		if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
-		{
-			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
-			m_lockOnTime = 0.f;
-			break;
-		}
+		// if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
+		// {
+		// 	m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+		// 	m_lockOnTime = 0.f;
+		// 	break;
+		// }
 	}
 	if (GetKeyDown(KEY::P))
 	{
