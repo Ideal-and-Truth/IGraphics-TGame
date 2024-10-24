@@ -179,8 +179,8 @@ struct CB_ParticleSystem
 
 	float DeltaTime;
 	float MaxParticles;
-	float pad0;
-	float pad1;
+	Vector2 AnimationUV_Offset;
+	Vector2 AnimationUV_Scale;
 };
 
 struct ComputeParticle

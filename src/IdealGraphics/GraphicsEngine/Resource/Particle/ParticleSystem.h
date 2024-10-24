@@ -156,6 +156,10 @@ namespace Ideal
 		virtual Ideal::IBezierCurve& GetCustomData2Z() override;
 		virtual Ideal::IBezierCurve& GetCustomData2W() override;
 
+		//-------Texture Sheet Animation-------//
+		virtual void SetTextureSheetAnimation(bool Active) override;
+		virtual void SetTextureSheetAnimationTiles(const DirectX::SimpleMath::Vector2& Tiles) override;
+
 		//--------Renderer---------//
 		// 랜더 모드를 설정 : 매쉬 형태 Or 빌보드 형태인지
 		virtual void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) override;
@@ -244,6 +248,11 @@ namespace Ideal
 		Ideal::BezierCurve m_CustomData2_Y;
 		Ideal::BezierCurve m_CustomData2_Z;
 		Ideal::BezierCurve m_CustomData2_W;
+
+		//-------Texture Sheet Animation-------//
+		void UpdateAnimationUV();
+		bool m_isTextureSheetAnimation;
+		Vector2 m_animationTiles = Vector2(1,1);
 
 		//------Renderer Menu------//
 		Ideal::ParticleMenu::ERendererMode m_Renderer_Mode;

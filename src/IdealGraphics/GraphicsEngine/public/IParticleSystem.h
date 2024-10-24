@@ -158,6 +158,10 @@ namespace Ideal
 		virtual Ideal::IBezierCurve& GetCustomData2Z() abstract;
 		virtual Ideal::IBezierCurve& GetCustomData2W() abstract;
 
+		//-------Texture Sheet Animation-------//
+		virtual void SetTextureSheetAnimation(bool Active) abstract;
+		virtual void SetTextureSheetAnimationTiles(const DirectX::SimpleMath::Vector2& Tiles) abstract;
+
 		//-----------Renderer-----------//
 		virtual void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) abstract;
 		virtual void SetRenderMesh(std::shared_ptr<Ideal::IMesh> ParticleRendererMesh) abstract;

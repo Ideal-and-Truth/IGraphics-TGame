@@ -1696,8 +1696,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
 		billboardTest->SetActive(true);
 		billboardTest->SetLoop(false);
-		billboardTest->SetDuration(3.f);
-		billboardTest->SetStartLifetime(3.f);
+		billboardTest->SetDuration(1.f);
+		billboardTest->SetStartLifetime(1.f);
 
 		billboardTest->SetMaxParticles(50);
 		billboardTest->SetShapeMode(true);
@@ -1713,6 +1713,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
 		//billboardTest->SetVelocitySpeedModifierConst(0.f);
 		//billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
+
+		// Animation
+		billboardTest->SetTextureSheetAnimation(true);
+		billboardTest->SetTextureSheetAnimationTiles({ 8,8 });
 		billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
 
 

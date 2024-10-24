@@ -25,8 +25,8 @@
         
         float g_DeltaTime;
         float g_MaxParticles;
-        float pad0;
-        float pad1;
+        float2 g_AnimationUV_Offset;
+        float2 g_AnimationUV_Scale;
 };
 
     struct Pos

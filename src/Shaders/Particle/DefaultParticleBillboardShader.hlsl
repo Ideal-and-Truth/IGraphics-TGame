@@ -65,7 +65,9 @@ void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<VSOutput> Spr
 float4 PSMain(VSOutput input) : SV_Target
 {
     float4 ret;
-    ret = ParticleTexture0.Sample(LinearWrapSampler, input.UV);
+    float2 animationUV = g_AnimationUV_Offset + (input.UV * g_AnimationUV_Scale); 
+    //ret = ParticleTexture0.Sample(LinearWrapSampler, input.UV);
+    ret = ParticleTexture0.Sample(LinearWrapSampler, animationUV);
     return ret;
 }
 
