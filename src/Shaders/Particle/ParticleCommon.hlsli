@@ -39,7 +39,9 @@
         float4 Position;
         float3 Direction;
         float Speed;
+        float RotationAngle;
     };
+    
     StructuredBuffer<ComputeParticle> g_bufPos : register(t0);
 
     Texture2D ParticleTexture0 : register(t1);

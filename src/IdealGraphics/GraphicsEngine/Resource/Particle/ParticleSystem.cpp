@@ -1042,6 +1042,10 @@ void Ideal::ParticleSystem::CreateParticleStartInfo(std::vector<ComputeParticle>
 					{
 						Vertices[i].Speed = m_velocityConstSpeed;
 					}
+
+					//---Rotation---//
+					float angle = randManager.nextFloat(0, 3.141592f);
+					Vertices[i].RotationAngle = angle;
 				}
 			}
 		}

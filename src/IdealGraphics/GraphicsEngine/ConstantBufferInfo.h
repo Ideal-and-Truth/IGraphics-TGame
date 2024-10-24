@@ -188,4 +188,5 @@ struct ComputeParticle
 	Vector4 Position;
 	Vector3 Direction;
 	float Speed;
+	float RotationAngle;
 };

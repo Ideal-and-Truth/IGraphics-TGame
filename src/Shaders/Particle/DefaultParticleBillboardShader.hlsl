@@ -9,7 +9,8 @@ VSParticleDrawOut VSMain(VSParticleInput input)
     //output.Pos = float3(0,0,0);
     //output.Pos = float3(input.ID * 10,0,0);
     output.Pos = g_bufPos[input.ID].Position.xyz;
-    output.Color = float4(1,1,1,1);
+    float rotationAngle = g_bufPos[input.ID].RotationAngle;
+    output.Color = float4(rotationAngle,1,1,1);
     return output;
 }
 
@@ -29,8 +30,9 @@ void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<VSOutput> Spr
     float halfWidth = 0.5f; // * input[0].Size.x // TODO : 나중에 사이즈 추가 할 것
     float halfHeight = 0.5f; // * input[0].Size.y // TODO : 나중에 사이즈 추가 할 것
 
-//////  Angle   //////
-    float rotationAngle = 1.57f; // TEMP
+    //////  Angle   //////
+    //float rotationAngle = 1.57f; // TEMP
+    float rotationAngle = input[0].Color.r;
     float cosAngle = cos(rotationAngle);
     float sinAngle = sin(rotationAngle);
     
