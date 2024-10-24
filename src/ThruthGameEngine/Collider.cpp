@@ -187,6 +187,7 @@ void Truth::Collider::Awake()
 	);
 	m_body->setGlobalPose(t);
 
+	m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
 }
 
 void Truth::Collider::FixedUpdate()
@@ -372,10 +373,6 @@ void Truth::Collider::SetUpFiltering(uint32 _filterGroup)
 	m_collider->setSimulationFilterData(filterData);
 	m_collider->setQueryFilterData(filterData);
 
-	if (!m_managers.expired())
-	{
-		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
-	}
 }
 
 

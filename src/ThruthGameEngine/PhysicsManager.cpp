@@ -421,9 +421,13 @@ void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 /// <returns>ºÎ‹HÈù ÁöÁ¡</returns>
 DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, FILTER_ENUM _filter)
 {
-	physx::PxRaycastBuffer rayCastBuffer;
+	const physx::PxU32 bufferSize = 8;        
+	physx::PxRaycastHit hitBuffer[bufferSize];  
+	physx::PxRaycastBuffer rayCastBuffer(hitBuffer, bufferSize);
+
 	physx::PxQueryFilterData queryFilterData;
 	queryFilterData.flags |= physx::PxQueryFlag::ePREFILTER;
+	// queryFilterData.flags |= physx::PxQueryFlag::eANY_HIT;
 	// queryFilterData.flags |= physx::PxQueryFlag::ePOSTFILTER;
 	queryFilterData.data.word0 = static_cast<uint32>(_filter);
 	bool hitCheck = m_scene->raycast(
@@ -431,12 +435,21 @@ DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vec
 		MathUtil::Convert(_direction),
 		_range,
 		rayCastBuffer,
-		physx::PxHitFlags(physx::PxHitFlag::ePOSITION),
+		physx::PxHitFlags(physx::PxHitFlag::eMESH_MULTIPLE),
 		queryFilterData,
 		m_qCallback
 	);
 
-	rayCastBuffer.nbTouches;
+	if (rayCastBuffer.getNbAnyHits())
+	{
+		int a = 1;
+	}
+
+	if (rayCastBuffer.nbTouches > 0)
+	{
+		int a = 1;
+	}
+
 	if (hitCheck)
 		return MathUtil::Convert(rayCastBuffer.block.position);
 	else
@@ -605,10 +618,14 @@ physx::PxQueryHitType::Enum Truth::TruthPxQueryFilterCallback::preFilter(const p
 	{
 		return physx::PxQueryHitType::Enum::eNONE;
 	}
-	
+	auto a = shape->getQueryFilterData().word0;
+	if (a == 0)
+	{
+		int b = 1;
+	}
 	if (physx::m_collsionTable[filterData.word0] & 1 << shape->getQueryFilterData().word0)
 	{
-		return physx::PxQueryHitType::Enum::eBLOCK;
+		return physx::PxQueryHitType::Enum::eTOUCH;
 	}
 	else
 	{

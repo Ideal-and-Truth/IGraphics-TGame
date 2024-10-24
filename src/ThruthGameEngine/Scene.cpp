@@ -566,7 +566,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 			if (coll)
 			{
-				coll->SetUpFiltering(0);
+				// coll->SetUpFiltering(0);
 				m_mapEntity[i]->AddComponent(coll);
 			}
 		}
