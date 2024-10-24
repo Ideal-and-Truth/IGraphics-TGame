@@ -556,8 +556,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
 		pointLight->SetIntensity(0.f);
 
-		std::vector< std::shared_ptr<Ideal::IPointLight>> plights;
-		std::vector< std::shared_ptr<Ideal::ISpotLight>> slights;
+		std::shared_ptr<Ideal::IPointLight> pointLight2 = gRenderer->CreatePointLight();
+		pointLight2->SetPosition(Vector3(0.f, 3.f, 3.f));
+		pointLight2->SetRange(6.f);
+		pointLight2->SetLightColor(Color(0.f, 1.f, 0.f, 1.f));
+		pointLight2->SetIntensity(0.f);
+
+
+		gRenderer->DeleteLight(pointLight);
+
+
 		//for (int i = 0; i < 300; i++)
 		//{
 		//	std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();

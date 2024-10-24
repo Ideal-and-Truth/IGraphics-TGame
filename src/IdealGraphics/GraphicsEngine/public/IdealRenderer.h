@@ -22,6 +22,7 @@ namespace Ideal
 	class IShader;
 	class IParticleSystem;
 	class IParticleMaterial;
+	class ILight;
 }
 
 namespace Ideal
@@ -80,6 +81,8 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::IDirectionalLight>	CreateDirectionalLight() abstract;
 		virtual std::shared_ptr<Ideal::ISpotLight>			CreateSpotLight() abstract;
 		virtual std::shared_ptr<Ideal::IPointLight>			CreatePointLight() abstract;
+
+		virtual void DeleteLight(std::shared_ptr<Ideal::ILight> Light) abstract;
 
 		virtual void SetSkyBox(const std::wstring& FileName) abstract;
 
