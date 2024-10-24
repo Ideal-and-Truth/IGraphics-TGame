@@ -55,6 +55,7 @@ void MeleeWeapon::Update()
 // 		m_owner.lock()->m_parent.lock().get()->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(angle);
 // 	}
 
+
 	if (m_player)
 	{
 		m_isAttacking = m_playerAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_playerAnimator.get()).Get();
@@ -100,6 +101,7 @@ void MeleeWeapon::Update()
 
 			float hpLeft = playerHp - enemyDamage;
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
+			m_onHitEnemys.clear();
 		}
 	}
 

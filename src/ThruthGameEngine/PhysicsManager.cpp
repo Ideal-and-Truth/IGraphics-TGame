@@ -443,7 +443,8 @@ void Truth::PhysicsManager::CreatePhysxScene()
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, basicPlane, *m_material);
 	physx::PxShape** planeShape = new physx::PxShape*();
 	physx::PxFilterData filterData;
-	filterData.word0 = 0;
+	filterData.word0 = static_cast<uint32>(COLLISION_GROUP::ENV);
+	filterData.word1 = static_cast<uint32>(COLLISION_GROUP::ALL);
 	groundPlane->getShapes(planeShape, sizeof(physx::PxShape));
 	planeShape[0]->setSimulationFilterData(filterData);
 	planeShape[0]->setQueryFilterData(filterData);

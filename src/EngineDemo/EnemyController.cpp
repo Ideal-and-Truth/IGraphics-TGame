@@ -128,10 +128,19 @@ void EnemyController::Update()
 		}
 
 		m_controller.lock()->AddImpulse(p);
+		if (m_isPassThrough)
+		{
+			m_controller.lock()->SetUserData(true);
+		}
 
 		m_useImpulse = false;
 		m_impulsePower = 0.f;
 		m_sideImpulse = 0.f;
+	}
+
+	if (!m_isPassThrough)
+	{
+		m_controller.lock()->SetUserData(false);
 	}
 
 	if (m_bossAnimator)

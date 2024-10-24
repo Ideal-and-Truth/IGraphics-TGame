@@ -249,8 +249,9 @@ void BossAnimator::Update()
 
 }
 
-void BossAnimator::SetImpulse(float power, float pL_mR_M)
+void BossAnimator::SetImpulse(float power, float pL_mR_M, bool isPassThrough)
 {
+	m_enemyController->GetTypeInfo().GetProperty("isPassThrough")->Set(m_enemyController.get(), isPassThrough);
 	m_enemyController->GetTypeInfo().GetProperty("useImpulse")->Set(m_enemyController.get(), true);
 	m_enemyController->GetTypeInfo().GetProperty("impulsePower")->Set(m_enemyController.get(), power);
 	m_enemyController->GetTypeInfo().GetProperty("sideImpulse")->Set(m_enemyController.get(), pL_mR_M);
@@ -390,6 +391,7 @@ void BossIdle::OnStateUpdate()
 void BossRun::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossRun", false);
+	GetProperty("passingTime")->Set(m_animator, 0.f);
 }
 
 void BossRun::OnStateUpdate()
@@ -638,6 +640,7 @@ void BossAttackCharge::OnStateUpdate()
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Idle");
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(0.f, 0.f, false);
 	}
 
 	if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
@@ -655,11 +658,11 @@ void BossAttackCharge::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackLightSpeedDash", false);
 		if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
 		{
-			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(900.f, 0.f);
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(500.f, 0.f, true);
 		}
 		else
 		{
-			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(800.f, 0.f);
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(400.f, 0.f, true);
 		}
 		GetProperty("passingTime")->Set(m_animator, 0.f);
 		GetProperty("isLockOn")->Set(m_animator, true);
@@ -685,13 +688,13 @@ void BossAttackCharge::OnStateExit()
 void BossAttackJump::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossJumpAttack", false);
-	dynamic_cast<BossAnimator*>(m_animator)->SetEnemySpeed(6.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
 void BossAttackJump::OnStateUpdate()
 {
 	GetProperty("strafeMove")->Set(m_animator, false);
+	GetProperty("isPursuit")->Set(m_animator, true);
 
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
@@ -703,7 +706,7 @@ void BossAttackJump::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(true);
 	}
 
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 115)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 115)
 	{
 		GetProperty("isLockOn")->Set(m_animator, true);
 	}
@@ -717,9 +720,9 @@ void BossAttackJump::OnStateUpdate()
 
 void BossAttackJump::OnStateExit()
 {
-	dynamic_cast<BossAnimator*>(m_animator)->SetEnemySpeed(3.f);
 	GetProperty("jumpAttack")->Set(m_animator, false);
 	GetProperty("isLockOn")->Set(m_animator, false);
+	GetProperty("isPursuit")->Set(m_animator, false);
 	isReset = false;
 }
 
@@ -1388,9 +1391,13 @@ void BossAnimator::Phase3()
 
 	if (!m_playOnce)
 	{
-		AllStateReset();
-		m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
-		m_isDown = true;
+		if (m_currentState != m_animationStateMap["Down"] && !m_isDown)
+		{
+			AllStateReset();
+			m_isDown = true;
+			ChangeState("Down");
+			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+		}
 		if (m_currentState == m_animationStateMap["Down"])
 		{
 			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 5.f);

@@ -38,6 +38,9 @@ private:
 	PROPERTY(impulsePower);
 	float m_impulsePower;
 
+	PROPERTY(isPassThrough);
+	bool m_isPassThrough;
+
 	PROPERTY(sideMove);
 	float m_sideMove;
 

@@ -125,19 +125,22 @@ void Truth::Controller::FixedUpdate()
 /// <param name="_disp">¼Óµµ</param>
 void Truth::Controller::Move(Vector3& _disp)
 {
-	m_flag |=
-		static_cast<uint32>(
-			m_controller->move
-			(
-				MathUtil::Convert(_disp + m_impulse),
-				m_minmumDistance,
-				1.0f / 60.0f,
-				*m_controllerFilter
-			));
+	if (m_controller)
+	{
+		m_flag |=
+			static_cast<uint32>(
+				m_controller->move
+				(
+					MathUtil::Convert(_disp + m_impulse),
+					m_minmumDistance,
+					1.0f / 60.0f,
+					*m_controllerFilter
+				));
 
-	m_impulse -= m_impulse * 0.1f;
-	if (m_impulse.Length() <= 1.0f)
-		m_impulse = Vector3::Zero;
+		m_impulse -= m_impulse * 0.1f;
+		if (m_impulse.Length() <= 1.0f)
+			m_impulse = Vector3::Zero;
+	}
 }
 
 void Truth::Controller::AddImpulse(Vector3& _disp)

@@ -5,6 +5,8 @@
 #include "PlayerAnimator.h"
 #include "Transform.h"
 #include <random>
+#include "ParticleManager.h"
+#include "IParticleSystem.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(RangerAnimator)
 
@@ -29,6 +31,8 @@ RangerAnimator::RangerAnimator()
 	, m_isReload(false)
 	, m_isShooting(false)
 	, m_isAnimationEnd(false)
+	, m_shootReady(false)
+	, m_showEffect(false)
 	, m_passingTime(0.f)
 	, m_lastHp(0.f)
 	, m_hitStopTime(0.f)
@@ -104,6 +108,8 @@ void RangerAnimator::Update()
 	m_isPursuit = m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get();
 	m_isAttack = m_enemyController->GetTypeInfo().GetProperty("isAttackReady")->Get<bool>(m_enemyController.get()).Get();
 	m_isReturn = m_enemyController->GetTypeInfo().GetProperty("isComeBack")->Get<bool>(m_enemyController.get()).Get();
+
+	PlayEffect();
 
 	if (m_enemy->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_enemy.get()).Get())
 	{
@@ -285,6 +291,11 @@ void RangerAttack::OnStateUpdate()
 		GetProperty("isShooting")->Set(m_animator, true);
 	}
 
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 43)
+	{
+		GetProperty("showEffect")->Set(m_animator, false);
+	}
+
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
@@ -322,12 +333,14 @@ void RangerAttack::OnStateUpdate()
 
 void RangerAttack::OnStateExit()
 {
-	GetProperty("isShooting")->Set(m_animator, false);
+
 }
 
 void RangerAim::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangeAim", false);
+	GetProperty("shootReady")->Set(m_animator, true);
+	GetProperty("showEffect")->Set(m_animator, true);
 }
 
 void RangerAim::OnStateUpdate()
@@ -492,4 +505,65 @@ void RangerDeath::OnStateEnter()
 void RangerDeath::OnStateUpdate()
 {
 
+}
+
+
+void RangerAnimator::PlayEffect()
+{
+	Vector3 effectPos = m_owner.lock()->GetWorldPosition();
+	Vector3 effectRot = m_owner.lock()->GetWorldRotation().ToEuler();
+	effectPos.y += 1.3f;
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\MagicCircle.yaml");
+
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix m = Matrix::CreateScale(Vector3(1, 1, 1)) * rotationMT * Matrix::CreateTranslation(effectPos);
+
+		p->SetTransformMatrix(
+			Matrix::CreateScale(0.5f)
+			* Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateTranslation(Vector3(0.f, 0.f, -1.2f))
+			* m
+		);
+
+		if (m_shootReady)
+		{
+			m_shootReady = false;
+
+			p->SetActive(true);
+			p->Play();
+		}
+
+		if (!m_showEffect)
+		{
+			p->SetActive(false);
+		}
+	}
+
+	if (m_isShooting)
+	{
+		m_isShooting = false;
+
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
+
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix m = Matrix::CreateScale(Vector3(1, 1, 1)) * rotationMT * Matrix::CreateTranslation(effectPos);
+
+		p->SetTransformMatrix(Matrix::CreateScale(0.8f)
+			* Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateRotationY(-1.57f)
+			* Matrix::CreateTranslation(Vector3(0, 0, -1.2f))
+			* m
+		);
+
+
+		p->SetActive(true);
+		p->Play();
+
+		if (!m_showEffect)
+		{
+			p->SetActive(false);
+		}
+	}
 }

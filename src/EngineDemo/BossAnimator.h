@@ -628,7 +628,7 @@ public:
 	void Update();
 
 
-	void SetImpulse(float power, float pL_mR_M);
+	void SetImpulse(float power, float pL_mR_M, bool isPassThrough = false);
 
 	void SetCanMove(bool canMove);
 

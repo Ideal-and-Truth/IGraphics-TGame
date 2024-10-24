@@ -235,8 +235,19 @@ private:
 
 	PROPERTY(isShooting);
 	bool m_isShooting;
+
+	PROPERTY(showEffect);
+	bool m_showEffect;
 	
 	/// ----------------------------------------
+
+	/// ÀÌÆåÆ®¿ë
+
+	PROPERTY(shootReady);
+	bool m_shootReady;
+
+	/// ----------------------------------------
+
 	PROPERTY(passingTime);
 	float m_passingTime;
 
@@ -258,6 +269,8 @@ private:
 
 private:
 	int RandomNumber(int _min, int _max);
+
+	void PlayEffect();
 
 public:
 	RangerAnimator();

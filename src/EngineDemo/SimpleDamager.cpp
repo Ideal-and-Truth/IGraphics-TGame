@@ -23,6 +23,10 @@ void SimpleDamager::Start()
 	auto player = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player");
 	m_player = player.lock()->GetComponent<Player>().lock();
 	m_onlyHitOnce = false;
+	if (!m_user)
+	{
+		m_user = m_owner.lock();
+	}
 }
 
 void SimpleDamager::Update()
@@ -38,7 +42,9 @@ void SimpleDamager::Update()
 			m_player->GetTypeInfo().GetProperty("currentTP")->Set(m_player.get(), currentTP - m_damage);
 		}
 
+		m_isPlayerIn = false;
 		m_onlyHitOnce = true;
+		m_damage = 0.f;
 	}
 }
 

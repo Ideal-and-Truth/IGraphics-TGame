@@ -110,6 +110,21 @@ void BossSkill::Awake()
 
 }
 
+void BossSkill::FixedUpdate()
+{
+	for (auto& e : m_clones)
+	{
+		auto rigid = e.first->GetComponent<Truth::Controller>().lock();
+
+		if (rigid)
+		{
+			Vector3 zero = Vector3::Zero;
+			rigid->Move(zero);
+		}
+	}
+
+}
+
 void BossSkill::Update()
 {
 	/// ÀÛ¾÷Áß ////////////////////////////////////////////////////////////////////
@@ -542,6 +557,9 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				auto skinnedMesh = illusion->AddComponent<Truth::SkinnedMesh>();
 				auto rigid = illusion->AddComponent<Truth::Controller>();
 				auto damage = illusion->AddComponent<SimpleDamager>();
+				auto collider = illusion->AddComponent<Truth::BoxCollider>();
+				collider->m_center = { 0.f,1.46f,0.f };
+				collider->m_size = { 1.f,3.f,1.f };
 				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 				damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
@@ -559,6 +577,12 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				m_clones.push_back(std::make_pair(illusion, false));
 				skinnedMesh->SetAnimation("AttackLightSpeedReady", false);
 			}
+
+			auto damager = m_owner.lock()->GetComponent<SimpleDamager>().lock();
+			damager->GetTypeInfo().GetProperty("damage")->Set(damager.get(), 3.f);
+			damager->GetTypeInfo().GetProperty("onlyHitOnce")->Set(damager.get(), false);
+
+
 			m_createComplete4 = true;
 
 			for (auto& e : m_clones)
@@ -609,9 +633,10 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 						power.Normalize();
 						power.y = -100.f;
 						power *= GetDeltaTime();
-						power *= 1000.f;
+						power *= 500.f;
 
 						rigid->AddImpulse(power);
+						rigid->SetUserData(true);
 
 						m_cloneCount++;
 					}
@@ -632,10 +657,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 
 				if (m_clones[i].second)
 				{
-					auto rigid = m_clones[i].first->GetComponent<Truth::Controller>().lock();
 
-					Vector3 zero = Vector3::Zero;
-					rigid->Move(zero);
 
 					if (skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() < 100 && skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get() > 8)
 					{
