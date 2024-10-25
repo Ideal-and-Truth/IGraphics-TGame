@@ -543,6 +543,10 @@ void Truth::UnityParser::GetPrefabMatarial(GameObject* _GO, const YAML::Node& _n
 				_GO->m_matarialsName.push_back(matGuid);
 				continue;
 			}
+			if (matGuid == "31321ba15b8f8eb4c954353edc038b1d")
+			{
+				continue;
+			}
 			ParseMatarialFile(_GO, matGuid);
 		}
 
@@ -584,6 +588,12 @@ void Truth::UnityParser::ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxP
 				if (node["first"]["type"].as<std::string>() == "UnityEngine:Material")
 				{
 					std::string matGuid = node["second"]["guid"].as<std::string>();
+					if (matGuid == "31321ba15b8f8eb4c954353edc038b1d")
+					{
+						_GO->m_isMesh = false;
+						m_meshFilterCount--;
+						continue; 
+					}
 					if (m_matarialMap.find(matGuid) != m_matarialMap.end())
 					{
 						_GO->m_matarialsName.push_back(m_matarialMap[matGuid].m_name);

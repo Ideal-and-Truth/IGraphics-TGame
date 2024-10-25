@@ -229,30 +229,37 @@ physx::PxRigidStatic* Truth::PhysicsManager::CreateDefaultRigidStatic()
 /// <returns>콜라이다</returns>
 physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, const Vector3& _args)
 {
+	Vector3 args = _args;
+
+	if (args.x < 0)
+		args.x *= -1;
+	if (args.y < 0)
+		args.y *= -1;	
+	if (args.z < 0)
+		args.z *= -1;
 
 	physx::PxShape* shape = nullptr;
 	switch (_shape)
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material, true);
+		shape = m_physics->createShape(physx::PxBoxGeometry(args.x, args.y, args.z), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
 	{
-		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material, true);
+		shape = m_physics->createShape(physx::PxCapsuleGeometry(args.x, args.y), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material, true);
+		shape = m_physics->createShape(physx::PxSphereGeometry(args.x), *m_material, true);
 		break;
 	}
 	default:
 		shape = nullptr;
 		break;
 	}
-
 	return shape;
 }
 
