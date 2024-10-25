@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_firetorch</Name>
-        <DiffuseFile>T_firetorch_BaseMap.png</DiffuseFile>
+        <Name>New_Material</Name>
+        <DiffuseFile>T_statuebase_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

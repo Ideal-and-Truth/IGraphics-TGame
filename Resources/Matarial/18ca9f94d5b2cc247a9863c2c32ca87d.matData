@@ -4,6 +4,6 @@ normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/windowwall/T_windowwall1
 maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/windowwall/T_windowwall15_MaskMap.png
 tileX: 1
 tileY: 1
-alphaCulling: false
+alphaCulling: true
 transparent: false
 ...

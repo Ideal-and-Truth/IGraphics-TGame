@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_fence_stone</Name>
-        <DiffuseFile>T_town_fence_one_BaseMap.png</DiffuseFile>
+        <Name>M_EJ_building2F</Name>
+        <DiffuseFile>T_town_building2F_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

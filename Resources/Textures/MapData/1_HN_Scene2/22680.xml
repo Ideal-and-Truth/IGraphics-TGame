@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_tunnel_door_dup</Name>
-        <DiffuseFile>T_tunnel_door_dup_BaseMap.png</DiffuseFile>
+        <Name>M_Pipe</Name>
+        <DiffuseFile>T_Pipe_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

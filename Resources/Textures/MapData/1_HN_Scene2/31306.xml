@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_yellowwall</Name>
-        <DiffuseFile>T_yellowwall_BaseMap.png</DiffuseFile>
+        <Name>M_brickwalktile</Name>
+        <DiffuseFile>T_brickwalktile_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
