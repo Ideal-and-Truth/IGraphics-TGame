@@ -437,6 +437,7 @@ void Truth::UnityParser::ParseMeshCollider(const YAML::Node& _node, GameObject* 
 {
 	_owner->m_isCollider = true;
 	_owner->m_shape = 4;
+	_owner->m_isConvex = static_cast<bool>(_node["m_Convex"].as<int>());
 }
 
 void Truth::UnityParser::ParseMeshFilter(const YAML::Node& _node, GameObject* _owner)
@@ -598,7 +599,7 @@ void Truth::UnityParser::ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxP
 void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _matGuid)
 {
 	fs::create_directories(m_texturePath / m_sceneName);
-
+	
 	MatarialData matdata = MatarialData();
 
 	fs::path matfile = m_guidMap[_matGuid]->m_filePath;
@@ -780,9 +781,10 @@ void Truth::UnityParser::WriteColliderData(std::shared_ptr<TFileUtils> _file, Ga
 		if (_GO->m_shape == 1)
 		{
 			_file->Write<Vector3>(_GO->m_size[0]);
-
 			_file->Write<Vector3>(_GO->m_center[0]);
 		}
+		else if (_GO->m_shape == 4)
+			_file->Write<bool>(_GO->m_isConvex);
 	}
 }
 

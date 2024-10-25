@@ -84,6 +84,11 @@ void Truth::SpotLight::Initialize()
 	SetDirection();
 }
 
+void Truth::SpotLight::Destroy()
+{
+	m_managers.lock()->Graphics()->DeleteSpotLight(m_spotLight);
+}
+
 #ifdef EDITOR_MODE
 void Truth::SpotLight::EditorSetValue()
 {

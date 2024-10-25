@@ -4,7 +4,7 @@
 namespace physx
 {
 	class PxController;
-	struct PxControllerFilters;
+	class PxControllerFilters;
 	struct PxFilterData;
 }
 

@@ -67,8 +67,14 @@ namespace Truth
 		std::shared_ptr<Ideal::IAnimation> CreateAnimation(std::wstring _path, const Matrix& _offset = Matrix::Identity);
 
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight();
+		void DeleteDirectionalLight(std::shared_ptr<Ideal::IDirectionalLight> _dLight);
+
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight();
+		void DeleteSpotLight(std::shared_ptr<Ideal::ISpotLight> _sLight);
+
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight();
+		void DeletePointLight(std::shared_ptr<Ideal::IPointLight> _pLight);
+
 		std::shared_ptr<Ideal::ISprite> CreateSprite();
 		void DeleteSprite(std::shared_ptr<Ideal::ISprite> _sprite);
 

@@ -174,7 +174,7 @@ void Truth::Collider::Awake()
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
 		m_body->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
-		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+		// m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
 		SetUpFiltering();
 		return;
 	}
@@ -346,27 +346,27 @@ physx::PxRigidStatic* Truth::Collider::GetDefaultStatic()
 void Truth::Collider::Initialize(const std::wstring& _path /*= L""*/)
 {
 #ifdef EDITOR_MODE
-	if (m_debugMesh != nullptr)
-	{
-		return;
-	}
-	switch (m_shape)
-	{
-	case Truth::ColliderShape::BOX:
-	{
-		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
-		m_debugMeshSize = { 50, 50, 50 };
-		break;
-	}
-	case Truth::ColliderShape::SPHERE:
-	{
-		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
-		m_debugMeshSize = { 0.5, 0.5, 0.5 };
-		break;
-	}
-	default:
-		break;
-	}
+// 	if (m_debugMesh != nullptr)
+// 	{
+// 		return;
+// 	}
+// 	switch (m_shape)
+// 	{
+// 	case Truth::ColliderShape::BOX:
+// 	{
+// 		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugCube");
+// 		m_debugMeshSize = { 50, 50, 50 };
+// 		break;
+// 	}
+// 	case Truth::ColliderShape::SPHERE:
+// 	{
+// 		m_debugMesh = m_managers.lock()->Graphics()->CreateDebugMeshObject(L"DebugObject/debugSphere");
+// 		m_debugMeshSize = { 0.5, 0.5, 0.5 };
+// 		break;
+// 	}
+// 	default:
+// 		break;
+// 	}
 
 #endif // EDITOR_MODE
 

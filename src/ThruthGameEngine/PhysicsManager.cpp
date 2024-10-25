@@ -61,7 +61,7 @@ void Truth::PhysicsManager::Initalize()
 	assert(m_physics && "PxCreatePhysics failed!");
 
 	// Cpu 코어 사용 갯수
-	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	m_dispatcher = physx::PxDefaultCpuDispatcherCreate(16);
 
 	// 씬 생성
 	CreatePhysxScene();
@@ -118,8 +118,8 @@ void Truth::PhysicsManager::FixedUpdate()
 					pos = MathUtil::Convert(rigidbody->GetController()->getFootPosition());
 					rot = rigidbody->GetRotation();
 					Vector3 rotv = rot.ToEuler();
- 					rotv.x = 0;
- 					rotv.z = 0;
+					rotv.x = 0;
+					rotv.z = 0;
 					rot = Quaternion::CreateFromYawPitchRoll(rotv);
 				}
 				else
@@ -135,7 +135,7 @@ void Truth::PhysicsManager::FixedUpdate()
 				TM *= Matrix::CreateTranslation(pos);
 
 				Matrix pTM = rigidbody->GetParentMatrix();
-				
+
 				rigidbody->SetLocalTM(TM * pTM.Invert());
 			}
 		}
@@ -163,6 +163,18 @@ void Truth::PhysicsManager::ResetPhysX()
 void Truth::PhysicsManager::AddScene(physx::PxActor* _actor)
 {
 	m_scene->addActor(*_actor);
+}
+
+void Truth::PhysicsManager::ResetAllFilter()
+{
+	int maxAxctorCount = m_scene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC);
+	physx::PxActor** actors = new physx::PxActor * [maxAxctorCount];
+	physx::PxU32 actorCount = m_scene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC, actors, maxAxctorCount, 0);
+
+	for (physx::PxU32 j = 0; j < maxAxctorCount; j++)
+	{
+		m_scene->resetFiltering(*actors[j]);  
+	}
 }
 
 /// <summary>
@@ -234,17 +246,17 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material, true);
+		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material);
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
 	{
-		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material, true);
+		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material);
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material, true);
+		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material);
 		break;
 	}
 	default:
@@ -255,7 +267,7 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	return shape;
 }
 
-std::vector<physx::PxShape*> Truth::PhysicsManager::CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points /*= std::vector<std::vector<Vector3>>()*/)
+std::vector<physx::PxShape*> Truth::PhysicsManager::CreateConvexMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points)
 {
 	if (_points.empty())
 	{
@@ -287,6 +299,45 @@ std::vector<physx::PxShape*> Truth::PhysicsManager::CreateMeshCollider(const Vec
 		physx::PxConvexMesh* convexMesh = m_physics->createConvexMesh(input);
 
 		shape[i] = m_physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_material);
+	}
+	return shape;
+}
+
+std::vector<physx::PxShape*> Truth::PhysicsManager::CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points, const std::vector<std::vector<int>>& _index)
+{
+	if (_points.empty())
+	{
+		return std::vector<physx::PxShape*>();
+	}
+	std::vector<physx::PxShape*> shape;
+
+	shape.resize(_points.size());
+
+	std::vector<std::vector<physx::PxVec3>> convexVerts;
+	convexVerts = ConvertPointToVertex(_args, _points);
+
+	for (int i = 0; i < _points.size(); i++)
+	{
+		physx::PxTriangleMeshDesc meshDesc;
+		meshDesc.points.count = static_cast<physx::PxU32>(convexVerts[i].size());
+		meshDesc.points.stride = sizeof(physx::PxVec3);
+		meshDesc.points.data = convexVerts[i].data();
+
+		meshDesc.triangles.count = static_cast<int>(_index[i].size()) / 3;
+		meshDesc.triangles.stride = 3 * sizeof(int);
+		meshDesc.triangles.data = _index[i].data();
+
+		physx::PxDefaultMemoryOutputStream writeBuffer;
+		physx::PxTriangleMeshCookingResult::Enum result;
+
+		bool status = m_cooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
+		if (!status)
+			return std::vector<physx::PxShape*>();
+
+		physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+
+		physx::PxTriangleMesh* tri = m_physics->createTriangleMesh(readBuffer);
+		shape[i] = m_physics->createShape(physx::PxTriangleMeshGeometry(tri), *m_material);
 	}
 	return shape;
 }
@@ -366,8 +417,8 @@ void Truth::PhysicsManager::CreateMapCollider(const std::wstring& _path)
 /// <returns>부딫힌 지점</returns>
 DirectX::SimpleMath::Vector3 Truth::PhysicsManager::GetRayCastHitPoint(const Vector3& _start, const Vector3& _direction, float _range, uint32 _group, uint32 _mask)
 {
-	const physx::PxU32 bufferSize = 8;        
-	physx::PxRaycastHit hitBuffer[bufferSize];  
+	const physx::PxU32 bufferSize = 8;
+	physx::PxRaycastHit hitBuffer[bufferSize];
 	physx::PxRaycastBuffer rayCastBuffer(hitBuffer, bufferSize);
 
 	physx::PxQueryFilterData queryFilterData;
@@ -437,11 +488,11 @@ void Truth::PhysicsManager::CreatePhysxScene()
 
 
 	// 기본 바닥 만들기 (필요없는 경우 없애면 된다)
- 	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
+	m_material = m_physics->createMaterial(0.5f, 0.5f, 0.5f);
 
 	physx::PxPlane basicPlane = physx::PxPlane(0, 1, 0, 0);
 	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*m_physics, basicPlane, *m_material);
-	physx::PxShape** planeShape = new physx::PxShape*();
+	physx::PxShape** planeShape = new physx::PxShape * ();
 	physx::PxFilterData filterData;
 	filterData.word0 = 0;
 	groundPlane->getShapes(planeShape, sizeof(physx::PxShape));
@@ -586,4 +637,4 @@ bool Truth::TruthPxCCTFilterCallback::filter(const physx::PxController& a, const
 	if (!(*isA) && !(*isB))
 		return true;
 	return false;
-}	
+}

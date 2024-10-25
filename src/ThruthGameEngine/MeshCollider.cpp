@@ -14,13 +14,14 @@ Truth::MeshCollider::MeshCollider()
 	m_shape = ColliderShape::MESH;
 }
 
-Truth::MeshCollider::MeshCollider(std::string _path)
+Truth::MeshCollider::MeshCollider(std::string _path, bool _isConvex)
 {
 	m_size = Vector3{ 1.0f, 1.0f, 1.0f };
 	USES_CONVERSION;
 	m_path = A2W(_path.c_str());
 
 	m_shape = ColliderShape::MESH;
+	m_isConvex = _isConvex;
 }
 
 Truth::MeshCollider::~MeshCollider()
@@ -39,13 +40,19 @@ void Truth::MeshCollider::Awake()
 
 	GetPoints();
 	if (m_points.empty())
-	{
 		return;
-	}
-	m_meshCollider = m_managers.lock()->Physics()->CreateMeshCollider((m_size * onwerSize), m_points);
+
+	if (m_isConvex)
+		m_meshCollider = m_managers.lock()->Physics()->CreateConvexMeshCollider((m_size * onwerSize), m_points);
+	else
+		m_meshCollider = m_managers.lock()->Physics()->CreateMeshCollider((m_size * onwerSize), m_points, m_index);
+
+	m_collider = m_meshCollider[0];
+
 	m_isTrigger = false;
 
-	// SetUpFiltering(m_owner.lock()->m_layer);
+	SetUpFiltering();
+
 	for (auto* mc : m_meshCollider)
 	{
 		mc->userData = this;
@@ -75,6 +82,8 @@ void Truth::MeshCollider::Awake()
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
 	}
+	// m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+
 }
 
 /// <summary>
@@ -99,11 +108,11 @@ void Truth::MeshCollider::GetPoints()
 			p.z = file->Read<float>();
 			m_points[i].push_back(p);
 		}
-
+		m_index.push_back(std::vector<int>());
 		unsigned int temp = file->Read<unsigned int>();
 		for (unsigned int j = 0; j < temp; j++)
 		{
-			unsigned int t = file->Read<uint32>();
+			m_index[i].push_back(file->Read<uint32>());
 		}
 	}
 }

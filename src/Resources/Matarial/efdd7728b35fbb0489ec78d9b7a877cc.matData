@@ -1,5 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/ej_brickwalltile/T_town_ej_wall_tile_BaseMap.png
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/ej_brickwalltile/T_town_ej_wall_tile_BaseMap.png
+normalMap: ""
+maskMap: ""
 tileX: 1
 tileY: 1
 alphaCulling: false

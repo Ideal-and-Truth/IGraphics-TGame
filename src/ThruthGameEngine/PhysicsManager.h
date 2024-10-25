@@ -121,6 +121,8 @@ namespace Truth
 
 		void AddScene(physx::PxActor* _actor);
 
+		void ResetAllFilter();
+
 		physx::PxMaterial* GetMaterial() { return m_material; };
 
 		physx::PxRigidDynamic* CreateRigidDynamic(Vector3 _pos, Quaternion _rot);
@@ -130,7 +132,8 @@ namespace Truth
 		physx::PxRigidStatic* CreateDefaultRigidStatic();
 		 
 		physx::PxShape* CreateCollider(ColliderShape _shape, const Vector3& _args);
-		std::vector<physx::PxShape*> CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points = std::vector<std::vector<Vector3>>());
+		std::vector<physx::PxShape*> CreateConvexMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points = std::vector<std::vector<Vector3>>());
+		std::vector<physx::PxShape*> CreateMeshCollider(const Vector3& _args, const std::vector<std::vector<Vector3>>& _points, const std::vector<std::vector<int>>& _index);
 
 		physx::PxController* CreatePlayerController(const physx::PxCapsuleControllerDesc& _desc);
 

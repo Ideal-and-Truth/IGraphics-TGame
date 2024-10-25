@@ -1,9 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/StandFlag/T_StandFlag_BaseMap.png
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/StandFlag/T_StandFlag_Normal.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/StandFlag/T_StandFlag_MaskMap.png
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/StandFlag/T_StandFlag_BaseMap.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/StandFlag/T_StandFlag_Normal.png
+maskMap: ../Resources/Textures/MapData/1_HN_Scene2/StandFlag/T_StandFlag_MaskMap.png
 tileX: 1
 tileY: 1
-alphaCulling: false
+alphaCulling: true
 transparent: false
 ...
