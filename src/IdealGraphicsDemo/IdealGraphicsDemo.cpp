@@ -225,7 +225,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		gRenderer->Init();
 
-		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		auto skybox = gRenderer->CreateSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		gRenderer->SetSkyBox(skybox);
 		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
 		Vector3 pointLightPosition = Vector3(3.f);
