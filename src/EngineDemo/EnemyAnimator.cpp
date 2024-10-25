@@ -330,7 +330,7 @@ void EnemyAttackReady::OnStateUpdate()
 void EnemyAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeAttack", false);
-	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(50.f);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(20.f);
 }
 
 void EnemyAttack::OnStateUpdate()
@@ -372,7 +372,7 @@ void EnemyAttack::OnStateExit()
 void EnemyParriableAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrongAttack", false);
-	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(150.f);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(100.f);
 }
 
 void EnemyParriableAttack::OnStateUpdate()
