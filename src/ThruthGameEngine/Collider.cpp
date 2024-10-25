@@ -175,7 +175,7 @@ void Truth::Collider::Awake()
 		m_managers.lock()->Physics()->AddScene(m_body);
 		m_body->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
 		SetUpFiltering();
-		m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
+		m_managers.lock()->Physics()->RsetFiltering(m_body);
 		return;
 	}
 
