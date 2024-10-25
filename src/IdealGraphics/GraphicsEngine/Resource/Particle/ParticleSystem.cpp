@@ -1102,11 +1102,6 @@ void Ideal::ParticleSystem::UpdateAnimationUV()
 	// 현재 프레임 계산
 	uint32 currentFrame = static_cast<uint32>(m_currentTime / frameDuration);
 
-	if (currentFrame == 20)
-	{
-		int a = 3;
-	}
-
 	// 경계를 초과하는 경우 마지막 프레임으로 고정
 	currentFrame = std::min<uint32>(currentFrame, totalFrames - 1);
 

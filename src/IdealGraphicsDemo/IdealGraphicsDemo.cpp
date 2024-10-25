@@ -1716,15 +1716,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::shared_ptr<Ideal::IParticleSystem> fireExplosionParticle = gRenderer->CreateParticleSystem(fireExplosionMaterial);
 		fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
-			//fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);	-> 테스트용
-			//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
+		//fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);	-> 테스트용
+		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
 
 		fireExplosionParticle->SetActive(true);
 		fireExplosionParticle->SetLoop(false);
 		fireExplosionParticle->SetDuration(1.f);
 		fireExplosionParticle->SetStartLifetime(1.f);
 
-		fireExplosionParticle->SetMaxParticles(200);
+		fireExplosionParticle->SetMaxParticles(50);
 		fireExplosionParticle->SetShapeMode(true);
 		fireExplosionParticle->SetShape(Ideal::ParticleMenu::EShape::Circle);
 		fireExplosionParticle->SetRadius(1.f);

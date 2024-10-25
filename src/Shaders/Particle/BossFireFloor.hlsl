@@ -11,7 +11,6 @@ float4 PSMain(VSOutput input) : SV_TARGET
 
      // 기본 색상
     float4 baseColor = ParticleTexture0.Sample(LinearWrapSampler, animationUV);
-    clip(baseColor.a - 0.1f);
     baseColor.rgb *= g_startColor.rgb;
     baseColor.rgb = baseColor.rgb / (baseColor.rgb + float3(1, 1, 1)); // 톤 매핑 예시 (Reinhard 톤 매핑)
     
