@@ -47,9 +47,9 @@ void PlayerCamera::Start()
 
 	m_playerController = m_player.lock()->GetComponent<PlayerController>().lock();
 
-	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
-	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
-	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
+// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
+// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
+// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
 }
 
 void PlayerCamera::LateUpdate()
