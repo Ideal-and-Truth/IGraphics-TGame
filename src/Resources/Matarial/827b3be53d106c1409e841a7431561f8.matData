@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Pipe/T_Pipe_BaseMap.png
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/Pipe/T_PIPE_Normal.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/Pipe/T_PIPE_MaskMap.png
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/Pipe/T_Pipe_BaseMap.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/Pipe/T_PIPE_Normal.png
+maskMap: ../Resources/Textures/MapData/1_HN_Scene2/Pipe/T_PIPE_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

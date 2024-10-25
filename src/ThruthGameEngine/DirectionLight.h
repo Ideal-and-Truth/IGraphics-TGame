@@ -41,6 +41,9 @@ namespace Truth
 		void SetDiffuse();
 		void SetAmbient();
 
+		METHOD(Destroy);
+		void Destroy();
+
 		METHOD(Initialize);
 		void Initialize();
 

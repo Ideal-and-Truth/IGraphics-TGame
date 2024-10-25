@@ -96,7 +96,7 @@ void Truth::Managers::Render() const
 	std::string temp = std::to_string(finish - start);
 	temp = std::string("update : ") + temp;
 	temp += " / ";
-	// DEBUG_PRINT(temp.c_str());
+	DEBUG_PRINT(temp.c_str());
 
 	start = clock();
 #ifdef EDITOR_MODE
@@ -112,7 +112,7 @@ void Truth::Managers::Render() const
 	temp = std::to_string(finish - start);
 	temp = std::string("render : ") + temp;
 	temp += " \n ";
-	// DEBUG_PRINT(temp.c_str());
+	DEBUG_PRINT(temp.c_str());
 
 }
 

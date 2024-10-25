@@ -62,6 +62,11 @@ void Truth::PointLight::Initialize()
 	SetPosition();
 }
 
+void Truth::PointLight::Destroy()
+{
+	m_managers.lock()->Graphics()->DeletePointLight(m_pointLight);
+}
+
 #ifdef EDITOR_MODE
 void Truth::PointLight::EditorSetValue()
 {

@@ -44,6 +44,11 @@ void Truth::DirectionLight::SetAmbient()
 	m_directionalLight->SetAmbientColor(m_ambientColor);
 }
 
+void Truth::DirectionLight::Destroy()
+{
+	m_managers.lock()->Graphics()->DeleteDirectionalLight(m_directionalLight);
+}
+
 void Truth::DirectionLight::Initialize()
 {
 	SetLight();

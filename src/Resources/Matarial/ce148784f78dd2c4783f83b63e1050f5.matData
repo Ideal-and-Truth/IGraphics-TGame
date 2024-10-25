@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/archtile/T_archtile_MaskMap.png
+baseMap: ""
+normalMap: ""
+maskMap: ""
 tileX: 1
 tileY: 1
 alphaCulling: false

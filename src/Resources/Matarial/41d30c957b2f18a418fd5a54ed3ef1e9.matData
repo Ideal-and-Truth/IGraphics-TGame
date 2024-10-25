@@ -1,5 +1,6 @@
 ---
 baseMap: ../Resources/Textures/MapData/1_HN_Scene2/stairset/T_stairset_BaseMap.png
+normalMap: ""
 maskMap: ../Resources/Textures/MapData/1_HN_Scene2/stairset/T_stairset_MaskMap.png
 tileX: 1
 tileY: 1

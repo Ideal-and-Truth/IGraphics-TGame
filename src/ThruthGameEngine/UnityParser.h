@@ -72,6 +72,7 @@ namespace Truth
 			int32 m_shape = 0;
 			std::vector<Vector3> m_size;
 			std::vector<Vector3> m_center;
+			bool m_isConvex = false;
 			
 			// Mesh Filter Info
 			bool m_isMesh = false;
