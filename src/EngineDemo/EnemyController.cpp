@@ -21,6 +21,7 @@ EnemyController::EnemyController()
 	, m_sideMove(1.f)
 	, m_impulsePower(0.f)
 	, m_sideImpulse(0.f)
+	, m_isPassThrough(0.f)
 {
 	m_name = "EnemyController";
 }
