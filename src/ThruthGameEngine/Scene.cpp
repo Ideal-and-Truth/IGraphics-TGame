@@ -347,8 +347,6 @@ void Truth::Scene::Start()
 		e->Awake();
 		m_awakedEntity.pop();
 	}
-
-	m_managers.lock()->Physics()->ResetAllFilter();
 }
 
 /// <summary>

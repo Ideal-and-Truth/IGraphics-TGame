@@ -47,42 +47,39 @@ void Truth::MeshCollider::Awake()
 	else
 		m_meshCollider = m_managers.lock()->Physics()->CreateMeshCollider((m_size * onwerSize), m_points, m_index);
 
-	m_collider = m_meshCollider[0];
-
 	m_isTrigger = false;
 
-	SetUpFiltering();
+	physx::PxFilterData filterData;
+	filterData.word0 = m_collisionGroup;
+	filterData.word1 = m_collisionMask;
+	m_meshCollider[0]->setSimulationFilterData(filterData);
+	m_meshCollider[0]->setQueryFilterData(filterData);
 
-	for (auto* mc : m_meshCollider)
-	{
-		mc->userData = this;
+	m_meshCollider[0]->userData = this;
 
-		mc->setLocalPose(physx::PxTransform(
-			MathUtil::Convert(m_center)
-		));
+	m_meshCollider[0]->setLocalPose(physx::PxTransform(
+		MathUtil::Convert(m_center)
+	));
 
-		mc->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
-		mc->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
-	}
-
+	m_meshCollider[0]->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
+	m_meshCollider[0]->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 
 	m_rigidbody = m_owner.lock()->GetComponent<RigidBody>();
 
 	if (m_rigidbody.expired())
 	{
 		m_body = m_managers.lock()->Physics()->CreateDefaultRigidStatic();
-		for (auto* mc : m_meshCollider)
-		{
-			m_body->attachShape(*mc);
-		}
+
+		m_body->attachShape(*m_meshCollider[0]);
+
 		physx::PxTransform t(
 			MathUtil::Convert(m_owner.lock()->GetLocalPosition()),
 			MathUtil::Convert(m_owner.lock()->GetLocalRotation())
 		);
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
+		m_managers.lock()->Physics()->RsetFiltering(m_body);
 	}
-	// m_managers.lock()->Physics()->RsetFiltering(m_collider->getActor());
 
 }
 

@@ -165,18 +165,6 @@ void Truth::PhysicsManager::AddScene(physx::PxActor* _actor)
 	m_scene->addActor(*_actor);
 }
 
-void Truth::PhysicsManager::ResetAllFilter()
-{
-	int maxAxctorCount = m_scene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC);
-	physx::PxActor** actors = new physx::PxActor * [maxAxctorCount];
-	physx::PxU32 actorCount = m_scene->getActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC, actors, maxAxctorCount, 0);
-
-	for (physx::PxU32 j = 0; j < maxAxctorCount; j++)
-	{
-		m_scene->resetFiltering(*actors[j]);  
-	}
-}
-
 /// <summary>
 /// 동적 바디 생성
 /// </summary>
@@ -246,17 +234,17 @@ physx::PxShape* Truth::PhysicsManager::CreateCollider(ColliderShape _shape, cons
 	{
 	case Truth::ColliderShape::BOX:
 	{
-		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material);
+		shape = m_physics->createShape(physx::PxBoxGeometry(_args.x, _args.y, _args.z), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::CAPSULE:
 	{
-		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material);
+		shape = m_physics->createShape(physx::PxCapsuleGeometry(_args.x, _args.y), *m_material, true);
 		break;
 	}
 	case Truth::ColliderShape::SPHERE:
 	{
-		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material);
+		shape = m_physics->createShape(physx::PxSphereGeometry(_args.x), *m_material, true);
 		break;
 	}
 	default:

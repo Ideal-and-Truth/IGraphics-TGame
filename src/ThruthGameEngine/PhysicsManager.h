@@ -121,8 +121,6 @@ namespace Truth
 
 		void AddScene(physx::PxActor* _actor);
 
-		void ResetAllFilter();
-
 		physx::PxMaterial* GetMaterial() { return m_material; };
 
 		physx::PxRigidDynamic* CreateRigidDynamic(Vector3 _pos, Quaternion _rot);
