@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/curtain/T_Curtain_003_BaseMap.png
-normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/curtain/T_Curtain_003_Normal.png
-maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/curtain/T_Curtain_003_MaskMap.png
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/curtain/T_Curtain_003_BaseMap.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/curtain/T_Curtain_003_Normal.png
+maskMap: ../Resources/Textures/MapData/1_HN_Scene2/curtain/T_Curtain_003_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

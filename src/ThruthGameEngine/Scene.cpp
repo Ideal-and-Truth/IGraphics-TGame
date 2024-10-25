@@ -134,7 +134,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		LoadEntity(e);
 	}
 
-	// LoadUnityData(m_mapPath);
+	LoadUnityData(m_mapPath);
 }
 
 /// <summary>
@@ -563,7 +563,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 				isMeshCollider = true;
 				bool isConvex = file->Read<bool>();
-				coll = std::make_shared<MeshCollider>(assetPathS + name, true);
+				coll = std::make_shared<MeshCollider>(assetPathS + name, isConvex);
 				break;
 			}
 			default:

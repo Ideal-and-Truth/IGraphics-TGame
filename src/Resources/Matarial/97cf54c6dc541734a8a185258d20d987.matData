@@ -1,5 +1,5 @@
 ---
-baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/candle/flame.png
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/candle/flame.png
 normalMap: ""
 maskMap: ""
 tileX: 1
