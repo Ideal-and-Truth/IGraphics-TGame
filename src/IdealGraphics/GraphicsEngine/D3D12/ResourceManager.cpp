@@ -11,6 +11,7 @@
 #include "GraphicsEngine/D3D12/D3D12UAV.h"
 #include "GraphicsEngine/D3D12/Raytracing/RaytracingManager.h"
 
+
 #include "GraphicsEngine/Resource/ShaderManager.h"
 #include "GraphicsEngine/D3D12/D3D12Shader.h"
 
@@ -97,11 +98,20 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	m_dsvHeap = std::make_shared<Ideal::D3D12DynamicDescriptorHeap>();
 	m_dsvHeap->Create(m_device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE, MAX_DSV_HEAP_COUNT);
 
+	//--------Manager--------//
+	m_uploadCommandListPoolManager = std::make_shared<Ideal::UploadCommandListPool>();
+	m_uploadCommandListPoolManager->Init(Device, m_fence, 8);
+
 	//----default resource----//
 	CreateDefaultQuadMesh();
 	CreateDefaultQuadMesh2();
 	CreateDefaultDebugLine();
 	CreateParticleVertexBuffer();
+}
+
+void ResourceManager::WaitForResourceUpload()
+{
+	m_uploadCommandListPoolManager->AllWaitForFenceValue();
 }
 
 void ResourceManager::Fence()
@@ -319,8 +329,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	}
 
 	//----------------------Init--------------------------//
-	m_commandAllocator->Reset();
-	m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+	//m_commandAllocator->Reset();
+	//m_commandList->Reset(m_commandAllocator.Get(), nullptr);
 
 	ComPtr<ID3D12Resource> resource;
 	Ideal::D3D12DescriptorHandle srvHandle;
@@ -399,23 +409,30 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		IID_PPV_ARGS(resource.GetAddressOf())
 	));
 
+
 	//----------------------Upload Buffer--------------------------//
 
 	uint64 bufferSize = GetRequiredIntermediateSize(resource.Get(), 0, MipLevels);
 
-	Ideal::D3D12UploadBuffer uploadBuffer;
-	uploadBuffer.Create(m_device.Get(), (uint32)bufferSize);
+	// TEST
+	auto container = m_uploadCommandListPoolManager->AllocateUploadContainer(bufferSize);
+
+
+	//Ideal::D3D12UploadBuffer uploadBuffer;
+	//uploadBuffer.Create(m_device.Get(), (uint32)bufferSize);
 
 	//----------------------Update Subresources--------------------------//
 
 	UpdateSubresources(
-		m_commandList.Get(),
+		//m_commandList.Get(),
+		container->CommandList.Get(),
 		resource.Get(),
-		uploadBuffer.GetResource(),
+		container->UploadBuffer->GetResource(),
 		0, 0, static_cast<UINT>(subResources.size()), subResources.data()
 	);
 
-	uploadBuffer.UnMap();
+	//uploadBuffer.UnMap();
+	container->UploadBuffer->UnMap();
 	//----------------------Resource Barrier--------------------------//
 
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -423,17 +440,18 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		D3D12_RESOURCE_STATE_COPY_DEST,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
-	m_commandList->ResourceBarrier(1, &barrier);
+	container->CommandList->ResourceBarrier(1, &barrier);
 
 	//----------------------Execute--------------------------//
+	container->CloseAndExecute(m_commandQueue, m_fence);
+	//container->CommandList->Close();
 
-	m_commandList->Close();
-
-	ID3D12CommandList* commandLists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	//ID3D12CommandList* commandLists[] = { container->CommandList.Get() };
+	//m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
 
 	Fence();
-	WaitForFenceValue();
+	container->FenceValue = m_fenceValue;
+	//WaitForFenceValue();
 
 	//----------------------Create Shader Resource View--------------------------//
 

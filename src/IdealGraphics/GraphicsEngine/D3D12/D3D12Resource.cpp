@@ -184,6 +184,27 @@ void D3D12VertexBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* 
 	m_vertexBufferView.StrideInBytes = m_elementSize;
 }
 
+void D3D12VertexBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer)
+{
+	D3D12GPUBuffer::CreateBuffer(Device, ElementSize, ElementCount);
+	D3D12GPUBuffer::SetName(L"VertexBuffer");
+	// 데이터를 복사한다
+	CmdList->CopyBufferRegion(m_resource.Get(), 0, UploadBuffer->GetResource(), 0, m_bufferSize);
+
+	CD3DX12_RESOURCE_BARRIER resourceBarrier
+		= CD3DX12_RESOURCE_BARRIER::Transition(
+			m_resource.Get(),
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER
+		);
+
+	CmdList->ResourceBarrier(1, &resourceBarrier);
+
+	m_vertexBufferView.BufferLocation = m_resource->GetGPUVirtualAddress();
+	m_vertexBufferView.SizeInBytes = m_bufferSize;
+	m_vertexBufferView.StrideInBytes = m_elementSize;
+}
+
 void Ideal::D3D12VertexBuffer::CreateAndCopyResource(ComPtr<ID3D12Device> Device, uint32 ElementSize, uint32 ElementCount, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12Resource> Resource, D3D12_RESOURCE_STATES BeforeState)
 {
 	//m_resource = Resource->GetResourceComPtr();
