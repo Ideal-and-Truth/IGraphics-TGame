@@ -209,45 +209,24 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			{
 				mat->SetBackFaceCulling(node["BackFaceCulling"].as<bool>());
 			}
-
+			/// Write DepthBuffer
+			if (node["WriteDepthBuffer"].IsDefined())
+			{
+				mat->SetWriteDepthBuffer(node["WriteDepthBuffer"].as<bool>());
+			}
+			/// Transparency
+			if (node["Transparency"].IsDefined())
+			{
+				mat->SetTransparency(node["Transparency"].as<bool>());
+			}
 			m_particleMatMap[matName] = mat;
 			particle = m_grapics->CreateParticle(mat);
 			particle->SetActive(false);
 			particle->SetTransformMatrix(Matrix::Identity);
 		}
-		if (node["Mesh"].IsDefined())
-		{
-			particle->SetRenderMesh(m_grapics->CreateParticleMesh(A2W(node["Mesh"].as<std::string>().c_str())));
-		}
 
-		/// Create Particle 
-		particle->SetSizeOverLifetime(false);
-		///Loop
-		if (node["Loop"].IsDefined())
-		{
-			particle->SetLoop(node["Loop"].as<bool>());
-		}
-		/// Duration
-		if (node["Duration"].IsDefined())
-		{
-			particle->SetDuration(node["Duration"].as<float>());
-		}
-		/// Stop When Finished
-		if (node["StopWhenFinished"].IsDefined())
-		{
-			particle->SetStopWhenFinished(node["StopWhenFinished"].as<bool>());
-		}
-		/// Play OnWake
-		if (node["PlayOnWake"].IsDefined())
-		{
-			particle->SetPlayOnWake(node["PlayOnWake"].as<bool>());
-		}
-		/// Start Size
-		if (node["StartSize"].IsDefined())
-		{
-			const YAML::Node& cNode = node["StartSize"];
-			particle->SetStartSize(cNode.as<float>());
-		}
+
+
 		/// Start Color
 		if (node["StartColor"].IsDefined())
 		{
@@ -255,19 +234,52 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			Color c(cNode[0].as<float>(), cNode[1].as<float>(), cNode[2].as<float>(), cNode[3].as<float>());
 			particle->SetStartColor(c);
 		}
-
+		/// Start Size
+		if (node["StartSize"].IsDefined())
+		{
+			const YAML::Node& cNode = node["StartSize"];
+			particle->SetStartSize(cNode.as<float>());
+		}
 		/// Start Life Time
 		if (node["StartLifetime"].IsDefined())
 		{
 			particle->SetStartLifetime(node["StartLifetime"].as<float>());
 		}
-
-		/// Render Mode
-		if (node["RenderMode"].IsDefined())
+		/// Simulation Speed
+		if (node["SimulationSpeed"].IsDefined())
 		{
-			particle->SetRenderMode(static_cast<Ideal::ParticleMenu::ERendererMode>(node["RenderMode"].as<int>()));
+			particle->SetSimulationSpeed(node["SimulationSpeed"].as<float>());
+		}
+		/// Duration
+		if (node["Duration"].IsDefined())
+		{
+			particle->SetDuration(node["Duration"].as<float>());
+		}
+		///Loop
+		if (node["Loop"].IsDefined())
+		{
+			particle->SetLoop(node["Loop"].as<bool>());
+		}
+		/// Color Over Lifetime
+		if (node["ColorOverLifetime"].IsDefined())
+		{
+			particle->SetColorOverLifetime(node["ColorOverLifetime"].as<bool>());
 		}
 
+		/// Color Over Lifetime Gradient Graph
+		if (node["ColorOverLifetimeGradientGraph"].IsDefined())
+		{
+			const YAML::Node& child = node["ColorOverLifetimeGradientGraph"];
+			auto& graph = particle->GetColorOverLifetimeGradientGraph();
+
+			for (YAML::const_iterator it = child.begin(); it != child.end(); ++it)
+			{
+				const YAML::Node& point = (*it)["Color"];
+				Color startColor(point[0].as<float>(), point[1].as<float>(), point[2].as<float>(), point[3].as<float>());
+				float position = (*it)["position"].as<float>();
+				graph.AddPoint(startColor, position);
+			}
+		}
 		/// Rotation Over Life Time
 		if (node["RotationOverLifetime"].IsDefined())
 		{
@@ -292,7 +304,29 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			const YAML::Node& child = node["RotationOverLifetimeAxisZControlPoints"];
 			GetControlPoints(&child, particle, particle->GetRotationOverLifetimeAxisZ());
 		}
-
+		/// Size Over Lifetime
+		if (node["SizeOverLifetime"].IsDefined())
+		{
+			particle->SetSizeOverLifetime(node["SizeOverLifetime"].as<bool>());
+		}
+		/// Size Over Life Time Axis X ControlPoints
+		if (node["SizeOverLifetimeAxisX"].IsDefined())
+		{
+			const YAML::Node& child = node["SizeOverLifetimeAxisX"];
+			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisX());
+		}
+		/// Size Over Life Time Axis Y ControlPoints
+		if (node["SizeOverLifetimeAxisY"].IsDefined())
+		{
+			const YAML::Node& child = node["SizeOverLifetimeAxisY"];
+			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisY());
+		}
+		/// Size Over Lifetime Axis Z ControlPoints
+		if (node["SizeOverLifetimeAxisZ"].IsDefined())
+		{
+			const YAML::Node& child = node["SizeOverLifetimeAxisZ"];
+			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisZ());
+		}
 		/// Custom Data 1 X
 		if (node["CustomData1X"].IsDefined())
 		{
@@ -343,60 +377,30 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			GetControlPoints(&child, particle, particle->GetCustomData2W());
 		}
 
-		/// Color Over Lifetime
-		if (node["ColorOverLifetime"].IsDefined())
+		/// Render Mode
+		if (node["RenderMode"].IsDefined())
 		{
-			particle->SetColorOverLifetime(node["ColorOverLifetime"].as<bool>());
+			particle->SetRenderMode(static_cast<Ideal::ParticleMenu::ERendererMode>(node["RenderMode"].as<int>()));
 		}
 
-		/// Color Over Lifetime Gradient Graph
-		if (node["ColorOverLifetimeGradientGraph"].IsDefined())
+		/// Stop When Finished
+		if (node["StopWhenFinished"].IsDefined())
 		{
-			const YAML::Node& child = node["ColorOverLifetimeGradientGraph"];
-			auto& graph = particle->GetColorOverLifetimeGradientGraph();
-
-			for (YAML::const_iterator it = child.begin(); it != child.end(); ++it)
-			{
-				const YAML::Node& point = (*it)["Color"];
-				Color startColor(point[0].as<float>(), point[1].as<float>(), point[2].as<float>(), point[3].as<float>());
-				float position = (*it)["position"].as<float>();
-				graph.AddPoint(startColor, position);
-			}
+			particle->SetStopWhenFinished(node["StopWhenFinished"].as<bool>());
+		}
+		/// Play OnWake
+		if (node["PlayOnWake"].IsDefined())
+		{
+			particle->SetPlayOnWake(node["PlayOnWake"].as<bool>());
 		}
 
-		/// Simulation Speed
-		if (node["SimulationSpeed"].IsDefined())
+		if (node["Mesh"].IsDefined())
 		{
-			particle->SetSimulationSpeed(node["SimulationSpeed"].as<float>());
+			particle->SetRenderMesh(m_grapics->CreateParticleMesh(A2W(node["Mesh"].as<std::string>().c_str())));
 		}
 
-		/// Size Over Lifetime
-		if (node["SizeOverLifetime"].IsDefined())
-		{
-			particle->SetSizeOverLifetime(node["SizeOverLifetime"].as<bool>());
-		}
-		/// Size Over Life Time Axis X ControlPoints
-		if (node["SizeOverLifetimeAxisX"].IsDefined())
-		{
-			const YAML::Node& child = node["SizeOverLifetimeAxisX"];
-			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisX());
-		}
-		/// Size Over Life Time Axis Y ControlPoints
-		if (node["SizeOverLifetimeAxisY"].IsDefined())
-		{
-			const YAML::Node& child = node["SizeOverLifetimeAxisY"];
-			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisY());
-		}
-		/// Size Over Lifetime Axis Z ControlPoints
-		if (node["SizeOverLifetimeAxisZ"].IsDefined())
-		{
-			const YAML::Node& child = node["SizeOverLifetimeAxisZ"];
-			GetControlPoints(&child, particle, particle->GetSizeOverLifetimeAxisZ());
-		}
-
-
+		/// Create Particle 
 		m_particleMap[_path]->m_pool.push_back(particle);
-
 	}
 }
 
