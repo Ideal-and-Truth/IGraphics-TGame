@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <d3dx12.h>
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 
 void Ideal::CommandListContainer::CloseAndExecute(ComPtr<ID3D12CommandQueue> CommandQueue, ComPtr<ID3D12Fence> Fence)
 {
@@ -59,7 +60,7 @@ void Ideal::UploadCommandListPool::Init(ComPtr<ID3D12Device> Device, ComPtr<ID3D
 std::shared_ptr<Ideal::CommandListContainer> Ideal::UploadCommandListPool::AllocateUploadContainer(uint32 Size)
 {
 	m_countForCheck++;
-	if (m_FreedContainer.size() == 0 || m_countForCheck>= m_numContainers)
+	if (m_FreedContainer.size() == 0 || m_countForCheck >= UPLOAD_CONTAINER_LOOP_CHECK_COUNT)
 	{
 		m_countForCheck = 0;
 		// TODO 
@@ -131,7 +132,6 @@ void Ideal::UploadCommandListPool::CheckFreedUploadContainer()
 		std::string count2 =std::to_string(Container->FenceValue);
 		std::string result = count + " : " + count2 + "\n";
 		OutputDebugStringA(result.c_str());
-
 		if (m_Fence->GetCompletedValue() >= Container->FenceValue)
 		{
 			RevertUploadBuffer(Container);
