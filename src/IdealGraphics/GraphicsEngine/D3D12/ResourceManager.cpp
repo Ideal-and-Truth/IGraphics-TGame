@@ -923,7 +923,7 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 	std::shared_ptr<Ideal::IdealStaticMesh> staticMesh;
 	if (!IsDebugMesh)
 	{
-		//staticMesh = m_staticMeshes[key];
+		staticMesh = m_staticMeshes[key];
 		if (staticMesh != nullptr)
 		{
 			staticMesh->AddRefCount();
