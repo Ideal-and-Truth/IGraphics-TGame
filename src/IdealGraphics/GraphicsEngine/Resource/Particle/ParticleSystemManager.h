@@ -5,6 +5,7 @@
 struct ID3D12Device;
 struct ID3D12RootSignature;
 struct ID3D12GraphicsCommandList;
+struct ID3D12PipelineState;
 
 namespace Ideal
 {
@@ -34,12 +35,16 @@ namespace Ideal
 		void SetMeshVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardVS(std::shared_ptr<Ideal::D3D12Shader> Shader);
 		void SetBillboardGS(std::shared_ptr<Ideal::D3D12Shader> Shader);
+		void SetBillboardCSAndCreatePipelineState(std::shared_ptr<Ideal::D3D12Shader> Shader, ComPtr<ID3D12Device> Device);
 
 		void SetDefaultParticleVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> ParticleVertexBuffer);
 		std::shared_ptr<Ideal::D3D12VertexBuffer> GetParticleVertexBuffer();
 
+		ComPtr<ID3D12PipelineState> GetParticleComputePipelineState();
 	private:
 		void CreateRootSignature(ComPtr<ID3D12Device> Device);
+
+		void CreateCSPipelineState(ComPtr<ID3D12Device> Device);
 
 	public:
 		void AddParticleSystemNoTransparency(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem);
@@ -50,9 +55,13 @@ namespace Ideal
 
 	private:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
+		ComPtr<ID3D12PipelineState> m_RENDER_MODE_BILLBOARD_Compute_PipelineState;
+
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_MESH_VS;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_VS;
 		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_GS;
+
+		std::shared_ptr<Ideal::D3D12Shader> m_RENDER_MODE_BILLBOARD_CS;
 
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 

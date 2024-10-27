@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 
 struct ID3D12Resource;
 struct ID3D12Device;
@@ -41,6 +42,49 @@ namespace Ideal
 	private:
 		uint32 m_bufferSize;
 	};
+	
+	//template <class T>
+	//class D3D12StructuredBuffer : public D3D12UploadBuffer
+	//{
+	//public:
+	//	void Create(ID3D12Device* Device, uint32 NumElements, LPCWSTR ResourceName = nulltpr)
+	//	{
+	//		m_staging.resize(NumElements);
+	//		uint32 bufferSize = NumElements * sizeof(T);
+	//		D3D12UploadBuffer::Create(Device, bufferSize);
+	//		m_mappedBuffers = reinterpret_cast<T*>(D3D12UploadBuffer::Map());
+	//	}
+	//
+	//	// 현재 까지 업로드 버퍼에 올린 것을 GPU에 올린다. //
+	//	void CopyStagingToGPU()
+	//	{
+	//		memcpy(m_mappedBuffers, &m_staging[0], m_staging.size() * sizeof(T));
+	//	}
+	//
+	//	T& operator[](uint32 ElementIndex)
+	//	{
+	//		if (ElementIndex > m_staging.size() - 1)
+	//		{
+	//			__debugbreak();
+	//			return;
+	//		}
+	//		return m_staging[ElementIndex];
+	//	}
+	//
+	//	const T& operator[](uint32 ElementIndex)
+	//	{
+	//		if (ElementIndex > m_staging.size() - 1)
+	//		{
+	//			__debugbreak();
+	//			return;
+	//		}
+	//		return m_staging[ElementIndex];
+	//	}
+	//
+	//private:
+	//	std::vector<T> m_staging;
+	//	T* m_mappedBuffers;
+	//};
 
 	// GPU에서 사용할 버퍼
 	class D3D12GPUBuffer : public D3D12Resource
@@ -54,7 +98,7 @@ namespace Ideal
 	public:
 		// GPU에서 사용할 버퍼를 만든다.
 		// 만들 때 리소스 스테이트를 COPY_DEST로 초기화 해준다.
-		void CreateBuffer(ID3D12Device* Device, uint32 ElementSize, uint32 ElementCount);
+		void CreateBuffer(ID3D12Device* Device, uint32 ElementSize, uint32 ElementCount, D3D12_RESOURCE_FLAGS Flags = D3D12_RESOURCE_FLAG_NONE);
 
 		// GPU에서 버퍼를 만든다.
 		//void InitializeBuffer();
@@ -67,6 +111,27 @@ namespace Ideal
 		uint32 m_bufferSize;
 		uint32 m_elementSize;
 		uint32 m_elementCount;
+	};
+
+	class D3D12StructuredBuffer : public D3D12GPUBuffer
+	{
+	public:
+		void Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, const D3D12UploadBuffer& UploadBuffer);
+		void Free();
+
+		void EmplaceSRV(Ideal::D3D12DescriptorHandle SRVHandle);
+		void EmplaceUAV(Ideal::D3D12DescriptorHandle UAVHandle);
+
+		Ideal::D3D12DescriptorHandle GetSRV();
+		Ideal::D3D12DescriptorHandle GetUAV();
+
+		void TransitionToSRV(ID3D12GraphicsCommandList* CmdList);
+		void TransitionToUAV(ID3D12GraphicsCommandList* CmdList);
+
+	private:
+		Ideal::D3D12DescriptorHandle m_srvHandle;
+		Ideal::D3D12DescriptorHandle m_uavHandle;
+
 	};
 
 	// VertexBuffer

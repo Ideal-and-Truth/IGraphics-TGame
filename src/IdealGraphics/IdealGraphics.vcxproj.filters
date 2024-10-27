@@ -226,6 +226,7 @@
     <ClInclude Include="Misc\Utils\Grid.h" />
     <ClInclude Include="Misc\Utils\Octree\Octree.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
+    <ClInclude Include="Misc\Utils\RandomValue.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -335,6 +336,7 @@
     <ClCompile Include="Misc\Utils\Grid.cpp" />
     <ClCompile Include="Misc\Utils\Octree\Octree.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
+    <ClCompile Include="Misc\Utils\RandomValue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">
