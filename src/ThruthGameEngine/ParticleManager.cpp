@@ -255,10 +255,83 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		{
 			particle->SetDuration(node["Duration"].as<float>());
 		}
-		///Loop
+		/// Loop
 		if (node["Loop"].IsDefined())
 		{
 			particle->SetLoop(node["Loop"].as<bool>());
+		}
+		/// Rate Over Time
+		if (node["RateOverTime"].IsDefined())
+		{
+			particle->SetRateOverTime(node["RateOverTime"].as<bool>());
+		}
+		/// Emission Rate Over Time
+		if (node["EmissionRateOverTime"].IsDefined())
+		{
+			particle->SetEmissionRateOverTime(node["EmissionRateOverTime"].as<float>());
+		}
+		/// ShapeMode
+		if (node["ShapeMode"].IsDefined())
+		{
+			particle->SetEmissionRateOverTime(node["ShapeMode"].as<bool>());
+		}
+		/// Shape
+		if (node["Shape"].IsDefined())
+		{
+			particle->SetShape(static_cast<Ideal::ParticleMenu::EShape>(node["Shape"].as<int>()));
+		}
+		/// Radius
+		if (node["Radius"].IsDefined())
+		{
+			particle->SetRadius(node["Radius"].as<float>());
+		}
+		/// Radius Thickness
+		if (node["RadiusThickness"].IsDefined())
+		{
+			particle->SetRadiusThickness(node["RadiusThickness"].as<float>());
+		}
+		/// Velocity Over Lifetime
+		if (node["VelocityOverLifetime"].IsDefined())
+		{
+			particle->SetVelocityOverLifetime(node["VelocityOverLifetime"].as<bool>());
+		}
+		/// Velocity Direction Mode
+		if (node["VelocityDirectionMode"].IsDefined())
+		{
+			particle->SetVelocityDirectionMode(static_cast<Ideal::ParticleMenu::EMode>(node["VelocityDirectionMode"].as<int>()));
+		}
+		/// Velocity Direction Random
+		if (node["VelocityDirectionRandomMIN"].IsDefined() && node["VelocityDirectionRandomMAX"].IsDefined())
+		{
+			particle->SetVelocityDirectionRandom(
+				node["VelocityDirectionRandomMIN"].as<float>(),
+				node["VelocityDirectionRandomMAX"].as<float>()
+			);
+		}
+		/// Velocity Direction Const
+		if (node["VelocityDirectionConst"].IsDefined())
+		{
+			YAML::Node child = node["VelocityDirectionConst"];
+			Vector3 val = {child["x"].as<float>(), child["y"].as<float>() , child["z"].as<float>() };
+			particle->SetVelocityDirectionConst(val);
+		}
+		/// Velocity Speed Modifier Mode
+		if (node["VelocitySpeedModifierMode"].IsDefined())
+		{
+			particle->SetVelocitySpeedModifierMode(static_cast<Ideal::ParticleMenu::EMode>(node["VelocitySpeedModifierMode"].as<int>()));
+		}
+		/// VelocitySpeedModifierRandom
+		if (node["VelocitySpeedModifierRandomMIN"].IsDefined() && node["VelocitySpeedModifierRandomMAX"].IsDefined())
+		{
+			particle->SetVelocitySpeedModifierRandom(
+				node["VelocitySpeedModifierRandomMIN"].as<float>(),
+				node["VelocitySpeedModifierRandomMAX"].as<float>()
+			);
+		}
+		/// Velocity Speed Modifier Const
+		if (node["VelocitySpeedModifierConst"].IsDefined())
+		{
+			particle->SetVelocitySpeedModifierConst(node["VelocitySpeedModifierConst"].as<float>());
 		}
 		/// Color Over Lifetime
 		if (node["ColorOverLifetime"].IsDefined())
@@ -376,7 +449,18 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			const YAML::Node& child = node["CustomData2W"];
 			GetControlPoints(&child, particle, particle->GetCustomData2W());
 		}
-
+		/// Texture Sheet Animation
+		if (node["TextureSheetAnimation"].IsDefined())
+		{
+			particle->SetTextureSheetAnimation(node["TextureSheetAnimation"].as<bool>());
+		}
+		/// Texture Sheet Animation Tiles
+		if (node["TextureSheetAnimationTiles"].IsDefined())
+		{
+			YAML::Node child = node["VelocityDirectionConst"];
+			Vector2 val = { child["x"].as<float>(), child["y"].as<float>()};
+			particle->SetTextureSheetAnimationTiles(val);
+		}
 		/// Render Mode
 		if (node["RenderMode"].IsDefined())
 		{
