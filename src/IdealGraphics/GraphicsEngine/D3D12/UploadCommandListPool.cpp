@@ -108,6 +108,12 @@ std::shared_ptr<Ideal::CommandListContainer> Ideal::UploadCommandListPool::Alloc
 		m_uploadBuffers40960kb.pop();
 		ret->EUploadBufferSizeType = Ideal::EUploadBufferSize::Size40960KB;
 	}
+	else
+	{
+		std::wstring message = L"Failed To Create Upload Buffer Container. Size : " + std::to_wstring(Size);
+		MyMessageBoxW(message.c_str());
+		__debugbreak();
+	}
 	// Command Reset
 	ret->CommandAllocator->Reset();
 	ret->CommandList->Reset(ret->CommandAllocator.Get(), nullptr);

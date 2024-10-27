@@ -242,6 +242,7 @@ void ResourceManager::CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer>
 	Ideal::D3D12UploadBuffer uploadBuffer;
 	uploadBuffer.Create(m_device.Get(), bufferSize);
 	{
+		uploadBuffer.Map();
 		void* mappedData = uploadBuffer.Map();
 		memcpy(mappedData, Indices.data(), bufferSize);
 		uploadBuffer.UnMap();
@@ -299,6 +300,7 @@ void ResourceManager::CreateIndexBufferUint16(std::shared_ptr<Ideal::D3D12IndexB
 	Ideal::D3D12UploadBuffer uploadBuffer;
 	uploadBuffer.Create(m_device.Get(), bufferSize);
 	{
+		uploadBuffer.Map();
 		void* mappedData = uploadBuffer.Map();
 		memcpy(mappedData, Indices.data(), bufferSize);
 		uploadBuffer.UnMap();
@@ -452,6 +454,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 #endif
 	//----------------------Update Subresources--------------------------//
 #ifndef USE_UPLOAD_CONTAINER
+	uploadBuffer.Map();
 	UpdateSubresources(
 		m_commandList.Get(),
 		resource.Get(),
@@ -635,7 +638,7 @@ void ResourceManager::CreateTextureDDS(std::shared_ptr<Ideal::D3D12Texture>& Out
 	uploadBuffer.Create(m_device.Get(), (uint32)bufferSize);
 
 	//----------------------Update Subresources--------------------------//
-
+	uploadBuffer.Map();
 	UpdateSubresources(
 		m_commandList.Get(),
 		resource.Get(),
