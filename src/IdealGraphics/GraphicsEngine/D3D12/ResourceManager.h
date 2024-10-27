@@ -4,7 +4,7 @@
 
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/UploadCommandListPool.h"
-
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 // 따로 GPU에 메모리를 업로드 하는 command list를 파서 여기서 사용한다.
 
 namespace Ideal
@@ -90,6 +90,7 @@ namespace Ideal
 			std::vector<TVertexType>& Vertices
 		)
 		{
+#ifndef USE_UPLOAD_CONTAINER
 			m_commandAllocator->Reset();
 			m_commandList->Reset(m_commandAllocator.Get(), nullptr);
 			
@@ -118,32 +119,32 @@ namespace Ideal
 			
 			Fence();
 			WaitForFenceValue();
+#endif
+#ifdef USE_UPLOAD_CONTAINER
+			const uint32 elementSize = sizeof(TVertexType);
+			const uint32 elementCount = (uint32)Vertices.size();
+			const uint32 bufferSize = elementSize * elementCount;
 			
-			////////////////////////TEST
-
-			//const uint32 elementSize = sizeof(TVertexType);
-			//const uint32 elementCount = (uint32)Vertices.size();
-			//const uint32 bufferSize = elementSize * elementCount;
-			//
-			//auto Container = m_uploadCommandListPoolManager->AllocateUploadContainer(bufferSize);
-			//std::shared_ptr<Ideal::D3D12UploadBuffer> uploadBuffer = Container->UploadBuffer;
-			////uploadBuffer->Create(m_device.Get(), bufferSize);
-			//{
-			//	void* mappedData = uploadBuffer->Map();
-			//	memcpy(mappedData, Vertices.data(), bufferSize);
-			//	uploadBuffer->UnMap();
-			//}
-			//OutVertexBuffer->Create(m_device.Get(),
-			//	m_commandList.Get(),
-			//	elementSize,
-			//	elementCount,
-			//	uploadBuffer
-			//);
-			//
-			////---------Execute---------//
-			//Container->CloseAndExecute(m_commandQueue, m_fence);
-			//Fence();
-			//Container->FenceValue = m_fenceValue;
+			auto Container = m_uploadCommandListPoolManager->AllocateUploadContainer(bufferSize);
+			std::shared_ptr<Ideal::D3D12UploadBuffer> uploadBuffer = Container->UploadBuffer;
+			//uploadBuffer->Create(m_device.Get(), bufferSize);
+			{
+				void* mappedData = uploadBuffer->Map();
+				memcpy(mappedData, Vertices.data(), bufferSize);
+				uploadBuffer->UnMap();
+			}
+			OutVertexBuffer->Create(m_device.Get(),
+				Container->CommandList.Get(),
+				elementSize,
+				elementCount,
+				uploadBuffer
+			);
+			
+			//---------Execute---------//
+			Container->CloseAndExecute(m_commandQueue, m_fence);
+			Fence();
+			Container->FenceValue = m_fenceValue;
+#endif
 		}
 
 		void CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer,

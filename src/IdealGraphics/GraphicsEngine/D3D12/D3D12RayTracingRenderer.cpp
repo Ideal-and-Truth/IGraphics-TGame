@@ -474,7 +474,9 @@ void Ideal::D3D12RayTracingRenderer::Tick()
 
 void Ideal::D3D12RayTracingRenderer::Render()
 {
+#ifdef USE_UPLOAD_CONTAINER
 	m_resourceManager->WaitForResourceUpload();
+#endif
 
 	m_mainCamera->UpdateMatrix2();
 	//m_mainCamera->UpdateViewMatrix();

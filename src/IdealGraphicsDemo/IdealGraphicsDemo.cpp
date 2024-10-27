@@ -34,6 +34,7 @@
 //#endif
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <chrono>
 
 #include <iostream>
 using namespace std;
@@ -68,8 +69,9 @@ using namespace std;
 //#include "GraphicsEngine/public/ICamera.h"
 #include "../Utils/SimpleMath.h"
 #include "Test.h"
-
-
+void outputToDebugConsole(const std::string& message) {
+	OutputDebugStringA(message.c_str()); // ANSI 문자열을 사용하여 출력
+}
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
 	utf8str.reserve(wstr.size() * 4); // 최대 크기로 예약
@@ -224,6 +226,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 
 		gRenderer->Init();
+		auto TimeStart = std::chrono::high_resolution_clock::now();
 
 		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
 		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
@@ -302,9 +305,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
 		//DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
-		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
-		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
-		//DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
+		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 		// 
 		//std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
 		//DebugStaticEnemy->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(3, 0, 0));
@@ -443,6 +446,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 				plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
 				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
 				meshes.push_back(plane);
 				plane->AlphaClippingCheck();
@@ -458,9 +462,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma endregion
 #pragma region CreateDebugMesh
-		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
-		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, -2, 0)));
+		//std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
+		//debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
+		//cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, -2, 0)));
 		//cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion
@@ -492,7 +496,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateUI
 		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
-		sprite->SetTexture(eyeTexture);
+		//sprite->SetTexture(eyeTexture);
+		sprite->SetTexture(faceTexture);
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		sprite->SetScale(Vector2(0.1, 0.1));
 		sprite->SetPosition(Vector2(0, 0));
@@ -1712,6 +1717,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		float angleY = 0.f;
 		float angleZ = 0.f;
 
+
+		auto Timeend = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> duration = Timeend - TimeStart;
+		outputToDebugConsole("Execution time: " + std::to_string(duration.count()) + " seconds\n");
 		while (msg.message != WM_QUIT)
 		{
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -1954,9 +1963,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				if (GetAsyncKeyState('G') & 0x8000)
 				{
-					auto a = gRenderer->GetRightBottomEditorPos();
-					auto b =gRenderer->GetTopLeftEditorPos();
-					int c = 3;
+					static int x = 0;
+					std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+					cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x, 0, 0)));
+					x++;
+					meshes.push_back(cart);
+				}
+				if (GetAsyncKeyState('H') & 0x8000)
+				{
+					if (meshes.size())
+					{
+						auto mesh = meshes.back();
+						meshes.pop_back();
+						gRenderer->DeleteMeshObject(mesh);
+					}
 				}
 
 				// Animation // 역재생 안됨

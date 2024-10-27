@@ -8,6 +8,9 @@
 
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
+//----USE UPLOAD COMMANDLIST CONTAINER----//
+#define USE_UPLOAD_CONTAINER
+#define UPLOAD_CONTAINER_COUNT 16
 
 //------------Light-----------//
 #define MAX_DIRECTIONAL_LIGHT_NUM 10

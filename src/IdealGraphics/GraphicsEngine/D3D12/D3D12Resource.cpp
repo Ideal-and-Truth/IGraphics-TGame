@@ -278,6 +278,26 @@ void D3D12IndexBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* C
 	m_indexBufferView.SizeInBytes = m_bufferSize;
 }
 
+void D3D12IndexBuffer::Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, std::shared_ptr<D3D12UploadBuffer> UploadBuffer)
+{
+	D3D12GPUBuffer::CreateBuffer(Device, ElementSize, ElementCount);
+	D3D12GPUBuffer::SetName(L"IndexBuffer");
+
+	CmdList->CopyBufferRegion(m_resource.Get(), 0, UploadBuffer->GetResource(), 0, m_bufferSize);
+
+	CD3DX12_RESOURCE_BARRIER resourceBarrier
+		= CD3DX12_RESOURCE_BARRIER::Transition(
+			m_resource.Get(),
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			D3D12_RESOURCE_STATE_INDEX_BUFFER
+		);
+	CmdList->ResourceBarrier(1, &resourceBarrier);
+
+	m_indexBufferView.BufferLocation = m_resource->GetGPUVirtualAddress();
+	m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+	m_indexBufferView.SizeInBytes = m_bufferSize;
+}
+
 D3D12_INDEX_BUFFER_VIEW D3D12IndexBuffer::GetView() const
 {
 	return m_indexBufferView;

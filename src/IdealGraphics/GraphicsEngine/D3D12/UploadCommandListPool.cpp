@@ -120,6 +120,12 @@ void Ideal::UploadCommandListPool::CheckFreedUploadContainer()
 	for (auto it = m_AllocatedContainer.begin(); it != m_AllocatedContainer.end(); )
 	{
 		std::shared_ptr<Ideal::CommandListContainer> Container = (*it);
+
+		std::string count =std::to_string(m_Fence->GetCompletedValue());
+		std::string count2 =std::to_string(Container->FenceValue);
+		std::string result = count + " : " + count2 + "\n";
+		OutputDebugStringA(result.c_str());
+
 		if (m_Fence->GetCompletedValue() >= Container->FenceValue)
 		{
 			RevertUploadBuffer(Container);
@@ -190,9 +196,9 @@ void Ideal::UploadCommandListPool::CreateUploadBuffers(ComPtr<ID3D12Device> Devi
 		UploadBuffer4096->Create(Device.Get(), 4194303);
 		m_uploadBuffers4096kb.push(UploadBuffer4096);
 
-		std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer20480 = std::make_shared<Ideal::D3D12UploadBuffer>();
-		UploadBuffer20480->Create(Device.Get(), 20971520);
-		m_uploadBuffers40960kb.push(UploadBuffer20480);
+		std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer40960 = std::make_shared<Ideal::D3D12UploadBuffer>();
+		UploadBuffer40960->Create(Device.Get(), 41943040);
+		m_uploadBuffers40960kb.push(UploadBuffer40960);
 	}
 }
 
