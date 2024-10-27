@@ -109,6 +109,12 @@ std::shared_ptr<Ideal::CommandListContainer> Ideal::UploadCommandListPool::Alloc
 		m_uploadBuffers40960kb.pop();
 		ret->EUploadBufferSizeType = Ideal::EUploadBufferSize::Size40960KB;
 	}
+	else if (Size < 125829120)
+	{
+		ret->UploadBuffer = m_uploadBuffers122880kb.top();
+		m_uploadBuffers122880kb.pop();
+		ret->EUploadBufferSizeType = Ideal::EUploadBufferSize::Size122880KB;
+	}
 	else
 	{
 		std::wstring message = L"Failed To Create Upload Buffer Container. Size : " + std::to_wstring(Size);
@@ -205,6 +211,10 @@ void Ideal::UploadCommandListPool::CreateUploadBuffers(ComPtr<ID3D12Device> Devi
 		std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer40960 = std::make_shared<Ideal::D3D12UploadBuffer>();
 		UploadBuffer40960->Create(Device.Get(), 41943040);
 		m_uploadBuffers40960kb.push(UploadBuffer40960);
+
+		std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer122880 = std::make_shared<Ideal::D3D12UploadBuffer>();
+		UploadBuffer122880->Create(Device.Get(), 125829120);
+		m_uploadBuffers122880kb.push(UploadBuffer122880);
 	}
 }
 
@@ -229,6 +239,9 @@ void Ideal::UploadCommandListPool::RevertUploadBuffer(std::shared_ptr<Ideal::Com
 			break;
 		case Size40960KB:
 			m_uploadBuffers40960kb.push(Container->UploadBuffer);
+			break;
+		case Size122880KB:
+			m_uploadBuffers122880kb.push(Container->UploadBuffer);
 			break;
 		default:
 			__debugbreak();
