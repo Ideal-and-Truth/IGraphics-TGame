@@ -700,6 +700,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> defaultTextureParticleShader = gRenderer->CreateAndLoadParticleShader(L"DefaultTextureParticlePS");
 
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/BossFireFloor.hlsl",
+			L"../Shaders/Particle/",
+			L"BossFireFloorPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> bossFireFloorShader = gRenderer->CreateAndLoadParticleShader(L"BossFireFloorPS");
+
 
 		// Test
 		gRenderer->CompileShader(
@@ -1692,18 +1702,116 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(0.2509f, 0, 0.7529f, 0), 1.f);	// 끝 색상
 		}
 #pragma endregion
-#pragma region ParticleBillboardTest
+#pragma region FireExplosionBillboardParticle
 		//----------ParticleBillboardTest effect----------//
-		std::shared_ptr<Ideal::IParticleMaterial> billboardMaterialTest = gRenderer->CreateParticleMaterial();
-		billboardMaterialTest->SetShader(billboardTestPS);
-		billboardMaterialTest->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
-		
-		
-		std::shared_ptr<Ideal::IParticleSystem> billboardTest = gRenderer->CreateParticleSystem(billboardMaterialTest);
-		billboardTest->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
-		
+		std::shared_ptr<Ideal::IParticleMaterial> fireExplosionMaterial = gRenderer->CreateParticleMaterial();
+		//billboardMaterialTest->SetShader(billboardTestPS);
+		fireExplosionMaterial->SetShader(bossFireFloorShader);
+		fireExplosionMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		std::shared_ptr<Ideal::ITexture> particleBillboardAnimationSheet = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/bossFireFloor/Explosion_1.png");
+		std::shared_ptr<Ideal::ITexture> particleBillboardNormal = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
+		fireExplosionMaterial->SetTexture0(particleBillboardAnimationSheet);
+		fireExplosionMaterial->SetTexture1(particleBillboardNormal);
+		fireExplosionMaterial->SetWriteDepthBuffer(true);
+
+		std::shared_ptr<Ideal::IParticleSystem> fireExplosionParticle = gRenderer->CreateParticleSystem(fireExplosionMaterial);
+		fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		//fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);	-> 테스트용
+		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
+
+		fireExplosionParticle->SetActive(true);
+		fireExplosionParticle->SetLoop(false);
+		fireExplosionParticle->SetDuration(1.f);
+		fireExplosionParticle->SetStartLifetime(1.f);
+
+		fireExplosionParticle->SetMaxParticles(50);
+		fireExplosionParticle->SetShapeMode(true);
+		fireExplosionParticle->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		fireExplosionParticle->SetRadius(1.f);
+		fireExplosionParticle->SetRadiusThickness(0.5f);
+
+		fireExplosionParticle->SetVelocityOverLifetime(true);
+		fireExplosionParticle->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		fireExplosionParticle->SetVelocityDirectionRandom(-10.f, 10.f);
+		fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		fireExplosionParticle->SetVelocitySpeedModifierRandom(0.f, 0.9f);
+		//billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
+		//billboardTest->SetVelocitySpeedModifierConst(0.f);
+		//billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
+
+		// Animation
+		fireExplosionParticle->SetTextureSheetAnimation(true);
+		fireExplosionParticle->SetTextureSheetAnimationTiles({ 8,8 });
+		fireExplosionParticle->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0,3,0)));
+
+
+		fireExplosionParticle->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
+		fireExplosionParticle->SetColorOverLifetime(true);
+		{
+			auto& graph = fireExplosionParticle->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.12f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.388f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+		}
+
+		{
+			auto& graph = fireExplosionParticle->GetCustomData1Z();
+			graph.AddControlPoint({ 0,6 });
+		}
+
 #pragma endregion
 
+#pragma region FireExplosionBillboardParticle2
+		std::shared_ptr<Ideal::IParticleSystem> fireExplosionParticle2 = gRenderer->CreateParticleSystem(fireExplosionMaterial);
+		fireExplosionParticle2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		//fireExplosionParticle->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);	-> 테스트용
+		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
+
+		fireExplosionParticle2->SetActive(true);
+		fireExplosionParticle2->SetLoop(false);
+		fireExplosionParticle2->SetDuration(5.f);
+		fireExplosionParticle2->SetStartLifetime(5.f);
+
+		fireExplosionParticle2->SetMaxParticles(100);
+		fireExplosionParticle2->SetShapeMode(true);
+		fireExplosionParticle2->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		fireExplosionParticle2->SetRadius(1.f);
+		fireExplosionParticle2->SetRadiusThickness(0.5f);
+
+		fireExplosionParticle2->SetVelocityOverLifetime(true);
+		//fireExplosionParticle2->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		//fireExplosionParticle2->SetVelocityDirectionRandom(-10.f, 10.f);
+		fireExplosionParticle2->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Const);
+		fireExplosionParticle2->SetVelocityDirectionConst(Vector3(0, 1, 0));
+		fireExplosionParticle2->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		fireExplosionParticle2->SetVelocitySpeedModifierRandom(0.f, 0.9f);
+
+		fireExplosionParticle2->SetRateOverTime(true);
+		fireExplosionParticle2->SetEmissionRateOverTime(25.f);
+
+		// Animation
+		fireExplosionParticle2->SetTextureSheetAnimation(true);
+		fireExplosionParticle2->SetTextureSheetAnimationTiles({ 8,8 });
+		fireExplosionParticle2->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateTranslation(Vector3(0, 3, 0)));
+
+
+		fireExplosionParticle2->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
+		fireExplosionParticle2->SetColorOverLifetime(true);
+		{
+			auto& graph = fireExplosionParticle2->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.12f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.388f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+		}
+
+		{
+			auto& graph = fireExplosionParticle2->GetCustomData1Z();
+			graph.AddControlPoint({ 0,6 });
+		}
+
+#pragma endregion
 
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -1952,13 +2060,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					magicCircleParticleSystem->Play();
 					bowAttackParticleSystem->Play();
 				}
-				if (GetAsyncKeyState('G') & 0x8000)
+				if (GetAsyncKeyState('I') & 0x8000)
 				{
-					auto a = gRenderer->GetRightBottomEditorPos();
-					auto b =gRenderer->GetTopLeftEditorPos();
-					int c = 3;
+					fireExplosionParticle->Play();
 				}
-
+				if (GetAsyncKeyState('O') & 0x8000)
+				{
+					fireExplosionParticle->Pause();
+				}
+				if (GetAsyncKeyState('P') & 0x8000)
+				{
+					fireExplosionParticle2->Play();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -1987,6 +2100,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				dodgeEffect->SetDeltaTime(0.003f);
 				magicCircleParticleSystem->SetDeltaTime(0.003f);
 				bowAttackParticleSystem->SetDeltaTime(0.003f);
+				fireExplosionParticle->SetDeltaTime(0.003f);
+				fireExplosionParticle2->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -2293,8 +2408,9 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	float aspectRatio = float(WIDTH) / HEIGHT;
 	//float aspectRatio = float(1296) / 999.f;
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
-	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.01f, 3000.f);
+	Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.1f, 3000.f);
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.01f, 3000.f);
+	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 0.001f, 3000.f);
 	//Camera->SetLens(0.25f * 3.141592f, aspectRatio, 1.f, 3000.f);
 	//Camera->SetLensWithoutAspect(0.7f * 3.141592f, 1.f, 3000.f);
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
