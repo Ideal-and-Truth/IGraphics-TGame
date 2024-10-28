@@ -14,7 +14,27 @@ StartColor:
 StartLifetime: 1
 Loop: false
 Duration: 1
+
+
+MaxParticles: 50
+ShapeMode: true
 Shape: 0
+Radius: 1
+RadiusThickness: 0.5
+
+
+VelocityOverLifetime: true
+VelocityDirectionMode: 1
+VelocityDirectionRandomMIN: -10
+VelocityDirectionRandomMAX: 10
+VelocitySpeedModifierMode: 1
+VelocitySpeedModifierRandomMIN: 0
+VelocitySpeedModifierRandomMAX: 0.9
+
+
+TextureSheetAnimation: true
+TextureSheetAnimationTiles: {x: 8, y: 8}
+
 ColorOverLifetime: true
 ColorOverLifetimeGradientGraph:
   - Color:

@@ -1833,6 +1833,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem0->SetSimulationSpeed(8.f);
 		norDamageParticleSystem0->SetLoop(false);
 		norDamageParticleSystem0->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
+
 		norDamageParticleSystem0->SetSizeOverLifetime(true);
 		norDamageParticleSystem0->SetTransformMatrix(Matrix::CreateRotationX(1.07f) * Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
@@ -1939,6 +1940,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddControlPoint({ 0,0.5f });
 			graph.AddControlPoint({ 1,3 });
 		}
+
 		// 2 Particle
 		std::shared_ptr<Ideal::IParticleMaterial> norDamageMaterial2 = gRenderer->CreateParticleMaterial();
 		norDamageMaterial2->SetShader(bossBeamRingShader);
