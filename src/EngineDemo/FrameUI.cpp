@@ -20,7 +20,7 @@ void FrameUI::Update()
 	m_adt += m_managers.lock()->Time()->GetADT();
 	if (m_adt >= m_interval)
 	{
-		m_TextUI.lock()->ChangeText(std::to_wstring(static_cast<uint32>(m_frameCount / m_interval)));
+		m_TextUI.lock()->ChangeText(std::to_wstring(m_frameCount));
 		m_frameCount = 0;
 		m_adt -= m_interval;
 	}
