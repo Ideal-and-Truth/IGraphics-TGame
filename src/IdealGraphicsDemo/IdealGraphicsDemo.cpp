@@ -1834,7 +1834,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem0->SetLoop(false);
 		norDamageParticleSystem0->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
 		norDamageParticleSystem0->SetSizeOverLifetime(true);
-		norDamageParticleSystem0->SetTransformMatrix(Matrix::CreateRotationX(1.07f) * Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		norDamageParticleSystem0->SetTransformMatrix(Matrix::CreateRotationX(1.07f) * Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
 			auto& graph = norDamageParticleSystem0->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0,0.5f });
@@ -1861,7 +1861,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem0_1->SetLoop(false);
 		norDamageParticleSystem0_1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
 		norDamageParticleSystem0_1->SetSizeOverLifetime(true);
-		norDamageParticleSystem0_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		norDamageParticleSystem0_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
 			auto& graph = norDamageParticleSystem0_1->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0,0.5f });
@@ -1897,7 +1897,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem1->SetLoop(false);
 		norDamageParticleSystem1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
 		norDamageParticleSystem1->SetSizeOverLifetime(true);
-		norDamageParticleSystem1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		norDamageParticleSystem1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
 			auto& graph = norDamageParticleSystem1->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0,0.5f });
@@ -1924,7 +1924,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem1_1->SetLoop(false);
 		norDamageParticleSystem1_1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
 		norDamageParticleSystem1_1->SetSizeOverLifetime(true);
-		norDamageParticleSystem1_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f) * Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		norDamageParticleSystem1_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f) * Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
 			auto& graph = norDamageParticleSystem1_1->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0,0.5f });
