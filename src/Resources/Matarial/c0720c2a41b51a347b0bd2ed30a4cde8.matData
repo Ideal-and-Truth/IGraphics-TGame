@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/Ground/T_ground_meadow_grass_01_A_SM.tga
+normalMap: ../Resources/Textures/MapData/3_EJ_Scene2/Ground/T_ground_meadow_grass_01_N.png
+maskMap: ../Resources/Textures/MapData/3_EJ_Scene2/Ground/T_ground_meadow_grass_01_MT_AO_H_SM.tga
+tileX: 0.400000006
+tileY: 0.400000006
+alphaCulling: false
+transparent: false
+...

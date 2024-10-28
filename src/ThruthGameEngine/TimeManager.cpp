@@ -57,10 +57,10 @@ void Truth::TimeManager::Update()
 
 	// 디버깅시에는 최소 프레임 제한
 #ifdef EDITOR_MODE
-	if (delta > 0.16f)
-	{
-		delta = 0.16f;
-	}
+// 	if (delta > 0.16f)
+// 	{
+// 		delta = 0.16f;
+// 	}
 #endif // _DEBUG
 
 	m_absDeltaTime = delta;

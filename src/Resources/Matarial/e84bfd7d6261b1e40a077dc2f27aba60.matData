@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/hn house/T_Material_BaseMap.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/hn house/T_Material_Normal.png
+maskMap: ../Resources/Textures/MapData/1_HN_Scene2/hn house/T_Material_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: true
+transparent: false
+...

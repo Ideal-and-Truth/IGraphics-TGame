@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_vehicle_top</Name>
-        <DiffuseFile>T_town_top_BaseMap.png</DiffuseFile>
+        <Name>M_Curtain_003</Name>
+        <DiffuseFile>T_Curtain_003_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

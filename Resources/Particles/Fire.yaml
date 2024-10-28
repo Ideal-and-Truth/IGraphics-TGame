@@ -12,8 +12,8 @@ StartColor:
   - 0.03
   - 0
   - 1
-StartLifetime: 3
+StartLifetime: 0.5
 Loop: false
-Duration: 3
+Duration: 0.5
 RenderMode: 1
 

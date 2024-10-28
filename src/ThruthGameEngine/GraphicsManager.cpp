@@ -154,14 +154,31 @@ std::shared_ptr<Ideal::IDirectionalLight> Truth::GraphicsManager::CreateDirectio
 	return m_renderer->CreateDirectionalLight();
 }
 
+void Truth::GraphicsManager::DeleteDirectionalLight(std::shared_ptr<Ideal::IDirectionalLight> _dLight)
+{
+	m_renderer->DeleteLight(_dLight);
+}
+
 std::shared_ptr<Ideal::ISpotLight> Truth::GraphicsManager::CreateSpotLight()
 {
 	return m_renderer->CreateSpotLight();
 }
 
+void Truth::GraphicsManager::DeleteSpotLight(std::shared_ptr<Ideal::ISpotLight> _sLight)
+{
+
+	m_renderer->DeleteLight(_sLight);
+}
+
 std::shared_ptr<Ideal::IPointLight> Truth::GraphicsManager::CreatePointLight()
 {
 	return m_renderer->CreatePointLight();
+}
+
+void Truth::GraphicsManager::DeletePointLight(std::shared_ptr<Ideal::IPointLight> _pLight)
+{
+
+	m_renderer->DeleteLight(_pLight);
 }
 
 std::shared_ptr<Ideal::ISprite> Truth::GraphicsManager::CreateSprite()

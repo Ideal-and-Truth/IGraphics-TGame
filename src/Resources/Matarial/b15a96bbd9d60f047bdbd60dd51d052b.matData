@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Hannatile/T_brickwall_002_BaseMap-1.png
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/brickwalltile/T_brickwall_002_Normal.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/brickwalltile/T_brickwall_002_MaskMap.png
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/Hannatile/T_brickwall_002_BaseMap-1.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/brickwalltile/T_brickwall_002_Normal.png
+maskMap: ../Resources/Textures/MapData/1_HN_Scene2/brickwalltile/T_brickwall_002_MaskMap.png
 tileX: -4.42000008
 tileY: 1.70000005
 alphaCulling: false

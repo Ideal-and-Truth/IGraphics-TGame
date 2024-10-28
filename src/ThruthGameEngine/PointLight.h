@@ -45,6 +45,8 @@ namespace Truth
 		METHOD(Initialize);
 		void Initialize();
 
+		METHOD(Destroy);
+		void Destroy();
 
 #ifdef EDITOR_MODE
 		virtual void EditorSetValue();
