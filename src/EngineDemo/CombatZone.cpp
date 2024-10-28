@@ -47,17 +47,18 @@ void CombatZone::OnTriggerEnter(Truth::Collider* _other)
 
 void CombatZone::OnTriggerExit(Truth::Collider* _other)
 {
-	if (_other->GetOwner().lock()->m_name == "Player")
-	{
-		for (auto& e : m_owner.lock()->m_children)
-		{
-			if (e.get()->GetComponent<Enemy>().lock())
-			{
-				e.get()->GetComponent<Enemy>().lock().get()->GetTypeInfo().GetProperty("isTargetIn")
-					->Set(e.get()->GetComponent<Enemy>().lock().get(), false);
-			}
-		}
-	}
+	// 추적해제 (안씀)
+// 	if (_other->GetOwner().lock()->m_name == "Player")
+// 	{
+// 		for (auto& e : m_owner.lock()->m_children)
+// 		{
+// 			if (e.get()->GetComponent<Enemy>().lock())
+// 			{
+// 				e.get()->GetComponent<Enemy>().lock().get()->GetTypeInfo().GetProperty("isTargetIn")
+// 					->Set(e.get()->GetComponent<Enemy>().lock().get(), false);
+// 			}
+// 		}
+// 	}
 }
 
 

@@ -18,6 +18,7 @@ PlayerCamera::PlayerCamera()
 	, m_isLockOn(false)
 	, m_isShaking(false)
 	, m_enemyCount(0)
+	, m_loopCount(0)
 	, m_shakeCount(0.f)
 	, m_zoomTime(0.f)
 	, m_shakeTime(0.f)
@@ -47,9 +48,16 @@ void PlayerCamera::Start()
 
 	m_playerController = m_player.lock()->GetComponent<PlayerController>().lock();
 
-// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
-// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
-// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
+	for (auto& e : m_managers.lock()->Scene()->m_currentScene->m_entities)
+	{
+		if (e->GetComponent<Enemy>().lock())
+		{
+			m_enemys.push_back(e);
+		}
+	}
+	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
+	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
+	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
 }
 
 void PlayerCamera::LateUpdate()
@@ -57,6 +65,30 @@ void PlayerCamera::LateUpdate()
 	if (m_enemys.empty())
 	{
 		m_isLockOn = false;
+	}
+
+	if (!m_enemys.empty())
+	{
+		if (GetKeyDown(MOUSE::WHEEL))
+		{
+			m_isLockOn = true;
+			m_passingTime = 0.f;
+		}
+		if (GetKey(MOUSE::WHEEL) && m_isLockOn)
+		{
+			m_passingTime += GetDeltaTime();
+			if (m_isLockOn && m_passingTime > 1.f)
+			{
+				m_isLockOn = false;
+				m_enemyCount = 0;
+				m_passingTime = 0.f;
+				m_lockOnTime = 0.f;
+			}
+		}
+		else if (GetKeyUp(MOUSE::WHEEL) && m_isLockOn)
+		{
+			m_passingTime = 0.f;
+		}
 	}
 
 	if (m_isLockOn && !m_enemys.empty())
@@ -68,38 +100,14 @@ void PlayerCamera::LateUpdate()
 		FreeCamera();
 	}
 
-	if (!m_enemys.empty())
-	{
-		if (GetKeyDown(MOUSE::WHEEL))
-		{
-			m_isLockOn = true;
-		}
-		if (GetKey(MOUSE::WHEEL) && m_isLockOn)
-		{
-			m_passingTime += GetDeltaTime();
-			if (m_isLockOn && m_passingTime > 1.5f)
-			{
-				m_isLockOn = false;
-				m_passingTime = 0.f;
-				m_enemyCount = 0;
-				m_lockOnTime = 0.f;
-			}
-		}
-		else if (GetKeyUp(MOUSE::WHEEL) && m_isLockOn)
-		{
-			m_passingTime = 0.f;
-		}
-	}
-
-
 	for (auto& e : m_enemys)
 	{
-		// if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
-		// {
-		// 	m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
-		// 	m_lockOnTime = 0.f;
-		// 	break;
-		// }
+		if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
+		{
+			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+			m_lockOnTime = 0.f;
+			break;
+		}
 	}
 	if (GetKeyDown(KEY::P))
 	{
@@ -193,13 +201,34 @@ void PlayerCamera::LockOnCamera()
 	if (GetKeyDown(MOUSE::WHEEL))
 	{
 		m_enemyCount++;
+
+		if (m_enemys.size() <= m_enemyCount)
+		{
+			m_enemyCount = 0;
+			m_lockOnTime = 0.f;
+		}
+
 		m_lockOnTime = 0.f;
 	}
+
+	if ((m_player.lock()->GetWorldPosition() - m_enemys[m_enemyCount]->GetWorldPosition()).Length() > 20.f)
+	{
+		m_enemyCount++;
+	}
+
 	if (m_enemys.size() <= m_enemyCount)
 	{
 		m_enemyCount = 0;
 		m_lockOnTime = 0.f;
+		m_loopCount++;
 	}
+
+	if (m_loopCount > 2)
+	{
+		m_isLockOn = false;
+		m_loopCount = 0;
+	}
+
 
 	m_lockOnTime += GetDeltaTime() * 0.8f;
 

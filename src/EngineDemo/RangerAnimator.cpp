@@ -98,10 +98,7 @@ void RangerAnimator::Update()
 		return;
 	}
 
-	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
-	{
-		m_isDeath = true;
-	}
+	
 
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
@@ -156,6 +153,14 @@ void RangerAnimator::Update()
 	m_lastHp = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
 
 	m_currentState->OnStateUpdate();
+
+	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
+	{
+		m_shootReady = false;
+		m_showEffect = false;
+		m_isDeath = true;
+		PlayEffect();
+	}
 }
 
 void RangerAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
@@ -340,7 +345,6 @@ void RangerAim::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangeAim", false);
 	GetProperty("shootReady")->Set(m_animator, true);
-	GetProperty("showEffect")->Set(m_animator, true);
 }
 
 void RangerAim::OnStateUpdate()
@@ -527,12 +531,17 @@ void RangerAnimator::PlayEffect()
 			* m
 		);
 
-		if (m_shootReady)
+		if (m_shootReady && !m_showEffect)
 		{
 			m_shootReady = false;
+			m_showEffect = true;
 
 			p->SetActive(true);
 			p->Play();
+		}
+		else if (m_shootReady && m_showEffect)
+		{
+			m_shootReady = false;
 		}
 
 		if (!m_showEffect)

@@ -571,14 +571,7 @@ void NormalAttack1::OnStateUpdate()
 	}
 	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
-		if (GetProperty("isComboReady")->Get<bool>(m_animator).Get())
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("ComboReady");
-		}
-		else
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		}
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
 }
 
@@ -626,14 +619,7 @@ void NormalAttack2::OnStateUpdate()
 	}
 	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
-		if (GetProperty("isComboReady")->Get<bool>(m_animator).Get())
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("ComboReady");
-		}
-		else
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		}
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
 }
 
@@ -686,14 +672,7 @@ void NormalAttack3::OnStateUpdate()
 	}
 	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
-		if (GetProperty("isComboReady")->Get<bool>(m_animator).Get())
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("ComboReady");
-		}
-		else
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		}
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
 }
 
@@ -737,14 +716,7 @@ void NormalAttack4::OnStateUpdate()
 
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
-		if (GetProperty("isComboReady")->Get<bool>(m_animator).Get())
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("ComboReady");
-		}
-		else
-		{
-			dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		}
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
 }
 
