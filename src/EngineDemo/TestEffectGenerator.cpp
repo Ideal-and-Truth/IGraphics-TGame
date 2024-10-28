@@ -241,4 +241,15 @@ void TestEffectGenerator::Update()
 // 		p->SetActive(true);
 // 		p->Play();
 // 	}
+//
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+		p->SetDeltaTime(GetDeltaTime());
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(3.14 * 0.5)
+		);
+		p->SetActive(true);
+		p->Play();
+  	}
 }

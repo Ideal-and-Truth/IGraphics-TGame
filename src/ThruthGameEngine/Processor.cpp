@@ -97,6 +97,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertStaticFbxData(L"EnemyAnimations/RangeEnemy/Weapon/SM_mon_bow.fbx");
 // 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_shield.fbx");
 // 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_sword.fbx");
+// 	ConvertStaticFbxData(L"BossAnimations/Spear/SM_niddle_sub.fbx");
 
  	int a = 0;
 	// ConvertDataUseTrhead();
