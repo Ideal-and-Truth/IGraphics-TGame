@@ -224,7 +224,26 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			particle->SetActive(false);
 			particle->SetTransformMatrix(Matrix::Identity);
 		}
-
+		/// mesh
+		if (node["Mesh"].IsDefined())
+		{
+			particle->SetRenderMesh(m_grapics->CreateParticleMesh(A2W(node["Mesh"].as<std::string>().c_str())));
+		}
+		/// Stop When Finished
+		if (node["StopWhenFinished"].IsDefined())
+		{
+			particle->SetStopWhenFinished(node["StopWhenFinished"].as<bool>());
+		}
+		/// Play OnWake
+		if (node["PlayOnWake"].IsDefined())
+		{
+			particle->SetPlayOnWake(node["PlayOnWake"].as<bool>());
+		}
+		/// Max Particle
+		if (node["MaxParticles"].IsDefined())
+		{
+			particle->SetMaxParticles((node["MaxParticles"].as<float>()));
+		}
 
 
 		/// Start Color
@@ -273,7 +292,7 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		/// ShapeMode
 		if (node["ShapeMode"].IsDefined())
 		{
-			particle->SetEmissionRateOverTime(node["ShapeMode"].as<bool>());
+			particle->SetShapeMode((node["ShapeMode"].as<bool>()));
 		}
 		/// Shape
 		if (node["Shape"].IsDefined())
@@ -467,21 +486,7 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 			particle->SetRenderMode(static_cast<Ideal::ParticleMenu::ERendererMode>(node["RenderMode"].as<int>()));
 		}
 
-		/// Stop When Finished
-		if (node["StopWhenFinished"].IsDefined())
-		{
-			particle->SetStopWhenFinished(node["StopWhenFinished"].as<bool>());
-		}
-		/// Play OnWake
-		if (node["PlayOnWake"].IsDefined())
-		{
-			particle->SetPlayOnWake(node["PlayOnWake"].as<bool>());
-		}
 
-		if (node["Mesh"].IsDefined())
-		{
-			particle->SetRenderMesh(m_grapics->CreateParticleMesh(A2W(node["Mesh"].as<std::string>().c_str())));
-		}
 
 		/// Create Particle 
 		m_particleMap[_path]->m_pool.push_back(particle);
