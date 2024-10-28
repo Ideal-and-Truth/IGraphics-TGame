@@ -70,7 +70,11 @@ void EnemyAnimator::Start()
 	m_playerAnimator = playerEntity->GetComponent<PlayerAnimator>().lock();
 
 	m_skinnedMesh->AddAnimation("EnemyMeleeAttack", L"EnemyAnimations/MeleeEnemy/Attack/Attack");
-	m_skinnedMesh->AddAnimation("EnemyMeleeDown", L"EnemyAnimations/MeleeEnemy/Down/Down");
+	m_skinnedMesh->AddAnimation("EnemyDown", L"EnemyAnimations/MeleeEnemy/Down/Down");
+	m_skinnedMesh->AddAnimation("EnemyFall", L"EnemyAnimations/MeleeEnemy/Down/Fall");
+	m_skinnedMesh->AddAnimation("EnemyFallAttack", L"EnemyAnimations/MeleeEnemy/Down/FallAttack");
+	m_skinnedMesh->AddAnimation("EnemyGetUp", L"EnemyAnimations/MeleeEnemy/Down/GetUp");
+	m_skinnedMesh->AddAnimation("EnemyKnockBack", L"EnemyAnimations/MeleeEnemy/Down/KnockBack");
 	m_skinnedMesh->AddAnimation("EnemyMeleeHit", L"EnemyAnimations/MeleeEnemy/Hit/Hit");
 	m_skinnedMesh->AddAnimation("EnemyMeleeIdle", L"EnemyAnimations/MeleeEnemy/Idle/Idle");
 	m_skinnedMesh->AddAnimation("EnemyMeleePursuit", L"EnemyAnimations/MeleeEnemy/Pursuit/Pursuit");
@@ -418,7 +422,7 @@ void EnemyHit::OnStateUpdate()
 
 void EnemyDown::OnStateEnter()
 {
-	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeDown", false);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyDown", false);
 }
 
 void EnemyDown::OnStateUpdate()

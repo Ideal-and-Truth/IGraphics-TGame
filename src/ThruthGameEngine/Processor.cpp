@@ -88,11 +88,17 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"BossAnimations/Idle/BattleEntrance.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Attacks/BossSwordShoot.fbx");
 
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Down.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Fall.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/FallAttack.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/GetUp.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/KnockBack.fbx");
+
 // 	ConvertStaticFbxData(L"EnemyAnimations/RangeEnemy/Weapon/SM_mon_bow.fbx");
 // 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_shield.fbx");
 // 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_sword.fbx");
 
-// 	int a = 0;
+ 	int a = 0;
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
