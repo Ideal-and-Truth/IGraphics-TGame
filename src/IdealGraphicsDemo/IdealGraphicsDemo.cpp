@@ -1813,6 +1813,169 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma endregion
 
+#pragma region Nor_Damage
+
+		std::shared_ptr<Ideal::IParticleMaterial> norDamageMaterial0 = gRenderer->CreateParticleMaterial();
+		norDamageMaterial0->SetShader(bossBeamRingShader);
+		norDamageMaterial0->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		norDamageMaterial0->SetBackFaceCulling(false);
+		std::shared_ptr<Ideal::ITexture> norDamageTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Flash21.png");
+		norDamageMaterial0->SetTexture0(norDamageTexture);
+		
+		std::shared_ptr<Ideal::IParticleSystem> norDamageParticleSystem0 = gRenderer->CreateParticleSystem(norDamageMaterial0);
+
+		norDamageParticleSystem0->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		norDamageParticleSystem0->SetRenderMesh(particleMeshPlane);
+		//norDamageParticleSystem0->SetRenderMeshBillboard(false);
+		norDamageParticleSystem0->SetStartSize(0.3f);
+		norDamageParticleSystem0->SetStartLifetime(1.f);
+		norDamageParticleSystem0->SetDuration(1.f);
+		norDamageParticleSystem0->SetSimulationSpeed(8.f);
+		norDamageParticleSystem0->SetLoop(false);
+		norDamageParticleSystem0->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
+		norDamageParticleSystem0->SetSizeOverLifetime(true);
+		norDamageParticleSystem0->SetTransformMatrix(Matrix::CreateRotationX(1.07f) * Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		{
+			auto& graph = norDamageParticleSystem0->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+		{
+			auto& graph = norDamageParticleSystem0->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1.f });
+		}
+		{
+			auto& graph = norDamageParticleSystem0->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+
+		std::shared_ptr<Ideal::IParticleSystem> norDamageParticleSystem0_1 = gRenderer->CreateParticleSystem(norDamageMaterial0);
+
+		norDamageParticleSystem0_1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		norDamageParticleSystem0_1->SetRenderMesh(particleMeshPlane);
+		norDamageParticleSystem0_1->SetStartSize(0.3f);
+		norDamageParticleSystem0_1->SetStartLifetime(1.f);
+		norDamageParticleSystem0_1->SetDuration(1.f);
+		norDamageParticleSystem0_1->SetSimulationSpeed(8.f);
+		norDamageParticleSystem0_1->SetLoop(false);
+		norDamageParticleSystem0_1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
+		norDamageParticleSystem0_1->SetSizeOverLifetime(true);
+		norDamageParticleSystem0_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		{
+			auto& graph = norDamageParticleSystem0_1->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+		{
+			auto& graph = norDamageParticleSystem0_1->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1.f });
+		}
+		{
+			auto& graph = norDamageParticleSystem0_1->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+
+		//1 
+
+		std::shared_ptr<Ideal::IParticleMaterial> norDamageMaterial1 = gRenderer->CreateParticleMaterial();
+		norDamageMaterial1->SetShader(bossBeamRingShader);
+		norDamageMaterial1->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		norDamageMaterial1->SetBackFaceCulling(false);
+		std::shared_ptr<Ideal::ITexture> norDamageTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Flare23.png");
+		norDamageMaterial1->SetTexture0(norDamageTexture1);
+
+		std::shared_ptr<Ideal::IParticleSystem> norDamageParticleSystem1 = gRenderer->CreateParticleSystem(norDamageMaterial1);
+
+		norDamageParticleSystem1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		norDamageParticleSystem1->SetRenderMesh(particleMeshPlane);
+		norDamageParticleSystem1->SetStartSize(0.3f);
+		norDamageParticleSystem1->SetStartLifetime(1.f);
+		norDamageParticleSystem1->SetDuration(1.f);
+		norDamageParticleSystem1->SetSimulationSpeed(8.f);
+		norDamageParticleSystem1->SetLoop(false);
+		norDamageParticleSystem1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
+		norDamageParticleSystem1->SetSizeOverLifetime(true);
+		norDamageParticleSystem1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		{
+			auto& graph = norDamageParticleSystem1->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+		{
+			auto& graph = norDamageParticleSystem1->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1.f });
+		}
+		{
+			auto& graph = norDamageParticleSystem1->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+
+		std::shared_ptr<Ideal::IParticleSystem> norDamageParticleSystem1_1 = gRenderer->CreateParticleSystem(norDamageMaterial1);
+
+		norDamageParticleSystem1_1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		norDamageParticleSystem1_1->SetRenderMesh(particleMeshPlane);
+		norDamageParticleSystem1_1->SetStartSize(0.3f);
+		norDamageParticleSystem1_1->SetStartLifetime(1.f);
+		norDamageParticleSystem1_1->SetDuration(1.f);
+		norDamageParticleSystem1_1->SetSimulationSpeed(8.f);
+		norDamageParticleSystem1_1->SetLoop(false);
+		norDamageParticleSystem1_1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
+		norDamageParticleSystem1_1->SetSizeOverLifetime(true);
+		norDamageParticleSystem1_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f) * Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		{
+			auto& graph = norDamageParticleSystem1_1->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+		{
+			auto& graph = norDamageParticleSystem1_1->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1.f });
+		}
+		{
+			auto& graph = norDamageParticleSystem1_1->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.5f });
+			graph.AddControlPoint({ 1,3 });
+		}
+		// 2 Particle
+		std::shared_ptr<Ideal::IParticleMaterial> norDamageMaterial2 = gRenderer->CreateParticleMaterial();
+		norDamageMaterial2->SetShader(bossBeamRingShader);
+		norDamageMaterial2->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		std::shared_ptr<Ideal::ITexture> glowTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Glow1.png");
+		norDamageMaterial2->SetTexture0(glowTexture);
+		norDamageMaterial2->SetWriteDepthBuffer(false);
+
+		std::shared_ptr<Ideal::IParticleSystem> norDamageParticleSystem2 = gRenderer->CreateParticleSystem(norDamageMaterial2);
+		norDamageParticleSystem2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		//norDamageParticleSystem2->SetRenderMeshBillboard(true);
+		norDamageParticleSystem2->SetMaxParticles(20);
+		norDamageParticleSystem2->SetDuration(0.4f);
+		norDamageParticleSystem2->SetStartLifetime(0.4f);
+		norDamageParticleSystem2->SetLoop(false);
+		norDamageParticleSystem2->SetShapeMode(true);
+		norDamageParticleSystem2->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		norDamageParticleSystem2->SetRadius(0.001f);
+		norDamageParticleSystem2->SetRadiusThickness(1.f);
+		norDamageParticleSystem2->SetVelocityOverLifetime(true);
+		norDamageParticleSystem2->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		norDamageParticleSystem2->SetVelocityDirectionRandom(-10.f, 10.f);
+		norDamageParticleSystem2->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		norDamageParticleSystem2->SetVelocitySpeedModifierRandom(1.8f, 2.f);
+		norDamageParticleSystem2->SetTransformMatrix(Matrix::CreateTranslation(0, 5, 0)); // 데모에서 위치 확인용
+		norDamageParticleSystem2->SetSizeOverLifetime(true);
+		{
+			auto& graph = norDamageParticleSystem2->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0, 0.03f });
+			graph.AddControlPoint({ 0.2f, 0.01f });
+		}
+		{
+			auto& graph = norDamageParticleSystem2->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0, 0.03f });
+			graph.AddControlPoint({ 0.2f, 0.01f });
+		}
+#pragma endregion
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -2072,6 +2235,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					fireExplosionParticle2->Play();
 				}
+				if (GetAsyncKeyState(VK_DELETE) & 0x8000)
+				{
+					norDamageParticleSystem0->Play();
+					norDamageParticleSystem0_1->Play();
+					norDamageParticleSystem1->Play();
+					norDamageParticleSystem1_1->Play();
+					norDamageParticleSystem2->Play();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -2102,6 +2273,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				bowAttackParticleSystem->SetDeltaTime(0.003f);
 				fireExplosionParticle->SetDeltaTime(0.003f);
 				fireExplosionParticle2->SetDeltaTime(0.003f);
+				norDamageParticleSystem0->SetDeltaTime(0.003f);
+				norDamageParticleSystem0_1->SetDeltaTime(0.003f);
+				norDamageParticleSystem1->SetDeltaTime(0.003f);
+				norDamageParticleSystem1_1->SetDeltaTime(0.003f);
+				norDamageParticleSystem2->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);

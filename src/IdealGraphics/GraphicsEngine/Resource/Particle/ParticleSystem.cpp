@@ -14,7 +14,7 @@
 #include "GraphicsEngine/D3D12/ResourceManager.h"
 #include "GraphicsEngine/D3D12/DeferredDeleteManager.h"
 #include "Misc/Utils/RandomValue.h"
-
+#include "GraphicsEngine/Resource/IdealCamera.h"
 #include <random>
 
 Ideal::ParticleSystem::ParticleSystem()
@@ -131,7 +131,7 @@ void Ideal::ParticleSystem::SetDeferredDeleteManager(std::shared_ptr<Ideal::Defe
 	m_DeferredDeleteManager = DeferredDeleteManager;
 }
 
-void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, Vector3 CameraPos, std::shared_ptr<Ideal::IdealCamera> Camera)
 {
 	m_currentTime += m_deltaTime;
 	m_cbParticleSystem.CurrentTime = m_currentTime;
@@ -183,7 +183,8 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 			{
 				RENDER_MODE_MESH_CreatePipelineState(Device);
 			}
-			DrawRenderMesh(Device, CommandList, DescriptorHeap, CBPool);
+			CommandList->SetPipelineState(m_RENDER_MODE_MESH_pipelineState.Get());
+			DrawRenderMesh(Device, CommandList, DescriptorHeap, CBPool, Camera);
 		}
 		break;
 		default:
@@ -567,7 +568,7 @@ void Ideal::ParticleSystem::UpdateParticleVertexBufferAndStructuredBuffer()
 	std::vector<ComputeParticle> startPos;
 	startPos.resize(m_maxParticles);
 	CreateParticleStartInfo(startPos);
-	
+
 
 	m_ResourceManger.lock()->CreateStructuredBuffer<ComputeParticle>(m_ParticleStructuredBuffer, startPos);
 }
@@ -759,13 +760,15 @@ void Ideal::ParticleSystem::SetCustomData(Ideal::ParticleMenu::ECustomData Custo
 	}
 }
 
-void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
+void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, std::shared_ptr<Ideal::IdealCamera> Camera)
 {
 
 	// Transform Data
 	{
 		// RotationOverLifetime
 		Matrix cal = Matrix::Identity;
+		
+		Matrix ScaleMatrix = Matrix::CreateScale(m_startSize);
 		cal *= Matrix::CreateScale(m_startSize);
 		if (m_isSizeOverLifetime)
 		{
@@ -774,6 +777,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 			float z = m_SizeOverLifetimeAxisZ.GetPoint(m_currentDurationTime).y;
 			Vector3 newSize(x, y, z);
 			cal *= Matrix::CreateScale(newSize);
+			ScaleMatrix *= Matrix::CreateScale(newSize);
 		}
 
 		if (m_isRotationOverLifetime)
@@ -788,9 +792,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 			cal *= matY;
 			cal *= matZ;
 		}
-
-		m_cbTransform.World = m_transform.Transpose();
-		m_cbTransform.World *= cal;
+		m_cbTransform.World = m_transform.Transpose() * cal;
 		m_cbTransform.WorldInvTranspose = m_cbTransform.World.Invert();
 
 		auto cb1 = CBPool->Allocate(Device.Get(), sizeof(CB_Transform));
@@ -800,8 +802,6 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 		CommandList->SetGraphicsRootDescriptorTable(Ideal::ParticleSystemRootSignature::Slot::CBV_Transform, handle1.GetGpuHandle());
 	}
 
-	//Draw Mesh
-	CommandList->SetPipelineState(m_RENDER_MODE_MESH_pipelineState.Get());
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const D3D12_VERTEX_BUFFER_VIEW& vertexBufferView = m_Renderer_Mesh.lock()->GetVertexBufferView();
@@ -864,6 +864,20 @@ void Ideal::ParticleSystem::DrawRenderBillboard(ComPtr<ID3D12Device> Device, Com
 
 	m_ParticleStructuredBuffer->TransitionToSRV(CommandList.Get());
 
+	if (m_isSizeOverLifetime)
+	{
+		if (m_currentDurationTime <= 0.05f)
+			int a = 3;
+		float x = m_SizeOverLifetimeAxisX.GetPoint(m_currentDurationTime).y;
+		float y = m_SizeOverLifetimeAxisY.GetPoint(m_currentDurationTime).y;
+		m_cbParticleSystem.ParticleSize.x = x;
+		m_cbParticleSystem.ParticleSize.y = y;
+	}
+	else
+	{
+		m_cbParticleSystem.ParticleSize.x = 1;
+		m_cbParticleSystem.ParticleSize.y = 1;
+	}
 	// CB_ParticleSystem
 	{
 		// Transform
@@ -1037,8 +1051,8 @@ void Ideal::ParticleSystem::CreateParticleStartInfo(std::vector<ComputeParticle>
 				if (m_isUseVelocityOverLifetime == true)
 				{
 					//---Direction---//
-					if(m_velocityDirectionMode == Ideal::ParticleMenu::EMode::Random)
-					{	
+					if (m_velocityDirectionMode == Ideal::ParticleMenu::EMode::Random)
+					{
 						float d0 = randManager.nextFloat(m_velocityRandomDirectionMin, m_velocityRandomDirectionMax);
 						float d1 = randManager.nextFloat(m_velocityRandomDirectionMin, m_velocityRandomDirectionMax);
 						float d2 = randManager.nextFloat(m_velocityRandomDirectionMin, m_velocityRandomDirectionMax);
@@ -1054,7 +1068,7 @@ void Ideal::ParticleSystem::CreateParticleStartInfo(std::vector<ComputeParticle>
 					}
 
 					//---Speed---//
-					if(m_velocitySpeedModifierMode == Ideal::ParticleMenu::EMode::Random)
+					if (m_velocitySpeedModifierMode == Ideal::ParticleMenu::EMode::Random)
 					{
 						float speed = randManager.nextFloat(m_velocityRandomSpeedMin, m_velocityRandomSpeedMax);
 						Vertices[i].Speed = speed;
@@ -1082,7 +1096,7 @@ void Ideal::ParticleSystem::CreateParticleStartInfo(std::vector<ComputeParticle>
 				}
 			}
 		}
-			break;
+		break;
 		default:
 			break;
 
@@ -1093,7 +1107,7 @@ void Ideal::ParticleSystem::UpdateAnimationUV()
 {
 	uint32 gridX = m_animationTiles.x;
 	uint32 gridY = m_animationTiles.y;
-	
+
 	// 총 애니메이션 프레임 개수
 	uint32 totalFrames = gridX * gridY;
 
@@ -1117,5 +1131,5 @@ void Ideal::ParticleSystem::UpdateAnimationUV()
 
 	// UV Offset과 UV Scale 계산
 	m_cbParticleSystem.AnimationUV_Offset = Vector2(uStart, vStart);
-	m_cbParticleSystem.AnimationUV_Scale  = Vector2(uEnd - uStart, vEnd - vStart);
+	m_cbParticleSystem.AnimationUV_Scale = Vector2(uEnd - uStart, vEnd - vStart);
 }

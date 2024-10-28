@@ -158,7 +158,7 @@ void Ideal::ParticleSystemManager::DeleteParticleSystem(std::shared_ptr<Ideal::P
 	}
 }
 
-void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData)
+void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData, std::shared_ptr<Ideal::IdealCamera> Camera)
 {
 	// 먼저 위치 계산부터 하겠음
 	CommandList->SetComputeRootSignature(m_rootSignature.Get());
@@ -198,7 +198,7 @@ void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, Co
 		// TODO: DRAW
 		if (p->GetActive())
 		{
-			p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
+			p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool, CB_GlobalData->eyePos, Camera);
 		}
 	}
 	for (auto& p : m_particles)
@@ -206,7 +206,7 @@ void Ideal::ParticleSystemManager::DrawParticles(ComPtr<ID3D12Device> Device, Co
 		// TODO: DRAW
 		if (p->GetActive())
 		{
-			p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool);
+			p->DrawParticle(Device, CommandList, DescriptorHeap, CBPool, CB_GlobalData->eyePos, Camera);
 		}
 	}
 }

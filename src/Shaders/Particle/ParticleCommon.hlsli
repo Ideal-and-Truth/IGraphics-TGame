@@ -21,14 +21,17 @@
         float4 g_CustomData2;
         float g_Time;
         float g_currentTime;
-        float2 pad;
+        float2 pad0;
         float4 g_startColor;
         
         float g_DeltaTime;
         float g_MaxParticles;
         float2 g_AnimationUV_Offset;
         float2 g_AnimationUV_Scale;
-};
+    
+        float2 g_ParticleSize;
+        float2 pad1;
+    };
 
     struct Pos
     {

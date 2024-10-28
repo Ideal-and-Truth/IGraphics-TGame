@@ -27,8 +27,8 @@ void GSMain(point VSParticleDrawOut input[1], inout TriangleStream<VSOutput> Spr
     up = cross(look, right);
     up = normalize(up);
     right = normalize(right);
-    float halfWidth = 0.5f; // * input[0].Size.x // TODO : 나중에 사이즈 추가 할 것
-    float halfHeight = 0.5f; // * input[0].Size.y // TODO : 나중에 사이즈 추가 할 것
+    float halfWidth = 0.5f * g_ParticleSize.x; // * input[0].Size.x // TODO : 나중에 사이즈 추가 할 것
+    float halfHeight = 0.5f * g_ParticleSize.y; // * input[0].Size.y // TODO : 나중에 사이즈 추가 할 것
 
     //////  Angle   //////
     //float rotationAngle = 1.57f; // TEMP

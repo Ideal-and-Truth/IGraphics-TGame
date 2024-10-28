@@ -1839,7 +1839,7 @@ void Ideal::D3D12RayTracingRenderer::CompileDefaultShader()
 	m_DebugLineShaderPS = CreateAndLoadShader(L"../Shaders/DebugMesh/DebugLineShaderPS.shader");
 
 	CompileShader(L"../Shaders/Particle/DefaultParticleVS.hlsl", L"../Shaders/Particle/", L"DefaultParticleVS", L"vs_6_3", L"Main", L"../Shaders/Particle/");
-	m_DefaultParticleShaderVS = std::static_pointer_cast<Ideal::D3D12Shader>(CreateAndLoadParticleShader(L"DefaultParticleVS"));
+	m_DefaultParticleShaderMeshVS = std::static_pointer_cast<Ideal::D3D12Shader>(CreateAndLoadParticleShader(L"DefaultParticleVS"));
 }
 
 void Ideal::D3D12RayTracingRenderer::CopyRaytracingOutputToBackBuffer()
@@ -2173,7 +2173,7 @@ void Ideal::D3D12RayTracingRenderer::DrawParticle()
 	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
 	m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, &depthBuffer->GetDSV().GetCpuHandle());
 	//m_commandLists[m_currentContextIndex]->OMSetRenderTargets(1, &m_raytracingManager->GetRaytracingOutputRTVHandle().GetCpuHandle(), FALSE, NULL);
-	m_particleSystemManager->DrawParticles(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex], &m_globalCB);
+	m_particleSystemManager->DrawParticles(m_device, m_commandLists[m_currentContextIndex], m_mainDescriptorHeaps[m_currentContextIndex], m_cbAllocator[m_currentContextIndex], &m_globalCB, m_mainCamera);
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateDebugMeshManager()

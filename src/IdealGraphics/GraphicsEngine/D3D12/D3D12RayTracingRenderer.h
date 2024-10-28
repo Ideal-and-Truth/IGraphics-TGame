@@ -299,7 +299,7 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugMeshManagerPS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderPS;
-		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderMeshVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderBillboardCS;
 		// RAY TRACING FRAMEWORK
 	private:
@@ -320,7 +320,7 @@ namespace Ideal
 		void TransitionRayTracingOutputToSRV();
 		void TransitionRayTracingOutputToUAV();
 
-		// AS Manager
+		// AS Manager	
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
