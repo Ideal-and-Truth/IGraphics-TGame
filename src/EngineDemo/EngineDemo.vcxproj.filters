@@ -168,9 +168,6 @@
     <ClInclude Include="TimeDistortion.h">
       <Filter>Component\Boss</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerHPTextUI.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="TestEffectGenerator.h">
       <Filter>Component\Effect</Filter>
     </ClInclude>
@@ -186,13 +183,16 @@
     <ClInclude Include="PlayerHPUI.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerCPUI.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
     <ClInclude Include="PlayerSkill.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCPUI.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHPTextUI.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
   </ItemGroup>
@@ -281,9 +281,6 @@
     <ClCompile Include="TimeDistortion.cpp">
       <Filter>Component\Boss</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerHPTextUI.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="TestEffectGenerator.cpp">
       <Filter>Component\Effect</Filter>
     </ClCompile>
@@ -299,13 +296,16 @@
     <ClCompile Include="PlayerHPUI.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerCPUI.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
     <ClCompile Include="PlayerSkill.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCPUI.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHPTextUI.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
   </ItemGroup>

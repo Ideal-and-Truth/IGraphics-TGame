@@ -30,12 +30,13 @@ namespace Truth
 		struct CameraNode
 		{
 			Vector3 m_position;
-			Quaternion m_look;
+			Vector3	m_look;
 			CINE_CAMERA_MOVE_MODE m_moveMode;
 			CINE_CAMERA_ROTATION_MODE m_rotaionMode;
 			float m_delayTime;
 
-			std::vector<Vector3> m_curvePoint;
+			std::vector<Vector3> m_curvePositionPoint;
+			std::vector<Vector3> m_curveRotationPoint;
 		};
 
 	private:
@@ -45,10 +46,6 @@ namespace Truth
 		void save(Archive& ar, const unsigned int file_version) const;
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
-
-	public:
-		CineCamera();
-		virtual ~CineCamera();
 
 	private:
 		std::vector<CameraNode> m_node;
@@ -64,7 +61,23 @@ namespace Truth
 
 		float m_dt;
 
+		PROPERTY(dataPath);
+		std::string m_dataPath;
+
+	public:
+		CineCamera();
+		virtual ~CineCamera();
+
+		void Play();
+
+		void LoadData(const fs::path& _dataPath);
+
+	private:
+		METHOD(Update);
 		void Update();
+
+		METHOD(Initialize);
+		void Initialize();
 	};
 }
 
@@ -72,12 +85,14 @@ template<class Archive>
 void Truth::CineCamera::save(Archive& _ar, const unsigned int file_version) const
 {
 	_ar& boost::serialization::base_object<Component>(*this);
+	_ar& m_dataPath;
 }
 
 template<class Archive>
 void Truth::CineCamera::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
+	_ar& m_dataPath;
 }
 BOOST_CLASS_EXPORT_KEY(Truth::CineCamera)
 BOOST_CLASS_VERSION(Truth::CineCamera, 0)
