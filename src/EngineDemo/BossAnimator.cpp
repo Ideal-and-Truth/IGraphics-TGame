@@ -59,7 +59,8 @@ BossAnimator::BossAnimator()
 	, m_hitStopTime(0.f)
 	, m_sideMove(0.f)
 	, m_attackCount(0)
-	, m_downGuage(300.f)
+	, m_downGuage(100.f)
+	, m_baseSpeed(0.f)
 	, m_currentFrame(0)
 	, m_currentPhase(0)
 	, m_currentState(nullptr)
@@ -108,6 +109,8 @@ void BossAnimator::Start()
 	m_enemy = m_owner.lock().get()->GetComponent<Enemy>().lock();
 	auto playerEntity = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
 	m_playerAnimator = playerEntity->GetComponent<PlayerAnimator>().lock();
+	m_baseSpeed = m_enemy->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.get()).Get();
+
 
 	m_skinnedMesh->AddAnimation("BossIdle", L"BossAnimations/Idle/Idle");
 	m_skinnedMesh->AddAnimation("BossAttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
@@ -149,7 +152,7 @@ void BossAnimator::Update()
 	Vector3 playerPos = { playerEntity->GetWorldPosition().x,0.f,playerEntity->GetWorldPosition().z };
 	Vector3 bossPos = { m_owner.lock()->GetWorldPosition().x,0.f,m_owner.lock()->GetWorldPosition().z };
 
-	if (GetKey(KEY::W) && (playerPos - bossPos).Length() < 15.f 
+	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
 		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
@@ -181,7 +184,6 @@ void BossAnimator::Update()
 	if (m_enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(m_enemy.get()).Get() > m_downGuage)
 	{
 		m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
-		m_downGuage += 100.f;
 		m_isDown = true;
 	}
 
@@ -234,11 +236,11 @@ void BossAnimator::Update()
 
 	if (m_isPursuit)
 	{
-		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), 15.f);
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed + m_baseSpeed * 0.5f);
 	}
 	else
 	{
-		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), 9.f);
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed);
 	}
 
 	if (m_isAttacking || m_isDodge || m_isDown || m_currentState == m_animationStateMap["Down"])
@@ -402,7 +404,7 @@ void BossRun::OnStateEnter()
 
 void BossRun::OnStateUpdate()
 {
-	if (GetProperty("isInRange")->Get<bool>(m_animator).Get())
+	if (GetProperty("isInRange")->Get<bool>(m_animator).Get() || GetProperty("passingTime")->Get<float>(m_animator).Get() > 2.f)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("AttackCombo1_3");
 	}
@@ -418,6 +420,7 @@ void BossRun::OnStateUpdate()
 void BossRun::OnStateExit()
 {
 	GetProperty("isPursuit")->Set(m_animator, false);
+	GetProperty("passingTime")->Set(m_animator, 0.f);
 }
 
 void BossStrafe::OnStateEnter()

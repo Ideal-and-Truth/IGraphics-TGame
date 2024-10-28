@@ -23,6 +23,7 @@ Bullet::~Bullet()
 void Bullet::Start()
 {
 	m_owner.lock()->GetComponent<Truth::RigidBody>().lock()->AddImpulse(m_power);
+	m_owner.lock()->GetComponent<Truth::RigidBody>().lock()->m_useGravity = false;
 }
 
 void Bullet::Update()
