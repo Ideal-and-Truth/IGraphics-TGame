@@ -99,6 +99,7 @@ void Truth::PhysicsManager::FixedUpdate()
 	m_scene->simulate(1.0f / 60.0f);
 	m_scene->fetchResults(true);
 
+
 	physx::PxU32 nbActiveActors;
 	physx::PxActor** activeActors = m_scene->getActiveActors(nbActiveActors);
 	for (physx::PxU32 i = 0; i < nbActiveActors; ++i)
@@ -495,7 +496,7 @@ void Truth::PhysicsManager::CreatePhysxScene()
 	groundPlane->getShapes(planeShape, sizeof(physx::PxShape));
 	planeShape[0]->setSimulationFilterData(filterData);
 	planeShape[0]->setQueryFilterData(filterData);
-	// m_scene->addActor(*groundPlane);
+	m_scene->addActor(*groundPlane);
 
 	// 컨트롤러 매니저 만들기
 	m_CCTManager = PxCreateControllerManager(*m_scene);

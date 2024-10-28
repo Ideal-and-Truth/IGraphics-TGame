@@ -19,10 +19,10 @@ Truth::TimeManager::TimeManager()
 	DEBUG_PRINT("Create TimeManager\n");
 
 	// 현재 카운트
-	QueryPerformanceCounter(&m_prevCount);
+	::QueryPerformanceCounter(&m_prevCount);
 
 	// 초당 카운트 횟수 (천만)
-	QueryPerformanceFrequency(&m_frequency);
+	::QueryPerformanceFrequency(&m_frequency);
 }
 
 Truth::TimeManager::~TimeManager()
@@ -51,9 +51,9 @@ void Truth::TimeManager::Update()
 	}
 
 	// 이전 프레임의 카운팅과 현재 프레임 카운팅 값의 차이를 구한다.
-	QueryPerformanceCounter(&m_currentCount);
-	float delta = static_cast<float4>(m_currentCount.QuadPart - m_prevCount.QuadPart) /
-		static_cast<float4>(m_frequency.QuadPart);
+	::QueryPerformanceCounter(&m_currentCount);
+	float delta = static_cast<float>(m_currentCount.QuadPart - m_prevCount.QuadPart) /
+		static_cast<float>(m_frequency.QuadPart);
 
 	// 디버깅시에는 최소 프레임 제한
 #ifdef EDITOR_MODE
@@ -75,17 +75,19 @@ void Truth::TimeManager::Update()
 		m_fixedDeltaTime = 0.0f;
 #endif // _DEBUG
 
-
 	// 만일 고정 프레임 시간이 단위를 넘기게 되면 이벤트를 발행한다.
 	while (m_fixedDeltaTime >= m_fixedTime)
 	{
+// 		DEBUG_PRINT(std::to_string(m_time).c_str());
+// 		DEBUG_PRINT("\n");
+
 		m_managers.lock()->FixedUpdate();
 		// 시간 조절
 		m_fixedDeltaTime -= m_fixedTime;
 	}
 
 	// 전체 시간
-	m_time += delta;
+	m_time += m_absDeltaTime;
 
 	// 이전카운트 값을 현재값으로 갱신 (다음번에 계산을 위해서)
 	m_prevCount = m_currentCount;

@@ -43,12 +43,19 @@ void PlayerController::Start()
 
 void PlayerController::FixedUpdate()
 {
+// 	float at = 0.0f;
+// 	at = m_managers.lock()->m_timeManager->GetProcessTime();
+// 	DEBUG_PRINT(std::to_string(at).c_str());
+// 	DEBUG_PRINT("\n");	float at = 0.0f;
+
+	DEBUG_PRINT((std::to_string(m_moveVec.x) + " " + std::to_string(m_moveVec.y) + " " + std::to_string(m_moveVec.z)).c_str());
+	DEBUG_PRINT("\n");
+
 	if (!m_controller.expired())
 	{
 		if (!m_canMove)
-		{
 			m_moveVec = Vector3::Zero;
-		}
+
 		m_moveVec.y = -100.0f;
 		m_controller.lock()->Move(m_moveVec);
 	}
@@ -139,7 +146,7 @@ void PlayerController::PlayerMove(const void*)
 	Vector3 disp = direction * m_forwardInput * playerSpeed;
 	Vector3 disp2 = right * m_sideInput * playerSpeed;
 	Vector3 gravity = Vector3(0.0f, -100.0f, 0.0f);
-	Vector3 finalMovement = (disp + disp2 + gravity) * GetDeltaTime();
+	Vector3 finalMovement = (disp + disp2 + gravity) * 0.016;
 
 	Vector3 playerDir = direction * m_forwardInput + right * m_sideInput;
 	m_faceDirection = { playerDir.x ,0, playerDir.z };
