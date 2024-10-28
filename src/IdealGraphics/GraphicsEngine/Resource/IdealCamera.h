@@ -37,6 +37,9 @@ namespace Ideal
 		float GetFarZ() { return m_farZ; }
 
 		float GetFOV() { return m_fovY; }
+
+		DirectX::SimpleMath::Vector3 GetUp() { return m_up; }
+
 	private:
 		DirectX::SimpleMath::Vector3 m_position;
 		DirectX::SimpleMath::Vector3 m_right;

@@ -14,6 +14,7 @@ namespace Ideal
 	class ParticleSystem;
 	class D3D12Shader;
 	class D3D12VertexBuffer;
+	class IdealCamera;
 }
 
 namespace Ideal
@@ -51,7 +52,7 @@ namespace Ideal
 		void AddParticleSystem(std::shared_ptr<Ideal::ParticleSystem> ParticleSystem);
 		void DeleteParticleSystem(std::shared_ptr<Ideal::ParticleSystem>& ParticleSystem);
 
-		void DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData);
+		void DrawParticles(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> DescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool, CB_Global* CB_GlobalData, std::shared_ptr<Ideal::IdealCamera> Camera);
 
 	private:
 		ComPtr<ID3D12RootSignature> m_rootSignature;

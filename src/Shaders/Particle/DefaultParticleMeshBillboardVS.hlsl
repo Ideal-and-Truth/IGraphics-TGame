@@ -1,11 +1,11 @@
-#ifndef DEFAULT_PARTICLE_VS_HLSL
-#define DEFAULT_PARTICLE_VS_HLSL
+#ifndef DEFAULT_PARTICLE_MESH_BILLBOARD_VS_HLSL
+#define DEFAULT_PARTICLE_MESH_BILLBOARD_VS_HLSL
 
 #include "ParticleCommon.hlsli" // necessary
 
 VSOutput Main(VSInput input)
 {
-    VSOutput output;
+     VSOutput output;
     
     float4 worldPos = mul(float4(input.Pos,1), World);
     output.Pos = worldPos.xyz;
