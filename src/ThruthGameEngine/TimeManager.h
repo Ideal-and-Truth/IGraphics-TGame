@@ -44,7 +44,7 @@ namespace Truth
 		void Finalize();
 
 		float4 GetDT() const { return m_deltaTime; }
-		float4 GetFDT() const { return m_fixedDeltaTime; }
+		float4 GetFDT() const { return m_fixedTime; }
 		float4 GetADT() const { return m_absDeltaTime; }
 		void WaitForSecondsRealtime(float time);
 	};

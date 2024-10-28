@@ -465,20 +465,20 @@ void BossDodge::OnStateUpdate()
 	if (!isPlay && GetProperty("attackCount")->Get<int>(m_animator).Get() > 2)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDodge", false);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(-50.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(-250.f, 0.f);
 		GetProperty("attackCount")->Set(m_animator, 0);
 		isPlay = true;
 	}
 	else if (!isPlay && GetProperty("sideMove")->Get<float>(m_animator).Get() < 0.f && GetProperty("attackCount")->Get<int>(m_animator).Get() <= 2)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDodgeLeft", false);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, 1.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(250.f, 1.f);
 		isPlay = true;
 	}
 	else if (!isPlay && GetProperty("sideMove")->Get<float>(m_animator).Get() > 0.f && GetProperty("attackCount")->Get<int>(m_animator).Get() <= 2)
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDodgeRight", false);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, -1.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(250.f, -1.f);
 		isPlay = true;
 	}
 
@@ -530,7 +530,7 @@ void BossAttackRunning::OnStateUpdate()
 	{
 		isReset = false;
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.f);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(200.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(500.f, 0.f);
 		GetProperty("isLockOn")->Set(m_animator, true);
 	}
 	if (GetProperty("isInRange")->Get<bool>(m_animator).Get() || GetProperty("passingTime")->Get<float>(m_animator).Get() > 1.f)
@@ -666,11 +666,11 @@ void BossAttackCharge::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackLightSpeedDash", false);
 		if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
 		{
-			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(200.f, 0.f, true);
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(500.f, 0.f, true);
 		}
 		else
 		{
-			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(150.f, 0.f, true);
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(600.f, 0.f, true);
 		}
 		GetProperty("passingTime")->Set(m_animator, 0.f);
 		GetProperty("isLockOn")->Set(m_animator, true);
@@ -744,7 +744,7 @@ void BossAttackSpin::OnStateUpdate()
 {
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 53)
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(250.f, 0.f);
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
@@ -845,7 +845,7 @@ void BossAttackCombo1_1::OnStateUpdate()
 
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 52)
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(15.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(90.f, 0.f);
 	}
 
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 70)
@@ -897,7 +897,7 @@ void BossAttackCombo1_2::OnStateExit()
 void BossAttackCombo1_3::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackCombo1_3", false);
-	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(50.f, 0.f);
+	dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(250.f, 0.f);
 	GetProperty("isAttacking")->Set(m_animator, true);
 }
 
@@ -940,7 +940,7 @@ void BossAttackCombo2_1::OnStateUpdate()
 
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6)
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(15.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(90.f, 0.f);
 	}
 
 	if (isReset && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
@@ -970,11 +970,11 @@ void BossAttackCombo3_1::OnStateUpdate()
 	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 45)
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(15.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(90.f, 0.f);
 	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 82)
 	{
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(15.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(90.f, 0.f);
 	}
 	if (m_isChangePose && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
