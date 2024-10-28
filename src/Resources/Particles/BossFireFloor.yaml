@@ -1,0 +1,46 @@
+MaxCount: 10
+MatName: FireExplosionMaterial
+EBlendingMode: 1
+Shader: BossFireFloorPS
+Texture0: ../Resources/Textures/0_Particle/bossFireFloor/Explosion_1.png
+Texture1: ../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png
+WriteDepthBuffer: true
+RenderMode: 0
+StartColor:
+  - 2.2
+  - 0
+  - 0
+  - 1
+StartLifetime: 1
+Loop: false
+Duration: 1
+Shape: 0
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 2.2
+      - 0
+      - 0
+      - 0
+    position: 0
+  - Color:
+      - 2.2
+      - 0
+      - 0
+      - 1
+    position: 0.12
+  - Color:
+      - 2.2
+      - 0
+      - 0
+      - 1
+    position: 0.388
+  - Color:
+      - 2.2
+      - 0
+      - 0
+      - 0
+    position: 1
+CustomData1Z:
+  - x: 0
+    y: 6

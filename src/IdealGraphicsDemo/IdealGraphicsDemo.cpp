@@ -1752,7 +1752,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
 			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.12f);
 			graph.AddPoint(Color(2.2f, 0.f, 0.f, 1.f), 0.388f);
-			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 0.f);
+			graph.AddPoint(Color(2.2f, 0.f, 0.f, 0.f), 1.f);
 		}
 
 		{
