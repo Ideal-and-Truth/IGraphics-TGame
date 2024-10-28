@@ -585,6 +585,8 @@ private:
 
 	float m_lastHp;
 
+	float m_baseSpeed;
+
 	float m_downGuage;
 
 	bool m_playOnce;

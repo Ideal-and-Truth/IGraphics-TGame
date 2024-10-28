@@ -31,6 +31,8 @@ private:
 	PROPERTY(delete);
 	bool m_delete;
 
+	Vector3 m_moveVec;
+
 	bool m_isPlayerIn;
 	bool m_isFaster;
 	int m_count;
@@ -51,6 +53,9 @@ public:
 
 	METHOD(Start);
 	void Start();
+
+	METHOD(FixedUpdate);
+	void FixedUpdate();
 
 	METHOD(Update);
 	void Update();

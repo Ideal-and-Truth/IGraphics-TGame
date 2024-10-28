@@ -492,14 +492,21 @@ void BossSkill::SwordShooting()
 			if (!m_swords[i].second)
 			{
 				Vector3 dir = playerPos - m_swords[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 1.5f, 0.0f };
+				dir.y = 0.f;
 				dir.Normalize(dir);
 				Quaternion lookRot;
-				if (playerPos.z - m_swords[i].first->m_transform->m_worldPosition.z > 0.f)
-				{
-					dir *= -1.f;
-				}
+			
 				Quaternion::LookRotation(dir, Vector3::Up, lookRot);
 				m_swords[i].first->m_transform->m_rotation = Quaternion::Slerp(m_swords[i].first->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+
+				Vector3 dir2 = playerPos - m_swords[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 1.5f, 0.0f };
+				dir2.y = 0.f;
+				auto rot = m_swords[i].first->m_transform->m_rotation.ToEuler();
+				float val2 = atan((m_swords[i].first->m_transform->m_worldPosition.y - playerPos.y + 1.5f) / dir2.Length());
+				float val = atan((m_swords[i].first->m_transform->m_worldPosition.y - playerPos.y + 1.5f) / dir2.Length());
+				
+				rot.x = -val;
+				m_swords[i].first->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(rot);
 			}
 			if (m_swords[i].second && m_spearImpactCount == i)
 			{

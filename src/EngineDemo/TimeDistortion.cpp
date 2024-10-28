@@ -39,6 +39,19 @@ void TimeDistortion::Start()
 	m_playerSpeed = m_player->GetTypeInfo().GetProperty("moveSpeed")->Get<float>(m_player.get()).Get();
 }
 
+void TimeDistortion::FixedUpdate()
+{
+	if (m_isPlayerIn)
+	{
+		auto con = m_playerEntity->GetComponent<Truth::Controller>().lock();
+		con->Move(m_moveVec);
+	}
+	else
+	{
+		m_moveVec = Vector3::Zero;
+	}
+}
+
 void TimeDistortion::Update()
 {
 	PlayEffect();
@@ -54,12 +67,12 @@ void TimeDistortion::Update()
 				m_playerMesh->SetAnimationSpeed(1.f);
 				m_player->GetTypeInfo().GetProperty("moveSpeed")->Set(m_player.get(), m_playerSpeed);
 
-				auto con = m_playerEntity->GetComponent<Truth::Controller>().lock();
 				auto dir = m_owner.lock()->m_transform->m_position - m_playerEntity->m_transform->m_position;
 				dir.Normalize();
 				dir.y = -100.f;
 				dir *= GetDeltaTime() * 5.f;
-				con->Move(dir);
+				m_moveVec = dir;
+
 			}
 
 			if (m_passingTime > 1.f)

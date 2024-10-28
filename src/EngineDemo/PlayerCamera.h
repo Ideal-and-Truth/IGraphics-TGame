@@ -38,6 +38,7 @@ private:
 	bool m_isLockOn;
 
 	int m_enemyCount;
+	int m_loopCount;
 
 	float m_passingTime;
 	float m_shakeTime;

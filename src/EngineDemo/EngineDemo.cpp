@@ -44,7 +44,7 @@
 #include "TextUI.h"
 #pragma endregion test Scene
 
-// #define EDITOR_MODE
+#define EDITOR_MODE
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -70,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //  	processor->SaveScene(testScene);
 
 	///...///
- 	processor->LoadScene(L"../Scene/Stage3.scene");
+ 	processor->LoadScene(L"../Scene/test.scene");
 	///...///
 
 	processor->Loop();
