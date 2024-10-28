@@ -3,6 +3,11 @@
 
 namespace Truth
 {
+	class Camera;
+}
+
+namespace Truth
+{
 	enum class CINE_CAMERA_MOVE_MODE
 	{
 		DIRECT,
@@ -29,6 +34,8 @@ namespace Truth
 			CINE_CAMERA_MOVE_MODE m_moveMode;
 			CINE_CAMERA_ROTATION_MODE m_rotaionMode;
 			float m_delayTime;
+
+			std::vector<Vector3> m_curvePoint;
 		};
 
 	private:
@@ -46,7 +53,11 @@ namespace Truth
 	private:
 		std::vector<CameraNode> m_node;
 
+		std::weak_ptr<Camera> m_mainCamera;
+
 		bool m_isMove;
+
+		bool m_isEnd;
 
 		uint32 m_currentNode;
 		uint32 m_nextNode;
