@@ -86,6 +86,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-1.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Strafe/BossWalk.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Idle/BattleEntrance.fbx");
+ 	ConvertAniFbxData(L"BossAnimations/Idle/BossEntranceRoot.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Attacks/BossSwordShoot.fbx");
 
 // 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Down.fbx");

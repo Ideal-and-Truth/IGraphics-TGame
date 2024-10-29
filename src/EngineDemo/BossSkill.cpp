@@ -1013,7 +1013,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 	if (m_playSpear)
 	{
 		m_playSpear = false;
-		pos.y += 1.f;
+		
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
 			p->SetTransformMatrix(

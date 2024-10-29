@@ -4,6 +4,8 @@
 #include "BoxCollider.h"
 #include "PhysicsManager.h"
 #include "RigidBody.h"
+#include "ParticleManager.h"
+#include "IParticleSystem.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Bullet)
 
@@ -44,6 +46,39 @@ void Bullet::OnCollisionEnter(Truth::Collider* _other)
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player.get(), playerHp - m_bulletDamage);
 		}
 		m_isHit = true;
+		PlayEffect();
 	}
 }
 
+void Bullet::PlayEffect()
+{
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.07f)
+			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage2.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+}

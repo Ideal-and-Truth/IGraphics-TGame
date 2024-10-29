@@ -106,14 +106,14 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class EnemyParriableAttack
+class EnemyChargeAttack
 	: public AnimationState
 {
 private:
 
 
 public:
-	EnemyParriableAttack(Truth::Component* animator)
+	EnemyChargeAttack(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -147,10 +147,48 @@ class EnemyDown
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
 	EnemyDown(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class EnemyFall
+	: public AnimationState
+{
+private:
+
+
+public:
+	EnemyFall(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class EnemyKnockBack
+	: public AnimationState
+{
+private:
+
+
+public:
+	EnemyKnockBack(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -217,11 +255,20 @@ private:
 	PROPERTY(isAttack);
 	bool m_isAttack;
 
-	PROPERTY(isParryAttack);
-	bool m_isParryAttack;
+	PROPERTY(isChargeAttack);
+	bool m_isChargeAttack;
 
 	PROPERTY(isDamage);
 	bool m_isDamage;
+
+	PROPERTY(isBack);
+	bool m_isBack;
+
+	PROPERTY(isFall);
+	bool m_isFall;
+
+	PROPERTY(isUntilFall);
+	bool m_isUntilFall;
 
 	PROPERTY(isDown);
 	bool m_isDown;
