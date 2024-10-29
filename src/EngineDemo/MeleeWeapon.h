@@ -30,6 +30,9 @@ private:
 
 	bool m_isAttacking;
 	
+private:
+	void PlayEffect(Vector3 pos);
+
 public:
 	MeleeWeapon();
 	virtual ~MeleeWeapon();

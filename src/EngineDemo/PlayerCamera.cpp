@@ -109,7 +109,7 @@ void PlayerCamera::LateUpdate()
 	if (m_isShaking)
 		ShakeCamera(m_shakeCount);
 
-	ZoomInOut(m_zoomOutTime);
+	//ZoomInOut(m_zoomOutTime);
 }
 
 void PlayerCamera::OnTriggerEnter(Truth::Collider* _other)

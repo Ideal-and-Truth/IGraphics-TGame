@@ -476,7 +476,7 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		/// Texture Sheet Animation Tiles
 		if (node["TextureSheetAnimationTiles"].IsDefined())
 		{
-			YAML::Node child = node["VelocityDirectionConst"];
+			YAML::Node child = node["TextureSheetAnimationTiles"];
 			Vector2 val = { child["x"].as<float>(), child["y"].as<float>()};
 			particle->SetTextureSheetAnimationTiles(val);
 		}

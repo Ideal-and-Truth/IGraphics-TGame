@@ -152,11 +152,11 @@ void BossAnimator::Update()
 	Vector3 playerPos = { playerEntity->GetWorldPosition().x,0.f,playerEntity->GetWorldPosition().z };
 	Vector3 bossPos = { m_owner.lock()->GetWorldPosition().x,0.f,m_owner.lock()->GetWorldPosition().z };
 
-	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
-		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
-	{
-		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
-	}
+// 	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
+// 		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
+// 	{
+// 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
+// 	}
 
 	if (m_isDeath || !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
