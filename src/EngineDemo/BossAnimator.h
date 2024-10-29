@@ -12,6 +12,23 @@ class EnemyController;
 class PlayerAnimator;
 
 
+class BossEntrance
+	: public AnimationState
+{
+private:
+
+
+public:
+	BossEntrance(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+};
+
 class BossIdle
 	: public AnimationState
 {

@@ -75,6 +75,7 @@ BossAnimator::~BossAnimator()
 
 void BossAnimator::Awake()
 {
+	m_animationStateMap["Entrance"] = new BossEntrance(this);
 	m_animationStateMap["Idle"] = new BossIdle(this);
 	m_animationStateMap["Run"] = new BossRun(this);
 	m_animationStateMap["Strafe"] = new BossStrafe(this);
@@ -99,7 +100,7 @@ void BossAnimator::Awake()
 	m_animationStateMap["AttackTimeSphere"] = new BossAttackTimeSphere(this);
 
 
-	m_currentState = m_animationStateMap["Idle"];
+	m_currentState = m_animationStateMap["Entrance"];
 }
 
 void BossAnimator::Start()
@@ -112,6 +113,7 @@ void BossAnimator::Start()
 	m_baseSpeed = m_enemy->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.get()).Get();
 
 
+	m_skinnedMesh->AddAnimation("BossEntranceRoot", L"BossAnimations/Idle/BossEntranceRoot");
 	m_skinnedMesh->AddAnimation("BossIdle", L"BossAnimations/Idle/Idle");
 	m_skinnedMesh->AddAnimation("BossAttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
 	m_skinnedMesh->AddAnimation("BossAttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
@@ -152,11 +154,21 @@ void BossAnimator::Update()
 	Vector3 playerPos = { playerEntity->GetWorldPosition().x,0.f,playerEntity->GetWorldPosition().z };
 	Vector3 bossPos = { m_owner.lock()->GetWorldPosition().x,0.f,m_owner.lock()->GetWorldPosition().z };
 
-// 	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
-// 		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
-// 	{
-// 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
-// 	}
+	// 	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
+	// 		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
+	// 	{
+	// 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
+	// 	}
+
+	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
+
+	if (m_animationStateMap["Entrance"] == m_currentState)
+	{
+		if (m_isAnimationEnd)
+		{
+			ChangeState("Idle");
+		}
+	}
 
 	if (m_isDeath || !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
@@ -170,7 +182,6 @@ void BossAnimator::Update()
 	}
 
 	m_sideMove = m_enemyController->GetTypeInfo().GetProperty("sideMove")->Get<float>(m_enemyController.get()).Get();
-	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
 	m_isInRange = m_enemyController->GetTypeInfo().GetProperty("isAttackReady")->Get<bool>(m_enemyController.get()).Get();
 	m_enemyController->GetTypeInfo().GetProperty("strafeMove")->Set(m_enemyController.get(), m_strafeMove);
@@ -299,6 +310,11 @@ void BossAnimator::SetEnemyDamage(float damage)
 void BossAnimator::SetEnemySpeed(float speed)
 {
 	m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), speed);
+}
+
+void BossEntrance::OnStateEnter()
+{
+	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossEntranceRoot", false);
 }
 
 void BossIdle::OnStateEnter()
@@ -1534,3 +1550,4 @@ void BossAnimator::Phase3()
 		}
 	}
 }
+
