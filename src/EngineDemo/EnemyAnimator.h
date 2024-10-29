@@ -267,9 +267,6 @@ private:
 	PROPERTY(isFall);
 	bool m_isFall;
 
-	PROPERTY(isUntilFall);
-	bool m_isUntilFall;
-
 	PROPERTY(isDown);
 	bool m_isDown;
 

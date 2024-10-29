@@ -753,7 +753,6 @@ void NormalAttack6::OnStateUpdate()
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 23)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
-		GetProperty("downAttack")->Set(m_animator, true);
 		isReset = false;
 		GetProperty("normalAttack6")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(5.f);
@@ -783,7 +782,6 @@ void NormalAttack6::OnStateExit()
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isNormalAttack")->Set(m_animator, false);
-	GetProperty("downAttack")->Set(m_animator, false);
 	GetProperty("isHit")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
 }
@@ -929,7 +927,7 @@ void ChargedAttack1::OnStateExit()
 	isReset = false;
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
-	GetProperty("downAttack")->Set(m_animator, false);
+	GetProperty("fallAttack")->Set(m_animator, false);
 }
 
 void ChargedAttack2::OnStateEnter()
@@ -941,7 +939,7 @@ void ChargedAttack2::OnStateEnter()
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	GetProperty("chargedAttack2")->Set(m_animator, true);
-	GetProperty("untilFallAttack")->Set(m_animator, true);
+	GetProperty("fallAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 }
 
@@ -976,7 +974,7 @@ void ChargedAttack2::OnStateExit()
 	isReset = false;
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
-	GetProperty("untilFallAttack")->Set(m_animator, false);
+	GetProperty("fallAttack")->Set(m_animator, false);
 }
 
 void ChargedAttack3::OnStateEnter()
@@ -986,7 +984,7 @@ void ChargedAttack3::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
-	GetProperty("untilFallAttack")->Set(m_animator, true);
+	GetProperty("fallAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
@@ -1027,7 +1025,7 @@ void ChargedAttack3::OnStateExit()
 	isReset = false;
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
-	GetProperty("untilFallAttack")->Set(m_animator, false);
+	GetProperty("fallAttack")->Set(m_animator, false);
 }
 
 void ChargedAttack4::OnStateEnter()
@@ -1037,7 +1035,7 @@ void ChargedAttack4::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
-	GetProperty("untilFallAttack")->Set(m_animator, true);
+	GetProperty("fallAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 }
 
@@ -1055,7 +1053,6 @@ void ChargedAttack4::OnStateUpdate()
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 25)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
-		GetProperty("downAttack")->Set(m_animator, true);
 	}
 	if (GetProperty("isCharged")->Get<float>(m_animator).Get() > 0.3f && (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 25 && GetProperty("currentFrame")->Get<int>(m_animator).Get() < 35))
 	{
@@ -1076,9 +1073,8 @@ void ChargedAttack4::OnStateExit()
 {
 	isReset = false;
 	GetProperty("isAttacking")->Set(m_animator, false);
-	GetProperty("downAttack")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
-	GetProperty("untilFallAttack")->Set(m_animator, false);
+	GetProperty("fallAttack")->Set(m_animator, false);
 }
 
 void ChargedAttack5::OnStateEnter()

@@ -24,7 +24,6 @@ EnemyAnimator::EnemyAnimator()
 	, m_isChargeAttack(false)
 	, m_isBack(false)
 	, m_isFall(false)
-	, m_isUntilFall(false)
 	, m_isDown(false)
 	, m_isDamage(false)
 	, m_isDeath(false)
@@ -148,6 +147,7 @@ void EnemyAnimator::Update()
 	{
 		m_isDamage = true;
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+		
 		if (m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Get<bool>(m_playerAnimator.get()).Get())
 		{
 			m_isBack = true;
@@ -156,11 +156,6 @@ void EnemyAnimator::Update()
 		else if (m_playerAnimator->GetTypeInfo().GetProperty("fallAttack")->Get<bool>(m_playerAnimator.get()).Get())
 		{
 			m_isFall = true;
-			m_isDamage = false;
-		}
-		else if (m_playerAnimator->GetTypeInfo().GetProperty("untilFallAttack")->Get<bool>(m_playerAnimator.get()).Get())
-		{
-			m_isUntilFall = true;
 			m_isDamage = false;
 		}
 		else if (m_playerAnimator->GetTypeInfo().GetProperty("downAttack")->Get<bool>(m_playerAnimator.get()).Get())
@@ -190,12 +185,22 @@ void EnemyAnimator::Update()
 		}
 	}
 
-	if (m_isDown || m_isFall || m_isUntilFall || m_isBack)
+	if (m_isAttack || m_currentState == m_animationStateMap["Attack"] || m_currentState == m_animationStateMap["ChargeAttack"]
+		|| m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["Down"] || m_currentState == m_animationStateMap["Fall"] || m_currentState == m_animationStateMap["KnockBack"])
+	{
+		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+	}
+	else
+	{
+		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
+	}
+
+	if (m_isDown || m_isFall  || m_isBack)
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 	}
 
-	if (!m_isAttack && !m_isDamage && !m_isChargeAttack && !m_isDown && !m_isFall && !m_isUntilFall && !m_isBack)
+	if (!m_isAttack && !m_isDamage && !m_isChargeAttack && !m_isDown && !m_isFall &&  !m_isBack)
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
 	}
@@ -361,6 +366,18 @@ void EnemyAttackReady::OnStateUpdate()
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Hit");
 	}
+	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
+	}
 	else if (!GetProperty("isChase")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Return");
@@ -389,7 +406,19 @@ void EnemyAttack::OnStateUpdate()
 {
 	if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isDamage")->Set(m_animator, false);
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Hit");
+	}
+	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 
 	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
@@ -476,10 +505,6 @@ void EnemyDown::OnStateEnter()
 
 void EnemyDown::OnStateUpdate()
 {
-	if (GetProperty("isUntilFall")->Get<bool>(m_animator).Get())
-	{
-		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
-	}
 	if (isReset && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Idle");
@@ -504,9 +529,9 @@ void EnemyFall::OnStateEnter()
 
 void EnemyFall::OnStateUpdate()
 {
-	if (GetProperty("isUntilFall")->Get<bool>(m_animator).Get())
+	if (GetProperty("isFall")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isUntilFall")->Set(m_animator, false);
+		GetProperty("isFall")->Set(m_animator, false);
 		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyFallAttack", false);
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
@@ -517,7 +542,7 @@ void EnemyFall::OnStateUpdate()
 
 void EnemyFall::OnStateExit()
 {
-
+	GetProperty("isFall")->Set(m_animator, false);
 }
 
 void EnemyKnockBack::OnStateEnter()
@@ -532,6 +557,10 @@ void EnemyKnockBack::OnStateUpdate()
 	{
 		GetProperty("isBack")->Set(m_animator, false);
 		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyKnockBack", false);
+	}
+	if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
 	}
 	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
 	{

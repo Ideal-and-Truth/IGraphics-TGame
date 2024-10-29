@@ -159,7 +159,6 @@ void PlayerController::PlayerMove(const void*)
 		{
 			Quaternion lookRot;
 			Quaternion::LookRotation(m_playerDirection, Vector3::Up, lookRot);
-			auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
 			m_owner.lock()->m_transform->m_rotation = lookRot;
 		}
 
@@ -174,13 +173,37 @@ void PlayerController::PlayerMove(const void*)
 		m_moveVec = { 0.f,0.f,0.f };
 	}
 	m_moveVec = finalMovement;
-	//	m_controller.lock()->Move(finalMovement);
+
+	/// 락온 중에 공격시 회전
+	if (m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_camera.lock()->GetComponent<PlayerCamera>().lock().get()).Get())
+	{
+		auto playerAnimator = m_owner.lock()->GetComponent<PlayerAnimator>().lock();
+		if (playerAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(playerAnimator.get()).Get())
+		{
+			if (m_faceDirection == Vector3::Zero)
+			{
+				Vector3 playerDir = direction;
+				m_playerDirection = playerDir;
+				Quaternion lookRot;
+				Quaternion::LookRotation(playerDir, Vector3::Up, lookRot);
+				auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+			}
+			else
+			{
+				Quaternion lookRot;
+				Quaternion::LookRotation(m_playerDirection, Vector3::Up, lookRot);
+				m_owner.lock()->m_transform->m_rotation = lookRot;
+			}
+		}
+	}
 
 	if (!m_canMove)
 	{
 		return;
 	}
 
+	/// 락온 중에 가만히 있으면 회전
 	if (m_faceDirection == Vector3::Zero)
 	{
 		if (m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_camera.lock()->GetComponent<PlayerCamera>().lock().get()).Get())
