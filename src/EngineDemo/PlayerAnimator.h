@@ -499,9 +499,6 @@ private:
 	PROPERTY(fallAttack);
 	bool m_fallAttack;
 
-	PROPERTY(untilFallAttack);
-	bool m_untilFallAttack;
-
 	PROPERTY(downAttack);
 	bool m_downAttack;
 
