@@ -21,7 +21,7 @@ public:
 	virtual ~MapMoveTrigger();
 
 	METHOD(OnTriggerEnter);
-	void OnTriggerEnter(Truth::Collider* _other);
+	virtual void OnTriggerEnter(Truth::Collider* _other) override;
 };
 
 template<class Archive>

@@ -2,16 +2,19 @@
 #include "Camera.h"
 #include "MathUtil.h"
 #include <yaml-cpp/yaml.h>
+#include "GraphicsManager.h"
+#include "Transform.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::CineCamera)
 
 Truth::CineCamera::CineCamera()
-	: m_isMove(true)
+	: m_isMove(false)
 	, m_currentNode(0)
 	, m_nextNode(1)
 	, m_dt(0)
-	, m_isEnd(false)
+	, m_isEnd(true)
 	, m_dataPath{}
+	, m_alias("CineCamera")
 {
 
 }
@@ -24,15 +27,15 @@ Truth::CineCamera::~CineCamera()
 void Truth::CineCamera::Update()
 {
 	// 컷 씬 카메라 이동을 하지 않을 때
-	if (!m_isMove)
+	if (!m_isMove && m_isEnd)
 		return;
 
 	// 컷 씬 카메라 이동 노드
 	CameraNode& current = m_node[m_currentNode];
 	CameraNode& next = m_node[m_nextNode];
-
+	m_dt += GetDeltaTime();
 	// 지속시간에 따라서 다음 노드로 이동한다.
-	while (current.m_delayTime >= m_dt)
+	while (current.m_delayTime <= m_dt)
 	{
 		m_dt -= current.m_delayTime;
 		m_currentNode++;
@@ -43,6 +46,7 @@ void Truth::CineCamera::Update()
 			m_isMove = false;
 			m_currentNode = 0;
 			m_nextNode = 1;
+			m_dt = 0.f;
 			return;
 		}
 	}
@@ -62,7 +66,8 @@ void Truth::CineCamera::Update()
 	case CINE_CAMERA_MOVE_MODE::LERP:
 	{
 		Vector3 pos = Vector3::Lerp(current.m_position, next.m_position, rate);
-		camera->m_position = pos;
+		camera->GetOwner().lock()->m_transform->m_position = pos;
+		DEBUG_PRINT((std::to_string(pos.x) + ' ' + std::to_string(pos.y) + ' ' + std::to_string(pos.z) + '\n').c_str());
 		break;
 	}
 	case CINE_CAMERA_MOVE_MODE::CURVE:
@@ -112,18 +117,20 @@ void Truth::CineCamera::Update()
 /// <summary>
 /// 초기화, 데이터가 있다면 가져온다.
 /// </summary>
-void Truth::CineCamera::Initialize()
+void Truth::CineCamera::Awake()
 {
 	if (fs::exists(m_dataPath))
 		LoadData(m_dataPath);
-}	
+
+	m_managers.lock()->Graphics()->AddCineCamera(m_alias, ::Cast<CineCamera>(shared_from_this()));
+}
 
 /// <summary>
 /// 컷 씬 카메라의 이동 시작
 /// </summary>
 void Truth::CineCamera::Play()
 {
-	if (!m_mainCamera.expired() && m_node.size() >= 1 && !m_isEnd)
+	if (!m_mainCamera.expired() && m_node.size() >= 1 && m_isEnd)
 	{
 		m_isMove = true;
 		m_isEnd = false;
@@ -148,6 +155,8 @@ void Truth::CineCamera::LoadData(const fs::path& _dataPath)
 		assert(false && "Cannot find YAML Node Data");
 		return;
 	}
+
+	m_dataPath = _dataPath.generic_string();
 
 	// 루트 데이터 노드에 있는 정보를 가져온다.
 	// 루트 데이터 노드는 배열로 구성되어있다.
@@ -180,11 +189,11 @@ void Truth::CineCamera::LoadData(const fs::path& _dataPath)
 		if ((*it)["rotationMode"].IsDefined())
 			cNode.m_rotaionMode = static_cast<CINE_CAMERA_ROTATION_MODE>((*it)["rotationMode"].as<uint32>());
 		// 움직임에 걸리는 시간
-		if ((*it)["m_delayTime"].IsDefined())
-			cNode.m_delayTime = (*it)["m_delayTime"].as<float>();
+		if ((*it)["delayTime"].IsDefined())
+			cNode.m_delayTime = (*it)["delayTime"].as<float>();
 
 		// 커브 모드에서 사용할 데이터
-		const YAML::Node& posCurveData = (*it)["positinCurveData"];
+		const YAML::Node& posCurveData = (*it)["positionCurveData"];
 		if (posCurveData.IsDefined() && posCurveData.IsSequence())
 		{
 			for (YAML::const_iterator it = posCurveData.begin(); it != posCurveData.end(); ++it)
@@ -200,7 +209,7 @@ void Truth::CineCamera::LoadData(const fs::path& _dataPath)
 		}
 
 		// 커브 모드에서 사용할 데이터
-		const YAML::Node& rotcurveData = (*it)["positinCurveData"];
+		const YAML::Node& rotcurveData = (*it)["rotationCurveData"];
 		if (rotcurveData.IsDefined() && rotcurveData.IsSequence())
 		{
 			for (YAML::const_iterator it = rotcurveData.begin(); it != rotcurveData.end(); ++it)
@@ -214,5 +223,6 @@ void Truth::CineCamera::LoadData(const fs::path& _dataPath)
 				cNode.m_curveRotationPoint.push_back(point);
 			}
 		}
+		m_node.push_back(cNode);
 	}
 }

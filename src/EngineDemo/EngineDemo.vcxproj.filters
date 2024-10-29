@@ -73,6 +73,15 @@
     <Filter Include="Component\FrameCounter">
       <UniqueIdentifier>{b1fdbea3-a874-4e31-a1ee-3670ac42fb34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="YAML Resource">
+      <UniqueIdentifier>{74c1985e-53b3-40a8-b9ee-fab0919ba7a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="YAML Resource\Particle">
+      <UniqueIdentifier>{a247670e-13a1-416d-83a7-2dacbd587a23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="YAML Resource\ceniCameraData">
+      <UniqueIdentifier>{873b4e80-3c37-4c80-8648-021f68b6cc8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -195,6 +204,9 @@
     <ClInclude Include="PlayerHPTextUI.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
+    <ClInclude Include="CutSceneTrigger.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -308,6 +320,9 @@
     <ClCompile Include="PlayerHPTextUI.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
+    <ClCompile Include="CutSceneTrigger.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EngineDemo.rc">
@@ -324,5 +339,59 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="..\Resources\Particles\Beam.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Beam1.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Beam2.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\BlackHole.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\BlackHoleSphere.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\ComAttack.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\ComAttack2.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\DodgeAttack.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Fire.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Fire_1.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\MagicCircle.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\NorAttack.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\NorAttack_S.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\ShootImpact.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\SpearImpact.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\SpearImpact1.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\SpearImpact2.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\CeniData\testCamera.yaml">
+      <Filter>YAML Resource\ceniCameraData</Filter>
+    </None>
   </ItemGroup>
 </Project>

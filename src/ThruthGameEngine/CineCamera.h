@@ -47,7 +47,7 @@ namespace Truth
 		template<class Archive>
 		void load(Archive& ar, const unsigned int file_version);
 
-	private:
+	protected:
 		std::vector<CameraNode> m_node;
 
 		std::weak_ptr<Camera> m_mainCamera;
@@ -64,6 +64,9 @@ namespace Truth
 		PROPERTY(dataPath);
 		std::string m_dataPath;
 
+		PROPERTY(alias);
+		std::string m_alias;
+
 	public:
 		CineCamera();
 		virtual ~CineCamera();
@@ -72,12 +75,12 @@ namespace Truth
 
 		void LoadData(const fs::path& _dataPath);
 
-	private:
+	protected:
 		METHOD(Update);
-		void Update();
+		virtual void Update() override;
 
-		METHOD(Initialize);
-		void Initialize();
+		METHOD(Awake);
+		virtual void Awake() override;
 	};
 }
 
@@ -86,6 +89,7 @@ void Truth::CineCamera::save(Archive& _ar, const unsigned int file_version) cons
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 	_ar& m_dataPath;
+	_ar& m_alias;
 }
 
 template<class Archive>
@@ -93,6 +97,7 @@ void Truth::CineCamera::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Component>(*this);
 	_ar& m_dataPath;
+	_ar& m_alias;
 }
 BOOST_CLASS_EXPORT_KEY(Truth::CineCamera)
 BOOST_CLASS_VERSION(Truth::CineCamera, 0)
