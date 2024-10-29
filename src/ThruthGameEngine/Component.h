@@ -19,6 +19,7 @@ namespace Truth
 	class Entity;
 	class Transform;
 	class Managers;
+	class Collider;
 }
 
 
@@ -63,12 +64,12 @@ namespace Truth
 		virtual void Start() {};
 		virtual void LateUpdate() {};
 		virtual void FixedUpdate() {};
-		virtual void OnCollisionEnter() {};
-		virtual void OnCollisionExit() {};
-		virtual void OnCollisionStay() {};
-		virtual void OnTriggerEnter() {};
-		virtual void OnTriggerExit() {};
-		virtual void OnTriggerStay() {};
+		virtual void OnCollisionEnter(Truth::Collider* _other) {};
+		virtual void OnCollisionExit(Truth::Collider* _other) {};
+		virtual void OnCollisionStay(Truth::Collider* _other) {};
+		virtual void OnTriggerEnter(Truth::Collider* _other) {};
+		virtual void OnTriggerExit(Truth::Collider* _other) {};
+		virtual void OnTriggerStay(Truth::Collider* _other) {};
 		virtual void Initialize() {};
 		virtual void ApplyTransform() {};
 		virtual void ResizeWindow() {};

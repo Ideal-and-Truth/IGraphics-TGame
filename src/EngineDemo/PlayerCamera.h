@@ -55,6 +55,8 @@ private:
 	PROPERTY(shakeCount);
 	float m_shakeCount;
 
+	bool m_isCutScenePlay;
+
 public:
 	PlayerCamera();
 	virtual ~PlayerCamera();
@@ -74,7 +76,10 @@ public:
 	METHOD(OnTriggerExit);
 	void OnTriggerExit(Truth::Collider* _other);
 
-	std::weak_ptr<Truth::Camera> GetCamera() { return m_camera; };
+	inline std::weak_ptr<Truth::Camera> GetCamera() { return m_camera; };
+
+	inline void SetCutScenePaly(bool _isPlay) { m_isCutScenePlay = _isPlay; };
+	inline bool GetCutScenePaly() { return m_isCutScenePlay; };
 
 private:
 	void FreeCamera();

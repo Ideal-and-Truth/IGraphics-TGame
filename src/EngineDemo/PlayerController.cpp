@@ -185,13 +185,15 @@ void PlayerController::PlayerMove(const void*)
 	{
 		if (m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_camera.lock()->GetComponent<PlayerCamera>().lock().get()).Get())
 		{
-
-			Vector3 playerDir = direction;
-			m_playerDirection = playerDir;
-			Quaternion lookRot;
-			Quaternion::LookRotation(playerDir, Vector3::Up, lookRot);
-			auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
-			m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+			if (!m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetCutScenePaly())
+			{
+				Vector3 playerDir = direction;
+				m_playerDirection = playerDir;
+				Quaternion lookRot;
+				Quaternion::LookRotation(playerDir, Vector3::Up, lookRot);
+				auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
+				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+			}
 		}
 		return;
 	}
