@@ -2019,12 +2019,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		groundEffectParticleSystem->SetRenderMesh(iceSpikeMesh);
 		groundEffectParticleSystem->SetStartSize(1.f);
 		groundEffectParticleSystem->SetStartColor(Color(1.f, 0.5295228f, 0.259434f, 1.f));
-		groundEffectParticleSystem->SetStartColor(Color(0.f, 0.f, 1.3f, 1.f));	// 테스트용
+		//groundEffectParticleSystem->SetStartColor(Color(0.f, 0.f, 1.3f, 1.f));	// 테스트용
 		groundEffectParticleSystem->SetLoop(false);
 		groundEffectParticleSystem->SetStartLifetime(5.f);
 		groundEffectParticleSystem->SetDuration(5.f);
 		groundEffectParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(3, 5, 0))); // 데모에서 위치 확인용
-		groundEffectParticleSystem->SetSimulationSpeed(3.f);
+		groundEffectParticleSystem->SetSimulationSpeed(2.f);
 		groundEffectParticleSystem->SetSizeOverLifetime(true);
 		{
 			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisX();

@@ -13,7 +13,7 @@ StartColor:
   - 1
 StartLifetime: 2
 Duration: 2
-SimulationSpeed: 3
+SimulationSpeed: 2
 Loop: false
 RenderMode: 1
 SizeOverLifetime: true
