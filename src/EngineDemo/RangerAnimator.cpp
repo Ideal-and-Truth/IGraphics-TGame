@@ -108,7 +108,7 @@ void RangerAnimator::Update()
 		return;
 	}
 
-	
+
 
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
@@ -210,6 +210,12 @@ void RangerAnimator::ChangeState(std::string stateName)
 void RangerAnimator::SetEnemyDamage(float damage)
 {
 	m_enemy->GetTypeInfo().GetProperty("currentDamage")->Set(m_enemy.get(), damage);
+}
+
+void RangerAnimator::SetImpulse(float power)
+{
+	m_enemyController->GetTypeInfo().GetProperty("useImpulse")->Set(m_enemyController.get(), true);
+	m_enemyController->GetTypeInfo().GetProperty("impulsePower")->Set(m_enemyController.get(), power);
 }
 
 void RangerIdle::OnStateEnter()
@@ -556,14 +562,18 @@ void RangerDown::OnStateEnter()
 
 void RangerDown::OnStateUpdate()
 {
-	if (isReset && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
-		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Aim");
+		isChange = true;
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		isReset = true;
 		dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyGetUp", false);
+	}
+	if (isChange && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Aim");
 	}
 
 	// Any State
@@ -575,6 +585,8 @@ void RangerDown::OnStateUpdate()
 
 void RangerDown::OnStateExit()
 {
+	GetProperty("isDown")->Set(m_animator, false);
+	isChange = false;
 	isReset = false;
 }
 
@@ -606,6 +618,7 @@ void RangerKnockBack::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyKnockBack", false);
 	GetProperty("isBack")->Set(m_animator, false);
+	dynamic_cast<RangerAnimator*>(m_animator)->SetImpulse(-20.f);
 }
 
 void RangerKnockBack::OnStateUpdate()

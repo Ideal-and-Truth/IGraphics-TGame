@@ -240,7 +240,29 @@ void TestEffectGenerator::Update()
 	{
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
 		p->SetTransformMatrix(
-			Matrix::CreateRotationX(1.07f)
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateTranslation(0, 0, 0)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateTranslation(0, 0, 0)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f)
 			* Matrix::CreateTranslation(0, 0, 0)
 		);
 		p->SetActive(true);

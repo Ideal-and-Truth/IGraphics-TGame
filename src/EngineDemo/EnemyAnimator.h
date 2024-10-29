@@ -148,6 +148,7 @@ class EnemyDown
 {
 private:
 	bool isReset = false;
+	bool isChange = false;
 
 public:
 	EnemyDown(Truth::Component* animator)

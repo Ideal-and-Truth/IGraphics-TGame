@@ -194,16 +194,7 @@ void EnemyAnimator::Update()
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
 	}
-
-	if (m_isDown || m_isFall  || m_isBack)
-	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-	}
-
-	if (!m_isAttack && !m_isDamage && !m_isChargeAttack && !m_isDown && !m_isFall &&  !m_isBack)
-	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
-	}
+	
 	m_currentState->OnStateUpdate();
 	m_lastHp = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
 }
@@ -505,20 +496,27 @@ void EnemyDown::OnStateEnter()
 
 void EnemyDown::OnStateUpdate()
 {
-	if (isReset && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
-		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Idle");
+		isChange = true;
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		isReset = true;
 		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyGetUp", false);
 	}
+	if (isChange && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Idle");
+	}
+
 }
 
 void EnemyDown::OnStateExit()
 {
+	GetProperty("isDown")->Set(m_animator, false);
 	isReset = false;
+	isChange = false;
 }
 
 void EnemyFall::OnStateEnter()
@@ -549,6 +547,7 @@ void EnemyKnockBack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyKnockBack", false);
 	GetProperty("isBack")->Set(m_animator, false);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(-20.f);
 }
 
 void EnemyKnockBack::OnStateUpdate()

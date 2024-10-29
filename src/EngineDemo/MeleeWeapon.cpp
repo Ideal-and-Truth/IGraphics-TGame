@@ -79,6 +79,10 @@ void MeleeWeapon::Update()
 					float hpLeft = enemyHp - playerDamage;
 					enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
 					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, true);
+
+					Vector3 pos = e->GetWorldPosition();
+					pos.y += 1.f;
+					PlayEffect(pos);
 				}
 			}
 		}
@@ -94,8 +98,13 @@ void MeleeWeapon::Update()
 
 			float hpLeft = playerHp - enemyDamage;
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
+
+			/// 여기에서 가드 이펙트 사용하기
+
 			m_onHitEnemys.clear();
 		}
+
+
 	}
 
 	if (!m_isAttacking && m_player)
@@ -110,6 +119,7 @@ void MeleeWeapon::Update()
 					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, false);
 				}
 			}
+
 		}
 		m_onHitEnemys.clear();
 	}
@@ -131,11 +141,6 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 					}
 					m_onHitEnemys.push_back(_other->GetOwner().lock());
 					WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
-
-					Vector3 pos = _other->GetOwner().lock()->GetWorldPosition();
-					pos.y += 1.f;
-					//PlayEffect(pos);
-					PlayEffect(m_owner.lock()->GetWorldPosition());
 				}
 			}
 		}
@@ -156,11 +161,6 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 						{
 							WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
 						}
-
-						Vector3 pos = _other->GetOwner().lock()->GetWorldPosition();
-						pos.y += 1.f;
-						//PlayEffect(pos);
-						PlayEffect(m_owner.lock()->GetWorldPosition());
 					}
 				}
 			}
@@ -178,7 +178,27 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 	{
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
 		p->SetTransformMatrix(
-			Matrix::CreateRotationX(1.07f)
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateTranslation(pos)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateTranslation(pos)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);
