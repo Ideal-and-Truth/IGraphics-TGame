@@ -158,6 +158,7 @@ void SkinnedMeshObjectGetMeshTest(std::shared_ptr<Ideal::ISkinnedMeshObject> Ski
 void SpriteTest(std::shared_ptr<Ideal::ISprite> Sprite);
 void TextTest(std::shared_ptr<Ideal::IText> Text);
 void RendererSizeTest();
+void ParticleSystemTransform(std::shared_ptr<Ideal::IParticleSystem> ParticleSystem);
 float lightColor[3] = { 1.f, 1.f, 1.f };
 float lightAngleX = 0.f;
 float lightAngleY = 0.f;
@@ -944,7 +945,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sphereImpactParticleSystem->SetRenderMesh(bossParticleMeshSphere);
 		sphereImpactParticleSystem->SetTransformMatrix(
 			Matrix::CreateScale(35.f)
-			* Matrix::CreateScale(Vector3(2.5, 2.5, 1))
+			* Matrix::CreateScale(Vector3(6, 6, 2))
 			* Matrix::CreateRotationX(3.1415 * 0.5)
 			* Matrix::CreateTranslation(-3, 0, 0)
 		);
@@ -982,7 +983,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sphereImpactParticleSystem1->SetRenderMesh(bossParticleMeshSphere);
 		sphereImpactParticleSystem1->SetTransformMatrix(
 			Matrix::CreateScale(35.f)
-			* Matrix::CreateScale(Vector3(3, 3, 1))
+			* Matrix::CreateScale(Vector3(7, 7, 2))
 			* Matrix::CreateRotationX(3.1415 * 0.5)
 			* Matrix::CreateTranslation(-3, 0, 0)
 		);
@@ -1021,9 +1022,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		sphereImpactParticleSystem2->SetRenderMesh(bossParticleMeshSphere);
 		sphereImpactParticleSystem2->SetTransformMatrix(
 			Matrix::CreateScale(35.f)
-			* Matrix::CreateScale(Vector3(1, 1, 2))
+			* Matrix::CreateScale(Vector3(1.5, 1.5, 3))
 			* Matrix::CreateRotationX(3.1415 * 0.5)
-			* Matrix::CreateTranslation(-3, 1, 0)
+			* Matrix::CreateTranslation(-3, 0.5, 0)
 		);
 		sphereImpactParticleSystem2->SetStartColor(Color(0, 0.1608106, 5.930247, 1));
 		sphereImpactParticleSystem2->SetLoop(false);
@@ -1046,12 +1047,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		{
 			auto& graph = sphereImpactParticleSystem2->GetCustomData1Y();
-			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0,5 });
 		}
 
 		{
 			auto& graph = sphereImpactParticleSystem2->GetCustomData1Z();
-			graph.AddControlPoint({ 0,3.5 });
+			//graph.AddControlPoint({ 0,3.5 });
+			graph.AddControlPoint({ 0,7.5 });
 		}
 #pragma endregion
 #pragma region BlackHole
@@ -1978,6 +1980,56 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddControlPoint({ 0.2f, 0.01f });
 		}
 #pragma endregion
+
+#pragma region Enforce_Com_S_Attack_Ground_Effect
+		std::shared_ptr<Ideal::IParticleMaterial> groundEffectMaterial = gRenderer->CreateParticleMaterial();
+		groundEffectMaterial->SetShader(DefaultParticlePSShader);
+		std::shared_ptr<Ideal::ITexture> noiseTex62 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise62.png");
+		std::shared_ptr<Ideal::ITexture> noiseTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise1.png");
+		groundEffectMaterial->SetTexture0(noiseTex62);
+		groundEffectMaterial->SetTexture1(noiseTex1);
+		groundEffectMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		groundEffectMaterial->SetBackFaceCulling(false);
+
+		std::shared_ptr<Ideal::IParticleSystem> groundEffectParticleSystem = gRenderer->CreateParticleSystem(groundEffectMaterial);
+		groundEffectParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/IceSpikes2.fbx");
+		std::shared_ptr<Ideal::IMesh> iceSpikeMesh = gRenderer->CreateParticleMesh(L"0_Particle/IceSpikes2");
+		groundEffectParticleSystem->SetRenderMesh(iceSpikeMesh);
+		groundEffectParticleSystem->SetStartSize(1.f);
+		groundEffectParticleSystem->SetStartColor(Color(1.f, 0.5295228f, 0.259434f, 1.f));
+		groundEffectParticleSystem->SetLoop(true);
+		groundEffectParticleSystem->SetStartLifetime(1.1f);
+		groundEffectParticleSystem->SetStartLifetime(2.f);
+		groundEffectParticleSystem->SetDuration(2.f);
+		groundEffectParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(3, 5, 0))); // 데모에서 위치 확인용
+		//groundEffectParticleSystem->SetSimulationSpeed(2.f);
+		groundEffectParticleSystem->SetSizeOverLifetime(true);
+		{
+			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0, 0 });
+			graph.AddControlPoint({ 0.07, 1.5 });
+			graph.AddControlPoint({ 0.1, 1.3 });
+			graph.AddControlPoint({ 1, 1.3 });
+		}
+		{
+			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0, 0 });
+			graph.AddControlPoint({ 0.07, 1.5 });
+			graph.AddControlPoint({ 0.1, 1.3 });
+			graph.AddControlPoint({ 1, 1.3 });
+		}
+		{
+			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0, 0 });
+			graph.AddControlPoint({ 0.07, 1.5 });
+			graph.AddControlPoint({ 0.1, 1.3 });
+			graph.AddControlPoint({ 1, 1.3 });
+		}
+
+
+#pragma endregion
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -2245,6 +2297,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					norDamageParticleSystem1_1->Play();
 					norDamageParticleSystem2->Play();
 				}
+				if (GetAsyncKeyState(VK_END) & 0x8000)
+				{
+					groundEffectParticleSystem->Play();
+				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -2280,6 +2336,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				norDamageParticleSystem1->SetDeltaTime(0.003f);
 				norDamageParticleSystem1_1->SetDeltaTime(0.003f);
 				norDamageParticleSystem2->SetDeltaTime(0.003f);
+				groundEffectParticleSystem->SetDeltaTime(0.003f);
+
+
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -2393,6 +2452,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 							// 매 루프마다 실행하지 말 것 -> 성능 하락
 							//TextTest(text);
 						}
+
+						//ParticleSystemTransform(sphereImpactParticleSystem);
 					}
 					//once++;
 					//ImGuiTest();
@@ -3057,5 +3118,22 @@ void RendererSizeTest()
 	{
 		gRenderer->SetDisplayResolutionOption((Ideal::Resolution::EDisplayResolutionOption)val);
 	}
+	ImGui::End();
+}
+
+void ParticleSystemTransform(std::shared_ptr<Ideal::IParticleSystem> ParticleSystem)
+{
+	ImGui::Begin("ParticleSystem");
+	auto pos = ParticleSystem->GetTransformMatrix().Translation();
+	float x, y, z;
+	x = pos.x;
+	y = pos.y;
+	z = pos.z;
+	ImGui::SliderFloat("X", &x, -10, 10);
+	ImGui::SliderFloat("Y", &y, -10, 10);
+	ImGui::SliderFloat("Z", &z, -10, 10);
+
+	ParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(x, y, z)));
+
 	ImGui::End();
 }

@@ -21,10 +21,10 @@ CustomData1X:
     y: 0.1
 CustomData1Y:
   - x: 0
-    y: 0
+    y: 5
 CustomData1Z:
   - x: 0
-    y: 3.5
+    y: 7.5
 ColorOverLifetime: true
 ColorOverLifetimeGradientGraph:
   - Color:
