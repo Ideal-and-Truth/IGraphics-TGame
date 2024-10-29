@@ -55,6 +55,8 @@ namespace Truth
 
 		int m_oldFrame;
 
+		bool m_isRootMotion;
+
 	public:
 		SkinnedMesh();
 		SkinnedMesh(std::wstring _path);

@@ -175,14 +175,14 @@ void Truth::SkinnedMesh::Initialize()
 
 void Truth::SkinnedMesh::Update()
 {
-
+	// 애니메이션이 변경 되지 않았다면 애니메이션 현재 프레임을 받아온다.
 	if (!m_isAnimationChanged)
-	{
 		m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
-	}
 
-	if (m_isAnimationChanged)
+	// 만일 변경 되었다면
+	else
 	{
+		// 프레임 정보를 0으로 초기화 한다.
 		if (m_skinnedMesh->GetCurrentAnimationIndex() == 0)
 		{
 			m_currentFrame = 0;
@@ -191,12 +191,12 @@ void Truth::SkinnedMesh::Update()
 		}
 	}
 
+	// 애니메이션이 있다면
+	// 해당 에니메이션을 재생한다.
 	if (m_animation != nullptr)
 	{
 		m_animationMaxFrame = m_skinnedMesh->GetCurrentAnimationMaxFrame();
 		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
-
-
 
 		if (m_oldFrame > m_currentFrame)
 		{
@@ -210,23 +210,29 @@ void Truth::SkinnedMesh::Update()
 		}
 
 		m_oldFrame = m_currentFrame;
-
-
 	}
-
 }
 
+/// <summary>
+/// 매쉬의 위치 정보 반영
+/// </summary>
 void Truth::SkinnedMesh::ApplyTransform()
 {
 	m_skinnedMesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
 	m_skinnedMesh->SetDrawObject(m_isRendering);
 }
 
+/// <summary>
+/// 매쉬 삭제
+/// </summary>
 void Truth::SkinnedMesh::Destroy()
 {
 	DeleteMesh();
 }
 
+/// <summary>
+/// Active 여부
+/// </summary>
 void Truth::SkinnedMesh::SetActive()
 {
 	if (m_skinnedMesh)
@@ -252,9 +258,7 @@ void Truth::SkinnedMesh::DeleteMesh()
 std::weak_ptr<Ideal::IBone> Truth::SkinnedMesh::GetBone(const std::string& _name)
 {
 	if (m_boneMap.find(_name) == m_boneMap.end())
-	{
 		return std::weak_ptr<Ideal::IBone>();
-	}
 	return m_boneMap[_name];
 }
 
