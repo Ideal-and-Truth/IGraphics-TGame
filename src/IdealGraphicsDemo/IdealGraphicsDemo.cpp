@@ -734,6 +734,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> defaultParticlePS_Clip = gRenderer->CreateAndLoadParticleShader(L"DefaultParticlePS_Clip");
 
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/GroundSpike.hlsl",
+			L"../Shaders/Particle/",
+			L"GroundSpikePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> groundSpikePS = gRenderer->CreateAndLoadParticleShader(L"GroundSpikePS");
+
 #pragma endregion
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
@@ -1993,12 +2003,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region Enforce_Com_S_Attack_Ground_Effect
 		std::shared_ptr<Ideal::IParticleMaterial> groundEffectMaterial = gRenderer->CreateParticleMaterial();
-		groundEffectMaterial->SetShader(DefaultParticlePSShader);
+		groundEffectMaterial->SetShader(groundSpikePS);
 		std::shared_ptr<Ideal::ITexture> noiseTex62 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise62.png");
 		std::shared_ptr<Ideal::ITexture> noiseTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise1.png");
 		groundEffectMaterial->SetTexture0(noiseTex62);
 		groundEffectMaterial->SetTexture1(noiseTex1);
-		groundEffectMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		groundEffectMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
 		groundEffectMaterial->SetBackFaceCulling(false);
 
 		std::shared_ptr<Ideal::IParticleSystem> groundEffectParticleSystem = gRenderer->CreateParticleSystem(groundEffectMaterial);
@@ -2009,12 +2019,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		groundEffectParticleSystem->SetRenderMesh(iceSpikeMesh);
 		groundEffectParticleSystem->SetStartSize(1.f);
 		groundEffectParticleSystem->SetStartColor(Color(1.f, 0.5295228f, 0.259434f, 1.f));
+		groundEffectParticleSystem->SetStartColor(Color(0.f, 0.f, 1.3f, 1.f));	// 테스트용
 		groundEffectParticleSystem->SetLoop(false);
-		groundEffectParticleSystem->SetStartLifetime(2.2f);
-		//groundEffectParticleSystem->SetStartLifetime(3.f);
+		groundEffectParticleSystem->SetStartLifetime(5.f);
 		groundEffectParticleSystem->SetDuration(5.f);
 		groundEffectParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(3, 5, 0))); // 데모에서 위치 확인용
-		groundEffectParticleSystem->SetSimulationSpeed(5.f);
+		groundEffectParticleSystem->SetSimulationSpeed(3.f);
 		groundEffectParticleSystem->SetSizeOverLifetime(true);
 		{
 			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisX();
@@ -2038,6 +2048,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddControlPoint({ 5, 1.3 });
 		}
 
+		{
+			auto& graph = groundEffectParticleSystem->GetCustomData1X();
+			graph.AddControlPoint({ 0, 0 });
+			graph.AddControlPoint({ 5, 1 });
+		}
 		// Ground Effect Smoke
 		std::shared_ptr<Ideal::IParticleMaterial> groundSmokeEffectMaterial = gRenderer->CreateParticleMaterial();
 		groundSmokeEffectMaterial->SetShader(defaultParticlePS_Clip);
