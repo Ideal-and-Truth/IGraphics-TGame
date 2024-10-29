@@ -42,14 +42,10 @@ void Player::Start()
 void Player::Update()
 {
 	if (GetKey(KEY::O) && GetKeyDown(KEY::P))
-	{
 		m_isInvincible = !m_isInvincible;
-	}
 
 	if (m_currentCP > m_maxCP)
-	{
 		m_currentCP = m_maxCP;
-	}
 
 	if (m_slowTime)
 	{

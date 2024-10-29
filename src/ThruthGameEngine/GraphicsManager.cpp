@@ -476,6 +476,29 @@ void Truth::GraphicsManager::BakeStaticMesh()
 	// 	m_renderer->ReBuildBLASFlagOn();
 }
 
+void Truth::GraphicsManager::AddCineCamera(const std::string& _name, std::shared_ptr<CineCamera> _cineCamera)
+{
+	auto itr = m_cineCameraMap.find(_name);
+	if (itr == m_cineCameraMap.end())
+		m_cineCameraMap[_name] = _cineCamera;
+}
+
+std::shared_ptr<Truth::CineCamera> Truth::GraphicsManager::GetCineCamera(const std::string& _name)
+{
+	auto itr = m_cineCameraMap.find(_name);
+	if (itr == m_cineCameraMap.end())
+		return nullptr;
+	return (*itr).second.lock();
+}
+
+void Truth::GraphicsManager::DeleteCineCamera(const std::string& _name)
+{
+	auto itr = m_cineCameraMap.find(_name);
+	if (itr == m_cineCameraMap.end())
+		return;
+	m_cineCameraMap.erase(itr);
+}
+
 #ifdef EDITOR_MODE
 void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 {

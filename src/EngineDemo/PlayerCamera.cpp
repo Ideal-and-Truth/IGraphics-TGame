@@ -23,6 +23,7 @@ PlayerCamera::PlayerCamera()
 	, m_zoomTime(0.f)
 	, m_shakeTime(0.f)
 	, m_zoomOutTime(0.f)
+	, m_isCutScenePlay(false)
 {
 	m_name = "PlayerCamera";
 }
@@ -49,12 +50,8 @@ void PlayerCamera::Start()
 	m_playerController = m_player.lock()->GetComponent<PlayerController>().lock();
 
 	for (auto& e : m_managers.lock()->Scene()->m_currentScene->m_entities)
-	{
 		if (e->GetComponent<Enemy>().lock())
-		{
 			m_enemys.push_back(e);
-		}
-	}
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
@@ -62,10 +59,11 @@ void PlayerCamera::Start()
 
 void PlayerCamera::LateUpdate()
 {
+	if (m_isCutScenePlay)
+		return;
+
 	if (m_enemys.empty())
-	{
 		m_isLockOn = false;
-	}
 
 	if (!m_enemys.empty())
 	{
@@ -86,19 +84,13 @@ void PlayerCamera::LateUpdate()
 			}
 		}
 		else if (GetKeyUp(MOUSE::WHEEL) && m_isLockOn)
-		{
 			m_passingTime = 0.f;
-		}
 	}
 
 	if (m_isLockOn && !m_enemys.empty())
-	{
 		LockOnCamera();
-	}
 	else
-	{
 		FreeCamera();
-	}
 
 	for (auto& e : m_enemys)
 	{
@@ -115,9 +107,7 @@ void PlayerCamera::LateUpdate()
 		m_zoomOutTime = 0.5f;
 	}
 	if (m_isShaking)
-	{
 		ShakeCamera(m_shakeCount);
-	}
 
 	ZoomInOut(m_zoomOutTime);
 }
@@ -125,20 +115,14 @@ void PlayerCamera::LateUpdate()
 void PlayerCamera::OnTriggerEnter(Truth::Collider* _other)
 {
 	if (_other->GetOwner().lock()->GetComponent<Enemy>().lock())
-	{
 		m_enemys.push_back(_other->GetOwner().lock());
-	}
 }
 
 void PlayerCamera::OnTriggerExit(Truth::Collider* _other)
 {
 	for (auto& e : m_enemys)
-	{
 		if (e == _other->GetOwner().lock())
-		{
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
-		}
-	}
 }
 
 void PlayerCamera::FreeCamera()
@@ -151,29 +135,19 @@ void PlayerCamera::FreeCamera()
 	m_azimuth -= MouseDx() * m_cameraSpeed;
 
 	if (m_elevation > 3.0f)
-	{
 		m_elevation = 3.0f;
-	}
 	if (m_elevation < 0.5f)
-	{
 		m_elevation = 0.5f;
-	}
 
 	if (m_azimuth > 3.14f)
-	{
 		m_azimuth = -3.14f;
-	}
 	if (m_azimuth < -3.14f)
-	{
 		m_azimuth = 3.14f;
-	}
 
 
 	m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
 	if (m_cameraDistance <= 0.0f)
-	{
 		m_cameraDistance = 0.001f;
-	}
 
 
 	cameraPos.x = sin(m_elevation) * cos(m_azimuth);
@@ -212,9 +186,7 @@ void PlayerCamera::LockOnCamera()
 	}
 
 	if ((m_player.lock()->GetWorldPosition() - m_enemys[m_enemyCount]->GetWorldPosition()).Length() > 20.f)
-	{
 		m_enemyCount++;
-	}
 
 	if (m_enemys.size() <= m_enemyCount)
 	{
@@ -245,14 +217,10 @@ void PlayerCamera::LockOnCamera()
 	}
 
 	if (m_camera.lock()->m_look.z < 0.f)
-	{
 		m_azimuth *= -1.f;
-	}
 
 	if (m_lockOnTime >= 1.f)
-	{
 		m_lockOnTime = 1.f;
-	}
 
 	Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 5.0f, 0.0f });
 	look.Normalize(look);
@@ -274,9 +242,8 @@ void PlayerCamera::SortEnemy()
 		for (int j = 0; j < m_enemys.size(); j++)
 		{
 			if (i == j || i > j)
-			{
 				continue;
-			}
+
 			Vector3 playerPos = m_player.lock()->m_transform->m_position;
 			Vector3 enemyPos1 = playerPos - m_enemys[i]->m_transform->m_position;
 			Vector3 enemyPos2 = playerPos - m_enemys[j]->m_transform->m_position;
@@ -317,13 +284,9 @@ void PlayerCamera::ZoomInOut(float timing)
 		m_zoomTime += GetDeltaTime();
 
 		if (m_zoomTime > timing)
-		{
 			m_cameraDistance -= (2.f / m_zoomTime - timing) * GetDeltaTime();
-		}
 		else
-		{
 			m_cameraDistance += (2.f / timing) * GetDeltaTime();
-		}
 
 		if (m_zoomTime > 2.f)
 		{
@@ -332,8 +295,6 @@ void PlayerCamera::ZoomInOut(float timing)
 		}
 	}
 	else
-	{
 		m_cameraDistance = 10.f;
-	}
 }
 
