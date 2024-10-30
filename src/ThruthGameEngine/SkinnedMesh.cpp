@@ -211,6 +211,16 @@ void Truth::SkinnedMesh::Update()
 		m_animationMaxFrame = m_skinnedMesh->GetCurrentAnimationMaxFrame();
 		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
 
+		if (m_oldFrame >= m_animationMaxFrame - 2)
+		{
+			if (m_owner.lock()->m_name == "Boss")
+			{
+				int a = 1;
+			}
+			m_prevMovement = Vector3::Zero;
+			m_currentMovement = Vector3::Zero;
+		}
+
 		if (m_oldFrame > m_currentFrame)
 		{
 			if (m_owner.lock()->m_name == "Boss")
