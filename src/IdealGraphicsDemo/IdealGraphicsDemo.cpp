@@ -212,8 +212,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region EditorInitialize
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12;
 		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_EDITOR;
-		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
-		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
+		EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING;
+		//EGraphicsInterfaceType type = EGraphicsInterfaceType::D3D12_RAYTRACING_EDITOR;
 		gRenderer = CreateRenderer(
 			type,
 			&g_hWnd,
@@ -237,9 +237,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		InitCamera(camera);
 		gRenderer->SetMainCamera(camera);
 
-		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
+		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_3440_1440);
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
-		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
+		gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		//gRenderer->ToggleFullScreenWindow();
 #pragma endregion
 
@@ -2308,6 +2308,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddControlPoint({ 1,1 });
 		}
 #pragma endregion
+
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -2593,7 +2594,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					groundEffectParticleSystem->Play();
 					groundSmokeParticleSystem->Play();
 					groundFireParticleSystem->Play();
+
+					gRenderer->GetTopLeftEditorPos();
+					gRenderer->GetRightBottomEditorPos();
+
+					int a = 3;
 				}
+				if (GetAsyncKeyState(VK_HOME) & 0x8001)
+				{
+					gRenderer->ToggleFullScreenWindow();
+				}
+
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
