@@ -1124,11 +1124,20 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEdito
 	return Vector2(nx, ny);
 }
 
-void Ideal::D3D12RayTracingRenderer::SetSkyBox(const std::wstring& FileName)
+void Ideal::D3D12RayTracingRenderer::SetSkyBox(std::shared_ptr<Ideal::ITexture> SkyBoxTexture)
+{
+	if (m_skyBoxTexture)
+	{
+		m_deferredDeleteManager->AddD3D12ResourceToDelete(m_skyBoxTexture->GetResource());
+	}
+	m_skyBoxTexture = std::static_pointer_cast<Ideal::D3D12Texture>(SkyBoxTexture);
+}
+
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateSkyBox(const std::wstring& FileName)
 {
 	std::shared_ptr <Ideal::D3D12Texture> skyBox = std::make_shared<Ideal::D3D12Texture>();
 	m_resourceManager->CreateTextureDDS(skyBox, FileName);
-	m_skyBoxTexture = skyBox;
+	return skyBox;
 }
 
 std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/)
