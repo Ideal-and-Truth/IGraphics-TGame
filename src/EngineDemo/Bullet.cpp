@@ -43,11 +43,21 @@ void Bullet::OnCollisionEnter(Truth::Collider* _other)
 
 		if (!playerAnimator->GetTypeInfo().GetProperty("isDodge")->Get<bool>(playerAnimator.get()).Get())
 		{
+			float damage = m_bulletDamage;
+			if (playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(playerAnimator.get()).Get())
+			{
+				damage *= 0.3f;
+			}
+			if (playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(playerAnimator.get()).Get())
+			{
+				damage = 0.f;
+			}
+
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player.get(), playerHp - m_bulletDamage);
 		}
 		m_isHit = true;
-		PlayEffect();
 	}
+	PlayEffect();
 }
 
 void Bullet::PlayEffect()

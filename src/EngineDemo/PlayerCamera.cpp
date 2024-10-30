@@ -222,7 +222,7 @@ void PlayerCamera::LockOnCamera()
 	if (m_lockOnTime >= 1.f)
 		m_lockOnTime = 1.f;
 
-	Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 5.0f, 0.0f });
+	Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 2.0f, 0.0f });
 	look.Normalize(look);
 	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
 

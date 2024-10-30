@@ -95,6 +95,10 @@ void MeleeWeapon::Update()
 			{
 				enemyDamage *= 0.3f;
 			}
+			if (m_playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(m_playerAnimator.get()).Get())
+			{
+				enemyDamage = 0.f;
+			}
 
 			float hpLeft = playerHp - enemyDamage;
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
@@ -116,6 +120,11 @@ void MeleeWeapon::Update()
 			{
 				if (enemy->GetTypeInfo().GetProperty("hitOnce")->Get<bool>(enemy).Get())
 				{
+					if (!m_player->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_player.get()).Get())
+					{
+						m_player->GetTypeInfo().GetProperty("currentCP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get() + 5.f);
+					}
+
 					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, false);
 				}
 			}
@@ -135,10 +144,6 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 			{
 				if (_other->GetOwner().lock()->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(_other->GetOwner().lock()->GetComponent<Enemy>().lock().get()).Get() > 0.f)
 				{
-					if (!m_player->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_player.get()).Get())
-					{
-						m_player->GetTypeInfo().GetProperty("currentCP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get() + 5.f);
-					}
 					m_onHitEnemys.push_back(_other->GetOwner().lock());
 					WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
 				}

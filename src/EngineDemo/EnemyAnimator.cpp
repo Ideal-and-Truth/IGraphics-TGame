@@ -439,6 +439,7 @@ void EnemyAttack::OnStateUpdate()
 void EnemyAttack::OnStateExit()
 {
 	GetProperty("isAttacking")->Set(m_animator, false);
+	GetProperty("isAttack")->Set(m_animator, false);
 }
 
 void EnemyChargeAttack::OnStateEnter()
@@ -455,6 +456,12 @@ void EnemyChargeAttack::OnStateUpdate()
 		GetProperty("passingTime")->Set(m_animator, 0.f);
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
 	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		GetProperty("isChargeAttack")->Set(m_animator, false);
+		GetProperty("passingTime")->Set(m_animator, 0.f);
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
+	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		GetProperty("passingTime")->Set(m_animator, 0.f);
@@ -467,6 +474,7 @@ void EnemyChargeAttack::OnStateUpdate()
 void EnemyChargeAttack::OnStateExit()
 {
 	GetProperty("isAttacking")->Set(m_animator, false);
+	GetProperty("isAttack")->Set(m_animator, false);
 }
 
 void EnemyHit::OnStateEnter()
