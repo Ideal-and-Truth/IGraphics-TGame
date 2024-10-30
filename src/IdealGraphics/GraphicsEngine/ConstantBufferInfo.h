@@ -174,6 +174,24 @@ struct CB_ParticleSystem
 	float CustomData1[4];
 	float CustomData2[4];
 	float Time = 0.f;
-	Vector3 pad;
+	float CurrentTime = 0.f;
+	Vector2 pad0;
 	Color StartColor;
+
+	float DeltaTime;
+	float MaxParticles;
+	Vector2 AnimationUV_Offset;
+	Vector2 AnimationUV_Scale;
+
+	Vector2 ParticleSize = Vector2(1,1);
+	Vector2 pad1;
+};
+
+struct ComputeParticle
+{
+	Vector4 Position;
+	Vector3 Direction;
+	float Speed;
+	float RotationAngle;
+	float DelayTime = 0.f;
 };

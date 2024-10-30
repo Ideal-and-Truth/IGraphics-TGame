@@ -16,12 +16,15 @@ namespace Truth
 
 	private:
 		std::vector<std::vector<Vector3>> m_points;
+		std::vector<std::vector<int>> m_index;
 		std::wstring m_path;
 		std::vector<physx::PxShape*> m_meshCollider;
 
+		bool m_isConvex;
+
 	public:
 		MeshCollider();
-		MeshCollider(std::string _path);
+		MeshCollider(std::string _path, bool _isConvex = false);
 		~MeshCollider();
 
 		METHOD(Initialize);

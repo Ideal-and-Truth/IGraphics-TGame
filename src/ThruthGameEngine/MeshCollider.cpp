@@ -14,13 +14,14 @@ Truth::MeshCollider::MeshCollider()
 	m_shape = ColliderShape::MESH;
 }
 
-Truth::MeshCollider::MeshCollider(std::string _path)
+Truth::MeshCollider::MeshCollider(std::string _path, bool _isConvex)
 {
 	m_size = Vector3{ 1.0f, 1.0f, 1.0f };
 	USES_CONVERSION;
 	m_path = A2W(_path.c_str());
 
 	m_shape = ColliderShape::MESH;
+	m_isConvex = _isConvex;
 }
 
 Truth::MeshCollider::~MeshCollider()
@@ -39,16 +40,20 @@ void Truth::MeshCollider::Awake()
 
 	GetPoints();
 	if (m_points.empty())
-	{
 		return;
-	}
-	m_meshCollider = m_managers.lock()->Physics()->CreateMeshCollider((m_size * onwerSize), m_points);
 
-
+	if (m_isConvex)
+		m_meshCollider = m_managers.lock()->Physics()->CreateConvexMeshCollider((m_size * onwerSize), m_points);
+	else
+		m_meshCollider = m_managers.lock()->Physics()->CreateMeshCollider((m_size * onwerSize), m_points, m_index);
 
 	m_isTrigger = false;
 
-	// SetUpFiltering(m_owner.lock()->m_layer);
+	physx::PxFilterData filterData;
+	filterData.word0 = m_collisionGroup;
+	filterData.word1 = m_collisionMask;
+	m_meshCollider[0]->setSimulationFilterData(filterData);
+	m_meshCollider[0]->setQueryFilterData(filterData);
 
 	m_meshCollider[0]->userData = this;
 
@@ -59,22 +64,13 @@ void Truth::MeshCollider::Awake()
 	m_meshCollider[0]->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !m_isTrigger);
 	m_meshCollider[0]->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, m_isTrigger);
 
-	physx::PxFilterData filterData;
-	filterData.word0 = m_collisionGroup;
-	filterData.word1 = m_collisionMask;
-	m_meshCollider[0]->setSimulationFilterData(filterData);
-	m_meshCollider[0]->setQueryFilterData(filterData);
-
-
-
 	m_rigidbody = m_owner.lock()->GetComponent<RigidBody>();
 
 	if (m_rigidbody.expired())
 	{
 		m_body = m_managers.lock()->Physics()->CreateDefaultRigidStatic();
 
-		bool c = m_body->attachShape(*m_meshCollider[0]);
-		int a = 1;
+		m_body->attachShape(*m_meshCollider[0]);
 
 		physx::PxTransform t(
 			MathUtil::Convert(m_owner.lock()->GetLocalPosition()),
@@ -83,8 +79,8 @@ void Truth::MeshCollider::Awake()
 		m_body->setGlobalPose(t);
 		m_managers.lock()->Physics()->AddScene(m_body);
 		m_managers.lock()->Physics()->RsetFiltering(m_body);
-
 	}
+
 }
 
 /// <summary>
@@ -109,11 +105,11 @@ void Truth::MeshCollider::GetPoints()
 			p.z = file->Read<float>();
 			m_points[i].push_back(p);
 		}
-
+		m_index.push_back(std::vector<int>());
 		unsigned int temp = file->Read<unsigned int>();
 		for (unsigned int j = 0; j < temp; j++)
 		{
-			unsigned int t = file->Read<uint32>();
+			m_index[i].push_back(file->Read<uint32>());
 		}
 	}
 }

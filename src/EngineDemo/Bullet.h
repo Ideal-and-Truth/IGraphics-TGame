@@ -21,6 +21,7 @@ private:
 	PROPERTY(isHit);
 	bool m_isHit;
 
+	void PlayEffect();
 
 public:
 	Vector3 m_power;

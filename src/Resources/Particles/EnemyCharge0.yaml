@@ -1,0 +1,17 @@
+MaxCount: 10
+MatName: EnemyCharge0Material
+EBlendingMode: 2
+Shader: EnemyChargePS
+Texture0: ../Resources/Textures/0_Particle/Glow1.png
+Texture1: ../Resources/Textures/0_Particle/Flare23.png
+Mesh: 0_Particle/Cone2
+
+StartLifetime: 1
+Loop: false
+Duration: 2
+RenderMode: 1
+CustomData1X:
+  - x: 0
+    y: 5
+  - x: 2
+    y: 0

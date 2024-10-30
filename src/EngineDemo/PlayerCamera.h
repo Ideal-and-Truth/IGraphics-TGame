@@ -38,6 +38,7 @@ private:
 	bool m_isLockOn;
 
 	int m_enemyCount;
+	int m_loopCount;
 
 	float m_passingTime;
 	float m_shakeTime;
@@ -53,6 +54,8 @@ private:
 
 	PROPERTY(shakeCount);
 	float m_shakeCount;
+
+	bool m_isCutScenePlay;
 
 public:
 	PlayerCamera();
@@ -73,7 +76,10 @@ public:
 	METHOD(OnTriggerExit);
 	void OnTriggerExit(Truth::Collider* _other);
 
-	std::weak_ptr<Truth::Camera> GetCamera() { return m_camera; };
+	inline std::weak_ptr<Truth::Camera> GetCamera() { return m_camera; };
+
+	inline void SetCutScenePaly(bool _isPlay) { m_isCutScenePlay = _isPlay; };
+	inline bool GetCutScenePaly() { return m_isCutScenePlay; };
 
 private:
 	void FreeCamera();

@@ -79,6 +79,10 @@ void Truth::Managers::LateUpdate() const
 
 void Truth::Managers::FixedUpdate() const
 {
+	static float at = 0.0f;
+	at += m_timeManager->GetADT();
+	// DEBUG_PRINT(std::to_string(at).c_str());
+	// DEBUG_PRINT("\n");
 	m_physXManager->FixedUpdate();
 	m_sceneManager->FixedUpdate();
 	m_eventManager->FixedUpdate();

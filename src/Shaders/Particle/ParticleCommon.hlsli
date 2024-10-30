@@ -20,19 +20,41 @@
         float4 g_CustomData1;
         float4 g_CustomData2;
         float g_Time;
-        float3 pad;
+        float g_currentTime;
+        float2 pad0;
         float4 g_startColor;
+        
+        float g_DeltaTime;
+        float g_MaxParticles;
+        float2 g_AnimationUV_Offset;
+        float2 g_AnimationUV_Scale;
+    
+        float2 g_ParticleSize;
+        float2 pad1;
+
     };
 
     struct Pos
     {
         float4 pos;
     };
-    StructuredBuffer<Pos> g_bufPos : register(t0);
+
+    struct ComputeParticle
+    {
+        float4 Position;
+        float3 Direction;
+        float Speed;
+        float RotationAngle;
+        float DelayTime;
+    };
+    
+    StructuredBuffer<ComputeParticle> g_bufPos : register(t0);
 
     Texture2D ParticleTexture0 : register(t1);
     Texture2D ParticleTexture1 : register(t2);
     Texture2D ParticleTexture2 : register(t3);
+
+    RWStructuredBuffer<ComputeParticle> g_RWBufferPos : register(u0);
 
     SamplerState LinearWrapSampler : register(s0);
     SamplerState LinearClampSampler : register(s1);
@@ -66,15 +88,18 @@
 
     struct GSParticleDrawOut
     {
+        float4 Pos : SV_POSITION;
         float2 UV : TEXCOORD0;
         float4 Color : COLOR;
-        float4 Pos : SV_POSITION;
     };
     
     struct PSParticleDrawIn
     {
-        float2 UV : TEXCOORD0;
-        float4 Color : COLOR;
+        //float2 UV : TEXCOORD0;
+        //float4 Color : COLOR;
+        float3 Pos : POSITION;
+        float3 Normal : NORMAL;
+        float2 UV : TEXCOORD;
     };
 
     cbuffer cbImmutable
@@ -103,6 +128,12 @@
     }
 
     //--------------------MATH-------------------//
+    // Fresnel effect
+    void Ideal_FresnelEffect_float(float3 Normal, float3 ViewDir, float Power, out float Out)
+    {
+        Out = pow((1.0 - saturate(dot(normalize(Normal), normalize(ViewDir)))), Power);
+    }
+
     // Comparison
     void Ideal_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
     {
@@ -124,6 +155,10 @@
     {
         Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
     }   
+    void Ideal_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+    {
+        Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+    }
     // SimpleNoise
     inline float Noise_RandomValue(float2 UV)
     {

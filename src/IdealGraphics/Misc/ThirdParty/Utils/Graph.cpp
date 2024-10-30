@@ -12,9 +12,10 @@ Ideal::Point Ideal::BezierCurve::GetPoint(float t)
 	//{
 	//	return m_cache[key];
 	//}
-
+	t = std::clamp(t, 0.0f, 1.0f);
 	Ideal::Point point = Bezier(t);
 	//m_cache[key] = point;
+
 	return point;
 }
 

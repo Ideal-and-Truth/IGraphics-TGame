@@ -11,6 +11,7 @@ namespace Truth
 	class EditorCamera;
 #endif // EDITOR_MODE
 	struct UISpriteSet;
+	class CineCamera;
 }
 
 namespace Ideal
@@ -44,6 +45,8 @@ namespace Truth
 		};
 		HWND m_hwnd;
 
+		std::map<std::string, std::weak_ptr<CineCamera>> m_cineCameraMap;
+
 	public:
 		// path / texture
 		std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
@@ -67,8 +70,14 @@ namespace Truth
 		std::shared_ptr<Ideal::IAnimation> CreateAnimation(std::wstring _path, const Matrix& _offset = Matrix::Identity);
 
 		std::shared_ptr<Ideal::IDirectionalLight> CreateDirectionalLight();
+		void DeleteDirectionalLight(std::shared_ptr<Ideal::IDirectionalLight> _dLight);
+
 		std::shared_ptr<Ideal::ISpotLight> CreateSpotLight();
+		void DeleteSpotLight(std::shared_ptr<Ideal::ISpotLight> _sLight);
+
 		std::shared_ptr<Ideal::IPointLight> CreatePointLight();
+		void DeletePointLight(std::shared_ptr<Ideal::IPointLight> _pLight);
+
 		std::shared_ptr<Ideal::ISprite> CreateSprite();
 		void DeleteSprite(std::shared_ptr<Ideal::ISprite> _sprite);
 
@@ -111,7 +120,11 @@ namespace Truth
 		// void SetDisplayResolution();
 		Vector2 GetDisplayResolution();
 		RECT GetWindowRect();
-		void BakeStaticMesh();
+		[[maybe_unused]] void BakeStaticMesh();
+
+		void AddCineCamera(const std::string& _name, std::shared_ptr<CineCamera> _cineCamera);
+		std::shared_ptr<CineCamera> GetCineCamera(const std::string& _name);
+		void DeleteCineCamera(const std::string& _name);
 
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);

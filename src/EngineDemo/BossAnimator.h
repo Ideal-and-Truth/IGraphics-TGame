@@ -12,6 +12,23 @@ class EnemyController;
 class PlayerAnimator;
 
 
+class BossEntrance
+	: public AnimationState
+{
+private:
+
+
+public:
+	BossEntrance(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+};
+
 class BossIdle
 	: public AnimationState
 {
@@ -584,6 +601,8 @@ private:
 	bool m_timeDistortionCoolTime;
 
 	float m_lastHp;
+
+	float m_baseSpeed;
 
 	float m_downGuage;
 
