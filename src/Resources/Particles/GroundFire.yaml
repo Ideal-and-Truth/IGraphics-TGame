@@ -1,0 +1,34 @@
+MaxCount: 10
+MatName: GroundFireEffectMaterial
+EBlendingMode: 2
+Shader: BossFireFloorPS
+Texture0: ../Resources/Textures/0_Particle/Smoke21.png
+WriteDepthBuffer: true
+RenderMode: 0
+StartColor:
+  - 1
+  - 0.72
+  - 0.3
+  - 1
+StartLifetime: 0.2
+Loop: false
+Duration: 0.2
+
+
+MaxParticles: 40
+ShapeMode: true
+Shape: 0
+Radius: 0.1
+RadiusThickness: 1
+
+
+VelocityOverLifetime: true
+VelocityDirectionMode: 1
+VelocityDirectionRandomMIN: -10
+VelocityDirectionRandomMAX: 10
+VelocitySpeedModifierMode: 1
+VelocitySpeedModifierRandomMIN: 5
+VelocitySpeedModifierRandomMAX: 7
+
+TextureSheetAnimation: true
+TextureSheetAnimationTiles: {x: 8, y: 8}

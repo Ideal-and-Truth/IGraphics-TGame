@@ -1,7 +1,7 @@
 MaxCount: 10
 MatName: Spike
-EBlendingMode: 2
-Shader: DefaultParticlePS
+EBlendingMode: 1
+Shader: GroundSpikePS
 Texture0: ../Resources/Textures/0_Particle/Noise62.png
 Texture1: ../Resources/Textures/0_Particle/Noise1.png
 Mesh: 0_Particle/IceSpikes2
@@ -13,6 +13,7 @@ StartColor:
   - 1
 StartLifetime: 2
 Duration: 2
+SimulationSpeed: 2
 Loop: false
 RenderMode: 1
 SizeOverLifetime: true
@@ -23,7 +24,7 @@ SizeOverLifetimeAxisX:
     y: 1.5
   - x: 0.1
     y: 1.3
-  - x: 1
+  - x: 5
     y: 1.3
 SizeOverLifetimeAxisY:
   - x: 0
@@ -32,7 +33,7 @@ SizeOverLifetimeAxisY:
     y: 1.5
   - x: 0.1
     y: 1.3
-  - x: 1
+  - x: 5
     y: 1.3
 SizeOverLifetimeAxisZ:
   - x: 0
@@ -41,5 +42,5 @@ SizeOverLifetimeAxisZ:
     y: 1.5
   - x: 0.1
     y: 1.3
-  - x: 1
+  - x: 5
     y: 1.3

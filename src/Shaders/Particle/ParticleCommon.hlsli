@@ -31,6 +31,7 @@
     
         float2 g_ParticleSize;
         float2 pad1;
+
     };
 
     struct Pos
@@ -127,6 +128,12 @@
     }
 
     //--------------------MATH-------------------//
+    // Fresnel effect
+    void Ideal_FresnelEffect_float(float3 Normal, float3 ViewDir, float Power, out float Out)
+    {
+        Out = pow((1.0 - saturate(dot(normalize(Normal), normalize(ViewDir)))), Power);
+    }
+
     // Comparison
     void Ideal_Comparison_GreaterOrEqual_float(float A, float B, out float Out)
     {
@@ -148,6 +155,10 @@
     {
         Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
     }   
+    void Ideal_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+    {
+        Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+    }
     // SimpleNoise
     inline float Noise_RandomValue(float2 UV)
     {

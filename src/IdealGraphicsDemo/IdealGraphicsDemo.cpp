@@ -723,6 +723,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> billboardTestPS = gRenderer->CreateAndLoadParticleShader(L"DefaultParticleBillboardShaderPS");
 
+		// Default Particle Clip
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/DefaultParticlePS_Clip.hlsl",
+			L"../Shaders/Particle/",
+			L"DefaultParticlePS_Clip",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> defaultParticlePS_Clip = gRenderer->CreateAndLoadParticleShader(L"DefaultParticlePS_Clip");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/GroundSpike.hlsl",
+			L"../Shaders/Particle/",
+			L"GroundSpikePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> groundSpikePS = gRenderer->CreateAndLoadParticleShader(L"GroundSpikePS");
 
 #pragma endregion
 
@@ -1983,12 +2003,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region Enforce_Com_S_Attack_Ground_Effect
 		std::shared_ptr<Ideal::IParticleMaterial> groundEffectMaterial = gRenderer->CreateParticleMaterial();
-		groundEffectMaterial->SetShader(DefaultParticlePSShader);
+		groundEffectMaterial->SetShader(groundSpikePS);
 		std::shared_ptr<Ideal::ITexture> noiseTex62 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise62.png");
 		std::shared_ptr<Ideal::ITexture> noiseTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise1.png");
 		groundEffectMaterial->SetTexture0(noiseTex62);
 		groundEffectMaterial->SetTexture1(noiseTex1);
-		groundEffectMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		groundEffectMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
 		groundEffectMaterial->SetBackFaceCulling(false);
 
 		std::shared_ptr<Ideal::IParticleSystem> groundEffectParticleSystem = gRenderer->CreateParticleSystem(groundEffectMaterial);
@@ -1999,34 +2019,101 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		groundEffectParticleSystem->SetRenderMesh(iceSpikeMesh);
 		groundEffectParticleSystem->SetStartSize(1.f);
 		groundEffectParticleSystem->SetStartColor(Color(1.f, 0.5295228f, 0.259434f, 1.f));
-		groundEffectParticleSystem->SetLoop(true);
-		groundEffectParticleSystem->SetStartLifetime(1.1f);
-		groundEffectParticleSystem->SetStartLifetime(2.f);
-		groundEffectParticleSystem->SetDuration(2.f);
+		//groundEffectParticleSystem->SetStartColor(Color(0.f, 0.f, 1.3f, 1.f));	// 테스트용
+		groundEffectParticleSystem->SetLoop(false);
+		groundEffectParticleSystem->SetStartLifetime(5.f);
+		groundEffectParticleSystem->SetDuration(5.f);
 		groundEffectParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(3, 5, 0))); // 데모에서 위치 확인용
-		//groundEffectParticleSystem->SetSimulationSpeed(2.f);
+		groundEffectParticleSystem->SetSimulationSpeed(2.f);
 		groundEffectParticleSystem->SetSizeOverLifetime(true);
 		{
 			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0, 0 });
 			graph.AddControlPoint({ 0.07, 1.5 });
 			graph.AddControlPoint({ 0.1, 1.3 });
-			graph.AddControlPoint({ 1, 1.3 });
+			graph.AddControlPoint({ 5, 1.3 });
 		}
 		{
 			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisY();
 			graph.AddControlPoint({ 0, 0 });
 			graph.AddControlPoint({ 0.07, 1.5 });
 			graph.AddControlPoint({ 0.1, 1.3 });
-			graph.AddControlPoint({ 1, 1.3 });
+			graph.AddControlPoint({ 5, 1.3 });
 		}
 		{
 			auto& graph = groundEffectParticleSystem->GetSizeOverLifetimeAxisZ();
 			graph.AddControlPoint({ 0, 0 });
 			graph.AddControlPoint({ 0.07, 1.5 });
 			graph.AddControlPoint({ 0.1, 1.3 });
-			graph.AddControlPoint({ 1, 1.3 });
+			graph.AddControlPoint({ 5, 1.3 });
 		}
+
+		{
+			auto& graph = groundEffectParticleSystem->GetCustomData1X();
+			graph.AddControlPoint({ 0, 0 });
+			graph.AddControlPoint({ 5, 1 });
+		}
+		// Ground Effect Smoke
+		std::shared_ptr<Ideal::IParticleMaterial> groundSmokeEffectMaterial = gRenderer->CreateParticleMaterial();
+		groundSmokeEffectMaterial->SetShader(defaultParticlePS_Clip);
+		groundSmokeEffectMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		std::shared_ptr<Ideal::ITexture> smokeTex = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Smoke24.png");
+		groundSmokeEffectMaterial->SetTexture0(smokeTex);
+		groundSmokeEffectMaterial->SetWriteDepthBuffer(true);
+		std::shared_ptr<Ideal::IParticleSystem> groundSmokeParticleSystem = gRenderer->CreateParticleSystem(groundSmokeEffectMaterial);
+		groundSmokeParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		groundSmokeParticleSystem->SetLoop(false);
+		groundSmokeParticleSystem->SetDuration(0.2f);
+		groundSmokeParticleSystem->SetStartLifetime(0.2f);
+		
+		groundSmokeParticleSystem->SetMaxParticles(40);
+		groundSmokeParticleSystem->SetShapeMode(true);
+		groundSmokeParticleSystem->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		groundSmokeParticleSystem->SetRadius(0.1f);
+		groundSmokeParticleSystem->SetRadiusThickness(0.5f);
+
+		groundSmokeParticleSystem->SetVelocityOverLifetime(true);
+		groundSmokeParticleSystem->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		groundSmokeParticleSystem->SetVelocityDirectionRandom(-10.f, 10.f);
+		groundSmokeParticleSystem->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		groundSmokeParticleSystem->SetVelocitySpeedModifierRandom(10.f, 13.f);
+
+		groundSmokeParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(3, 5, 0))); // 데모에서 위치 확인용
+		groundSmokeParticleSystem->SetStartColor(Color(0.8f, 0.6f, 0.4f, 1.f));
+
+		// Ground Fire Effect
+		std::shared_ptr<Ideal::IParticleMaterial> groundFireEffectMaterial = gRenderer->CreateParticleMaterial();
+		groundFireEffectMaterial->SetShader(bossFireFloorShader);
+		groundFireEffectMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		std::shared_ptr<Ideal::ITexture> smokeTex21 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Smoke21.png");
+		groundFireEffectMaterial->SetTexture0(smokeTex21);
+		groundFireEffectMaterial->SetWriteDepthBuffer(true);
+
+		std::shared_ptr<Ideal::IParticleSystem> groundFireParticleSystem = gRenderer->CreateParticleSystem(groundFireEffectMaterial);
+
+		groundFireParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(3, 5, 0))); // 데모에서 위치 확인용
+
+
+		groundFireParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Billboard);
+		groundFireParticleSystem->SetDuration(0.2f);
+		groundFireParticleSystem->SetStartLifetime(0.2f);
+
+		groundFireParticleSystem->SetMaxParticles(40);
+		groundFireParticleSystem->SetShapeMode(true);
+		groundFireParticleSystem->SetShape(Ideal::ParticleMenu::EShape::Circle);
+		groundFireParticleSystem->SetRadius(0.1f);
+		groundFireParticleSystem->SetRadiusThickness(1.f);
+
+		groundFireParticleSystem->SetVelocityOverLifetime(true);
+		groundFireParticleSystem->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
+		groundFireParticleSystem->SetVelocityDirectionRandom(-10.f, 10.f);
+		groundFireParticleSystem->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		groundFireParticleSystem->SetVelocitySpeedModifierRandom(5.f, 7.f);
+
+		groundFireParticleSystem->SetTextureSheetAnimation(true);
+		groundFireParticleSystem->SetTextureSheetAnimationTiles({ 8,8 });
+
+		groundFireParticleSystem->SetStartColor(Color(1, 0.72, 0.3, 1));
 
 
 #pragma endregion
@@ -2300,6 +2387,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (GetAsyncKeyState(VK_END) & 0x8000)
 				{
 					groundEffectParticleSystem->Play();
+					groundSmokeParticleSystem->Play();
+					groundFireParticleSystem->Play();
 				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
@@ -2337,8 +2426,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				norDamageParticleSystem1_1->SetDeltaTime(0.003f);
 				norDamageParticleSystem2->SetDeltaTime(0.003f);
 				groundEffectParticleSystem->SetDeltaTime(0.003f);
-
-
+				groundSmokeParticleSystem->SetDeltaTime(0.003f);
+				groundFireParticleSystem->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);

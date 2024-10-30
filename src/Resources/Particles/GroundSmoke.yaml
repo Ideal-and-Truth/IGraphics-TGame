@@ -1,0 +1,31 @@
+MaxCount: 10
+MatName: GroundSmokeEffectMaterial
+EBlendingMode: 2
+Shader: DefaultParticlePS_Clip
+Texture0: ../Resources/Textures/0_Particle/Smoke24.png
+WriteDepthBuffer: true
+RenderMode: 0
+StartColor:
+  - 0.8
+  - 0.6
+  - 0.4
+  - 1
+StartLifetime: 0.2
+Loop: false
+Duration: 0.2
+
+
+MaxParticles: 40
+ShapeMode: true
+Shape: 0
+Radius: 0.1
+RadiusThickness: 1
+
+
+VelocityOverLifetime: true
+VelocityDirectionMode: 1
+VelocityDirectionRandomMIN: -10
+VelocityDirectionRandomMAX: 10
+VelocitySpeedModifierMode: 1
+VelocitySpeedModifierRandomMIN: 10
+VelocitySpeedModifierRandomMAX: 13
