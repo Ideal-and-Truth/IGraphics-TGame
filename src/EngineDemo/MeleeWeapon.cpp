@@ -105,6 +105,10 @@ void MeleeWeapon::Update()
 
 			/// 여기에서 가드 이펙트 사용하기
 
+			Vector3 pos = e->GetWorldPosition();
+			pos.y += 1.f;
+			PlayEffect(pos);
+
 			m_onHitEnemys.clear();
 		}
 

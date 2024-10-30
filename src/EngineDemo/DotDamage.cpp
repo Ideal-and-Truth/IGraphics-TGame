@@ -2,10 +2,14 @@
 #include "Player.h"
 #include "PlayerAnimator.h"
 #include "Enemy.h"
+#include "ParticleManager.h"
+#include "IParticleSystem.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(DotDamage)
 
+
 DotDamage::DotDamage()
+	: m_playEffect(false)
 {
 	m_name = "DotDamage";
 }
@@ -13,6 +17,8 @@ DotDamage::DotDamage()
 DotDamage::~DotDamage()
 {
 	m_player->GetTypeInfo().GetProperty("onFire")->Set(m_player.get(), false);
+	auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+	p->SetActive(false);
 }
 
 void DotDamage::Start()
@@ -23,7 +29,7 @@ void DotDamage::Start()
 
 void DotDamage::Update()
 {
-	
+	PlayEffect();
 }
 
 void DotDamage::OnTriggerEnter(Truth::Collider* _other)
@@ -42,3 +48,20 @@ void DotDamage::OnTriggerExit(Truth::Collider* _other)
 	}
 }
 
+void DotDamage::PlayEffect()
+{
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(3.14 * 0.5)
+			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+
+		if (m_playEffect)
+		{
+			m_playEffect = false;
+			p->SetActive(true);
+			p->Play();
+		}
+	}
+}

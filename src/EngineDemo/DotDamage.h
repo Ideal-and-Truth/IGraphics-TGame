@@ -20,6 +20,12 @@ private:
 private:
 	std::shared_ptr<Player> m_player;
 
+	PROPERTY(playEffect);
+	bool m_playEffect;
+
+private:
+	void PlayEffect();
+
 public:
 	DotDamage();
 	virtual ~DotDamage();

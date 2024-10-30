@@ -68,7 +68,6 @@ BossSkill::BossSkill()
 	, m_playShock(false)
 	, m_playSpear(false)
 	, m_playFlameShot(false)
-	, m_playFlameField(false)
 {
 	m_name = "BossSkill";
 }
@@ -395,8 +394,11 @@ void BossSkill::FlameSword()
 		{
 			float bossHeight = m_owner.lock()->m_transform->m_position.y;
 			m_flameSwordTime += GetDeltaTime();
-			if (m_flameSwordTime > 0.13f && m_flameCount < m_flamePos.size())
+			if (m_flameSwordTime > 0.13f && m_flameCount <= m_flamePos.size())
 			{
+				auto damage = m_fires[m_flameCount].first->GetComponent<DotDamage>().lock();
+				damage->GetTypeInfo().GetProperty("playEffect")->Set(damage.get(), true);
+
 				m_fires[m_flameCount].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_flameCount] });
 				Vector3 worldPos = m_fires[m_flameCount].first->m_transform->m_worldPosition;
 				m_owner.lock()->DeleteChild(m_fires[m_flameCount].first);
@@ -404,11 +406,8 @@ void BossSkill::FlameSword()
 				m_fires[m_flameCount].first->m_transform->m_position = worldPos;
 				m_flameCount++;
 				m_flameSwordTime = 0.f;
-
-				m_playFlameField = true;
-				PlayEffect(m_fires[m_flameCount].first->GetWorldPosition());
 			}
-			if (m_flameCount >= m_flamePos.size() - 1)
+			if (m_flameCount >= m_flamePos.size())
 			{
 				m_deleteFire = true;
 				m_flameSword = false;
@@ -885,10 +884,10 @@ void BossSkill::DeleteCheck()
 			}
 
 			m_fires.clear();
+			PlayEffect(Vector3::Zero);
 
 			m_deleteFire = false;
 
-			m_playFlameField = false;
 			m_flameCount = 0;
 			m_paternEnds = true;
 			m_createComplete2 = false;
@@ -1099,25 +1098,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 			}
 
 			m_playFlameShot = false;
-		}
-	}
-
-	/// ºÒÀåÆÇ
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
-		p->SetTransformMatrix(
-			Matrix::CreateRotationX(3.14 * 0.5)
-			* Matrix::CreateTranslation(pos)
-		);
-
-		if (m_playFlameField)
-		{
-			p->SetActive(true);
-			p->Play();
-		}
-		else
-		{
-			p->SetActive(false);
 		}
 	}
 
