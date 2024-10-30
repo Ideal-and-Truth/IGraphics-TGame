@@ -2113,6 +2113,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		groundFireParticleSystem->SetShape(Ideal::ParticleMenu::EShape::Circle);
 		groundFireParticleSystem->SetRadius(0.1f);
 		groundFireParticleSystem->SetRadiusThickness(1.f);
+		groundFireParticleSystem->SetLoop(false);
 
 		groundFireParticleSystem->SetVelocityOverLifetime(true);
 		groundFireParticleSystem->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
