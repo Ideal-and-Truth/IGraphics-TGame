@@ -82,6 +82,12 @@
     <Filter Include="YAML Resource\ceniCameraData">
       <UniqueIdentifier>{873b4e80-3c37-4c80-8648-021f68b6cc8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Camera">
+      <UniqueIdentifier>{d33b5163-594b-4014-82a9-21108e121a90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\TitleButton">
+      <UniqueIdentifier>{7fa272f0-fa0e-4825-9cf4-988d4347da9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -207,6 +213,12 @@
     <ClInclude Include="CutSceneTrigger.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="FixedCamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="StartButton.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -321,6 +333,12 @@
       <Filter>Component\Player</Filter>
     </ClCompile>
     <ClCompile Include="CutSceneTrigger.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FixedCamera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="StartButton.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

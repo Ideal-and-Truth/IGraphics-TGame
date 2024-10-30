@@ -1,5 +1,5 @@
 ---
-baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/candle/flame.png
+baseMap: ../Resources/Textures/MapData/0_TitleTest/candle/flame.png
 normalMap: ""
 maskMap: ""
 tileX: 1

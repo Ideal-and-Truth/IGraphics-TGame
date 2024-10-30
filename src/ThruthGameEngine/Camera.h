@@ -37,6 +37,7 @@ namespace Truth
 		float m_farZ;
 
 	public:
+		PROPERTY(position);
 		Vector3 m_position;
 
 		PROPERTY(look);

@@ -44,6 +44,8 @@ namespace Truth
 
 		bool m_useNavMesh = true;
 
+		bool m_isFpsScene = false;
+
 		fs::path m_skyBox;
 
 	public:
@@ -115,6 +117,7 @@ namespace Truth
 		_ar& m_rootEntities;
 		_ar& m_mapPath;
 		_ar& m_skyBox.generic_string();
+		_ar& m_useNavMesh;
 	}
 
 	template<class Archive>
@@ -130,6 +133,8 @@ namespace Truth
 			_ar& path;
 			m_skyBox = path;
 		}
+		if (file_version >= 4)
+			_ar& m_useNavMesh;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Scene, 3)
+BOOST_CLASS_VERSION(Truth::Scene, 4)

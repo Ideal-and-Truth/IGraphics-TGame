@@ -166,6 +166,7 @@
     <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
+    <ClInclude Include="FixedCamera.h" />
     <ClInclude Include="FrameUI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HitStop.h" />
@@ -186,6 +187,7 @@
     <ClInclude Include="SimpleDamager.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="SkillTree.h" />
+    <ClInclude Include="StartButton.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestEffectGenerator.h" />
     <ClInclude Include="TestMovement.h" />
@@ -212,6 +214,7 @@
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
+    <ClCompile Include="FixedCamera.cpp" />
     <ClCompile Include="FrameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />
     <ClCompile Include="MapMoveTrigger.cpp" />
@@ -230,6 +233,7 @@
     <ClCompile Include="SimpleDamager.cpp" />
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="SkillTree.cpp" />
+    <ClCompile Include="StartButton.cpp" />
     <ClCompile Include="TestEffectGenerator.cpp" />
     <ClCompile Include="TestMovement.cpp" />
     <ClCompile Include="TimeDistortion.cpp" />

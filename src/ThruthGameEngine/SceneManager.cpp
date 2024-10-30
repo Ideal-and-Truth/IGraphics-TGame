@@ -119,6 +119,8 @@ void Truth::SceneManager::ChangeScene()
 	m_currentScene = s;
 	m_currentScene->Initalize(m_mangers);
 	m_currentScene->Enter();
+
+	m_mangers.lock()->Time()->RestartTime();
 }
 
 /// <summary>

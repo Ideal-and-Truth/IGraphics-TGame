@@ -107,3 +107,8 @@ void Truth::TimeManager::WaitForSecondsRealtime(float time)
 		m_waitingTime = 0.0f;
 	}
 }
+
+void Truth::TimeManager::RestartTime()
+{
+	::QueryPerformanceCounter(&m_prevCount);
+}

@@ -349,8 +349,6 @@ void Truth::UnityParser::ParsePrefabNode(const YAML::Node& _node, const std::str
 	GetPrefabMatrix(_node["m_Modification"]["m_Modifications"], GO);
 	GetPrefabMatarial(GO, _node["m_Modification"]["m_Modifications"]);
 
-
-
 	if (m_guidMap.find(prefabGuid) != m_guidMap.end())
 	{
 		const fs::path& prefabPath = m_guidMap[prefabGuid]->m_filePath;
@@ -914,9 +912,7 @@ void Truth::UnityParser::ParseUnityFile(const std::string& _path)
 	// load yaml unity file
 	auto doc = YAML::LoadAll(dataFile);
 	for (size_t i = 0; i < doc.size(); i++)
-	{
 		ParseYAMLFile(doc[i], guid);
-	}
 
 	m_sceneName = uscene.filename().replace_extension("");
 
@@ -929,13 +925,9 @@ void Truth::UnityParser::ParseUnityFile(const std::string& _path)
 		YAML::Node& node = m_nodeMap[guid][fid]->m_node;
 
 		if (node["Transform"].IsDefined())
-		{
 			ParseTranfomrNode(node["Transform"], guid, -1);
-		}
 		else if (node["PrefabInstance"].IsDefined())
-		{
 			ParsePrefabNode(node["PrefabInstance"], guid, -1);
-		}
 	}
 
 	WriteData();

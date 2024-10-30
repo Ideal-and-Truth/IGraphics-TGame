@@ -152,12 +152,24 @@ void MenuBar::ShowContext(bool* p_open)
 				fs::path filepath = m_openFileName.lpstrFile;
 				std::vector<std::wstring> f = StringConverter::split(filepath, L'\\');
 				filepath = fs::relative(filepath);
-				
+
 				m_manager.lock()->Graphics()->ChangeSkyBox(filepath);
 				m_manager.lock()->Scene()->m_currentScene->m_skyBox = filepath;
 			}
 			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
+
+		if (m_manager.lock()->Scene()->m_currentScene->m_useNavMesh)
+		{
+			if (ImGui::Selectable("No Nav Mesh"))
+				m_manager.lock()->Scene()->m_currentScene->m_useNavMesh = false;
+		}
+		else
+		{
+			if (ImGui::Selectable("Use Nav Mesh"))
+				m_manager.lock()->Scene()->m_currentScene->m_useNavMesh = true;
+		}
+
 		ImGui::EndPopup();
 	}
 
