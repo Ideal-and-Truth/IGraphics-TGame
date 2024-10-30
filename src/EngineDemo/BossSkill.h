@@ -72,6 +72,7 @@ private:
 	bool m_playSpear;
 	int m_spearImpactCount;
 	bool m_playFlameShot;
+	bool m_playFlameField;
 
 	float m_flameShotPos;
 

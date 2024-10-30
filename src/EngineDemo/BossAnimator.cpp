@@ -160,6 +160,11 @@ void BossAnimator::Update()
 	// 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
 	// 	}
 
+	if (GetKeyDown(KEY::_9))
+	{
+		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
+	}
+
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 
 	if (m_animationStateMap["Entrance"] == m_currentState)

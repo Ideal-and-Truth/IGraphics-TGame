@@ -15,6 +15,7 @@
 #include "IParticleSystem.h"
 #include "Controller.h"
 #include "PhysicsManager.h"
+#include "DotDamage.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -67,6 +68,7 @@ BossSkill::BossSkill()
 	, m_playShock(false)
 	, m_playSpear(false)
 	, m_playFlameShot(false)
+	, m_playFlameField(false)
 {
 	m_name = "BossSkill";
 }
@@ -349,9 +351,7 @@ void BossSkill::FlameSword()
 			flame->Initialize();
 			flame->m_layer = 1;
 			flame->AddComponent<Truth::SphereCollider>();
-			auto damage = flame->AddComponent<SimpleDamager>();
-			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
-			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
+			auto damage = flame->AddComponent<DotDamage>();
 
 			flame->m_name = "Flame";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flame);
@@ -405,6 +405,8 @@ void BossSkill::FlameSword()
 				m_flameCount++;
 				m_flameSwordTime = 0.f;
 
+				m_playFlameField = true;
+				PlayEffect(m_fires[m_flameCount].first->GetWorldPosition());
 			}
 			if (m_flameCount >= m_flamePos.size() - 1)
 			{
@@ -886,6 +888,7 @@ void BossSkill::DeleteCheck()
 
 			m_deleteFire = false;
 
+			m_playFlameField = false;
 			m_flameCount = 0;
 			m_paternEnds = true;
 			m_createComplete2 = false;
@@ -971,6 +974,7 @@ void BossSkill::DeleteCheck()
 
 void BossSkill::PlayEffect(Vector3 pos)
 {
+	/// 충격파
 	if (m_playShock)
 	{
 		m_playShock = false;
@@ -1010,10 +1014,11 @@ void BossSkill::PlayEffect(Vector3 pos)
 		}
 	}
 
+	/// 창
 	if (m_playSpear)
 	{
 		m_playSpear = false;
-		
+
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
 			p->SetTransformMatrix(
@@ -1057,6 +1062,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		}
 	}
 
+	/// 불 발사
 	{
 		Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
 		effectRot.y += (3.141592f / 180.f) * 180.f;
@@ -1096,6 +1102,24 @@ void BossSkill::PlayEffect(Vector3 pos)
 		}
 	}
 
+	/// 불장판
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(3.14 * 0.5)
+			* Matrix::CreateTranslation(pos)
+		);
+
+		if (m_playFlameField)
+		{
+			p->SetActive(true);
+			p->Play();
+		}
+		else
+		{
+			p->SetActive(false);
+		}
+	}
 
 }
 

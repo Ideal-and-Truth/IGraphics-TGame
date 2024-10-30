@@ -12,7 +12,7 @@ StartColor:
   - 0
   - 1
 StartLifetime: 1
-Loop: false
+Loop: true
 Duration: 1
 
 

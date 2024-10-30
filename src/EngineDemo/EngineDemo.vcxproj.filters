@@ -207,6 +207,9 @@
     <ClInclude Include="CutSceneTrigger.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="DotDamage.h">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -322,6 +325,9 @@
     </ClCompile>
     <ClCompile Include="CutSceneTrigger.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DotDamage.cpp">
+      <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
