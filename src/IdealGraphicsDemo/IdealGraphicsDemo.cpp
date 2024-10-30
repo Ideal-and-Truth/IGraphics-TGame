@@ -2292,7 +2292,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		enemyChargeParticleSystem2->SetDuration(2.f);
 		enemyChargeParticleSystem2->SetTransformMatrix(
 			Matrix::CreateScale(Vector3(0.5, 0.5, 1))				// 여기는 적용
-			* Matrix::CreateTranslation(Vector3(0, -4, 0))	// 여기는 데모 위치 확인용
+			* Matrix::CreateTranslation(Vector3(19, 0, 0))	// 여기는 데모 위치 확인용
 		);
 		enemyChargeParticleSystem2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		enemyChargeParticleSystem2->SetRenderMesh(Cone2Mesh);
