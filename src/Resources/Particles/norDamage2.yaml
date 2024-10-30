@@ -1,6 +1,6 @@
 MaxCount: 10
 #-------Material--------#
-MatName: FireExplosionMaterial
+MatName: NorDamageMaterial2
 EBlendingMode: 1
 Shader: BossFX_1BeamRingPS
 Texture0: ../Resources/Textures/0_Particle/Glow1.png
@@ -29,12 +29,12 @@ VelocitySpeedModifierRandomMAX: 2
 
 #--------SizeOverLifetime---------#
 SizeOverLifetime: true
-SizeOverLifetimeAxisXControlPoints:
+SizeOverLifetimeAxisX:
   - x: 0
     y: 0.03
   - x: 0.2
     y: 0.01
-SizeOverLifetimeAxisYControlPoints:
+SizeOverLifetimeAxisY:
   - x: 0
     y: 0.03
   - x: 0.2

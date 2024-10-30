@@ -81,7 +81,11 @@ void RangerAnimator::Start()
 
 	m_skinnedMesh->AddAnimation("EnemyRangeAim", L"EnemyAnimations/RangeEnemy/Aim/Aim");
 	m_skinnedMesh->AddAnimation("EnemyRangeAttack", L"EnemyAnimations/RangeEnemy/Attack/Attack");
-	m_skinnedMesh->AddAnimation("EnemyRangeDown", L"EnemyAnimations/RangeEnemy/Down/Down");
+	m_skinnedMesh->AddAnimation("EnemyDown", L"EnemyAnimations/MeleeEnemy/Down/Down");
+	m_skinnedMesh->AddAnimation("EnemyFall", L"EnemyAnimations/MeleeEnemy/Down/Fall");
+	m_skinnedMesh->AddAnimation("EnemyFallAttack", L"EnemyAnimations/MeleeEnemy/Down/FallAttack");
+	m_skinnedMesh->AddAnimation("EnemyGetUp", L"EnemyAnimations/MeleeEnemy/Down/GetUp");
+	m_skinnedMesh->AddAnimation("EnemyKnockBack", L"EnemyAnimations/MeleeEnemy/Down/KnockBack");
 	m_skinnedMesh->AddAnimation("EnemyRangeHit", L"EnemyAnimations/RangeEnemy/Hit/Hit");
 	m_skinnedMesh->AddAnimation("EnemyRangeIdle", L"EnemyAnimations/RangeEnemy/Idle/Idle");
 	m_skinnedMesh->AddAnimation("EnemyRangePursuitReturn", L"EnemyAnimations/RangeEnemy/Pursuit Return/PursuitReturn");
@@ -472,7 +476,7 @@ void RangerDamage::OnStateExit()
 
 void RangerDown::OnStateEnter()
 {
-	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangeDown", false);
+	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyDown", false);
 }
 
 void RangerDown::OnStateUpdate()

@@ -11,6 +11,7 @@ namespace Truth
 	class EditorCamera;
 #endif // EDITOR_MODE
 	struct UISpriteSet;
+	class CineCamera;
 }
 
 namespace Ideal
@@ -43,6 +44,8 @@ namespace Truth
 			L"../Resources/Textures/"
 		};
 		HWND m_hwnd;
+
+		std::map<std::string, std::weak_ptr<CineCamera>> m_cineCameraMap;
 
 	public:
 		// path / texture
@@ -117,7 +120,11 @@ namespace Truth
 		// void SetDisplayResolution();
 		Vector2 GetDisplayResolution();
 		RECT GetWindowRect();
-		void BakeStaticMesh();
+		[[maybe_unused]] void BakeStaticMesh();
+
+		void AddCineCamera(const std::string& _name, std::shared_ptr<CineCamera> _cineCamera);
+		std::shared_ptr<CineCamera> GetCineCamera(const std::string& _name);
+		void DeleteCineCamera(const std::string& _name);
 
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);

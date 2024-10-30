@@ -73,6 +73,7 @@ void PlayerSkill::SwordBeam()
 		if (m_swordBeamPos <= 0.f)
 		{
 			m_playSwordBeam = true;
+			m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Set(m_playerAnimator.get(), true);
 		}
 
 		m_swordBeamPos += GetDeltaTime() * 0.8f;
@@ -90,6 +91,7 @@ void PlayerSkill::SwordBeam()
 			m_swordBeam = nullptr;
 			m_useSwordBeam = false;
 			m_createComplete = false;
+			m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Set(m_playerAnimator.get(), false);
 		}
 	}
 }

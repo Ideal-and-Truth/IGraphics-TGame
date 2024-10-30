@@ -6,6 +6,7 @@
 #include "SphereCollider.h"
 #include "Bullet.h"
 #include "Transform.h"
+#include "Mesh.h"
 #include "SkinnedMesh.h"
 #include "SimpleDamager.h"
 #include "TimeDistortion.h"
@@ -91,11 +92,11 @@ void BossSkill::Awake()
 	m_flamePos.push_back(13.2f);
 	m_flamePos.push_back(16.2f);
 
-	m_swordPos.push_back({ 0.f,3.7f,0.f });
-	m_swordPos.push_back({ 1.1f,4.2f,0.f });
-	m_swordPos.push_back({ 2.2f,4.7f,0.f });
-	m_swordPos.push_back({ -1.1f,4.2f,0.f });
-	m_swordPos.push_back({ -2.2f,4.7f,0.f });
+	m_swordPos.push_back({ 0.f,5.7f,0.f });
+	m_swordPos.push_back({ 1.1f,6.2f,0.f });
+	m_swordPos.push_back({ 2.2f,6.7f,0.f });
+	m_swordPos.push_back({ -1.1f,6.2f,0.f });
+	m_swordPos.push_back({ -2.2f,6.7f,0.f });
 
 	m_spherePos.push_back({ 9.f, 7.f, 0.f });
 	m_spherePos.push_back({ -9.f, 7.f, 0.f });
@@ -449,7 +450,9 @@ void BossSkill::SwordShooting()
 			std::shared_ptr<Truth::Entity> sword = std::make_shared<Truth::Entity>(m_managers.lock());
 			sword->Initialize();
 			sword->m_layer = 1;
-			sword->AddComponent<Truth::BoxCollider>();
+			auto collider = sword->AddComponent<Truth::BoxCollider>();
+			collider->m_size = { 0.015f,0.015f,0.03f };
+			sword->AddComponent<Truth::Mesh>(L"BossAnimations/Spear/SM_niddle_sub");
 			auto damage = sword->AddComponent<SimpleDamager>();
 			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
@@ -460,7 +463,7 @@ void BossSkill::SwordShooting()
 
 			sword->SetPosition(m_swordPos[m_swordCount]);
 			//sword->SetScale({ 30.f,30.f,300.f });
-			sword->SetScale({ 1.5f,1.5f,3.f });
+			sword->SetScale({ 100.f,100.f,100.f });
 
 
 			sword->Start();
@@ -495,17 +498,18 @@ void BossSkill::SwordShooting()
 				dir.y = 0.f;
 				dir.Normalize(dir);
 				Quaternion lookRot;
-			
 				Quaternion::LookRotation(dir, Vector3::Up, lookRot);
-				m_swords[i].first->m_transform->m_rotation = Quaternion::Slerp(m_swords[i].first->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+				Vector3 lookVec = lookRot.ToEuler();
+				lookVec.y += 3.141592f;
+				m_swords[i].first->m_transform->m_rotation = Quaternion::Slerp(m_swords[i].first->m_transform->m_rotation, Quaternion::CreateFromYawPitchRoll(lookVec), 10.f * GetDeltaTime());
 
 				Vector3 dir2 = playerPos - m_swords[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 1.5f, 0.0f };
 				dir2.y = 0.f;
 				auto rot = m_swords[i].first->m_transform->m_rotation.ToEuler();
-				float val2 = atan((m_swords[i].first->m_transform->m_worldPosition.y - playerPos.y + 1.5f) / dir2.Length());
 				float val = atan((m_swords[i].first->m_transform->m_worldPosition.y - playerPos.y + 1.5f) / dir2.Length());
-				
-				rot.x = -val;
+
+				rot.x = val;
+
 				m_swords[i].first->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(rot);
 			}
 			if (m_swords[i].second && m_spearImpactCount == i)
@@ -1009,12 +1013,12 @@ void BossSkill::PlayEffect(Vector3 pos)
 	if (m_playSpear)
 	{
 		m_playSpear = false;
-
+		
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(2.5f, 2.5f, 1.f) * 2.f)
+				* Matrix::CreateScale(Vector3(2.5f, 2.5f, 1.f) * 4.f)
 				* Matrix::CreateRotationX(3.1415f * 0.5f)
 				* Matrix::CreateTranslation(pos)
 			);
@@ -1028,7 +1032,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact1.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(3.f, 3.f, 1.f) * 2.f)
+				* Matrix::CreateScale(Vector3(3.f, 3.f, 1.f) * 4.f)
 				* Matrix::CreateRotationX(3.1415f * 0.5f)
 				* Matrix::CreateTranslation(pos)
 			);
@@ -1042,7 +1046,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact2.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(1.f, 1.f, 2.f) * 2.f)
+				* Matrix::CreateScale(Vector3(1.f, 1.f, 2.f) * 4.f)
 				* Matrix::CreateRotationX(3.1415f * 0.5)
 				* Matrix::CreateTranslation(pos)
 			);

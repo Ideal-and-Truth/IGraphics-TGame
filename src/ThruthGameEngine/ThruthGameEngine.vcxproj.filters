@@ -187,6 +187,9 @@
     <Filter Include="Component\UI\Text">
       <UniqueIdentifier>{2f2a9c1b-7bb9-4639-8a75-1b3d60748e47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Camera\CutSceneCamera">
+      <UniqueIdentifier>{c00671a4-d7a6-417d-8f55-a14c0419c49e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Processor.cpp">
@@ -376,6 +379,7 @@
     <ClCompile Include="TextUI.cpp">
       <Filter>Component\UI\Text</Filter>
     </ClCompile>
+    <ClCompile Include="CineCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Processor.h">
@@ -583,6 +587,7 @@
     <ClInclude Include="TextUI.h">
       <Filter>Component\UI\Text</Filter>
     </ClInclude>
+    <ClInclude Include="CineCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

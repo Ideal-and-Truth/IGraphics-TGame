@@ -226,7 +226,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		gRenderer->Init();
 
-		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		auto skybox = gRenderer->CreateSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		gRenderer->SetSkyBox(skybox);
 		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
 		Vector3 pointLightPosition = Vector3(3.f);
@@ -1735,7 +1736,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 #pragma endregion
 #pragma region FireExplosionBillboardParticle
-		//----------ParticleBillboardTest effect----------//
 		std::shared_ptr<Ideal::IParticleMaterial> fireExplosionMaterial = gRenderer->CreateParticleMaterial();
 		//billboardMaterialTest->SetShader(billboardTestPS);
 		fireExplosionMaterial->SetShader(bossFireFloorShader);
@@ -1752,10 +1752,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
 
 		fireExplosionParticle->SetActive(true);
-		fireExplosionParticle->SetLoop(false);
+		fireExplosionParticle->SetLoop(true);
 		fireExplosionParticle->SetDuration(1.f);
 		fireExplosionParticle->SetStartLifetime(1.f);
-
+		fireExplosionParticle->SetSimulationSpeed(2.f);
 		fireExplosionParticle->SetMaxParticles(50);
 		fireExplosionParticle->SetShapeMode(true);
 		fireExplosionParticle->SetShape(Ideal::ParticleMenu::EShape::Circle);
@@ -1765,10 +1765,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		fireExplosionParticle->SetVelocityOverLifetime(true);
 		fireExplosionParticle->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
 		fireExplosionParticle->SetVelocityDirectionRandom(-10.f, 10.f);
-		fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
-		fireExplosionParticle->SetVelocitySpeedModifierRandom(0.f, 0.9f);
-		//billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
-		//billboardTest->SetVelocitySpeedModifierConst(0.f);
+		//fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		//fireExplosionParticle->SetVelocitySpeedModifierRandom(0.f, 0.9f);
+		fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
+		fireExplosionParticle->SetVelocitySpeedModifierConst(0.f);
 		//billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
 
 		// Animation
