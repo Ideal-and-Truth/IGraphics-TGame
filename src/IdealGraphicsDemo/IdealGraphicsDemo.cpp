@@ -253,6 +253,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"DebugPlayer/animation_ka_walk.fbx");
 
+		//gRenderer->ConvertAssetToMyFormat(L"BossAnimations/Idle/BossEntranceRoot.fbx", true);
+		 
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/SM_chronos.Main_tPose.fbx", true);
 		//gRenderer->ConvertAssetToMyFormat(L"PlayerRe/untitled.fbx", true);
 
@@ -380,6 +382,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere6->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 0.f, 0.f)));
 		//sphere7->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 2.5f, 0.f)));
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
+
+		std::shared_ptr<Ideal::ISkinnedMeshObject> boss = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
+		boss->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-3, 0, 0)));
+		std::shared_ptr<Ideal::IAnimation> bossAnim = gRenderer->CreateAnimation(L"BossAnimations/Idle/BossEntranceRoot");
+		boss->AddAnimation("BossAnim", bossAnim);
 
 		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> cart2 = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
@@ -2603,6 +2610,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
 				DebugPlayer->AnimationDeltaTime(0.003f);
+				boss->AnimationDeltaTime(0.003f);
+
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
@@ -2733,6 +2742,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//{
 						//	//SkinnedMeshObjectBoneInfoTest(playerRe);
 						SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+
+						SkinnedMeshObjectAnimationTest(boss);
 
 						//if (DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
@@ -3180,24 +3191,32 @@ void SkinnedMeshObjectAnimationTest(std::shared_ptr<Ideal::ISkinnedMeshObject> S
 	ImGui::Text("Current Animation Index : %d", SkinnedMeshObject->GetCurrentAnimationIndex());
 
 	ImGui::Text("Change Next Animation");
-	if (ImGui::Button("Run"))
+	if (ImGui::Button("BossAnim"))
 	{
-		SkinnedMeshObject->SetAnimation("Run", false);
+		SkinnedMeshObject->SetAnimation("BossAnim", false);
 	}
-	if (ImGui::Button("Slash"))
-	{
-		SkinnedMeshObject->SetAnimation("Slash", false);
-	}
+	//if (ImGui::Button("Run"))
+	//{
+	//	SkinnedMeshObject->SetAnimation("Run", false);
+	//}
+	//if (ImGui::Button("Slash"))
+	//{
+	//	SkinnedMeshObject->SetAnimation("Slash", false);
+	//}
 
 	ImGui::Text("Reserve Next Animation");
-	if (ImGui::Button("Run2"))
+	if (ImGui::Button("BossAnim2"))
 	{
-		SkinnedMeshObject->SetAnimation("Run", true);
+		SkinnedMeshObject->SetAnimation("BossAnim", true);
 	}
-	if (ImGui::Button("Slash2"))
-	{
-		SkinnedMeshObject->SetAnimation("Slash", true);
-	}
+	//if (ImGui::Button("Run2"))
+	//{
+	//	SkinnedMeshObject->SetAnimation("Run", true);
+	//}
+	//if (ImGui::Button("Slash2"))
+	//{
+	//	SkinnedMeshObject->SetAnimation("Slash", true);
+	//}
 
 	ImGui::End();
 }
