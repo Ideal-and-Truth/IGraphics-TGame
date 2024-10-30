@@ -30,7 +30,7 @@ Truth::Component::~Component()
 	}
 }
 
-void Truth::Component::Translate(Vector3& _val)
+void Truth::Component::Translate(const Vector3& _val)
 {
 	m_owner.lock()->m_transform->Translate(_val);
 }

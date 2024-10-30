@@ -119,11 +119,17 @@ void Truth::Controller::FixedUpdate()
 	m_controllerFilter->mFilterData = m_filterData;
 }
 
+void Truth::Controller::Update()
+{
+	SetPosition(m_owner.lock()->m_transform->m_worldPosition);
+	SetRotation(m_owner.lock()->m_transform->m_worldRotation);
+}
+
 /// <summary>
 /// 움직임 함수
 /// </summary>
 /// <param name="_disp">속도</param>
-void Truth::Controller::Move(Vector3& _disp)
+void Truth::Controller::Move(const Vector3& _disp)
 {
 	if (m_controller)
 	{
@@ -143,7 +149,7 @@ void Truth::Controller::Move(Vector3& _disp)
 	}
 }
 
-void Truth::Controller::AddImpulse(Vector3& _disp)
+void Truth::Controller::AddImpulse(const Vector3& _disp)
 {
 	m_impulse = _disp;
 	// m_rigidbody->AddImpulse(_disp);
@@ -154,7 +160,7 @@ void Truth::Controller::AddImpulse(Vector3& _disp)
 /// </summary>
 /// <param name="_disp">위치</param>
 /// <returns>성공 여부</returns>
-bool Truth::Controller::SetPosition(Vector3& _disp)
+bool Truth::Controller::SetPosition(const Vector3& _disp)
 {
 	return m_controller->setFootPosition(physx::PxExtendedVec3(_disp.x, _disp.y, _disp.z));
 }
@@ -162,7 +168,7 @@ bool Truth::Controller::SetPosition(Vector3& _disp)
 /// <summary>
 /// 회전 적용
 /// </summary>
-void Truth::Controller::SetRotation(Quaternion& _val)
+void Truth::Controller::SetRotation(const Quaternion& _val)
 {
 	GetRigidbody()->SetRotation(_val);
 }

@@ -7,6 +7,7 @@
 #include "IBone.h"
 #include "Imesh.h"
 #include "IMaterial.h"
+#include "Transform.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::SkinnedMesh)
 
@@ -25,6 +26,9 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	, m_isAnimationChanged(false)
 	, m_animationMaxFrame(0)
 	, m_oldFrame(0)
+	, m_isRootMotion(true)
+	, m_prevMovement(0.0f)
+	, m_currentMovement(0.0f)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -44,6 +48,9 @@ Truth::SkinnedMesh::SkinnedMesh()
 	, m_isAnimationEnd(false)
 	, m_isAnimationChanged(false)
 	, m_oldFrame(0)
+	, m_isRootMotion(true)
+	, m_prevMovement(0.0f)
+	, m_currentMovement(0.0f)
 {
 	m_name = "Skinned Mesh Filter";
 }
@@ -115,6 +122,9 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
 		}
 	}
+
+	m_rootBone = m_skinnedMesh->GetBoneByIndex(1);
+	SetRootMotion(true);
 }
 
 /// <summary>
@@ -178,7 +188,6 @@ void Truth::SkinnedMesh::Update()
 	// 애니메이션이 변경 되지 않았다면 애니메이션 현재 프레임을 받아온다.
 	if (!m_isAnimationChanged)
 		m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
-
 	// 만일 변경 되었다면
 	else
 	{
@@ -195,18 +204,41 @@ void Truth::SkinnedMesh::Update()
 	// 해당 에니메이션을 재생한다.
 	if (m_animation != nullptr)
 	{
+		if (m_owner.lock()->m_name == "Boss")
+		{
+			int a = 1;
+		}
 		m_animationMaxFrame = m_skinnedMesh->GetCurrentAnimationMaxFrame();
 		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
 
 		if (m_oldFrame > m_currentFrame)
 		{
+			if (m_owner.lock()->m_name == "Boss")
+			{
+				int a = 1;
+			}
 			m_isAnimationEnd = true;
 			m_isAnimationPlaying = false;
+			m_prevMovement = Vector3::Zero;
+			m_currentMovement = Vector3::Zero;
 		}
 		else
 		{
 			m_isAnimationEnd = false;
 			m_isAnimationPlaying = true;
+			if (m_isRootMotion)
+			{
+				Vector3 tempSca;
+				Quaternion tempRot;
+				Matrix btm = m_rootBone.lock()->GetTransform();
+				btm.Decompose(tempSca, tempRot, m_currentMovement);
+				Translate(m_currentMovement - m_prevMovement);
+				m_prevMovement = m_currentMovement;
+			}
+		}
+		if (m_owner.lock()->m_name == "Boss")
+		{
+			// DEBUG_PRINT((std::to_string(m_oldFrame) + " " + std::to_string(m_currentFrame) + "\n").c_str());
 		}
 
 		m_oldFrame = m_currentFrame;
@@ -218,6 +250,7 @@ void Truth::SkinnedMesh::Update()
 /// </summary>
 void Truth::SkinnedMesh::ApplyTransform()
 {
+
 	m_skinnedMesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
 	m_skinnedMesh->SetDrawObject(m_isRendering);
 }
@@ -248,6 +281,15 @@ void Truth::SkinnedMesh::DeleteMesh()
 		m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
 	m_skinnedMesh.reset();
 	m_skinnedMesh = nullptr;
+}
+
+void Truth::SkinnedMesh::SetRootMotion(bool _isRootMotion)
+{
+	m_isRootMotion = _isRootMotion;
+	// m_owner.lock()->m_transform->m_isRootMotion = m_isRootMotion;
+
+	m_prevMovement = Vector3::Zero;
+	m_currentMovement = Vector3::Zero;
 }
 
 /// <summary>

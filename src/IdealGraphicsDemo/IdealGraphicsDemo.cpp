@@ -272,7 +272,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Hip Hop Dancing.fbx");
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"Kachujin/HipHop.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player/SK_Fencer_Lady_Nude.fbx", true);
-		//gRenderer->ConvertAnimationAssetToMyFormat(L"player/Dancing Twerk.fbx");
+		gRenderer->ConvertAnimationAssetToMyFormat(L"BossAnimations/Idle/BossEntranceRoot.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"player2/myPlayer2.fbx", true);
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"player2/Capoeira.fbx");
 		//ERROR : 

@@ -26,10 +26,14 @@ namespace Truth
 		std::shared_ptr<Ideal::IAnimation> m_animation;
 
 		std::map<std::string, std::weak_ptr<Ideal::IBone>> m_boneMap;
+		std::weak_ptr<Ideal::IBone> m_rootBone;
 
 		PROPERTY(mat);
 		std::vector<std::shared_ptr<Material>> m_mat;
 		std::vector<std::string> m_matPath;
+
+		Vector3 m_prevMovement;
+		Vector3 m_currentMovement;
 
 	private:
 		PROPERTY(path);
@@ -84,6 +88,8 @@ namespace Truth
 		void SetActive();
 
 		void DeleteMesh();
+
+		void SetRootMotion(bool _isRootMotion);
 
 		std::weak_ptr<Ideal::IBone> GetBone(const std::string& _name);
 		const std::map<std::string, std::weak_ptr<Ideal::IBone>>& GetBoneMap() { return m_boneMap; }

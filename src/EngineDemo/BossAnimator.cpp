@@ -112,7 +112,7 @@ void BossAnimator::Start()
 	m_baseSpeed = m_enemy->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.get()).Get();
 
 
-	m_skinnedMesh->AddAnimation("BossIdle", L"BossAnimations/Idle/Idle");
+	m_skinnedMesh->AddAnimation("BossIdle", L"BossAnimations/Idle/BossEntranceRoot");
 	m_skinnedMesh->AddAnimation("BossAttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
 	m_skinnedMesh->AddAnimation("BossAttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
 	m_skinnedMesh->AddAnimation("BossAttackChargedCombo", L"BossAnimations/Attacks/AttackChargedCombo");

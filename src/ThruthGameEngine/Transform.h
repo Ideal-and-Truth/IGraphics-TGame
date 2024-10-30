@@ -35,6 +35,11 @@ namespace Truth
 
 		Vector3 m_look;
 
+		bool m_isRootMotion;
+		Matrix& m_rootMatrix;
+
+		Matrix m_identity;
+
 	public:
 		Transform();
 		virtual ~Transform();
@@ -42,7 +47,6 @@ namespace Truth
 		// 변환 내용 적용
 		void ApplyTransform();
 
-	public:
 
 #pragma region Inline
 #pragma region Transform

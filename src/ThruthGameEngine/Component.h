@@ -150,7 +150,7 @@ namespace Truth
 			m_managers.lock()->Time()->WaitForSecondsRealtime(time);
 		}
 	public:
-		void Translate(Vector3& _val);
+		void Translate(const Vector3& _val);
 
 		void SetRotation(const Quaternion& _val);
 		void SetPosition(const Vector3& _pos) const;

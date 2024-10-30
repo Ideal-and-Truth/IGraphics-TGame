@@ -8,8 +8,11 @@ Truth::Transform::Transform()
 	, m_position(0.0f, 0.0f, 0.0f)
 	, m_scale(1.0f, 1.0f, 1.0f)
 	, m_rotation{}
-	, m_localTM{Matrix::Identity}
+	, m_localTM{ Matrix::Identity }
 	, m_look(0.0f, 0.0f, 1.0f)
+	, m_isRootMotion(false)
+	, m_rootMatrix(m_identity)
+	, m_identity(Matrix::Identity)
 {
 	m_canMultiple = false;
 	m_name = "Transform";
@@ -32,17 +35,11 @@ void Truth::Transform::ApplyTransform()
 	m_localTM = scaleMT * rotationMT * traslationMT;
 
 	if (HasParent() && IsLinked())
-	{
 		m_globalTM = m_localTM * GetParentLinkedMatrix() * GetParentMatrix();
-	}
 	else if (HasParent())
-	{
 		m_globalTM = m_localTM * GetParentMatrix();
-	}
 	else
-	{
 		m_globalTM = m_localTM;
-	}
 
 	m_globalTM.Decompose(m_worldScale, m_worldRotation, m_worldPosition);
 }

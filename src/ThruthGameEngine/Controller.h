@@ -84,10 +84,13 @@ namespace Truth
 		METHOD(FixedUpdate);
 		virtual void FixedUpdate() override;
 
-		void Move(Vector3& _disp);
-		void AddImpulse(Vector3& _disp);
-		bool SetPosition(Vector3& _disp);
-		void SetRotation(Quaternion& _val);
+		METHOD(Update);
+		virtual void Update() override;
+
+		void Move(const Vector3& _disp);
+		void AddImpulse(const Vector3& _disp);
+		bool SetPosition(const Vector3& _disp);
+		void SetRotation(const Quaternion& _val);
 		bool IsCollisionDown();
 		bool IsCollisionUp();
 		bool IsCollisionSide();
