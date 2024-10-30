@@ -195,9 +195,10 @@ void BossAnimator::Update()
 
 
 	// ╫╨ео©К
-	if (m_enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(m_enemy.get()).Get() > m_downGuage)
+	if (!m_isDown && m_enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(m_enemy.get()).Get() > m_downGuage)
 	{
 		m_isDown = true;
+		m_passingTime = 0.f;
 	}
 
 	if (m_isDown)

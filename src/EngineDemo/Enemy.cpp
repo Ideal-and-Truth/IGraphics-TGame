@@ -72,24 +72,5 @@ void Enemy::Update()
 		return;
 	}
 
-	if (m_stunGuage > 100.f)
-	{
-		m_stunGuage;
-	}
-
-// 	if (m_stunGuage > 0.f)
-// 	{
-// 		m_passingTime += GetDeltaTime();
-// 		if (m_passingTime > 1.f)
-// 		{
-// 			m_stunGuage -= 1.f;
-// 			m_passingTime = 0.f;
-// 		}
-// 	}
-// 	else
-// 	{
-// 		m_stunGuage = 0.f;
-// 		m_passingTime = 0.f;
-// 	}
 
 }

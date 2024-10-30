@@ -126,7 +126,9 @@ void MeleeWeapon::Update()
 				{
 					if (!m_player->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_player.get()).Get())
 					{
-						m_player->GetTypeInfo().GetProperty("currentCP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get() + 5.f);
+						auto damage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
+						m_player->GetTypeInfo().GetProperty("currentCP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get() + damage);
+						m_player->GetTypeInfo().GetProperty("currentTP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() + damage);
 					}
 
 					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, false);
@@ -188,6 +190,7 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);
@@ -198,6 +201,7 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);
@@ -208,6 +212,7 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);
@@ -218,6 +223,7 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);
@@ -228,6 +234,7 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage2.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);

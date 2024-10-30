@@ -65,7 +65,30 @@ void Bullet::PlayEffect()
 	{
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
 		p->SetTransformMatrix(
-			Matrix::CreateRotationX(1.07f)
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
+			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateScale(2.f)
+			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
 		);
 		p->SetActive(true);
@@ -76,6 +99,7 @@ void Bullet::PlayEffect()
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
 		);
 		p->SetActive(true);
@@ -86,6 +110,7 @@ void Bullet::PlayEffect()
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage2.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
 		);
 		p->SetActive(true);
