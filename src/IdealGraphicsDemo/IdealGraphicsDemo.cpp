@@ -1093,7 +1093,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackholeMaterial->SetShader(bossBlackHoleShader);
 		//blackholeMaterial->SetWriteDepthBuffer(true);
 
-
+		
 		std::shared_ptr<Ideal::ITexture> bhTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/PerlinMap_1.png");
 		std::shared_ptr<Ideal::ITexture> bhTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
 		std::shared_ptr<Ideal::ITexture> bhTex2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_5.png");
@@ -1106,7 +1106,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//blackholeMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Blend);
 		blackholeMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
 		blackholeMaterial->SetBackFaceCulling(false);
-		//blackholeMaterial->SetWriteDepthBuffer(false);
 
 
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Circle_2.fbx");
@@ -1123,6 +1122,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackHoleParticleSystem->SetStartLifetime(8.f);
 		blackHoleParticleSystem->SetTransformMatrix(
 			Matrix::CreateRotationX(3.14 * 0.5)
+			* Matrix::CreateTranslation(Vector3(-4,0,0))
 		);
 		blackHoleParticleSystem->SetColorOverLifetime(true);
 		//{
@@ -1147,9 +1147,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IParticleMaterial> blackholeSphereMaterial = gRenderer->CreateParticleMaterial();
 		blackholeSphereMaterial->SetShader(bossBlackHoleSphereShader);
 		blackholeSphereMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		//blackholeSphereMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		blackholeSphereMaterial->SetBackFaceCulling(true);
 		//blackholeSphereMaterial->SetWriteDepthBuffer(false);
 		//blackholeSphereMaterial->SetTransparency(false);
-		//blackholeSphereMaterial->SetWriteDepthBuffer(true);
+		blackholeSphereMaterial->SetWriteDepthBuffer(true);
 		std::shared_ptr<Ideal::IParticleSystem> blackHoleSphereParticleSystem = gRenderer->CreateParticleSystem(blackholeSphereMaterial);
 		blackHoleSphereParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		blackHoleSphereParticleSystem->SetRenderMesh(bossParticleMeshSphere);
@@ -1159,6 +1161,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackHoleSphereParticleSystem->SetStartColor(Color(0, 0, 0, 1));
 		blackHoleSphereParticleSystem->SetStartColor(Color(1, 0, 0, 1));
 		blackHoleSphereParticleSystem->SetLoop(false);
+		blackHoleSphereParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-4, 0, 0)));
 #pragma endregion
 
 #pragma region CreateParticle
