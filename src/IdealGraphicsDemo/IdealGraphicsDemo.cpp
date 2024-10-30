@@ -744,6 +744,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		);
 		std::shared_ptr<Ideal::IShader> groundSpikePS = gRenderer->CreateAndLoadParticleShader(L"GroundSpikePS");
 
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/EnemyCharge.hlsl",
+			L"../Shaders/Particle/",
+			L"EnemyChargePS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> enemyChargePS = gRenderer->CreateAndLoadParticleShader(L"EnemyChargePS");
+
 #pragma endregion
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
@@ -2117,6 +2127,193 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 #pragma endregion
+
+#pragma region AbilitySlash
+
+		std::shared_ptr<Ideal::IParticleMaterial> abilitySlashMaterial = gRenderer->CreateParticleMaterial();
+		abilitySlashMaterial->SetShader(swordParticleShader);
+		//
+		//std::shared_ptr<Ideal::ITexture> slashParticleTexture1_0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Smoke12.png");
+		abilitySlashMaterial->SetTexture0(slashParticleTexture1_0);
+		//std::shared_ptr<Ideal::ITexture> slashParticleTexture1_1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Fire13.png");
+		abilitySlashMaterial->SetTexture1(slashParticleTexture1_1);
+		//particleMaterial->SetTexture0(slashParticleTexture1);
+		//std::shared_ptr<Ideal::ITexture> slashParticleTexture1_2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise43b.png");
+		abilitySlashMaterial->SetTexture2(slashParticleTexture1_2);
+
+		abilitySlashMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		//abilitySlashMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+
+		std::shared_ptr<Ideal::IParticleSystem> abilitySlashParticleSystem = gRenderer->CreateParticleSystem(abilitySlashMaterial);
+		abilitySlashParticleSystem->SetTransformMatrix(
+			Matrix::CreateRotationY(-2.44f)
+			* Matrix::CreateTranslation(Vector3(13, 0, 0))
+		);
+
+
+		abilitySlashParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		abilitySlashParticleSystem->SetRenderMesh(slashParticleMesh);
+		abilitySlashParticleSystem->SetLoop(false);
+		abilitySlashParticleSystem->SetDuration(2.f);
+		//abilitySlashParticleSystem->SetStartColor(DirectX::SimpleMath::Color(0.2509f, 0, 0.7529f, 1));
+		abilitySlashParticleSystem->SetStartColor(Color(0.5647f, 0.0705f, 1.f, 0.5));
+		abilitySlashParticleSystem->SetRotationOverLifetime(true);
+		{
+			auto& graphY = abilitySlashParticleSystem->GetRotationOverLifetimeAxisY();
+			graphY.AddControlPoint({ 0,1 });
+			graphY.AddControlPoint({ 0.5, 0 });
+			graphY.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = abilitySlashParticleSystem->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = abilitySlashParticleSystem->GetCustomData1Y();
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = abilitySlashParticleSystem->GetCustomData2Z();
+			graph.AddControlPoint({ 0,0 });
+		}
+		{
+			auto& graph = abilitySlashParticleSystem->GetCustomData2W();
+			graph.AddControlPoint({ 0,1 });
+		}
+
+		// use color over lifetime
+		abilitySlashParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = abilitySlashParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0.3f, 0.07f, 1.f, 1), 0.f);	// 시작 생상
+			graph.AddPoint(Color(0.3f, 0.07f, 1.f, 1), 1.f);	// 끝 색상
+		}
+#pragma endregion
+
+#pragma region EnemyAttack
+		std::shared_ptr<Ideal::IParticleMaterial> enemySlashMaterial = gRenderer->CreateParticleMaterial();
+		enemySlashMaterial->SetShader(swordParticleShader);
+		//
+		std::shared_ptr<Ideal::ITexture> smoke27 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Smoke27.png");
+		//std::shared_ptr<Ideal::ITexture> mytex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Flare23.png");
+		//std::shared_ptr<Ideal::ITexture> mytex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Smoke27.png");
+		enemySlashMaterial->SetTexture0(smoke27);
+		enemySlashMaterial->SetTexture1(norDamageTexture1);
+		enemySlashMaterial->SetTexture2(glowTexture);
+
+		enemySlashMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+
+		std::shared_ptr<Ideal::IParticleSystem> enemySlashParticleSystem = gRenderer->CreateParticleSystem(enemySlashMaterial);
+		enemySlashParticleSystem->SetTransformMatrix(
+			Matrix::CreateRotationY(-2.44f)
+			* Matrix::CreateTranslation(Vector3(16, 0, 0))
+		);
+
+
+		enemySlashParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		enemySlashParticleSystem->SetRenderMesh(slashParticleMesh);
+		enemySlashParticleSystem->SetLoop(false);
+		enemySlashParticleSystem->SetDuration(2.f);
+		//abilitySlashParticleSystem->SetStartColor(DirectX::SimpleMath::Color(0.2509f, 0, 0.7529f, 1));
+		enemySlashParticleSystem->SetStartColor(Color(1, 1, 1.f, 0.5));
+		enemySlashParticleSystem->SetRotationOverLifetime(true);
+		{
+			auto& graphY = enemySlashParticleSystem->GetRotationOverLifetimeAxisY();
+			graphY.AddControlPoint({ 0,1 });
+			graphY.AddControlPoint({ 0.5, 0 });
+			graphY.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = enemySlashParticleSystem->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 0.1,2 });
+			graph.AddControlPoint({ 0.3,0.6 });
+			graph.AddControlPoint({ 1,0 });
+		}
+		{
+			auto& graph = enemySlashParticleSystem->GetCustomData1Y();
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = enemySlashParticleSystem->GetCustomData2Z();
+			graph.AddControlPoint({ 0,0 });
+		}
+		{
+			auto& graph = enemySlashParticleSystem->GetCustomData2W();
+			graph.AddControlPoint({ 0,1 });
+		}
+
+		// use color over lifetime
+		enemySlashParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = enemySlashParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0.f, 0.f, 0.f, 0), 0.f);	// 시작 생상
+			graph.AddPoint(Color(0.7311f, 0.9524f, 1.f, 1), 0.3f);	// 시작 생상
+			graph.AddPoint(Color(0.f, 0.f, 0.f, 0), 1.f);	// 끝 색상
+		}
+#pragma endregion
+
+#pragma region EnemyCharge
+		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Cone2.fbx");
+		std::shared_ptr<Ideal::IMesh> Cone2Mesh = gRenderer->CreateParticleMesh(L"0_Particle/Cone2");
+		
+		std::shared_ptr<Ideal::IParticleMaterial> enemyChargeMaterial = gRenderer->CreateParticleMaterial();
+		enemyChargeMaterial->SetShader(enemyChargePS);
+		//enemyChargeMaterial->SetTexture0(norDamageTexture1);
+		enemyChargeMaterial->SetTexture0(glowTexture);
+		enemyChargeMaterial->SetTexture1(norDamageTexture1);
+		//enemyChargeMaterial->SetTexture1(slashParticleTexture1_1);
+		enemyChargeMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		enemyChargeMaterial->SetBackFaceCulling(true);
+
+		std::shared_ptr<Ideal::IParticleSystem> enemyChargeParticleSystem = gRenderer->CreateParticleSystem(enemyChargeMaterial);
+		enemyChargeParticleSystem->SetLoop(false);
+		enemyChargeParticleSystem->SetStartLifetime(1.f);
+		enemyChargeParticleSystem->SetDuration(2.f);
+		enemyChargeParticleSystem->SetTransformMatrix(
+			Matrix::CreateScale(Vector3(0.5,0.5,1))				// 여기는 적용
+			* Matrix::CreateTranslation(Vector3(0, -4, 0))	// 여기는 데모 위치 확인용
+		);
+		enemyChargeParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		enemyChargeParticleSystem->SetRenderMesh(Cone2Mesh);
+		
+		{
+			auto& graph = enemyChargeParticleSystem->GetCustomData1X();
+			graph.AddControlPoint({ 0,5 });
+			graph.AddControlPoint({ 2,0 });
+		}
+		{
+			auto& graph = enemyChargeParticleSystem->GetCustomData1Y();
+			graph.AddControlPoint({ 0,5 });
+			graph.AddControlPoint({ 2,0});
+		}
+
+		//2
+		std::shared_ptr<Ideal::IParticleSystem> enemyChargeParticleSystem2 = gRenderer->CreateParticleSystem(enemyChargeMaterial);
+		enemyChargeParticleSystem2->SetLoop(false);
+		enemyChargeParticleSystem2->SetStartLifetime(1.f);
+		enemyChargeParticleSystem2->SetDuration(2.f);
+		enemyChargeParticleSystem2->SetTransformMatrix(
+			Matrix::CreateScale(Vector3(0.5, 0.5, 1))				// 여기는 적용
+			* Matrix::CreateTranslation(Vector3(0, -4, 0))	// 여기는 데모 위치 확인용
+		);
+		enemyChargeParticleSystem2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		enemyChargeParticleSystem2->SetRenderMesh(Cone2Mesh);
+
+		{
+			auto& graph = enemyChargeParticleSystem2->GetCustomData1X();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 1,1 });
+		}
+		{
+			auto& graph = enemyChargeParticleSystem2->GetCustomData1Y();
+			graph.AddControlPoint({ 0,0 });
+			graph.AddControlPoint({ 1,1 });
+		}
+#pragma endregion
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -2357,6 +2554,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (GetAsyncKeyState('Y') & 0x8000)
 				{
 					dodgeEffect->Play();
+
+					// 위랑 아래랑 다른거임.
+
+					abilitySlashParticleSystem->Play();
+
+					// 위랑 아래랑 다른거임.
+
+					enemySlashParticleSystem->Play();
+
+					// 위랑 아래랑 다른거임.
+
+					enemyChargeParticleSystem->Play();
+					enemyChargeParticleSystem2->Play();
 				}
 
 				if (GetAsyncKeyState('U') & 0x8000)
@@ -2428,6 +2638,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				groundEffectParticleSystem->SetDeltaTime(0.003f);
 				groundSmokeParticleSystem->SetDeltaTime(0.003f);
 				groundFireParticleSystem->SetDeltaTime(0.003f);
+				abilitySlashParticleSystem->SetDeltaTime(0.003f);
+				enemySlashParticleSystem->SetDeltaTime(0.003f);
+				enemyChargeParticleSystem->SetDeltaTime(0.003f);
+				enemyChargeParticleSystem2->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
