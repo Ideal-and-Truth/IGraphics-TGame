@@ -2212,7 +2212,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			* Matrix::CreateTranslation(Vector3(16, 0, 0))
 		);
 
-
 		enemySlashParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		enemySlashParticleSystem->SetRenderMesh(slashParticleMesh);
 		enemySlashParticleSystem->SetLoop(false);
@@ -2275,7 +2274,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		enemyChargeParticleSystem->SetDuration(2.f);
 		enemyChargeParticleSystem->SetTransformMatrix(
 			Matrix::CreateScale(Vector3(0.5,0.5,1))				// 여기는 적용
-			* Matrix::CreateTranslation(Vector3(0, -4, 0))	// 여기는 데모 위치 확인용
+			* Matrix::CreateTranslation(Vector3(19, 0, 0))	// 여기는 데모 위치 확인용
 		);
 		enemyChargeParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		enemyChargeParticleSystem->SetRenderMesh(Cone2Mesh);
@@ -2284,11 +2283,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			auto& graph = enemyChargeParticleSystem->GetCustomData1X();
 			graph.AddControlPoint({ 0,5 });
 			graph.AddControlPoint({ 2,0 });
-		}
-		{
-			auto& graph = enemyChargeParticleSystem->GetCustomData1Y();
-			graph.AddControlPoint({ 0,5 });
-			graph.AddControlPoint({ 2,0});
 		}
 
 		//2
