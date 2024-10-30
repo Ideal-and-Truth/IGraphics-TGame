@@ -137,8 +137,6 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 
 	LoadUnityData(m_mapPath);
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
-
-	m_managers.lock()->Input()->m_fpsMode = m_useNavMesh;
 }
 
 /// <summary>

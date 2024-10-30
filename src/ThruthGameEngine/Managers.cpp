@@ -155,7 +155,7 @@ void Truth::Managers::EditToGame()
 	m_sceneManager->SaveCurrentScene();
 	m_sceneManager->m_currentScene->Start();
 	m_isEdit = false;
-	m_inputManager->m_fpsMode = true;
+	m_inputManager->m_fpsMode = m_sceneManager->m_currentScene->m_useNavMesh;
 }
 
 void Truth::Managers::GameToEdit()
