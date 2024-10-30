@@ -2,6 +2,12 @@
 #include "Component.h"
 #include "Collider.h"
 
+
+namespace Ideal
+{
+	class IParticleSystem;
+}
+
 class Player;
 
 class DotDamage :
@@ -19,6 +25,7 @@ private:
 
 private:
 	std::shared_ptr<Player> m_player;
+	std::shared_ptr<Ideal::IParticleSystem> m_particle;
 
 	PROPERTY(playEffect);
 	bool m_playEffect;

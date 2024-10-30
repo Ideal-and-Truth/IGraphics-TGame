@@ -17,14 +17,14 @@ DotDamage::DotDamage()
 DotDamage::~DotDamage()
 {
 	m_player->GetTypeInfo().GetProperty("onFire")->Set(m_player.get(), false);
-	auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
-	p->SetActive(false);
+	m_particle->SetActive(false);
 }
 
 void DotDamage::Start()
 {
 	auto player = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player");
 	m_player = player.lock()->GetComponent<Player>().lock();
+	m_particle = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
 }
 
 void DotDamage::Update()
@@ -51,17 +51,17 @@ void DotDamage::OnTriggerExit(Truth::Collider* _other)
 void DotDamage::PlayEffect()
 {
 	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
-		p->SetTransformMatrix(
-			Matrix::CreateRotationX(3.14 * 0.5)
+		m_particle->SetTransformMatrix(
+			Matrix::CreateRotationX(3.14f * 0.5f)
+			* Matrix::CreateScale(3.f)
 			* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
 		);
 
 		if (m_playEffect)
 		{
 			m_playEffect = false;
-			p->SetActive(true);
-			p->Play();
+			m_particle->SetActive(true);
+			m_particle->Play();
 		}
 	}
 }
