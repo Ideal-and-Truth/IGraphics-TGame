@@ -44,6 +44,8 @@ namespace Truth
 
 		bool m_useNavMesh = true;
 
+		fs::path m_skyBox;
+
 	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
@@ -112,6 +114,7 @@ namespace Truth
 		_ar& m_name;
 		_ar& m_rootEntities;
 		_ar& m_mapPath;
+		_ar& m_skyBox.generic_string();
 	}
 
 	template<class Archive>
@@ -120,9 +123,13 @@ namespace Truth
 		_ar& m_name;
 		_ar& m_rootEntities;
 		if (file_version >= 2)
-		{
 			_ar& m_mapPath;
+		if (file_version >= 3)
+		{
+			std::string path;
+			_ar& path;
+			m_skyBox = path;
 		}
 	}
 }
-BOOST_CLASS_VERSION(Truth::Scene, 2)
+BOOST_CLASS_VERSION(Truth::Scene, 3)

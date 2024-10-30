@@ -70,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //  	processor->SaveScene(testScene);
 
 	///...///
- 	processor->LoadScene(L"../Scene/test.scene");
+ 	processor->LoadScene(L"../Scene/TitleScene.scene");
 	///...///
 
 	processor->Loop();

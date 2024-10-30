@@ -86,8 +86,6 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 	// 추후에 카메라에 넘겨 줄 시야각
 	m_aspect = static_cast<float>(_wight) / static_cast<float>(_height);
 
-	m_renderer->SetSkyBox(L"../Resources/Textures/SkyBox/NightStormMoonGlow.dds");
-
 	m_renderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 }
 
@@ -497,6 +495,21 @@ void Truth::GraphicsManager::DeleteCineCamera(const std::string& _name)
 	if (itr == m_cineCameraMap.end())
 		return;
 	m_cineCameraMap.erase(itr);
+}
+
+void Truth::GraphicsManager::ChangeSkyBox(fs::path _path)
+{
+	if (!fs::exists(_path))
+		return;
+
+	auto it = m_textureMap.find(_path);
+	if (it == m_textureMap.end())
+	{
+		std::shared_ptr<Texture> t = std::make_shared<Texture>();
+		t->m_texture = m_renderer->CreateSkyBox(_path);
+		m_textureMap[_path] = t;
+	}
+	m_renderer->SetSkyBox(m_textureMap[_path]->m_texture);
 }
 
 #ifdef EDITOR_MODE

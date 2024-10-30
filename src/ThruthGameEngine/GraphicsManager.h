@@ -49,10 +49,10 @@ namespace Truth
 
 	public:
 		// path / texture
-		std::unordered_map<std::wstring, std::shared_ptr<Texture>> m_textureMap;
+		std::unordered_map<fs::path, std::shared_ptr<Texture>> m_textureMap;
 
 		// name / matarial
-		std::unordered_map<std::string, std::shared_ptr<Material>> m_matarialMap;
+		std::unordered_map<fs::path, std::shared_ptr<Material>> m_matarialMap;
 
 	public:
 		GraphicsManager();
@@ -125,6 +125,8 @@ namespace Truth
 		void AddCineCamera(const std::string& _name, std::shared_ptr<CineCamera> _cineCamera);
 		std::shared_ptr<CineCamera> GetCineCamera(const std::string& _name);
 		void DeleteCineCamera(const std::string& _name);
+
+		void ChangeSkyBox(fs::path _path);
 
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);

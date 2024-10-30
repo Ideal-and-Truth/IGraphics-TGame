@@ -242,7 +242,7 @@ void Truth::ParticleManager::LoadParticle(fs::path _path)
 		/// Max Particle
 		if (node["MaxParticles"].IsDefined())
 		{
-			particle->SetMaxParticles((node["MaxParticles"].as<float>()));
+			particle->SetMaxParticles((node["MaxParticles"].as<uint32>()));
 		}
 
 
