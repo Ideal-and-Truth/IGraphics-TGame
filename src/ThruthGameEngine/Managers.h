@@ -23,7 +23,7 @@ namespace Truth
 	{
 	private:
 		static fs::path ROOT_PATH;
-
+		HWND m_hwnd;
 	public:
 
 		std::shared_ptr<TimeManager> m_timeManager;
@@ -56,6 +56,7 @@ namespace Truth
 
 		void Finalize();
 
+		void EndGame();
 
 #ifdef EDITOR_MODE
 		void EditToGame();

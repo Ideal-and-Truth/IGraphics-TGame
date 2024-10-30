@@ -3,6 +3,11 @@
 
 BOOST_CLASS_EXPORT_IMPLEMENT(StartButton)
 
+StartButton::StartButton()
+{
+	m_name = "Start Button";
+}
+
 void StartButton::Start()
 {
 	m_UI.lock()->SetButton();

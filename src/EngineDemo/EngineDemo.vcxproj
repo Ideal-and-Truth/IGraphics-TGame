@@ -166,6 +166,7 @@
     <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
+    <ClInclude Include="ExitButton.h" />
     <ClInclude Include="FixedCamera.h" />
     <ClInclude Include="FrameUI.h" />
     <ClInclude Include="framework.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
+    <ClCompile Include="ExitButton.cpp" />
     <ClCompile Include="FixedCamera.cpp" />
     <ClCompile Include="FrameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />

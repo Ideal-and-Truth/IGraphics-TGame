@@ -145,6 +145,11 @@ void Truth::Managers::Finalize()
 }
 
 
+void Truth::Managers::EndGame()
+{
+	::PostQuitMessage(0);
+}
+
 #ifdef EDITOR_MODE
 void Truth::Managers::EditToGame()
 {

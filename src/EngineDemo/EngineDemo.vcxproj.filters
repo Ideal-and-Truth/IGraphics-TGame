@@ -214,9 +214,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="FixedCamera.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Component\Camera</Filter>
     </ClInclude>
     <ClInclude Include="StartButton.h">
+      <Filter>Component\TitleButton</Filter>
+    </ClInclude>
+    <ClInclude Include="ExitButton.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -336,9 +339,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="FixedCamera.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Component\Camera</Filter>
     </ClCompile>
     <ClCompile Include="StartButton.cpp">
+      <Filter>Component\TitleButton</Filter>
+    </ClCompile>
+    <ClCompile Include="ExitButton.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
