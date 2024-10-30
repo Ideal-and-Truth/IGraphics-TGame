@@ -76,8 +76,11 @@ void MeleeWeapon::Update()
 				{
 					float playerDamage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
 					float enemyHp = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy).Get();
+					float enemyStunGuage = enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(enemy).Get();
 					float hpLeft = enemyHp - playerDamage;
+
 					enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
+					enemy->GetTypeInfo().GetProperty("stunGuage")->Set(enemy, enemyStunGuage + 1.f);
 					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, true);
 
 					Vector3 pos = e->GetWorldPosition();
@@ -105,9 +108,6 @@ void MeleeWeapon::Update()
 
 			/// 여기에서 가드 이펙트 사용하기
 
-			Vector3 pos = e->GetWorldPosition();
-			pos.y += 1.f;
-			PlayEffect(pos);
 
 			m_onHitEnemys.clear();
 		}
