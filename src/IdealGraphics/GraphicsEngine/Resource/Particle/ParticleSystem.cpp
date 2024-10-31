@@ -135,6 +135,7 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 {
 	m_currentTime += m_deltaTime;
 	m_cbParticleSystem.CurrentTime = m_currentTime;
+	m_cbParticleSystem.CurrentTime = m_currentDurationTime;
 
 	if (m_isPlaying)
 	{
@@ -150,6 +151,7 @@ void Ideal::ParticleSystem::DrawParticle(ComPtr<ID3D12Device> Device, ComPtr<ID3
 			return;
 		}
 		m_currentDurationTime = 0.f;
+		m_RENDERM_MODE_BILLBOARD_isDirty = true;
 	}
 
 	if (m_currentDurationTime > m_startLifetime)
@@ -816,6 +818,7 @@ void Ideal::ParticleSystem::DrawRenderMesh(ComPtr<ID3D12Device> Device, ComPtr<I
 		UpdateColorOverLifetime();
 		//if (m_currentTime > 1.0) m_currentTime = 1.0;
 		m_cbParticleSystem.Time = m_currentTime;
+		m_cbParticleSystem.Time = m_currentDurationTime;
 		auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
 		memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
 		auto handle2 = DescriptorHeap->Allocate();
@@ -968,7 +971,8 @@ void Ideal::ParticleSystem::ComputeRenderBillboard(ComPtr<ID3D12Device> Device, 
 		}
 		{
 			// ParticleData
-			m_cbParticleSystem.Time = m_currentTime;
+			//m_cbParticleSystem.Time = m_currentTime;
+			m_cbParticleSystem.Time = m_currentDurationTime;
 			m_cbParticleSystem.DeltaTime = m_deltaTime;
 			auto cb2 = CBPool->Allocate(Device.Get(), sizeof(CB_ParticleSystem));
 			memcpy(cb2->SystemMemAddr, &m_cbParticleSystem, sizeof(CB_ParticleSystem));
@@ -1114,7 +1118,7 @@ void Ideal::ParticleSystem::UpdateAnimationUV()
 	float frameDuration = m_startLifetime / static_cast<float>(totalFrames);
 
 	// 현재 프레임 계산
-	uint32 currentFrame = static_cast<uint32>(m_currentTime / frameDuration);
+	uint32 currentFrame = static_cast<uint32>(m_currentDurationTime / frameDuration);
 
 	// 경계를 초과하는 경우 마지막 프레임으로 고정
 	currentFrame = std::min<uint32>(currentFrame, totalFrames - 1);

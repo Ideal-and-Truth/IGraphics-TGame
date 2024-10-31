@@ -21,6 +21,7 @@ private:
 	std::shared_ptr<PlayerAnimator> m_playerAnimator;
 
 	float m_swordBeamPos;
+	float m_passingTime;
 
 	bool m_useSwordBeam;
 

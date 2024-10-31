@@ -76,9 +76,16 @@ void MeleeWeapon::Update()
 				{
 					float playerDamage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
 					float enemyHp = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy).Get();
+					float enemyStunGuage = enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(enemy).Get();
 					float hpLeft = enemyHp - playerDamage;
+
 					enemy->GetTypeInfo().GetProperty("currentTP")->Set(enemy, hpLeft);
+					enemy->GetTypeInfo().GetProperty("stunGuage")->Set(enemy, enemyStunGuage + 1.f);
 					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, true);
+
+					Vector3 pos = e->GetWorldPosition();
+					pos.y += 1.f;
+					PlayEffect(pos);
 				}
 			}
 		}
@@ -91,11 +98,25 @@ void MeleeWeapon::Update()
 			{
 				enemyDamage *= 0.3f;
 			}
+			if (m_playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(m_playerAnimator.get()).Get())
+			{
+				enemyDamage = 0.f;
+
+				Vector3 pos = e->GetWorldPosition();
+				pos.y += 1.f;
+				PlayEffect(pos);
+			}
 
 			float hpLeft = playerHp - enemyDamage;
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
+
+			/// 여기에서 가드 이펙트 사용하기
+
+
 			m_onHitEnemys.clear();
 		}
+
+
 	}
 
 	if (!m_isAttacking && m_player)
@@ -107,9 +128,17 @@ void MeleeWeapon::Update()
 			{
 				if (enemy->GetTypeInfo().GetProperty("hitOnce")->Get<bool>(enemy).Get())
 				{
+					if (!m_player->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_player.get()).Get())
+					{
+						auto damage = m_player->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_player.get()).Get();
+						m_player->GetTypeInfo().GetProperty("currentCP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get() + damage);
+						m_player->GetTypeInfo().GetProperty("currentTP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get() + damage);
+					}
+
 					enemy->GetTypeInfo().GetProperty("hitOnce")->Set(enemy, false);
 				}
 			}
+
 		}
 		m_onHitEnemys.clear();
 	}
@@ -125,17 +154,8 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 			{
 				if (_other->GetOwner().lock()->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(_other->GetOwner().lock()->GetComponent<Enemy>().lock().get()).Get() > 0.f)
 				{
-					if (!m_player->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_player.get()).Get())
-					{
-						m_player->GetTypeInfo().GetProperty("currentCP")->Set(m_player.get(), m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get() + 5.f);
-					}
 					m_onHitEnemys.push_back(_other->GetOwner().lock());
 					WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
-
-					Vector3 pos = _other->GetOwner().lock()->GetWorldPosition();
-					pos.y += 1.f;
-					//PlayEffect(pos);
-					PlayEffect(m_owner.lock()->GetWorldPosition());
 				}
 			}
 		}
@@ -156,11 +176,6 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 						{
 							WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
 						}
-
-						Vector3 pos = _other->GetOwner().lock()->GetWorldPosition();
-						pos.y += 1.f;
-						//PlayEffect(pos);
-						PlayEffect(m_owner.lock()->GetWorldPosition());
 					}
 				}
 			}
@@ -178,7 +193,30 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 	{
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
 		p->SetTransformMatrix(
-			Matrix::CreateRotationX(1.07f)
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
+			* Matrix::CreateTranslation(pos)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateScale(2.f)
+			* Matrix::CreateTranslation(pos)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);
@@ -189,6 +227,7 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);
@@ -199,6 +238,7 @@ void MeleeWeapon::PlayEffect(Vector3 pos)
 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage2.yaml");
 		p->SetTransformMatrix(
 			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateScale(2.f)
 			* Matrix::CreateTranslation(pos)
 		);
 		p->SetActive(true);

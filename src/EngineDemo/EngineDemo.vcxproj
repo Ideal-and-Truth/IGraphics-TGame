@@ -162,6 +162,7 @@
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="CutSceneTrigger.h" />
     <ClInclude Include="DamageSystem.h" />
+    <ClInclude Include="DotDamage.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="CutSceneTrigger.cpp" />
     <ClCompile Include="DamageSystem.cpp" />
+    <ClCompile Include="DotDamage.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />

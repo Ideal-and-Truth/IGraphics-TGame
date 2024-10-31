@@ -15,6 +15,7 @@
 #include "IParticleSystem.h"
 #include "Controller.h"
 #include "PhysicsManager.h"
+#include "DotDamage.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -349,9 +350,7 @@ void BossSkill::FlameSword()
 			flame->Initialize();
 			flame->m_layer = 1;
 			flame->AddComponent<Truth::SphereCollider>();
-			auto damage = flame->AddComponent<SimpleDamager>();
-			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
-			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
+			auto damage = flame->AddComponent<DotDamage>();
 
 			flame->m_name = "Flame";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flame);
@@ -395,8 +394,11 @@ void BossSkill::FlameSword()
 		{
 			float bossHeight = m_owner.lock()->m_transform->m_position.y;
 			m_flameSwordTime += GetDeltaTime();
-			if (m_flameSwordTime > 0.13f && m_flameCount < m_flamePos.size())
+			if (m_flameSwordTime > 0.13f && m_flameCount <= m_flamePos.size())
 			{
+				auto damage = m_fires[m_flameCount].first->GetComponent<DotDamage>().lock();
+				damage->GetTypeInfo().GetProperty("playEffect")->Set(damage.get(), true);
+
 				m_fires[m_flameCount].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_flameCount] });
 				Vector3 worldPos = m_fires[m_flameCount].first->m_transform->m_worldPosition;
 				m_owner.lock()->DeleteChild(m_fires[m_flameCount].first);
@@ -404,9 +406,8 @@ void BossSkill::FlameSword()
 				m_fires[m_flameCount].first->m_transform->m_position = worldPos;
 				m_flameCount++;
 				m_flameSwordTime = 0.f;
-
 			}
-			if (m_flameCount >= m_flamePos.size() - 1)
+			if (m_flameCount >= m_flamePos.size())
 			{
 				m_deleteFire = true;
 				m_flameSword = false;
@@ -883,6 +884,7 @@ void BossSkill::DeleteCheck()
 			}
 
 			m_fires.clear();
+			PlayEffect(Vector3::Zero);
 
 			m_deleteFire = false;
 
@@ -971,6 +973,7 @@ void BossSkill::DeleteCheck()
 
 void BossSkill::PlayEffect(Vector3 pos)
 {
+	/// 충격파
 	if (m_playShock)
 	{
 		m_playShock = false;
@@ -1010,10 +1013,11 @@ void BossSkill::PlayEffect(Vector3 pos)
 		}
 	}
 
+	/// 창
 	if (m_playSpear)
 	{
 		m_playSpear = false;
-		
+
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
 			p->SetTransformMatrix(
@@ -1057,6 +1061,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		}
 	}
 
+	/// 불 발사
 	{
 		Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
 		effectRot.y += (3.141592f / 180.f) * 180.f;
@@ -1095,7 +1100,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 			m_playFlameShot = false;
 		}
 	}
-
 
 }
 

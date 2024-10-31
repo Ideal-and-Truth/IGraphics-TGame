@@ -50,12 +50,21 @@ private:
 
 	float m_passingTime;
 
+	float m_dotDealTime;
+
 	bool m_isInvincible;
 
 	PROPERTY(slowTime);
 	bool m_slowTime;
 
 	const static fs::path m_dataPath;
+
+	PROPERTY(onFire);
+	bool m_onFire;
+
+	bool m_getDotDeal;
+
+	float m_burnedTime;
 
 public:
 	Player();

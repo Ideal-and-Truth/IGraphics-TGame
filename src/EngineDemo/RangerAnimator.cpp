@@ -27,6 +27,8 @@ RangerAnimator::RangerAnimator()
 	, m_isAttack(false)
 	, m_isDamage(false)
 	, m_isDown(false)
+	, m_isBack(false)
+	, m_isFall(false)
 	, m_isDeath(false)
 	, m_isReload(false)
 	, m_isShooting(false)
@@ -65,6 +67,10 @@ void RangerAnimator::Awake()
 
 	m_animationStateMap["Down"] = new RangerDown(this);
 
+	m_animationStateMap["Fall"] = new RangerFall(this);
+
+	m_animationStateMap["KnockBack"] = new RangerKnockBack(this);
+
 	m_animationStateMap["Death"] = new RangerDeath(this);
 
 
@@ -102,7 +108,7 @@ void RangerAnimator::Update()
 		return;
 	}
 
-	
+
 
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
@@ -127,7 +133,7 @@ void RangerAnimator::Update()
 	}
 
 	if (m_isAttack || m_currentState == m_animationStateMap["Aim"] || m_currentState == m_animationStateMap["Reload"] || m_currentState == m_animationStateMap["Attack"]
-		|| m_currentState == m_animationStateMap["Damage"] || m_currentState == m_animationStateMap["Down"])
+		|| m_currentState == m_animationStateMap["Damage"] || m_currentState == m_animationStateMap["Down"] || m_currentState == m_animationStateMap["Fall"] || m_currentState == m_animationStateMap["KnockBack"])
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 	}
@@ -145,7 +151,19 @@ void RangerAnimator::Update()
 	if (m_lastHp > m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get())
 	{
 		m_isDamage = true;
-		if (m_playerAnimator->GetTypeInfo().GetProperty("downAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+
+		if (m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		{
+			m_isBack = true;
+			m_isDamage = false;
+		}
+		else if (m_playerAnimator->GetTypeInfo().GetProperty("fallAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		{
+			m_isFall = true;
+			m_isDamage = false;
+		}
+		else if (m_playerAnimator->GetTypeInfo().GetProperty("downAttack")->Get<bool>(m_playerAnimator.get()).Get())
 		{
 			m_isDown = true;
 			m_isDamage = false;
@@ -194,6 +212,12 @@ void RangerAnimator::SetEnemyDamage(float damage)
 	m_enemy->GetTypeInfo().GetProperty("currentDamage")->Set(m_enemy.get(), damage);
 }
 
+void RangerAnimator::SetImpulse(float power)
+{
+	m_enemyController->GetTypeInfo().GetProperty("useImpulse")->Set(m_enemyController.get(), true);
+	m_enemyController->GetTypeInfo().GetProperty("impulsePower")->Set(m_enemyController.get(), power);
+}
+
 void RangerIdle::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangeIdle", false);
@@ -218,6 +242,14 @@ void RangerIdle::OnStateUpdate()
 	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 	else if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
@@ -245,6 +277,14 @@ void RangerPursuit::OnStateUpdate()
 	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 	else if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
@@ -281,6 +321,14 @@ void RangerReturn::OnStateUpdate()
 	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 	else if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
@@ -334,6 +382,14 @@ void RangerAttack::OnStateUpdate()
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
 	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("KnockBack");
+	}
 	else if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Death");
@@ -382,6 +438,14 @@ void RangerAim::OnStateUpdate()
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
 	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("KnockBack");
+	}
 	else if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Death");
@@ -421,6 +485,14 @@ void RangerReload::OnStateUpdate()
 	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 	else if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
@@ -463,6 +535,14 @@ void RangerDamage::OnStateUpdate()
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
 	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("KnockBack");
+	}
 	else if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Death");
@@ -477,20 +557,23 @@ void RangerDamage::OnStateExit()
 void RangerDown::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyDown", false);
+	GetProperty("isDown")->Set(m_animator, false);
 }
 
 void RangerDown::OnStateUpdate()
 {
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isChange = true;
+	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
-		if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
-		{
-			dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Aim");
-		}
-		else
-		{
-			dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Idle");
-		}
+		isReset = true;
+		dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyGetUp", false);
+	}
+	if (isChange && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Aim");
 	}
 
 	// Any State
@@ -503,6 +586,65 @@ void RangerDown::OnStateUpdate()
 void RangerDown::OnStateExit()
 {
 	GetProperty("isDown")->Set(m_animator, false);
+	isChange = false;
+	isReset = false;
+}
+
+void RangerFall::OnStateEnter()
+{
+	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyFall", false);
+	GetProperty("isFall")->Set(m_animator, false);
+}
+
+void RangerFall::OnStateUpdate()
+{
+	if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		GetProperty("isFall")->Set(m_animator, false);
+		dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyFallAttack", false);
+	}
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
+	}
+}
+
+void RangerFall::OnStateExit()
+{
+	GetProperty("isFall")->Set(m_animator, false);
+}
+
+void RangerKnockBack::OnStateEnter()
+{
+	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyKnockBack", false);
+	GetProperty("isBack")->Set(m_animator, false);
+	dynamic_cast<RangerAnimator*>(m_animator)->SetImpulse(-20.f);
+}
+
+void RangerKnockBack::OnStateUpdate()
+{
+	if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		GetProperty("isBack")->Set(m_animator, false);
+		dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyKnockBack", false);
+	}
+	if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Down");
+	}
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Idle");
+	}
+}
+
+void RangerKnockBack::OnStateExit()
+{
+
 }
 
 void RangerDeath::OnStateEnter()

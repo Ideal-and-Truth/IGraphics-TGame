@@ -48,6 +48,7 @@ namespace Truth
 		float4 GetADT() const { return m_absDeltaTime; }
 		float4 GetProcessTime() const { return m_time; }
 		void WaitForSecondsRealtime(float time);
+		void SetTimeScaleForSeconds(float scale, float time);
 
 		void RestartTime();
 	};

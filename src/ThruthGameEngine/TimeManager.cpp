@@ -108,6 +108,16 @@ void Truth::TimeManager::WaitForSecondsRealtime(float time)
 	}
 }
 
+void Truth::TimeManager::SetTimeScaleForSeconds(float scale, float time)
+{
+	if (time > 0.f && m_waitUntilTime == 0.f)
+	{
+		m_waitUntilTime = time;
+		m_timeScale = scale;
+		m_waitingTime = 0.0f;
+	}
+}
+
 void Truth::TimeManager::RestartTime()
 {
 	::QueryPerformanceCounter(&m_prevCount);

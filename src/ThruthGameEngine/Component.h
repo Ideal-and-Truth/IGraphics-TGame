@@ -149,6 +149,11 @@ namespace Truth
 		{
 			m_managers.lock()->Time()->WaitForSecondsRealtime(time);
 		}
+
+		inline void SetTimeScaleForSeconds(float scale, float time)
+		{
+			m_managers.lock()->Time()->SetTimeScaleForSeconds(scale, time);
+		}
 	public:
 		void Translate(Vector3& _val);
 

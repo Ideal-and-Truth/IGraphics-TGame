@@ -404,7 +404,7 @@ finishAdapter:
 	{
 		CreateDebugMeshManager();
 	}
-	
+
 	//---------------Editor---------------//
 	if (m_isEditor)
 	{
@@ -510,7 +510,7 @@ void Ideal::D3D12RayTracingRenderer::Render()
 	m_globalCB.eyePos = m_mainCamera->GetPosition();
 
 	UpdateLightListCBData();
-	
+
 	ResetCommandList();
 
 #ifdef _DEBUG
@@ -964,7 +964,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 				}
 			}
 		}
-			break;
+		break;
 		case ELightType::Spot:
 		{
 			auto castLight = std::static_pointer_cast<Ideal::ISpotLight>(Light);
@@ -977,7 +977,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 				}
 			}
 		}
-			break;
+		break;
 		case ELightType::Point:
 		{
 			auto castLight = std::static_pointer_cast<Ideal::IPointLight>(Light);
@@ -990,7 +990,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 				}
 			}
 		}
-			break;
+		break;
 		default:
 			break;
 	}
@@ -1092,36 +1092,110 @@ void Ideal::D3D12RayTracingRenderer::ClearImGui()
 
 DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetTopLeftEditorPos()
 {
-	//m_mainCameraEditorTopLeft;
-	// 비율 계산
-	auto& rect = m_postViewport->GetScissorRect();
-	m_mainCameraEditorWindowSize;
-	// offset * editor size / main window size = new Offset // return new Offset + editor pos
-	float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
-	float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
+	if (m_isEditor)
+	{
+		//m_mainCameraEditorTopLeft;
+		// 비율 계산
+		auto& rect = m_postViewport->GetScissorRect();
+		m_mainCameraEditorWindowSize;
+		// offset * editor size / main window size = new Offset // return new Offset + editor pos
+		float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
+		float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
 
-	float ny = m_mainCameraEditorTopLeft.y;
-	float nx = m_mainCameraEditorTopLeft.x;
-	ny += y;
-	nx += x;
-	return Vector2(nx,ny);
+		float ny = m_mainCameraEditorTopLeft.y;
+		float nx = m_mainCameraEditorTopLeft.x;
+		ny += y;
+		nx += x;
+		return Vector2(nx, ny);
+	}
+	else
+	{
+		if (m_fullScreenMode)
+		{
+			//uint32 width = GetSystemMetrics(SM_CXSCREEN);
+			//uint32 height = GetSystemMetrics(SM_CYSCREEN);
+			// 풀스크린일때 또 다르다?
+
+			//RECT windowRect;
+			//GetWindowRect(m_hwnd, &windowRect);
+			//int32 x = windowRect.left;
+			//int32 y = windowRect.top;
+			//int32 width = windowRect.right - windowRect.left;
+			//int32 height = windowRect.bottom - windowRect.top;
+
+			float nx = m_postViewport->GetScissorRect().left;
+			float ny = m_postViewport->GetScissorRect().top;
+
+			return Vector2(nx, ny);
+
+		}
+		else
+		{
+			RECT windowRect;
+			GetWindowRect(m_hwnd, &windowRect);
+			int32 x = windowRect.left;
+			int32 y = windowRect.top;
+			int32 width = windowRect.right - windowRect.left;
+			int32 height = windowRect.bottom - windowRect.top;
+
+			int32 borderThickness = GetSystemMetrics(SM_CXSIZEFRAME);
+			int32 titleBarHeight = GetSystemMetrics(SM_CYCAPTION);
+			float nx = x + m_postViewport->GetScissorRect().left + borderThickness + borderThickness;
+			float ny = y + m_postViewport->GetScissorRect().top + borderThickness + borderThickness + titleBarHeight;
+
+			return Vector2(nx, ny);
+		}
+	}
 }
 
 DirectX::SimpleMath::Vector2 Ideal::D3D12RayTracingRenderer::GetRightBottomEditorPos()
 {
-	//m_mainCameraEditorTopLeft;
-	// 비율 계산
-	auto& rect = m_postViewport->GetScissorRect();
-	m_mainCameraEditorWindowSize;
-	// offset * editor size / main window size = new Offset // return new Offset + editor pos
-	float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
-	float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
+	if (m_isEditor)
+	{
+		//m_mainCameraEditorTopLeft;
+		// 비율 계산
+		auto& rect = m_postViewport->GetScissorRect();
+		m_mainCameraEditorWindowSize;
+		// offset * editor size / main window size = new Offset // return new Offset + editor pos
+		float y = rect.top * m_mainCameraEditorWindowSize.y / m_height;
+		float x = rect.left * m_mainCameraEditorWindowSize.x / m_width;
 
-	float ny = m_mainCameraEditorBottomRight.y;
-	float nx = m_mainCameraEditorBottomRight.x;
-	ny -= y;
-	nx -= x;
-	return Vector2(nx, ny);
+		float ny = m_mainCameraEditorBottomRight.y;
+		float nx = m_mainCameraEditorBottomRight.x;
+		ny -= y;
+		nx -= x;
+		return Vector2(nx, ny);
+	}
+	else
+	{
+		if (m_fullScreenMode)
+		{
+			uint32 width = GetSystemMetrics(SM_CXSCREEN);
+			uint32 height = GetSystemMetrics(SM_CYSCREEN);
+			// 풀스크린일때 또 다르다?
+
+			float nx = m_postViewport->GetScissorRect().right;
+			float ny = m_postViewport->GetScissorRect().bottom;
+
+			return Vector2(nx, ny);
+		}
+		else
+		{
+			RECT windowRect;
+			GetWindowRect(m_hwnd, &windowRect);
+			int32 x = windowRect.left;
+			int32 y = windowRect.top;
+			int32 width = windowRect.right - windowRect.left;
+			int32 height = windowRect.bottom - windowRect.top;
+
+			int32 borderThickness = GetSystemMetrics(SM_CXSIZEFRAME);
+			int32 titleBarHeight = GetSystemMetrics(SM_CYCAPTION);
+			float nx = x + m_postViewport->GetScissorRect().right + borderThickness + borderThickness;
+			float ny = y + m_postViewport->GetScissorRect().bottom + borderThickness + borderThickness + titleBarHeight;
+
+			return Vector2(nx, ny);
+		}
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::SetSkyBox(std::shared_ptr<Ideal::ITexture> SkyBoxTexture)
@@ -1148,7 +1222,7 @@ std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(c
 	{
 		generateMips = 0;
 	}
-	m_resourceManager->CreateTexture(texture, FileName,false, generateMips);
+	m_resourceManager->CreateTexture(texture, FileName, false, generateMips);
 
 	//if (IsGenerateMips)
 	//{
@@ -1289,7 +1363,7 @@ std::shared_ptr<Ideal::IParticleSystem> Ideal::D3D12RayTracingRenderer::CreatePa
 	NewParticleSystem->SetBillboardGS(m_particleSystemManager->GetBillboardGS());
 	NewParticleSystem->SetParticleVertexBuffer(m_particleSystemManager->GetParticleVertexBuffer());
 	NewParticleSystem->SetBillboardCalculateComputePipelineState(m_particleSystemManager->GetParticleComputePipelineState());
-	
+
 	NewParticleSystem->SetResourceManager(m_resourceManager);
 	NewParticleSystem->SetDeferredDeleteManager(m_deferredDeleteManager);
 
@@ -2251,17 +2325,17 @@ void Ideal::D3D12RayTracingRenderer::DrawImGuiMainCamera()
 	ImGui::Begin("MAIN SCREEN", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoNav);		// Create a window called "Hello, world!" and append into it.
 
 	ImVec2 windowPos = ImGui::GetWindowPos(); // 현재 윈도우 포지션
- 	ImVec2 min = ImGui::GetWindowContentRegionMin(); // 컨텐츠 포지션 왼쪽 위 -> 윈도우 왼쪽 위 기준
- 	ImVec2 max = ImGui::GetWindowContentRegionMax(); // 컨텐츠 포지션 오른쪽 아래 -> 윈도우 왼쪽 위 기준
+	ImVec2 min = ImGui::GetWindowContentRegionMin(); // 컨텐츠 포지션 왼쪽 위 -> 윈도우 왼쪽 위 기준
+	ImVec2 max = ImGui::GetWindowContentRegionMax(); // 컨텐츠 포지션 오른쪽 아래 -> 윈도우 왼쪽 위 기준
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	auto a = ImGui::GetWindowHeight();
 	auto b = ImGui::GetWindowWidth();
 	ImVec2 size(windowSize.x, windowSize.y);
 
-	
+
 	m_mainCameraEditorTopLeft.x = windowPos.x + min.x;
 	m_mainCameraEditorTopLeft.y = windowPos.y + min.y;
-	
+
 	//m_mainCameraEditorBottomRight.x = windowPos.x + max.x;
 	//m_mainCameraEditorBottomRight.y = windowPos.y + max.y;
 

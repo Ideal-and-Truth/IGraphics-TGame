@@ -284,7 +284,8 @@ class BossAttackDoubleUpperCut
 	: public AnimationState
 {
 private:
-	bool m_isChangePose;
+	bool m_isChangePose = false;
+	bool isReset = false;
 
 public:
 	BossAttackDoubleUpperCut(Truth::Component* animator)
@@ -519,9 +520,6 @@ private:
 
 	PROPERTY(attackSpin);
 	bool m_attackSpin;
-
-	PROPERTY(attackDoubleUpperCut);
-	bool m_attackDoubleUpperCut;
 
 	PROPERTY(attackCombo1_1);
 	bool m_attackCombo1_1;

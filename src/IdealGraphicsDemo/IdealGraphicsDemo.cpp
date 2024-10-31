@@ -1093,7 +1093,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackholeMaterial->SetShader(bossBlackHoleShader);
 		//blackholeMaterial->SetWriteDepthBuffer(true);
 
-
+		
 		std::shared_ptr<Ideal::ITexture> bhTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/PerlinMap_1.png");
 		std::shared_ptr<Ideal::ITexture> bhTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
 		std::shared_ptr<Ideal::ITexture> bhTex2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_5.png");
@@ -1106,7 +1106,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//blackholeMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Blend);
 		blackholeMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
 		blackholeMaterial->SetBackFaceCulling(false);
-		//blackholeMaterial->SetWriteDepthBuffer(false);
 
 
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Circle_2.fbx");
@@ -1123,6 +1122,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackHoleParticleSystem->SetStartLifetime(8.f);
 		blackHoleParticleSystem->SetTransformMatrix(
 			Matrix::CreateRotationX(3.14 * 0.5)
+			* Matrix::CreateTranslation(Vector3(-4,0,0))
 		);
 		blackHoleParticleSystem->SetColorOverLifetime(true);
 		//{
@@ -1147,9 +1147,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IParticleMaterial> blackholeSphereMaterial = gRenderer->CreateParticleMaterial();
 		blackholeSphereMaterial->SetShader(bossBlackHoleSphereShader);
 		blackholeSphereMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		//blackholeSphereMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		blackholeSphereMaterial->SetBackFaceCulling(true);
 		//blackholeSphereMaterial->SetWriteDepthBuffer(false);
 		//blackholeSphereMaterial->SetTransparency(false);
-		//blackholeSphereMaterial->SetWriteDepthBuffer(true);
+		blackholeSphereMaterial->SetWriteDepthBuffer(true);
 		std::shared_ptr<Ideal::IParticleSystem> blackHoleSphereParticleSystem = gRenderer->CreateParticleSystem(blackholeSphereMaterial);
 		blackHoleSphereParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		blackHoleSphereParticleSystem->SetRenderMesh(bossParticleMeshSphere);
@@ -1159,6 +1161,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackHoleSphereParticleSystem->SetStartColor(Color(0, 0, 0, 1));
 		blackHoleSphereParticleSystem->SetStartColor(Color(1, 0, 0, 1));
 		blackHoleSphereParticleSystem->SetLoop(false);
+		blackHoleSphereParticleSystem->SetTransformMatrix(Matrix::CreateTranslation(Vector3(-4, 0, 0)));
 #pragma endregion
 
 #pragma region CreateParticle
@@ -1736,7 +1739,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 #pragma endregion
 #pragma region FireExplosionBillboardParticle
-		//----------ParticleBillboardTest effect----------//
 		std::shared_ptr<Ideal::IParticleMaterial> fireExplosionMaterial = gRenderer->CreateParticleMaterial();
 		//billboardMaterialTest->SetShader(billboardTestPS);
 		fireExplosionMaterial->SetShader(bossFireFloorShader);
@@ -1753,10 +1755,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
 
 		fireExplosionParticle->SetActive(true);
-		fireExplosionParticle->SetLoop(false);
+		fireExplosionParticle->SetLoop(true);
 		fireExplosionParticle->SetDuration(1.f);
 		fireExplosionParticle->SetStartLifetime(1.f);
-
+		fireExplosionParticle->SetSimulationSpeed(2.f);
 		fireExplosionParticle->SetMaxParticles(50);
 		fireExplosionParticle->SetShapeMode(true);
 		fireExplosionParticle->SetShape(Ideal::ParticleMenu::EShape::Circle);
@@ -1766,10 +1768,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		fireExplosionParticle->SetVelocityOverLifetime(true);
 		fireExplosionParticle->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
 		fireExplosionParticle->SetVelocityDirectionRandom(-10.f, 10.f);
-		fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
-		fireExplosionParticle->SetVelocitySpeedModifierRandom(0.f, 0.9f);
-		//billboardTest->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
-		//billboardTest->SetVelocitySpeedModifierConst(0.f);
+		//fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Random);
+		//fireExplosionParticle->SetVelocitySpeedModifierRandom(0.f, 0.9f);
+		fireExplosionParticle->SetVelocitySpeedModifierMode(Ideal::ParticleMenu::EMode::Const);
+		fireExplosionParticle->SetVelocitySpeedModifierConst(0.f);
 		//billboardTest->SetTransformMatrix(Matrix::CreateRotationX(1.57f));
 
 		// Animation
@@ -2114,6 +2116,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		groundFireParticleSystem->SetShape(Ideal::ParticleMenu::EShape::Circle);
 		groundFireParticleSystem->SetRadius(0.1f);
 		groundFireParticleSystem->SetRadiusThickness(1.f);
+		groundFireParticleSystem->SetLoop(false);
 
 		groundFireParticleSystem->SetVelocityOverLifetime(true);
 		groundFireParticleSystem->SetVelocityDirectionMode(Ideal::ParticleMenu::EMode::Random);
@@ -2293,7 +2296,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		enemyChargeParticleSystem2->SetDuration(2.f);
 		enemyChargeParticleSystem2->SetTransformMatrix(
 			Matrix::CreateScale(Vector3(0.5, 0.5, 1))				// 여기는 적용
-			* Matrix::CreateTranslation(Vector3(0, -4, 0))	// 여기는 데모 위치 확인용
+			* Matrix::CreateTranslation(Vector3(19, 0, 0))	// 여기는 데모 위치 확인용
 		);
 		enemyChargeParticleSystem2->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		enemyChargeParticleSystem2->SetRenderMesh(Cone2Mesh);
@@ -2308,6 +2311,49 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddControlPoint({ 0,0 });
 			graph.AddControlPoint({ 1,1 });
 		}
+#pragma endregion
+
+#pragma region Scanner
+		std::shared_ptr<Ideal::IParticleMaterial> ScannerMaterial = gRenderer->CreateParticleMaterial();
+		ScannerMaterial->SetShader(bossBlackHoleSphereShader);
+		ScannerMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		//ScannerMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		ScannerMaterial->SetBackFaceCulling(false);
+		//std::shared_ptr<Ideal::ITexture>
+
+		std::shared_ptr<Ideal::IParticleSystem> ScannerParticleSystem = gRenderer->CreateParticleSystem(ScannerMaterial);
+		ScannerParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		ScannerParticleSystem->SetRenderMesh(bossParticleMeshSphere);
+		ScannerParticleSystem->SetStartSize(100.f);
+		ScannerParticleSystem->SetStartLifetime(2.f);
+		ScannerParticleSystem->SetDuration(2.f);
+		ScannerParticleSystem->SetSimulationSpeed(2.f);
+		ScannerParticleSystem->SetLoop(false);
+		ScannerParticleSystem->SetStartColor(Color(0.4f, 0.4f, 0.4f, 1.f));
+		ScannerParticleSystem->SetSizeOverLifetime(true);
+		{
+			auto& graph = ScannerParticleSystem->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0, 0.f });
+			graph.AddControlPoint({ 2, 15.f });
+		}
+		{
+			auto& graph = ScannerParticleSystem->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0, 0.f });
+			graph.AddControlPoint({ 2, 15.f });
+		}
+		{
+			auto& graph = ScannerParticleSystem->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0, 0.f });
+			graph.AddControlPoint({ 2, 15.f });
+		}
+
+		ScannerParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = ScannerParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0.4f, 0.4f, 0.4f, 1), 0.f);
+			graph.AddPoint(Color(0, 0, 0,0), 2.f / 2.f);
+		}
+
 #pragma endregion
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -2594,6 +2640,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					groundEffectParticleSystem->Play();
 					groundSmokeParticleSystem->Play();
 					groundFireParticleSystem->Play();
+
+					gRenderer->GetTopLeftEditorPos();
+					gRenderer->GetRightBottomEditorPos();
+
+					int a = 3;
+
+					ScannerParticleSystem->Play();
+				}
+				if (GetAsyncKeyState(VK_HOME) & 0x8001)
+				{
+					gRenderer->ToggleFullScreenWindow();
 				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
@@ -2637,6 +2694,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				enemySlashParticleSystem->SetDeltaTime(0.003f);
 				enemyChargeParticleSystem->SetDeltaTime(0.003f);
 				enemyChargeParticleSystem2->SetDeltaTime(0.003f);
+				ScannerParticleSystem->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
