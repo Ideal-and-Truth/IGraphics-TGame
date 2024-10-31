@@ -108,8 +108,6 @@ void Processor::Initialize(HINSTANCE _hInstance)
 #ifdef EDITOR_MODE
 
 	Truth::UnityParser up(m_manager->Graphics().get());
-	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
-	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\0_TitleTest.unity");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
