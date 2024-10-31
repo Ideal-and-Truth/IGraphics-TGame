@@ -1799,27 +1799,6 @@ void PlayerAnimator::PlayEffects()
 		}
 	}
 
-	if (m_rushAttack)
-	{
-		m_rushAttack = false;
-
-		{
-			effectRot.z += (3.141592f / 180.f) * -90.f;
-			effectRot.y += (3.141592f / 180.f) * -180.f;
-			effectRot.x += (3.141592f / 180.f) * 30.f;
-			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-
-			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\AbilitySlash.yaml");
-			p->SetTransformMatrix(
-				rotationMT
-				* Matrix::CreateTranslation(effectPos)
-			);
-			p->SetActive(true);
-			p->SetSimulationSpeed(2.f);
-			p->Play();
-		}
-	}
-
 	if (m_timeStop)
 	{
 		m_timeStop = false;
