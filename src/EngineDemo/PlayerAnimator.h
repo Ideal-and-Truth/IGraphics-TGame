@@ -584,6 +584,9 @@ private:
 	PROPERTY(swordBeam);
 	bool m_swordBeam;
 
+	PROPERTY(timeStop);
+	bool m_timeStop;
+
 	float m_lastHp;
 
 	PROPERTY(passingTime);

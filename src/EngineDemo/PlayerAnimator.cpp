@@ -1346,6 +1346,7 @@ void PlayerSkillQ::OnStateUpdate()
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 12)
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->SetTimeSlow();
+		GetProperty("timeStop")->Set(m_animator, true);
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
@@ -1808,6 +1809,24 @@ void PlayerAnimator::PlayEffects()
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\AbilitySlash.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_timeStop)
+	{
+		m_timeStop = false;
+
+		{
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Scanner.yaml");
 			p->SetTransformMatrix(
 				rotationMT
 				* Matrix::CreateTranslation(effectPos)
