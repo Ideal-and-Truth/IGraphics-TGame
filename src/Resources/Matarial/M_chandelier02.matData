@@ -1,9 +1,0 @@
----
-baseMap: ../Resources/DefaultData/DefaultAlbedo.png
-normalMap: ../Resources/DefaultData/DefaultNormalMap.png
-maskMap: ../Resources/DefaultData/DefaultBlack.png
-tileX: 1
-tileY: 1
-alphaCulling: false
-transparent: false
-...

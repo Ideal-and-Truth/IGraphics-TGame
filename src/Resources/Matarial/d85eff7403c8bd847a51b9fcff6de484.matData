@@ -5,4 +5,5 @@ maskMap: ../Resources/Textures/MapData/2_JS_Scene2/tilefloor_001/T_tilefloor_001
 tileX: 5
 tileY: 5
 alphaCulling: false
+transparent: false
 ...

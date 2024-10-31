@@ -1,6 +1,6 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/JS_DesignerTile/T_JST_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/JS_DesignerTile/T_JST_Normal.png
+baseMap: ../Resources/Textures/MapData/1_HN_Scene2/JS_DesignerTile/T_JST_Crack_BaseMap.png
+normalMap: ../Resources/Textures/MapData/1_HN_Scene2/JS_DesignerTile/T_JST_Crack_Normal.png
 maskMap: ../Resources/Textures/MapData/1_HN_Scene2/JS_DesignerTile/T_JST_Crack_MaskMap.png
 tileX: 1
 tileY: 1

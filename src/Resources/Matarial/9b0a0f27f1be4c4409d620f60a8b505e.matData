@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/0_TitleTest/lantern/T_lantern_BaseMap.png
-normalMap: ../Resources/Textures/MapData/0_TitleTest/lantern/T_lantern_Normal.png
-maskMap: ../Resources/Textures/MapData/0_TitleTest/lantern/T_lantern_MaskMap.png
+baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/lantern/T_lantern_BaseMap.png
+normalMap: ../Resources/Textures/MapData/3_EJ_Scene2/lantern/T_lantern_Normal.png
+maskMap: ../Resources/Textures/MapData/3_EJ_Scene2/lantern/T_lantern_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
