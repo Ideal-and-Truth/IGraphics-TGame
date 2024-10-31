@@ -640,27 +640,27 @@ void EnemyAnimator::PlayEffect()
 	Vector3 effectPos = m_owner.lock()->GetWorldPosition();
 	Vector3 effectRot = m_owner.lock()->GetWorldRotation().ToEuler();
 
-	if (m_normalAttack)
-	{
-		m_normalAttack = false;
-
-		effectPos.y += 1.f;
-
-		effectRot.y += (3.141592f / 180.f) * -140.f;
-		effectRot.z += (3.141592f / 180.f) * 180.f;
-
-		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemySlash.yaml");
-		p->SetTransformMatrix(
-			rotationMT
-			* Matrix::CreateTranslation(effectPos)
-		);
-
-		p->SetSimulationSpeed(2.f);
-		p->SetActive(true);
-		p->Play();
-	}
+// 	if (m_normalAttack)
+// 	{
+// 		m_normalAttack = false;
+// 
+// 		effectPos.y += 1.f;
+// 
+// 		effectRot.y += (3.141592f / 180.f) * -140.f;
+// 		effectRot.z += (3.141592f / 180.f) * 180.f;
+// 
+// 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+// 
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemySlash.yaml");
+// 		p->SetTransformMatrix(
+// 			rotationMT
+// 			* Matrix::CreateTranslation(effectPos)
+// 		);
+// 
+// 		p->SetSimulationSpeed(2.f);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
 
 	if (m_chargeAttack)
 	{
