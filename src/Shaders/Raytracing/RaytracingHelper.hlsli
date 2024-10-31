@@ -758,4 +758,11 @@ float TriUVInfoToTexLOD(uint2 vTexSize, float2 vUVInfo)
     return vUVInfo.x + 0.5f * log2(vTexSize.x * vTexSize.y * vUVInfo.y);
 }
 
+float3 GammaCorrection(float3 color, float gamma)
+{
+    float3 ret = pow(color, 1.0 / gamma);
+    return ret;
+    //return pow(color, 1.0 / gamma);
+}
+
 #endif
