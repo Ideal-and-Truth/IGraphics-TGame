@@ -2312,6 +2312,49 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddControlPoint({ 1,1 });
 		}
 #pragma endregion
+
+#pragma region Scanner
+		std::shared_ptr<Ideal::IParticleMaterial> ScannerMaterial = gRenderer->CreateParticleMaterial();
+		ScannerMaterial->SetShader(bossBlackHoleSphereShader);
+		ScannerMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		//ScannerMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
+		ScannerMaterial->SetBackFaceCulling(false);
+		//std::shared_ptr<Ideal::ITexture>
+
+		std::shared_ptr<Ideal::IParticleSystem> ScannerParticleSystem = gRenderer->CreateParticleSystem(ScannerMaterial);
+		ScannerParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		ScannerParticleSystem->SetRenderMesh(bossParticleMeshSphere);
+		ScannerParticleSystem->SetStartSize(100.f);
+		ScannerParticleSystem->SetStartLifetime(2.f);
+		ScannerParticleSystem->SetDuration(2.f);
+		ScannerParticleSystem->SetSimulationSpeed(2.f);
+		ScannerParticleSystem->SetLoop(false);
+		ScannerParticleSystem->SetStartColor(Color(0.4f, 0.4f, 0.4f, 1.f));
+		ScannerParticleSystem->SetSizeOverLifetime(true);
+		{
+			auto& graph = ScannerParticleSystem->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0, 0.f });
+			graph.AddControlPoint({ 2, 15.f });
+		}
+		{
+			auto& graph = ScannerParticleSystem->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0, 0.f });
+			graph.AddControlPoint({ 2, 15.f });
+		}
+		{
+			auto& graph = ScannerParticleSystem->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0, 0.f });
+			graph.AddControlPoint({ 2, 15.f });
+		}
+
+		ScannerParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = ScannerParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(0.4f, 0.4f, 0.4f, 1), 0.f);
+			graph.AddPoint(Color(0, 0, 0,0), 2.f / 2.f);
+		}
+
+#pragma endregion
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -2597,6 +2640,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					groundEffectParticleSystem->Play();
 					groundSmokeParticleSystem->Play();
 					groundFireParticleSystem->Play();
+
+					gRenderer->GetTopLeftEditorPos();
+					gRenderer->GetRightBottomEditorPos();
+
+					int a = 3;
+
+					ScannerParticleSystem->Play();
+				}
+				if (GetAsyncKeyState(VK_HOME) & 0x8001)
+				{
+					gRenderer->ToggleFullScreenWindow();
 				}
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
@@ -2640,6 +2694,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				enemySlashParticleSystem->SetDeltaTime(0.003f);
 				enemyChargeParticleSystem->SetDeltaTime(0.003f);
 				enemyChargeParticleSystem2->SetDeltaTime(0.003f);
+				ScannerParticleSystem->SetDeltaTime(0.003f);
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
