@@ -441,13 +441,12 @@ float3 Shade(
         }
     }
 
-    //L *= ao;
+    L *= ao;
     // Temp : 0.2는 임시 값
 
     L += 0.2f * albedo;
     //L = L / (L + float3(1,1,1));
     L = GammaCorrection(L, 2.2);
-    //L = pow(L, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
 
     //return L;
     // Specular
