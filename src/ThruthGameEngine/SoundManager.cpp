@@ -40,7 +40,7 @@ void Truth::SoundManager::Finalize()
 void Truth::SoundManager::CreateSound(fs::path _path, bool _isLoop)
 {
 	std::unordered_map<fs::path, FMOD::Sound*>::iterator itr = m_soundMap.find(_path);
-	if (itr == m_soundMap.end())
+	if (itr != m_soundMap.end())
 	{
 		return;
 	}

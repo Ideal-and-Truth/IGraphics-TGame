@@ -152,7 +152,8 @@ class RangerDown
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
+	bool isChange = false;
 
 public:
 	RangerDown(Truth::Component* animator)
@@ -167,6 +168,43 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class RangerFall
+	: public AnimationState
+{
+private:
+
+
+public:
+	RangerFall(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class RangerKnockBack
+	: public AnimationState
+{
+private:
+
+
+public:
+	RangerKnockBack(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
 
 class RangerDeath
 	: public AnimationState
@@ -223,6 +261,12 @@ private:
 
 	PROPERTY(isDamage);
 	bool m_isDamage;
+
+	PROPERTY(isBack);
+	bool m_isBack;
+
+	PROPERTY(isFall);
+	bool m_isFall;
 
 	PROPERTY(isDown);
 	bool m_isDown;
@@ -295,6 +339,8 @@ public:
 	void ChangeState(std::string stateName);
 
 	void SetEnemyDamage(float damage);
+
+	void SetImpulse(float power);
 };
 
 template<class Archive>

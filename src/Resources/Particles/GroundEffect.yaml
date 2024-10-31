@@ -7,7 +7,7 @@ Texture1: ../Resources/Textures/0_Particle/Noise1.png
 Mesh: 0_Particle/IceSpikes2
 BackFaceCulling: false
 StartColor:
-  - 0
+  - 1
   - 0.5295228
   - 0.259434
   - 1

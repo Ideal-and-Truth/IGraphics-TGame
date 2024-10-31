@@ -225,47 +225,69 @@ void TestEffectGenerator::Update()
 // 	}
 
 	/// 불장판
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(3.14 * 0.5)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	/// 피격이펙트
 // 	if (GetKeyDown(KEY::P))
 // 	{
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
 // 		p->SetTransformMatrix(
-// 			Matrix::CreateRotationX(3.14 * 0.5)
+// 			Matrix::CreateRotationX(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
 // 		);
 // 		p->SetActive(true);
 // 		p->Play();
-//   }
-
-	/// 피격이펙트
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
-		p->SetTransformMatrix(
-			Matrix::CreateRotationX(1.07f)
-			* Matrix::CreateTranslation(0, 0, 0)
-		);
-		p->SetActive(true);
-		p->Play();
-	}
-
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
-		p->SetTransformMatrix(
-			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
-			* Matrix::CreateTranslation(0, 0, 0)
-		);
-		p->SetActive(true);
-		p->Play();
-	}
-
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage2.yaml");
-		p->SetTransformMatrix(
-			Matrix::CreateRotationX(1.57f)
-			* Matrix::CreateTranslation(0, 0, 0)
-		);
-		p->SetActive(true);
-		p->Play();
-	}
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage2.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
 }

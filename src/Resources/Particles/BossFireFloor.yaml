@@ -12,7 +12,7 @@ StartColor:
   - 0
   - 1
 StartLifetime: 1
-Loop: false
+Loop: true
 Duration: 1
 
 
@@ -27,9 +27,8 @@ VelocityOverLifetime: true
 VelocityDirectionMode: 1
 VelocityDirectionRandomMIN: -10
 VelocityDirectionRandomMAX: 10
-VelocitySpeedModifierMode: 1
-VelocitySpeedModifierRandomMIN: 0
-VelocitySpeedModifierRandomMAX: 0.9
+VelocitySpeedModifierMode: 0
+VelocitySpeedModifierConst: 0
 
 
 TextureSheetAnimation: true

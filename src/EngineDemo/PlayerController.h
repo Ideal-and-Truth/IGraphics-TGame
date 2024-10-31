@@ -69,7 +69,6 @@ public:
 
 private:
 	void PlayerMove(const void*);
-
 };
 
 template<class Archive>
