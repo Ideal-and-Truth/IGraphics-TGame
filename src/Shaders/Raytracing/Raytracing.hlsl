@@ -397,7 +397,7 @@ float3 Shade(
                 float intensity = g_lightList.DirLights[i].Intensity;
                 bool isInShadow = TraceShadowRayAndReportIfHit(hitPosition, LightVector, N, rayPayload);
                 //L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, ao);
-                L = DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, intensity);
+                L += DirectionalLight(isInShadow, V, LightVector, N, radiance, albedo, roughness, metallic, intensity);
             }
         }
         

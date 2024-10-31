@@ -627,7 +627,10 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 LightColor, float3 albedo, float roughness, float metallic, float intensity)
 {
     if(isInShadow)
+    {
+        //return albedo;
         return float3(0, 0, 0);
+    }
     
     float3 Lo = float3(0, 0, 0);
     
@@ -659,7 +662,10 @@ float3 DirectionalLight(bool isInShadow, float3 V, float3 L, float3 N, float3 Li
 float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float distance, float3 LightColor, float3 albedo, float roughness, float metallic, float lightIntensity)
 {
     if(isInShadow)
+    {
+        //return albedo;
         return float3(0, 0, 0);
+    }
     
     float3 Lo = float3(0.f, 0.f, 0.f);
     
@@ -689,7 +695,10 @@ float3 PointLight(bool isInShadow, float3 V, float3 Direction, float3 N, float d
 float3 SpotLight(bool isInShadow, float3 V, float3 Direction, float3 LightDirection, float3 N, float distance, float3 LightColor,float softness, float angle, float3 albedo, float roughness, float metallic, float lightIntensity, float range)
 {
     if (isInShadow)
+    {
+        //return albedo;
         return float3(0, 0, 0);
+    }
     
     
     float spotEffect = dot(normalize(-Direction), LightDirection);

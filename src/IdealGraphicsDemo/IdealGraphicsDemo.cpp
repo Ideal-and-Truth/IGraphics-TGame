@@ -2328,7 +2328,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		ScannerParticleSystem->SetStartLifetime(2.f);
 		ScannerParticleSystem->SetDuration(2.f);
 		ScannerParticleSystem->SetSimulationSpeed(2.f);
-		ScannerParticleSystem->SetLoop(false);
+		ScannerParticleSystem->SetLoop(true);
 		ScannerParticleSystem->SetStartColor(Color(0.4f, 0.4f, 0.4f, 1.f));
 		ScannerParticleSystem->SetSizeOverLifetime(true);
 		{
