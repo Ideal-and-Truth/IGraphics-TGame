@@ -9,6 +9,7 @@
 #include "SimpleDamager.h"
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerAnimator)
 
@@ -179,6 +180,10 @@ void PlayerAnimator::Start()
 	m_skinnedMesh->AddAnimation("SlashSkill", L"PlayerAnimations/Skill/SlashSkill");
 	m_skinnedMesh->AddAnimation("TimeStop", L"PlayerAnimations/Skill/TimeStop");
 
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_2_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_3_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->SetVolum(1, 100.f);
 
 	m_currentState->OnStateEnter();
 }
@@ -315,14 +320,14 @@ void PlayerAnimator::Update()
 		}
 	}
 
-	if (m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["RushAttack"])
+	if (m_currentState == m_animationStateMap["Guard"] || m_currentState == m_animationStateMap["Parry"] || m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["RushAttack"])
 	{
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 
 	m_currentState->OnStateUpdate();
 
-	if (!m_skillQ && !m_skillE && !m_isDodge && !m_isAttacking && !m_isGuard && !m_isComboReady && !m_isNormalAttack && !m_isChargedAttack && m_currentState != m_animationStateMap["Hit"])
+	if (!m_parry && !m_skillQ && !m_skillE && !m_isDodge && !m_isAttacking && !m_isGuard && !m_isComboReady && !m_isNormalAttack && !m_isChargedAttack && m_currentState != m_animationStateMap["Hit"])
 	{
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
 	}
@@ -883,7 +888,7 @@ void PlayerGuard::OnStateUpdate()
 		isHit = false;
 	}
 
-	if (!GetProperty("isGuard")->Get<bool>(m_animator).Get())
+	if (!GetProperty("isGuard")->Get<bool>(m_animator).Get() && !isHit)
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
@@ -1300,9 +1305,9 @@ void ComboReady::OnStateExit()
 void PlayerRushAttack::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("RushAttack", false);
-	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("hitStopTime")->Set(m_animator, 0.07f);
 	GetProperty("fallAttack")->Set(m_animator, true);
+	GetProperty("isDodge")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(30.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(5.f);
 }
@@ -1312,6 +1317,7 @@ void PlayerRushAttack::OnStateUpdate()
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
 	{
 		GetProperty("rushAttack")->Set(m_animator, true);
+		GetProperty("isAttacking")->Set(m_animator, true);
 	}
 
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 68)
@@ -1326,6 +1332,7 @@ void PlayerRushAttack::OnStateExit()
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
 	GetProperty("rushAttack")->Set(m_animator, false);
+	GetProperty("isDodge")->Set(m_animator, false);
 }
 
 void PlayerSkillQ::OnStateEnter()
@@ -1455,6 +1462,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(3.f);
 			p->Play();
+
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 1);
 		}
 	}
 	if (m_normalAttack2)
@@ -1471,6 +1480,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(3.f);
 			p->Play();
+
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 2);
 		}
 	}
 	if (m_normalAttack3)
@@ -1490,6 +1501,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(2.f);
 			p->Play();
+
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 3);
 		}
 	}
 	if (m_normalAttack4)
@@ -1508,6 +1521,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(2.f);
 			p->Play();
+			
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 4);
 		}
 	}
 	if (m_normalAttack6)
@@ -1553,6 +1568,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 5);
 	}
 
 	if (m_chargedAttack1)
@@ -1749,6 +1766,48 @@ void PlayerAnimator::PlayEffects()
 			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\DodgeAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_rushAttack)
+	{
+		m_rushAttack = false;
+
+		{
+			effectRot.z += (3.141592f / 180.f) * -90.f;
+			effectRot.y += (3.141592f / 180.f) * -180.f;
+			effectRot.x += (3.141592f / 180.f) * 30.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\AbilitySlash.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	if (m_rushAttack)
+	{
+		m_rushAttack = false;
+
+		{
+			effectRot.z += (3.141592f / 180.f) * -90.f;
+			effectRot.y += (3.141592f / 180.f) * -180.f;
+			effectRot.x += (3.141592f / 180.f) * 30.f;
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\AbilitySlash.yaml");
 			p->SetTransformMatrix(
 				rotationMT
 				* Matrix::CreateTranslation(effectPos)

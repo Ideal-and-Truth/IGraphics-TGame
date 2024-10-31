@@ -91,7 +91,7 @@ class EnemyAttack
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
 	EnemyAttack(Truth::Component* animator)
@@ -110,7 +110,7 @@ class EnemyChargeAttack
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
 	EnemyChargeAttack(Truth::Component* animator)
@@ -282,6 +282,12 @@ private:
 
 	PROPERTY(isAttacking);
 	bool m_isAttacking;
+
+	PROPERTY(normalAttack);
+	bool m_normalAttack;
+
+	PROPERTY(chargeAttack);
+	bool m_chargeAttack;
 	/// ----------------------------------------
 	PROPERTY(passingTime);
 	float m_passingTime;
@@ -304,6 +310,7 @@ private:
 
 private:
 	int RandomNumber(int _min, int _max);
+	void PlayEffect();
 
 public:
 	EnemyAnimator();

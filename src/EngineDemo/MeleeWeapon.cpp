@@ -101,6 +101,10 @@ void MeleeWeapon::Update()
 			if (m_playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(m_playerAnimator.get()).Get())
 			{
 				enemyDamage = 0.f;
+
+				Vector3 pos = e->GetWorldPosition();
+				pos.y += 1.f;
+				PlayEffect(pos);
 			}
 
 			float hpLeft = playerHp - enemyDamage;

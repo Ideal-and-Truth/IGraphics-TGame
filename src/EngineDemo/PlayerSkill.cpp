@@ -14,6 +14,7 @@ PlayerSkill::PlayerSkill()
 	, m_createComplete(false)
 	, m_playSwordBeam(false)
 	, m_swordBeamPos(0.f)
+	, m_passingTime(0.f)
 {
 	m_name = "PlayerSkill";
 }
@@ -70,13 +71,15 @@ void PlayerSkill::SwordBeam()
 	}
 	else
 	{
-		if (m_swordBeamPos <= 0.f)
+		if (m_passingTime > 0.04f)
 		{
+			m_passingTime = 0.f;
 			m_playSwordBeam = true;
 			m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Set(m_playerAnimator.get(), true);
 		}
 
 		m_swordBeamPos += GetDeltaTime() * 0.8f;
+		m_passingTime += GetDeltaTime();
 		m_swordBeam->m_transform->m_position.y = m_owner.lock()->m_transform->m_position.y + 1.f;
 		m_swordBeam->m_transform->m_position.z += -m_swordBeamPos;
 
@@ -84,6 +87,7 @@ void PlayerSkill::SwordBeam()
 
 		if (m_swordBeam->m_transform->m_position.z < -10.f)
 		{
+			m_passingTime = 0.f;
 			m_swordBeamPos = 0.f;
 			m_owner.lock()->DeleteChild(m_swordBeam);
 			m_owner.lock().reset();
@@ -100,20 +104,20 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 {
 	Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
 	{
-		effectRot.z += (3.141592f / 180.f) * 90.f;
-		effectRot.y += (3.141592f / 180.f) * 20.f;
+		effectRot.z += (3.141592f / 180.f) * 70.f;
+		//effectRot.y += (3.141592f / 180.f) * 20.f;
 		effectRot.x += (3.141592f / 180.f) * 90.f;
 
 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
-		p->SetTransformMatrix(
-			rotationMT
-			* Matrix::CreateTranslation(pos)
-		);
-
 		if (m_playSwordBeam)
 		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(pos)
+			);
+
 			p->SetActive(true);
 			p->SetSimulationSpeed(2.f);
 			p->Play();
@@ -123,15 +127,53 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 	{
 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
-		p->SetTransformMatrix(
-			Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
-			* rotationMT
-			* Matrix::CreateTranslation(pos)
-		);
+		if (m_playSwordBeam)
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* rotationMT
+				* Matrix::CreateTranslation(pos)
+			);
+
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	{
+		//effectRot.z += (3.141592f / 180.f) * 50.f;
+		effectRot.x += (3.141592f / 180.f) * -180.f;
+
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 
 		if (m_playSwordBeam)
 		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				rotationMT
+				* Matrix::CreateTranslation(pos)
+			);
+
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+	}
+
+	{
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+		if (m_playSwordBeam)
+		{
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* rotationMT
+				* Matrix::CreateTranslation(pos)
+			);
+
 			p->SetActive(true);
 			p->SetSimulationSpeed(2.f);
 			p->Play();
