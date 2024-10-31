@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ceillinginside/T_ceillingbase_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ceillinginside/T_ceillingbase_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ceillinginside/T_ceillingbase_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

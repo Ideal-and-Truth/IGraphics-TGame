@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossfieldcircle/T_field_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossfieldcircle/T_field_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossfieldcircle/T_field_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...
