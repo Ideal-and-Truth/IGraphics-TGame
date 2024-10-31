@@ -177,8 +177,53 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 			p->SetActive(true);
 			p->SetSimulationSpeed(2.f);
 			p->Play();
-			m_playSwordBeam = false;
 		}
 	}
+
+	{
+		if (m_playSwordBeam)
+		{
+			Vector3 effPos = m_owner.lock()->GetWorldPosition();
+			effPos.y -= 0.1f;
+			Vector3 localPos = { 0.f,0.f,-1.f };
+			{
+				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundEffect.yaml");
+				p->SetTransformMatrix(
+					Matrix::CreateTranslation(localPos)
+					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					* Matrix::CreateTranslation(effPos)
+				);
+
+				p->SetActive(true);
+				p->Play();
+			}
+
+			{
+				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundSmoke.yaml");
+				p->SetTransformMatrix(
+					Matrix::CreateTranslation(localPos)
+					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					* Matrix::CreateTranslation(effPos)
+				);
+
+				p->SetActive(true);
+				p->Play();
+			}
+
+			{
+				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundFire.yaml");
+				p->SetTransformMatrix(
+					Matrix::CreateTranslation(localPos)
+					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					* Matrix::CreateTranslation(effPos)
+				);
+
+				p->SetActive(true);
+				p->Play();
+			}
+		}
+	}
+
+	m_playSwordBeam = false;
 }
 
