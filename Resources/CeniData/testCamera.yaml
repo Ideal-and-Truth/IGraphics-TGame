@@ -1,0 +1,26 @@
+NodeData:
+  - position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 1}
+    positionMode: 1
+    rotationMode: 1
+    delayTime: 1.0
+  - position: {x: 1, y: 0, z: 0}
+    rotation: {x: 0, y: -1, z: 0}
+    positionMode: 1
+    rotationMode: 1
+    delayTime: 1.0
+  - position: {x: 2, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 1}
+    positionMode: 1
+    rotationMode: 1
+    delayTime: 1.0
+  - position: {x: 3, y: 0, z: 0}
+    rotation: {x: 0, y: -1, z: 0}
+    positionMode: 1
+    rotationMode: 1
+    delayTime: 1.0
+  - position: {x: 4, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 1}
+    positionMode: 1
+    rotationMode: 1
+    delayTime: 1.0
