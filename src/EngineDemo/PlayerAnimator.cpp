@@ -181,10 +181,21 @@ void PlayerAnimator::Start()
 	m_skinnedMesh->AddAnimation("SlashSkill", L"PlayerAnimations/Skill/SlashSkill");
 	m_skinnedMesh->AddAnimation("TimeStop", L"PlayerAnimations/Skill/TimeStop");
 
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_2_Impact_Sound.wav", false);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_3_Impact_Sound.wav", false);
-	m_managers.lock()->Sound()->SetVolum(1, 100.f);
+	/// 사운드 추가
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_2_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_2_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_3_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_4_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Dodge_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Dead_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\TimeStop_Skill_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Ground_Impact_2_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Walk_1_Sound.wav", true);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_1_Sound.wav", true);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_2_Sound.wav", true);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_3_Sound.wav", true);
 
 	m_currentState->OnStateEnter();
 }
@@ -321,10 +332,6 @@ void PlayerAnimator::Update()
 		}
 	}
 
-	if (m_currentState == m_animationStateMap["Guard"] || m_currentState == m_animationStateMap["Parry"] || m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["RushAttack"])
-	{
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-	}
 
 	m_currentState->OnStateUpdate();
 
@@ -333,6 +340,10 @@ void PlayerAnimator::Update()
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
 	}
 
+	if (m_currentState == m_animationStateMap["Guard"] || m_currentState == m_animationStateMap["Parry"] || m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["RushAttack"])
+	{
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+	}
 
 
 	m_lastHp = m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get();
@@ -1464,9 +1475,9 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(3.f);
 			p->Play();
-
-			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 1);
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 1);
 	}
 	if (m_normalAttack2)
 	{
@@ -1482,9 +1493,9 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(3.f);
 			p->Play();
-
-			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 2);
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_2_Sound.wav", false, 2);
 	}
 	if (m_normalAttack3)
 	{
@@ -1503,9 +1514,9 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(2.f);
 			p->Play();
-
-			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 3);
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 3);
 	}
 	if (m_normalAttack4)
 	{
@@ -1523,9 +1534,9 @@ void PlayerAnimator::PlayEffects()
 			p->SetActive(true);
 			p->SetSimulationSpeed(2.f);
 			p->Play();
-			
-			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 4);
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_2_Sound.wav", false, 4);
 	}
 	if (m_normalAttack6)
 	{
@@ -1609,6 +1620,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Sound.wav", false, 6);
 	}
 
 	if (m_chargedAttack2)
@@ -1646,6 +1659,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_2_Sound.wav", false, 7);
 	}
 
 	if (m_chargedAttack3)
@@ -1683,6 +1698,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_3_Sound.wav", false, 8);
 	}
 
 	if (m_chargedAttack4)
@@ -1720,6 +1737,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_4_Sound.wav", false, 9);
 	}
 
 	if (m_chargedAttack5)
@@ -1757,6 +1776,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Sound.wav", false, 10);
 	}
 
 	if (m_dodgeAttack)

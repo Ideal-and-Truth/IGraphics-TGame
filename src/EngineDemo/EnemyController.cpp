@@ -22,6 +22,7 @@ EnemyController::EnemyController()
 	, m_impulsePower(0.f)
 	, m_sideImpulse(0.f)
 	, m_isPassThrough(0.f)
+	, m_delayTime(0.f)
 {
 	m_name = "EnemyController";
 }
@@ -184,22 +185,28 @@ void EnemyController::Update()
 
 void EnemyController::FollowTarget()
 {
+	m_delayTime += GetDeltaTime();
 	if (!m_controller.expired() && !m_target.expired())
 	{
 		m_isComeBack = false;
 
 		Vector3 pos = m_owner.lock()->GetWorldPosition();
 
-		Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
-			pos,
-			m_target.lock()->GetWorldPosition(),
-			GetScale()
-		);
+		if (m_delayTime > 1.f || m_targetPos == Vector3::Zero)
+		{
+			m_targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
+				pos,
+				m_target.lock()->GetWorldPosition(),
+				GetScale()
+			);
+
+			m_delayTime = 0.f;
+		}
 
 		Vector3 playerPos = m_target.lock()->GetWorldPosition();
 
 
-		Vector3 dir = targetPos - pos;
+		Vector3 dir = m_targetPos - pos;
 
 		float distance = (playerPos - pos).Length();
 		float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
@@ -259,7 +266,7 @@ void EnemyController::FollowTarget()
 			dir.y = 0.0f;
 			dir.Normalize(dir);
 			dir.y = -100.0f;
-			dir *=m_speed * 2.f;
+			dir *= m_speed * 2.f;
 
 			m_moveVec = dir;
 			//m_controller.lock()->Move(dir);

@@ -405,10 +405,6 @@ void EnemyAttack::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
-	{
-		GetProperty("normalAttack")->Set(m_animator, true);
-	}
 
 	if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
 	{
