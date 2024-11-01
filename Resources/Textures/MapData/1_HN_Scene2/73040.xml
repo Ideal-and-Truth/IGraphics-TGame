@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_cafe_table</Name>
-        <DiffuseFile>T_town_cafe_parasol_chair_BaseMap.png</DiffuseFile>
+        <Name>M_JShouse_Roof</Name>
+        <DiffuseFile>T_JShouse_roof_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

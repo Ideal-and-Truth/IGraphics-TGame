@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_Tunnel</Name>
-        <DiffuseFile>T_Tunnel_BaseMap.png</DiffuseFile>
+        <Name>M_booksign</Name>
+        <DiffuseFile>T_town_BOOK_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

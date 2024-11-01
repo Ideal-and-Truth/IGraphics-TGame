@@ -22,6 +22,9 @@ public:
 
 	METHOD(OnTriggerEnter);
 	virtual void OnTriggerEnter(Truth::Collider* _other) override;
+
+	METHOD(Update);
+	virtual void Update() override;
 };
 
 template<class Archive>

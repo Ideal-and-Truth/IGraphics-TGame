@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_Ground_Forest_Grass_01</Name>
-        <DiffuseFile>T_forest_ground_grass_01_A_SM.tga</DiffuseFile>
+        <Name>M_stair</Name>
+        <DiffuseFile>T_stairset_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
-        <NormalFile>T_forest_ground_grass_01_N.png</NormalFile>
+        <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
         <RoughnessFile>DefaulBlack.png</RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
@@ -13,6 +13,6 @@
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="true" Normal="true" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>

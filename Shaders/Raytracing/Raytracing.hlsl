@@ -441,11 +441,9 @@ float3 Shade(
         }
     }
 
-    //L *= ao;
-    // Temp : 0.2는 임시 값
-    L += 0.2f * albedo;
-    //return L;
-    // Specular
+    L *= ao;
+    L += g_sceneCB.AmbientIntensity * albedo;
+
     bool isReflective = !BxDF::IsBlack(Kr);
     //bool isReflective = Ideal::CheckReflect(Kr);
     //bool isTransmissive = !BxDF::IsBlack(Kt); // 일단 굴절은 뺄까?

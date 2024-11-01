@@ -81,7 +81,7 @@ void Truth::TimeManager::Update()
 // 		DEBUG_PRINT(std::to_string(m_time).c_str());
 // 		DEBUG_PRINT("\n");
 
-		m_managers.lock()->FixedUpdate();
+		// m_managers.lock()->FixedUpdate();
 		// 시간 조절
 		m_fixedDeltaTime -= m_fixedTime;
 	}

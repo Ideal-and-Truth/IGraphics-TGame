@@ -118,7 +118,7 @@ void Truth::Managers::Render() const
 
 	temp = std::string("render : ") + temp;
 	temp += " \n ";
-	DEBUG_PRINT(temp.c_str());
+	// DEBUG_PRINT(temp.c_str());
 
 }
 

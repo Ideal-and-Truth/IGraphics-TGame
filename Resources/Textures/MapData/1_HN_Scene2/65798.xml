@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_castle2Fwindow</Name>
-        <DiffuseFile>T_castleoutside2F_BaseMap.png</DiffuseFile>
+        <Name>M_ghettoset</Name>
+        <DiffuseFile>T_ghettohomeset_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
@@ -10,7 +10,7 @@
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="1" G="1" B="1" A="1"/>
         <Specular R="1" G="1" B="1" A="1"/>
-        <Emissive R="0" G="0" B="0" A="1"/>
+        <Emissive R="0.44339621" G="0.44339621" B="0.44339621" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
         <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
