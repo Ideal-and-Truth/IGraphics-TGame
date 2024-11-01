@@ -341,8 +341,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
 	{
-		//OutTexture = m_textures[name];
-		//return;
+		OutTexture = m_textures[name];
+		return;
 	}
 
 	m_textures[name] = std::make_shared<Ideal::D3D12Texture>();
@@ -935,9 +935,9 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 		staticMesh = m_staticMeshes[key];
 		if (staticMesh != nullptr)
 		{
-			//staticMesh->AddRefCount();
-			//OutMesh->SetStaticMesh(staticMesh);
-			//return;
+			staticMesh->AddRefCount();
+			OutMesh->SetStaticMesh(staticMesh);
+			return;
 		}
 	}
 
