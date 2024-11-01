@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/T_flower_common_Saint_John's_wort_01_A_M.tga
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/T_flower_common_Saint_John's_wort_01_N.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/T_flower_common_Saint_John's_wort_01_AO_SM.tga
+baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/Textures/T_flower_common_Saint_John's_wort_01_A_M.tga
+normalMap: ../Resources/Textures/MapData/3_EJ_Scene2/Textures/T_flower_common_Saint_John's_wort_01_N.png
+maskMap: ../Resources/Textures/MapData/3_EJ_Scene2/Textures/T_flower_common_Saint_John's_wort_01_AO_SM.tga
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...
