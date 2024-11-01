@@ -1,0 +1,47 @@
+MaxCount: 10
+MatName: ScannerMaterial
+EBlendingMode: 2
+Shader: BossBlackHoleSpherePS
+Mesh: 0_Particle/UVSphere
+StartSize: 100
+StartColor:
+  - 0.4
+  - 0.4
+  - 0.4
+  - 1
+StartLifetime: 2
+Loop: false
+Duration: 2
+RenderMode: 1
+
+SizeOverLifetime: true
+SizeOverLifetimeAxisX:
+  - x: 0
+    y: 0
+  - x: 2
+    y: 15
+SizeOverLifetimeAxisY:
+  - x: 0
+    y: 0
+  - x: 2
+    y: 15
+SizeOverLifetimeAxisZ:
+  - x: 0
+    y: 0
+  - x: 2
+    y: 15
+
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 0.4
+      - 0.4
+      - 0.4
+      - 1
+    position: 0
+  - Color:
+      - 0
+      - 0
+      - 0
+      - 0
+    position: 2
