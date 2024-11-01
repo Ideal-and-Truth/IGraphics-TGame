@@ -52,6 +52,7 @@ BossAnimator::BossAnimator()
 	, m_flameSwordCoolTime(false)
 	, m_lightSpeedDashCoolTime(false)
 	, m_timeDistortionCoolTime(false)
+	, m_killBoss(false)
 	, m_isLockOn(false)
 	, m_passingTime(0.f)
 	, m_lastHp(0.f)
@@ -149,20 +150,27 @@ void BossAnimator::Start()
 
 void BossAnimator::Update()
 {
+	if (m_killBoss)
+	{
+		m_owner.lock()->Destroy();
+		return;
+	}
+
 	auto playerEntity = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
 	Vector3 playerPos = { playerEntity->GetWorldPosition().x,0.f,playerEntity->GetWorldPosition().z };
 	Vector3 bossPos = { m_owner.lock()->GetWorldPosition().x,0.f,m_owner.lock()->GetWorldPosition().z };
 
-	// 	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
-	// 		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
-	// 	{
-	// 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
-	// 	}
-
-	if (GetKeyDown(KEY::_9))
+	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
+		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
 	}
+
+
+	// 	if (GetKeyDown(KEY::_9))
+	// 	{
+	// 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
+	// 	}
 
 	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
 
@@ -174,7 +182,7 @@ void BossAnimator::Update()
 		}
 	}
 
-	if (m_isDeath || !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
+	if (!m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
 	{
 		return;
 	}
@@ -183,6 +191,7 @@ void BossAnimator::Update()
 	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
 	{
 		m_isDeath = true;
+		m_isDown = true;
 	}
 
 	m_sideMove = m_enemyController->GetTypeInfo().GetProperty("sideMove")->Get<float>(m_enemyController.get()).Get();
@@ -863,6 +872,7 @@ void BossDown::OnStateEnter()
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDown1", false);
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isLockOn")->Set(m_animator, true);
+	GetProperty("passingTime")->Set(m_animator, 0.f);
 }
 
 void BossDown::OnStateUpdate()
@@ -886,8 +896,15 @@ void BossDown::OnStateUpdate()
 	{
 		if (!GetProperty("isDown")->Get<bool>(m_animator).Get())
 		{
-			dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDown3", false);
-			m_isChangePose = false;
+			if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
+			{
+				GetProperty("killBoss")->Set(m_animator, true);
+			}
+			else
+			{
+				dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDown3", false);
+				m_isChangePose = false;
+			}
 		}
 	}
 }

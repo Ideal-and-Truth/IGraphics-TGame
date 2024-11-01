@@ -560,6 +560,9 @@ private:
 	PROPERTY(isDeath);
 	bool m_isDeath;
 
+	PROPERTY(killBoss);
+	bool m_killBoss;
+
 	/// 상태 조건을 위한 것들
 	PROPERTY(isSkillActive);
 	bool m_isSkillActive;
@@ -630,6 +633,7 @@ private:
 	void Phase1();
 	void Phase2();
 	void Phase3();
+
 
 public:
 	BossAnimator();

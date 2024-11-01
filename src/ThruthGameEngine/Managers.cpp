@@ -99,8 +99,6 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
-
-
 	m_sceneManager->ApplyTransform();
 
 	clock_t start, finish;
