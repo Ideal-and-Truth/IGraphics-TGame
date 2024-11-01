@@ -145,6 +145,7 @@ namespace Ideal
 		// Upload Buffer에 있는 데이터를 GPU Buffer에 복사한다.
 		// 내부에서 리소스 베리어를 걸어주고 Buffer View를 만든다.
 		void Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, const D3D12UploadBuffer& UploadBuffer);
+		void Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer);
 		void CreateAndCopyResource(ComPtr<ID3D12Device> Device, uint32 ElementSize, uint32 ElementCount, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12Resource> Resource, D3D12_RESOURCE_STATES BeforeState);
 
 		D3D12_VERTEX_BUFFER_VIEW GetView() const;
@@ -164,6 +165,7 @@ namespace Ideal
 		// Upload Buffer에 있는 데이터를 GPU Buffer에 복사한다.
 		// 내부에서 리소스 베리어를 걸어주고 Buffer View를 만든다.
 		void Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, const D3D12UploadBuffer& UploadBuffer);
+		void Create(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, uint32 ElementSize, uint32 ElementCount, std::shared_ptr<D3D12UploadBuffer> UploadBuffer);
 		D3D12_INDEX_BUFFER_VIEW GetView() const;
 
 	private:

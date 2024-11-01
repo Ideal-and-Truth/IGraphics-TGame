@@ -44,7 +44,7 @@ struct SceneConstantBuffer
     float resolutionY;
 
     float FOV;
-    float pad0;
+    float AmbientIntensity;
 };
 
 struct MaterialInfoConstantBuffer

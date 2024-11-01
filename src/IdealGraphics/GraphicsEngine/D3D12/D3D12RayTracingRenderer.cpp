@@ -354,6 +354,10 @@ finishAdapter:
 		MyMessageBoxW(L"Device dose not support ray tracing!");
 	}
 
+	//D3D12_FEATURE_DATA_D3D12_OPTIONS17 option17 = {};
+	//bool ManualWriteTrackingResourceSupported = false;
+	//Check(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS17, &option17, sizeof(option17)), L"Device dose not support GPU Upload Heaps!");
+
 	//---------------Command Queue-----------------//
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -460,20 +464,7 @@ finishAdapter:
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
 
 
-
-	// Test
-	//m_ParticleStructuredBuffer = std::make_shared<Ideal::D3D12StructuredBuffer>();
-	//std::vector<Vector4> startPos;
-	//startPos.resize(100);	// TEMP
-	//
-	//for (uint32 y = 0; y < 10; y++)
-	//{
-	//	for (uint32 x = 0; x < 10; x++)
-	//	{
-	//		startPos[y * 10 + x] = Vector4(y, x, 0, 1);
-	//	}
-	//}
-	//m_resourceManager->CreateStructuredBuffer<Vector4>(m_ParticleStructuredBuffer, startPos);
+	SetRendererAmbientIntensity(0.4f);
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -485,6 +476,10 @@ void Ideal::D3D12RayTracingRenderer::Tick()
 
 void Ideal::D3D12RayTracingRenderer::Render()
 {
+#ifdef USE_UPLOAD_CONTAINER
+	m_resourceManager->WaitForResourceUpload();
+#endif
+
 	m_mainCamera->UpdateMatrix2();
 	//m_mainCamera->UpdateViewMatrix();
 
@@ -1398,6 +1393,11 @@ std::shared_ptr<Ideal::IMesh> Ideal::D3D12RayTracingRenderer::CreateParticleMesh
 {
 	auto mesh = m_resourceManager->CreateParticleMesh(FileName);
 	return mesh;
+}
+
+void Ideal::D3D12RayTracingRenderer::SetRendererAmbientIntensity(float Value)
+{
+	m_sceneCB.AmbientIntensity = Value;
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)

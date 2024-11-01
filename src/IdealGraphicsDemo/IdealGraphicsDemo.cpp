@@ -396,6 +396,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 
+		for (int i = 0; i < 300; i++)
+		{
+			//std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+			//meshes.push_back(debugCart);
+		}
+
 #pragma endregion
 #pragma region TestPlane
 		auto planeMaterial = gRenderer->CreateMaterial();
