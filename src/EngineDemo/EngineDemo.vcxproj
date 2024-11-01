@@ -160,11 +160,15 @@
     <ClInclude Include="ButtonTest.h" />
     <ClInclude Include="CombatZone.h" />
     <ClInclude Include="ComponentBase.h" />
+    <ClInclude Include="CutSceneTrigger.h" />
     <ClInclude Include="DamageSystem.h" />
+    <ClInclude Include="DotDamage.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyAnimator.h" />
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
+    <ClInclude Include="ExitButton.h" />
+    <ClInclude Include="FixedCamera.h" />
     <ClInclude Include="FrameUI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HitStop.h" />
@@ -185,6 +189,7 @@
     <ClInclude Include="SimpleDamager.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="SkillTree.h" />
+    <ClInclude Include="StartButton.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestEffectGenerator.h" />
     <ClInclude Include="TestMovement.h" />
@@ -205,11 +210,15 @@
     <ClCompile Include="ButtonTest.cpp" />
     <ClCompile Include="CombatZone.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
+    <ClCompile Include="CutSceneTrigger.cpp" />
     <ClCompile Include="DamageSystem.cpp" />
+    <ClCompile Include="DotDamage.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyAnimator.cpp" />
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
+    <ClCompile Include="ExitButton.cpp" />
+    <ClCompile Include="FixedCamera.cpp" />
     <ClCompile Include="FrameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />
     <ClCompile Include="MapMoveTrigger.cpp" />
@@ -228,6 +237,7 @@
     <ClCompile Include="SimpleDamager.cpp" />
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="SkillTree.cpp" />
+    <ClCompile Include="StartButton.cpp" />
     <ClCompile Include="TestEffectGenerator.cpp" />
     <ClCompile Include="TestMovement.cpp" />
     <ClCompile Include="TimeDistortion.cpp" />
@@ -240,6 +250,24 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Resources\CeniData\testCamera.yaml" />
+    <None Include="..\Resources\Particles\Beam.yaml" />
+    <None Include="..\Resources\Particles\Beam1.yaml" />
+    <None Include="..\Resources\Particles\Beam2.yaml" />
+    <None Include="..\Resources\Particles\BlackHole.yaml" />
+    <None Include="..\Resources\Particles\BlackHoleSphere.yaml" />
+    <None Include="..\Resources\Particles\ComAttack.yaml" />
+    <None Include="..\Resources\Particles\ComAttack2.yaml" />
+    <None Include="..\Resources\Particles\DodgeAttack.yaml" />
+    <None Include="..\Resources\Particles\Fire.yaml" />
+    <None Include="..\Resources\Particles\Fire_1.yaml" />
+    <None Include="..\Resources\Particles\MagicCircle.yaml" />
+    <None Include="..\Resources\Particles\NorAttack.yaml" />
+    <None Include="..\Resources\Particles\NorAttack_S.yaml" />
+    <None Include="..\Resources\Particles\ShootImpact.yaml" />
+    <None Include="..\Resources\Particles\SpearImpact.yaml" />
+    <None Include="..\Resources\Particles\SpearImpact1.yaml" />
+    <None Include="..\Resources\Particles\SpearImpact2.yaml" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

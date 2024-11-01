@@ -28,6 +28,7 @@ Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 	: m_managers(_managers)
 	, m_name("No Name Scene")
 	, m_mapPath(L"")
+	, m_skyBox("../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS")
 {
 }
 
@@ -135,6 +136,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	}
 
 	LoadUnityData(m_mapPath);
+	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
 }
 
 /// <summary>

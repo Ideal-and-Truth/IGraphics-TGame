@@ -86,13 +86,22 @@ void Processor::Initialize(HINSTANCE _hInstance)
 // 	ConvertAniFbxData(L"BossAnimations/Attacks/Combo1-1.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Strafe/BossWalk.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Idle/BattleEntrance.fbx");
+// 	ConvertAniFbxData(L"BossAnimations/Idle/BossEntranceRoot.fbx");
 // 	ConvertAniFbxData(L"BossAnimations/Attacks/BossSwordShoot.fbx");
+
+
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Down.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/Fall.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/FallAttack.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/GetUp.fbx");
+// 	ConvertAniFbxData(L"EnemyAnimations/MeleeEnemy/Down/KnockBack.fbx");
 
 // 	ConvertStaticFbxData(L"EnemyAnimations/RangeEnemy/Weapon/SM_mon_bow.fbx");
 // 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_shield.fbx");
 // 	ConvertStaticFbxData(L"EnemyAnimations/MeleeEnemy/Weapon/SM_mon_sword.fbx");
+// 	ConvertStaticFbxData(L"BossAnimations/Spear/SM_niddle_sub.fbx");
 
-// 	int a = 0;
+ 	int a = 0;
 	// ConvertDataUseTrhead();
 #endif // CONVERT_DATA
 
@@ -102,6 +111,7 @@ void Processor::Initialize(HINSTANCE _hInstance)
 	// up.SetRootDir("E:\\Projects\\SampleUnity\\parsingTest");
 	// up.ParseUnityFile("E:\\Projects\\SampleUnity\\parsingTest\\Assets\\Scenes\\SampleScene.unity");
 	// up.SetRootDir("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP");
+	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\0_TitleTest.unity");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\1_HN_Scene2.unity");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\2_JS_Scene2.unity");
 	// up.ParseUnityFile("E:\\Projects\\ChronosUnity\\Kronos_IAT_Unity\\Cronos_URP\\Assets\\Scenes\\ArtRoom\\FinalScene\\3_EJ_Scene2.unity");
@@ -183,7 +193,7 @@ LRESULT CALLBACK Processor::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		break;
 
 	case WM_DESTROY:
-		PostQuitMessage(0);
+		::PostQuitMessage(0);
 		break;
 	case WM_SIZE:
 	{

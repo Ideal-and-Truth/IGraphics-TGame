@@ -51,8 +51,11 @@ void EnemyController::FixedUpdate()
 		if (!m_canMove)
 		{
 			m_moveVec = Vector3::Zero;
-			m_moveVec.y = -100.0f;
 		}
+
+		m_moveVec *= GetFixedDeltaTime();
+		m_moveVec.y = -100.0f;
+
 		m_controller.lock()->Move(m_moveVec);
 		m_moveVec = Vector3::Zero;
 	}
@@ -108,7 +111,7 @@ void EnemyController::Update()
 		power.y = 0.f;
 		power.Normalize();
 		power.y = -100.f;
-		power *= GetDeltaTime();
+		power *= 0.002f;
 		power.x *= m_impulsePower;
 		power.y *= abs(m_impulsePower);
 		power.z *= m_impulsePower;
@@ -246,7 +249,7 @@ void EnemyController::FollowTarget()
 
 
 			right *= m_sideMove;
-			right *= GetDeltaTime() * m_speed;
+			right *= m_speed;
 
 			m_moveVec = right;
 			//m_controller.lock()->Move(right);
@@ -256,7 +259,7 @@ void EnemyController::FollowTarget()
 			dir.y = 0.0f;
 			dir.Normalize(dir);
 			dir.y = -100.0f;
-			dir *= GetDeltaTime() * m_speed * 2.f;
+			dir *=m_speed * 2.f;
 
 			m_moveVec = dir;
 			//m_controller.lock()->Move(dir);
@@ -301,7 +304,7 @@ void EnemyController::ComeBackHome()
 			backDir.y = 0.0f;
 			backDir.Normalize(backDir);
 			backDir.y = -100.0f;
-			backDir *= GetDeltaTime() * m_speed * 0.5f;
+			backDir *= m_speed * 0.5f;
 			m_controller.lock()->Move(backDir);
 			m_moveVec = backDir;
 			//m_controller.lock()->Move(backDir);

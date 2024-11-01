@@ -91,7 +91,7 @@ class EnemyAttack
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
 	EnemyAttack(Truth::Component* animator)
@@ -106,14 +106,14 @@ public:
 	virtual void OnStateExit() override;
 };
 
-class EnemyParriableAttack
+class EnemyChargeAttack
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
 
 public:
-	EnemyParriableAttack(Truth::Component* animator)
+	EnemyChargeAttack(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -147,10 +147,49 @@ class EnemyDown
 	: public AnimationState
 {
 private:
-
+	bool isReset = false;
+	bool isChange = false;
 
 public:
 	EnemyDown(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class EnemyFall
+	: public AnimationState
+{
+private:
+
+
+public:
+	EnemyFall(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
+
+class EnemyKnockBack
+	: public AnimationState
+{
+private:
+
+
+public:
+	EnemyKnockBack(Truth::Component* animator)
 		: AnimationState(animator)
 	{
 
@@ -217,11 +256,17 @@ private:
 	PROPERTY(isAttack);
 	bool m_isAttack;
 
-	PROPERTY(isParryAttack);
-	bool m_isParryAttack;
+	PROPERTY(isChargeAttack);
+	bool m_isChargeAttack;
 
 	PROPERTY(isDamage);
 	bool m_isDamage;
+
+	PROPERTY(isBack);
+	bool m_isBack;
+
+	PROPERTY(isFall);
+	bool m_isFall;
 
 	PROPERTY(isDown);
 	bool m_isDown;
@@ -237,6 +282,12 @@ private:
 
 	PROPERTY(isAttacking);
 	bool m_isAttacking;
+
+	PROPERTY(normalAttack);
+	bool m_normalAttack;
+
+	PROPERTY(chargeAttack);
+	bool m_chargeAttack;
 	/// ----------------------------------------
 	PROPERTY(passingTime);
 	float m_passingTime;
@@ -259,6 +310,7 @@ private:
 
 private:
 	int RandomNumber(int _min, int _max);
+	void PlayEffect();
 
 public:
 	EnemyAnimator();

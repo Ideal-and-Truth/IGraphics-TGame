@@ -9,7 +9,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BlackHole.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateRotationX(3.14 * 0.5)
 // 		);
@@ -20,7 +19,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BlackHoleSphere.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		//p->SetTransformMatrix(Matrix::CreateScale(10.f,10.f,10.f));
 // 		p->SetActive(true);
 // 		//p->SetSimulationSpeed(0.1f);
@@ -31,7 +29,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(2, 2, 4))
 // 		);
@@ -42,7 +39,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Fire_1.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(Matrix::CreateScale(Vector3(1, 1, 5))
 // 			* DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 0, -1))
 // 			);
@@ -54,7 +50,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateScale(35.f)
 // 			* Matrix::CreateScale(Vector3(2.5, 2.5, 1))
@@ -68,7 +63,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact1.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateScale(35.f)
 // 			* Matrix::CreateScale(Vector3(3, 3, 1))
@@ -82,7 +76,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact2.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateScale(35.f)
 // 			* Matrix::CreateScale(Vector3(1, 1, 2))
@@ -97,7 +90,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack_S.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateScale(Vector3(1.5, 3, 1.5))
 // 			* Matrix::CreateRotationZ(0.13f)
@@ -110,7 +102,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack_S.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateScale(Vector3(1.5, 3, 1.5))
 // 			* Matrix::CreateRotationY(2.44f)
@@ -124,7 +115,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack_S.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateRotationY(2.44f)
 // 			* Matrix::CreateTranslation(Vector3(3, 0, 0))
@@ -138,7 +128,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::O))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateRotationY(-2.7925f)
 // 			//Matrix::CreateRotationY(-3.14f)
@@ -152,7 +141,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::O))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
 // 			*Matrix::CreateRotationY(-3.14f)
@@ -166,7 +154,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\DodgeAttack.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			Matrix::CreateRotationY(-2.44f)
 // 			* Matrix::CreateTranslation(Vector3(9, 0, 0))
@@ -179,7 +166,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\MagicCircle.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(Matrix::CreateScale(0.5f) 
 // 			* Matrix::CreateRotationX(1.57f) 
 // 			* Matrix::CreateTranslation(Vector3(0, 3, 0))
@@ -193,7 +179,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(Matrix::CreateScale(0.8f) 
 // 			* Matrix::CreateRotationX(1.57f) 
 // 			* Matrix::CreateRotationY(-1.57f) 
@@ -209,7 +194,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
 // 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
@@ -222,7 +206,6 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		p->SetTransformMatrix(
 // 			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
 // 			DirectX::SimpleMath::Matrix::CreateRotationX(3.14f * 0.5f)
@@ -235,9 +218,75 @@ void TestEffectGenerator::Update()
 // 	if (GetKeyDown(KEY::P))
 // 	{
 // 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
-// 		p->SetDeltaTime(GetDeltaTime());
 // 		
 // 
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+
+	/// 불장판
+	if (GetKeyDown(KEY::P))
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateRotationX(3.14 * 0.5)
+		);
+		p->SetActive(true);
+		p->Play();
+	}
+
+	/// 피격이펙트
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage0.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage1.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+// 
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\norDamage2.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(1.57f)
+// 			* Matrix::CreateTranslation(0, 0, 0)
+// 		);
 // 		p->SetActive(true);
 // 		p->Play();
 // 	}

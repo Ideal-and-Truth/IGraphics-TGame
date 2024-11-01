@@ -40,6 +40,7 @@ namespace Ideal
 	class D3D12PipelineStateObject;
 	class D3D12Viewport;
 	class D3D12UAVBuffer;
+	class D3D12StructuredBuffer;
 
 	class IdealCamera;
 	class IdealRenderScene;
@@ -152,7 +153,8 @@ namespace Ideal
 		DirectX::SimpleMath::Vector2 GetTopLeftEditorPos() override;
 		DirectX::SimpleMath::Vector2 GetRightBottomEditorPos() override;
 
-		virtual void SetSkyBox(const std::wstring& FileName) override;
+		virtual void SetSkyBox(std::shared_ptr<Ideal::ITexture> SkyBoxTexture) override;
+		virtual std::shared_ptr<Ideal::ITexture> CreateSkyBox(const std::wstring& FileName) override;
 
 		// Texture
 		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName, bool IsGenerateMips = false, bool IsNormalMap = false) override;
@@ -299,7 +301,8 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugMeshManagerPS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DebugLineShaderPS;
-		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderMeshVS;
+		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderBillboardCS;
 		// RAY TRACING FRAMEWORK
 	private:
 		// shader
@@ -321,7 +324,7 @@ namespace Ideal
 		void TransitionRayTracingOutputToSRV();
 		void TransitionRayTracingOutputToUAV();
 
-		// AS Manager
+		// AS Manager	
 		std::shared_ptr<Ideal::RaytracingManager> m_raytracingManager;
 		std::vector<std::shared_ptr<Ideal::IdealStaticMeshObject>> m_staticMeshObject;
 		std::vector<std::shared_ptr<Ideal::IdealSkinnedMeshObject>> m_skinnedMeshObject;
@@ -386,5 +389,8 @@ namespace Ideal
 		Vector2 m_mainCameraEditorTopLeft;
 		Vector2 m_mainCameraEditorBottomRight;
 		Vector2 m_mainCameraEditorWindowSize;
+
+
+		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_ParticleStructuredBuffer;
 	};
 }

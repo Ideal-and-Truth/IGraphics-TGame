@@ -1,7 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/candle/flame.png
+baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/candle/flame.png
+normalMap: ""
+maskMap: ""
 tileX: 1
 tileY: 1
-alphaCulling: false
+alphaCulling: true
 transparent: false
 ...

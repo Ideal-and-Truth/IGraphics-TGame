@@ -102,7 +102,9 @@ namespace Ideal
 
 		virtual void DeleteLight(std::shared_ptr<Ideal::ILight> Light) override;
 
-		virtual void SetSkyBox(const std::wstring& FileName) override;
+		virtual void SetSkyBox(std::shared_ptr<Ideal::ITexture> SkyBoxTexture) override;
+		virtual std::shared_ptr<Ideal::ITexture> CreateSkyBox(const std::wstring& FileName) override;
+
 		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName, bool IsGenerateMips = false, bool IsNormalMap = false) override;
 		virtual std::shared_ptr<Ideal::IMaterial> CreateMaterial() override;
 

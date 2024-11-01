@@ -119,6 +119,9 @@ void Truth::SceneManager::ChangeScene()
 	m_currentScene = s;
 	m_currentScene->Initalize(m_mangers);
 	m_currentScene->Enter();
+
+	m_mangers.lock()->Time()->RestartTime();
+	m_mangers.lock()->Input()->m_fpsMode = s->m_useNavMesh;
 }
 
 /// <summary>

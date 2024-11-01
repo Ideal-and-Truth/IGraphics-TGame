@@ -546,9 +546,14 @@ void Ideal::D3D12Renderer::DeleteLight(std::shared_ptr<Ideal::ILight> Light)
 
 }
 
-void Ideal::D3D12Renderer::SetSkyBox(const std::wstring& FileName)
+void Ideal::D3D12Renderer::SetSkyBox(std::shared_ptr<Ideal::ITexture> SkyBoxTexture)
 {
-	// TODO
+
+}
+
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateSkyBox(const std::wstring& FileName)
+{
+	return nullptr;
 }
 
 std::shared_ptr<Ideal::ITexture> Ideal::D3D12Renderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/)

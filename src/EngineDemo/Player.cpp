@@ -16,10 +16,14 @@ Player::Player()
 	, m_currentCP(0.f)
 	, m_chargingCP(10.f)
 	, m_passingTime(0.f)
+	, m_burnedTime(0.f)
+	, m_dotDealTime(0.f)
 	, m_isDecreaseCP(false)
 	, m_unlockSkill1(false)
 	, m_slowTime(false)
 	, m_isInvincible(false)
+	, m_onFire(false)
+	, m_getDotDeal(false)
 {
 	m_name = "Player";
 }
@@ -41,16 +45,44 @@ void Player::Start()
 
 void Player::Update()
 {
+	/// 무적이 되는 마법의 커맨드
 	if (GetKey(KEY::O) && GetKeyDown(KEY::P))
-	{
 		m_isInvincible = !m_isInvincible;
-	}
 
+	/// 최대 체력 이상 못 올라가게
 	if (m_currentCP > m_maxCP)
-	{
 		m_currentCP = m_maxCP;
+
+	/// 도트데미지 계산
+	if (m_onFire)
+	{
+		m_getDotDeal = true;
 	}
 
+	if (m_getDotDeal)
+	{
+		m_dotDealTime += GetDeltaTime();
+
+		if (m_dotDealTime > 0.2f)
+		{
+			m_dotDealTime = 0.f;
+
+			m_currentTP -= 1.f;
+		}
+
+		if (!m_onFire)
+		{
+			m_burnedTime += GetDeltaTime();
+
+			if (m_burnedTime > 3.f)
+			{
+				m_burnedTime = 0.f;
+				m_getDotDeal = false;
+			}
+		}
+	}
+
+	/// 시간 감속 키면 10초에 걸쳐 CP 감소
 	if (m_slowTime)
 	{
 		m_currentCP -= GetDeltaTime() * 10.f;
@@ -61,6 +93,7 @@ void Player::Update()
 		}
 	}
 
+	/// 1초마다 체력 감소
 	if (m_currentTP > 0.f)
 	{
 		m_passingTime += GetDeltaTime();
@@ -71,6 +104,8 @@ void Player::Update()
 		}
 	}
 
+
+	/// 무적
 	if (m_isInvincible)
 	{
 		m_currentTP = m_maxTP;

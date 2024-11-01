@@ -12,6 +12,23 @@ class EnemyController;
 class PlayerAnimator;
 
 
+class BossEntrance
+	: public AnimationState
+{
+private:
+
+
+public:
+	BossEntrance(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+};
+
 class BossIdle
 	: public AnimationState
 {
@@ -267,7 +284,8 @@ class BossAttackDoubleUpperCut
 	: public AnimationState
 {
 private:
-	bool m_isChangePose;
+	bool m_isChangePose = false;
+	bool isReset = false;
 
 public:
 	BossAttackDoubleUpperCut(Truth::Component* animator)
@@ -503,9 +521,6 @@ private:
 	PROPERTY(attackSpin);
 	bool m_attackSpin;
 
-	PROPERTY(attackDoubleUpperCut);
-	bool m_attackDoubleUpperCut;
-
 	PROPERTY(attackCombo1_1);
 	bool m_attackCombo1_1;
 
@@ -584,6 +599,8 @@ private:
 	bool m_timeDistortionCoolTime;
 
 	float m_lastHp;
+
+	float m_baseSpeed;
 
 	float m_downGuage;
 

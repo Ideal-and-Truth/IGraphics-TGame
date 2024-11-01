@@ -424,6 +424,25 @@ public:
 	virtual void OnStateExit() override;
 };
 
+class PlayerParry
+	: public AnimationState
+{
+private:
+	bool isReset = false;
+	bool isChange = false;
+
+public:
+	PlayerParry(Truth::Component* animator)
+		: AnimationState(animator)
+	{
+
+	}
+
+public:
+	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
+};
 
 // 애니메이터 없어서 임시로 만든 컴포넌트
 class PlayerAnimator :
@@ -493,11 +512,23 @@ private:
 	PROPERTY(isDead);
 	bool m_isDead;
 
+	PROPERTY(backAttack);
+	bool m_backAttack;
+
+	PROPERTY(fallAttack);
+	bool m_fallAttack;
+
 	PROPERTY(downAttack);
 	bool m_downAttack;
 
 	PROPERTY(chargedReady);
 	bool m_chargedReady;
+
+	PROPERTY(parry);
+	bool m_parry;
+
+	PROPERTY(rush);
+	bool m_rush;
 
 	PROPERTY(forwardInput);
 	float m_forwardInput;
@@ -553,8 +584,12 @@ private:
 	PROPERTY(swordBeam);
 	bool m_swordBeam;
 
+	PROPERTY(timeStop);
+	bool m_timeStop;
+
 	float m_lastHp;
 
+	PROPERTY(passingTime);
 	float m_passingTime;
 
 	float m_chargedTime;

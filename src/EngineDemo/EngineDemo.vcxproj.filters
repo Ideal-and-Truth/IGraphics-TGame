@@ -73,6 +73,21 @@
     <Filter Include="Component\FrameCounter">
       <UniqueIdentifier>{b1fdbea3-a874-4e31-a1ee-3670ac42fb34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="YAML Resource">
+      <UniqueIdentifier>{74c1985e-53b3-40a8-b9ee-fab0919ba7a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="YAML Resource\Particle">
+      <UniqueIdentifier>{a247670e-13a1-416d-83a7-2dacbd587a23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="YAML Resource\ceniCameraData">
+      <UniqueIdentifier>{873b4e80-3c37-4c80-8648-021f68b6cc8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\Camera">
+      <UniqueIdentifier>{d33b5163-594b-4014-82a9-21108e121a90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\TitleButton">
+      <UniqueIdentifier>{7fa272f0-fa0e-4825-9cf4-988d4347da9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -168,9 +183,6 @@
     <ClInclude Include="TimeDistortion.h">
       <Filter>Component\Boss</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerHPTextUI.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="TestEffectGenerator.h">
       <Filter>Component\Effect</Filter>
     </ClInclude>
@@ -186,14 +198,29 @@
     <ClInclude Include="PlayerHPUI.h">
       <Filter>Component\Player</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerCPUI.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClInclude>
     <ClInclude Include="PlayerSkill.h">
       <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCPUI.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHPTextUI.h">
+      <Filter>Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CutSceneTrigger.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="FixedCamera.h">
+      <Filter>Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="StartButton.h">
+      <Filter>Component\TitleButton</Filter>
+    </ClInclude>
+    <ClInclude Include="ExitButton.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -281,9 +308,6 @@
     <ClCompile Include="TimeDistortion.cpp">
       <Filter>Component\Boss</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerHPTextUI.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="TestEffectGenerator.cpp">
       <Filter>Component\Effect</Filter>
     </ClCompile>
@@ -299,14 +323,29 @@
     <ClCompile Include="PlayerHPUI.cpp">
       <Filter>Component\Player</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerCPUI.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Component\BattleSystem\DamageSystem</Filter>
     </ClCompile>
     <ClCompile Include="PlayerSkill.cpp">
       <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCPUI.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHPTextUI.cpp">
+      <Filter>Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CutSceneTrigger.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FixedCamera.cpp">
+      <Filter>Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="StartButton.cpp">
+      <Filter>Component\TitleButton</Filter>
+    </ClCompile>
+    <ClCompile Include="ExitButton.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -324,5 +363,59 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="..\Resources\Particles\Beam.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Beam1.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Beam2.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\BlackHole.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\BlackHoleSphere.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\ComAttack.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\ComAttack2.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\DodgeAttack.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Fire.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\Fire_1.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\MagicCircle.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\NorAttack.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\NorAttack_S.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\ShootImpact.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\SpearImpact.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\SpearImpact1.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\Particles\SpearImpact2.yaml">
+      <Filter>YAML Resource\Particle</Filter>
+    </None>
+    <None Include="..\Resources\CeniData\testCamera.yaml">
+      <Filter>YAML Resource\ceniCameraData</Filter>
+    </None>
   </ItemGroup>
 </Project>

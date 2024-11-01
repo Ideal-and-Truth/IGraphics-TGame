@@ -1,0 +1,57 @@
+MaxCount: 10
+MatName: AbilitySlash
+EBlendingMode: 2
+Shader: SwordSlash
+Texture0: ../Resources/Textures/0_Particle/Smoke12.png
+Texture1: ../Resources/Textures/0_Particle/Crater62.png
+Texture2: ../Resources/Textures/0_Particle/Noise43b.png
+Mesh: 0_Particle/Slash
+StartColor:
+  - 0.5647
+  - 0.0705
+  - 1
+  - 0.5
+StartLifetime: 1
+Loop: false
+Duration: 2
+RenderMode: 1
+RotationOverLifetime: true
+RotationOverLifetimeAxisYControlPoints:
+  - x: 0
+    y: 1
+  - x: 0.5
+    y: 0
+  - x: 1
+    y: 0
+CustomData1X:
+  - x: 0
+    y: 0
+  - x: 0.1
+    y: 2
+  - x: 0.3
+    y: 0.6
+  - x: 1
+    y: 0
+CustomData1Y:
+  - x: 1
+    y: 1
+CustomData2Z:
+  - x: 0
+    y: 0
+CustomData2W:
+  - x: 0
+    y: 1
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 0.3
+      - 0.07
+      - 1
+      - 1
+    position: 0
+  - Color:
+      - 0.3
+      - 0.07
+      - 1
+      - 1
+    position: 1

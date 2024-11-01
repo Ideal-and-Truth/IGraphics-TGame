@@ -6,6 +6,7 @@
 #include "SphereCollider.h"
 #include "Bullet.h"
 #include "Transform.h"
+#include "Mesh.h"
 #include "SkinnedMesh.h"
 #include "SimpleDamager.h"
 #include "TimeDistortion.h"
@@ -14,6 +15,7 @@
 #include "IParticleSystem.h"
 #include "Controller.h"
 #include "PhysicsManager.h"
+#include "DotDamage.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -91,11 +93,11 @@ void BossSkill::Awake()
 	m_flamePos.push_back(13.2f);
 	m_flamePos.push_back(16.2f);
 
-	m_swordPos.push_back({ 0.f,3.7f,0.f });
-	m_swordPos.push_back({ 1.1f,4.2f,0.f });
-	m_swordPos.push_back({ 2.2f,4.7f,0.f });
-	m_swordPos.push_back({ -1.1f,4.2f,0.f });
-	m_swordPos.push_back({ -2.2f,4.7f,0.f });
+	m_swordPos.push_back({ 0.f,5.7f,0.f });
+	m_swordPos.push_back({ 1.1f,6.2f,0.f });
+	m_swordPos.push_back({ 2.2f,6.7f,0.f });
+	m_swordPos.push_back({ -1.1f,6.2f,0.f });
+	m_swordPos.push_back({ -2.2f,6.7f,0.f });
 
 	m_spherePos.push_back({ 9.f, 7.f, 0.f });
 	m_spherePos.push_back({ -9.f, 7.f, 0.f });
@@ -348,9 +350,7 @@ void BossSkill::FlameSword()
 			flame->Initialize();
 			flame->m_layer = 1;
 			flame->AddComponent<Truth::SphereCollider>();
-			auto damage = flame->AddComponent<SimpleDamager>();
-			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
-			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
+			auto damage = flame->AddComponent<DotDamage>();
 
 			flame->m_name = "Flame";
 			m_managers.lock()->Scene()->m_currentScene->CreateEntity(flame);
@@ -394,8 +394,11 @@ void BossSkill::FlameSword()
 		{
 			float bossHeight = m_owner.lock()->m_transform->m_position.y;
 			m_flameSwordTime += GetDeltaTime();
-			if (m_flameSwordTime > 0.13f && m_flameCount < m_flamePos.size())
+			if (m_flameSwordTime > 0.13f && m_flameCount <= m_flamePos.size())
 			{
+				auto damage = m_fires[m_flameCount].first->GetComponent<DotDamage>().lock();
+				damage->GetTypeInfo().GetProperty("playEffect")->Set(damage.get(), true);
+
 				m_fires[m_flameCount].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_flameCount] });
 				Vector3 worldPos = m_fires[m_flameCount].first->m_transform->m_worldPosition;
 				m_owner.lock()->DeleteChild(m_fires[m_flameCount].first);
@@ -403,9 +406,8 @@ void BossSkill::FlameSword()
 				m_fires[m_flameCount].first->m_transform->m_position = worldPos;
 				m_flameCount++;
 				m_flameSwordTime = 0.f;
-
 			}
-			if (m_flameCount >= m_flamePos.size() - 1)
+			if (m_flameCount >= m_flamePos.size())
 			{
 				m_deleteFire = true;
 				m_flameSword = false;
@@ -449,7 +451,9 @@ void BossSkill::SwordShooting()
 			std::shared_ptr<Truth::Entity> sword = std::make_shared<Truth::Entity>(m_managers.lock());
 			sword->Initialize();
 			sword->m_layer = 1;
-			sword->AddComponent<Truth::BoxCollider>();
+			auto collider = sword->AddComponent<Truth::BoxCollider>();
+			collider->m_size = { 0.015f,0.015f,0.03f };
+			sword->AddComponent<Truth::Mesh>(L"BossAnimations/Spear/SM_niddle_sub");
 			auto damage = sword->AddComponent<SimpleDamager>();
 			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
@@ -460,7 +464,7 @@ void BossSkill::SwordShooting()
 
 			sword->SetPosition(m_swordPos[m_swordCount]);
 			//sword->SetScale({ 30.f,30.f,300.f });
-			sword->SetScale({ 1.5f,1.5f,3.f });
+			sword->SetScale({ 100.f,100.f,100.f });
 
 
 			sword->Start();
@@ -492,14 +496,22 @@ void BossSkill::SwordShooting()
 			if (!m_swords[i].second)
 			{
 				Vector3 dir = playerPos - m_swords[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 1.5f, 0.0f };
+				dir.y = 0.f;
 				dir.Normalize(dir);
 				Quaternion lookRot;
-				if (playerPos.z - m_swords[i].first->m_transform->m_worldPosition.z > 0.f)
-				{
-					dir *= -1.f;
-				}
 				Quaternion::LookRotation(dir, Vector3::Up, lookRot);
-				m_swords[i].first->m_transform->m_rotation = Quaternion::Slerp(m_swords[i].first->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
+				Vector3 lookVec = lookRot.ToEuler();
+				lookVec.y += 3.141592f;
+				m_swords[i].first->m_transform->m_rotation = Quaternion::Slerp(m_swords[i].first->m_transform->m_rotation, Quaternion::CreateFromYawPitchRoll(lookVec), 10.f * GetDeltaTime());
+
+				Vector3 dir2 = playerPos - m_swords[i].first->m_transform->m_worldPosition + Vector3{ 0.0f, 1.5f, 0.0f };
+				dir2.y = 0.f;
+				auto rot = m_swords[i].first->m_transform->m_rotation.ToEuler();
+				float val = atan((m_swords[i].first->m_transform->m_worldPosition.y - playerPos.y + 1.5f) / dir2.Length());
+
+				rot.x = val;
+
+				m_swords[i].first->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(rot);
 			}
 			if (m_swords[i].second && m_spearImpactCount == i)
 			{
@@ -872,6 +884,7 @@ void BossSkill::DeleteCheck()
 			}
 
 			m_fires.clear();
+			PlayEffect(Vector3::Zero);
 
 			m_deleteFire = false;
 
@@ -960,6 +973,7 @@ void BossSkill::DeleteCheck()
 
 void BossSkill::PlayEffect(Vector3 pos)
 {
+	/// 충격파
 	if (m_playShock)
 	{
 		m_playShock = false;
@@ -999,6 +1013,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		}
 	}
 
+	/// 창
 	if (m_playSpear)
 	{
 		m_playSpear = false;
@@ -1007,7 +1022,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(2.5f, 2.5f, 1.f) * 2.f)
+				* Matrix::CreateScale(Vector3(2.5f, 2.5f, 1.f) * 4.f)
 				* Matrix::CreateRotationX(3.1415f * 0.5f)
 				* Matrix::CreateTranslation(pos)
 			);
@@ -1021,7 +1036,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact1.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(3.f, 3.f, 1.f) * 2.f)
+				* Matrix::CreateScale(Vector3(3.f, 3.f, 1.f) * 4.f)
 				* Matrix::CreateRotationX(3.1415f * 0.5f)
 				* Matrix::CreateTranslation(pos)
 			);
@@ -1035,7 +1050,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact2.yaml");
 			p->SetTransformMatrix(
 				Matrix::CreateScale(35.f)
-				* Matrix::CreateScale(Vector3(1.f, 1.f, 2.f) * 2.f)
+				* Matrix::CreateScale(Vector3(1.f, 1.f, 2.f) * 4.f)
 				* Matrix::CreateRotationX(3.1415f * 0.5)
 				* Matrix::CreateTranslation(pos)
 			);
@@ -1046,6 +1061,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		}
 	}
 
+	/// 불 발사
 	{
 		Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
 		effectRot.y += (3.141592f / 180.f) * 180.f;
@@ -1084,7 +1100,6 @@ void BossSkill::PlayEffect(Vector3 pos)
 			m_playFlameShot = false;
 		}
 	}
-
 
 }
 

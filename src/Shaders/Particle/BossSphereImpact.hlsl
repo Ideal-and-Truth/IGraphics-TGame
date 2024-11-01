@@ -32,14 +32,9 @@ float4 PSMain(VSOutput input) : SV_TARGET
     // 마스크 페이드 (Mask Fade)
     float2 maskUV;
     Ideal_TilingAndOffset_float(input.UV, float2(1, -1), float2(0, 0), maskUV);
-    float maskAlpha = ParticleTexture2.Sample(LinearWrapSampler, maskUV).a; // 마스크 텍스처 사용
+    float4 maskAlpha = ParticleTexture2.Sample(LinearWrapSampler, maskUV); // 마스크 텍스처 사용
 
-    // Y값을 기준으로 하단 반구만 적용
-    float isInLowerHemisphere = step(0.0, -input.Pos.y); // Y가 0보다 작으면 1, 아니면 0
-    baseColor.a *= maskAlpha * isInLowerHemisphere; // 알파 값 조정
-
-    // 하단 반구에만 적용되도록 추가 조건
-    baseColor.rgb *= isInLowerHemisphere; // 색상도 하단 반구에서만 보이도록 조정
+    baseColor *= maskAlpha;
     
     // 최종 색상 반환
     return baseColor;

@@ -13,6 +13,7 @@ namespace Ideal
 	class D3D12Resource;
 	class D3D12VertexBuffer;
 	class D3D12IndexBuffer;
+	class D3D12StructuredBuffer;
 	class D3D12ShaderResourceView;
 	class D3D12UnorderedAccessView;
 	class D3D12Texture;
@@ -84,6 +85,66 @@ namespace Ideal
 
 		void CreateVertexBufferBox(std::shared_ptr<Ideal::D3D12VertexBuffer>& VertexBuffer);
 		void CreateIndexBufferBox(std::shared_ptr<Ideal::D3D12IndexBuffer>& IndexBuffer);
+
+		template <typename TType>
+		void CreateStructuredBuffer(std::shared_ptr<Ideal::D3D12StructuredBuffer> OutStructuredBuffer, std::vector<TType>& Vertices)
+		{
+			m_commandAllocator->Reset();
+			m_commandList->Reset(m_commandAllocator.Get(), nullptr);
+
+			const uint32 elementSize = sizeof(TType);
+			const uint32 elementCount = (uint32)Vertices.size();
+			const uint32 bufferSize = elementSize * elementCount;
+
+			Ideal::D3D12UploadBuffer uploadBuffer;
+			uploadBuffer.Create(m_device.Get(), bufferSize);
+			{
+				void* mappedData = uploadBuffer.Map();
+				memcpy(mappedData, Vertices.data(), bufferSize);
+				uploadBuffer.UnMap();
+			}
+			OutStructuredBuffer->Create(m_device.Get(),
+				m_commandList.Get(),
+				elementSize,
+				elementCount,
+				uploadBuffer
+			);
+
+			//---------Execute---------//
+			m_commandList->Close();
+			ID3D12CommandList* commandLists[] = { m_commandList.Get() };
+			m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+			Fence();
+			WaitForFenceValue();
+
+			//-------------SRV--------------//
+			auto srvHandle = m_cbv_srv_uavHeap->Allocate();
+			D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+			srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+			srvDesc.Buffer.NumElements = elementCount;
+			srvDesc.Buffer.StructureByteStride = sizeof(TType);
+			srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+			
+			m_device->CreateShaderResourceView(OutStructuredBuffer->GetResource(), &srvDesc, srvHandle.GetCpuHandle());
+			OutStructuredBuffer->EmplaceSRV(srvHandle);
+			
+			//-------------UAV--------------//
+			auto uavHandle = m_cbv_srv_uavHeap->Allocate();
+			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+			uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+			uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+			uavDesc.Buffer.FirstElement = 0;
+			uavDesc.Buffer.NumElements = elementCount;
+			uavDesc.Buffer.StructureByteStride = sizeof(TType);
+			uavDesc.Buffer.CounterOffsetInBytes = 0;
+			uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+			
+			m_device->CreateUnorderedAccessView(OutStructuredBuffer->GetResource(), nullptr, &uavDesc, uavHandle.GetCpuHandle());
+			OutStructuredBuffer->EmplaceUAV(uavHandle);
+		}
 
 		template <typename TVertexType>
 		void CreateVertexBuffer(std::shared_ptr<Ideal::D3D12VertexBuffer> OutVertexBuffer,
@@ -277,7 +338,7 @@ namespace Ideal
 
 	private:
 		// ±×³É 10000°³ ¸¸µé¾îº­·È~
-		const uint32 ParticleCount = 100;
+		const uint32 ParticleCount = 1000;
 
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
 	};

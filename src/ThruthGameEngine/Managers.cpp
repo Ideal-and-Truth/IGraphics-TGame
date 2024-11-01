@@ -79,6 +79,10 @@ void Truth::Managers::LateUpdate() const
 
 void Truth::Managers::FixedUpdate() const
 {
+	static float at = 0.0f;
+	at += m_timeManager->GetADT();
+	// DEBUG_PRINT(std::to_string(at).c_str());
+	// DEBUG_PRINT("\n");
 	m_physXManager->FixedUpdate();
 	m_sceneManager->FixedUpdate();
 	m_eventManager->FixedUpdate();
@@ -96,7 +100,7 @@ void Truth::Managers::Render() const
 	std::string temp = std::to_string(finish - start);
 	temp = std::string("update : ") + temp;
 	temp += " / ";
-	DEBUG_PRINT(temp.c_str());
+	// DEBUG_PRINT(temp.c_str());
 
 	start = clock();
 #ifdef EDITOR_MODE
@@ -112,7 +116,7 @@ void Truth::Managers::Render() const
 	temp = std::to_string(finish - start);
 	temp = std::string("render : ") + temp;
 	temp += " \n ";
-	DEBUG_PRINT(temp.c_str());
+	// DEBUG_PRINT(temp.c_str());
 
 }
 
@@ -141,6 +145,11 @@ void Truth::Managers::Finalize()
 }
 
 
+void Truth::Managers::EndGame()
+{
+	::PostQuitMessage(0);
+}
+
 #ifdef EDITOR_MODE
 void Truth::Managers::EditToGame()
 {
@@ -151,7 +160,7 @@ void Truth::Managers::EditToGame()
 	m_sceneManager->SaveCurrentScene();
 	m_sceneManager->m_currentScene->Start();
 	m_isEdit = false;
-	m_inputManager->m_fpsMode = true;
+	m_inputManager->m_fpsMode = m_sceneManager->m_currentScene->m_useNavMesh;
 }
 
 void Truth::Managers::GameToEdit()

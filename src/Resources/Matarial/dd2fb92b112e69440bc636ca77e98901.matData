@@ -1,9 +1,0 @@
----
-baseMap: ""
-normalMap: ""
-maskMap: ""
-tileX: 1
-tileY: 1
-alphaCulling: false
-transparent: false
-...

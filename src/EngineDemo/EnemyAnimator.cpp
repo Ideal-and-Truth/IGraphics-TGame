@@ -4,6 +4,8 @@
 #include "EnemyController.h"
 #include "PlayerAnimator.h"
 #include <random>
+#include "ParticleManager.h"
+#include "IParticleSystem.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(EnemyAnimator)
 
@@ -21,7 +23,9 @@ EnemyAnimator::EnemyAnimator()
 	, m_isChase(false)
 	, m_isAttackReady(false)
 	, m_isAttack(false)
-	, m_isParryAttack(false)
+	, m_isChargeAttack(false)
+	, m_isBack(false)
+	, m_isFall(false)
 	, m_isDown(false)
 	, m_isDamage(false)
 	, m_isDeath(false)
@@ -29,6 +33,8 @@ EnemyAnimator::EnemyAnimator()
 	, m_isAnimationEnd(false)
 	, m_isBackStep(false)
 	, m_isAttacking(false)
+	, m_normalAttack(false)
+	, m_chargeAttack(false)
 {
 
 }
@@ -50,11 +56,15 @@ void EnemyAnimator::Awake()
 
 	m_animationStateMap["Attack"] = new EnemyAttack(this);
 
-	m_animationStateMap["ParriableAttack"] = new EnemyParriableAttack(this);
+	m_animationStateMap["ChargeAttack"] = new EnemyChargeAttack(this);
 
 	m_animationStateMap["Hit"] = new EnemyHit(this);
 
 	m_animationStateMap["Down"] = new EnemyDown(this);
+
+	m_animationStateMap["Fall"] = new EnemyFall(this);
+
+	m_animationStateMap["KnockBack"] = new EnemyKnockBack(this);
 
 	m_animationStateMap["Death"] = new EnemyDeath(this);
 
@@ -70,7 +80,13 @@ void EnemyAnimator::Start()
 	m_playerAnimator = playerEntity->GetComponent<PlayerAnimator>().lock();
 
 	m_skinnedMesh->AddAnimation("EnemyMeleeAttack", L"EnemyAnimations/MeleeEnemy/Attack/Attack");
-	m_skinnedMesh->AddAnimation("EnemyMeleeDown", L"EnemyAnimations/MeleeEnemy/Down/Down");
+
+	m_skinnedMesh->AddAnimation("EnemyDown", L"EnemyAnimations/MeleeEnemy/Down/Down");
+	m_skinnedMesh->AddAnimation("EnemyFall", L"EnemyAnimations/MeleeEnemy/Down/Fall");
+	m_skinnedMesh->AddAnimation("EnemyFallAttack", L"EnemyAnimations/MeleeEnemy/Down/FallAttack");
+	m_skinnedMesh->AddAnimation("EnemyGetUp", L"EnemyAnimations/MeleeEnemy/Down/GetUp");
+	m_skinnedMesh->AddAnimation("EnemyKnockBack", L"EnemyAnimations/MeleeEnemy/Down/KnockBack");
+
 	m_skinnedMesh->AddAnimation("EnemyMeleeHit", L"EnemyAnimations/MeleeEnemy/Hit/Hit");
 	m_skinnedMesh->AddAnimation("EnemyMeleeIdle", L"EnemyAnimations/MeleeEnemy/Idle/Idle");
 	m_skinnedMesh->AddAnimation("EnemyMeleePursuit", L"EnemyAnimations/MeleeEnemy/Pursuit/Pursuit");
@@ -135,14 +151,25 @@ void EnemyAnimator::Update()
 	{
 		m_isDamage = true;
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-		if (m_playerAnimator->GetTypeInfo().GetProperty("downAttack")->Get<bool>(m_playerAnimator.get()).Get())
+
+		if (m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		{
+			m_isBack = true;
+			m_isDamage = false;
+		}
+		else if (m_playerAnimator->GetTypeInfo().GetProperty("fallAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		{
+			m_isFall = true;
+			m_isDamage = false;
+		}
+		else if (m_playerAnimator->GetTypeInfo().GetProperty("downAttack")->Get<bool>(m_playerAnimator.get()).Get())
 		{
 			m_isDown = true;
 			m_isDamage = false;
 		}
 	}
 
-	if (m_isAttackReady && !m_isAttack && !m_isParryAttack && !m_isDown)
+	if (m_isAttackReady && !m_isAttack && !m_isChargeAttack && !m_isDown)
 	{
 		m_passingTime += GetDeltaTime();
 		if (m_passingTime > 2.f)
@@ -151,7 +178,7 @@ void EnemyAnimator::Update()
 			if (random >= 1 && random <= 2)
 			{
 				m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-				m_isParryAttack = true;
+				m_isChargeAttack = true;
 			}
 			else if (random >= 3 && random <= 5)
 			{
@@ -162,16 +189,19 @@ void EnemyAnimator::Update()
 		}
 	}
 
-	if (m_isDown)
+	if (m_isAttack || m_currentState == m_animationStateMap["Attack"] || m_currentState == m_animationStateMap["ChargeAttack"]
+		|| m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["Down"] || m_currentState == m_animationStateMap["Fall"] || m_currentState == m_animationStateMap["KnockBack"])
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 	}
-
-	if (!m_isAttack && !m_isDamage && !m_isParryAttack && !m_isDown)
+	else
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
 	}
+
 	m_currentState->OnStateUpdate();
+	PlayEffect();
+
 	m_lastHp = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
 }
 
@@ -223,6 +253,18 @@ void EnemyIdle::OnStateUpdate()
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Hit");
 	}
+	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
+	}
 	else if (GetProperty("isChase")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Chase");
@@ -243,6 +285,18 @@ void EnemyChase::OnStateUpdate()
 	else if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Hit");
+	}
+	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 	else if (!GetProperty("isChase")->Get<bool>(m_animator).Get())
 	{
@@ -309,6 +363,18 @@ void EnemyAttackReady::OnStateUpdate()
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Hit");
 	}
+	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
+	}
 	else if (!GetProperty("isChase")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Return");
@@ -317,9 +383,9 @@ void EnemyAttackReady::OnStateUpdate()
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Attack");
 	}
-	else if (GetProperty("isParryAttack")->Get<bool>(m_animator).Get())
+	else if (GetProperty("isChargeAttack")->Get<bool>(m_animator).Get())
 	{
-		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("ParriableAttack");
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("ChargeAttack");
 	}
 	else if (!GetProperty("isAttackReady")->Get<bool>(m_animator).Get())
 	{
@@ -330,14 +396,35 @@ void EnemyAttackReady::OnStateUpdate()
 void EnemyAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeAttack", false);
-	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(20.f);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(50.f);
 }
 
 void EnemyAttack::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isReset = true;
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	{
+		GetProperty("normalAttack")->Set(m_animator, true);
+	}
+
 	if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isDamage")->Set(m_animator, false);
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Hit");
+	}
+	else if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 
 	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
@@ -366,35 +453,54 @@ void EnemyAttack::OnStateUpdate()
 
 void EnemyAttack::OnStateExit()
 {
+	isReset = false;
 	GetProperty("isAttacking")->Set(m_animator, false);
+	GetProperty("isAttack")->Set(m_animator, false);
 }
 
-void EnemyParriableAttack::OnStateEnter()
+void EnemyChargeAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrongAttack", false);
-	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(100.f);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(150.f);
 }
 
-void EnemyParriableAttack::OnStateUpdate()
+void EnemyChargeAttack::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isReset = true;
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
+	{
+		GetProperty("chargeAttack")->Set(m_animator, true);
+	}
+
 	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isParryAttack")->Set(m_animator, false);
+		GetProperty("isChargeAttack")->Set(m_animator, false);
 		GetProperty("passingTime")->Set(m_animator, 0.f);
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+	else if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		GetProperty("isChargeAttack")->Set(m_animator, false);
+		GetProperty("passingTime")->Set(m_animator, 0.f);
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("KnockBack");
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		GetProperty("passingTime")->Set(m_animator, 0.f);
-		GetProperty("isParryAttack")->Set(m_animator, false);
+		GetProperty("isChargeAttack")->Set(m_animator, false);
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("AttackReady");
 	}
 }
 
 
-void EnemyParriableAttack::OnStateExit()
+void EnemyChargeAttack::OnStateExit()
 {
+	isReset = false;
 	GetProperty("isAttacking")->Set(m_animator, false);
+	GetProperty("isAttack")->Set(m_animator, false);
 }
 
 void EnemyHit::OnStateEnter()
@@ -418,20 +524,90 @@ void EnemyHit::OnStateUpdate()
 
 void EnemyDown::OnStateEnter()
 {
-	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeDown", false);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyDown", false);
+	GetProperty("isDown")->Set(m_animator, false);
 }
 
 void EnemyDown::OnStateUpdate()
 {
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isChange = true;
+	}
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		isReset = true;
+		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyGetUp", false);
+	}
+	if (isChange && GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Idle");
+	}
+
+}
+
+void EnemyDown::OnStateExit()
+{
+	GetProperty("isDown")->Set(m_animator, false);
+	isReset = false;
+	isChange = false;
+}
+
+void EnemyFall::OnStateEnter()
+{
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyFall", false);
+	GetProperty("isFall")->Set(m_animator, false);
+}
+
+void EnemyFall::OnStateUpdate()
+{
+	if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		GetProperty("isFall")->Set(m_animator, false);
+		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyFallAttack", false);
+	}
+	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
+}
+
+void EnemyFall::OnStateExit()
+{
+	GetProperty("isFall")->Set(m_animator, false);
+}
+
+void EnemyKnockBack::OnStateEnter()
+{
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyKnockBack", false);
+	GetProperty("isBack")->Set(m_animator, false);
+	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(-20.f);
+}
+
+void EnemyKnockBack::OnStateUpdate()
+{
+	if (GetProperty("isBack")->Get<bool>(m_animator).Get())
+	{
+		GetProperty("isBack")->Set(m_animator, false);
+		dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyKnockBack", false);
+	}
+	if (GetProperty("isFall")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Fall");
+	}
+	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Down");
+	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Idle");
 	}
 }
 
-void EnemyDown::OnStateExit()
+void EnemyKnockBack::OnStateExit()
 {
-	GetProperty("isDown")->Set(m_animator, false);
+
 }
 
 void EnemyDeath::OnStateEnter()
@@ -458,3 +634,69 @@ int EnemyAnimator::RandomNumber(int _min, int _max)
 	// 난수 반환
 	return dis(gen);
 }
+
+void EnemyAnimator::PlayEffect()
+{
+	Vector3 effectPos = m_owner.lock()->GetWorldPosition();
+	Vector3 effectRot = m_owner.lock()->GetWorldRotation().ToEuler();
+
+// 	if (m_normalAttack)
+// 	{
+// 		m_normalAttack = false;
+// 
+// 		effectPos.y += 1.f;
+// 
+// 		effectRot.y += (3.141592f / 180.f) * -140.f;
+// 		effectRot.z += (3.141592f / 180.f) * 180.f;
+// 
+// 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+// 
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemySlash.yaml");
+// 		p->SetTransformMatrix(
+// 			rotationMT
+// 			* Matrix::CreateTranslation(effectPos)
+// 		);
+// 
+// 		p->SetSimulationSpeed(2.f);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
+
+	if (m_chargeAttack)
+	{
+		m_chargeAttack = false;
+
+		{
+			effectPos.y += 0.5f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemyCharge0.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(0.5, 0.5, 1))
+				* rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+
+			p->SetSimulationSpeed(2.5f);
+			p->SetActive(true);
+			p->Play();
+		}
+
+		{
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemyCharge1.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(0.5, 0.5, 1))
+				* rotationMT
+				* Matrix::CreateTranslation(effectPos)
+			);
+
+			p->SetSimulationSpeed(2.5f);
+			p->SetActive(true);
+			p->Play();
+		}
+	}
+}
+

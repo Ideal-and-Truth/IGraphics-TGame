@@ -1,0 +1,41 @@
+MaxCount: 10
+#-------Material--------#
+MatName: NorDamageMaterial2
+EBlendingMode: 1
+Shader: BossFX_1BeamRingPS
+Texture0: ../Resources/Textures/0_Particle/Glow1.png
+WriteDepthBuffer: false
+
+#------ParticleSystem------#
+RenderMode: 0
+StartLifetime: 0.4
+Loop: false
+Duration: 0.4
+
+#-------Particles--------#
+MaxParticles: 20
+ShapeMode: true
+Shape: 0
+Radius: 0.001
+RadiusThickness: 1
+
+VelocityOverLifetime: true
+VelocityDirectionMode: 1
+VelocityDirectionRandomMIN: -10
+VelocityDirectionRandomMAX: 10
+VelocitySpeedModifierMode: 1
+VelocitySpeedModifierRandomMIN: 1.8
+VelocitySpeedModifierRandomMAX: 2
+
+#--------SizeOverLifetime---------#
+SizeOverLifetime: true
+SizeOverLifetimeAxisX:
+  - x: 0
+    y: 0.03
+  - x: 0.2
+    y: 0.01
+SizeOverLifetimeAxisY:
+  - x: 0
+    y: 0.03
+  - x: 0.2
+    y: 0.01

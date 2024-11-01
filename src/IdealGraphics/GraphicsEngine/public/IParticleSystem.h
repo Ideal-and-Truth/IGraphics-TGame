@@ -46,6 +46,17 @@ namespace Ideal
 			CustomData_z,
 			CustomData_w
 		};
+		
+		enum class EShape
+		{
+			Circle = 0,
+		};
+
+		enum class EMode
+		{
+			Const = 0,
+			Random
+		};
 	}
 }
 namespace Ideal
@@ -77,6 +88,8 @@ namespace Ideal
 
 		virtual float GetCurrentDurationTime() abstract;
 
+		virtual void SetMaxParticles(unsigned int MaxParticles) abstract;
+
 	public:
 		virtual void SetStartColor(const DirectX::SimpleMath::Color& StartColor) abstract;
 		virtual DirectX::SimpleMath::Color& GetStartColor() abstract;
@@ -97,6 +110,29 @@ namespace Ideal
 
 		virtual void SetLoop(bool Loop) abstract;	
 		virtual bool GetLoop() abstract;
+
+		//-------Emission-------//
+		virtual void SetRateOverTime(bool Active) abstract;
+		// 1초마다 생성할 수 있는 최대 개수
+		virtual void SetEmissionRateOverTime(float Count) abstract;
+
+		//------Shape------//
+		virtual void SetShapeMode(bool Active) abstract;
+		virtual void SetShape(const Ideal::ParticleMenu::EShape& Shape) abstract;
+		virtual void SetRadius(float Radius) abstract;
+		// 0~1사이의 비율로 현재 반지름의 두께를 결정한다. 최대 반지름에서 안쪽으로 늘어나는 구조. 
+		virtual void SetRadiusThickness(float RadiusThickness) abstract;
+
+		//------Velocity Over Lifetime------//
+		// 개별 파티클의 방향을 랜덤 or 동일
+		virtual void SetVelocityOverLifetime(bool Active) abstract;
+		virtual void SetVelocityDirectionMode(const Ideal::ParticleMenu::EMode& Mode) abstract;
+		virtual void SetVelocityDirectionRandom(float Min, float Max) abstract;
+		virtual void SetVelocityDirectionConst(const DirectX::SimpleMath::Vector3& Direction) abstract;
+		// 개별 파티클의 속도를 랜덤 or 동일
+		virtual void SetVelocitySpeedModifierMode(const Ideal::ParticleMenu::EMode& Mode) abstract;
+		virtual void SetVelocitySpeedModifierRandom(float Min, float Max) abstract;
+		virtual void SetVelocitySpeedModifierConst(float Speed) abstract;
 
 		//------Color Over Lifetime------//
 		// 생명 시간 동안 색상 값이 바뀔지를 결정. 그라디언트 그래프를 통해 조작함
@@ -126,6 +162,10 @@ namespace Ideal
 		virtual Ideal::IBezierCurve& GetCustomData2Y() abstract;
 		virtual Ideal::IBezierCurve& GetCustomData2Z() abstract;
 		virtual Ideal::IBezierCurve& GetCustomData2W() abstract;
+
+		//-------Texture Sheet Animation-------//
+		virtual void SetTextureSheetAnimation(bool Active) abstract;
+		virtual void SetTextureSheetAnimationTiles(const DirectX::SimpleMath::Vector2& Tiles) abstract;
 
 		//-----------Renderer-----------//
 		virtual void SetRenderMode(Ideal::ParticleMenu::ERendererMode ParticleRendererMode) abstract;

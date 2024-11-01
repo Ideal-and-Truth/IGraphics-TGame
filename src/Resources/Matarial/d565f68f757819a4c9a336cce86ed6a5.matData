@@ -1,9 +1,0 @@
----
-baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossroomtile/T_castlemarbletile_BaseMap.png
-normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossroomtile/T_castlemarbletile_Normal.png
-maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/bossroomtile/T_castlemarbletile_MaskMap.png
-tileX: 0.150000006
-tileY: 0.150000006
-alphaCulling: false
-transparent: false
-...

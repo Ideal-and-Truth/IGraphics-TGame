@@ -441,7 +441,7 @@ float3 Shade(
         }
     }
 
-    //L += 0.2f * albedo;
+    L *= ao;
     L += g_sceneCB.AmbientIntensity * albedo;
 
     bool isReflective = !BxDF::IsBlack(Kr);
