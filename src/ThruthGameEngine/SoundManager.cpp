@@ -47,18 +47,16 @@ void Truth::SoundManager::CreateSound(fs::path _path, bool _isLoop)
 
 	FMOD_RESULT result;
 	if (_isLoop == true)
-	{
 		result = m_system->createSound(_path.generic_string().c_str(), FMOD_LOOP_NORMAL, 0, &m_soundMap[_path]);
-	}
 	else
-	{
 		result = m_system->createSound(_path.generic_string().c_str(), FMOD_LOOP_OFF, 0, &m_soundMap[_path]);
-	}
 }
 
 void Truth::SoundManager::SetVolum(int _channel, float _vol)
 {
-	m_channel[_channel]->setVolume(_vol);
+	FMOD_RESULT result;
+
+	result = m_channel[_channel]->setVolume(_vol);
 }
 
 void Truth::SoundManager::Play(fs::path _path, bool _canReduplication, int _channel)
@@ -74,11 +72,7 @@ void Truth::SoundManager::Play(fs::path _path, bool _canReduplication, int _chan
 	m_channel[_channel]->isPlaying(&isPlaying);
 
 	if (_canReduplication)
-	{
 		result = m_system->playSound((*itr).second, nullptr, false, &m_channel[_channel]);
-	}
 	else if (!_canReduplication && !isPlaying)
-	{
 		result = m_system->playSound((*itr).second, nullptr, false, &m_channel[_channel]);
-	}
 }

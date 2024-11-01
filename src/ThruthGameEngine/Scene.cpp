@@ -102,10 +102,15 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 #ifdef EDITOR_MODE
 	if (m_managers.lock()->m_isEdit)
 	{
+		// TODO: delete ÃÖÀûÈ­
+		for (auto itr = m_entities.begin(); itr != m_entities.end() ; itr++)
+		{
+			if (_p == (*itr))
+			{
+				m_entities.erase(itr);
+			}
+		}
 		_p->Destroy();
-		m_entities.back()->m_index = _p->m_index;
-		std::iter_swap(m_entities.begin() + _p->m_index, m_entities.begin() + (m_entities.size() - 1));
-		m_entities.pop_back();
 	}
 	else
 	{

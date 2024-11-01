@@ -164,7 +164,7 @@ void EnemyController::Update()
 
 	if (!isTargetIn)
 	{
-		ComeBackHome();
+		// ComeBackHome();
 		m_moveVec.y = -100.0f;
 
 		return;
@@ -264,8 +264,6 @@ void EnemyController::FollowTarget()
 			m_moveVec = dir;
 			//m_controller.lock()->Move(dir);
 		}
-
-
 	}
 }
 
@@ -328,7 +326,5 @@ void EnemyController::ComeBackHome()
 				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
 			}
 		}
-
-
 	}
 }

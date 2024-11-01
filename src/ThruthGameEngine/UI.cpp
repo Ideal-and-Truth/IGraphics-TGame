@@ -31,7 +31,8 @@ Truth::UI::UI()
 
 Truth::UI::~UI()
 {
-	m_managers.lock()->Graphics()->DeleteUISpriteSet(m_sprite);
+	if (m_sprite)
+		m_managers.lock()->Graphics()->DeleteUISpriteSet(m_sprite);
 }
 
 void Truth::UI::SetScale(const Vector2& _scale, bool _centerPos)

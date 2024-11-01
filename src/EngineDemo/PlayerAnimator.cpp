@@ -183,7 +183,7 @@ void PlayerAnimator::Start()
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_2_Impact_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_3_Impact_Sound.wav", false);
-	m_managers.lock()->Sound()->SetVolum(1, 100.f);
+	// m_managers.lock()->Sound()->SetVolum(1, 1.f);
 
 	m_currentState->OnStateEnter();
 }
@@ -320,10 +320,6 @@ void PlayerAnimator::Update()
 		}
 	}
 
-	if (m_currentState == m_animationStateMap["Guard"] || m_currentState == m_animationStateMap["Parry"] || m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["RushAttack"])
-	{
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-	}
 
 	m_currentState->OnStateUpdate();
 
@@ -332,6 +328,10 @@ void PlayerAnimator::Update()
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
 	}
 
+	if (m_currentState == m_animationStateMap["Guard"] || m_currentState == m_animationStateMap["Parry"] || m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["RushAttack"])
+	{
+		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+	}
 
 
 	m_lastHp = m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get();

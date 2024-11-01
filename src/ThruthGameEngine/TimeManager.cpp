@@ -59,7 +59,7 @@ void Truth::TimeManager::Update()
 #ifdef EDITOR_MODE
 // 	if (delta > 0.16f)
 // 	{
-// 		delta = 0.16f;
+// 		delta = 0.016f;
 // 	}
 #endif // _DEBUG
 
