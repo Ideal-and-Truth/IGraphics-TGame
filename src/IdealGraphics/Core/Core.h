@@ -80,3 +80,14 @@ inline void MyMessageBox(const char* Message)
 	MessageBoxA(NULL, Message, "Failed", MB_OK);
 	assert(false);
 }
+
+inline void MyDebugConsoleMessage(const std::string& message) {
+	OutputDebugStringA(message.c_str());
+}
+
+
+//auto Start = std::chrono::high_resolution_clock::now();
+//auto End = std::chrono::high_resolution_clock::now();
+//std::chrono::duration<double> duration = End - Start;
+//std::string msg = "Load Times : " + std::to_string(duration.count()) + " seconds\n";
+//MyDebugConsoleMessage(msg.c_str());

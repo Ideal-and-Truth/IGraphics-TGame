@@ -228,7 +228,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->Init();
 		auto TimeStart = std::chrono::high_resolution_clock::now();
 
-		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/flower_road_8khdri_1kcubemap.BC7.DDS");
+		gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/SkyBox3.DDS");
 		//gRenderer->SetSkyBox(L"../Resources/Textures/SkyBox/custom1.dds");
 
 		Vector3 pointLightPosition = Vector3(3.f);
@@ -491,6 +492,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//kaMaterial->SetBaseMap(kaTexture);
 
 		//DebugPlayer->GetMeshByIndex(0).lock()->SetMaterialObject(kaMaterial);
+
+
+
+		std::shared_ptr<Ideal::ITexture> testTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F/T_town_building_1F_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> testTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F/T_town_building_1F_MaskMap.png");
+		std::shared_ptr<Ideal::ITexture> testTexture2 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F/T_town_building_1F_Normal.png");
+
+		std::shared_ptr<Ideal::ITexture> testTexture3 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F_door/T_JShouse_1F_door_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> testTexture4 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F_door/T_JShouse_1F_door_MaskMap.png");
+		std::shared_ptr<Ideal::ITexture> testTexture5 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F_door/T_JShouse_1F_door_Normal.png");
+
+		std::shared_ptr<Ideal::ITexture> testTexture6 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F_LR/T_JShouse_1F_L_R_BaseMap.png");
+		std::shared_ptr<Ideal::ITexture> testTexture7 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F_LR/T_JShouse_1F_L_R_MaskMap.png");
+		std::shared_ptr<Ideal::ITexture> testTexture8 = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F_LR/T_JShouse_1F_L_R_Normal.png");
+
+		std::vector< std::shared_ptr<Ideal::ITexture>> textures;
+		//for (int i = 0; i < 300; i++)
+		//{
+		//	std::shared_ptr<Ideal::ITexture> t = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/1F_LR/T_JShouse_1F_L_R_Normal.png");
+		//	textures.push_back(t);
+		//}
+
+		for (int i = 0; i < 9000; i++)
+		{
+			std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+			meshes.push_back(cart);
+		}
 
 #pragma endregion
 

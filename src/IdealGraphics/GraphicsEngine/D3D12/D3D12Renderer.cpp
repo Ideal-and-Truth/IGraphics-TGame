@@ -709,6 +709,11 @@ DirectX::SimpleMath::Vector2 Ideal::D3D12Renderer::GetRightBottomEditorPos()
 	return Vector2();
 }
 
+void Ideal::D3D12Renderer::SetRendererAmbientIntensity(float Value)
+{
+
+}
+
 void Ideal::D3D12Renderer::Release()
 {
 

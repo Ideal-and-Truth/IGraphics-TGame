@@ -109,11 +109,11 @@ std::shared_ptr<Ideal::CommandListContainer> Ideal::UploadCommandListPool::Alloc
 		m_uploadBuffers40960kb.pop();
 		ret->EUploadBufferSizeType = Ideal::EUploadBufferSize::Size40960KB;
 	}
-	else if (Size < 125829120)
+	else if (Size < 134217728)
 	{
-		ret->UploadBuffer = m_uploadBuffers122880kb.top();
-		m_uploadBuffers122880kb.pop();
-		ret->EUploadBufferSizeType = Ideal::EUploadBufferSize::Size122880KB;
+		ret->UploadBuffer = m_uploadBuffers128mb.top();
+		m_uploadBuffers128mb.pop();
+		ret->EUploadBufferSizeType = Ideal::EUploadBufferSize::Size128MB;
 	}
 	else
 	{
@@ -150,6 +150,8 @@ void Ideal::UploadCommandListPool::CheckFreedUploadContainer()
 		}
 		else
 		{
+			std::string result = "Doing Upload \n";
+			OutputDebugStringA(result.c_str());
 			++it;
 		}
 	}
@@ -172,6 +174,9 @@ void Ideal::UploadCommandListPool::AllWaitForFenceValue()
 		{
 			m_Fence->SetEventOnCompletion(expectedFenceValue, m_fenceEvent);
 			WaitForSingleObject(m_fenceEvent, INFINITE);
+
+			std::string result = "Wait in Upload Command List Pool! \n";
+			OutputDebugStringA(result.c_str());
 		}
 	}
 
@@ -212,9 +217,9 @@ void Ideal::UploadCommandListPool::CreateUploadBuffers(ComPtr<ID3D12Device> Devi
 		UploadBuffer40960->Create(Device.Get(), 41943040);
 		m_uploadBuffers40960kb.push(UploadBuffer40960);
 
-		std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer122880 = std::make_shared<Ideal::D3D12UploadBuffer>();
-		UploadBuffer122880->Create(Device.Get(), 125829120);
-		m_uploadBuffers122880kb.push(UploadBuffer122880);
+		std::shared_ptr<Ideal::D3D12UploadBuffer> UploadBuffer128mb = std::make_shared<Ideal::D3D12UploadBuffer>();
+		UploadBuffer128mb->Create(Device.Get(), 134217728);
+		m_uploadBuffers128mb.push(UploadBuffer128mb);
 	}
 }
 
@@ -240,8 +245,8 @@ void Ideal::UploadCommandListPool::RevertUploadBuffer(std::shared_ptr<Ideal::Com
 		case Size40960KB:
 			m_uploadBuffers40960kb.push(Container->UploadBuffer);
 			break;
-		case Size122880KB:
-			m_uploadBuffers122880kb.push(Container->UploadBuffer);
+		case Size128MB:
+			m_uploadBuffers128mb.push(Container->UploadBuffer);
 			break;
 		default:
 			__debugbreak();

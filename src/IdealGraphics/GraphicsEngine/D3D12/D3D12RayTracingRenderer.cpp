@@ -354,6 +354,10 @@ finishAdapter:
 		MyMessageBoxW(L"Device dose not support ray tracing!");
 	}
 
+	//D3D12_FEATURE_DATA_D3D12_OPTIONS17 option17 = {};
+	//bool ManualWriteTrackingResourceSupported = false;
+	//Check(m_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS17, &option17, sizeof(option17)), L"Device dose not support GPU Upload Heaps!");
+
 	//---------------Command Queue-----------------//
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -460,9 +464,7 @@ finishAdapter:
 	m_raytracingManager->CreateMaterialInRayTracing(m_device, m_descriptorManager, m_resourceManager->GetDefaultMaterial());
 
 
-	// shader compile
-
-
+	SetRendererAmbientIntensity(0.4f);
 }
 
 void Ideal::D3D12RayTracingRenderer::Tick()
@@ -1304,6 +1306,11 @@ std::shared_ptr<Ideal::IMesh> Ideal::D3D12RayTracingRenderer::CreateParticleMesh
 {
 	auto mesh = m_resourceManager->CreateParticleMesh(FileName);
 	return mesh;
+}
+
+void Ideal::D3D12RayTracingRenderer::SetRendererAmbientIntensity(float Value)
+{
+	m_sceneCB.AmbientIntensity = Value;
 }
 
 void Ideal::D3D12RayTracingRenderer::CreateSwapChains(ComPtr<IDXGIFactory6> Factory)

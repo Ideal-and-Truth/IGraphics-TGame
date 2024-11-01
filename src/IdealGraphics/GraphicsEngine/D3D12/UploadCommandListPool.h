@@ -22,7 +22,8 @@ namespace Ideal
 		Size512KB,
 		Size4096KB,
 		Size40960KB,
-		Size122880KB
+		Size128MB,
+		
 	};
 
 	struct CommandListContainer
@@ -78,6 +79,6 @@ namespace Ideal
 		std::stack<std::shared_ptr<Ideal::D3D12UploadBuffer>> m_uploadBuffers512kb;
 		std::stack<std::shared_ptr<Ideal::D3D12UploadBuffer>> m_uploadBuffers4096kb;
 		std::stack<std::shared_ptr<Ideal::D3D12UploadBuffer>> m_uploadBuffers40960kb;
-		std::stack<std::shared_ptr<Ideal::D3D12UploadBuffer>> m_uploadBuffers122880kb;
+		std::stack<std::shared_ptr<Ideal::D3D12UploadBuffer>> m_uploadBuffers128mb;
 	};
 }

@@ -117,6 +117,8 @@ namespace Ideal
 		// ParticleMesh
 		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) abstract;
 
+		virtual void SetRendererAmbientIntensity(float Value) abstract;
+
 	public:
 		virtual void SetAssetPath(const std::wstring& AssetPath) abstract;
 		virtual void SetModelPath(const std::wstring& ModelPath) abstract;

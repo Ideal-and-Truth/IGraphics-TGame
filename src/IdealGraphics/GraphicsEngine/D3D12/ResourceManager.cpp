@@ -118,6 +118,12 @@ void ResourceManager::Fence()
 {
 	m_fenceValue++;
 	m_commandQueue->Signal(m_fence.Get(), m_fenceValue);
+
+	uint64 fenceValue = m_fence->GetCompletedValue();
+	std::string result = "Current Fence :" + std::to_string(fenceValue) + "\n";
+	std::string result2 = "Current Fence Value : " + std::to_string(m_fenceValue) + "\n";
+	OutputDebugStringA(result.c_str());
+	OutputDebugStringA(result2.c_str());
 }
 
 void ResourceManager::WaitForFenceValue()
@@ -331,11 +337,12 @@ uint64 ResourceManager::AllocateMaterialID()
 
 void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB /*= false*/, uint32 MipLevels /*= 1*/, bool IsNormalMap /*= false*/)
 {
+
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
 	{
-		OutTexture = m_textures[name];
-		return;
+		//OutTexture = m_textures[name];
+		//return;
 	}
 
 	m_textures[name] = std::make_shared<Ideal::D3D12Texture>();
@@ -387,7 +394,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		Check(DirectX::LoadFromWICFile(Path.c_str(), WIC_FLAGS_FORCE_RGB, &metadata, image), L"Failed to load WIC from file");
 		img = image.GetImages();
 	}
-
+	
 	if (IgnoreSRGB || IsNormalMap)
 	{
 		metadata.format = MakeLinear(metadata.format);
@@ -413,6 +420,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 			//Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_FANT, MipLevels, mipChain), L"Failed to generate MIP maps");
 			Check(DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, MipLevels, mipChain), L"Failed to generate MIP maps");
 		}
+		
 		img = mipChain.GetImages();
 	}
 	// 각 MIP 레벨별 서브리소스 데이터 생성
@@ -454,7 +462,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 #endif
 	//----------------------Update Subresources--------------------------//
 #ifndef USE_UPLOAD_CONTAINER
-	uploadBuffer.Map();
+	//uploadBuffer.Map();
 	UpdateSubresources(
 		m_commandList.Get(),
 		resource.Get(),
@@ -462,16 +470,16 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		0, 0, static_cast<UINT>(subResources.size()), subResources.data()
 	);
 	
-	uploadBuffer.UnMap();
+	//uploadBuffer.UnMap();
 #else
-	uploadBuffer->Map();
+	//uploadBuffer->Map();
 	UpdateSubresources(
 		uploadContainer->CommandList.Get(),
 		resource.Get(),
 		uploadBuffer->GetResource(),
 		0, 0, static_cast<UINT>(subResources.size()), subResources.data()
 	);
-	uploadBuffer->UnMap();
+	//uploadBuffer->UnMap();
 #endif
 	//----------------------Resource Barrier--------------------------//
 
@@ -493,6 +501,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	ID3D12CommandList* commandLists[] = { m_commandList.Get() };
 	m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
 	Fence();
+
 	WaitForFenceValue();
 #else
 	uploadContainer->CloseAndExecute(m_commandQueue, m_fence);
@@ -926,9 +935,9 @@ void Ideal::ResourceManager::CreateStaticMeshObject(std::shared_ptr<Ideal::Ideal
 		staticMesh = m_staticMeshes[key];
 		if (staticMesh != nullptr)
 		{
-			staticMesh->AddRefCount();
-			OutMesh->SetStaticMesh(staticMesh);
-			return;
+			//staticMesh->AddRefCount();
+			//OutMesh->SetStaticMesh(staticMesh);
+			//return;
 		}
 	}
 
