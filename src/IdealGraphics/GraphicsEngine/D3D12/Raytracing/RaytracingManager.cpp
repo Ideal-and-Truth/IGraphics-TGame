@@ -954,3 +954,64 @@ void Ideal::RaytracingManager::CopyDepthBuffer(ComPtr<ID3D12GraphicsCommandList4
 
 	CommandList->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
 }
+
+void Ideal::RaytracingManager::UpdateSkinnedMeshID(std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
+{
+	if (m_SkinnedMeshIDStructuredBuffer)
+	{
+		DeferredDeleteManager->AddD3D12ResourceToDelete(m_SkinnedMeshIDStructuredBuffer->GetResource());
+	}
+
+	std::vector<uint32> SkinnedMeshIDVector;
+	for (uint32 i = 0; i < m_CurrentSkinnedMeshID; i++)
+	{
+		SkinnedMeshIDVector.push_back(0);
+	}
+	ResourceManager->CreateStructuredBuffer<uint32>(m_SkinnedMeshIDStructuredBuffer, SkinnedMeshIDVector);
+}
+
+uint32 Ideal::RaytracingManager::GetSkinnedMeshID()
+{
+	if (m_freedSkinnedMeshID.size())
+	{
+		uint32 ret = m_freedSkinnedMeshID.top();
+		return ret;
+	}
+	uint32 ret = m_CurrentSkinnedMeshID;
+	m_CurrentSkinnedMeshID++;
+	return ret;
+}
+
+void Ideal::RaytracingManager::SkinnedMeshIDCopyGPUtoCPU(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, uint32 CurrentIndex)
+{
+	ComPtr<ID3D12Resource> readbackBuffer;
+	D3D12_RESOURCE_DESC bufferDesc = {};
+	bufferDesc.MipLevels = 1;
+	bufferDesc.Format = DXGI_FORMAT_UNKNOWN;
+	bufferDesc.Height = 1;
+	bufferDesc.DepthOrArraySize = 1;
+	bufferDesc.SampleDesc.Count = 1;
+	bufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	bufferDesc.Width = sizeof(uint32) * m_CurrentSkinnedMeshID;
+
+	Device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK),
+		D3D12_HEAP_FLAG_NONE,
+		&bufferDesc,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		nullptr,
+		IID_PPV_ARGS(&readbackBuffer)
+	);
+
+	// CommandList에 Copy 명령 추가
+	CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_SkinnedMeshIDStructuredBuffer->GetResource(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE));
+	CommandList->CopyResource(readbackBuffer.Get(), m_SkinnedMeshIDStructuredBuffer->GetResource());
+	CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_SkinnedMeshIDStructuredBuffer->GetResource(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
+
+	// 복사
+	uint32* mappedData;
+	readbackBuffer->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
+	memcpy(m_SkinnedMeshIDs[CurrentIndex].data(), mappedData, sizeof(uint32) * m_CurrentSkinnedMeshID);
+	readbackBuffer->Unmap(0, nullptr);
+}

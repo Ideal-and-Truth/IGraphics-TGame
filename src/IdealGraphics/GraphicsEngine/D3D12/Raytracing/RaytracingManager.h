@@ -23,6 +23,7 @@ namespace Ideal
 	class D3D12DescriptorManager;
 	class D3D12UnorderedAccessView;
 	class D3D12Texture;
+	class D3D12StructuredBuffer;
 
 	class D3D12RayTracingRenderer;
 	class DeferredDeleteManager;
@@ -145,6 +146,11 @@ namespace Ideal
 	/// </summary>
 	class RaytracingManager
 	{
+	public:
+		static const uint32 SWAP_CHAIN_FRAME_COUNT = G_SWAP_CHAIN_NUM;
+		static const uint32 MAX_PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
+
+
 		static const uint32 MAX_RAY_RECURSION_DEPTH = G_MAX_RAY_RECURSION_DEPTH;
 		const wchar_t* c_raygenShaderName = L"MyRaygenShader";
 		const wchar_t* c_closestHitShaderName[2] = { L"MyClosestHitShader", L"MyClosestHitShader_ShadowRay" };
@@ -297,5 +303,24 @@ namespace Ideal
 
 		std::shared_ptr<Ideal::D3D12Texture> m_CopyDepthBuffer;	// raytracing으로 뽑은 depth buffer를 옮길 dsv
 																// 이유는 uav와 dsv 동시 허용하여 생성을 못한다.
+
+		//////// 2024.11.03 /////////
+		// 스키닝 오브젝트를 최적화 해야 한다. 
+		// 먼저 Structured Buffer를 만들어서 이 SkinnedMesh의 인덱스 관리를 해야한다.
+		// Ray와 겹칠 경우 ID의 값을 켜주는 것이다.
+
+		// 초기화 방법을 생각해야 한다.
+	private:
+		void UpdateSkinnedMeshID(std::shared_ptr<Ideal::ResourceManager> ResourceManager, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
+		uint32 GetSkinnedMeshID();
+
+		void SkinnedMeshIDCopyGPUtoCPU(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, uint32 CurrentIndex);
+
+	private:
+		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_SkinnedMeshIDStructuredBuffer;
+		std::stack<uint32> m_freedSkinnedMeshID;
+		uint32 m_CurrentSkinnedMeshID = 0;
+
+		std::vector<uint32> m_SkinnedMeshIDs[MAX_PENDING_FRAME_COUNT];
 	};
 }

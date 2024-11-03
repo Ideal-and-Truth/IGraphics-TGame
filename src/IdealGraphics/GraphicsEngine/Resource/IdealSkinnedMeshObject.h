@@ -112,6 +112,8 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_VertexBuffer() { return m_uavBuffer; }
 		std::shared_ptr<Ideal::D3D12UAVBuffer> GetUAV_VertexBufferByIndex(const uint32& index) { return m_vertexBuffers[index]; }
 
+		
+
 	private:
 		uint32 m_instanceIndex = 0;
 		std::shared_ptr<Ideal::BLASInstanceDesc> m_BLASInstanceDesc;

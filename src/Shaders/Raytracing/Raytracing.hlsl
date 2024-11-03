@@ -658,6 +658,9 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     payload.gBuffer.hitPosition = hitPosition;
 
     payload.radiance = Shade(payload, uv, normal, objectNormal, hitPosition, lod);
+    
+    uint id = InstanceID();
+    payload.radiance = float3(id, id, id);
 }
 
 [shader("closesthit")]
