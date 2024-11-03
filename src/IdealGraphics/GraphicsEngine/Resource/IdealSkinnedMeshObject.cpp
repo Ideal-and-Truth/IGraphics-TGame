@@ -22,6 +22,7 @@
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
 #include <d3dx12.h>
+#include "GraphicsEngine/Resource/IdealCamera.h"
 //#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
@@ -190,7 +191,7 @@ void Ideal::IdealSkinnedMeshObject::SetStaticWhenRunTime(bool Static)
 
 }
 
-void Ideal::IdealSkinnedMeshObject::AnimationPlay()
+void Ideal::IdealSkinnedMeshObject::AnimationPlay(bool IsAnimationInterpolate /*= true*/)
 {
 	if (m_currentAnimation == nullptr)
 	{
@@ -217,9 +218,11 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 
 			m_ratio = m_sumTime / timePerFrame;
 
-			// 평소 애니메이션일 경우
-			AnimationInterpolate(m_currentAnimation, m_currentFrame, m_currentAnimation, m_nextFrame);
-
+			if (IsAnimationInterpolate)
+			{
+				// 평소 애니메이션일 경우
+				AnimationInterpolate(m_currentAnimation, m_currentFrame, m_currentAnimation, m_nextFrame);
+			}
 			if (m_isAnimationFinished && m_reservedAnimation)
 			{
 				m_animationState = EAnimationState::ReserveAnimation;
@@ -228,8 +231,11 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 		break;
 		case EAnimationState::ChangeAnimation:
 		{
-			// 이전 애니메이션과 다음 애니메이션일 경우
-			AnimationInterpolate(m_currentAnimation, m_cacheCurrentAnimationFrame, m_nextAnimation, 0);
+			if (IsAnimationInterpolate)
+			{
+				// 이전 애니메이션과 다음 애니메이션일 경우
+				AnimationInterpolate(m_currentAnimation, m_cacheCurrentAnimationFrame, m_nextAnimation, 0);
+			}
 			m_ratio = m_sumTime / timePerFrame;
 			if (m_ratio >= 1.0f)
 			{
@@ -245,7 +251,10 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 		break;
 		case EAnimationState::ReserveAnimation:
 		{
-			AnimationInterpolate(m_currentAnimation, m_currentFrame, m_nextAnimation, 0);
+			if (IsAnimationInterpolate)
+			{
+				AnimationInterpolate(m_currentAnimation, m_currentFrame, m_nextAnimation, 0);
+			}
 			m_ratio = m_sumTime / timePerFrame;
 			if (m_ratio >= 1.0f)
 			{
@@ -281,11 +290,6 @@ void Ideal::IdealSkinnedMeshObject::AnimationInterpolate(std::shared_ptr<Ideal::
 		Matrix finalMatrix = bones[boneIdx]->GetOffsetMatrix() * resultFrame;
 
 		m_cbBoneData.transforms[boneIdx] = finalMatrix.Transpose();
-
-		//if (bones[boneIdx]->GetName() == "Sword")
-		//{
-		//	m_cbBoneData.transforms[boneIdx] = resultFrame.Transpose();
-		//}
 
 		// SkinnedMesh"Object"가 가지고 있는 본의 정보
 		m_bones[boneIdx]->SetTransform(resultFrame);
@@ -337,7 +341,8 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 	std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager,
 	uint32 CurrentContextIndex,
 	std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
-	std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
+	std::shared_ptr<Ideal::RaytracingManager> RaytracingManager,
+	std::shared_ptr<Ideal::IdealCamera> Camera
 )
 {
 	if (m_playAnimation == false)
@@ -346,7 +351,22 @@ void Ideal::IdealSkinnedMeshObject::UpdateBLASInstance(
 		return;
 	}
 
-	AnimationPlay();
+	bool containWithCamera = Camera->ContainWithCamera(m_transform);
+
+	// 카메라와 닿을때만 애니메이션 보간 작업을 한다. (CPU)
+	AnimationPlay(containWithCamera);
+
+	if (containWithCamera == false)
+	{
+		if (m_isDirty)
+		{
+			m_BLAS->SetDirty(true);
+			m_BLASInstanceDesc->InstanceDesc.SetTransform(m_transform);
+			m_isDirty = false;
+		}
+		return;
+		int a = 3;
+	}
 
 	{
 		auto& meshes = m_skinnedMesh->GetMeshes();

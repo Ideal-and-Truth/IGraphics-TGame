@@ -34,6 +34,7 @@ void IdealCamera::SetLensWithoutAspect(float FovY, float NearZ, float FarZ)
 	m_farWindowHeight = 2.f * m_farZ * std::tanf(0.5f * m_fovY);
 
 	m_proj = XMMatrixPerspectiveFovLH(m_fovY, m_aspect, m_nearZ, m_farZ);
+	InitBoundingFrustum();
 }
 
 void Ideal::IdealCamera::Walk(float d)
@@ -100,6 +101,26 @@ void Ideal::IdealCamera::SetLook(Vector3 Look)
 	//UpdateViewMatrix();
 }
 
+bool IdealCamera::ContainWithCamera(const Matrix& Transform)
+{
+	auto containment = m_boundingFrustum.Contains(Transform.Translation());
+	if (containment == ContainmentType::INTERSECTS || containment == ContainmentType::CONTAINS)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void IdealCamera::InitBoundingFrustum()
+{
+	//m_boundingFrustum.CreateFromMatrix(m_proj);
+	BoundingFrustum::CreateFromMatrix(m_boundingFrustum, m_proj, false);
+	m_boundingFrustum.Transform(m_boundingFrustum, m_view.Invert());
+}
+
 void IdealCamera::SetAspectRatio(float AspectRatio)
 {
 	m_aspect = AspectRatio;
@@ -108,6 +129,7 @@ void IdealCamera::SetAspectRatio(float AspectRatio)
 
 void IdealCamera::UpdateMatrix2()
 {
+
 	Vector3 eyePosition = m_position;
 	Vector3 focusPosition = eyePosition + m_look;
 	Vector3 right = Vector3::Up.Cross(m_look);
@@ -119,6 +141,8 @@ void IdealCamera::UpdateMatrix2()
 	m_view = XMMatrixLookAtLH(eyePosition, focusPosition, upDir);
 	m_proj = XMMatrixPerspectiveFovLH(m_fovY, m_aspect, m_nearZ, m_farZ);
 	//Vector3 upDir = 
+
+	InitBoundingFrustum();
 }
 
 IdealCamera::~IdealCamera()
@@ -138,6 +162,7 @@ void IdealCamera::SetLens(float FovY, float Aspect, float NearZ, float FarZ)
 
 	m_proj = XMMatrixPerspectiveFovLH(m_fovY, m_aspect, m_nearZ, m_farZ);
 	//m_proj = Matrix::CreatePerspectiveFieldOfView(m_fovY, m_aspect, m_nearZ, m_farZ);
+	InitBoundingFrustum();
 }
 
 void IdealCamera::UpdateViewMatrix()

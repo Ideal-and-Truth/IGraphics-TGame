@@ -310,6 +310,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// 
 		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
 		DebugStaticEnemy->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(3, 0, 0));
+
+
+		std::vector<std::shared_ptr<Ideal::ISkinnedMeshObject>> skinnedMeshes;
+		for (int i = 0; i < 10; i++)
+		{
+			std::shared_ptr<Ideal::ISkinnedMeshObject> p = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+			p->AddAnimation("Debug", DebugPlayerAnim);
+			skinnedMeshes.push_back(p);
+			p->SetTransformMatrix(Matrix::CreateTranslation(i, 0, 0));
+		}
+
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
 		//DebugPlayer2->AddAnimation("Debug1", DebugPlayerAnim2);
@@ -1761,7 +1772,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
 
 		fireExplosionParticle->SetActive(true);
-		fireExplosionParticle->SetLoop(true);
+		fireExplosionParticle->SetLoop(false);
 		fireExplosionParticle->SetDuration(1.f);
 		fireExplosionParticle->SetStartLifetime(1.f);
 		fireExplosionParticle->SetSimulationSpeed(2.f);
@@ -2665,6 +2676,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
+				for (int i = 0; i < skinnedMeshes.size(); i++)
+				{
+					skinnedMeshes[i]->AnimationDeltaTime(0.003f);
+				}
 				DebugPlayer->AnimationDeltaTime(0.003f);
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);

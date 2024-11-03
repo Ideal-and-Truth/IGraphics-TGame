@@ -23,6 +23,7 @@ namespace Ideal
 	class D3D12DescriptorManager;
 	class D3D12UnorderedAccessView;
 	class BLASInstanceDesc;
+	class IdealCamera;
 }
 struct AnimTransform
 {
@@ -98,7 +99,8 @@ namespace Ideal
 			std::shared_ptr<Ideal::D3D12DescriptorManager> DescriptorManager,
 			uint32 CurrentContextIndex,
 			std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool,
-			std::shared_ptr<Ideal::RaytracingManager> RaytracingManager
+			std::shared_ptr<Ideal::RaytracingManager> RaytracingManager,
+			std::shared_ptr<Ideal::IdealCamera> Camera
 		);
 		void SetBLAS(std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> InBLAS);
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> GetBLAS();
@@ -135,7 +137,7 @@ namespace Ideal
 		virtual void SetPlayAnimation(bool Play) override { m_playAnimation = Play; }
 
 	private:
-		void AnimationPlay();
+		void AnimationPlay(bool IsAnimationInterpolate = true);
 		void AnimationInterpolate(
 			std::shared_ptr<Ideal::IdealAnimation> BeforeAnimation,
 			uint32 BeforeAnimationFrame,

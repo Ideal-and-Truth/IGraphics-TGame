@@ -1,6 +1,7 @@
 #pragma once
 #include "GraphicsEngine/public/ICamera.h"
 #include "Core/Core.h"
+#include <DirectXCollision.h>
 
 namespace Ideal
 {
@@ -57,5 +58,15 @@ namespace Ideal
 
 		DirectX::SimpleMath::Matrix m_view;
 		DirectX::SimpleMath::Matrix m_proj;
+
+
+		// Optimization
+	private:
+		void InitBoundingFrustum();
+	public:
+		bool ContainWithCamera(const DirectX::SimpleMath::Matrix& Transform);
+
+	private:
+		DirectX::BoundingFrustum m_boundingFrustum;
 	};
 }

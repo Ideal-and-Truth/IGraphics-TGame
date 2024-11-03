@@ -531,7 +531,8 @@ void Ideal::D3D12RayTracingRenderer::Render()
 			m_descriptorManager,
 			m_currentContextIndex,
 			m_cbAllocator[m_currentContextIndex],
-			m_raytracingManager
+			m_raytracingManager,
+			m_mainCamera
 		);
 	}
 
