@@ -147,7 +147,7 @@ void BossAnimator::Start()
 
 	m_currentState->OnStateEnter();
 
-	m_killBoss = true;
+	// m_killBoss = true;
 }
 
 void BossAnimator::Update()
