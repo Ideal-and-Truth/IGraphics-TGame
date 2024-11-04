@@ -197,6 +197,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 		return;
 	}
 
+	// 프레임동안 흘러야 하는 시간
 	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
 	switch (m_animationState)
 	{
@@ -204,6 +205,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 		{
 			if (m_sumTime >= timePerFrame)
 			{
+				// 만약 m_sumTime이 TimePerFrame보다 큰데 몇배크다면 frame을 그만큼 돌려주어야한다.
 				uint32 shouldMoveFrameCount = m_sumTime / timePerFrame;
 				m_sumTime = 0.f;
 				for (uint32 i = 0; i < shouldMoveFrameCount; ++i)
