@@ -81,6 +81,9 @@ namespace Truth
 		METHOD(SetActive);
 		void SetActive();
 
+		inline int GetCurrentFrame() const { return m_currentFrame; }
+		inline bool GetIsAnimationEnd() const { return m_isAnimationEnd; }
+
 		void DeleteMesh();
 
 		std::weak_ptr<Ideal::IBone> GetBone(const std::string& _name);

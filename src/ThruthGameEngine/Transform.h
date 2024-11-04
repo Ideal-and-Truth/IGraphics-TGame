@@ -109,7 +109,23 @@ namespace Truth
 			m_localTM = _tm;
 			_tm.Decompose(m_scale, m_rotation, m_position);
 			// ApplyTransform();
+		}
 
+		inline void SetWorldRotation(const Quaternion& _rotation)
+		{
+
+			Vector3 pos, sca;
+			m_worldRotation = _rotation;
+			m_globalTM = Matrix::CreateScale(m_worldScale);
+			m_globalTM *= Matrix::CreateFromQuaternion(m_worldRotation);
+			m_globalTM *= Matrix::CreateTranslation(m_worldPosition);
+
+			if (HasParent())
+				m_localTM = m_globalTM * GetParentMatrix().Invert();
+			else
+				m_localTM = m_globalTM;
+
+			m_localTM.Decompose(sca, m_rotation, pos);
 		}
 #pragma endregion Transform
 

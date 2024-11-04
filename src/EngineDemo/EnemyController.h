@@ -84,6 +84,13 @@ public:
 	METHOD(Update);
 	void Update();
 
+	inline bool GetIsAttackReady() const { return m_isAttackReady; }
+	inline bool GetIsBackStep() const { return m_isBackStep; }
+	inline float GetSideMove() const { return m_sideMove; }
+
+	inline void SetIsDead(bool _val) { m_isDead = _val; }
+	inline void SetCanMove(bool _val) { m_canMove = _val; }
+
 private:
 	void FollowTarget();
 	void ComeBackHome();

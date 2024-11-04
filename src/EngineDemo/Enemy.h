@@ -1,5 +1,8 @@
 #pragma once
 #include "Component.h"
+
+class Player;
+
 class Enemy :
 	public Truth::Component
 {
@@ -45,6 +48,7 @@ private:
 
 	PROPERTY(target);
 	std::weak_ptr<Truth::Entity> m_target;
+	std::weak_ptr<Player> m_player;
 
 	PROPERTY(isTargetIn);
 	bool m_isTargetIn;
@@ -74,8 +78,13 @@ public:
 	METHOD(Update);
 	void Update();
 
-	inline float GetMaxTP() { return m_maxTP; };
-	inline float GetCurrentTP() { return m_currentTP; };
+	inline float GetMaxTP() const { return m_maxTP; };
+	inline float GetCurrentTP() const { return m_currentTP; };
+	inline float GetSpeed() const { return m_speed; }
+	inline float GetAttackRange() const { return m_attackRange; }
+
+	inline bool GetIsTargetIn() const { return m_isTargetIn; }
+	inline bool GetSlowTime() const { return m_slowTime; }
 };
 
 template<class Archive>

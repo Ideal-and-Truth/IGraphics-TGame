@@ -117,10 +117,6 @@ void Truth::PhysicsManager::FixedUpdate()
 				{
 					pos = MathUtil::Convert(rigidbody->GetController()->getFootPosition());
 					rot = rigidbody->GetRotation();
-					Vector3 rotv = rot.ToEuler();
-					rotv.x = 0;
-					rotv.z = 0;
-					rot = Quaternion::CreateFromYawPitchRoll(rotv);
 				}
 				else
 				{

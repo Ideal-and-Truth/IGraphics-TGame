@@ -72,8 +72,6 @@ void Truth::Controller::Awake()
 	m_rigidbody->m_isController = true;
 	m_rigidbody->m_controller = m_controller;
 
-
-
 	m_rigidbody->m_body = m_controller->getActor();
 	m_controller->getActor()->userData = m_rigidbody.get();
 
@@ -119,6 +117,7 @@ void Truth::Controller::FixedUpdate()
 	m_controllerFilter->mFilterData = m_filterData;
 }
 
+
 /// <summary>
 /// 움직임 함수
 /// </summary>
@@ -131,7 +130,7 @@ void Truth::Controller::Move(Vector3& _disp)
 			static_cast<uint32>(
 				m_controller->move
 				(
-					MathUtil::Convert(_disp + m_impulse),
+					MathUtil::Convert((_disp + m_impulse) * (1.0f / 60.0f)),
 					m_minmumDistance,
 					1.0f / 60.0f,
 					*m_controllerFilter

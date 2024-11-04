@@ -665,6 +665,7 @@ public:
 
 	void SetEnemySpeed(float speed);
 
+	inline bool GetIsLockOn() const { return m_isLockOn; }
 };
 
 template<class Archive>

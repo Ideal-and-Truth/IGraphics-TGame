@@ -49,7 +49,7 @@ void PlayerController::FixedUpdate()
 		{
 			m_moveVec = Vector3::Zero;
 		}
-		m_moveVec *= GetFixedDeltaTime();
+		m_moveVec.y = 0.0f;
 		m_moveVec.y = -100.0f;
 
 		m_controller.lock()->Move(m_moveVec);
@@ -215,9 +215,7 @@ void PlayerController::PlayerMove(const void*)
 	}
 
 	if (!m_canMove)
-	{
 		return;
-	}
 
 	/// 락온 중에 가만히 있으면 회전
 	if (m_faceDirection == Vector3::Zero)

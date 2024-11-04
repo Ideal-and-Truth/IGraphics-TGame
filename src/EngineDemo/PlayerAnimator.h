@@ -645,6 +645,10 @@ public:
 	void CameraZoom(float timing);
 
 	void SetTimeSlow();
+
+	inline bool GetBackAttack() const { return m_backAttack; }
+	inline bool GetFallAttack() const { return m_fallAttack; }
+	inline bool GetDownAttack() const { return m_downAttack; }
 };
 
 template<class Archive>
