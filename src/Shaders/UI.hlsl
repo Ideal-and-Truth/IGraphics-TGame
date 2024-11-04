@@ -60,7 +60,7 @@ float4 PS(PSInput Input) : SV_Target
     float4 outputColor;
     outputColor.rgb = texColor.rgb * Input.Color.rgb;
     outputColor.a = texColor.a;
-
+    clip(outputColor.a - 0.2);
     return outputColor;
 }
 
