@@ -162,6 +162,8 @@ namespace Ideal
 		float m_animSpeed = 1.f;
 		float m_ratio = 0.f;
 
+		float m_deltaTime = 0.f;
+
 		//std::shared_ptr<Ideal::IdealAnimation> m_cacheCurrentAnimation;
 		uint32 m_cacheCurrentAnimationFrame = 0;
 		//std::shared_ptr<Ideal::IdealAnimation> m_cacheNextAnimation;

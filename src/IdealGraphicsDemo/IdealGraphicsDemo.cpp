@@ -2708,6 +2708,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
 				DebugPlayer->AnimationDeltaTime(0.003f);
+				//DebugPlayer->AnimationDeltaTime(1.003f);
+
+				if (GetAsyncKeyState(VK_END) * 0x8000)
+				{
+					DebugPlayer->AnimationDeltaTime(0.106f);
+				}
+
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
