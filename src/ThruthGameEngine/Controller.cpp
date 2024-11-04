@@ -130,7 +130,7 @@ void Truth::Controller::Move(Vector3& _disp)
 			static_cast<uint32>(
 				m_controller->move
 				(
-					MathUtil::Convert((_disp + m_impulse) * (1.0f / 60.0f)),
+					MathUtil::Convert((_disp) * (1.0f / 60.0f) + m_impulse),
 					m_minmumDistance,
 					1.0f / 60.0f,
 					*m_controllerFilter

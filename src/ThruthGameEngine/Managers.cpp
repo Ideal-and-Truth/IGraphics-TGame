@@ -54,9 +54,9 @@ void Truth::Managers::Update() const
 		m_editorCamera->Update(m_timeManager->GetDT());
 	}
 #else
-// 	LARGE_INTEGER start, finish, frameCounter;
-// 	::QueryPerformanceCounter(&start);
-// 	::QueryPerformanceFrequency(&frameCounter);
+	LARGE_INTEGER start, finish, frameCounter;
+	::QueryPerformanceCounter(&start);
+	::QueryPerformanceFrequency(&frameCounter);
 
 	m_soundManager->Update();
 	m_physXManager->Update();
@@ -64,11 +64,11 @@ void Truth::Managers::Update() const
 	m_eventManager->Update();
 	m_particleManager->Update();
 
-// 	::QueryPerformanceCounter(&finish);
-// 	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
-// 	temp = std::string("Update : ") + temp;
-// 	temp += " / ";
-// 	DEBUG_PRINT(temp.c_str());
+	::QueryPerformanceCounter(&finish);
+	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
+	temp = std::string("Update : ") + temp;
+	temp += " / ";
+	DEBUG_PRINT(temp.c_str());
 #endif // EDITOR_MODE
 
 }
@@ -100,9 +100,9 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
-// 	LARGE_INTEGER start, finish, frameCounter;
-// 	::QueryPerformanceCounter(&start);
-// 	::QueryPerformanceFrequency(&frameCounter);
+	LARGE_INTEGER start, finish, frameCounter;
+	::QueryPerformanceCounter(&start);
+	::QueryPerformanceFrequency(&frameCounter);
 
 	m_sceneManager->ApplyTransform();
 #ifdef EDITOR_MODE
@@ -114,11 +114,11 @@ void Truth::Managers::Render() const
 #else
 	m_graphicsManager->Render();
 #endif // EDITOR_MODE
-// 	::QueryPerformanceCounter(&finish);
-// 	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
-// 	temp = std::string("Render : ") + temp;
-// 	temp += " \n ";
-// 	DEBUG_PRINT(temp.c_str());
+	::QueryPerformanceCounter(&finish);
+	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
+	temp = std::string("Render : ") + temp;
+	temp += " \n ";
+	DEBUG_PRINT(temp.c_str());
 
 }
 

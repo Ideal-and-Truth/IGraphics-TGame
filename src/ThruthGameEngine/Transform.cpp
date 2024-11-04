@@ -25,7 +25,6 @@ Truth::Transform::~Transform()
 /// </summary>
 void Truth::Transform::ApplyTransform()
 {
-
 	Matrix scaleMT = Matrix::CreateScale(m_scale);
 	Matrix rotationMT = Matrix::CreateFromQuaternion(m_rotation);
 	Matrix traslationMT = Matrix::CreateTranslation(m_position);

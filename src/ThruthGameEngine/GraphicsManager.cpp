@@ -222,7 +222,7 @@ void Truth::GraphicsManager::SetMainCamera(Camera* _camera)
 	m_mainCamera = _camera;
 }
 
-std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _a, bool _b)
+std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std::wstring& _path, bool _createMips, bool _isNormalMap, bool _ignoreSRGB)
 {
 	std::filesystem::path p(_path);
 	if (p.is_absolute())
@@ -237,7 +237,7 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(p, _a, _b);
+		tex->m_texture = m_renderer->CreateTexture(p, _createMips, _isNormalMap, _ignoreSRGB);
 		tex->m_useCount = 1;
 		tex->m_path = p;
 

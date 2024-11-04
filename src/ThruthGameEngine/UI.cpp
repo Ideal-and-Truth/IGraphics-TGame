@@ -97,7 +97,7 @@ void Truth::UI::Initialize()
 		if (!m_texturePath[i].empty())
 		{
 			(*m_sprite)[i] = gp->CreateSprite();
-			auto tex = gp->CreateTexture(fs::path(m_texturePath[i]));
+			auto tex = gp->CreateTexture(fs::path(m_texturePath[i]), false, false, true);
 			m_sprite->GetTex(i) = tex;
 
 			float w = static_cast<float>(tex->w);
