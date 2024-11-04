@@ -1305,7 +1305,11 @@ std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 
 void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
 {
 	if (Text)
+	{
 		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
+		// Text는 그래픽엔진에서 만드는 텍스쳐라 삭제.
+		m_deferredDeleteManager->AddD3D12ResourceToDelete((std::static_pointer_cast<Ideal::IdealText>(Text))->GetTexture()->GetResource());
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/, bool HasEntry /*= true*/)

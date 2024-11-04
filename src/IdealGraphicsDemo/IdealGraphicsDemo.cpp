@@ -539,6 +539,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		text->SetPosition(Vector2(500, 500));
 		text->SetZ(0.2);
 		
+		std::vector<std::shared_ptr<Ideal::IText>>texts;
+
 
 		std::shared_ptr<Ideal::ITexture> uiTex0 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_base.png");
 		std::shared_ptr<Ideal::ITexture> uiTex1 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_gph.png", false, false, true);
@@ -2661,6 +2663,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					norDamageParticleSystem1->Play();
 					norDamageParticleSystem1_1->Play();
 					norDamageParticleSystem2->Play();
+
+
+					if (texts.size())
+					{
+						std::shared_ptr<Ideal::IText> text = texts.back();
+						texts.pop_back();
+						gRenderer->DeleteText(text);
+					}
 				}
 				if (GetAsyncKeyState(VK_END) & 0x8000)
 				{
@@ -2674,11 +2684,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					int a = 3;
 
 					ScannerParticleSystem->Play();
+
+					//
+
+					{
+						std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
+						text->ChangeText(L"Test");
+						text->SetPosition(Vector2(500, 500));
+						text->SetZ(0.2);
+						texts.push_back(text);
+					}
 				}
 				if (GetAsyncKeyState(VK_HOME) & 0x8001)
 				{
 					gRenderer->ToggleFullScreenWindow();
 				}
+
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);

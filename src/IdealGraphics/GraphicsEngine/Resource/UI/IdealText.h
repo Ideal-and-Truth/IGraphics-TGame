@@ -47,6 +47,9 @@ namespace Ideal
 		//virtual void SetTexture(std::weak_ptr<Ideal::ITexture> Texture) override { m_textSprite->SetTexture(Texture); };
 
 		virtual void ResizeTexture(float Width, float Height) override;
+
+		std::shared_ptr<Ideal::D3D12Texture> GetTexture() { return m_texture; }
+
 	private:
 		std::weak_ptr<Ideal::D2DTextManager> m_textManager;
 		std::shared_ptr<Ideal::D3D12Texture> m_texture;
