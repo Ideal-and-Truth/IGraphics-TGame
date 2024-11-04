@@ -150,6 +150,7 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)IdealGraphics;$(SolutionDir)IdealGraphics\ThirdParty\Include;%(AdditionalIncludeDirectories);$(SolutionDir)IdealGraphics\GraphicsEngine\public\;$(SolutionDir)IdealGraphics\Editor\imgui\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
