@@ -197,22 +197,27 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 		return;
 	}
 
+	// 프레임동안 흘러야 하는 시간
 	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
-	
 	switch (m_animationState)
 	{
 		case EAnimationState::CurrentAnimation:
 		{
 			if (m_sumTime >= timePerFrame)
 			{
+				// 만약 m_sumTime이 TimePerFrame보다 큰데 몇배크다면 frame을 그만큼 돌려주어야한다.
+				uint32 shouldMoveFrameCount = m_sumTime / timePerFrame;
 				m_sumTime = 0.f;
-				// 현재 프레임 + 1이 현재 애니메이션의 최대 프레임 - 1 보다 클 경우 애니메이션은 끝났다고 처리한다.
-				if (m_currentFrame + 1 > m_currentAnimation->frameCount - 1)
+				for (uint32 i = 0; i < shouldMoveFrameCount; ++i)
 				{
-					m_isAnimationFinished = true;
+					// 현재 프레임 + 1이 현재 애니메이션의 최대 프레임 - 1 보다 클 경우 애니메이션은 끝났다고 처리한다.
+					if (m_currentFrame + 1 > m_currentAnimation->frameCount - 1)
+					{
+						m_isAnimationFinished = true;
+					}
+					m_currentFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
+					m_nextFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
 				}
-				m_currentFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
-				m_nextFrame = (m_currentFrame + 1) % m_currentAnimation->frameCount;
 			}
 
 			m_ratio = m_sumTime / timePerFrame;

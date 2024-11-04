@@ -1209,7 +1209,7 @@ std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateSkyBox(co
 	return skyBox;
 }
 
-std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/)
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/, bool IngoreSRGB /*= false*/)
 {
 	std::shared_ptr<Ideal::D3D12Texture> texture;
 	uint32 generateMips = 1;
@@ -1217,7 +1217,7 @@ std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(c
 	{
 		generateMips = 0;
 	}
-	m_resourceManager->CreateTexture(texture, FileName, false, generateMips);
+	m_resourceManager->CreateTexture(texture, FileName, IngoreSRGB, generateMips,IsNormalMap);
 
 	//if (IsGenerateMips)
 	//{
@@ -1305,7 +1305,12 @@ std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 
 void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& Text)
 {
 	if (Text)
+	{
 		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
+		// Text는 그래픽엔진에서 만드는 텍스쳐라 삭제.
+		//m_deferredDeleteManager->AddD3D12ResourceToDelete((std::static_pointer_cast<Ideal::IdealText>(Text))->GetTexture()->GetResource());
+		m_deferredDeleteManager->AddTextureToDeferredDelete((std::static_pointer_cast<Ideal::IdealText>(Text))->GetTexture());
+	}
 }
 
 void Ideal::D3D12RayTracingRenderer::CompileShader(const std::wstring& FilePath, const std::wstring& SavePath, const std::wstring& SaveName, const std::wstring& ShaderVersion, const std::wstring& EntryPoint /*= L"Main"*/, const std::wstring& IncludeFilePath /*= L""*/, bool HasEntry /*= true*/)

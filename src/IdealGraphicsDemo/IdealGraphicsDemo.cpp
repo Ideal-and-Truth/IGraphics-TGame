@@ -539,6 +539,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		text->SetPosition(Vector2(500, 500));
 		text->SetZ(0.2);
 		
+		std::vector<std::shared_ptr<Ideal::IText>>texts;
+
+
+		std::shared_ptr<Ideal::ITexture> uiTex0 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_base.png");
+		std::shared_ptr<Ideal::ITexture> uiTex1 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_gph.png", false, false, true);
+		std::shared_ptr<Ideal::ITexture> uiTex2 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_deco.png");
+
+		std::shared_ptr<Ideal::ISprite> sp0 = gRenderer->CreateSprite();
+		sp0->SetTexture(uiTex0);
+		sp0->SetPosition(Vector2(500, 400));
+		sp0->SetZ(0.7);
+		sp0->SetScale(Vector2(2, 2));
+		std::shared_ptr<Ideal::ISprite> sp1 = gRenderer->CreateSprite();
+		sp1->SetTexture(uiTex2);
+		sp1->SetPosition(Vector2(500, 400));
+		sp1->SetZ(0.6);
+		sp1->SetScale(Vector2(2, 2));
+		std::shared_ptr<Ideal::ISprite> sp2 = gRenderer->CreateSprite();
+		sp2->SetTexture(uiTex1);
+		sp2->SetPosition(Vector2(500, 400));
+		sp2->SetZ(0.5);
+		sp2->SetScale(Vector2(2, 2));
+
 #pragma endregion
 
 #pragma region CreateLight
@@ -2640,6 +2663,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					norDamageParticleSystem1->Play();
 					norDamageParticleSystem1_1->Play();
 					norDamageParticleSystem2->Play();
+
+
+					if (texts.size())
+					{
+						std::shared_ptr<Ideal::IText> text = texts.back();
+						texts.pop_back();
+						gRenderer->DeleteText(text);
+					}
 				}
 				if (GetAsyncKeyState(VK_END) & 0x8000)
 				{
@@ -2653,11 +2684,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					int a = 3;
 
 					ScannerParticleSystem->Play();
+
+					//
+
+					if (texts.size())
+					{
+						std::shared_ptr<Ideal::IText> text = texts.back();
+						texts.pop_back();
+						gRenderer->DeleteText(text);
+					}
+
+					{
+						std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
+						text->ChangeText(L"Test");
+						text->SetPosition(Vector2(500, 500));
+						text->SetZ(0.2);
+						texts.push_back(text);
+					}
 				}
 				if (GetAsyncKeyState(VK_HOME) & 0x8001)
 				{
 					gRenderer->ToggleFullScreenWindow();
 				}
+
 				// Animation // 역재생 안됨
 				//ka->AnimationDeltaTime(0.002f);
 				//cat->AnimationDeltaTime(0.002f);
@@ -2666,6 +2715,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
 				DebugPlayer->AnimationDeltaTime(0.003f);
+				//DebugPlayer->AnimationDeltaTime(1.003f);
+
+				if (GetAsyncKeyState(VK_END) * 0x8000)
+				{
+					DebugPlayer->AnimationDeltaTime(0.106f);
+				}
+
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
