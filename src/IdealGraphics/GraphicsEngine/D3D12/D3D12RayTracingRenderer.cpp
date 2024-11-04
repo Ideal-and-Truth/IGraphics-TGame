@@ -1209,7 +1209,7 @@ std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateSkyBox(co
 	return skyBox;
 }
 
-std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/)
+std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(const std::wstring& FileName, bool IsGenerateMips /*= false*/, bool IsNormalMap /*= false*/, bool IngoreSRGB /*= false*/)
 {
 	std::shared_ptr<Ideal::D3D12Texture> texture;
 	uint32 generateMips = 1;
@@ -1217,7 +1217,7 @@ std::shared_ptr<Ideal::ITexture> Ideal::D3D12RayTracingRenderer::CreateTexture(c
 	{
 		generateMips = 0;
 	}
-	m_resourceManager->CreateTexture(texture, FileName, false, generateMips);
+	m_resourceManager->CreateTexture(texture, FileName, IngoreSRGB, generateMips,IsNormalMap);
 
 	//if (IsGenerateMips)
 	//{
