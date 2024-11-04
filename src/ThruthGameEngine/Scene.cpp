@@ -279,6 +279,8 @@ void Truth::Scene::Update()
 		else
 			m_beginDestroy.push(e);
 	}
+
+	DEBUG_PRINT("\n");
 }
 
 /// <summary>

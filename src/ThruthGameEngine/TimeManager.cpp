@@ -78,10 +78,18 @@ void Truth::TimeManager::Update()
 	// 만일 고정 프레임 시간이 단위를 넘기게 되면 이벤트를 발행한다.
 	while (m_fixedDeltaTime >= m_fixedTime)
 	{
-// 		DEBUG_PRINT(std::to_string(m_time).c_str());
-// 		DEBUG_PRINT("\n");
+// 		LARGE_INTEGER start, finish, frameCounter;
+// 		::QueryPerformanceCounter(&start);
+// 		::QueryPerformanceFrequency(&frameCounter);
 
 		m_managers.lock()->FixedUpdate();
+
+// 		::QueryPerformanceCounter(&finish);
+// 		std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
+// 		temp = std::string("Fixedupdate : ") + temp;
+// 		temp += " / ";
+// 		DEBUG_PRINT(temp.c_str());
+
 		// 시간 조절
 		m_fixedDeltaTime -= m_fixedTime;
 	}

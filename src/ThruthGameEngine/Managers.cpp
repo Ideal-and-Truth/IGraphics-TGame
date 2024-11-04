@@ -54,20 +54,21 @@ void Truth::Managers::Update() const
 		m_editorCamera->Update(m_timeManager->GetDT());
 	}
 #else
-	clock_t start, finish;
+// 	LARGE_INTEGER start, finish, frameCounter;
+// 	::QueryPerformanceCounter(&start);
+// 	::QueryPerformanceFrequency(&frameCounter);
 
-	start = clock();
 	m_soundManager->Update();
 	m_physXManager->Update();
 	m_sceneManager->Update();
 	m_eventManager->Update();
 	m_particleManager->Update();
-	finish = clock();
 
-	std::string temp = std::to_string(finish - start);
-	temp = std::string("update : ") + temp;
-	temp += " / ";
-	DEBUG_PRINT(temp.c_str());
+// 	::QueryPerformanceCounter(&finish);
+// 	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
+// 	temp = std::string("Update : ") + temp;
+// 	temp += " / ";
+// 	DEBUG_PRINT(temp.c_str());
 #endif // EDITOR_MODE
 
 }
@@ -99,11 +100,11 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
+// 	LARGE_INTEGER start, finish, frameCounter;
+// 	::QueryPerformanceCounter(&start);
+// 	::QueryPerformanceFrequency(&frameCounter);
+
 	m_sceneManager->ApplyTransform();
-
-	clock_t start, finish;
-
-	start = clock();
 #ifdef EDITOR_MODE
 	if (m_isEdit)
 		m_graphicsManager->Render();
@@ -113,12 +114,11 @@ void Truth::Managers::Render() const
 #else
 	m_graphicsManager->Render();
 #endif // EDITOR_MODE
-	finish = clock();
-	std::string temp = std::to_string(finish - start);
-
-	temp = std::string("render : ") + temp;
-	temp += " \n ";
-	// DEBUG_PRINT(temp.c_str());
+// 	::QueryPerformanceCounter(&finish);
+// 	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
+// 	temp = std::string("Render : ") + temp;
+// 	temp += " \n ";
+// 	DEBUG_PRINT(temp.c_str());
 
 }
 
