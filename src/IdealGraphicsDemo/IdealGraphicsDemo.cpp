@@ -539,6 +539,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		text->SetPosition(Vector2(500, 500));
 		text->SetZ(0.2);
 		
+
+		std::shared_ptr<Ideal::ITexture> uiTex0 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_base.png");
+		std::shared_ptr<Ideal::ITexture> uiTex1 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_gph.png", false, false, true);
+		std::shared_ptr<Ideal::ITexture> uiTex2 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_deco.png");
+
+		std::shared_ptr<Ideal::ISprite> sp0 = gRenderer->CreateSprite();
+		sp0->SetTexture(uiTex0);
+		sp0->SetPosition(Vector2(500, 400));
+		sp0->SetZ(0.7);
+		sp0->SetScale(Vector2(2, 2));
+		std::shared_ptr<Ideal::ISprite> sp1 = gRenderer->CreateSprite();
+		sp1->SetTexture(uiTex2);
+		sp1->SetPosition(Vector2(500, 400));
+		sp1->SetZ(0.6);
+		sp1->SetScale(Vector2(2, 2));
+		std::shared_ptr<Ideal::ISprite> sp2 = gRenderer->CreateSprite();
+		sp2->SetTexture(uiTex1);
+		sp2->SetPosition(Vector2(500, 400));
+		sp2->SetZ(0.5);
+		sp2->SetScale(Vector2(2, 2));
+
 #pragma endregion
 
 #pragma region CreateLight
