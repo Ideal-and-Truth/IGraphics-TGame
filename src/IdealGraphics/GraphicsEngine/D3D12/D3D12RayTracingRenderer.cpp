@@ -1308,7 +1308,8 @@ void Ideal::D3D12RayTracingRenderer::DeleteText(std::shared_ptr<Ideal::IText>& T
 	{
 		m_UICanvas->DeleteText(std::static_pointer_cast<Ideal::IdealText>(Text));
 		// Text는 그래픽엔진에서 만드는 텍스쳐라 삭제.
-		m_deferredDeleteManager->AddD3D12ResourceToDelete((std::static_pointer_cast<Ideal::IdealText>(Text))->GetTexture()->GetResource());
+		//m_deferredDeleteManager->AddD3D12ResourceToDelete((std::static_pointer_cast<Ideal::IdealText>(Text))->GetTexture()->GetResource());
+		m_deferredDeleteManager->AddTextureToDeferredDelete((std::static_pointer_cast<Ideal::IdealText>(Text))->GetTexture());
 	}
 }
 
