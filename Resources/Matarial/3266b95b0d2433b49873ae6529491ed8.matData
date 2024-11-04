@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/ej_brickwalltile/T_town_ej_wall_tile_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/ej_brickwalltile/T_town_ej_wall_tile_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/ej_brickwalltile/T_town_ej_wall_tile_MaskMap.png
+baseMap: ../Resources/Textures/MapData/0_TitleTest/ej_brickwalltile/T_town_ej_wall_tile_BaseMap.png
+normalMap: ../Resources/Textures/MapData/0_TitleTest/ej_brickwalltile/T_town_ej_wall_tile_Normal.png
+maskMap: ../Resources/Textures/MapData/0_TitleTest/ej_brickwalltile/T_town_ej_wall_tile_MaskMap.png
 tileX: 0.349999994
 tileY: 0.349999994
 alphaCulling: false

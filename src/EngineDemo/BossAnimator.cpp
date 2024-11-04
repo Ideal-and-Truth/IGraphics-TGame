@@ -146,6 +146,8 @@ void BossAnimator::Start()
 
 
 	m_currentState->OnStateEnter();
+
+	// m_killBoss = true;
 }
 
 void BossAnimator::Update()
@@ -153,6 +155,7 @@ void BossAnimator::Update()
 	if (m_killBoss)
 	{
 		m_owner.lock()->Destroy();
+		m_managers.lock()->Scene()->ChangeScene("TitleScene");
 		return;
 	}
 

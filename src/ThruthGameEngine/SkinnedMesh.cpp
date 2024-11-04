@@ -175,11 +175,8 @@ void Truth::SkinnedMesh::Initialize()
 
 void Truth::SkinnedMesh::Update()
 {
-
 	if (!m_isAnimationChanged)
-	{
 		m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
-	}
 
 	if (m_isAnimationChanged)
 	{
@@ -196,8 +193,6 @@ void Truth::SkinnedMesh::Update()
 		m_animationMaxFrame = m_skinnedMesh->GetCurrentAnimationMaxFrame();
 		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
 
-
-
 		if (m_oldFrame > m_currentFrame)
 		{
 			m_isAnimationEnd = true;
@@ -210,10 +205,7 @@ void Truth::SkinnedMesh::Update()
 		}
 
 		m_oldFrame = m_currentFrame;
-
-
 	}
-
 }
 
 void Truth::SkinnedMesh::ApplyTransform()
@@ -252,9 +244,7 @@ void Truth::SkinnedMesh::DeleteMesh()
 std::weak_ptr<Ideal::IBone> Truth::SkinnedMesh::GetBone(const std::string& _name)
 {
 	if (m_boneMap.find(_name) == m_boneMap.end())
-	{
 		return std::weak_ptr<Ideal::IBone>();
-	}
 	return m_boneMap[_name];
 }
 

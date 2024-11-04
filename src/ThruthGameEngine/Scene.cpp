@@ -39,9 +39,7 @@ Truth::Scene::~Scene()
 {
 	ClearEntity();
 	for (auto& m : m_mapEntity)
-	{
 		DeleteEntity(m);
-	}
 }
 
 /// <summary>
@@ -56,9 +54,7 @@ void Truth::Scene::AddEntity(std::shared_ptr<Entity> _p)
 	m_awakedEntity.push(_p);
 
 	if (_p->m_parent.expired())
-	{
 		m_rootEntities.push_back(_p);
-	}
 }
 
 /// <summary>
@@ -79,9 +75,7 @@ void Truth::Scene::CreateEntity(std::shared_ptr<Entity> _p)
 void Truth::Scene::DeleteEntity(uint32 _index)
 {
 	if (_index >= m_entities.size())
-	{
 		return;
-	}
 	m_beginDestroy.push(m_entities[_index]);
 }
 
@@ -92,25 +86,20 @@ void Truth::Scene::DeleteEntity(uint32 _index)
 void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 {
 	for (auto& child : _p->m_children)
-	{
 		DeleteEntity(child);
-	}
 	if (!_p->m_parent.expired())
-	{
 		_p->m_parent.lock()->DeleteChild(_p);
-	}
 #ifdef EDITOR_MODE
 	if (m_managers.lock()->m_isEdit)
 	{
+		// TODO: delete ÃÖÀûÈ­
+		for (auto itr = m_entities.begin(); itr != m_entities.end() ; itr++)
+			if (_p == (*itr))
+				m_entities.erase(itr);
 		_p->Destroy();
-		m_entities.back()->m_index = _p->m_index;
-		std::iter_swap(m_entities.begin() + _p->m_index, m_entities.begin() + (m_entities.size() - 1));
-		m_entities.pop_back();
 	}
 	else
-	{
 		m_beginDestroy.push(_p);
-	}
 	EditorUpdate();
 #else
 	m_beginDestroy.push(_p);
@@ -123,20 +112,28 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 /// <param name="_manager"></param>
 void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 {
+	clock_t start, finish;
+
+	start = clock();
 	if (m_managers.expired())
 		m_managers = _manager;
 
 	for (auto& e : m_rootEntities)
 	{
 		if (e->HasParent())
-		{
 			continue;
-		}
 		LoadEntity(e);
 	}
 
 	LoadUnityData(m_mapPath);
+
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
+	finish = clock();
+	std::string temp = std::to_string(finish - start);
+
+	temp = std::string("Loading : ") + temp;
+	temp += " \n ";
+	DEBUG_PRINT(temp.c_str());
 }
 
 /// <summary>
@@ -182,10 +179,8 @@ DirectX::SimpleMath::Vector3 Truth::Scene::FindPath(Vector3 _start, Vector3 _end
 std::weak_ptr<Truth::Entity> Truth::Scene::FindEntity(std::string _name)
 {
 	for (auto& e : m_entities)
-	{
 		if (e->m_name == _name)
 			return e;
-	}
 
 	return std::weak_ptr<Entity>();
 }
@@ -225,10 +220,8 @@ void Truth::Scene::EditorUpdate()
 {
 	m_rootEntities.clear();
 	for (auto& e : m_entities)
-	{
 		if (e->m_parent.expired() && !e->m_isDead)
 			m_rootEntities.push_back(e);
-	}
 }
 #endif // EDITOR_MODE
 
@@ -359,9 +352,7 @@ void Truth::Scene::Enter()
 {
 	int32 index = 0;
 	for (auto& e : m_entities)
-	{
 		e->m_index = index++;
-	}
 #ifndef EDITOR_MODE
 	Start();
 	ApplyTransform();
@@ -429,9 +420,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 	std::filesystem::path p(mapPath);
 	if (!std::filesystem::exists(p))
-	{
 		return;
-	}
 
 	/// read map data
 	std::shared_ptr<TFileUtils> file = std::make_shared<TFileUtils>();

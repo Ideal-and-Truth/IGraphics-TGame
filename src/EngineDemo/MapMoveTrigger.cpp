@@ -25,3 +25,9 @@ void MapMoveTrigger::OnTriggerEnter(Truth::Collider* _other)
 		m_managers.lock()->Scene()->ChangeScene(m_nextMap);
 	}
 }
+
+void MapMoveTrigger::Update()
+{
+ 	if (GetKeyDown(KEY::F8))
+ 		m_managers.lock()->Scene()->ChangeScene(m_nextMap);
+}

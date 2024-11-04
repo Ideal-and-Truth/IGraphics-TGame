@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/JS_DesignerTile/T_JST_Crack_BaseMap.png
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/JS_DesignerTile/T_JST_Crack_Normal.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/JS_DesignerTile/T_JST_Crack_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/JS_DesignerTile/T_JST_Crack_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/JS_DesignerTile/T_JST_Crack_Normal.png
+maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/JS_DesignerTile/T_JST_Crack_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

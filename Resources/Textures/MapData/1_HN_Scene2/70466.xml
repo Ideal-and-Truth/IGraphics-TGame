@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_ej_walltile_2</Name>
-        <DiffuseFile>T_town_ej_wall_tile_BaseMap.png</DiffuseFile>
+        <Name>M_Pipe</Name>
+        <DiffuseFile>T_Pipe_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

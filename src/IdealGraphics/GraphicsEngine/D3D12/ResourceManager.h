@@ -3,7 +3,8 @@
 #include <winnt.h>
 
 #include "GraphicsEngine/VertexInfo.h"
-
+#include "GraphicsEngine/D3D12/UploadCommandListPool.h"
+#include "GraphicsEngine/D3D12/D3D12Definitions.h"
 // 따로 GPU에 메모리를 업로드 하는 command list를 파서 여기서 사용한다.
 
 namespace Ideal
@@ -28,6 +29,7 @@ namespace Ideal
 	class DeferredDeleteManager;
 	class IMesh;
 	class D3D12DynamicConstantBufferAllocator;
+	class UploadCommandListPool;
 }
 
 namespace Ideal
@@ -76,6 +78,7 @@ namespace Ideal
 		void Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager);
 		void Fence();
 		void WaitForFenceValue();
+		void WaitForResourceUpload();
 
 		ComPtr<ID3D12DescriptorHeap> GetSRVHeap() { return m_cbv_srv_uavHeap->GetDescriptorHeap(); }
 		std::shared_ptr<Ideal::D3D12DynamicDescriptorHeap> GetSRVPool() { return m_cbv_srv_uavHeap; }
@@ -148,13 +151,14 @@ namespace Ideal
 			std::vector<TVertexType>& Vertices
 		)
 		{
+#ifndef USE_UPLOAD_CONTAINER
 			m_commandAllocator->Reset();
 			m_commandList->Reset(m_commandAllocator.Get(), nullptr);
-
+			
 			const uint32 elementSize = sizeof(TVertexType);
 			const uint32 elementCount = (uint32)Vertices.size();
 			const uint32 bufferSize = elementSize * elementCount;
-
+			
 			Ideal::D3D12UploadBuffer uploadBuffer;
 			uploadBuffer.Create(m_device.Get(), bufferSize);
 			{
@@ -168,14 +172,40 @@ namespace Ideal
 				elementCount,
 				uploadBuffer
 			);
-
+			
 			//---------Execute---------//
 			m_commandList->Close();
 			ID3D12CommandList* commandLists[] = { m_commandList.Get() };
 			m_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
-
+			
 			Fence();
 			WaitForFenceValue();
+#endif
+#ifdef USE_UPLOAD_CONTAINER
+			const uint32 elementSize = sizeof(TVertexType);
+			const uint32 elementCount = (uint32)Vertices.size();
+			const uint32 bufferSize = elementSize * elementCount;
+			
+			auto Container = m_uploadCommandListPoolManager->AllocateUploadContainer(bufferSize);
+			std::shared_ptr<Ideal::D3D12UploadBuffer> uploadBuffer = Container->UploadBuffer;
+			//uploadBuffer->Create(m_device.Get(), bufferSize);
+			{
+				void* mappedData = uploadBuffer->Map();
+				memcpy(mappedData, Vertices.data(), bufferSize);
+				uploadBuffer->UnMap();
+			}
+			OutVertexBuffer->Create(m_device.Get(),
+				Container->CommandList.Get(),
+				elementSize,
+				elementCount,
+				uploadBuffer
+			);
+			
+			//---------Execute---------//
+			Container->CloseAndExecute(m_commandQueue, m_fence);
+			Fence();
+			Container->FenceValue = m_fenceValue;
+#endif
 		}
 
 		void CreateIndexBuffer(std::shared_ptr<Ideal::D3D12IndexBuffer> OutIndexBuffer,
@@ -243,6 +273,9 @@ namespace Ideal
 		HANDLE m_fenceEvent = NULL;
 
 		std::shared_ptr<Ideal::DeferredDeleteManager> m_deferredDeleteManager;
+
+		// 10.26 업로드 리스트 풀
+		std::shared_ptr<Ideal::UploadCommandListPool> m_uploadCommandListPoolManager;
 
 	private:
 		// Descriptor heaps

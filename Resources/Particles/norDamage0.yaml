@@ -1,0 +1,38 @@
+MaxCount: 10
+# norDamage0과 norDamage1은 각각 두개씩만들어서
+# 십자가로 두 개 붙여서 사용
+# 
+#-----------Material-------------#
+MatName: NorDamageMaterial0
+EBlendingMode: 2
+Shader: BossFX_1BeamRingPS
+Texture0: ../Resources/Textures/0_Particle/Flash21.png
+BackFaceCulling: false
+
+
+Mesh: 0_Particle/Plane
+RenderMode: 1
+StartSize: 0.3
+StartColor:
+  - 1
+  - 1
+  - 1
+  - 1
+StartLifetime: 1
+Duration: 1
+SimulationSpeed: 8
+Loop: false
+SizeOverLifetime: true
+SizeOverLifetimeAxisX:
+  - x: 0
+    y: 0.5
+  - x: 1
+    y: 3
+SizeOverLifetimeAxisY:
+  - x: 0
+    y: 1
+SizeOverLifetimeAxisZ:
+  - x: 0
+    y: 0.5
+  - x: 1
+    y: 3

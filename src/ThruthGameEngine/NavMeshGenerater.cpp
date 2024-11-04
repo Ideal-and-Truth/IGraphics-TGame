@@ -10,9 +10,9 @@ Truth::NavMeshGenerater::NavMeshGenerater()
 	: m_cellSize(0.3f)
 	, m_cellHeight(0.2f)
 	, m_agentMaxSlope(50.0f)
-	, m_agentHeight(2.0f)
+	, m_agentHeight(1.0f)
 	, m_agentMaxClimb(1.0f)
-	, m_agentRadius(0.1f)
+	, m_agentRadius(0.01f)
 	, m_edgeMaxLen(12.0f)
 	, m_edgeMaxError(1.3f)
 	, m_regionMinSize(0.1f)
@@ -129,7 +129,7 @@ Vector3 Truth::NavMeshGenerater::FindPath(Vector3 _start, Vector3 _end, Vector3 
 	}
 	else
 	{
-		result = Vector3(0.0f, 0.0f, 0.0f);
+		result = _end;
 	}
 
 	delete[] polys;

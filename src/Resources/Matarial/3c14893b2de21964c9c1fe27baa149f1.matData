@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/gatedoor 1/T_gatetop_BaseMap.png
-normalMap: ../Resources/Textures/MapData/3_EJ_Scene2/gatedoor 1/T_gatetop_Normal.png
-maskMap: ../Resources/Textures/MapData/3_EJ_Scene2/gatedoor 1/T_gatetop_MaskMap.png
+baseMap: ../Resources/Textures/MapData/0_TitleTest/gatedoor 1/T_gatetop_BaseMap.png
+normalMap: ../Resources/Textures/MapData/0_TitleTest/gatedoor 1/T_gatetop_Normal.png
+maskMap: ../Resources/Textures/MapData/0_TitleTest/gatedoor 1/T_gatetop_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

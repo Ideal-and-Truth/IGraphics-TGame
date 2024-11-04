@@ -54,11 +54,20 @@ void Truth::Managers::Update() const
 		m_editorCamera->Update(m_timeManager->GetDT());
 	}
 #else
+	clock_t start, finish;
+
+	start = clock();
 	m_soundManager->Update();
 	m_physXManager->Update();
 	m_sceneManager->Update();
 	m_eventManager->Update();
 	m_particleManager->Update();
+	finish = clock();
+
+	std::string temp = std::to_string(finish - start);
+	temp = std::string("update : ") + temp;
+	temp += " / ";
+	DEBUG_PRINT(temp.c_str());
 #endif // EDITOR_MODE
 
 }
@@ -90,17 +99,9 @@ void Truth::Managers::FixedUpdate() const
 
 void Truth::Managers::Render() const
 {
-	clock_t start, finish;
-
-	start = clock();
-
 	m_sceneManager->ApplyTransform();
-	finish = clock();
 
-	std::string temp = std::to_string(finish - start);
-	temp = std::string("update : ") + temp;
-	temp += " / ";
-	// DEBUG_PRINT(temp.c_str());
+	clock_t start, finish;
 
 	start = clock();
 #ifdef EDITOR_MODE
@@ -113,7 +114,8 @@ void Truth::Managers::Render() const
 	m_graphicsManager->Render();
 #endif // EDITOR_MODE
 	finish = clock();
-	temp = std::to_string(finish - start);
+	std::string temp = std::to_string(finish - start);
+
 	temp = std::string("render : ") + temp;
 	temp += " \n ";
 	// DEBUG_PRINT(temp.c_str());

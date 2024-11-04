@@ -53,7 +53,6 @@ void Truth::Entity::Initialize()
 	{
 		LinkBone(m_linkBoneName);
 	}
-
 	m_transform->ApplyTransform();
 }
 

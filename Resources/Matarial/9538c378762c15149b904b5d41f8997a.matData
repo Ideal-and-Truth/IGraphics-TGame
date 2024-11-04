@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/roaddeco/T_roadrockdeco_BaseMap.png
+normalMap: ../Resources/Textures/MapData/3_EJ_Scene2/roaddeco/T_roadrockdeco_Normal.png
+maskMap: ../Resources/Textures/MapData/3_EJ_Scene2/roaddeco/T_roadrockdeco_MaskMap.png
+tileX: 1
+tileY: 1
+alphaCulling: false
+transparent: false
+...

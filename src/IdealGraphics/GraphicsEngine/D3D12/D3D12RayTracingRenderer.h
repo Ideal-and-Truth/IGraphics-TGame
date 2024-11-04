@@ -187,6 +187,7 @@ namespace Ideal
 		// ParticleMesh
 		virtual std::shared_ptr<Ideal::IMesh> CreateParticleMesh(const std::wstring& FileName) override;
 
+		virtual void SetRendererAmbientIntensity(float Value) override;
 
 	private:
 		void CreateCommandlists();
@@ -308,6 +309,8 @@ namespace Ideal
 		ComPtr<IDxcCompiler3> m_compiler3;
 		ComPtr<IDxcUtils> m_dxcUtils;
 		ComPtr<IDxcBlob> m_testBlob;
+
+		
 
 	private:
 		// AS

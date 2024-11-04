@@ -148,6 +148,9 @@ namespace Ideal
 
 		virtual DirectX::SimpleMath::Vector2 GetTopLeftEditorPos() override;
 		virtual DirectX::SimpleMath::Vector2 GetRightBottomEditorPos() override;
+
+		virtual void SetRendererAmbientIntensity(float Value) override;
+
 	public:
 		void Release();
 
