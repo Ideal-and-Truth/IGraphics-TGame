@@ -2687,6 +2687,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 					//
 
+					if (texts.size())
+					{
+						std::shared_ptr<Ideal::IText> text = texts.back();
+						texts.pop_back();
+						gRenderer->DeleteText(text);
+					}
+
 					{
 						std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
 						text->ChangeText(L"Test");
