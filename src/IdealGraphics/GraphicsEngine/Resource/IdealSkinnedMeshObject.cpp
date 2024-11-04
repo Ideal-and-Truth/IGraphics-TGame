@@ -22,6 +22,7 @@
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
 #include <d3dx12.h>
+#include <cmath>
 //#include "GraphicsEngine/D3D12/D3D12DynamicConstantBufferAllocator.h"
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
@@ -207,7 +208,8 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 			{
 				// 만약 m_sumTime이 TimePerFrame보다 큰데 몇배크다면 frame을 그만큼 돌려주어야한다.
 				uint32 shouldMoveFrameCount = m_sumTime / timePerFrame;
-				m_sumTime = 0.f;
+				m_sumTime = std::fmod(m_sumTime, timePerFrame);
+
 				for (uint32 i = 0; i < shouldMoveFrameCount; ++i)
 				{
 					// 현재 프레임 + 1이 현재 애니메이션의 최대 프레임 - 1 보다 클 경우 애니메이션은 끝났다고 처리한다.
