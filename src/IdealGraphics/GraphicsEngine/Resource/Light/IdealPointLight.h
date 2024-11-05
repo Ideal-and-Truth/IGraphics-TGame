@@ -1,6 +1,7 @@
 #pragma once
 #include "GraphicsEngine/public/IPointLight.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
+#include "GraphicsEngine/IdealLayer.h"
 
 namespace Ideal
 {
@@ -23,10 +24,18 @@ namespace Ideal
 		virtual float GetIntensity() override { return m_pointLight.Intensity; }
 		virtual void SetIntensity(const float& Intensity) override;
 
+		virtual void SetNoShadowCasting(bool Active) override;
+		virtual bool GetIsNoShadowCasting() override;
+
+		virtual void AddLayer(uint32 LayerNum) override;
+		virtual void DeleteLayer(uint32 LayerNum) override;
+		virtual void ChangeLayer(uint32 LayerNum) override;
+
 	public:
 		PointLight const& GetPointLightDesc() { return m_pointLight; }
 
 	private:
 		PointLight m_pointLight;
+		Ideal::IdealLayer m_layer;
 	};
 }

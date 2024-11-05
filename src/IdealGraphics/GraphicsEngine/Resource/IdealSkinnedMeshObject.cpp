@@ -27,7 +27,7 @@
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
 {
-
+	AddLayer(0);
 }
 
 Ideal::IdealSkinnedMeshObject::~IdealSkinnedMeshObject()
@@ -403,4 +403,19 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::IdealSkinnedM
 void Ideal::IdealSkinnedMeshObject::SetBLASInstanceIndex(uint32 InstanceIndex)
 {
 	m_instanceIndex = InstanceIndex;
+}
+
+void Ideal::IdealSkinnedMeshObject::AddLayer(uint32 LayerNum)
+{
+	m_Layer.AddLayer(LayerNum);
+}
+
+void Ideal::IdealSkinnedMeshObject::DeleteLayer(uint32 LayerNum)
+{
+	m_Layer.DeleteLayer(LayerNum);
+}
+
+void Ideal::IdealSkinnedMeshObject::ChangeLayer(uint32 LayerNum)
+{
+	m_Layer.ChangeLayer(LayerNum);
 }

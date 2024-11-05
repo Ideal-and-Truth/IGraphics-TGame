@@ -228,6 +228,7 @@
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
     <ClInclude Include="Misc\Utils\RandomValue.h" />
     <ClInclude Include="GraphicsEngine\D3D12\UploadCommandListPool.h" />
+    <ClInclude Include="GraphicsEngine\IdealLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IdealGraphics.rc">
@@ -339,6 +340,7 @@
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
     <ClCompile Include="Misc\Utils\RandomValue.cpp" />
     <ClCompile Include="GraphicsEngine\D3D12\UploadCommandListPool.cpp" />
+    <ClCompile Include="GraphicsEngine\IdealLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\BoxPS.hlsl">

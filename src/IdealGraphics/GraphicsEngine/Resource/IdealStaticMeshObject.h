@@ -5,6 +5,7 @@
 #include "GraphicsEngine/D3D12/D3D12Resource.h"
 #include "GraphicsEngine/Resource/IdealStaticMesh.h"
 #include "GraphicsEngine/ConstantBufferInfo.h"
+#include "GraphicsEngine/IdealLayer.h"
 
 struct ID3D12GraphicsCommandList;
 
@@ -66,6 +67,7 @@ namespace Ideal
 		bool m_isDraw = true;
 		CB_Color m_cbDebugColor;
 		bool m_isStaticWhenRuntime = false;
+
 		//------Raytracing Info------//
 	public:
 		virtual void AlphaClippingCheck() override;
@@ -82,5 +84,16 @@ namespace Ideal
 		uint32 m_instanceIndex = 0;
 		std::shared_ptr<Ideal::BLASInstanceDesc> m_BLASInstanceDesc;
 		std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> m_blas;
+
+
+		//-----Layer-----//
+	public:
+		virtual void AddLayer(uint32 LayerNum) override;
+		virtual void DeleteLayer(uint32 LayerNum) override;
+		virtual void ChangeLayer(uint32 LayerNum) override;
+
+		Ideal::IdealLayer& GetLayer() { return m_Layer; }
+	private:
+		Ideal::IdealLayer m_Layer;
 	};
 }

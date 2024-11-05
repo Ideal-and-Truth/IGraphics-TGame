@@ -26,6 +26,7 @@ Ideal::IdealMaterial::IdealMaterial()
 	m_cbMaterialInfo.bUseMetallicMap = false;
 	SetTiling(1, 1);
 	SetOffset(0, 0);
+	AddLayer(0);
 }
 
 Ideal::IdealMaterial::~IdealMaterial()
@@ -228,4 +229,22 @@ void Ideal::IdealMaterial::CopyHandleToRayTracingDescriptorTable(ComPtr<ID3D12De
 		Device->CopyDescriptorsSimple(1, m_normalTextureInRayTracing.GetCpuHandle(), m_normalTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	if(!m_maskTexture.expired())
 		Device->CopyDescriptorsSimple(1, m_maskTextureInRayTracing.GetCpuHandle(), m_maskTexture.lock()->GetSRV().GetCpuHandle(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+}
+
+void Ideal::IdealMaterial::AddLayer(uint32 LayerNum)
+{
+	m_Layer.AddLayer(LayerNum);
+	m_cbMaterialInfo.Layer = m_Layer.GetLayer();
+}
+
+void Ideal::IdealMaterial::DeleteLayer(uint32 LayerNum)
+{
+	m_Layer.DeleteLayer(LayerNum);
+	m_cbMaterialInfo.Layer = m_Layer.GetLayer();
+}
+
+void Ideal::IdealMaterial::ChangeLayer(uint32 LayerNum)
+{
+	m_Layer.ChangeLayer(LayerNum);
+	m_cbMaterialInfo.Layer = m_Layer.GetLayer();
 }

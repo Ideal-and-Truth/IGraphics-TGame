@@ -29,5 +29,9 @@ namespace Ideal
 
 		virtual void SetAlphaClipping(bool IsAlphClipping) abstract;
 		virtual void SetSurfaceTypeTransparent(bool IsTransparent) abstract;
+
+		virtual void AddLayer(unsigned int LayerNum) abstract;
+		virtual void DeleteLayer(unsigned int LayerNum) abstract;
+		virtual void ChangeLayer(unsigned int LayerNum) abstract;
 	};
 }

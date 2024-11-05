@@ -16,6 +16,7 @@
 
 Ideal::IdealStaticMeshObject::IdealStaticMeshObject()
 {
+	AddLayer(0);
 }
 
 Ideal::IdealStaticMeshObject::~IdealStaticMeshObject()
@@ -162,4 +163,19 @@ void Ideal::IdealStaticMeshObject::SetBLAS(std::shared_ptr<Ideal::DXRBottomLevel
 std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::IdealStaticMeshObject::GetBLAS()
 {
 	return m_blas;
+}
+
+void Ideal::IdealStaticMeshObject::AddLayer(uint32 LayerNum)
+{
+	m_Layer.AddLayer(LayerNum);
+}
+
+void Ideal::IdealStaticMeshObject::DeleteLayer(uint32 LayerNum)
+{
+	m_Layer.DeleteLayer(LayerNum);
+}
+
+void Ideal::IdealStaticMeshObject::ChangeLayer(uint32 LayerNum)
+{
+	m_Layer.ChangeLayer(LayerNum);
 }
