@@ -88,7 +88,7 @@ namespace Ideal
 		virtual std::shared_ptr<Ideal::ITexture> CreateSkyBox(const std::wstring& FileName) abstract;
 
 		// Texture
-		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName, bool IsGenerateMips = false, bool IsNormalMap = false) abstract;
+		virtual std::shared_ptr<Ideal::ITexture> CreateTexture(const std::wstring& FileName, bool IsGenerateMips = false, bool IsNormalMap = false, bool IngoreSRGB = false) abstract;
 		virtual std::shared_ptr<Ideal::IMaterial>			CreateMaterial() abstract;
 
 		virtual void DeleteTexture(std::shared_ptr<Ideal::ITexture> Texture) abstract;

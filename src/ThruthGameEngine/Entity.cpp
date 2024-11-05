@@ -109,7 +109,7 @@ void Truth::Entity::ApplyTransform()
 	m_transform->ApplyTransform();
 	for (auto p = m_applyTransform.begin(); p != m_applyTransform.end(); p++)
 	{
-		
+
 		if (p->first.expired())
 		{
 			if (p == m_applyTransform.end() - 1)
@@ -133,7 +133,7 @@ void Truth::Entity::ApplyTransform()
 			continue;
 		}
 
-		
+
 		p->second->Invoke<void>(p->first.lock().get());
 	}
 }
@@ -199,7 +199,17 @@ void Truth::Entity::Start()
 
 void Truth::Entity::Update()
 {
+	LARGE_INTEGER start, finish, frameCounter;
+	::QueryPerformanceCounter(&start);
+	::QueryPerformanceFrequency(&frameCounter);
+
 	IterateComponentMethod(m_update);
+
+	::QueryPerformanceCounter(&finish);
+	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
+	temp = m_name + temp;
+	temp += " / ";
+	DEBUG_PRINT(temp.c_str());
 }
 
 void Truth::Entity::FixedUpdate()
