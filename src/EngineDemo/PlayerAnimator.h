@@ -53,6 +53,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class NormalAttack1
@@ -653,6 +654,8 @@ public:
 	void SetTimeSlow();
 
 	void SoundPlay(std::wstring path, int channel);
+
+	void SoundStop(int channel);
 
 	inline bool GetBackAttack() const { return m_backAttack; }
 	inline bool GetFallAttack() const { return m_fallAttack; }
