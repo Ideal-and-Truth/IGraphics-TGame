@@ -594,6 +594,9 @@ private:
 	PROPERTY(timeStop);
 	bool m_timeStop;
 
+	PROPERTY(hit);
+	bool m_hit;
+
 	float m_lastHp;
 
 	PROPERTY(passingTime);
@@ -617,6 +620,7 @@ private:
 
 private:
 	void PlayEffects();
+	void HitSounds();
 
 public:
 	PlayerAnimator();

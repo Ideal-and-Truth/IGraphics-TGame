@@ -6,6 +6,7 @@
 #include <random>
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(EnemyAnimator)
 
@@ -95,18 +96,15 @@ void EnemyAnimator::Start()
 	m_skinnedMesh->AddAnimation("EnemyMeleeStrafeR", L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeR");
 	m_skinnedMesh->AddAnimation("EnemyMeleeStrongAttack", L"EnemyAnimations/MeleeEnemy/StrongAttack/StrongAttack");
 
-
-	// °ú°ÅÀÇ ÀÜÀç
-// 	m_skinnedMesh->AddAnimation("EnemyIdle", L"Kachujin/Idle");
-// 	m_skinnedMesh->AddAnimation("EnemyWalk", L"Kachujin/Sword And Shield Walk");
-// 	m_skinnedMesh->AddAnimation("EnemyLeftWalk", L"Kachujin/Left Strafe Walking");
-// 	m_skinnedMesh->AddAnimation("EnemyRightWalk", L"Kachujin/Right Strafe Walking");
-// 	m_skinnedMesh->AddAnimation("EnemyBackStep", L"Kachujin/Standing Walk Back");
-// 	m_skinnedMesh->AddAnimation("EnemyAttack", L"Kachujin/Sword And Shield Slash");
-// 	m_skinnedMesh->AddAnimation("EnemyParriableAttack", L"Kachujin/Jump Attack");
-// 	m_skinnedMesh->AddAnimation("EnemyHit", L"Kachujin/Sword And Shield Impact");
-// 	m_skinnedMesh->AddAnimation("EnemyDeath", L"Kachujin/Sword And Shield Death");
-// 	m_skinnedMesh->AddAnimation("EnemyParried", L"Kachujin/Parried");
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_2_Sound.wav", false);
 
 	m_currentState->OnStateEnter();
 }

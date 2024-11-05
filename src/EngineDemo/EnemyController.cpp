@@ -101,7 +101,6 @@ void EnemyController::Update()
 		Vector3 power(playerPos - pos);
 		power.y = 0.f;
 		power.Normalize();
-		power.y = -100.f;
 		power *= 0.002f;
 		power.x *= m_impulsePower;
 		power.y *= abs(m_impulsePower);
@@ -119,6 +118,8 @@ void EnemyController::Update()
 		}
 		else if (m_sideImpulse == 0.f)
 			p = power;
+
+		p.y = -100.f;
 
 		m_controller.lock()->AddImpulse(p);
 		if (m_isPassThrough)
