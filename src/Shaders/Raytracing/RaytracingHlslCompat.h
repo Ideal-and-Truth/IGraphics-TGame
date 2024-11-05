@@ -107,7 +107,7 @@ struct PointLight
     XMFLOAT3 Position;
     float Range;
     float Intensity;
-    unsigned int IsNoShadowCasting;
+    unsigned int IsShadowCasting;
     unsigned int Layer;
     float pad2;
 };

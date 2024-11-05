@@ -98,7 +98,7 @@ struct PointLight
 	Vector3 Position;
 	float Range;
 	float Intensity;
-	uint32 IsNoShadowCasting;
+	uint32 IsShadowCasting;
 	uint32 Layer;
 	float pad2;
 };
