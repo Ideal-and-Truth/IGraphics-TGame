@@ -73,6 +73,7 @@ void Truth::InputManager::Initalize(HINSTANCE _hinstance, HWND _hwnd, std::share
 	{
 		m_keyInfomation[i] = tKeyInfo{ KEY_STATE::NONE, false };
 	}
+
 	m_eventManager = _eventManager;
 }
 
@@ -160,7 +161,9 @@ void Truth::InputManager::Update()
 
 	if (m_fpsMode)
 	{
-		SetCursorPos(1920 / 2, 1080 / 2);
+		RECT rect;
+		::GetWindowRect(m_hwnd, &rect);
+		SetCursorPos((rect.right - rect.left) * 0.5f + rect.left, (rect.bottom - rect.top) * 0.5f + rect.top);
 
 		if (GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
 		{
@@ -201,8 +204,10 @@ void Truth::InputManager::OnMouseMove(int _btnState, int _x, int _y)
 {
 	if (m_fpsMode)
 	{
-		m_oldMousePosX = 1920 / 2;
-		m_oldMousePosY = 1080 / 2;
+		RECT rect;
+		::GetWindowRect(m_hwnd, &rect);
+		m_oldMousePosX = (rect.right - rect.left) * 0.5f + rect.left;
+		m_oldMousePosY = (rect.bottom - rect.top) * 0.5f + rect.top;
 	}
 	else
 	{
@@ -259,6 +264,7 @@ void Truth::InputManager::SetFPSMode(bool _isFPS)
 	if (_isFPS != m_fpsMode)
 	{
 		m_fpsMode = _isFPS;
+		SetShowCursor(!_isFPS);
 	}
 }
 
