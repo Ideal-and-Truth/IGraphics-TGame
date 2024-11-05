@@ -1790,7 +1790,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//fireExplosionParticle->SetRenderMesh(particleMeshPlane);							-> 테스트용
 
 		fireExplosionParticle->SetActive(true);
-		fireExplosionParticle->SetLoop(true);
+		fireExplosionParticle->SetLoop(false);
 		fireExplosionParticle->SetDuration(1.f);
 		fireExplosionParticle->SetStartLifetime(1.f);
 		fireExplosionParticle->SetSimulationSpeed(2.f);
@@ -2663,6 +2663,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					fireExplosionParticle2->Play();
 				}
+
+				static int textPos = 0;
+
 				if (GetAsyncKeyState(VK_DELETE) & 0x8000)
 				{
 					norDamageParticleSystem0->Play();
@@ -2677,6 +2680,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						std::shared_ptr<Ideal::IText> text = texts.back();
 						texts.pop_back();
 						gRenderer->DeleteText(text);
+						textPos--;
 					}
 				}
 				if (GetAsyncKeyState(VK_END) & 0x8000)
@@ -2694,24 +2698,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 					//
 
-					if (texts.size())
+// 					if (texts.size())
+// 					{
+// 						std::shared_ptr<Ideal::IText> text = texts.back();
+// 						texts.pop_back();
+// 						gRenderer->DeleteText(text);
+// 					}
+//					if (texts.size() < 3)
 					{
-						std::shared_ptr<Ideal::IText> text = texts.back();
-						texts.pop_back();
-						gRenderer->DeleteText(text);
-					}
-
-					{
+						if (texts.size() == 2)
+						{
+							int a = 3;
+						}
 						std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
 						text->ChangeText(L"Test");
-						text->SetPosition(Vector2(500, 500));
+						text->SetPosition(Vector2(textPos * 100, 500));
 						text->SetZ(0.2);
 						texts.push_back(text);
+						textPos++;
 					}
 				}
-				if (GetAsyncKeyState(VK_HOME) & 0x8001)
+				static float delayHomeKey = 0.3f;
+				if (delayHomeKey <= 0.3f)
 				{
-					gRenderer->ToggleFullScreenWindow();
+					delayHomeKey += 0.003f;
+				}
+				if (delayHomeKey >= 0.3f)
+				{
+					if (GetAsyncKeyState(VK_HOME) & 0x8001)
+					{
+						delayHomeKey = 0.f;
+						gRenderer->ToggleFullScreenWindow();
+					}
 				}
 
 				// Animation // 역재생 안됨

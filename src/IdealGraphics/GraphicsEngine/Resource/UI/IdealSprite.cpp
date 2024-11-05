@@ -150,13 +150,20 @@ void Ideal::IdealSprite::SetMesh(std::shared_ptr<Ideal::IdealMesh<SimpleVertex>>
 void Ideal::IdealSprite::CalculatePositionOffset()
 {
 	m_cbSprite.PosOffset = m_cbSprite.Pos / m_cbSprite.ScreenSize;
+	MyDebugConsoleMessage(
+		"PosOffset : "
+		+ std::to_string(m_cbSprite.PosOffset.x)
+		+ " , "
+		+ std::to_string(m_cbSprite.PosOffset.y)
+		+ "\n"
+		);
 }
 
 void Ideal::IdealSprite::ReSize(uint32 Width, uint32 Height)
 {
 	m_cbSprite.ScreenSize.x = Width;
 	m_cbSprite.ScreenSize.y = Height;
-
+	// CalculatePositionOffset();
 	// 생각해보니 offset 계산을 Resize때 다시 안할려고 한건데 
 	// 그래서 삭제. 
 	// CalculatePositionOffset();
