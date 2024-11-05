@@ -294,6 +294,8 @@ private:
 
 	float m_lastHp;
 
+	float m_baseSpeed;
+
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
 
@@ -337,6 +339,8 @@ public:
 	void SetEnemyDamage(float damage);
 
 	void SetImpulse(float power);
+
+	void SoundPlay(std::wstring path, bool isDup, int channel);
 
 };
 

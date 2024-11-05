@@ -7,6 +7,11 @@ namespace Truth
 	class SkinnedMesh;
 }
 
+namespace Ideal
+{
+	class IParticleSystem;
+}
+
 class Enemy;
 class EnemyController;
 class PlayerAnimator;
@@ -243,6 +248,9 @@ private:
 
 	std::shared_ptr<PlayerAnimator> m_playerAnimator;
 
+	std::shared_ptr<Ideal::IParticleSystem> m_magicCircle;
+	std::shared_ptr<Ideal::IParticleSystem> m_shootEffect;
+
 
 	/// <summary>
 	///  상태 조절을 위한 것들
@@ -297,6 +305,8 @@ private:
 
 	float m_lastHp;
 
+	float m_baseSpeed;
+
 	PROPERTY(isAnimationEnd);
 	bool m_isAnimationEnd;
 
@@ -341,6 +351,9 @@ public:
 	void SetEnemyDamage(float damage);
 
 	void SetImpulse(float power);
+
+	void SoundPlay(std::wstring path, bool isDup, int channel);
+
 };
 
 template<class Archive>

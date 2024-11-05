@@ -152,9 +152,10 @@ void PlayerController::PlayerMove(const void*)
 		Vector3 impRot;
 		if (m_faceDirection == Vector3::Zero)
 		{
-			Vector3 power(m_playerDirection.x, -100.f, m_playerDirection.z);
+			Vector3 power(m_playerDirection.x, 0.f, m_playerDirection.z);
 			power *= m_impulsePower;
 			power *= 0.01f;
+			power.y = -100.f;
 
 			m_controller.lock()->AddImpulse(power);
 
@@ -162,9 +163,10 @@ void PlayerController::PlayerMove(const void*)
 		}
 		else
 		{
-			Vector3 power(m_faceDirection.x, -100.f, m_faceDirection.z);
+			Vector3 power(m_faceDirection.x, 0.f, m_faceDirection.z);
 			power *= m_impulsePower;
 			power *= 0.01f;
+			power.y = -100.f;
 
 			m_controller.lock()->AddImpulse(power);
 
