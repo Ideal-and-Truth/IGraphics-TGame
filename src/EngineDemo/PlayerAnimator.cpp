@@ -456,6 +456,11 @@ void PlayerAnimator::SetTimeSlow()
 	m_player->GetTypeInfo().GetProperty("slowTime")->Set(m_player.get(), true);
 }
 
+void PlayerAnimator::SoundPlay(std::wstring path, int channel)
+{
+	m_managers.lock()->Sound()->Play(path, false, channel);
+}
+
 void PlayerIdle::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Idle", false);
@@ -512,6 +517,7 @@ void PlayerIdle::OnStateUpdate()
 void PlayerRun::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Run", false);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay("Hit");
 }
 
 void PlayerRun::OnStateUpdate()
@@ -1582,7 +1588,7 @@ void PlayerAnimator::PlayEffects()
 			p->Play();
 		}
 
-		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 5);
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 5);
 	}
 
 	if (m_chargedAttack1)
@@ -1777,7 +1783,7 @@ void PlayerAnimator::PlayEffects()
 			p->Play();
 		}
 
-		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Sound.wav", false, 10);
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Ground_Impact_2_Sound.wav", false, 10);
 	}
 
 	if (m_dodgeAttack)
@@ -1797,6 +1803,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 11);
 	}
 
 	if (m_rushAttack)
@@ -1818,6 +1826,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 12);
 	}
 
 	if (m_timeStop)
@@ -1836,5 +1846,7 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\TimeStop_Skill_Sound.wav", false, 13);
 	}
 }

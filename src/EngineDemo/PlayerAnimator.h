@@ -645,6 +645,8 @@ public:
 	void CameraZoom(float timing);
 
 	void SetTimeSlow();
+
+	void SoundPlay(std::wstring path, int channel);
 };
 
 template<class Archive>

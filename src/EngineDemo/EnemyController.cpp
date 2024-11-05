@@ -76,15 +76,9 @@ void EnemyController::Update()
 	// Àû È¸Àü
 	Vector3 pos = m_owner.lock()->GetWorldPosition();
 
-	Vector3 targetPos = m_managers.lock()->Scene()->m_currentScene->FindPath(
-		pos,
-		m_target.lock()->GetWorldPosition(),
-		GetScale()
-	);
-
 	Vector3 playerPos = m_target.lock()->GetWorldPosition();
 
-	Vector3 dir = targetPos - pos;
+	Vector3 dir = m_targetPos - pos;
 
 	float distance = (playerPos - pos).Length();
 	float attackRange = m_enemy.lock().get()->GetTypeInfo().GetProperty("attackRange")->Get<float>(m_enemy.lock().get()).Get();
@@ -165,7 +159,7 @@ void EnemyController::Update()
 
 	if (!isTargetIn)
 	{
-		// ComeBackHome();
+		ComeBackHome();
 		m_moveVec.y = -100.0f;
 
 		return;
@@ -271,6 +265,8 @@ void EnemyController::FollowTarget()
 			m_moveVec = dir;
 			//m_controller.lock()->Move(dir);
 		}
+
+
 	}
 }
 
@@ -333,5 +329,7 @@ void EnemyController::ComeBackHome()
 				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, 10.f * GetDeltaTime());
 			}
 		}
+
+
 	}
 }

@@ -96,6 +96,7 @@ void PlayerCamera::LateUpdate()
 	{
 		if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
 		{
+			e->Destroy();
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
 			m_lockOnTime = 0.f;
 			break;
