@@ -620,6 +620,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//	spotLight->SetDirection(Vector3(0, -1, 0));
 		//	slights.push_back(spotLight);
 		//}
+
+		std::vector<std::shared_ptr<Ideal::IPointLight>> pointLights;
 #pragma endregion
 
 #pragma region CompileShader
@@ -2665,6 +2667,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 
 				static int textPos = 0;
+				static int lightPos = 0;
 
 				if (GetAsyncKeyState(VK_DELETE) & 0x8000)
 				{
@@ -2681,6 +2684,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						texts.pop_back();
 						gRenderer->DeleteText(text);
 						textPos--;
+					}
+
+					if (pointLights.size())
+					{
+						std::shared_ptr<Ideal::IPointLight> light = pointLights.back();
+						pointLights.pop_back();
+						gRenderer->DeleteLight(light);
+						lightPos--;
 					}
 				}
 				if (GetAsyncKeyState(VK_END) & 0x8000)
@@ -2706,16 +2717,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 // 					}
 //					if (texts.size() < 3)
 					{
-						if (texts.size() == 2)
-						{
-							int a = 3;
-						}
 						std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
 						text->ChangeText(L"Test");
 						text->SetPosition(Vector2(textPos * 100, 500));
 						text->SetZ(0.2);
 						texts.push_back(text);
 						textPos++;
+					}
+
+					{
+						std::shared_ptr<Ideal::IPointLight> pointLight = gRenderer->CreatePointLight();
+						pointLight->SetPosition(Vector3(lightPos, 3.f, 3.f));
+						pointLight->SetRange(6.f);
+						pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
+						pointLight->SetIntensity(6.f);
+						pointLights.push_back(pointLight);
+						lightPos++;
 					}
 				}
 				static float delayHomeKey = 0.3f;
