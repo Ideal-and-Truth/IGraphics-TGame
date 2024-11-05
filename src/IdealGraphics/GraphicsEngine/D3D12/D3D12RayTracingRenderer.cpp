@@ -1267,7 +1267,9 @@ std::shared_ptr<Ideal::ISprite> Ideal::D3D12RayTracingRenderer::CreateSprite()
 {
 	// TODO : Canvas에 UI를 추가해야 할 것이다.
 	std::shared_ptr<Ideal::IdealSprite> ret = std::make_shared<Ideal::IdealSprite>();
-	ret->SetScreenSize(Vector2(m_width, m_height));
+	//ret->SetScreenSize(Vector2(m_width, m_height));
+	auto r = m_resolutionOptions[m_displayResolutionIndex];
+	ret->SetScreenSize(Vector2(r.Width, r.Height));
 	ret->SetMesh(m_resourceManager->GetDefaultQuadMesh());
 	ret->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
 	m_UICanvas->AddSprite(ret);
@@ -1290,7 +1292,9 @@ std::shared_ptr<Ideal::IText> Ideal::D3D12RayTracingRenderer::CreateText(uint32 
 	{
 		//Sprite
 		std::shared_ptr<Ideal::IdealSprite> sprite = std::make_shared<Ideal::IdealSprite>();
-		sprite->SetScreenSize(Vector2(m_width, m_height));
+		//sprite->SetScreenSize(Vector2(m_width, m_height));
+		auto r = m_resolutionOptions[m_displayResolutionIndex];
+		sprite->SetScreenSize(Vector2(r.Width, r.Height));
 		sprite->SetMesh(m_resourceManager->GetDefaultQuadMesh());
 		sprite->SetTexture(m_resourceManager->GetDefaultAlbedoTexture());
 		text->SetSprite(sprite);
