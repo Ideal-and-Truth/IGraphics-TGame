@@ -412,6 +412,10 @@ float3 Shade(
                 float3 direction = normalize(position - hitPosition);
                 float distance = length(position - hitPosition);
                 bool isInShadow = false;
+
+                uint lightCast = l_materialInfo.Layer & g_lightList.PointLights[i].Layer;
+                range *= (float)lightCast;
+
                 if(distance <= range)
                 {
                     isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);

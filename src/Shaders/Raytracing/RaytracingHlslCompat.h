@@ -62,7 +62,7 @@ struct MaterialInfoConstantBuffer
     float OffsetY;
 
     unsigned int bIsTransmissive;
-    float pad0;
+    unsigned int Layer;
 };
 
 struct CubeConstantBuffer
@@ -108,7 +108,7 @@ struct PointLight
     float Range;
     float Intensity;
     unsigned int IsNoShadowCasting;
-    float pad1;
+    unsigned int Layer;
     float pad2;
 };
 

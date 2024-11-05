@@ -69,6 +69,9 @@ using namespace std;
 #include "../Utils/SimpleMath.h"
 #include "Test.h"
 
+#define DefaultLayer 0
+#define PlayerLayer 1
+
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -443,7 +446,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		windowMaterial->SetNormalMap(windowNormal);
 		windowMaterial->SetMaskMap(windowMask);
 		windowMaterial->SetSurfaceTypeTransparent(true);
-
+		windowMaterial->ChangeLayer(PlayerLayer);
 		for(int y = 0 ; y < 20;y++)
 		{
 			for (int x = 0; x < 20; x++)
@@ -456,6 +459,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				plane->AlphaClippingCheck();
 			}
 		}
+
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 		//plane->AlphaClippingCheck();
@@ -468,7 +472,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, -2, 0)));
+		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 2, 0)));
+		cart->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+
 		//cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion

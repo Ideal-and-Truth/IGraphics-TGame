@@ -4,7 +4,7 @@
 #include "GraphicsEngine/Resource/IdealBone.h"
 #include "GraphicsEngine/VertexInfo.h"
 #include "GraphicsEngine/D3D12/Raytracing/DXRAccelerationStructure.h"
-
+#include "GraphicsEngine/IdealLayer.h"
 #include <d3d12.h>
 
 namespace Ideal
@@ -170,5 +170,14 @@ namespace Ideal
 
 
 		EAnimationState m_animationState = EAnimationState::CurrentAnimation;
+
+		//-----Layer-----//
+	public:
+		virtual void AddLayer(uint32 LayerNum) override;
+		virtual void DeleteLayer(uint32 LayerNum) override;
+		virtual void ChangeLayer(uint32 LayerNum) override;
+		Ideal::IdealLayer& GetLayer() { return m_Layer; }
+	private:
+		Ideal::IdealLayer m_Layer;
 	};
 }

@@ -28,5 +28,9 @@ namespace Ideal
 
 		virtual void SetNoShadowCasting(bool Active) abstract;
 		virtual bool GetIsNoShadowCasting() abstract;
+
+		virtual void AddLayer(unsigned int LayerNum) abstract;
+		virtual void DeleteLayer(unsigned int LayerNum) abstract;
+		virtual void ChangeLayer(unsigned int LayerNum) abstract;
 	};
 }

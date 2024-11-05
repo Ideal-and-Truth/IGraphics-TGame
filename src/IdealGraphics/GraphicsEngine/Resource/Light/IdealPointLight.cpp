@@ -7,6 +7,7 @@ Ideal::IdealPointLight::IdealPointLight()
 	m_pointLight.Range = 10.f;
 	m_pointLight.Intensity = 1.f;
 	m_pointLight.IsNoShadowCasting = 0;
+	m_layer.AddLayer(0);
 }
 
 Ideal::IdealPointLight::~IdealPointLight()
@@ -47,4 +48,22 @@ void Ideal::IdealPointLight::SetNoShadowCasting(bool Active)
 bool Ideal::IdealPointLight::GetIsNoShadowCasting()
 {
 	return (bool)m_pointLight.IsNoShadowCasting;
+}
+
+void Ideal::IdealPointLight::AddLayer(uint32 LayerNum)
+{
+	m_layer.AddLayer(LayerNum);
+	m_pointLight.Layer = m_layer.GetLayer();
+}
+
+void Ideal::IdealPointLight::DeleteLayer(uint32 LayerNum)
+{
+	m_layer.DeleteLayer(LayerNum);
+	m_pointLight.Layer = m_layer.GetLayer();
+}
+
+void Ideal::IdealPointLight::ChangeLayer(uint32 LayerNum)
+{
+	m_layer.ChangeLayer(LayerNum);
+	m_pointLight.Layer = m_layer.GetLayer();
 }

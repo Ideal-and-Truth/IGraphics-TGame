@@ -176,6 +176,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="GraphicsEngine\D3D12\UploadCommandListPool.h" />
+    <ClInclude Include="GraphicsEngine\IdealLayer.h" />
     <ClInclude Include="Misc\Utils\RandomValue.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugLine.h" />
     <ClInclude Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.h" />
@@ -344,6 +345,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicsEngine\D3D12\UploadCommandListPool.cpp" />
+    <ClCompile Include="GraphicsEngine\IdealLayer.cpp" />
     <ClCompile Include="Misc\Utils\RandomValue.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugLine.cpp" />
     <ClCompile Include="GraphicsEngine\Resource\DebugMesh\DebugMeshManager.cpp" />
