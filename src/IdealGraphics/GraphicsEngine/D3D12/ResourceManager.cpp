@@ -119,20 +119,20 @@ void ResourceManager::Fence()
 	m_fenceValue++;
 	m_commandQueue->Signal(m_fence.Get(), m_fenceValue);
 
-	uint64 fenceValue = m_fence->GetCompletedValue();
-	std::string result = "Current Fence :" + std::to_string(fenceValue) + "\n";
-	std::string result2 = "Current Fence Value : " + std::to_string(m_fenceValue) + "\n";
-	OutputDebugStringA(result.c_str());
-	OutputDebugStringA(result2.c_str());
+	//uint64 fenceValue = m_fence->GetCompletedValue();
+	//std::string result = "Current Fence :" + std::to_string(fenceValue) + "\n";
+	//std::string result2 = "Current Fence Value : " + std::to_string(m_fenceValue) + "\n";
+	//OutputDebugStringA(result.c_str());
+	//OutputDebugStringA(result2.c_str());
 }
 
 void ResourceManager::WaitForFenceValue()
 {
 	const uint64 expectedFenceValue = m_fenceValue;
-	std::string count = std::to_string(m_fence->GetCompletedValue());
-	std::string count2 = std::to_string(expectedFenceValue);
-	std::string result = "resource manager" + count + " : " + count2 + "\n";
-	OutputDebugStringA(result.c_str());
+	//std::string count = std::to_string(m_fence->GetCompletedValue());
+	//std::string count2 = std::to_string(expectedFenceValue);
+	//std::string result = "resource manager" + count + " : " + count2 + "\n";
+	//OutputDebugStringA(result.c_str());
 
 	if (m_fence->GetCompletedValue() < expectedFenceValue)
 	{
