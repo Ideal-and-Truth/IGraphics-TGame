@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "PlayerController.h"
 #include "EnemyAnimator.h"
+#include "BossAnimator.h"
 #include "PlayerCamera.h"
 #include "Bullet.h"
 #include "SimpleDamager.h"
@@ -384,6 +385,22 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 					m_parry = true;
 				}
 				enemyAnim->GetTypeInfo().GetProperty("isAttacking")->Set(enemyAnim.get(), false);
+			}
+		}
+		else if (enemy->GetComponent<BossAnimator>().lock())
+		{
+			auto bossAnim = enemy->GetComponent<BossAnimator>().lock();
+			if (bossAnim->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(bossAnim.get()).Get())
+			{
+				m_isHit = true;
+				m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+
+				if ((m_passingTime > 0.f && m_passingTime < 0.4f))
+				{
+					SetTimeScaleForSeconds(0.2f, 1.f);
+					m_isHit = false;
+					m_parry = true;
+				}
 			}
 		}
 	}
@@ -1304,7 +1321,11 @@ void PlayerDodge::OnStateEnter()
 
 void PlayerDodge::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 18)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	{
+		isReset = true;
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 18)
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
@@ -1316,6 +1337,7 @@ void PlayerDodge::OnStateUpdate()
 
 void PlayerDodge::OnStateExit()
 {
+	isReset = true;
 	GetProperty("isDodge")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 }

@@ -343,6 +343,7 @@ class PlayerDodge
 	: public AnimationState
 {
 private:
+	bool isReset = false;
 
 public:
 	PlayerDodge(Truth::Component* animator)
