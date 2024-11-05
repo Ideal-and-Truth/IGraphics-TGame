@@ -9,6 +9,11 @@ namespace Truth
 	class SkinnedMesh;
 }
 
+namespace Ideal
+{
+	class IParticleSystem;
+}
+
 class Player;
 class PlayerController;
 class PlayerCamera;
@@ -48,6 +53,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class NormalAttack1
@@ -459,6 +465,7 @@ private:
 	std::shared_ptr<PlayerController> m_playerController;
 	std::shared_ptr<Player> m_player;
 	std::shared_ptr<PlayerCamera> m_playerCamera;
+	std::shared_ptr<Ideal::IParticleSystem> m_normalAbilityEffect;
 
 
 	/// <summary>
@@ -587,6 +594,9 @@ private:
 	PROPERTY(timeStop);
 	bool m_timeStop;
 
+	PROPERTY(hit);
+	bool m_hit;
+
 	float m_lastHp;
 
 	PROPERTY(passingTime);
@@ -610,6 +620,7 @@ private:
 
 private:
 	void PlayEffects();
+	void HitSounds();
 
 public:
 	PlayerAnimator();
@@ -645,6 +656,10 @@ public:
 	void CameraZoom(float timing);
 
 	void SetTimeSlow();
+
+	void SoundPlay(std::wstring path, bool isDup, int channel);
+
+	void SoundStop(int channel);
 
 	inline bool GetBackAttack() const { return m_backAttack; }
 	inline bool GetFallAttack() const { return m_fallAttack; }

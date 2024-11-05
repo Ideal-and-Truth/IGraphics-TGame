@@ -6,6 +6,7 @@
 #include <random>
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(EnemyAnimator)
 
@@ -20,6 +21,7 @@ EnemyAnimator::EnemyAnimator()
 	, m_passingTime(0.f)
 	, m_sideMove(0.f)
 	, m_lastHp(0.f)
+	, m_baseSpeed(0.f)
 	, m_isChase(false)
 	, m_isAttackReady(false)
 	, m_isAttack(false)
@@ -78,6 +80,7 @@ void EnemyAnimator::Start()
 	m_enemy = m_owner.lock().get()->GetComponent<Enemy>().lock();
 	auto playerEntity = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
 	m_playerAnimator = playerEntity->GetComponent<PlayerAnimator>().lock();
+	m_baseSpeed = m_enemy->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.get()).Get();
 
 	m_skinnedMesh->AddAnimation("EnemyMeleeAttack", L"EnemyAnimations/MeleeEnemy/Attack/Attack");
 
@@ -95,30 +98,21 @@ void EnemyAnimator::Start()
 	m_skinnedMesh->AddAnimation("EnemyMeleeStrafeR", L"EnemyAnimations/MeleeEnemy/StrafeMove/StrafeR");
 	m_skinnedMesh->AddAnimation("EnemyMeleeStrongAttack", L"EnemyAnimations/MeleeEnemy/StrongAttack/StrongAttack");
 
-
-	// °ú°ÅÀÇ ÀÜÀç
-// 	m_skinnedMesh->AddAnimation("EnemyIdle", L"Kachujin/Idle");
-// 	m_skinnedMesh->AddAnimation("EnemyWalk", L"Kachujin/Sword And Shield Walk");
-// 	m_skinnedMesh->AddAnimation("EnemyLeftWalk", L"Kachujin/Left Strafe Walking");
-// 	m_skinnedMesh->AddAnimation("EnemyRightWalk", L"Kachujin/Right Strafe Walking");
-// 	m_skinnedMesh->AddAnimation("EnemyBackStep", L"Kachujin/Standing Walk Back");
-// 	m_skinnedMesh->AddAnimation("EnemyAttack", L"Kachujin/Sword And Shield Slash");
-// 	m_skinnedMesh->AddAnimation("EnemyParriableAttack", L"Kachujin/Jump Attack");
-// 	m_skinnedMesh->AddAnimation("EnemyHit", L"Kachujin/Sword And Shield Impact");
-// 	m_skinnedMesh->AddAnimation("EnemyDeath", L"Kachujin/Sword And Shield Death");
-// 	m_skinnedMesh->AddAnimation("EnemyParried", L"Kachujin/Parried");
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_2_Sound.wav", false);
 
 	m_currentState->OnStateEnter();
 }
 
 void EnemyAnimator::Update()
 {
-	if (m_isDeath)
-	{
-		// m_owner.lock()->Destroy();
-		return;
-	}
-
 	if (m_isDeath)
 	{
 		return;
@@ -143,6 +137,13 @@ void EnemyAnimator::Update()
 
 	if (m_enemy->GetCurrentTP() <= 0.f)
 	{
+		int random = RandomNumber(1, 2);
+
+		if (random == 1)
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_1_Sound.wav", false, 39);
+		else if (random == 2)
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_2_Sound.wav", false, 39);
+
 		m_isDeath = true;
 		m_enemyController->SetIsDead(true);
 	}
@@ -152,20 +153,60 @@ void EnemyAnimator::Update()
 		m_isDamage = true;
 		m_enemyController->SetCanMove(false);
 
+
 		if (m_playerAnimator->GetBackAttack())
 		{
+			int random = RandomNumber(1, 4);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 40);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 40);
+			else if (random == 3)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 40);
+			else if (random == 4)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 40);
+
 			m_isBack = true;
 			m_isDamage = false;
 		}
 		else if (m_playerAnimator->GetFallAttack())
 		{
+			int random = RandomNumber(1, 2);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 41);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 41);
+
+
 			m_isFall = true;
 			m_isDamage = false;
 		}
 		else if (m_playerAnimator->GetDownAttack())
 		{
+			int random = RandomNumber(1, 2);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 42);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 42);
+
 			m_isDown = true;
 			m_isDamage = false;
+		}
+		else
+		{
+			int random = RandomNumber(1, 4);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 43);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 43);
+			else if (random == 3)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 43);
+			else if (random == 4)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 43);
 		}
 	}
 
@@ -195,6 +236,16 @@ void EnemyAnimator::Update()
 		m_enemyController->SetCanMove(false);
 	else
 		m_enemyController->SetCanMove(true);
+
+
+	if (m_isChase)
+	{
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed * 1.5f);
+	}
+	if (m_isAttackReady)
+	{
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed);
+	}
 
 	m_currentState->OnStateUpdate();
 	PlayEffect();
@@ -275,6 +326,11 @@ void EnemyChase::OnStateEnter()
 
 void EnemyChase::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+	}
+
 	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
@@ -352,6 +408,21 @@ void EnemyAttackReady::OnStateUpdate()
 		}
 	}
 
+	if (m_sidePose > 0.f)
+	{
+		if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 33)
+		{
+			dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+		}
+	}
+	else
+	{
+		if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 18 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 36)
+		{
+			dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+		}
+	}
+
 	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
@@ -401,6 +472,10 @@ void EnemyAttack::OnStateUpdate()
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	{
+		GetProperty("normalAttack")->Set(m_animator, true);
 	}
 
 	if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
@@ -633,27 +708,28 @@ void EnemyAnimator::PlayEffect()
 	Vector3 effectPos = m_owner.lock()->GetWorldPosition();
 	Vector3 effectRot = m_owner.lock()->GetWorldRotation().ToEuler();
 
-// 	if (m_normalAttack)
-// 	{
-// 		m_normalAttack = false;
-// 
-// 		effectPos.y += 1.f;
-// 
-// 		effectRot.y += (3.141592f / 180.f) * -140.f;
-// 		effectRot.z += (3.141592f / 180.f) * 180.f;
-// 
-// 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-// 
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemySlash.yaml");
-// 		p->SetTransformMatrix(
-// 			rotationMT
-// 			* Matrix::CreateTranslation(effectPos)
-// 		);
-// 
-// 		p->SetSimulationSpeed(2.f);
-// 		p->SetActive(true);
-// 		p->Play();
-// 	}
+	if (m_normalAttack)
+	{
+		m_normalAttack = false;
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", true, 37);
+		// 		effectPos.y += 1.f;
+		// 
+		// 		effectRot.y += (3.141592f / 180.f) * -140.f;
+		// 		effectRot.z += (3.141592f / 180.f) * 180.f;
+		// 
+		// 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		// 
+		// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemySlash.yaml");
+		// 		p->SetTransformMatrix(
+		// 			rotationMT
+		// 			* Matrix::CreateTranslation(effectPos)
+		// 		);
+		// 
+		// 		p->SetSimulationSpeed(2.f);
+		// 		p->SetActive(true);
+		// 		p->Play();
+	}
 
 	if (m_chargeAttack)
 	{
@@ -690,6 +766,13 @@ void EnemyAnimator::PlayEffect()
 			p->SetActive(true);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", true, 38);
 	}
+}
+
+void EnemyAnimator::SoundPlay(std::wstring path, bool isDup, int channel)
+{
+	m_managers.lock()->Sound()->Play(path, isDup, channel);
 }
 

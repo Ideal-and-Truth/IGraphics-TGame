@@ -57,6 +57,7 @@ PlayerAnimator::PlayerAnimator()
 	, m_skillE(false)
 	, m_swordBeam(false)
 	, m_timeStop(false)
+	, m_hit(false)
 	, m_coolTimeE(10.f)
 	, m_chargedTime(0.f)
 	, m_forwardInput(0.f)
@@ -127,7 +128,7 @@ void PlayerAnimator::Start()
 	m_playerController = m_owner.lock().get()->GetComponent<PlayerController>().lock();
 	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 	m_playerCamera = m_managers.lock()->Scene()->m_currentScene->FindEntity("ThirdPersonCamera").lock()->GetComponent<PlayerCamera>().lock();
-
+	m_normalAbilityEffect = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3{ 1.5f, 0.0f, 0.0f });
 	Matrix t = Matrix::CreateFromQuaternion(q);
 	t *= Matrix::CreateTranslation(Vector3{ 0.0f, 0.02f, 0.0f });
@@ -190,12 +191,20 @@ void PlayerAnimator::Start()
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_4_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Dodge_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Dead_Sound.wav", false);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\TimeStop_Skill_Sound.wav", false);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Ground_Impact_2_Sound.wav", false);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Walk_1_Sound.wav", true);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_1_Sound.wav", true);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_2_Sound.wav", true);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_3_Sound.wav", true);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_2_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_3_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_ComboChange_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_2_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_3_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_2_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_3_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_4_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\03. Skill_sound\\TimeStop_Skill_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_2_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Player\\Player_Walk_1_Sound.wav", false);
 
 	m_currentState->OnStateEnter();
 }
@@ -232,7 +241,7 @@ void PlayerAnimator::Update()
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 	}
 
-	if (GetKeyDown(KEY::E) && m_coolTimeE > 10.f)
+	if (GetKeyDown(KEY::E) && m_coolTimeE > 10.f && (m_currentState == m_animationStateMap["Idle"] || m_currentState == m_animationStateMap["Run"]))
 	{
 		m_skillE = true;
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
@@ -301,8 +310,8 @@ void PlayerAnimator::Update()
 	}
 
 
-	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
-	{
+// 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
+// 	{
 		if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() > 0.f
 			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() > 0.f
 			|| m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() < 0.f
@@ -320,7 +329,7 @@ void PlayerAnimator::Update()
 		{
 			m_isRun = false;
 		}
-	}
+	//}
 
 	if (m_chargedReady)
 	{
@@ -334,6 +343,8 @@ void PlayerAnimator::Update()
 
 
 	m_currentState->OnStateUpdate();
+
+	HitSounds();
 
 	if (!m_parry && !m_skillQ && !m_skillE && !m_isDodge && !m_isAttacking && !m_isGuard && !m_isComboReady && !m_isNormalAttack && !m_isChargedAttack && m_currentState != m_animationStateMap["Hit"])
 	{
@@ -456,6 +467,16 @@ void PlayerAnimator::SetTimeSlow()
 	m_player->GetTypeInfo().GetProperty("slowTime")->Set(m_player.get(), true);
 }
 
+void PlayerAnimator::SoundPlay(std::wstring path, bool isDup, int channel)
+{
+	m_managers.lock()->Sound()->Play(path, isDup, channel);
+}
+
+void PlayerAnimator::SoundStop(int channel)
+{
+	m_managers.lock()->Sound()->Stop(channel);
+}
+
 void PlayerIdle::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Idle", false);
@@ -516,6 +537,12 @@ void PlayerRun::OnStateEnter()
 
 void PlayerRun::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 42)
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Player\\Player_Walk_1_Sound.wav", true, 15);
+	}
+
+
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
@@ -571,6 +598,11 @@ void PlayerRun::OnStateUpdate()
 
 }
 
+void PlayerRun::OnStateExit()
+{
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundStop(15);
+}
+
 void NormalAttack1::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("NormalAttack1", false);
@@ -584,9 +616,9 @@ void NormalAttack1::OnStateEnter()
 
 void NormalAttack1::OnStateUpdate()
 {
-	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
 	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
 	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
@@ -617,6 +649,7 @@ void NormalAttack1::OnStateExit()
 {
 	isReset = false;
 	GetProperty("isRun")->Set(m_animator, false);
+	GetProperty("isHit")->Set(m_animator, false);
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isNormalAttack")->Set(m_animator, false);
 }
@@ -633,9 +666,9 @@ void NormalAttack2::OnStateEnter()
 
 void NormalAttack2::OnStateUpdate()
 {
-	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
 	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
 	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
@@ -682,6 +715,10 @@ void NormalAttack3::OnStateEnter()
 
 void NormalAttack3::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
@@ -737,6 +774,10 @@ void NormalAttack4::OnStateEnter()
 
 void NormalAttack4::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Hit");
@@ -793,6 +834,10 @@ void NormalAttack6::OnStateEnter()
 
 void NormalAttack6::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -841,21 +886,26 @@ void NormalAbility::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(30.f, true);
+	GetProperty("normalAbility")->Set(m_animator, true);
+	GetProperty("downAttack")->Set(m_animator, true);
 }
 
 void NormalAbility::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
 	}
 
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 23)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 23)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
-		GetProperty("downAttack")->Set(m_animator, true);
 		isReset = false;
-		GetProperty("normalAbility")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(5.f);
 	}
 
@@ -885,6 +935,8 @@ void PlayerGuard::OnStateUpdate()
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardHit", false);
+		dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(-10.f, true);
+		//dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Walk_1_Sound.wav", 16);
 		isHit = true;
 		GetProperty("isHit")->Set(m_animator, false);
 	}
@@ -915,6 +967,7 @@ void PlayerHit::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Hit", false);
 	GetProperty("isHit")->Set(m_animator, false);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_1_Sound.wav", false, 17);
 }
 
 void PlayerHit::OnStateUpdate()
@@ -927,6 +980,7 @@ void PlayerHit::OnStateUpdate()
 	{
 		GetProperty("isHit")->Set(m_animator, false);
 		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Hit", false);
+		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_2_Sound.wav", false, 18);
 	}
 	if (GetProperty("parry")->Get<bool>(m_animator).Get())
 	{
@@ -955,6 +1009,11 @@ void ChargedAttack1::OnStateEnter()
 
 void ChargedAttack1::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -976,13 +1035,13 @@ void ChargedAttack1::OnStateUpdate()
 	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isChargedAttack")->Set(m_animator, false);
 	}
 }
 
 void ChargedAttack1::OnStateExit()
 {
 	isReset = false;
+		GetProperty("isChargedAttack")->Set(m_animator, false);
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
@@ -1004,6 +1063,11 @@ void ChargedAttack2::OnStateEnter()
 
 void ChargedAttack2::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -1024,13 +1088,13 @@ void ChargedAttack2::OnStateUpdate()
 	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isChargedAttack")->Set(m_animator, false);
 	}
 }
 
 void ChargedAttack2::OnStateExit()
 {
 	isReset = false;
+		GetProperty("isChargedAttack")->Set(m_animator, false);
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
@@ -1050,6 +1114,11 @@ void ChargedAttack3::OnStateEnter()
 
 void ChargedAttack3::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -1076,7 +1145,6 @@ void ChargedAttack3::OnStateUpdate()
 	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isChargedAttack")->Set(m_animator, false);
 	}
 }
 
@@ -1086,6 +1154,7 @@ void ChargedAttack3::OnStateExit()
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
+		GetProperty("isChargedAttack")->Set(m_animator, false);
 }
 
 void ChargedAttack4::OnStateEnter()
@@ -1102,6 +1171,10 @@ void ChargedAttack4::OnStateEnter()
 
 void ChargedAttack4::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -1126,7 +1199,6 @@ void ChargedAttack4::OnStateUpdate()
 	else if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isChargedAttack")->Set(m_animator, false);
 	}
 }
 
@@ -1136,6 +1208,7 @@ void ChargedAttack4::OnStateExit()
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
+	GetProperty("isChargedAttack")->Set(m_animator, false);
 }
 
 void ChargedAttack5::OnStateEnter()
@@ -1152,6 +1225,10 @@ void ChargedAttack5::OnStateEnter()
 
 void ChargedAttack5::OnStateUpdate()
 {
+	if (GetProperty("isDodge")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Dodge");
+	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -1168,7 +1245,6 @@ void ChargedAttack5::OnStateUpdate()
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isChargedAttack")->Set(m_animator, false);
 	}
 }
 
@@ -1178,6 +1254,7 @@ void ChargedAttack5::OnStateExit()
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("downAttack")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
+	GetProperty("isChargedAttack")->Set(m_animator, false);
 }
 
 
@@ -1205,7 +1282,6 @@ void ChargedAbility::OnStateUpdate()
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
-		GetProperty("isChargedAttack")->Set(m_animator, false);
 	}
 }
 
@@ -1214,6 +1290,7 @@ void ChargedAbility::OnStateExit()
 	isReset = false;
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
+	GetProperty("isChargedAttack")->Set(m_animator, false);
 }
 
 
@@ -1222,6 +1299,7 @@ void PlayerDodge::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(30.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Dodge", false);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Dodge_Sound.wav", false, 19);
 }
 
 void PlayerDodge::OnStateUpdate()
@@ -1251,6 +1329,7 @@ void PlayerDodgeAttack::OnStateEnter()
 	GetProperty("backAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(22.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(3.f);
+	GetProperty("isDodge")->Set(m_animator, false);
 }
 
 void PlayerDodgeAttack::OnStateUpdate()
@@ -1270,6 +1349,7 @@ void PlayerDodgeAttack::OnStateExit()
 {
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
+	GetProperty("isDodge")->Set(m_animator, false);
 	GetProperty("backAttack")->Set(m_animator, false);
 }
 
@@ -1279,6 +1359,7 @@ void ComboReady::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	//GetProperty("isWalk")->Set(m_animator, false);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_ComboChange_Sound.wav", false, 20);
 }
 
 void ComboReady::OnStateUpdate()
@@ -1389,6 +1470,7 @@ void PlayerSkillE::OnStateUpdate()
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
 	{
+		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_2_Sound.wav", false, 21);
 		GetProperty("swordBeam")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 	}
@@ -1436,6 +1518,11 @@ void PlayerParry::OnStateUpdate()
 			isChange = true;
 		}
 	}
+	if (isChange && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 21)
+	{
+		GetProperty("dodgeAttack")->Set(m_animator, true);
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() >= 58)
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
@@ -1484,6 +1571,8 @@ void PlayerAnimator::PlayEffects()
 		m_normalAttack2 = false;
 
 		{
+			effectRot.y += (3.141592f / 180.f) * -90.f;
+
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
 			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
@@ -1582,7 +1671,7 @@ void PlayerAnimator::PlayEffects()
 			p->Play();
 		}
 
-		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", false, 5);
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 5);
 	}
 
 	if (m_chargedAttack1)
@@ -1777,7 +1866,7 @@ void PlayerAnimator::PlayEffects()
 			p->Play();
 		}
 
-		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Sound.wav", false, 10);
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_2_Sound.wav", false, 10);
 	}
 
 	if (m_dodgeAttack)
@@ -1797,6 +1886,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 11);
 	}
 
 	if (m_rushAttack)
@@ -1818,6 +1909,8 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 12);
 	}
 
 	if (m_timeStop)
@@ -1836,5 +1929,98 @@ void PlayerAnimator::PlayEffects()
 			p->SetSimulationSpeed(2.f);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\03. Skill_sound\\TimeStop_Skill_Sound.wav", false, 13);
+	}
+
+	{
+		effectRot.y += (3.141592f / 180.f) * -90.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		m_normalAbilityEffect->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+
+		if (m_normalAbility)
+		{
+			m_normalAbility = false;
+
+			{
+				m_normalAbilityEffect->SetActive(true);
+				m_normalAbilityEffect->SetSimulationSpeed(3.f);
+				m_normalAbilityEffect->Play();
+			}
+
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_2_Sound.wav", false, 14);
+		}
+	}
+}
+
+void PlayerAnimator::HitSounds()
+{
+	if (m_hit)
+	{
+		if (m_currentState == m_animationStateMap["NormalAttack1"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 22);
+		}
+		else if (m_currentState == m_animationStateMap["NormalAttack2"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_2_Impact_Sound.wav", true, 23);
+		}
+		else if (m_currentState == m_animationStateMap["NormalAttack3"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_3_Impact_Sound.wav", true, 24);
+		}
+		else if (m_currentState == m_animationStateMap["NormalAttack4"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 25);
+		}
+		else if (m_currentState == m_animationStateMap["NormalAttack6"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 26);
+		}
+		else if (m_currentState == m_animationStateMap["ChargedAttack1"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Impact_Sound.wav", true, 27);
+		}
+		else if (m_currentState == m_animationStateMap["ChargedAttack2"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_2_Impact_Sound.wav", true, 28);
+		}
+		else if (m_currentState == m_animationStateMap["ChargedAttack3"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_3_Impact_Sound.wav", true, 29);
+		}
+		else if (m_currentState == m_animationStateMap["ChargedAttack4"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_4_Impact_Sound.wav", true, 30);
+		}
+		else if (m_currentState == m_animationStateMap["ChargedAttack5"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Impact_Sound.wav", true, 31);
+		}
+		else if (m_currentState == m_animationStateMap["NormalAbility"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 32);
+		}
+		else if (m_currentState == m_animationStateMap["RushAttack"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 33);
+		}
+		else if (m_currentState == m_animationStateMap["DodgeAttack"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 34);
+		}
+		else if (m_currentState == m_animationStateMap["Parry"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 35);
+		}
+		else if (m_currentState == m_animationStateMap["SkillE"])
+		{
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_4_Impact_Sound.wav", true, 36);
+		}
+
+		m_hit = false;
 	}
 }

@@ -51,19 +51,8 @@ void Enemy::Update()
 	{
 		m_isTargetIn = true;
 	}
-	std::shared_ptr<Player> player = m_player.lock();
 
-	m_slowTime = player->GetSlowTime();
 
-	if (m_slowTime)
-	{
-		m_speed = m_baseSpeed * 0.3f;
-		if (player->GetCurrentCP() <= 0.f)
-		{
-			m_speed = m_baseSpeed;
-			m_slowTime = false;
-		}
-	}
 
 	if (m_isInvincible)
 	{
@@ -73,4 +62,21 @@ void Enemy::Update()
 
 	if (!m_isTargetIn)
 		return;
+}
+
+void Enemy::LateUpdate()
+{
+	std::shared_ptr<Player> player = m_player.lock();
+
+	m_slowTime = player->GetSlowTime();
+
+	if (m_slowTime && m_owner.lock()->m_name != "Boss")
+	{
+		m_speed = m_baseSpeed * 0.3f;
+		if (player->GetCurrentCP() <= 0.f)
+		{
+			m_speed = m_baseSpeed;
+			m_slowTime = false;
+		}
+	}
 }

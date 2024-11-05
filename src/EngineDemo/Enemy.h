@@ -78,6 +78,9 @@ public:
 	METHOD(Update);
 	void Update();
 
+	METHOD(LateUpdate);
+	void LateUpdate();
+
 	inline float GetMaxTP() const { return m_maxTP; };
 	inline float GetCurrentTP() const { return m_currentTP; };
 	inline float GetSpeed() const { return m_speed; }
