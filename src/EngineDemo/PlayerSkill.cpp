@@ -60,7 +60,7 @@ void PlayerSkill::SwordBeam()
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(swordBeam);
 		m_owner.lock()->AddChild(swordBeam);
 
-		swordBeam->SetPosition({ 0.f,m_owner.lock()->GetWorldPosition().y + 2.f,-2.f });
+		swordBeam->SetPosition({ 0.f,m_owner.lock()->GetWorldPosition().y + 4.f,-2.f });
 		swordBeam->SetScale({ 2.f,5.f,5.f });
 
 		swordBeam->Start();

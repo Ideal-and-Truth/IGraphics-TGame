@@ -165,7 +165,7 @@ void BossAnimator::Update()
 
 	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
 		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get()
-		&& m_currentState==m_animationStateMap["Idle"])
+		&& m_currentState == m_animationStateMap["Idle"])
 	{
 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
 	}
@@ -1518,12 +1518,14 @@ void BossAnimator::Phase3()
 			ChangeState("Down");
 			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
 		}
-		if (m_currentState == m_animationStateMap["Down"])
+		if (m_currentState == m_animationStateMap["Down"] && m_isDown)
 		{
 			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 5.f);
 		}
-		if (currentTP / maxTP >= 0.5f)
+		if (currentTP / maxTP >= 0.5f && m_isDown)
 		{
+			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get() * 0.5f);
+			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
 			m_playOnce = true;
 			m_isDown = false;
 			m_jumpAttack = true;
