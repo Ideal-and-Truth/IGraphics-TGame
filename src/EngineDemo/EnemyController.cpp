@@ -152,13 +152,12 @@ void EnemyController::Update()
 
 	if (!isTargetIn)
 	{
-		ComeBackHome();
 		m_moveVec.y = -100.0f;
 
 		return;
 	}
 
-	if (m_canMove)
+	//if (m_canMove)
 		FollowTarget();
 
 	m_moveVec.y = -100.0f;

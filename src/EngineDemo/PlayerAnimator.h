@@ -657,7 +657,7 @@ public:
 
 	void SetTimeSlow();
 
-	void SoundPlay(std::wstring path, int channel);
+	void SoundPlay(std::wstring path, bool isDup, int channel);
 
 	void SoundStop(int channel);
 

@@ -51,6 +51,21 @@ void Enemy::Update()
 	{
 		m_isTargetIn = true;
 	}
+
+	
+
+	if (m_isInvincible)
+	{
+		m_currentTP = m_maxTP;
+		return;
+	}
+
+	if (!m_isTargetIn)
+		return;
+}
+
+void Enemy::LateUpdate()
+{
 	std::shared_ptr<Player> player = m_player.lock();
 
 	m_slowTime = player->GetSlowTime();
@@ -64,13 +79,4 @@ void Enemy::Update()
 			m_slowTime = false;
 		}
 	}
-
-	if (m_isInvincible)
-	{
-		m_currentTP = m_maxTP;
-		return;
-	}
-
-	if (!m_isTargetIn)
-		return;
 }

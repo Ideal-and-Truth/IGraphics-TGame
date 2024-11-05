@@ -7,6 +7,7 @@
 #include <random>
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(RangerAnimator)
 
@@ -37,6 +38,7 @@ RangerAnimator::RangerAnimator()
 	, m_showEffect(false)
 	, m_passingTime(0.f)
 	, m_lastHp(0.f)
+	, m_baseSpeed(0.f)
 	, m_hitStopTime(0.f)
 	, m_currentFrame(0)
 	, m_currentState(nullptr)
@@ -84,6 +86,7 @@ void RangerAnimator::Start()
 	m_enemy = m_owner.lock().get()->GetComponent<Enemy>().lock();
 	auto playerEntity = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
 	m_playerAnimator = playerEntity->GetComponent<PlayerAnimator>().lock();
+	m_baseSpeed = m_enemy->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.get()).Get();
 
 	m_skinnedMesh->AddAnimation("EnemyRangeAim", L"EnemyAnimations/RangeEnemy/Aim/Aim");
 	m_skinnedMesh->AddAnimation("EnemyRangeAttack", L"EnemyAnimations/RangeEnemy/Attack/Attack");
@@ -96,6 +99,12 @@ void RangerAnimator::Start()
 	m_skinnedMesh->AddAnimation("EnemyRangeIdle", L"EnemyAnimations/RangeEnemy/Idle/Idle");
 	m_skinnedMesh->AddAnimation("EnemyRangePursuitReturn", L"EnemyAnimations/RangeEnemy/Pursuit Return/PursuitReturn");
 	m_skinnedMesh->AddAnimation("EnemyRangeReload", L"EnemyAnimations/RangeEnemy/Reload/Reload");
+
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Bow_load_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Bow_Shoot_Sound.wav", false);
+
+	m_magicCircle = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\MagicCircle.yaml");
+	m_shootEffect = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
 
 	m_currentState->OnStateEnter();
 }
@@ -147,29 +156,75 @@ void RangerAnimator::Update()
 	}
 
 
-	if (m_lastHp > m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get())
+	if (m_lastHp > m_enemy->GetCurrentTP() && m_enemy->GetCurrentTP() > 0.f)
 	{
 		m_isDamage = true;
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 
-		if (m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		if (m_playerAnimator->GetBackAttack())
 		{
+			int random = RandomNumber(1, 4);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 45);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 45);
+			else if (random == 3)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 45);
+			else if (random == 4)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 45);
+
 			m_isBack = true;
 			m_isDamage = false;
 		}
-		else if (m_playerAnimator->GetTypeInfo().GetProperty("fallAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		else if (m_playerAnimator->GetFallAttack())
 		{
+			int random = RandomNumber(1, 2);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 46);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 46);
+
+
 			m_isFall = true;
 			m_isDamage = false;
 		}
-		else if (m_playerAnimator->GetTypeInfo().GetProperty("downAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		else if (m_playerAnimator->GetDownAttack())
 		{
+			int random = RandomNumber(1, 2);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 47);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 47);
+
 			m_isDown = true;
 			m_isDamage = false;
 		}
+		else
+		{
+			int random = RandomNumber(1, 4);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 48);
+			else if (random == 2)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 48);
+			else if (random == 3)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 48);
+			else if (random == 4)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 48);
+		}
 	}
 
-
+	if (m_isPursuit)
+	{
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed * 1.5f);
+	}
+	else
+	{
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed);
+	}
 
 	m_lastHp = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
 
@@ -215,6 +270,11 @@ void RangerAnimator::SetImpulse(float power)
 {
 	m_enemyController->GetTypeInfo().GetProperty("useImpulse")->Set(m_enemyController.get(), true);
 	m_enemyController->GetTypeInfo().GetProperty("impulsePower")->Set(m_enemyController.get(), power);
+}
+
+void RangerAnimator::SoundPlay(std::wstring path, bool isDup, int channel)
+{
+	m_managers.lock()->Sound()->Play(path, isDup, channel);
 }
 
 void RangerIdle::OnStateEnter()
@@ -263,6 +323,11 @@ void RangerPursuit::OnStateEnter()
 
 void RangerPursuit::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 51);
+	}
+
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->ChangeState("Aim");
@@ -342,7 +407,7 @@ void RangerAttack::OnStateEnter()
 
 void RangerAttack::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 9)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 9)
 	{
 		GetProperty("isShooting")->Set(m_animator, true);
 	}
@@ -408,6 +473,10 @@ void RangerAim::OnStateEnter()
 
 void RangerAim::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 127)
+	{
+		GetProperty("shootReady")->Set(m_animator, true);
+	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
 		if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
@@ -459,6 +528,11 @@ void RangerReload::OnStateEnter()
 
 void RangerReload::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 17 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 40)
+	{
+		dynamic_cast<RangerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 51);
+	}
+
 	if (GetProperty("passingTime")->Get<float>(m_animator).Get() > 1.f)
 	{
 		if (GetProperty("isAttack")->Get<bool>(m_animator).Get())
@@ -664,12 +738,11 @@ void RangerAnimator::PlayEffect()
 	effectPos.y += 1.3f;
 
 	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\MagicCircle.yaml");
 
 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 		Matrix m = Matrix::CreateScale(Vector3(1, 1, 1)) * rotationMT * Matrix::CreateTranslation(effectPos);
 
-		p->SetTransformMatrix(
+		m_magicCircle->SetTransformMatrix(
 			Matrix::CreateScale(0.5f)
 			* Matrix::CreateRotationX(1.57f)
 			* Matrix::CreateTranslation(Vector3(0.f, 0.f, -1.2f))
@@ -681,30 +754,25 @@ void RangerAnimator::PlayEffect()
 			m_shootReady = false;
 			m_showEffect = true;
 
-			p->SetActive(true);
-			p->Play();
+			m_magicCircle->SetActive(true);
+			m_magicCircle->Play();
 		}
 		else if (m_shootReady && m_showEffect)
 		{
 			m_shootReady = false;
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Bow_load_Sound.wav", true, 49);
 		}
 
-		if (!m_showEffect)
-		{
-			p->SetActive(false);
-		}
 	}
 
 	if (m_isShooting)
 	{
 		m_isShooting = false;
 
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ShootImpact.yaml");
-
 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 		Matrix m = Matrix::CreateScale(Vector3(1, 1, 1)) * rotationMT * Matrix::CreateTranslation(effectPos);
 
-		p->SetTransformMatrix(Matrix::CreateScale(0.8f)
+		m_shootEffect->SetTransformMatrix(Matrix::CreateScale(0.8f)
 			* Matrix::CreateRotationX(1.57f)
 			* Matrix::CreateRotationY(-1.57f)
 			* Matrix::CreateTranslation(Vector3(0, 0, -1.2f))
@@ -712,12 +780,17 @@ void RangerAnimator::PlayEffect()
 		);
 
 
-		p->SetActive(true);
-		p->Play();
+		m_shootEffect->SetActive(true);
+		m_shootEffect->Play();
 
-		if (!m_showEffect)
-		{
-			p->SetActive(false);
-		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Bow_Shoot_Sound.wav", true, 50);
+
+	}
+
+	if (!m_showEffect)
+	{
+		m_magicCircle->SetActive(false);
+		m_shootEffect->SetActive(false);
 	}
 }

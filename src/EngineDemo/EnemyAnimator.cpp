@@ -21,6 +21,7 @@ EnemyAnimator::EnemyAnimator()
 	, m_passingTime(0.f)
 	, m_sideMove(0.f)
 	, m_lastHp(0.f)
+	, m_baseSpeed(0.f)
 	, m_isChase(false)
 	, m_isAttackReady(false)
 	, m_isAttack(false)
@@ -79,6 +80,7 @@ void EnemyAnimator::Start()
 	m_enemy = m_owner.lock().get()->GetComponent<Enemy>().lock();
 	auto playerEntity = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
 	m_playerAnimator = playerEntity->GetComponent<PlayerAnimator>().lock();
+	m_baseSpeed = m_enemy->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.get()).Get();
 
 	m_skinnedMesh->AddAnimation("EnemyMeleeAttack", L"EnemyAnimations/MeleeEnemy/Attack/Attack");
 
@@ -139,7 +141,7 @@ void EnemyAnimator::Update()
 
 		if (random == 1)
 			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_1_Sound.wav", false, 39);
-		else if (random == 2)										
+		else if (random == 2)
 			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_2_Sound.wav", false, 39);
 
 		m_isDeath = true;
@@ -158,11 +160,11 @@ void EnemyAnimator::Update()
 
 			if (random == 1)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 40);
-			else if (random == 2)										 
+			else if (random == 2)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 40);
-			else if (random == 3)										
+			else if (random == 3)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 40);
-			else if (random == 4)										
+			else if (random == 4)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 40);
 
 			m_isBack = true;
@@ -174,7 +176,7 @@ void EnemyAnimator::Update()
 
 			if (random == 1)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 41);
-			else if (random == 2)								
+			else if (random == 2)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 41);
 
 
@@ -187,7 +189,7 @@ void EnemyAnimator::Update()
 
 			if (random == 1)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 42);
-			else if (random == 2)								
+			else if (random == 2)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 42);
 
 			m_isDown = true;
@@ -199,11 +201,11 @@ void EnemyAnimator::Update()
 
 			if (random == 1)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 43);
-			else if (random == 2)					
+			else if (random == 2)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 43);
-			else if (random == 3)									
+			else if (random == 3)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 43);
-			else if (random == 4)										
+			else if (random == 4)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 43);
 		}
 	}
@@ -234,6 +236,16 @@ void EnemyAnimator::Update()
 		m_enemyController->SetCanMove(false);
 	else
 		m_enemyController->SetCanMove(true);
+
+
+	if (m_isChase)
+	{
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed * 1.5f);
+	}
+	if (m_isAttackReady)
+	{
+		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed);
+	}
 
 	m_currentState->OnStateUpdate();
 	PlayEffect();
@@ -314,6 +326,11 @@ void EnemyChase::OnStateEnter()
 
 void EnemyChase::OnStateUpdate()
 {
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	{
+		dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+	}
+
 	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
@@ -391,6 +408,21 @@ void EnemyAttackReady::OnStateUpdate()
 		}
 	}
 
+	if (m_sidePose > 0.f)
+	{
+		if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 33)
+		{
+			dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+		}
+	}
+	else
+	{
+		if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 18 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 36)
+		{
+			dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+		}
+	}
+
 	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->ChangeState("Death");
@@ -440,6 +472,10 @@ void EnemyAttack::OnStateUpdate()
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	{
+		GetProperty("normalAttack")->Set(m_animator, true);
 	}
 
 	if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
@@ -676,7 +712,7 @@ void EnemyAnimator::PlayEffect()
 	{
 		m_normalAttack = false;
 
-		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 37);
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", true, 37);
 		// 		effectPos.y += 1.f;
 		// 
 		// 		effectRot.y += (3.141592f / 180.f) * -140.f;
@@ -731,7 +767,12 @@ void EnemyAnimator::PlayEffect()
 			p->Play();
 		}
 
-		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 38);
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", true, 38);
 	}
+}
+
+void EnemyAnimator::SoundPlay(std::wstring path, bool isDup, int channel)
+{
+	m_managers.lock()->Sound()->Play(path, isDup, channel);
 }
 
