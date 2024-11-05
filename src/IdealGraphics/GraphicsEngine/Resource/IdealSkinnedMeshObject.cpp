@@ -198,7 +198,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 		return;
 	}
 
-	// 프레임동안 흘러야 하는 시간
+	// 프레임동안 흘러야 하는 시간7
 	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
 	switch (m_animationState)
 	{

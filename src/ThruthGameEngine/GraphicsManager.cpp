@@ -164,7 +164,6 @@ std::shared_ptr<Ideal::ISpotLight> Truth::GraphicsManager::CreateSpotLight()
 
 void Truth::GraphicsManager::DeleteSpotLight(std::shared_ptr<Ideal::ISpotLight> _sLight)
 {
-
 	m_renderer->DeleteLight(_sLight);
 }
 
@@ -237,7 +236,7 @@ std::shared_ptr<Truth::Texture> Truth::GraphicsManager::CreateTexture(const std:
 		{
 			return nullptr;
 		}
-		tex->m_texture = m_renderer->CreateTexture(p, _createMips, _isNormalMap, _ignoreSRGB);
+		tex->m_texture = m_renderer->CreateTexture(p, _createMips, _isNormalMap, true);
 		tex->m_useCount = 1;
 		tex->m_path = p;
 

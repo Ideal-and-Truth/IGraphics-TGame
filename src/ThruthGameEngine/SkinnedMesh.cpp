@@ -211,18 +211,18 @@ void Truth::SkinnedMesh::Update()
 
 void Truth::SkinnedMesh::ApplyTransform()
 {
-	if (m_owner.lock()->m_name == "MeleeEnemy")
-	{
-		auto t = m_owner.lock()->GetWorldTM();
-		Vector3 pos, sca;
-		Quaternion q;
-		t.Decompose(sca, q, pos);
-		Vector3 rot = q.ToEuler();
-
-		std::string temp = 
-			"x: " + std::to_string(rot.x) + " y: " + std::to_string(rot.y) + " z: " + std::to_string(rot.z) + "\n";
-		DEBUG_PRINT(temp.c_str());
-	}
+// 	if (m_owner.lock()->m_name == "MeleeEnemy")
+// 	{
+// 		auto t = m_owner.lock()->GetWorldTM();
+// 		Vector3 pos, sca;
+// 		Quaternion q;
+// 		t.Decompose(sca, q, pos);
+// 		Vector3 rot = q.ToEuler();
+// 
+// 		std::string temp = 
+// 			"x: " + std::to_string(rot.x) + " y: " + std::to_string(rot.y) + " z: " + std::to_string(rot.z) + "\n";
+// 		DEBUG_PRINT(temp.c_str());
+// 	}
 	m_skinnedMesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
 	m_skinnedMesh->SetDrawObject(m_isRendering);
 }
