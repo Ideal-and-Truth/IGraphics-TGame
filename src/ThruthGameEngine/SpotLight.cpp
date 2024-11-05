@@ -70,7 +70,10 @@ void Truth::SpotLight::SetPosition()
 
 void Truth::SpotLight::SetDirection()
 {
-	m_spotLight->SetDirection(m_direction);
+	Vector3 dir;
+	m_direction.Normalize(dir);
+
+	m_spotLight->SetDirection(dir);
 }
 
 void Truth::SpotLight::Initialize()

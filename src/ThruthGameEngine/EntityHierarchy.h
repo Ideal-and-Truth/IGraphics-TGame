@@ -16,6 +16,7 @@ class EntityHierarchy :
 {
 private:
 	std::queue<std::weak_ptr<Truth::Entity>> m_createdEntity;
+	bool m_showMapLight = false;
 
 public:
 	std::weak_ptr<Truth::Entity> m_selectedEntity;

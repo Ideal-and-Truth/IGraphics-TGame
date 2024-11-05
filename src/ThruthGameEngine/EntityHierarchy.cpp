@@ -10,6 +10,9 @@
 #include "EditorContext.h"
 #include "LinkBonePopup.h"
 #include "EditorUI.h"
+#include "DirectionLight.h"
+#include "SpotLight.h"
+#include "PointLight.h"
 
 EntityHierarchy::EntityHierarchy(std::weak_ptr<Truth::Managers> _manager, HWND _hwnd, EditorUI* _editor)
 	: EditorContext("Entity Hierarchy", _manager, _hwnd, _editor)
@@ -68,6 +71,7 @@ void EntityHierarchy::ShowContext(bool* p_open)
 	const auto& currentSceneName = currentScene->m_name;
 	const auto& currentSceneEntities = currentScene->m_entities;
 	const auto& currentSceneRootEntities = currentScene->m_rootEntities;
+	const auto& currentSceneMapEntities = currentScene->m_mapEntity;
 
 	// Main body of the Demo window starts here.
 	if (!ImGui::Begin("Hierarchy", p_open, window_flags))
@@ -85,7 +89,9 @@ void EntityHierarchy::ShowContext(bool* p_open)
 	// e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
 	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
-
+	ImGui::Checkbox("ShowLight", &m_showMapLight);
+	
+	
 
 	/// 여기부터 UI 만들기
 
@@ -113,6 +119,19 @@ void EntityHierarchy::ShowContext(bool* p_open)
 			{
 				currentScene->AddEntity(m_createdEntity.front().lock());
 				m_createdEntity.pop();
+			}
+
+			if (m_showMapLight)
+			{
+				for (auto& e : currentSceneMapEntities)
+				{
+					if (!e->GetComponent<Truth::DirectionLight>().expired() || 
+						!e->GetComponent<Truth::SpotLight>().expired() ||
+						!e->GetComponent<Truth::PointLight>().expired())
+					{
+						DisplayEntity(e);
+					}
+				}
 			}
 		}
 	}

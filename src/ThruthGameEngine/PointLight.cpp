@@ -14,7 +14,7 @@ Truth::PointLight::PointLight()
 	, m_radius(1.0f)
 	, m_lightColor{ 1.0f, 1.0f, 1.0f, 1.0f }
 	, m_intensity(1.0f)
-	, m_layer(1)
+	, m_layer(0)
 {
 	m_name = "PointLight";
 }
@@ -51,7 +51,7 @@ void Truth::PointLight::SetPosition()
 
 void Truth::PointLight::SetLayer()
 {
-	m_pointLight->ChangeLayer(m_layer);
+	m_pointLight->ChangeLayer(static_cast<uint32>(m_layer));
 }
 
 void Truth::PointLight::Initialize()

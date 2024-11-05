@@ -768,6 +768,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_radius = range;
 				light->m_intensity = intensity * 1;
 				light->m_lightColor = lightColor;
+				light->m_layer = 0;
 				m_mapEntity[i]->AddComponent(light);
 				break;
 			}

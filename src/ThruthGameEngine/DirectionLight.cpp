@@ -66,9 +66,13 @@ void Truth::DirectionLight::ApplyTransform()
 #ifdef EDITOR_MODE
 void Truth::DirectionLight::EditorSetValue()
 {
+	Vector3 dir;
+	m_direction.Normalize(dir);
+
 	SetIntensity();
 	SetDiffuse();
 	SetAmbient();
+	m_directionalLight->SetDirection(dir);
 }
 #endif // _DEBUG
 

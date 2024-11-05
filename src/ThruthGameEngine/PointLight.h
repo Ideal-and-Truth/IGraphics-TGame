@@ -33,7 +33,7 @@ namespace Truth
 		Color m_lightColor;
 
 		PROPERTY(layer);
-		uint32 m_layer;
+		int m_layer;
 
 	public:
 		PointLight();

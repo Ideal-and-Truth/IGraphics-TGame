@@ -4,6 +4,7 @@
 #include "TypeInfo.h"
 #include <windows.h>
 #include <commdlg.h>
+#include "Types.h"
 
 namespace Truth
 {
