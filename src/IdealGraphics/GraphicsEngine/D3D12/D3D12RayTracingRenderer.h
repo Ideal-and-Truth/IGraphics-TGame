@@ -241,8 +241,8 @@ namespace Ideal
 	public:
 		uint64 m_lastFenceValues[MAX_PENDING_FRAME_COUNT] = {};
 		uint64 m_currentContextIndex = 0;
-	private:
 
+	private:
 		ComPtr<IDXGISwapChain3> m_swapChain = nullptr;
 		UINT m_swapChainFlags;
 		uint32 m_frameIndex = 0;
