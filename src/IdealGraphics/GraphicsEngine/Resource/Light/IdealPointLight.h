@@ -24,8 +24,8 @@ namespace Ideal
 		virtual float GetIntensity() override { return m_pointLight.Intensity; }
 		virtual void SetIntensity(const float& Intensity) override;
 
-		virtual void SetNoShadowCasting(bool Active) override;
-		virtual bool GetIsNoShadowCasting() override;
+		virtual void SetShadowCasting(bool Active) override;
+		virtual bool GetIsShadowCasting() override;
 
 		virtual void AddLayer(uint32 LayerNum) override;
 		virtual void DeleteLayer(uint32 LayerNum) override;

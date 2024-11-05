@@ -421,7 +421,7 @@ float3 Shade(
                     isInShadow = TraceShadowRayAndReportIfHit(hitPosition, direction, N, rayPayload, distance);
                     //isInShadow *= g_lightList.PointLights[i].IsNoShadowCasting;
                     uint shadowCast = (uint)isInShadow;
-                    shadowCast *= g_lightList.PointLights[i].IsNoShadowCasting;
+                    shadowCast *= g_lightList.PointLights[i].IsShadowCasting;
                     L += PointLight((bool)shadowCast, V, direction, N, distance, color, albedo, roughness, metallic, intensity);
                 }
             }
