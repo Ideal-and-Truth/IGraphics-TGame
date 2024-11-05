@@ -158,6 +158,7 @@ namespace Truth
 		void Translate(Vector3& _val);
 
 		void SetRotation(const Quaternion& _val);
+		void SetWorldRotation(const Quaternion& _val);
 		void SetPosition(const Vector3& _pos) const;
 		void SetScale(const Vector3& _scale) const;
 

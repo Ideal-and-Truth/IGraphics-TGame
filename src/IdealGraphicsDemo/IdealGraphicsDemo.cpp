@@ -69,6 +69,9 @@ using namespace std;
 #include "../Utils/SimpleMath.h"
 #include "Test.h"
 
+#define DefaultLayer 0
+#define PlayerLayer 1
+
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -144,7 +147,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 // Test Function
 void InitCamera(std::shared_ptr<Ideal::ICamera> Camera);
-void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight = nullptr);
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight = nullptr, std::shared_ptr<Ideal::IPointLight> PointLight = nullptr);
 void ImGuiTest();
 void DirLightAngle(float* x, float* y, float* z);
 void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light);
@@ -406,8 +409,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region TestPlane
 		auto planeMaterial = gRenderer->CreateMaterial();
 		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_BaseMap.png", true);
-		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_MaskMap.png", true);
-		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png");
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_MaskMap.png", true);
+		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png");
 		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_Normal.png", true, true);
 		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
@@ -443,19 +446,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		windowMaterial->SetNormalMap(windowNormal);
 		windowMaterial->SetMaskMap(windowMask);
 		windowMaterial->SetSurfaceTypeTransparent(true);
-
+		windowMaterial->ChangeLayer(PlayerLayer);
 		for(int y = 0 ; y < 20;y++)
 		{
 			for (int x = 0; x < 20; x++)
 			{
 				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
-				plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+				plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
+				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
 				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
 				meshes.push_back(plane);
 				plane->AlphaClippingCheck();
 			}
 		}
+
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 		//plane->AlphaClippingCheck();
@@ -468,7 +472,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region CreateDebugMesh
 		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
 		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, -2, 0)));
+		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 2, 0)));
+		cart->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+
 		//cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
 #pragma endregion
@@ -594,7 +600,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pointLight2->SetIntensity(0.f);
 
 
-		gRenderer->DeleteLight(pointLight);
+		gRenderer->DeleteLight(pointLight2);
 
 
 		//for (int i = 0; i < 300; i++)
@@ -2415,6 +2421,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					g_FrameCount = 0;
 				}
 
+				//6CameraTick(camera, spotLight, pointLight);
 				CameraTick(camera, spotLight);
 				//pointLight->SetPosition(camera->GetPosition());
 				//auto cp = camera->GetPosition();
@@ -3073,7 +3080,7 @@ void InitCamera(std::shared_ptr<Ideal::ICamera> Camera)
 	Camera->SetPosition(Vector3(3.f, 3.f, -10.f));
 }
 
-void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight /*= nullptr*/)
+void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::ISpotLight> SpotLight /*= nullptr*/, std::shared_ptr<Ideal::IPointLight> PointLight /*= nullptr*/)
 {
 	if (!g_CameraMove)
 		return;
@@ -3133,6 +3140,11 @@ void CameraTick(std::shared_ptr<Ideal::ICamera> Camera, std::shared_ptr<Ideal::I
 		SpotLight->SetPosition(Camera->GetPosition());
 		SpotLight->SetDirection(Camera->GetLook());
 	}
+
+	if (PointLight)
+	{
+		PointLight->SetPosition(Camera->GetPosition());
+	}
 }
 
 void CameraWindow(std::shared_ptr<Ideal::ICamera> Camera)
@@ -3171,6 +3183,7 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 	Vector3 lightPosition = light->GetPosition();
 	float range = light->GetRange();
 	float intensity = light->GetIntensity();
+	bool noShadowCast = light->GetIsNoShadowCasting();
 	if (show_point_light_window)
 	{
 		ImGui::Begin("Point Light Inspector");
@@ -3185,6 +3198,9 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 
 		ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.f, 100.f);
 		light->SetIntensity(intensity);
+
+		ImGui::Checkbox("NoShadowCast", &noShadowCast);
+		light->SetNoShadowCasting(noShadowCast);
 
 		ImGui::End();
 	}

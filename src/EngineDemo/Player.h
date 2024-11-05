@@ -85,6 +85,8 @@ public:
 	inline float GetCurrentCP() const { return m_currentCP; };
 	inline float GetMaxCP() const { return m_maxCP; }
 
+	inline bool GetSlowTime() const { return m_slowTime; }
+
 	void SavePlayerData(int _slot = 0);
 	void LoadPlayerData(int _slot = 0);
 

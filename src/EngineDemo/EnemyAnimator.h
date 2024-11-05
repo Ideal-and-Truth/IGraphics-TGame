@@ -337,6 +337,7 @@ public:
 	void SetEnemyDamage(float damage);
 
 	void SetImpulse(float power);
+
 };
 
 template<class Archive>

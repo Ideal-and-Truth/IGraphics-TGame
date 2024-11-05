@@ -45,5 +45,10 @@ namespace Ideal
 		
 		virtual unsigned int GetBonesSize() abstract;
 		virtual std::weak_ptr<Ideal::IBone> GetBoneByIndex(unsigned int) abstract;
+
+	public:
+		virtual void AddLayer(unsigned int LayerNum) abstract;
+		virtual void DeleteLayer(unsigned int LayerNum) abstract;
+		virtual void ChangeLayer(unsigned int LayerNum) abstract;
 	};
 }

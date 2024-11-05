@@ -69,6 +69,7 @@ void Truth::NavMeshGenerater::Initalize(const std::vector<float>& _points, const
 
 Vector3 Truth::NavMeshGenerater::FindPath(Vector3 _start, Vector3 _end, Vector3 _size)
 {
+	return _end;
 	if (!m_navMesh)
 		return _end;
 

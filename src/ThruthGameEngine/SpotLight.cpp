@@ -23,6 +23,7 @@ Truth::SpotLight::SpotLight()
 
 Truth::SpotLight::~SpotLight()
 {
+	m_managers.lock()->Graphics()->DeleteSpotLight(m_spotLight);
 }
 
 void Truth::SpotLight::SetLight()

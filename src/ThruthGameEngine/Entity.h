@@ -110,6 +110,7 @@ namespace Truth
 
 		void SetPosition(const Vector3& _pos) const;
 		void SetScale(const Vector3& _scale) const;
+		void SetWorldRotation(const Quaternion& _rotation) const;
 
 		const Vector3& GetLocalPosition() const;
 		const Quaternion& GetLocalRotation() const;

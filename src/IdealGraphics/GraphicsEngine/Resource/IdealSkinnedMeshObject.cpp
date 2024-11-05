@@ -27,7 +27,7 @@
 
 Ideal::IdealSkinnedMeshObject::IdealSkinnedMeshObject()
 {
-
+	AddLayer(0);
 }
 
 Ideal::IdealSkinnedMeshObject::~IdealSkinnedMeshObject()
@@ -198,7 +198,7 @@ void Ideal::IdealSkinnedMeshObject::AnimationPlay()
 		return;
 	}
 
-	// 프레임동안 흘러야 하는 시간
+	// 프레임동안 흘러야 하는 시간7
 	float timePerFrame = 1 / (m_currentAnimation->frameRate * m_animSpeed);
 	switch (m_animationState)
 	{
@@ -403,4 +403,19 @@ std::shared_ptr<Ideal::DXRBottomLevelAccelerationStructure> Ideal::IdealSkinnedM
 void Ideal::IdealSkinnedMeshObject::SetBLASInstanceIndex(uint32 InstanceIndex)
 {
 	m_instanceIndex = InstanceIndex;
+}
+
+void Ideal::IdealSkinnedMeshObject::AddLayer(uint32 LayerNum)
+{
+	m_Layer.AddLayer(LayerNum);
+}
+
+void Ideal::IdealSkinnedMeshObject::DeleteLayer(uint32 LayerNum)
+{
+	m_Layer.DeleteLayer(LayerNum);
+}
+
+void Ideal::IdealSkinnedMeshObject::ChangeLayer(uint32 LayerNum)
+{
+	m_Layer.ChangeLayer(LayerNum);
 }

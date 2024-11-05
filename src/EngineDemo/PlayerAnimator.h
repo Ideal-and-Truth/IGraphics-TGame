@@ -653,6 +653,10 @@ public:
 	void SetTimeSlow();
 
 	void SoundPlay(std::wstring path, int channel);
+
+	inline bool GetBackAttack() const { return m_backAttack; }
+	inline bool GetFallAttack() const { return m_fallAttack; }
+	inline bool GetDownAttack() const { return m_downAttack; }
 };
 
 template<class Archive>

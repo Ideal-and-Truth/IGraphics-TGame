@@ -32,6 +32,7 @@ Enemy::~Enemy()
 void Enemy::Awake()
 {
 	m_target = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player");
+	m_player = m_target.lock()->GetComponent<Player>();
 }
 
 void Enemy::Start()
@@ -46,20 +47,23 @@ void Enemy::Update()
 	{
 		m_isInvincible = !m_isInvincible;
 	}
+	if (GetKey(KEY::_9))
+	{
+		m_isTargetIn = true;
+	}
+	std::shared_ptr<Player> player = m_player.lock();
 
-	auto player = m_target.lock()->GetComponent<Player>().lock();
-	m_slowTime = player->GetTypeInfo().GetProperty("slowTime")->Get<bool>(player.get()).Get();
+	m_slowTime = player->GetSlowTime();
 
 	if (m_slowTime)
 	{
 		m_speed = m_baseSpeed * 0.3f;
-		if (player->GetTypeInfo().GetProperty("currentCP")->Get<float>(player.get()).Get() <= 0.f)
+		if (player->GetCurrentCP() <= 0.f)
 		{
 			m_speed = m_baseSpeed;
 			m_slowTime = false;
 		}
 	}
-
 
 	if (m_isInvincible)
 	{
@@ -68,9 +72,5 @@ void Enemy::Update()
 	}
 
 	if (!m_isTargetIn)
-	{
 		return;
-	}
-
-
 }

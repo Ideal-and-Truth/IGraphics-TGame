@@ -20,6 +20,7 @@ Truth::PointLight::PointLight()
 
 Truth::PointLight::~PointLight()
 {
+	m_managers.lock()->Graphics()->DeletePointLight(m_pointLight);
 }
 
 void Truth::PointLight::SetLight()

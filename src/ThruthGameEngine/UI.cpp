@@ -48,7 +48,9 @@ void Truth::UI::SetScale(const Vector2& _scale, bool _centerPos)
 		Vector2 gpPosition = { (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y };
 		(*m_sprite)[i]->SetScale({ (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y });
 		if (_centerPos)
+		{
 			(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * m_scale.x * 0.5f), m_position.y - (m_size.y * m_scale.y * 0.5f) });
+		}
 	}
 }
 
@@ -97,7 +99,7 @@ void Truth::UI::Initialize()
 		if (!m_texturePath[i].empty())
 		{
 			(*m_sprite)[i] = gp->CreateSprite();
-			auto tex = gp->CreateTexture(fs::path(m_texturePath[i]));
+			auto tex = gp->CreateTexture(fs::path(m_texturePath[i]), false, false, true);
 			m_sprite->GetTex(i) = tex;
 
 			float w = static_cast<float>(tex->w);
@@ -162,7 +164,7 @@ void Truth::UI::Start()
 		(*m_sprite)[i]->SetScale({ (m_size.x / w) * m_scale.x, (m_size.y / h) * m_scale.y });
 		(*m_sprite)[i]->SetPosition({ m_position.x - (m_size.x * m_scale.x * 0.5f), m_position.y - (m_size.y * m_scale.y * 0.5f) });
 		(*m_sprite)[i]->SetActive(IsActive());
-		(*m_sprite)[i]->SetAlpha(m_alpha);
+		(*m_sprite)[i]->SetAlpha(1.0f);
 		(*m_sprite)[i]->SetZ(m_zDepth);
 		(*m_sprite)[i]->SetSampleRect(
 			{
@@ -317,6 +319,7 @@ void Truth::UI::ResizeWindow()
 	Vector2 editorPos = {};
 	editorPos.x = realLT.x + (m_position.x * ratioW);
 	editorPos.y = realLT.y + (m_position.y * ratioH);
+	// m_position = { m_position.x * ratioW, m_position.y * ratioH };
 
 	m_rect.left = static_cast<LONG>(editorPos.x - (editorSize.x * 0.5f) * m_scale.x);
 	m_rect.top = static_cast<LONG>(editorPos.y - (editorSize.y * 0.5f) * m_scale.y);

@@ -4,6 +4,7 @@
 #include "GraphicsEngine/ConstantBufferInfo.h"
 #include "GraphicsEngine/D3D12/D3D12DescriptorHeap.h"
 #include "GraphicsEngine/D3D12/Raytracing/RayTracingFlagManger.h"
+#include "GraphicsEngine/IdealLayer.h"
 
 namespace Ideal
 {
@@ -143,8 +144,14 @@ namespace Ideal
 		bool m_isTextureChanged = true;
 		bool m_isAlphaClipping = false;
 
+		//-----Layer-----//
+	public:
+		virtual void AddLayer(uint32 LayerNum) override;
+		virtual void DeleteLayer(uint32 LayerNum) override;
+		virtual void ChangeLayer(uint32 LayerNum) override;
+
+		Ideal::IdealLayer& GetLayer() { return m_Layer; }
 	private:
-		std::vector<std::weak_ptr<Ideal::IdealStaticMeshObject>> m_REGISTERED_staticMeshObjects;
-		std::vector<std::weak_ptr<Ideal::IdealSkinnedMeshObject>> m_REGISTERED_skinnedMeshObjects;
+		Ideal::IdealLayer m_Layer;
 	};
 }

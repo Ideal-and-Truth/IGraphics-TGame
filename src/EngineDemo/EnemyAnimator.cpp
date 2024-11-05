@@ -124,15 +124,15 @@ void EnemyAnimator::Update()
 		return;
 	}
 
-	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
-	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
-	m_isChase = m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get();
-	m_isComeBack = m_enemyController->GetTypeInfo().GetProperty("isComeBack")->Get<bool>(m_enemyController.get()).Get();
-	m_isAttackReady = m_enemyController->GetTypeInfo().GetProperty("isAttackReady")->Get<bool>(m_enemyController.get()).Get();
-	m_isBackStep = m_enemyController->GetTypeInfo().GetProperty("isBackStep")->Get<bool>(m_enemyController.get()).Get();
-	m_sideMove = m_enemyController->GetTypeInfo().GetProperty("sideMove")->Get<float>(m_enemyController.get()).Get();
+	m_currentFrame = m_skinnedMesh->GetCurrentFrame();
+	m_isAnimationEnd = m_skinnedMesh->GetIsAnimationEnd();
+	m_isChase = m_enemy->GetIsTargetIn();
+	m_isAttackReady = m_enemyController->GetIsAttackReady();
+	m_sideMove = m_enemyController->GetSideMove();
+	// m_isComeBack = m_enemyController->GetTypeInfo().GetProperty("isComeBack")->Get<bool>(m_enemyController.get()).Get();
+	// m_isBackStep = m_enemyController->GetIsBackStep();
 
-	if (m_enemy->GetTypeInfo().GetProperty("slowTime")->Get<bool>(m_enemy.get()).Get())
+	if (m_enemy->GetSlowTime())
 	{
 		m_skinnedMesh->SetAnimationSpeed(0.3f);
 	}
@@ -141,28 +141,28 @@ void EnemyAnimator::Update()
 		m_skinnedMesh->SetAnimationSpeed(1.f);
 	}
 
-	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
+	if (m_enemy->GetCurrentTP() <= 0.f)
 	{
 		m_isDeath = true;
-		m_enemyController->GetTypeInfo().GetProperty("isDead")->Set(m_enemyController.get(), true);
+		m_enemyController->SetIsDead(true);
 	}
 
-	if (m_lastHp > m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() && m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() > 0.f)
+	if (m_lastHp > m_enemy->GetCurrentTP() && m_enemy->GetCurrentTP() > 0.f)
 	{
 		m_isDamage = true;
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+		m_enemyController->SetCanMove(false);
 
-		if (m_playerAnimator->GetTypeInfo().GetProperty("backAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		if (m_playerAnimator->GetBackAttack())
 		{
 			m_isBack = true;
 			m_isDamage = false;
 		}
-		else if (m_playerAnimator->GetTypeInfo().GetProperty("fallAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		else if (m_playerAnimator->GetFallAttack())
 		{
 			m_isFall = true;
 			m_isDamage = false;
 		}
-		else if (m_playerAnimator->GetTypeInfo().GetProperty("downAttack")->Get<bool>(m_playerAnimator.get()).Get())
+		else if (m_playerAnimator->GetDownAttack())
 		{
 			m_isDown = true;
 			m_isDamage = false;
@@ -177,32 +177,29 @@ void EnemyAnimator::Update()
 			int random = RandomNumber(1, 5);
 			if (random >= 1 && random <= 2)
 			{
-				m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+				m_enemyController->SetCanMove(false);
 				m_isChargeAttack = true;
 			}
 			else if (random >= 3 && random <= 5)
 			{
-				m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+				m_enemyController->SetCanMove(false);
 				m_isAttack = true;
 			}
 			m_isAttacking = true;
 		}
 	}
 
+	// TODO: vector로 최적화
 	if (m_isAttack || m_currentState == m_animationStateMap["Attack"] || m_currentState == m_animationStateMap["ChargeAttack"]
 		|| m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["Down"] || m_currentState == m_animationStateMap["Fall"] || m_currentState == m_animationStateMap["KnockBack"])
-	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
-	}
+		m_enemyController->SetCanMove(false);
 	else
-	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
-	}
+		m_enemyController->SetCanMove(true);
 
 	m_currentState->OnStateUpdate();
 	PlayEffect();
 
-	m_lastHp = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
+	m_lastHp = m_enemy->GetCurrentTP();
 }
 
 void EnemyAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)

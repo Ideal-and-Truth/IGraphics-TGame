@@ -45,6 +45,11 @@ void Truth::Component::SetRotation(const Quaternion& _val)
 	m_owner.lock()->m_transform->SetRotate(_val);
 }
 
+void Truth::Component::SetWorldRotation(const Quaternion& _val)
+{
+	m_owner.lock()->SetWorldRotation(_val);
+}
+
 void Truth::Component::SetScale(const Vector3& _scale) const
 {
 	m_owner.lock()->m_transform->SetScale(_scale);

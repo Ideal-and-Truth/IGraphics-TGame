@@ -22,6 +22,7 @@ Truth::DirectionLight::DirectionLight()
 
 Truth::DirectionLight::~DirectionLight()
 {
+	m_managers.lock()->Graphics()->DeleteDirectionalLight(m_directionalLight);
 }
 
 void Truth::DirectionLight::SetLight()

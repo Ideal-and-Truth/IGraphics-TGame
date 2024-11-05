@@ -66,6 +66,11 @@ void Truth::Entity::SetScale(const Vector3& _scale) const
 	m_transform->SetScale(_scale);
 }
 
+void Truth::Entity::SetWorldRotation(const Quaternion& _rotation) const
+{
+	m_transform->SetWorldRotation(_rotation);
+}
+
 const DirectX::SimpleMath::Vector3& Truth::Entity::GetLocalPosition() const
 {
 	return m_transform->m_position;
@@ -208,8 +213,8 @@ void Truth::Entity::Update()
 	::QueryPerformanceCounter(&finish);
 	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
 	temp = m_name + temp;
-	temp += " / ";
-	DEBUG_PRINT(temp.c_str());
+	temp += "\n";
+	// DEBUG_PRINT(temp.c_str());
 }
 
 void Truth::Entity::FixedUpdate()

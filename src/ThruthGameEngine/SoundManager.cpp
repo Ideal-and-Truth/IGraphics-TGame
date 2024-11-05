@@ -53,7 +53,7 @@ void Truth::SoundManager::CreateSound(fs::path _path, bool _isLoop)
 		else
 			result = m_system->createSound(_path.generic_string().c_str(), FMOD_LOOP_OFF, 0, &m_soundMap[_path]);
 	}
-	catch(std::exception& e)
+	catch (std::exception& e)
 	{
 		DEBUG_PRINT(e.what());
 	}
@@ -89,6 +89,63 @@ void Truth::SoundManager::Play(fs::path _path, bool _canReduplication, int _chan
 			result = m_system->playSound((*itr).second, nullptr, false, &m_channel[_channel]);
 		else if (!_canReduplication && !isPlaying)
 			result = m_system->playSound((*itr).second, nullptr, false, &m_channel[_channel]);
+	}
+	catch (std::exception& e)
+	{
+		DEBUG_PRINT(e.what());
+	}
+}
+
+void Truth::SoundManager::Pause(int _channel)
+{
+	FMOD_RESULT result;
+
+	try
+	{
+		bool isPaused;
+		result = m_channel[_channel]->getPaused(&isPaused);
+		if (!isPaused)
+		{
+			result = m_channel[_channel]->setPaused(true);
+		}
+	}
+	catch (std::exception& e)
+	{
+		DEBUG_PRINT(e.what());
+	}
+}
+
+void Truth::SoundManager::Resume(int _channel)
+{
+	FMOD_RESULT result;
+
+	try
+	{
+		bool isPaused;
+		result = m_channel[_channel]->getPaused(&isPaused);
+		if (isPaused)
+		{
+			result = m_channel[_channel]->setPaused(false);
+		}
+	}
+	catch (std::exception& e)
+	{
+		DEBUG_PRINT(e.what());
+	}
+}
+
+void Truth::SoundManager::Stop(int _channel)
+{
+	FMOD_RESULT result;
+
+	try
+	{
+		bool isPlay;
+		m_channel[_channel]->isPlaying(&isPlay);
+		if (isPlay)
+		{
+			result = m_channel[_channel]->stop();
+		}
 	}
 	catch (std::exception& e)
 	{

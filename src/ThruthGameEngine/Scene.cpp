@@ -38,8 +38,11 @@ Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 Truth::Scene::~Scene()
 {
 	ClearEntity();
+
 	for (auto& m : m_mapEntity)
 		DeleteEntity(m);
+
+	m_mapEntity.clear();
 }
 
 /// <summary>
@@ -125,7 +128,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		LoadEntity(e);
 	}
 
-	LoadUnityData(m_mapPath);
+	// LoadUnityData(m_mapPath);
 
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
 	finish = clock();

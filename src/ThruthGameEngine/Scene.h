@@ -46,6 +46,8 @@ namespace Truth
 
 		bool m_isFpsScene = false;
 
+		float m_brightness = 0.4f;
+
 		fs::path m_skyBox;
 
 	public:

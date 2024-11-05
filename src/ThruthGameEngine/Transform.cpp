@@ -7,8 +7,8 @@ Truth::Transform::Transform()
 	: Component()
 	, m_position(0.0f, 0.0f, 0.0f)
 	, m_scale(1.0f, 1.0f, 1.0f)
-	, m_rotation{}
-	, m_localTM{Matrix::Identity}
+	, m_rotation(0.0f, 0.0f, 0.0f, 1.0f)
+	, m_localTM{ Matrix::Identity }
 	, m_look(0.0f, 0.0f, 1.0f)
 {
 	m_canMultiple = false;
