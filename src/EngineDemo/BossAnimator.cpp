@@ -1511,7 +1511,7 @@ void BossAnimator::Phase3()
 
 	if (!m_playOnce)
 	{
-		if (m_currentState != m_animationStateMap["Down"] && !m_isDown)
+		if (currentTP / maxTP < 0.5f && m_currentState != m_animationStateMap["Down"] && !m_isDown && !m_jumpAttack)
 		{
 			AllStateReset();
 			m_isDown = true;
