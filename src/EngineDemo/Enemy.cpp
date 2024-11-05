@@ -52,7 +52,7 @@ void Enemy::Update()
 		m_isTargetIn = true;
 	}
 
-	
+
 
 	if (m_isInvincible)
 	{
@@ -70,7 +70,7 @@ void Enemy::LateUpdate()
 
 	m_slowTime = player->GetSlowTime();
 
-	if (m_slowTime)
+	if (m_slowTime && m_owner.lock()->m_name != "Boss")
 	{
 		m_speed = m_baseSpeed * 0.3f;
 		if (player->GetCurrentCP() <= 0.f)
