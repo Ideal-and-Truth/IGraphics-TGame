@@ -3183,7 +3183,7 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 	Vector3 lightPosition = light->GetPosition();
 	float range = light->GetRange();
 	float intensity = light->GetIntensity();
-	bool noShadowCast = light->GetIsNoShadowCasting();
+	bool noShadowCast = light->GetIsShadowCasting();
 	if (show_point_light_window)
 	{
 		ImGui::Begin("Point Light Inspector");
@@ -3199,8 +3199,8 @@ void PointLightInspecter(std::shared_ptr<Ideal::IPointLight> light)
 		ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.f, 100.f);
 		light->SetIntensity(intensity);
 
-		ImGui::Checkbox("NoShadowCast", &noShadowCast);
-		light->SetNoShadowCasting(noShadowCast);
+		ImGui::Checkbox("ShadowCast", &noShadowCast);
+		light->SetShadowCasting(noShadowCast);
 
 		ImGui::End();
 	}
