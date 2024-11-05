@@ -45,6 +45,8 @@ namespace Truth
 		void SetRange();
 		void SetPosition();
 
+		void SetLayer();
+
 		METHOD(Initialize);
 		void Initialize();
 
@@ -63,6 +65,10 @@ namespace Truth
 		_ar& m_radius;
 		_ar& m_intensity;
 		_ar& m_lightColor;
+		if (file_version >= 1)
+		{
+			_ar& m_layer;
+		}
 	}
 
 	template<class Archive>
@@ -73,8 +79,9 @@ namespace Truth
 		_ar& m_radius;
 		_ar& m_intensity;
 		_ar& m_lightColor;
+		_ar& m_layer;
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::PointLight)
-BOOST_CLASS_VERSION(Truth::PointLight, 0)
+BOOST_CLASS_VERSION(Truth::PointLight, 1)

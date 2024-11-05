@@ -120,6 +120,7 @@ void Truth::Material::SaveMaterial()
 	emitter << YAML::Key << "tileY" << YAML::Value << m_tileY;
 	emitter << YAML::Key << "alphaCulling" << YAML::Value << m_alphaCulling;
 	emitter << YAML::Key << "transparent" << YAML::Value << m_transparent;
+	emitter << YAML::Key << "layer" << YAML::Value << m_layer;
 
 	emitter << YAML::EndMap;
 	emitter << YAML::EndDoc;

@@ -37,6 +37,8 @@ namespace Truth
 		std::shared_ptr<Texture> m_normalMap;
 		std::shared_ptr<Texture> m_maskMap;
 
+		uint32 m_layer = 1;
+
 		float m_tileX = 1.0f;
 		float m_tileY = 1.0f;
 

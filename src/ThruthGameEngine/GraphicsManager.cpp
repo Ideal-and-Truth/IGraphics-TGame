@@ -306,6 +306,8 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 				mat->m_alphaCulling = node["alphaCulling"].as<bool>();
 			if (node["transparent"].IsDefined())
 				mat->m_transparent = node["transparent"].as<bool>();
+			if (node["layer"].IsDefined())
+				mat->m_layer = node["layer"].as<uint32>();
 
 			mat->m_baseMap = CreateTexture(albedo, true, false);
 			mat->m_normalMap = CreateTexture(normal, true, true);
