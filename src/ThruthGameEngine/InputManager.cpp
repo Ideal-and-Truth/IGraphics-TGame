@@ -19,18 +19,11 @@ Truth::InputManager::InputManager()
 	, m_mouseInfomation()
 	, m_keyState()
 	, m_mouseState()
+	, m_showCursor(true)
+	, m_fpsMode(false)
 {
 	DEBUG_PRINT("Create InputManager\n");
 	m_mousePoint = new POINT;
-#ifdef EDITOR_MODE
-	m_fpsMode = false;
-	ShowCursor(true);
-
-#else
-	m_fpsMode = true;
-	ShowCursor(false);
-
-#endif
 }
 
 Truth::InputManager::~InputManager()
@@ -171,7 +164,7 @@ void Truth::InputManager::Update()
 
 		if (GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
 		{
-			ShowCursor(true);
+			SetShowCursor(true);
 			m_fpsMode = false;
 		}
 	}
@@ -179,7 +172,7 @@ void Truth::InputManager::Update()
 	{
 		if (GetKeyState(KEY::F1) == KEY_STATE::DOWN)
 		{
-			ShowCursor(false);
+			SetShowCursor(false);
 			m_fpsMode = true;
 		}
 	}
@@ -259,5 +252,22 @@ int32 Truth::InputManager::GetMousePosX()
 int32 Truth::InputManager::GetMousePosY()
 {
 	return m_nowMousePosY;
+}
+
+void Truth::InputManager::SetFPSMode(bool _isFPS)
+{
+	if (_isFPS != m_fpsMode)
+	{
+		m_fpsMode = _isFPS;
+	}
+}
+
+void Truth::InputManager::SetShowCursor(bool _isShow)
+{
+	if (_isShow != m_showCursor)
+	{
+		::ShowCursor(_isShow);
+		m_showCursor = _isShow;
+	}
 }
 

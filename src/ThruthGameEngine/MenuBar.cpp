@@ -39,7 +39,7 @@
 MenuBar::MenuBar(std::weak_ptr<Truth::Managers> _manager, HWND _hwnd, EditorUI* _editor)
 	: EditorContext("Menu Bar", _manager, _hwnd, _editor)
 {
-
+	m_isActive = true;
 }
 
 MenuBar::~MenuBar()

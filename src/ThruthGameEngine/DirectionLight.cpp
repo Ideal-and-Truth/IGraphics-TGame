@@ -23,6 +23,7 @@ Truth::DirectionLight::DirectionLight()
 Truth::DirectionLight::~DirectionLight()
 {
 	m_managers.lock()->Graphics()->DeleteDirectionalLight(m_directionalLight);
+	m_directionalLight.reset();
 }
 
 void Truth::DirectionLight::SetLight()
@@ -52,15 +53,15 @@ void Truth::DirectionLight::Destroy()
 
 void Truth::DirectionLight::Initialize()
 {
+	Vector3 dir;
+	m_direction.Normalize(dir);
+
 	SetLight();
 	SetIntensity();
 	SetDiffuse();
 	SetAmbient();
-}
 
-void Truth::DirectionLight::ApplyTransform()
-{
-	m_directionalLight->SetDirection(m_direction);
+	m_directionalLight->SetDirection(dir);
 }
 
 #ifdef EDITOR_MODE

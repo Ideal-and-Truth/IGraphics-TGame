@@ -949,7 +949,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 			break;
 		case ELightType::Directional:
 		{
-			auto castLight = std::static_pointer_cast<Ideal::IDirectionalLight>(Light);
+			auto castLight = std::static_pointer_cast<Ideal::IdealDirectionalLight>(Light);
 			auto it = std::find(m_directionalLights.begin(), m_directionalLights.end(), castLight);
 			{
 				if (it != m_directionalLights.end())
@@ -962,7 +962,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 		break;
 		case ELightType::Spot:
 		{
-			auto castLight = std::static_pointer_cast<Ideal::ISpotLight>(Light);
+			auto castLight = std::static_pointer_cast<Ideal::IdealSpotLight>(Light);
 			auto it = std::find(m_spotLights.begin(), m_spotLights.end(), castLight);
 			{
 				if (it != m_spotLights.end())
@@ -975,7 +975,7 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 		break;
 		case ELightType::Point:
 		{
-			auto castLight = std::static_pointer_cast<Ideal::IPointLight>(Light);
+			auto castLight = std::static_pointer_cast<Ideal::IdealPointLight>(Light);
 			auto it = std::find(m_pointLights.begin(), m_pointLights.end(), castLight);
 			{
 				if (it != m_pointLights.end())

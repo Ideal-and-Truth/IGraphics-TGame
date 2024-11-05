@@ -49,7 +49,7 @@ namespace Truth
 
 	public:
 		void Initialize(HINSTANCE _hinstance, HWND _hwnd, uint32 _width, uint32 _height);
-		void Update() const;
+		void Update();
 		void LateUpdate() const;
 		void FixedUpdate() const;
 		void Render() const;

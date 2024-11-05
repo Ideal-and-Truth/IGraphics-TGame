@@ -124,6 +124,7 @@ namespace Truth
 		std::weak_ptr<EventManager> m_eventManager;
 		LPPOINT m_mousePoint;
 
+		bool m_showCursor;
 
 	public:
 		int m_deltaWheel;
@@ -157,5 +158,10 @@ namespace Truth
 
 		int32 GetMousePosX();
 		int32 GetMousePosY();
+
+		void SetFPSMode(bool _isFPS);
+
+	private:
+		void SetShowCursor(bool _isShow);
 	};
 }

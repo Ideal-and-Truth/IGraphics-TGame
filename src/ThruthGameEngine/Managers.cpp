@@ -35,9 +35,22 @@ void Truth::Managers::Initialize(HINSTANCE _hinstance, HWND _hwnd, uint32 _width
 #endif // EDITOR_MODE
 }
 
-void Truth::Managers::Update() const
+void Truth::Managers::Update()
 {
 	m_inputManager->Update();
+#ifdef EDITOR_MODE
+	if (m_inputManager->GetKeyState(KEY::F9) == KEY_STATE::DOWN)
+	{
+		if (m_isEdit)
+		{
+			EditToGame();
+		}
+		else
+		{
+			GameToEdit();
+		}
+	}
+#endif // EDITOR_MODE
 	m_timeManager->Update();
 #ifdef EDITOR_MODE
 	if (!m_isEdit)

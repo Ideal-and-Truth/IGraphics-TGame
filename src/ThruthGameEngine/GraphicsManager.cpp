@@ -174,7 +174,6 @@ std::shared_ptr<Ideal::IPointLight> Truth::GraphicsManager::CreatePointLight()
 
 void Truth::GraphicsManager::DeletePointLight(std::shared_ptr<Ideal::IPointLight> _pLight)
 {
-
 	m_renderer->DeleteLight(_pLight);
 }
 

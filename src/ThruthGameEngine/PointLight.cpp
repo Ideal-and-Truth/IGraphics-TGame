@@ -22,6 +22,7 @@ Truth::PointLight::PointLight()
 Truth::PointLight::~PointLight()
 {
 	m_managers.lock()->Graphics()->DeletePointLight(m_pointLight);
+	m_pointLight.reset();
 }
 
 void Truth::PointLight::SetLight()
@@ -62,11 +63,13 @@ void Truth::PointLight::Initialize()
 	SetRange();
 	SetPosition();
 	SetLayer();
+	m_pointLight->SetShadowCasting(true);
 }
 
 void Truth::PointLight::Destroy()
 {
 	m_managers.lock()->Graphics()->DeletePointLight(m_pointLight);
+	// m_pointLight.reset();
 }
 
 #ifdef EDITOR_MODE
@@ -76,6 +79,7 @@ void Truth::PointLight::EditorSetValue()
 	SetColor();
 	SetRange();
 	SetPosition();
+	SetLayer();
 }
 #endif // _DEBUG
 

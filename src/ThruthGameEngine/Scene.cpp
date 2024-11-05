@@ -138,14 +138,17 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	LoadUnityData(m_mapPath);
 
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
-	finish = clock();
-	std::string temp = std::to_string(finish - start);
 
-	temp = std::string("Loading : ") + temp;
-	temp += " \n ";
-	DEBUG_PRINT(temp.c_str());
+// 	finish = clock();
+// 	std::string temp = std::to_string(finish - start);
+// 
+// 	temp = std::string("Loading : ") + temp;
+// 	temp += " \n ";
+// 	DEBUG_PRINT(temp.c_str());
 
 	m_managers.lock()->Graphics()->SetBrightness(m_brightness);
+
+	m_managers.lock()->Input()->SetFPSMode(m_useNavMesh);
 }
 
 /// <summary>
