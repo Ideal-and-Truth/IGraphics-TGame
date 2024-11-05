@@ -106,6 +106,8 @@ namespace Truth
 
 		void ClearEntity();
 
+		void SetBrightness();
+
 	private:
 		void LoadUnityData(const std::wstring& _path);
 		void ResetMapData();
@@ -120,6 +122,7 @@ namespace Truth
 		_ar& m_mapPath;
 		_ar& m_skyBox.generic_string();
 		_ar& m_useNavMesh;
+		_ar& m_brightness;
 	}
 
 	template<class Archive>
@@ -137,6 +140,8 @@ namespace Truth
 		}
 		if (file_version >= 4)
 			_ar& m_useNavMesh;
+		if (file_version >= 5)
+			_ar& m_brightness;
 	}
 }
-BOOST_CLASS_VERSION(Truth::Scene, 4)
+BOOST_CLASS_VERSION(Truth::Scene, 5)

@@ -49,6 +49,9 @@ MenuBar::~MenuBar()
 
 void MenuBar::ShowContext(bool* p_open)
 {
+	auto sceneManager = m_manager.lock()->Scene();
+	auto currentScene = sceneManager->m_currentScene;
+
 	// Exceptionally add an extra assert here for people confused about initial Dear ImGui setup
 	// Most functions would normally just assert/crash if the context is missing.
 	IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
@@ -56,9 +59,6 @@ void MenuBar::ShowContext(bool* p_open)
 	// Verify ABI compatibility between caller code and compiled version of Dear ImGui. This helps detects some build issues.
 	IMGUI_CHECKVERSION();
 
-	std::shared_ptr<Truth::Scene> currentScene = m_manager.lock()->Scene()->m_currentScene;
-	const auto& currentSceneName = currentScene->m_name;
-	const auto& currentSceneEntities = currentScene->m_entities;
 
 	ImGui::BeginMainMenuBar();
 	ImGui::Text("\t\t\t\t\t\t\t");
@@ -75,7 +75,7 @@ void MenuBar::ShowContext(bool* p_open)
 		}
 		if (ImGui::Selectable("Save Scene"))
 		{
-			m_manager.lock()->Scene()->SaveCurrentScene();
+			sceneManager->SaveCurrentScene();
 
 		}
 		if (ImGui::Selectable("Save as Scene"))
@@ -93,9 +93,9 @@ void MenuBar::ShowContext(bool* p_open)
 				f.back().pop_back();
 				f.back().pop_back();
 
-				m_manager.lock()->Scene()->SaveAsScene(filepath);
+				sceneManager->SaveAsScene(filepath);
 				USES_CONVERSION;
-				m_manager.lock()->Scene()->m_currentScene->m_name = W2A(f.back().c_str());
+				currentScene->m_name = W2A(f.back().c_str());
 			}
 			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
@@ -154,12 +154,12 @@ void MenuBar::ShowContext(bool* p_open)
 				filepath = fs::relative(filepath);
 
 				m_manager.lock()->Graphics()->ChangeSkyBox(filepath);
-				m_manager.lock()->Scene()->m_currentScene->m_skyBox = filepath;
+				currentScene->m_skyBox = filepath;
 			}
 			::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
 		}
 
-		if (m_manager.lock()->Scene()->m_currentScene->m_useNavMesh)
+		if (currentScene->m_useNavMesh)
 		{
 			if (ImGui::Selectable("No Nav Mesh"))
 				m_manager.lock()->Scene()->m_currentScene->m_useNavMesh = false;
@@ -180,6 +180,11 @@ void MenuBar::ShowContext(bool* p_open)
 	if (ImGui::Button("Stop"))
 	{
 		m_manager.lock()->GameToEdit();
+	}
+
+	if (ImGui::DragFloat("brightness", &currentScene->m_brightness), 0.001f, 0.0f, 1.0f)
+	{
+		currentScene->SetBrightness();
 	}
 
 	static float step = 1.0f;

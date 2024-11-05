@@ -40,7 +40,10 @@ Truth::Scene::~Scene()
 	ClearEntity();
 
 	for (auto& m : m_mapEntity)
+	{
 		DeleteEntity(m);
+		m->Destroy();
+	}
 
 	m_mapEntity.clear();
 }
@@ -89,9 +92,13 @@ void Truth::Scene::DeleteEntity(uint32 _index)
 void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 {
 	for (auto& child : _p->m_children)
+	{
 		DeleteEntity(child);
+	}
 	if (!_p->m_parent.expired())
+	{
 		_p->m_parent.lock()->DeleteChild(_p);
+	}
 #ifdef EDITOR_MODE
 	if (m_managers.lock()->m_isEdit)
 	{
@@ -128,7 +135,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		LoadEntity(e);
 	}
 
-	// LoadUnityData(m_mapPath);
+	LoadUnityData(m_mapPath);
 
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
 	finish = clock();
@@ -137,6 +144,8 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 	temp = std::string("Loading : ") + temp;
 	temp += " \n ";
 	DEBUG_PRINT(temp.c_str());
+
+	m_managers.lock()->Graphics()->SetBrightness(m_brightness);
 }
 
 /// <summary>
@@ -403,6 +412,11 @@ void Truth::Scene::Exit()
 void Truth::Scene::ClearEntity()
 {
 	m_entities.clear();
+}
+
+void Truth::Scene::SetBrightness()
+{
+	m_managers.lock()->Graphics()->SetBrightness(m_brightness);
 }
 
 /// <summary>

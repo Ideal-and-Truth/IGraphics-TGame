@@ -144,6 +144,9 @@ void Truth::Managers::Finalize()
 
 	m_soundManager->Finalize();
 	m_soundManager.reset();
+
+	m_particleManager->Finalize();
+	m_particleManager.reset();
 }
 
 

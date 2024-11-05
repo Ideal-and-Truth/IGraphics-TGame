@@ -32,6 +32,9 @@ namespace Truth
 		PROPERTY(lightColor);
 		Color m_lightColor;
 
+		PROPERTY(layer);
+		uint32 m_layer;
+
 	public:
 		PointLight();
 		virtual ~PointLight();

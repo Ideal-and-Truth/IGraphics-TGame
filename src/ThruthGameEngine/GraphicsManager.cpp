@@ -511,6 +511,11 @@ void Truth::GraphicsManager::ChangeSkyBox(fs::path _path)
 	m_renderer->SetSkyBox(m_textureMap[_path]->m_texture);
 }
 
+void Truth::GraphicsManager::SetBrightness(float _brightness)
+{
+	m_renderer->SetRendererAmbientIntensity(_brightness);
+}
+
 #ifdef EDITOR_MODE
 void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 {

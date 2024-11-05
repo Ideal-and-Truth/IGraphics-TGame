@@ -14,6 +14,7 @@ Truth::PointLight::PointLight()
 	, m_radius(1.0f)
 	, m_lightColor{ 1.0f, 1.0f, 1.0f, 1.0f }
 	, m_intensity(1.0f)
+	, m_layer(0)
 {
 	m_name = "PointLight";
 }
@@ -25,12 +26,6 @@ Truth::PointLight::~PointLight()
 
 void Truth::PointLight::SetLight()
 {
-	if (m_position.x < 1 && m_position.x > -1 &&
-		m_position.y < 1 && m_position.y > -1 &&
-		m_position.z < 1 && m_position.z > -1)
-	{
-		int a = 1;
-	}
 	m_pointLight = m_managers.lock()->Graphics()->CreatePointLight();
 }
 

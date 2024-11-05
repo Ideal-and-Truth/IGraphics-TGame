@@ -128,6 +128,8 @@ namespace Truth
 
 		void ChangeSkyBox(fs::path _path);
 
+		void SetBrightness(float _brightness);
+
 #ifdef EDITOR_MODE
 		void SetMainCamera(EditorCamera* _camera);
 #endif // EDITOR_MODE

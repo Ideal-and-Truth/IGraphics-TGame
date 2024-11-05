@@ -36,7 +36,7 @@ void Truth::ParticleManager::Update()
 
 void Truth::ParticleManager::Finalize()
 {
-
+	Reset();
 }
 
 void Truth::ParticleManager::CreateEmptyParticle()
