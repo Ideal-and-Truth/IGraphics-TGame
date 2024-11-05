@@ -21,8 +21,7 @@ Truth::PointLight::PointLight()
 
 Truth::PointLight::~PointLight()
 {
-	m_managers.lock()->Graphics()->DeletePointLight(m_pointLight);
-	m_pointLight.reset();
+
 }
 
 void Truth::PointLight::SetLight()
