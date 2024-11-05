@@ -252,7 +252,7 @@ void BossSkill::ShockWave()
 
 			if (m_shockWaveTime > 0.3f)
 			{
-				float bossHeight = m_owner.lock()->m_transform->m_position.y + 3.5f;
+				float bossHeight = m_owner.lock()->m_transform->m_position.y + 2.5f;
 
 				auto pos = sqrt(pow(m_shockWavePos[m_shockCount], 2.f) / 2.f);
 
@@ -392,7 +392,7 @@ void BossSkill::FlameSword()
 	{
 		if (m_readyToShoot)
 		{
-			float bossHeight = m_owner.lock()->m_transform->m_position.y + 2.2f;
+			float bossHeight = m_owner.lock()->m_transform->m_position.y + 2.3f;
 			m_flameSwordTime += GetDeltaTime();
 			if (m_flameSwordTime > 0.13f && m_flameCount <= m_flamePos.size())
 			{
