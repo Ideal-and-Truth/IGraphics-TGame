@@ -392,7 +392,7 @@ void BossSkill::FlameSword()
 	{
 		if (m_readyToShoot)
 		{
-			float bossHeight = m_owner.lock()->m_transform->m_position.y + 3.3f;
+			float bossHeight = m_owner.lock()->m_transform->m_position.y + 2.5f;
 			m_flameSwordTime += GetDeltaTime();
 			if (m_flameSwordTime > 0.13f && m_flameCount <= m_flamePos.size())
 			{
@@ -1038,7 +1038,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 				Matrix::CreateScale(35.f)
 				* Matrix::CreateScale(Vector3(3.f, 3.f, 1.f) * 4.f)
 				* Matrix::CreateRotationX(3.1415f * 0.5f)
-				* Matrix::CreateTranslation({ pos.x, pos.y + 1.f, pos.z })
+				* Matrix::CreateTranslation({ pos.x, pos.y + 2.f, pos.z })
 			);
 			p->SetActive(true);
 			p->SetSimulationSpeed(3.f);

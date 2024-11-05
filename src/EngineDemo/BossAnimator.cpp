@@ -1522,7 +1522,7 @@ void BossAnimator::Phase3()
 		{
 			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 5.f);
 		}
-		if (currentTP / maxTP >= 0.5f && m_isDown)
+		if (currentTP / maxTP >= 0.5f && m_currentState == m_animationStateMap["Down"])
 		{
 			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get() * 0.5f);
 			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
