@@ -83,6 +83,7 @@ namespace Truth
 
 		inline int GetCurrentFrame() const { return m_currentFrame; }
 		inline bool GetIsAnimationEnd() const { return m_isAnimationEnd; }
+		inline bool GetIsAnimationChanged() const { return m_isAnimationChanged; }
 
 		void DeleteMesh();
 

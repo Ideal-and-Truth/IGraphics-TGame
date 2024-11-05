@@ -223,7 +223,6 @@ void PlayerAnimator::Update()
 	}
 
 
-
 	m_isLockOn = m_playerCamera->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_playerCamera.get()).Get();
 	m_forwardInput = m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get();
 	m_sideInput = m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get();
@@ -1321,7 +1320,7 @@ void PlayerDodge::OnStateEnter()
 
 void PlayerDodge::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
+	if (!isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
 	}
@@ -1337,7 +1336,7 @@ void PlayerDodge::OnStateUpdate()
 
 void PlayerDodge::OnStateExit()
 {
-	isReset = true;
+	isReset = false;
 	GetProperty("isDodge")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 }
