@@ -213,7 +213,7 @@ void BossAnimator::Update()
 		m_passingTime = 0.f;
 	}
 
-	if (m_isDown)
+	if (m_isDown&& m_playOnce)
 	{
 		//m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
 		m_passingTime += GetDeltaTime();
