@@ -310,25 +310,25 @@ void PlayerAnimator::Update()
 	}
 
 
-// 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
-// 	{
-		if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() > 0.f
-			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() > 0.f
-			|| m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() < 0.f
-			|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() < 0.f)
-		{
-			m_isRun = true;
+	// 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
+	// 	{
+	if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() > 0.f
+		|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() > 0.f
+		|| m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() < 0.f
+		|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() < 0.f)
+	{
+		m_isRun = true;
 
-			if (GetKeyDown(KEY::SPACE))
-			{
-				m_isDodge = true;
-				m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
-			}
-		}
-		else
+		if (GetKeyDown(KEY::SPACE))
 		{
-			m_isRun = false;
+			m_isDodge = true;
+			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 		}
+	}
+	else
+	{
+		m_isRun = false;
+	}
 	//}
 
 	if (m_chargedReady)
@@ -1041,7 +1041,7 @@ void ChargedAttack1::OnStateUpdate()
 void ChargedAttack1::OnStateExit()
 {
 	isReset = false;
-		GetProperty("isChargedAttack")->Set(m_animator, false);
+	GetProperty("isChargedAttack")->Set(m_animator, false);
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
@@ -1094,7 +1094,7 @@ void ChargedAttack2::OnStateUpdate()
 void ChargedAttack2::OnStateExit()
 {
 	isReset = false;
-		GetProperty("isChargedAttack")->Set(m_animator, false);
+	GetProperty("isChargedAttack")->Set(m_animator, false);
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
@@ -1154,7 +1154,7 @@ void ChargedAttack3::OnStateExit()
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	GetProperty("fallAttack")->Set(m_animator, false);
-		GetProperty("isChargedAttack")->Set(m_animator, false);
+	GetProperty("isChargedAttack")->Set(m_animator, false);
 }
 
 void ChargedAttack4::OnStateEnter()
@@ -1304,20 +1304,19 @@ void PlayerDodge::OnStateEnter()
 
 void PlayerDodge::OnStateUpdate()
 {
-	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 18)
 	{
-		GetProperty("isDodge")->Set(m_animator, false);
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("Idle");
 	}
 	else if (GetProperty("currentFrame")->Get<int>(m_animator).Get() > 16 && GetProperty("isAttack")->Get<bool>(m_animator).Get())
 	{
-		GetProperty("isDodge")->Set(m_animator, false);
 		dynamic_cast<PlayerAnimator*>(m_animator)->ChangeState("DodgeAttack");
 	}
 }
 
 void PlayerDodge::OnStateExit()
 {
+	GetProperty("isDodge")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 }
 

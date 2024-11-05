@@ -60,7 +60,7 @@ void PlayerSkill::SwordBeam()
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(swordBeam);
 		m_owner.lock()->AddChild(swordBeam);
 
-		swordBeam->SetPosition({ 0.f,0.f,-2.f });
+		swordBeam->SetPosition({ 0.f,m_owner.lock()->GetWorldPosition().y + 2.f,-2.f });
 		swordBeam->SetScale({ 2.f,5.f,5.f });
 
 		swordBeam->Start();
@@ -80,7 +80,6 @@ void PlayerSkill::SwordBeam()
 
 		m_swordBeamPos += GetDeltaTime() * 0.8f;
 		m_passingTime += GetDeltaTime();
-		m_swordBeam->m_transform->m_position.y = m_owner.lock()->m_transform->m_position.y + 1.f;
 		m_swordBeam->m_transform->m_position.z += -m_swordBeamPos;
 
 		PlayEffect(m_swordBeam->GetWorldPosition());
