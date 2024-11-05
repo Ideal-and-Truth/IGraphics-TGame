@@ -6,6 +6,7 @@ Ideal::IdealPointLight::IdealPointLight()
 	m_pointLight.Position = Vector3(0.f, 0.f, 0.f);
 	m_pointLight.Range = 10.f;
 	m_pointLight.Intensity = 1.f;
+	m_pointLight.IsNoShadowCasting = 0;
 }
 
 Ideal::IdealPointLight::~IdealPointLight()
@@ -36,4 +37,14 @@ void Ideal::IdealPointLight::SetRange(const float& Range)
 void Ideal::IdealPointLight::SetIntensity(const float& Intensity)
 {
 	m_pointLight.Intensity = Intensity;
+}
+
+void Ideal::IdealPointLight::SetNoShadowCasting(bool Active)
+{
+	m_pointLight.IsNoShadowCasting = (uint32)Active;
+}
+
+bool Ideal::IdealPointLight::GetIsNoShadowCasting()
+{
+	return (bool)m_pointLight.IsNoShadowCasting;
 }

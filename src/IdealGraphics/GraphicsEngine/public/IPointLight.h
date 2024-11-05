@@ -25,5 +25,8 @@ namespace Ideal
 
 		virtual float GetIntensity() abstract;
 		virtual void SetIntensity(const float& Intensity) abstract;
+
+		virtual void SetNoShadowCasting(bool Active) abstract;
+		virtual bool GetIsNoShadowCasting() abstract;
 	};
 }
