@@ -39,7 +39,7 @@ struct CB_MaterialInfo
 	Vector2 offset;
 
 	uint32 bIsTransmissive;
-	float pad0;
+	uint32 Layer = 0;
 };
 
 struct CB_Bone
@@ -98,8 +98,8 @@ struct PointLight
 	Vector3 Position;
 	float Range;
 	float Intensity;
-	float pad0;
-	float pad1;
+	uint32 IsNoShadowCasting;
+	uint32 Layer;
 	float pad2;
 };
 
