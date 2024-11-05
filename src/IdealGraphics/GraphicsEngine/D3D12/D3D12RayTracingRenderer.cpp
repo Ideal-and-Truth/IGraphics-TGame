@@ -921,22 +921,22 @@ std::shared_ptr<Ideal::IAnimation> Ideal::D3D12RayTracingRenderer::CreateAnimati
 
 std::shared_ptr<Ideal::IDirectionalLight> Ideal::D3D12RayTracingRenderer::CreateDirectionalLight()
 {
-	std::shared_ptr<Ideal::IDirectionalLight> newLight = std::make_shared<Ideal::IdealDirectionalLight>();
-	m_directionalLights.push_back(std::static_pointer_cast<Ideal::IdealDirectionalLight>(newLight));
+	auto newLight = std::make_shared<Ideal::IdealDirectionalLight>();
+	m_directionalLights.push_back(newLight);
 	return newLight;
 }
 
 std::shared_ptr<Ideal::ISpotLight> Ideal::D3D12RayTracingRenderer::CreateSpotLight()
 {
-	std::shared_ptr<Ideal::ISpotLight> newLight = std::make_shared<Ideal::IdealSpotLight>();
-	m_spotLights.push_back(std::static_pointer_cast<Ideal::IdealSpotLight>(newLight));
+	auto newLight = std::make_shared<Ideal::IdealSpotLight>();
+	m_spotLights.push_back(newLight);
 	return newLight;
 }
 
 std::shared_ptr<Ideal::IPointLight> Ideal::D3D12RayTracingRenderer::CreatePointLight()
 {
-	std::shared_ptr<Ideal::IPointLight> newLight = std::make_shared<Ideal::IdealPointLight>();
-	m_pointLights.push_back(std::static_pointer_cast<Ideal::IdealPointLight>(newLight));
+	auto newLight = std::make_shared<Ideal::IdealPointLight>();
+	m_pointLights.push_back(newLight);
 	return newLight;
 }
 
@@ -950,12 +950,12 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 		case ELightType::Directional:
 		{
 			auto castLight = std::static_pointer_cast<Ideal::IdealDirectionalLight>(Light);
-			//auto it = std::find(m_directionalLights.begin(), m_directionalLights.end(), castLight);
+			auto it = std::find(m_directionalLights.begin(), m_directionalLights.end(), castLight);
 
-			auto it = std::find_if(m_directionalLights.begin(), m_directionalLights.end(),
-				[&castLight](const std::shared_ptr<Ideal::IdealDirectionalLight>& light) {
-					return light == castLight; // Compare the shared pointers
-				});
+			//auto it = std::find_if(m_directionalLights.begin(), m_directionalLights.end(),
+			//	[&castLight](const std::shared_ptr<Ideal::IdealDirectionalLight>& light) {
+			//		return light == castLight; // Compare the shared pointers
+			//	});
 
 			{
 				if (it != m_directionalLights.end())
@@ -969,11 +969,11 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 		case ELightType::Spot:
 		{
 			auto castLight = std::static_pointer_cast<Ideal::IdealSpotLight>(Light);
-			//auto it = std::find(m_spotLights.begin(), m_spotLights.end(), castLight);
-			auto it = std::find_if(m_spotLights.begin(), m_spotLights.end(),
-				[&castLight](const std::shared_ptr<Ideal::IdealSpotLight>& light) {
-					return light == castLight; // Compare the shared pointers
-				});
+			auto it = std::find(m_spotLights.begin(), m_spotLights.end(), castLight);
+			//auto it = std::find_if(m_spotLights.begin(), m_spotLights.end(),
+			//	[&castLight](const std::shared_ptr<Ideal::IdealSpotLight>& light) {
+			//		return light == castLight; // Compare the shared pointers
+			//	});
 			{
 				if (it != m_spotLights.end())
 				{
@@ -986,11 +986,11 @@ void Ideal::D3D12RayTracingRenderer::DeleteLight(std::shared_ptr<Ideal::ILight> 
 		case ELightType::Point:
 		{
 			auto castLight = std::static_pointer_cast<Ideal::IdealPointLight>(Light);
-			//auto it = std::find(m_pointLights.begin(), m_pointLights.end(), castLight);
-			auto it = std::find_if(m_pointLights.begin(), m_pointLights.end(),
-				[&castLight](const std::shared_ptr<Ideal::IdealPointLight>& light) {
-					return light == castLight; // Compare the shared pointers
-				});
+			auto it = std::find(m_pointLights.begin(), m_pointLights.end(), castLight);
+			//auto it = std::find_if(m_pointLights.begin(), m_pointLights.end(),
+			//	[&castLight](const std::shared_ptr<Ideal::IdealPointLight>& light) {
+			//		return light == castLight; // Compare the shared pointers
+			//	});
 			{
 				if (it != m_pointLights.end())
 				{
