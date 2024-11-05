@@ -113,12 +113,6 @@ void EnemyAnimator::Update()
 {
 	if (m_isDeath)
 	{
-		//m_owner.lock()->Destroy();
-		return;
-	}
-
-	if (m_isDeath)
-	{
 		return;
 	}
 
@@ -141,6 +135,13 @@ void EnemyAnimator::Update()
 
 	if (m_enemy->GetCurrentTP() <= 0.f)
 	{
+		int random = RandomNumber(1, 2);
+
+		if (random == 1)
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_1_Sound.wav", false, 39);
+		else if (random == 2)										
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_2_Sound.wav", false, 39);
+
 		m_isDeath = true;
 		m_enemyController->SetIsDead(true);
 	}
@@ -150,20 +151,60 @@ void EnemyAnimator::Update()
 		m_isDamage = true;
 		m_enemyController->SetCanMove(false);
 
+
 		if (m_playerAnimator->GetBackAttack())
 		{
+			int random = RandomNumber(1, 4);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 40);
+			else if (random == 2)										 
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 40);
+			else if (random == 3)										
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 40);
+			else if (random == 4)										
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 40);
+
 			m_isBack = true;
 			m_isDamage = false;
 		}
 		else if (m_playerAnimator->GetFallAttack())
 		{
+			int random = RandomNumber(1, 2);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 41);
+			else if (random == 2)								
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 41);
+
+
 			m_isFall = true;
 			m_isDamage = false;
 		}
 		else if (m_playerAnimator->GetDownAttack())
 		{
+			int random = RandomNumber(1, 2);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 42);
+			else if (random == 2)								
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 42);
+
 			m_isDown = true;
 			m_isDamage = false;
+		}
+		else
+		{
+			int random = RandomNumber(1, 4);
+
+			if (random == 1)
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_1_Sound.wav", false, 43);
+			else if (random == 2)					
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_2_Sound.wav", false, 43);
+			else if (random == 3)									
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_3_Sound.wav", false, 43);
+			else if (random == 4)										
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_4_Sound.wav", false, 43);
 		}
 	}
 
@@ -631,27 +672,28 @@ void EnemyAnimator::PlayEffect()
 	Vector3 effectPos = m_owner.lock()->GetWorldPosition();
 	Vector3 effectRot = m_owner.lock()->GetWorldRotation().ToEuler();
 
-// 	if (m_normalAttack)
-// 	{
-// 		m_normalAttack = false;
-// 
-// 		effectPos.y += 1.f;
-// 
-// 		effectRot.y += (3.141592f / 180.f) * -140.f;
-// 		effectRot.z += (3.141592f / 180.f) * 180.f;
-// 
-// 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
-// 
-// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemySlash.yaml");
-// 		p->SetTransformMatrix(
-// 			rotationMT
-// 			* Matrix::CreateTranslation(effectPos)
-// 		);
-// 
-// 		p->SetSimulationSpeed(2.f);
-// 		p->SetActive(true);
-// 		p->Play();
-// 	}
+	if (m_normalAttack)
+	{
+		m_normalAttack = false;
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 37);
+		// 		effectPos.y += 1.f;
+		// 
+		// 		effectRot.y += (3.141592f / 180.f) * -140.f;
+		// 		effectRot.z += (3.141592f / 180.f) * 180.f;
+		// 
+		// 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		// 
+		// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\EnemySlash.yaml");
+		// 		p->SetTransformMatrix(
+		// 			rotationMT
+		// 			* Matrix::CreateTranslation(effectPos)
+		// 		);
+		// 
+		// 		p->SetSimulationSpeed(2.f);
+		// 		p->SetActive(true);
+		// 		p->Play();
+	}
 
 	if (m_chargeAttack)
 	{
@@ -688,6 +730,8 @@ void EnemyAnimator::PlayEffect()
 			p->SetActive(true);
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false, 38);
 	}
 }
 

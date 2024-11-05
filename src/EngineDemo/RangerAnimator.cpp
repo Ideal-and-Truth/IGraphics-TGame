@@ -104,7 +104,6 @@ void RangerAnimator::Update()
 {
 	if (m_isDeath)
 	{
-		//m_owner.lock()->Destroy();
 		return;
 	}
 
