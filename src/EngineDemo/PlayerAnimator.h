@@ -9,6 +9,11 @@ namespace Truth
 	class SkinnedMesh;
 }
 
+namespace Ideal
+{
+	class IParticleSystem;
+}
+
 class Player;
 class PlayerController;
 class PlayerCamera;
@@ -459,6 +464,7 @@ private:
 	std::shared_ptr<PlayerController> m_playerController;
 	std::shared_ptr<Player> m_player;
 	std::shared_ptr<PlayerCamera> m_playerCamera;
+	std::shared_ptr<Ideal::IParticleSystem> m_normalAbilityEffect;
 
 
 	/// <summary>

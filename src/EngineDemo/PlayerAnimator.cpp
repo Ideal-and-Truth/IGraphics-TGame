@@ -127,7 +127,7 @@ void PlayerAnimator::Start()
 	m_playerController = m_owner.lock().get()->GetComponent<PlayerController>().lock();
 	m_player = m_owner.lock().get()->GetComponent<Player>().lock();
 	m_playerCamera = m_managers.lock()->Scene()->m_currentScene->FindEntity("ThirdPersonCamera").lock()->GetComponent<PlayerCamera>().lock();
-
+	m_normalAbilityEffect= m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(Vector3{ 1.5f, 0.0f, 0.0f });
 	Matrix t = Matrix::CreateFromQuaternion(q);
 	t *= Matrix::CreateTranslation(Vector3{ 0.0f, 0.02f, 0.0f });
@@ -519,7 +519,7 @@ void PlayerIdle::OnStateUpdate()
 void PlayerRun::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Run", false);
-	//dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Player\\Player_Walk_1_Sound.wav", 14);
+	//dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Player\\Player_Walk_1_Sound.wav", 15);
 }
 
 void PlayerRun::OnStateUpdate()
@@ -849,6 +849,8 @@ void NormalAbility::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isNormalAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(30.f, true);
+	GetProperty("normalAbility")->Set(m_animator, true);
+	GetProperty("downAttack")->Set(m_animator, true);
 }
 
 void NormalAbility::OnStateUpdate()
@@ -858,12 +860,10 @@ void NormalAbility::OnStateUpdate()
 		isReset = true;
 	}
 
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 23)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 23)
 	{
 		GetProperty("isAttacking")->Set(m_animator, false);
-		GetProperty("downAttack")->Set(m_animator, true);
 		isReset = false;
-		GetProperty("normalAbility")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(5.f);
 	}
 
@@ -893,7 +893,7 @@ void PlayerGuard::OnStateUpdate()
 	if (GetProperty("isHit")->Get<bool>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("GuardHit", false);
-		//dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Walk_1_Sound.wav", 14);
+		//dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Walk_1_Sound.wav", 16);
 		isHit = true;
 		GetProperty("isHit")->Set(m_animator, false);
 	}
@@ -924,7 +924,7 @@ void PlayerHit::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Hit", false);
 	GetProperty("isHit")->Set(m_animator, false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_1_Sound.wav", 15);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_1_Sound.wav", 17);
 }
 
 void PlayerHit::OnStateUpdate()
@@ -937,7 +937,7 @@ void PlayerHit::OnStateUpdate()
 	{
 		GetProperty("isHit")->Set(m_animator, false);
 		dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Hit", false);
-		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_2_Sound.wav", 16);
+		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Pain_2_Sound.wav", 18);
 	}
 	if (GetProperty("parry")->Get<bool>(m_animator).Get())
 	{
@@ -1233,7 +1233,7 @@ void PlayerDodge::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimationSpeed(1.f);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(30.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Dodge", false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Dodge_Sound.wav", 17);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Dodge_Sound.wav", 19);
 }
 
 void PlayerDodge::OnStateUpdate()
@@ -1291,7 +1291,7 @@ void ComboReady::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, false);
 	GetProperty("isRun")->Set(m_animator, false);
 	//GetProperty("isWalk")->Set(m_animator, false);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_ComboChange_Sound.wav", 18);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_ComboChange_Sound.wav", 20);
 }
 
 void ComboReady::OnStateUpdate()
@@ -1402,7 +1402,7 @@ void PlayerSkillE::OnStateUpdate()
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
 	{
-		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_2_Sound.wav", 18);
+		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_2_Sound.wav", 21);
 		GetProperty("swordBeam")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
 	}
@@ -1498,6 +1498,8 @@ void PlayerAnimator::PlayEffects()
 		m_normalAttack2 = false;
 
 		{
+			effectRot.y += (3.141592f / 180.f) * -90.f;
+
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\NorAttack.yaml");
 
 			Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
@@ -1856,5 +1858,27 @@ void PlayerAnimator::PlayEffects()
 		}
 
 		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\03. Skill_sound\\TimeStop_Skill_Sound.wav", false, 13);
+	}
+
+	{
+		effectRot.y += (3.141592f / 180.f) * -90.f;
+
+		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
+		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
+		m_normalAbilityEffect->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+
+		if (m_normalAbility)
+		{
+			m_normalAbility = false;
+
+			{
+				m_normalAbilityEffect->SetActive(true);
+				m_normalAbilityEffect->SetSimulationSpeed(3.f);
+				m_normalAbilityEffect->Play();
+			}
+
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_2_Sound.wav", false, 14);
+		}
 	}
 }
