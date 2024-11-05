@@ -607,6 +607,7 @@ private:
 
 	float m_downGuage;
 
+	PROPERTY(playOnce);
 	bool m_playOnce;
 
 	PROPERTY(isAnimationEnd);

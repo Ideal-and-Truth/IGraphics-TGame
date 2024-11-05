@@ -392,7 +392,7 @@ void BossSkill::FlameSword()
 	{
 		if (m_readyToShoot)
 		{
-			float bossHeight = m_owner.lock()->m_transform->m_position.y + 2.f;
+			float bossHeight = m_owner.lock()->m_transform->m_position.y + 2.2f;
 			m_flameSwordTime += GetDeltaTime();
 			if (m_flameSwordTime > 0.13f && m_flameCount <= m_flamePos.size())
 			{
@@ -1018,7 +1018,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 	{
 		m_playSpear = false;
 
-		pos.y += 2.f;
+		pos.y += 0.3f;
 
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\SpearImpact.yaml");
