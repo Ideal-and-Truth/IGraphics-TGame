@@ -5,6 +5,7 @@
 #include "PhysicsManager.h"
 #include "PlayerController.h"
 #include "EnemyAnimator.h"
+#include "BossAnimator.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 
@@ -96,7 +97,10 @@ void PlayerCamera::LateUpdate()
 	{
 		if (e->GetComponent<Enemy>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(e->GetComponent<Enemy>().lock().get()).Get() <= 0.f)
 		{
-			e->Destroy();
+			if (e->GetComponent<BossAnimator>().expired())
+			{
+				e->Destroy();
+			}
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
 			m_lockOnTime = 0.f;
 			break;
