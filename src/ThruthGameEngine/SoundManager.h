@@ -33,6 +33,9 @@ namespace Truth
 		void CreateSound(fs::path _path, bool _isLoop);
 		void SetVolum(int _channel, float _vol);
 		void Play(fs::path _path, bool _canReduplication, int _channel);
+		void Pause(int _channel);
+		void Resume(int _channel);
+		void Stop(int _channel);
 
 	private:
 		void CheckResult(FMOD_RESULT _result);

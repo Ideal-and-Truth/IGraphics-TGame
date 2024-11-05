@@ -38,8 +38,11 @@ Truth::Scene::Scene(std::shared_ptr<Managers> _managers)
 Truth::Scene::~Scene()
 {
 	ClearEntity();
+
 	for (auto& m : m_mapEntity)
 		DeleteEntity(m);
+
+	m_mapEntity.clear();
 }
 
 /// <summary>
