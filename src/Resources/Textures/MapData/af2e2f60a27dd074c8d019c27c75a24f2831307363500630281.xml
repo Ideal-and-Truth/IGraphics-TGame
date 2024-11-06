@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Materials>
+    <Material>
+        <Name>M_alterbase_3</Name>
+        <DiffuseFile>T_roofinside_BaseMap.png</DiffuseFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
+        <NormalFile>DefaultNormalMap.png</NormalFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
+        <RoughnessFile>DefaulBlack.png</RoughnessFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="1" G="1" B="1" A="1"/>
+        <Emissive R="0" G="0" B="0" A="1"/>
+        <Metallic Factor="-1.0737418e+08"/>
+        <Roughness Factor="0"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
+    </Material>
+    <Material>
+        <Name>M_alterbase_2</Name>
+        <DiffuseFile>T_alterroofoutside_BaseMap.png</DiffuseFile>
+        <SpecularFile>DefaultAlbedo.png</SpecularFile>
+        <NormalFile>DefaultNormalMap.png</NormalFile>
+        <MetalicFile>DefaulBlack.png</MetalicFile>
+        <RoughnessFile>DefaulBlack.png</RoughnessFile>
+        <Ambient R="0" G="0" B="0" A="1"/>
+        <Diffuse R="1" G="1" B="1" A="1"/>
+        <Specular R="1" G="1" B="1" A="1"/>
+        <Emissive R="1" G="0.66884589" B="0.36320752" A="1"/>
+        <Metallic Factor="-1.0737418e+08"/>
+        <Roughness Factor="0"/>
+        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
+    </Material>
+</Materials>
