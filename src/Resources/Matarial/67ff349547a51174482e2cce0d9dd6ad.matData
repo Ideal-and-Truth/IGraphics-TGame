@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ej_window/T_town_edge_BaseMap.png
-normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ej_window/T_town_edge_Normal.png
-maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ej_window/T_town_edge_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/ej_window/T_town_edge_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/ej_window/T_town_edge_Normal.png
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/ej_window/T_town_edge_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

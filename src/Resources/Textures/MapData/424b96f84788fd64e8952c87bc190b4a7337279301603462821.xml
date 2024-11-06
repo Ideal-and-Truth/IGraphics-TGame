@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_JShouse_3F_white_M</Name>
-        <DiffuseFile>T_JShouse_3F_M_white_BaseMap.png</DiffuseFile>
+        <Name>M_JShouse_3F_M</Name>
+        <DiffuseFile>T_JShouse_3F_M_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

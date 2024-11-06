@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_treebot_default</Name>
-        <DiffuseFile>T_town_treebot_big_BaseMap.png</DiffuseFile>
+        <Name>M_treebot_gear</Name>
+        <DiffuseFile>T_town_treebot_gear_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
