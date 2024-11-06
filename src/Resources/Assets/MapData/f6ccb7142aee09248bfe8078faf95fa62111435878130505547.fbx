@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 14
-		Minute: 29
-		Second: 36
-		Millisecond: 911
+		Hour: 19
+		Minute: 42
+		Second: 53
+		Millisecond: 842
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\13360c81_f6ccb7142aee09248bfe8078faf95fa62111435878130505547.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\13360c81_f6ccb7142aee09248bfe8078faf95fa62111435878130505547.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\qsgwa05f_f6ccb7142aee09248bfe8078faf95fa62111435878130505547.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\qsgwa05f_f6ccb7142aee09248bfe8078faf95fa62111435878130505547.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1861187018080, "Scene", "Scene" {
+	Document: 2887088829824, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029985872, "Geometry::Scene", "Mesh" {
+	Geometry: 2878745420560, "Geometry::Scene", "Mesh" {
 		Vertices: *144 {
 			a: -0.400000065565109,-0.261826021596789,1.98571439832449,-0.400000065565109,0.295000011101365,2.70000007003546,-0.400000065565109,-0.304999994114041,2.70000007003546,-0.400000065565109,0.295000011101365,1.98571421205997,-0.400000065565109,0.295000011101365,1.78406666964293,-0.400000065565109,-0.223401980474591,1.78339183330536,-0.400000065565109,-0.0767297286074609,1.41693782061338,-0.400000065565109,0.295000011101365,1.41693782061338,-0.400000065565109,0.0116593502752949,1.08183640986681,-0.400000065565109,0.295000011101365,1.08183640986681,-0.400000065565109,0.0583077664487064,0.735714286565781,-0.400000065565109,0.295000011101365,0.735714286565781,-0.400000065565109,0.0433602777775377,0.438095210120082,-0.400000065565109,0.295000011101365,0.438095210120082,-0.400000065565109,-0.00499999514431693,0.20000000949949,-0.400000065565109,0.295000011101365,0.20000000949949,0.400000065565109,0.295000011101365,1.98571421205997,0.400000065565109,-0.304999994114041,2.70000007003546,0.400000065565109,0.295000011101365,2.70000007003546,0.400000065565109,-0.261826021596789,1.98571421205997,0.400000065565109,-0.22340202704072,1.78339164704084,0.400000065565109,0.295000011101365,1.78406666964293,0.400000065565109,-0.0767297577112913,1.41693782061338,0.400000065565109,0.295000011101365,1.41693782061338,0.400000065565109,0.295000011101365,1.08183640986681,0.400000065565109,0.0116593313578051,1.08183640986681,0.400000065565109,0.0583077664487064,0.735714286565781,0.400000065565109,0.295000011101365,0.735714286565781,0.400000065565109,0.0433602777775377,0.438095210120082,0.400000065565109,0.295000011101365,0.438095210120082,0.400000065565109,0.295000011101365,0.20000000949949,0.400000065565109,-0.00499999514431693,0.20000000949949,-0.430000014603138,-0.334999989718199,2.70000007003546,-0.430000014603138,0.325000006705523,2.70000007003546,-0.430000014603138,0.325000006705523,3.00000011920929,-0.430000014603138,-0.334999989718199,3.00000011920929,0.430000014603138,0.325000006705523,2.70000007003546,0.430000014603138,-0.334999989718199,2.70000007003546,
 0.430000014603138,-0.334999989718199,3.00000011920929,0.430000014603138,0.325000006705523,3.00000011920929,-0.430000014603138,-0.0449999934062362,0,-0.430000014603138,0.334999989718199,0,-0.430000014603138,0.334999989718199,0.20000000949949,-0.430000014603138,-0.0449999934062362,0.20000000949949,0.430000014603138,0.334999989718199,0,0.430000014603138,-0.0449999934062362,0,0.430000014603138,-0.0449999934062362,0.20000000949949,0.430000014603138,0.334999989718199,0.20000000949949
@@ -367,7 +367,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845824464, "Model::SM_wall_pillar", "Mesh" {
+	Model: 2882424118640, "Model::SM_wall_pillar", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -375,13 +375,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.9720153808594,44.9982604980469,0
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",84.973991394043,84.9739837646484,84.974006652832
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,35.0000610351563
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000030517578,100.000030517578,124.090896606445
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1875844847504, "Material::M_wall_bigpattern", "" {
+	Material: 2882454801328, "Material::M_wall_brick", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -395,23 +395,23 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1861136684576, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2878745998512, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_brick_BaseMap.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_brick_BaseMap.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_brick_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_brick_BaseMap.png"
 	}
-	Texture: 1881005435232, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2878745998032, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_brick_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_brick_BaseMap.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -425,22 +425,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_wall_pillar, Model::RootNode
-	C: "OO",1875845824464,0
+	C: "OO",2882424118640,0
 	
-	;Material::M_wall_bigpattern, Model::SM_wall_pillar
-	C: "OO",1875844847504,1875845824464
+	;Material::M_wall_brick, Model::SM_wall_pillar
+	C: "OO",2882454801328,2882424118640
 	
 	;Geometry::Scene, Model::SM_wall_pillar
-	C: "OO",1868029985872,1875845824464
+	C: "OO",2878745420560,2882424118640
 	
-	;Texture::DiffuseColor_Texture, Material::M_wall_bigpattern
-	C: "OO",1881005435232,1875844847504
+	;Texture::DiffuseColor_Texture, Material::M_wall_brick
+	C: "OO",2878745998032,2882454801328
 	
-	;Texture::DiffuseColor_Texture, Material::M_wall_bigpattern
-	C: "OP",1881005435232,1875844847504, "DiffuseColor"
+	;Texture::DiffuseColor_Texture, Material::M_wall_brick
+	C: "OP",2878745998032,2882454801328, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1861136684576,1881005435232
+	C: "OO",2878745998512,2878745998032
 }
 ;Takes section
 ;----------------------------------------------------
