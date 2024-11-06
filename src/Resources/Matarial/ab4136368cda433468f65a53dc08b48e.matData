@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/2F_LR/T_JShouse2F_LR_white_BaseMap.png
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/2F_LR/T_JShouse2F_LR_Normal.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/2F_LR/T_JShouse2F_LR_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/JShouse/2F_LR/T_JShouse2F_LR_white_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/JShouse/2F_LR/T_JShouse2F_LR_Normal.png
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/JShouse/2F_LR/T_JShouse2F_LR_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
