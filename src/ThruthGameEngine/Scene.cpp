@@ -103,7 +103,7 @@ void Truth::Scene::DeleteEntity(std::shared_ptr<Entity> _p)
 	if (m_managers.lock()->m_isEdit)
 	{
 		// TODO: delete ÃÖÀûÈ­
-		for (auto itr = m_entities.begin(); itr != m_entities.end() ; itr++)
+		for (auto itr = m_entities.begin(); itr != m_entities.end(); itr++)
 			if (_p == (*itr))
 				m_entities.erase(itr);
 		_p->Destroy();
@@ -139,12 +139,12 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
 
-// 	finish = clock();
-// 	std::string temp = std::to_string(finish - start);
-// 
-// 	temp = std::string("Loading : ") + temp;
-// 	temp += " \n ";
-// 	DEBUG_PRINT(temp.c_str());
+	// 	finish = clock();
+	// 	std::string temp = std::to_string(finish - start);
+	// 
+	// 	temp = std::string("Loading : ") + temp;
+	// 	temp += " \n ";
+	// 	DEBUG_PRINT(temp.c_str());
 
 	m_managers.lock()->Graphics()->SetBrightness(m_brightness);
 
@@ -765,6 +765,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			}
 			case 2:
 			{
+				static bool c = true;
 				std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
 				light->m_isRendering = true;
 				light->m_position = pos;
@@ -772,7 +773,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_intensity = intensity * 1;
 				light->m_lightColor = lightColor;
 				light->m_layer = 0;
-				m_mapEntity[i]->AddComponent(light);
+					m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			default:
@@ -787,7 +788,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 	for (auto& e : m_mapEntity)
 	{
-		e->Initialize();
+		// e->Initialize();
 		e->ApplyTransform();
 		e->Awake();
 		e->Start();

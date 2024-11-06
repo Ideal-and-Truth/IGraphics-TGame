@@ -226,7 +226,6 @@ void EnemyAnimator::Update()
 				m_enemyController->SetCanMove(false);
 				m_isAttack = true;
 			}
-			m_isAttacking = true;
 		}
 	}
 
@@ -476,6 +475,11 @@ void EnemyAttack::OnStateUpdate()
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
 	{
 		GetProperty("normalAttack")->Set(m_animator, true);
+		GetProperty("isAttacking")->Set(m_animator, true);
+	}
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 26)
+	{
+		GetProperty("isAttacking")->Set(m_animator, false);
 	}
 
 	if (GetProperty("isDamage")->Get<bool>(m_animator).Get())
@@ -541,6 +545,12 @@ void EnemyChargeAttack::OnStateUpdate()
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
 	{
 		GetProperty("chargeAttack")->Set(m_animator, true);
+		GetProperty("isAttacking")->Set(m_animator, true);
+	}
+
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 26)
+	{
+		GetProperty("isAttacking")->Set(m_animator, false);
 	}
 
 	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
