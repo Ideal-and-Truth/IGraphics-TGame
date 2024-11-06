@@ -47,20 +47,23 @@ namespace Truth
 		void SetColor();
 		void SetRange();
 		void SetPosition();
-
+		void SetPosition(const Vector3& _position);
 		void SetLayer();
 
 		void SetShadow();
 
+#ifdef EDITOR_MODE
+		virtual void EditorSetValue();
+#endif // EDITOR_MODE
+
+	private:
 		METHOD(Initialize);
 		void Initialize();
 
 		METHOD(Destroy);
 		void Destroy();
 
-#ifdef EDITOR_MODE
-		virtual void EditorSetValue();
-#endif // EDITOR_MODE
+
 	};
 	template<class Archive>
 	void Truth::PointLight::load(Archive& _ar, const unsigned int file_version)

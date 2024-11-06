@@ -135,7 +135,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		LoadEntity(e);
 	}
 
-	// LoadUnityData(m_mapPath);
+	LoadUnityData(m_mapPath);
 
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
 
@@ -772,8 +772,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				light->m_radius = range;
 				light->m_intensity = intensity * 1;
 				light->m_lightColor = lightColor;
-				light->m_layer = 0;
-					m_mapEntity[i]->AddComponent(light);
+				light->m_layer = 1;
+				m_mapEntity[i]->AddComponent(light);
 				break;
 			}
 			default:
