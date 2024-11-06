@@ -14,11 +14,15 @@ Ideal::D3D12Texture::D3D12Texture()
 
 Ideal::D3D12Texture::~D3D12Texture()
 {
-	m_srvHandle.Free();
-	m_rtvHandle.Free();
-	m_dsvHandle.Free();
-
-	m_srvHandleInEditor.Free();
+	//m_srvHandle.Free();
+	//m_rtvHandle.Free();
+	//m_dsvHandle.Free();
+	//for (uint32 i = 0; i < m_uavHandles.size(); ++i)
+	//{
+	//	m_uavHandles[i].Free();
+	//}
+	//m_uavHandles.clear();
+	//m_srvHandleInEditor.Free();
 }
 
 uint64 Ideal::D3D12Texture::GetImageID()
@@ -50,7 +54,7 @@ void Ideal::D3D12Texture::Free()
 	m_rtvHandle.Free();
 	m_dsvHandle.Free();
 	//m_uavHandle.Free();
-	for (uint32 i = 0; i < m_uavCount; i++)
+	for (uint32 i = 0; i < m_uavHandles.size(); ++i)
 	{
 		m_uavHandles[i].Free();
 	}

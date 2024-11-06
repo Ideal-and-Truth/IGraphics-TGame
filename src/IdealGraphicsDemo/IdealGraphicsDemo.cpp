@@ -487,7 +487,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
 		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png", true);
 		//std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/1_Test/uni_spill.tga");
-		std::shared_ptr<Ideal::ITexture> kaTexture;// = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");
 		//std::shared_ptr<Ideal::ITexture> normalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
@@ -2970,22 +2969,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 		//meshes.clear();
 
-		//gRenderer->DeleteMeshObject(cart);
-		//cart.reset();
+		gRenderer->DeleteMeshObject(cart);
+		cart.reset();
 		//gRenderer->DeleteMeshObject(cart2);
 		//cart2.reset();
-		//gRenderer->DeleteMeshObject(DebugStaticEnemy);
-		//DebugStaticEnemy.reset();
-		//gRenderer->DeleteMeshObject(DebugEnemy);
-		//DebugEnemy.reset();
-		//gRenderer->DeleteMeshObject(DebugPlayer);
-		//gRenderer->DeleteMeshObject(DebugPlayer2);
-		//gRenderer->DeleteMeshObject(DebugPlayer3);
-		//DebugPlayer.reset();
-		//DebugPlayer2.reset();
-		//DebugPlayer3.reset();
-		//gRenderer->DeleteMeshObject(playerRe);
-		//playerRe.reset();
+
+
+		gRenderer->DeleteMeshObject(DebugStaticEnemy);
+		DebugStaticEnemy.reset();
+		gRenderer->DeleteMeshObject(DebugPlayer);
+		DebugPlayer.reset();
 		gRenderer->DeleteMaterial(kaMaterial);
 		kaMaterial.reset();
 		gRenderer->DeleteMaterial(skirtMaterial);
@@ -2994,8 +2987,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		eyeMaterial.reset();
 		gRenderer->DeleteTexture(faceTexture);
 		faceTexture.reset();
-		gRenderer->DeleteTexture(kaTexture);
-		kaTexture.reset();
 		//gRenderer->DeleteTexture(normalTexture);
 		//normalTexture.reset();
 		gRenderer->DeleteTexture(faceNormalTexture);
@@ -3007,9 +2998,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->DeleteTexture(skirtBottomNormalTexture);
 		skirtBottomNormalTexture.reset();
 
+		gRenderer->DeleteMaterial(planeMaterial);
+		planeMaterial.reset();
+		gRenderer->DeleteTexture(planeAlbedoTexture);
+		planeAlbedoTexture.reset();
+		gRenderer->DeleteTexture(planeMaskTexture);
+		planeMaskTexture.reset();
+		gRenderer->DeleteTexture(planeNormalTexture);
+		planeNormalTexture.reset();
 		gRenderer->DeleteText(text);
 		text.reset();
 
+		gRenderer->DeleteTexture(skybox);
+		skybox.reset();
 		gRenderer.reset();
 	}
 

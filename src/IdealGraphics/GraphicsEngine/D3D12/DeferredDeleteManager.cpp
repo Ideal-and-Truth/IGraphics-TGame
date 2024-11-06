@@ -107,7 +107,8 @@ void Ideal::DeferredDeleteManager::DeleteTexture(uint32 DeleteContextIndex)
 	{
 		for (auto& Resource : m_textureToDelete[DeleteContextIndex])
 		{
-			Resource.reset();
+			//Resource.reset();
+			Resource->Free();
 		}
 		m_textureToDelete[DeleteContextIndex].clear();
 	}
