@@ -6,6 +6,7 @@
 #include "RigidBody.h"
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Bullet)
 
@@ -44,9 +45,11 @@ void Bullet::OnCollisionEnter(Truth::Collider* _other)
 		if (!playerAnimator->GetTypeInfo().GetProperty("isDodge")->Get<bool>(playerAnimator.get()).Get())
 		{
 			float damage = m_bulletDamage;
-			if (playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(playerAnimator.get()).Get())
+			if (playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(playerAnimator.get()).Get()
+				&& !playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(playerAnimator.get()).Get())
 			{
 				damage *= 0.3f;
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Block_Sound_1.wav", true, 63);
 			}
 			if (playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(playerAnimator.get()).Get())
 			{
@@ -56,8 +59,8 @@ void Bullet::OnCollisionEnter(Truth::Collider* _other)
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player.get(), playerHp - m_bulletDamage);
 		}
 		m_isHit = true;
+		PlayEffect();
 	}
-	PlayEffect();
 }
 
 void Bullet::PlayEffect()

@@ -1,9 +1,10 @@
 ---
 baseMap: ../Resources/DefaultData/DefaultAlbedo.png
 normalMap: ../Resources/DefaultData/DefaultNormalMap.png
-maskMap: ../Resources/DefaultData/DefaultBlack.png
+maskMap: ../Resources/Textures/UVSphere/DefaultWhite.png
 tileX: 1
 tileY: 1
 alphaCulling: false
 transparent: false
+layer: 1
 ...

@@ -283,7 +283,7 @@ void BossAnimator::Update()
 	if (m_isUseSkill || m_isDodge || m_isDown || m_currentState == m_animationStateMap["Down"]
 		|| m_currentState == m_animationStateMap["AttackCombo1_1"] || m_currentState == m_animationStateMap["AttackCombo1_2"]
 		|| m_currentState == m_animationStateMap["AttackCombo1_3"] || m_currentState == m_animationStateMap["AttackCombo2_1"]
-		|| m_currentState == m_animationStateMap["AttackCombo3_1"] || m_currentState == m_animationStateMap["AttackSpin"] 
+		|| m_currentState == m_animationStateMap["AttackCombo3_1"] || m_currentState == m_animationStateMap["AttackSpin"]
 		|| m_currentState == m_animationStateMap["AttackJump"] || m_currentState == m_animationStateMap["AttackRunning"])
 	{
 		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
@@ -823,12 +823,12 @@ void BossAttackCharge::OnStateExit()
 {
 	if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
 	{
-		GetProperty("isSkillActive")->Set(m_animator, false);
 		GetProperty("lightSpeedDashCoolTime")->Set(m_animator, true);
 	}
 
 	dynamic_cast<BossAnimator*>(m_animator)->SetChargeAttack(true);
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(1.f);
+	GetProperty("isSkillActive")->Set(m_animator, false);
 	GetProperty("attackCharge")->Set(m_animator, false);
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 	GetProperty("isLockOn")->Set(m_animator, false);
@@ -1131,7 +1131,7 @@ void BossAttackCombo1_3::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("attackCombo1_3")->Get<bool>(m_animator).Get() 
+	if (isReset && GetProperty("attackCombo1_3")->Get<bool>(m_animator).Get()
 		&& GetProperty("currentFrame")->Get<int>(m_animator).Get() < 34)
 	{
 		GetProperty("isAttacking")->Set(m_animator, true);

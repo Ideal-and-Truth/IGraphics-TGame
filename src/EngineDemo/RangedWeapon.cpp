@@ -64,11 +64,13 @@ void RangedWeapon::Update()
 		bullet->m_layer = 1;
 		bullet->AddComponent<Truth::RigidBody>();
 		bullet->AddComponent<Truth::BoxCollider>(false);
-		bullet->AddComponent<Truth::Mesh>(L"DebugObject/debugCube");
+		bullet->AddComponent<Truth::Mesh>(L"BossAnimations/Spear/SM_niddle_sub");
 
 		auto c = bullet->GetComponent<Truth::BoxCollider>().lock().get();
 		c->SetGroup(1 << 5);
 		c->SetMask(1 << 1);
+		c->m_center = { 0.f,0.f,-0.02f };
+		c->m_size = { 0.011f,0.011f,0.041f };
 
 		auto bulletComponent = bullet->AddComponent<Bullet>();
 		float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
@@ -77,7 +79,7 @@ void RangedWeapon::Update()
 		bullet->m_name = "bullet";
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(bullet);
 		bullet->SetPosition(m_owner.lock()->m_transform->m_worldPosition);
-		bullet->SetScale({ 1.f,1.f,1.f });
+		bullet->SetScale({ 50.f,50.f,50.f });
 
 // 		bullet->Awake();
 // 		bullet->Start();

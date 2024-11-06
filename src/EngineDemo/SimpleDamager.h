@@ -31,6 +31,9 @@ private:
 	PROPERTY(damage);
 	float m_damage;
 
+private:
+	void PlayEffect(Vector3 pos);
+
 public:
 	SimpleDamager();
 	virtual ~SimpleDamager();

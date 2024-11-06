@@ -550,7 +550,7 @@ void EnemyChargeAttack::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
 	{
 		GetProperty("chargeAttack")->Set(m_animator, true);
 		GetProperty("isAttacking")->Set(m_animator, true);

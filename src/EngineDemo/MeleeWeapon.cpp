@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(MeleeWeapon)
 
@@ -32,6 +33,9 @@ void MeleeWeapon::Awake()
 
 void MeleeWeapon::Start()
 {
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Block_Sound_1.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Block_Sound_2.wav", false);
+
 	m_collider = m_owner.lock().get()->GetComponent<Truth::BoxCollider>().lock();
 	if (m_owner.lock()->m_parent.lock()->m_name == "Player")
 	{
@@ -100,18 +104,20 @@ void MeleeWeapon::Update()
 			auto player = e->GetComponent<Player>().lock().get();
 			float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
 			float playerHp = player->GetTypeInfo().GetProperty("currentTP")->Get<float>(player).Get();
-			if (m_playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_playerAnimator.get()).Get())
+			if (m_playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_playerAnimator.get()).Get()
+				&&!m_playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(m_playerAnimator.get()).Get())
 			{
 				enemyDamage *= 0.3f;
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Block_Sound_1.wav", true, 63);
 			}
 			if (m_playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(m_playerAnimator.get()).Get())
 			{
 				enemyDamage = 0.f;
-
-				Vector3 pos = e->GetWorldPosition();
-				pos.y += 1.f;
-				PlayEffect(pos);
 			}
+
+			Vector3 pos = e->GetWorldPosition();
+			pos.y += 1.f;
+			PlayEffect(pos);
 
 			float hpLeft = playerHp - enemyDamage;
 			player->GetTypeInfo().GetProperty("currentTP")->Set(player, hpLeft);
@@ -152,7 +158,7 @@ void MeleeWeapon::Update()
 
 void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 {
-	if (m_isAttacking&& m_canHit)
+	if (m_isAttacking && m_canHit)
 	{
 		if (m_player && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 		{
