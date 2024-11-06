@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 14
-		Minute: 29
-		Second: 42
-		Millisecond: 152
+		Hour: 18
+		Minute: 8
+		Second: 52
+		Millisecond: 334
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\fsxnl63e_0000000000000000e00000000000000010209.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\fsxnl63e_0000000000000000e00000000000000010209.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\ifnlqlne_0000000000000000e00000000000000010209.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\ifnlqlne_0000000000000000e00000000000000010209.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1881009167376, "Scene", "Scene" {
+	Document: 1866201844112, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -98,7 +98,7 @@ References:  {
 
 Definitions:  {
 	Version: 100
-	Count: 6
+	Count: 8
 	ObjectType: "GlobalSettings" {
 		Count: 1
 	}
@@ -218,7 +218,7 @@ Definitions:  {
 		}
 	}
 	ObjectType: "Texture" {
-		Count: 1
+		Count: 2
 		PropertyTemplate: "FbxFileTexture" {
 			Properties70:  {
 				P: "TextureTypeUse", "enum", "", "",0
@@ -241,7 +241,7 @@ Definitions:  {
 		}
 	}
 	ObjectType: "Video" {
-		Count: 1
+		Count: 2
 		PropertyTemplate: "FbxVideo" {
 			Properties70:  {
 				P: "Path", "KString", "XRefUrl", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029974224, "Geometry::Scene", "Mesh" {
+	Geometry: 1868029277424, "Geometry::Scene", "Mesh" {
 		Vertices: *363 {
 			a: -500,-1.11022302462516e-14,500,-400,-1.11022302462516e-14,500,-300,-1.11022302462516e-14,500,-199.999988079071,-1.11022302462516e-14,500,-99.9999940395355,-1.11022302462516e-14,500,-0,-1.11022302462516e-14,500,100.000023841858,-1.11022302462516e-14,500,199.999988079071,-1.11022302462516e-14,500,300,-1.11022302462516e-14,500,400.000047683716,-1.11022302462516e-14,500,500,-1.11022302462516e-14,500,-500,-8.88178432935015e-15,400,-400,-8.88178432935015e-15,400,-300,-8.88178432935015e-15,400,-199.999988079071,-8.88178432935015e-15,400,-99.9999940395355,-8.88178432935015e-15,400,-0,-8.88178432935015e-15,400,100.000023841858,-8.88178432935015e-15,400,199.999988079071,-8.88178432935015e-15,400,300,-8.88178432935015e-15,400,400.000047683716,-8.88178432935015e-15,400,500,-8.88178432935015e-15,400,-500,-6.66133841244874e-15,300,-400,-6.66133841244874e-15,300,-300,-6.66133841244874e-15,300,-199.999988079071,-6.66133841244874e-15,300,-99.9999940395355,-6.66133841244874e-15,300,-0,-6.66133841244874e-15,300,100.000023841858,-6.66133841244874e-15,300,199.999988079071,-6.66133841244874e-15,300,300,-6.66133841244874e-15,300,400.000047683716,-6.66133841244874e-15,300,500,-6.66133841244874e-15,300,-500,-4.44089183380283e-15,199.999988079071,-400,-4.44089183380283e-15,199.999988079071,-300,-4.44089183380283e-15,199.999988079071,-199.999988079071,-4.44089183380283e-15,199.999988079071,-99.9999940395355,-4.44089183380283e-15,199.999988079071,-0,-4.44089183380283e-15,199.999988079071,100.000023841858,-4.44089183380283e-15,199.999988079071,199.999988079071,-4.44089183380283e-15,199.999988079071,300,-4.44089183380283e-15,199.999988079071,400.000047683716,-4.44089183380283e-15,199.999988079071,500,-4.44089183380283e-15,199.999988079071,-500,-2.22044591690142e-15,99.9999940395355,-400,-2.22044591690142e-15,99.9999940395355,-300,-2.22044591690142e-15,99.9999940395355,-199.999988079071,-2.22044591690142e-15,99.9999940395355,-99.9999940395355,-2.22044591690142e-15,99.9999940395355,-0,-2.22044591690142e-15,99.9999940395355,100.000023841858,-2.22044591690142e-15,99.9999940395355,
 199.999988079071,-2.22044591690142e-15,99.9999940395355,300,-2.22044591690142e-15,99.9999940395355,400.000047683716,-2.22044591690142e-15,99.9999940395355,500,-2.22044591690142e-15,99.9999940395355,-500,0,0,-400,0,0,-300,0,0,-199.999988079071,0,0,-99.9999940395355,0,0,-0,0,0,100.000023841858,0,0,199.999988079071,0,0,300,0,0,400.000047683716,0,0,500,0,0,-500,2.22044657864591e-15,-100.000023841858,-400,2.22044657864591e-15,-100.000023841858,-300,2.22044657864591e-15,-100.000023841858,-199.999988079071,2.22044657864591e-15,-100.000023841858,-99.9999940395355,2.22044657864591e-15,-100.000023841858,-0,2.22044657864591e-15,-100.000023841858,100.000023841858,2.22044657864591e-15,-100.000023841858,199.999988079071,2.22044657864591e-15,-100.000023841858,300,2.22044657864591e-15,-100.000023841858,400.000047683716,2.22044657864591e-15,-100.000023841858,500,2.22044657864591e-15,-100.000023841858,-500,4.44089183380283e-15,-199.999988079071,-400,4.44089183380283e-15,-199.999988079071,-300,4.44089183380283e-15,-199.999988079071,-199.999988079071,4.44089183380283e-15,-199.999988079071,-99.9999940395355,4.44089183380283e-15,-199.999988079071,-0,4.44089183380283e-15,-199.999988079071,100.000023841858,4.44089183380283e-15,-199.999988079071,199.999988079071,4.44089183380283e-15,-199.999988079071,300,4.44089183380283e-15,-199.999988079071,400.000047683716,4.44089183380283e-15,-199.999988079071,500,4.44089183380283e-15,-199.999988079071,-500,6.66133841244874e-15,-300,-400,6.66133841244874e-15,-300,-300,6.66133841244874e-15,-300,-199.999988079071,6.66133841244874e-15,-300,-99.9999940395355,6.66133841244874e-15,-300,-0,6.66133841244874e-15,-300,100.000023841858,6.66133841244874e-15,-300,199.999988079071,6.66133841244874e-15,-300,300,6.66133841244874e-15,-300,400.000047683716,6.66133841244874e-15,-300,500,6.66133841244874e-15,-300,-500,8.88178499109464e-15,-400.000047683716,-400,8.88178499109464e-15,-400.000047683716,-300,8.88178499109464e-15,-400.000047683716,-199.999988079071,8.88178499109464e-15,-400.000047683716,-99.9999940395355,8.88178499109464e-15,-400.000047683716,
@@ -372,7 +372,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845824464, "Model::SM_ghettowindowbrickwall__5_", "Mesh" {
+	Model: 1880397436256, "Model::Plane__17_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -380,43 +380,64 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",87.5385208129883,70.8203735351563,159.786697387695
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.344980716705322,0.248700097203255,0.380486249923706
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.0272671543061733,-179.396484375,0.0117797851562572
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.200000375509262,0.200000002980232,0.200000375509262
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881008357760, "Material::M_brickwallbase", "" {
+	Material: 1880403442640, "Material::M_JST_Crack", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
 		Properties70:  {
 			P: "AmbientColor", "Color", "", "A",0,0,0
 			P: "DiffuseColor", "Color", "", "A",1,1,1
-			P: "BumpFactor", "double", "Number", "",0
 			P: "Emissive", "Vector3D", "Vector", "",0,0,0
 			P: "Ambient", "Vector3D", "Vector", "",0,0,0
 			P: "Diffuse", "Vector3D", "Vector", "",1,1,1
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1880247294944, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1881008500720, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_BaseMap.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_BaseMap.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_BaseMap.png"
 	}
-	Texture: 1880247292544, "Texture::DiffuseColor_Texture", "" {
+	Video: 1882322338992, "Video::NormalMap_Texture", "Clip" {
+		Type: "Clip"
+		Properties70:  {
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_Normal.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_Normal.png"
+		}
+		UseMipMap: 0
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_Normal.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_Normal.png"
+	}
+	Texture: 1881008500240, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_BaseMap.png"
+		ModelUVTranslation: 0,0
+		ModelUVScaling: 1,1
+		Texture_Alpha_Source: "None"
+		Cropping: 0,0,0,0
+	}
+	Texture: 1881008499280, "Texture::NormalMap_Texture", "" {
+		Type: "TextureVideoClip"
+		Version: 202
+		TextureName: "Texture::NormalMap_Texture"
+		Media: "Video::NormalMap_Texture"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_Normal.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\JS_DesignerTile\T_JST_Crack_Normal.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -429,23 +450,32 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_ghettowindowbrickwall__5_, Model::RootNode
-	C: "OO",1875845824464,0
+	;Model::Plane__17_, Model::RootNode
+	C: "OO",1880397436256,0
 	
-	;Material::M_brickwallbase, Model::SM_ghettowindowbrickwall__5_
-	C: "OO",1881008357760,1875845824464
+	;Material::M_JST_Crack, Model::Plane__17_
+	C: "OO",1880403442640,1880397436256
 	
-	;Geometry::Scene, Model::SM_ghettowindowbrickwall__5_
-	C: "OO",1868029974224,1875845824464
+	;Geometry::Scene, Model::Plane__17_
+	C: "OO",1868029277424,1880397436256
 	
-	;Texture::DiffuseColor_Texture, Material::M_brickwallbase
-	C: "OO",1880247292544,1881008357760
+	;Texture::DiffuseColor_Texture, Material::M_JST_Crack
+	C: "OO",1881008500240,1880403442640
 	
-	;Texture::DiffuseColor_Texture, Material::M_brickwallbase
-	C: "OP",1880247292544,1881008357760, "DiffuseColor"
+	;Texture::NormalMap_Texture, Material::M_JST_Crack
+	C: "OO",1881008499280,1880403442640
+	
+	;Texture::DiffuseColor_Texture, Material::M_JST_Crack
+	C: "OP",1881008500240,1880403442640, "DiffuseColor"
+	
+	;Texture::NormalMap_Texture, Material::M_JST_Crack
+	C: "OP",1881008499280,1880403442640, "NormalMap"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1880247294944,1880247292544
+	C: "OO",1881008500720,1881008500240
+	
+	;Video::NormalMap_Texture, Texture::NormalMap_Texture
+	C: "OO",1882322338992,1881008499280
 }
 ;Takes section
 ;----------------------------------------------------

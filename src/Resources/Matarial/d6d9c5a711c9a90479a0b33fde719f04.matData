@@ -1,5 +1,5 @@
 ---
-baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/Hannatile/T_brickwall_002_BaseMap-1.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/brickwalltile/Hannatile/T_brickwall_002_BaseMap-1.png
 normalMap: ""
 maskMap: ""
 tileX: 1.89999998

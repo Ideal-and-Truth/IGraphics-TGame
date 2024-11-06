@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 14
-		Minute: 29
-		Second: 44
-		Millisecond: 444
+		Hour: 20
+		Minute: 20
+		Second: 40
+		Millisecond: 559
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\n96yzitf_e56cd9319e1ddd04686755001b3853731635033520839513089.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\n96yzitf_e56cd9319e1ddd04686755001b3853731635033520839513089.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\kbdxfobg_e56cd9319e1ddd04686755001b3853731635033520839513089.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\kbdxfobg_e56cd9319e1ddd04686755001b3853731635033520839513089.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1861208350528, "Scene", "Scene" {
+	Document: 2164598938848, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029992592, "Geometry::Scene", "Mesh" {
+	Geometry: 2158621002096, "Geometry::Scene", "Mesh" {
 		Vertices: *27 {
 			a: 4.97892907458386e-09,0.577756343409419,0,0.408535404130816,0.408535404130816,0,2.55758053624433e-09,-5.86038995109561e-09,0,-0.408535404130816,0.408535404130816,0,0.577756343409419,-3.70808002359002e-09,0,-0.577756343409419,-3.70808002359002e-09,0,0.408535404130816,-0.408535404130816,0,-0.408535404130816,-0.408535404130816,0,4.97892907458386e-09,-0.577756343409419,0
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845804464, "Model::tree_bot", "Mesh" {
+	Model: 2164596049792, "Model::tree_bot", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,1.02688598632815
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",99.9999847412109,100.000061035156,100.000061035156
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-145.168670654297
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000099182129,100.000053405762,100.000076293945
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881079083200, "Material::M_Ground_Forest_Grass_01", "" {
+	Material: 2164600669808, "Material::M_Ground_Forest_needles_01", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -390,45 +390,45 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1864894496096, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164599947360, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_A_SM.tga"
-			P: "RelPath", "KString", "XRefUrl", "", "..\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_A_SM.tga"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_A_SM.tga"
+			P: "RelPath", "KString", "XRefUrl", "", "..\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_A_SM.tga"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_A_SM.tga"
-		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_A_SM.tga"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_A_SM.tga"
+		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_A_SM.tga"
 	}
-	Video: 1864894495136, "Video::NormalMap_Texture", "Clip" {
+	Video: 2164599950240, "Video::NormalMap_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_N.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_N.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_N.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_N.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_N.png"
-		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_N.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_N.png"
+		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_N.png"
 	}
-	Texture: 1881005435232, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_A_SM.tga"
-		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_A_SM.tga"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_A_SM.tga"
+		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_A_SM.tga"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 1864894494656, "Texture::NormalMap_Texture", "" {
+	Texture: 2164599948800, "Texture::NormalMap_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::NormalMap_Texture"
 		Media: "Video::NormalMap_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_N.png"
-		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_grass_01_N.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_N.png"
+		RelativeFilename: "..\ArtResource\ADDassets\Ground\T_forest_ground_needles_01_N.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -442,31 +442,31 @@ Objects:  {
 Connections:  {
 	
 	;Model::tree_bot, Model::RootNode
-	C: "OO",1875845804464,0
+	C: "OO",2164596049792,0
 	
-	;Material::M_Ground_Forest_Grass_01, Model::tree_bot
-	C: "OO",1881079083200,1875845804464
+	;Material::M_Ground_Forest_needles_01, Model::tree_bot
+	C: "OO",2164600669808,2164596049792
 	
 	;Geometry::Scene, Model::tree_bot
-	C: "OO",1868029992592,1875845804464
+	C: "OO",2158621002096,2164596049792
 	
-	;Texture::DiffuseColor_Texture, Material::M_Ground_Forest_Grass_01
-	C: "OO",1881005435232,1881079083200
+	;Texture::DiffuseColor_Texture, Material::M_Ground_Forest_needles_01
+	C: "OO",2176327841456,2164600669808
 	
-	;Texture::NormalMap_Texture, Material::M_Ground_Forest_Grass_01
-	C: "OO",1864894494656,1881079083200
+	;Texture::NormalMap_Texture, Material::M_Ground_Forest_needles_01
+	C: "OO",2164599948800,2164600669808
 	
-	;Texture::DiffuseColor_Texture, Material::M_Ground_Forest_Grass_01
-	C: "OP",1881005435232,1881079083200, "DiffuseColor"
+	;Texture::DiffuseColor_Texture, Material::M_Ground_Forest_needles_01
+	C: "OP",2176327841456,2164600669808, "DiffuseColor"
 	
-	;Texture::NormalMap_Texture, Material::M_Ground_Forest_Grass_01
-	C: "OP",1864894494656,1881079083200, "NormalMap"
+	;Texture::NormalMap_Texture, Material::M_Ground_Forest_needles_01
+	C: "OP",2164599948800,2164600669808, "NormalMap"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1864894496096,1881005435232
+	C: "OO",2164599947360,2176327841456
 	
 	;Video::NormalMap_Texture, Texture::NormalMap_Texture
-	C: "OO",1864894495136,1864894494656
+	C: "OO",2164599950240,2164599948800
 }
 ;Takes section
 ;----------------------------------------------------

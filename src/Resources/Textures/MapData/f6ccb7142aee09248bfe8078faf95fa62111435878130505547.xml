@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_wall_bigpattern</Name>
-        <DiffuseFile>T_town_wall_big_pattern_BaseMap.png</DiffuseFile>
+        <Name>M_wall_brick</Name>
+        <DiffuseFile>T_town_wall_brick_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

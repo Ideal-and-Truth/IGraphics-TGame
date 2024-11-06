@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 14
-		Minute: 29
-		Second: 44
-		Millisecond: 923
+		Hour: 20
+		Minute: 20
+		Second: 41
+		Millisecond: 9
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\fuehh3w9_e56cd9319e1ddd04686755001b385373-686976112567319229.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\fuehh3w9_e56cd9319e1ddd04686755001b385373-686976112567319229.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\3iahqp7d_e56cd9319e1ddd04686755001b385373-686976112567319229.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\3iahqp7d_e56cd9319e1ddd04686755001b385373-686976112567319229.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1864897882112, "Scene", "Scene" {
+	Document: 2164598937312, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029987216, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620997168, "Geometry::Scene", "Mesh" {
 		Vertices: *51 {
 			a: 0.399431865662336,0.964313745498657,0,0.738053862005472,0.738053862005472,0,-1.64760080578752e-08,-6.32398994282468e-10,0,5.35439227677958e-10,1.04376580566168,0,0.964313745498657,0.399431865662336,0,-0.399431865662336,0.964313745498657,0,1.04376580566168,-6.32398994282468e-10,0,-0.738053862005472,0.738053862005472,0,0.964313745498657,-0.399431865662336,0,-0.964313745498657,0.399431865662336,0,0.738053862005472,-0.738053862005472,0,-1.04376580566168,-6.32398994282468e-10,0,0.399431865662336,-0.964313745498657,0,-0.964313745498657,-0.399431865662336,0,5.35439227677958e-10,-1.04376580566168,0,-0.738053862005472,-0.738053862005472,0,-0.399431865662336,-0.964313745498657,0
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845804464, "Model::big_low", "Mesh" {
+	Model: 2164301117328, "Model::big_low", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,1.02688598632815
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",105.861740112305,105.86181640625,105.86181640625
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-145.168670654297
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",105.861846923828,105.86181640625,105.861831665039
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1853988880784, "Material::M_treebot_default", "" {
+	Material: 2164599950960, "Material::M_treebot_gear", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,23 +391,23 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1869340355824, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164598544384, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_big_BaseMap.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_big_BaseMap.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_gear_BaseMap.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_gear_BaseMap.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_big_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_big_BaseMap.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_gear_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_gear_BaseMap.png"
 	}
-	Texture: 1869340355344, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_big_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_big_BaseMap.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_gear_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\tree bottom\T_town_treebot_gear_BaseMap.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -421,22 +421,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::big_low, Model::RootNode
-	C: "OO",1875845804464,0
+	C: "OO",2164301117328,0
 	
-	;Material::M_treebot_default, Model::big_low
-	C: "OO",1853988880784,1875845804464
+	;Material::M_treebot_gear, Model::big_low
+	C: "OO",2164599950960,2164301117328
 	
 	;Geometry::Scene, Model::big_low
-	C: "OO",1868029987216,1875845804464
+	C: "OO",2158620997168,2164301117328
 	
-	;Texture::DiffuseColor_Texture, Material::M_treebot_default
-	C: "OO",1869340355344,1853988880784
+	;Texture::DiffuseColor_Texture, Material::M_treebot_gear
+	C: "OO",2176327841456,2164599950960
 	
-	;Texture::DiffuseColor_Texture, Material::M_treebot_default
-	C: "OP",1869340355344,1853988880784, "DiffuseColor"
+	;Texture::DiffuseColor_Texture, Material::M_treebot_gear
+	C: "OP",2176327841456,2164599950960, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1869340355824,1869340355344
+	C: "OO",2164598544384,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

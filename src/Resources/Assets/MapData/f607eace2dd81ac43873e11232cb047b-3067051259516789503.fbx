@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 14
-		Minute: 30
-		Second: 8
-		Millisecond: 270
+		Hour: 20
+		Minute: 21
+		Second: 34
+		Millisecond: 859
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\qimla6yn_f607eace2dd81ac43873e11232cb047b-3067051259516789503.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\qimla6yn_f607eace2dd81ac43873e11232cb047b-3067051259516789503.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\cqrcqkhx_f607eace2dd81ac43873e11232cb047b-3067051259516789503.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\cqrcqkhx_f607eace2dd81ac43873e11232cb047b-3067051259516789503.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1881009164304, "Scene", "Scene" {
+	Document: 2164598936544, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029973776, "Geometry::Scene", "Mesh" {
+	Geometry: 2158621009712, "Geometry::Scene", "Mesh" {
 		Vertices: *48 {
 			a: -3.29999998211861,-3.20000015199184,-0.20000000949949,-3.29999998211861,3.20000015199184,-0.20000000949949,-3.29999998211861,3.20000015199184,0,-3.29999998211861,-3.20000015199184,0,3.29999998211861,3.20000015199184,-0.20000000949949,3.29999998211861,3.20000015199184,0,3.29999998211861,-3.20000015199184,-0.20000000949949,3.29999998211861,-3.20000015199184,0,-2.55001857876778,2.4500185623765,-0.20000000949949,-2.55001857876778,-2.4500185623765,-0.20000000949949,-2.95830424875021,-2.84229312092066,0,-2.95830424875021,2.84229312092066,0,2.55001857876778,2.4500185623765,-0.20000000949949,2.95830424875021,2.84229312092066,0,2.55001857876778,-2.4500185623765,-0.20000000949949,2.95830424875021,-2.84229312092066,0
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845836464, "Model::cube_roof_low_004", "Mesh" {
+	Model: 2164265360176, "Model::cube_roof_low_004", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -390,13 +390,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-35.4813690185547
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",130.041351318359,64.594482421875,99.9999923706055
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,129.18913269043
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",130.041610717773,98.8548889160156,100.000076293945
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881008348960, "Material::M_roof_gold", "" {
+	Material: 2164604538432, "Material::M_roof_gold", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -410,7 +410,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1880247292544, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164598901760, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roof\T_roofgold_BaseMap.png"
@@ -420,7 +420,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roof\T_roofgold_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\roof\T_roofgold_BaseMap.png"
 	}
-	Texture: 1880247294944, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -440,22 +440,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::cube_roof_low_004, Model::RootNode
-	C: "OO",1875845836464,0
+	C: "OO",2164265360176,0
 	
 	;Material::M_roof_gold, Model::cube_roof_low_004
-	C: "OO",1881008348960,1875845836464
+	C: "OO",2164604538432,2164265360176
 	
 	;Geometry::Scene, Model::cube_roof_low_004
-	C: "OO",1868029973776,1875845836464
+	C: "OO",2158621009712,2164265360176
 	
 	;Texture::DiffuseColor_Texture, Material::M_roof_gold
-	C: "OO",1880247294944,1881008348960
+	C: "OO",2176327841456,2164604538432
 	
 	;Texture::DiffuseColor_Texture, Material::M_roof_gold
-	C: "OP",1880247294944,1881008348960, "DiffuseColor"
+	C: "OP",2176327841456,2164604538432, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1880247292544,1880247294944
+	C: "OO",2164598901760,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

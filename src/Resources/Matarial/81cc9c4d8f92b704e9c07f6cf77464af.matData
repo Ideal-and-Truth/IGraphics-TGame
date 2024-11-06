@@ -1,0 +1,9 @@
+---
+baseMap: ../Resources/Textures/MapData/Assets/Resources/Models/Player/texture/T_timering_BaseMap.png
+normalMap: ""
+maskMap: ""
+tileX: 1
+tileY: 1
+alphaCulling: true
+transparent: false
+...

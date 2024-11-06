@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 14
-		Minute: 29
-		Second: 37
-		Millisecond: 162
+		Hour: 20
+		Minute: 21
+		Second: 23
+		Millisecond: 786
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\xrvbsu2a_8fa4f0001b087d743b5151c618f7ff837190062737962597424.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\xrvbsu2a_8fa4f0001b087d743b5151c618f7ff837190062737962597424.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\5lzh3jxw_8fa4f0001b087d743b5151c618f7ff837190062737962597424.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\5lzh3jxw_8fa4f0001b087d743b5151c618f7ff837190062737962597424.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1869339397520, "Scene", "Scene" {
+	Document: 2164598937568, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029980944, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620995824, "Geometry::Scene", "Mesh" {
 		Vertices: *96 {
 			a: -3.19229289889336,142.664742469788,46.342733502388,-1.6450148075819,141.551208496094,49.1392433643341,-3.03177703171968,138.87859582901,49.7651368379593,3.13605256378651,140.226984024048,-48.8853931427002,-2.87323519587517,142.396545410156,-47.4617570638657,-2.69785784184933,140.750408172607,-49.9079078435898,3.11633460223675,142.538011074066,-47.4720746278763,3.40450443327427,13.6356934905052,49.7697770595551,1.91174484789371,0.709235668182373,49.260339140892,-1.56212812289596,0.342130661010742,49.7764468193054,3.64276356995106,0.938510894775391,-49.7407019138336,-2.84600779414177,0.514376163482666,-49.6104389429092,2.29591596871614,141.685044765472,48.1120586395264,3.24742458760738,67.0803427696228,41.5747433900833,2.53786314278841,130.58602809906,41.6150271892548,3.33138220012188,127.530264854431,39.8422718048096,-3.21626588702202,0.116086006164551,46.3369697332382,-3.64276319742203,5.89730143547058,45.9466159343719,2.95138619840145,130.174684524536,-41.1955744028091,2.25831735879183,15.0771379470825,-38.6566489934921,2.62345615774393,128.691232204437,-39.4556850194931,3.39345820248127,11.9835428893566,-40.9822374582291,2.36020479351282,14.4870385527611,39.1876757144928,3.4696701914072,12.2768759727478,41.717004776001,-3.46217602491379,0.326097011566162,-15.4225707054138,3.23367156088352,0.235593318939209,-15.9631356596947,-3.33222858607769,0.15714168548584,9.97572913765907,3.57856787741184,0,45.5911368131638,-3.50524187088013,0.16288161277771,31.1114728450775,3.45258750021458,0.0626027584075928,-38.8064295053482,3.26703749597073,138.042736053467,49.8360097408295,-3.52012179791927,12.4903202056885,49.907910823822
 		} 
@@ -376,7 +376,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845822464, "Model::SM_ghettowindow", "Mesh" {
+	Model: 2164595963792, "Model::SM_ghettowindow__2_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -384,13 +384,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.0123441768810153,1.77383422851563,-0.0270207691937685
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.64660859107971,1.02649998664856,1.02649974822998
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.391143798828119,-85.5849151611328,-0.958630800247192
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.957516729831696,0.953916192054749,1.06288015842438
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1864886953856, "Material::M_ghettoset", "" {
+	Material: 2164598544064, "Material::M_ghettoset", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -405,7 +405,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1864886897776, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164603158240, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghettohomeset_BaseMap.png"
@@ -415,7 +415,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghettohomeset_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghettohomeset_BaseMap.png"
 	}
-	Video: 1864886898256, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 2164603156320, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghettohomeset_Emissive.png"
@@ -425,7 +425,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghettohomeset_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghettohomeset_Emissive.png"
 	}
-	Texture: 1881005435232, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -437,7 +437,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 1864886898736, "Texture::EmissiveColor_Texture", "" {
+	Texture: 2164603157760, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -456,32 +456,32 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_ghettowindow, Model::RootNode
-	C: "OO",1875845822464,0
+	;Model::SM_ghettowindow__2_, Model::RootNode
+	C: "OO",2164595963792,0
 	
-	;Material::M_ghettoset, Model::SM_ghettowindow
-	C: "OO",1864886953856,1875845822464
+	;Material::M_ghettoset, Model::SM_ghettowindow__2_
+	C: "OO",2164598544064,2164595963792
 	
-	;Geometry::Scene, Model::SM_ghettowindow
-	C: "OO",1868029980944,1875845822464
-	
-	;Texture::DiffuseColor_Texture, Material::M_ghettoset
-	C: "OO",1881005435232,1864886953856
-	
-	;Texture::EmissiveColor_Texture, Material::M_ghettoset
-	C: "OO",1864886898736,1864886953856
-	
-	;Texture::EmissiveColor_Texture, Material::M_ghettoset
-	C: "OP",1864886898736,1864886953856, "EmissiveColor"
+	;Geometry::Scene, Model::SM_ghettowindow__2_
+	C: "OO",2158620995824,2164595963792
 	
 	;Texture::DiffuseColor_Texture, Material::M_ghettoset
-	C: "OP",1881005435232,1864886953856, "DiffuseColor"
+	C: "OO",2176327841456,2164598544064
+	
+	;Texture::EmissiveColor_Texture, Material::M_ghettoset
+	C: "OO",2164603157760,2164598544064
+	
+	;Texture::EmissiveColor_Texture, Material::M_ghettoset
+	C: "OP",2164603157760,2164598544064, "EmissiveColor"
+	
+	;Texture::DiffuseColor_Texture, Material::M_ghettoset
+	C: "OP",2176327841456,2164598544064, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1864886897776,1881005435232
+	C: "OO",2164603158240,2176327841456
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",1864886898256,1864886898736
+	C: "OO",2164603156320,2164603157760
 }
 ;Takes section
 ;----------------------------------------------------

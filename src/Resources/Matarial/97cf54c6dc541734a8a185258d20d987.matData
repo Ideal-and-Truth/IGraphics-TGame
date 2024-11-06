@@ -1,9 +1,9 @@
 ---
-baseMap: ""
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/candle/flame.png
 normalMap: ""
 maskMap: ""
 tileX: 1
 tileY: 1
-alphaCulling: true
+alphaCulling: false
 transparent: false
 ...

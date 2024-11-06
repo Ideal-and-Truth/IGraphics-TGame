@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 14
-		Minute: 30
-		Second: 53
-		Millisecond: 941
+		Hour: 20
+		Minute: 21
+		Second: 45
+		Millisecond: 906
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\xof1wtdv_04b86ccc33b85be409c65c72f5cf57a3-1763152338621206356.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\xof1wtdv_04b86ccc33b85be409c65c72f5cf57a3-1763152338621206356.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\85dab4g8_04b86ccc33b85be409c65c72f5cf57a3-1763152338621206356.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\85dab4g8_04b86ccc33b85be409c65c72f5cf57a3-1763152338621206356.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1881009164560, "Scene", "Scene" {
+	Document: 2164598937568, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029967056, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620989552, "Geometry::Scene", "Mesh" {
 		Vertices: *63 {
 			a: 307.973575592041,6.7626066505909,140.529274940491,-0,6.7626066505909,140.529274940491,-0,14.4056022167206,140.529274940491,307.973575592041,14.4056022167206,140.529274940491,-0,19.5976555347443,137.055969238281,307.973575592041,19.5976555347443,137.055969238281,-0,19.5976555347443,113.946330547333,307.973575592041,19.5976555347443,113.946330547333,-0,26.4056026935577,113.883376121521,307.973575592041,26.4056026935577,113.883376121521,-0,31.5976560115814,110.410058498383,307.973575592041,31.5976560115814,110.410058498383,-0,31.5976560115814,83.0782890319824,307.973575592041,31.5976560115814,83.0782890319824,-307.973575592041,6.7626066505909,140.529274940491,-307.973575592041,14.4056022167206,140.529274940491,-307.973575592041,19.5976555347443,137.055969238281,-307.973575592041,19.5976555347443,113.946330547333,-307.973575592041,26.4056026935577,113.883376121521,-307.973575592041,31.5976560115814,110.410058498383,-307.973575592041,31.5976560115814,83.0782890319824
 		} 
@@ -365,7 +365,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845824464, "Model::midf_low", "Mesh" {
+	Model: 2164265360176, "Model::midf_low", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -373,13 +373,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.023010253906231,-179.99983215332,0.0547790527343618
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000047683716,1,1.00000023841858
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.00418638065457344,125.343841552734,0.0526123046875288
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000059604645,1,1.00000071525574
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881008354160, "Material::M_midtunnelwall", "" {
+	Material: 2164598902480, "Material::M_midtunnelwall", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -393,7 +393,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1880247294944, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2176335579616, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tunnel\midtunnel\T_midtunnelwall_BaseMap.png"
@@ -403,7 +403,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\tunnel\midtunnel\T_midtunnelwall_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\tunnel\midtunnel\T_midtunnelwall_BaseMap.png"
 	}
-	Texture: 1880247292544, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -423,22 +423,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::midf_low, Model::RootNode
-	C: "OO",1875845824464,0
+	C: "OO",2164265360176,0
 	
 	;Material::M_midtunnelwall, Model::midf_low
-	C: "OO",1881008354160,1875845824464
+	C: "OO",2164598902480,2164265360176
 	
 	;Geometry::Scene, Model::midf_low
-	C: "OO",1868029967056,1875845824464
+	C: "OO",2158620989552,2164265360176
 	
 	;Texture::DiffuseColor_Texture, Material::M_midtunnelwall
-	C: "OO",1880247292544,1881008354160
+	C: "OO",2176327841456,2164598902480
 	
 	;Texture::DiffuseColor_Texture, Material::M_midtunnelwall
-	C: "OP",1880247292544,1881008354160, "DiffuseColor"
+	C: "OP",2176327841456,2164598902480, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1880247294944,1880247292544
+	C: "OO",2176335579616,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------
