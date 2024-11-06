@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 18
-		Minute: 8
-		Second: 56
-		Millisecond: 144
+		Hour: 20
+		Minute: 21
+		Second: 50
+		Millisecond: 236
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\9ot8ck0a_d76149fd4ca04b448958aba3f848caa2-4934255693392289837.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\9ot8ck0a_d76149fd4ca04b448958aba3f848caa2-4934255693392289837.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\l1owef70_d76149fd4ca04b448958aba3f848caa2-4934255693392289837.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\l1owef70_d76149fd4ca04b448958aba3f848caa2-4934255693392289837.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1866201844112, "Scene", "Scene" {
+	Document: 2164598937056, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029281904, "Geometry::Scene", "Mesh" {
+	Geometry: 2158621006128, "Geometry::Scene", "Mesh" {
 		Vertices: *48 {
 			a: 0.0700000382494181,-0.114727183245122,-0.170000013895333,0.0700000382494181,0.125272886361927,0.170000013895333,0.0700000382494181,0.125272886361927,-0.170000013895333,0.0700000382494181,-0.114727183245122,0.170000013895333,0.0466666999273002,-0.125272863078862,-0.170000013895333,0.0466666999273002,-0.125272863078862,0.170000013895333,0.0233333688811399,-0.125272863078862,-0.170000013895333,0.0233333688811399,-0.125272863078862,0.170000013895333,3.72529007641731e-08,-0.114727183245122,-0.170000013895333,3.72529007641731e-08,-0.114727183245122,0.170000013895333,3.72529007641731e-08,0.125272886361927,-0.170000013895333,3.72529007641731e-08,0.125272886361927,0.170000013895333,0.0233333688811399,0.125272886361927,-0.170000013895333,0.0233333688811399,0.125272886361927,0.170000013895333,0.0466666999273002,0.125272886361927,-0.170000013895333,0.0466666999273002,0.125272886361927,0.170000013895333
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1880397446256, "Model::SM_book_T__1_", "Mesh" {
+	Model: 2164265560176, "Model::SM_book_T__2_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-1.45141520988545e-05,150.409530639648,90
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000061035156,100.000061035156,100.000061035156
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-6.83018924974022e-06,-90.0000076293945,90
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000015258789,100.000038146973,100.000022888184
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1880403435440, "Material::M_booksign", "" {
+	Material: 2164604536032, "Material::M_booksign", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1881008500720, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164598901280, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\oldsign\BOOK\T_town_BOOK_BaseMap.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\oldsign\BOOK\T_town_BOOK_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\oldsign\BOOK\T_town_BOOK_BaseMap.png"
 	}
-	Texture: 1881008500240, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -420,23 +420,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_book_T__1_, Model::RootNode
-	C: "OO",1880397446256,0
+	;Model::SM_book_T__2_, Model::RootNode
+	C: "OO",2164265560176,0
 	
-	;Material::M_booksign, Model::SM_book_T__1_
-	C: "OO",1880403435440,1880397446256
+	;Material::M_booksign, Model::SM_book_T__2_
+	C: "OO",2164604536032,2164265560176
 	
-	;Geometry::Scene, Model::SM_book_T__1_
-	C: "OO",1868029281904,1880397446256
-	
-	;Texture::DiffuseColor_Texture, Material::M_booksign
-	C: "OO",1881008500240,1880403435440
+	;Geometry::Scene, Model::SM_book_T__2_
+	C: "OO",2158621006128,2164265560176
 	
 	;Texture::DiffuseColor_Texture, Material::M_booksign
-	C: "OP",1881008500240,1880403435440, "DiffuseColor"
+	C: "OO",2176327841456,2164604536032
+	
+	;Texture::DiffuseColor_Texture, Material::M_booksign
+	C: "OP",2176327841456,2164604536032, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1881008500720,1881008500240
+	C: "OO",2164598901280,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

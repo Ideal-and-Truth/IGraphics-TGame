@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 19
-		Minute: 42
-		Second: 16
-		Millisecond: 683
+		Hour: 20
+		Minute: 20
+		Second: 34
+		Millisecond: 34
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\k64zsyc8_990e0fdc86d1a5042ab5ba2d13be7af0-6246928259160299017.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\k64zsyc8_990e0fdc86d1a5042ab5ba2d13be7af0-6246928259160299017.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\4sl8bbcj_990e0fdc86d1a5042ab5ba2d13be7af0-6246928259160299017.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\4sl8bbcj_990e0fdc86d1a5042ab5ba2d13be7af0-6246928259160299017.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2887088839808, "Scene", "Scene" {
+	Document: 2164598936544, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745421008, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620995376, "Geometry::Scene", "Mesh" {
 		Vertices: *120 {
 			a: -1.60000026226044,-0.0399999611545354,0.599999958649278,-1.60000026226044,-0.0399999611545354,0.539999967440963,-1.60000026226044,0.389999966137111,0.539999967440963,-1.60000026226044,0.389999966137111,0.599999958649278,1.59999970346689,-0.0399999611545354,0.599999958649278,1.59999970346689,0.389999966137111,0.599999958649278,1.59999970346689,0.389999966137111,0.539999967440963,1.59999970346689,-0.0399999611545354,0.539999967440963,-1.60000007599592,-0.819999910891056,0.199999986216426,-1.60000007599592,-0.819999910891056,0.139999983366579,-1.60000007599592,-0.389999966137111,0.139999983366579,-1.60000007599592,-0.389999966137111,0.199999986216426,1.59999988973141,-0.819999910891056,0.199999986216426,1.59999988973141,-0.389999966137111,0.199999986216426,1.59999988973141,-0.389999966137111,0.139999983366579,1.59999988973141,-0.819999910891056,0.139999983366579,-1.60000026226044,-0.429999921470881,0.399999972432852,-1.60000026226044,-0.429999921470881,0.339999957941473,-1.60000026226044,0,0.339999957941473,-1.60000026226044,0,0.399999972432852,1.59999970346689,-0.429999921470881,0.399999972432852,1.59999970346689,0,0.399999972432852,1.59999970346689,0,0.339999957941473,1.59999970346689,-0.429999921470881,0.339999957941473,-1.60000026226044,0.350000010803342,0.799999944865704,-1.60000026226044,0.350000010803342,0.739999953657389,-1.60000026226044,0.779999932274222,0.739999953657389,-1.60000026226044,0.779999932274222,0.799999944865704,1.59999970346689,0.350000010803342,0.799999944865704,1.59999970346689,0.779999932274222,0.799999944865704,1.59999970346689,0.779999932274222,0.739999953657389,1.59999970346689,0.350000010803342,0.739999953657389,-1.60000026226044,0.740000000223517,0.999999884516001,-1.60000026226044,0.740000000223517,0.939999893307686,-1.60000026226044,1.16999996826053,0.939999893307686,-1.60000026226044,1.16999996826053,0.999999884516001,1.59999970346689,0.740000000223517,0.999999884516001,1.59999970346689,1.16999996826053,0.999999884516001,1.59999970346689,1.16999996826053,0.939999893307686,
 1.59999970346689,0.740000000223517,0.939999893307686
@@ -385,7 +385,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882448551952, "Model::up_low", "Mesh" {
+	Model: 2164301277328, "Model::up_low", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -393,13 +393,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.9720153808594,90.9877319335938,0
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000045776367,99.9999923706055,99.9999923706055
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-158.136642456055
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",-108.840217590332,108.84009552002,108.840057373047
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2878726648976, "Material::M_darkstair", "" {
+	Material: 2164599646064, "Material::M_darkstair", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -413,7 +413,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2878745997552, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164599950240, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\stairset\ej_stair\T_Stairs_low_stairs_BaseMap.png"
@@ -423,7 +423,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\stairset\ej_stair\T_Stairs_low_stairs_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\stairset\ej_stair\T_Stairs_low_stairs_BaseMap.png"
 	}
-	Texture: 2878745998032, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -443,22 +443,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::up_low, Model::RootNode
-	C: "OO",2882448551952,0
+	C: "OO",2164301277328,0
 	
 	;Material::M_darkstair, Model::up_low
-	C: "OO",2878726648976,2882448551952
+	C: "OO",2164599646064,2164301277328
 	
 	;Geometry::Scene, Model::up_low
-	C: "OO",2878745421008,2882448551952
+	C: "OO",2158620995376,2164301277328
 	
 	;Texture::DiffuseColor_Texture, Material::M_darkstair
-	C: "OO",2878745998032,2878726648976
+	C: "OO",2176327841456,2164599646064
 	
 	;Texture::DiffuseColor_Texture, Material::M_darkstair
-	C: "OP",2878745998032,2878726648976, "DiffuseColor"
+	C: "OP",2176327841456,2164599646064, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2878745997552,2878745998032
+	C: "OO",2164599950240,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 18
-		Minute: 43
-		Second: 44
-		Millisecond: 361
+		Hour: 20
+		Minute: 20
+		Second: 56
+		Millisecond: 110
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\0orugoa8_004351274d3c8704fbf27aa5ee06db6a-1432966876036087737.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\0orugoa8_004351274d3c8704fbf27aa5ee06db6a-1432966876036087737.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\332h2l53_004351274d3c8704fbf27aa5ee06db6a-1432966876036087737.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\332h2l53_004351274d3c8704fbf27aa5ee06db6a-1432966876036087737.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2061958828032, "Scene", "Scene" {
+	Document: 2164598941152, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2066668939456, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620985520, "Geometry::Scene", "Mesh" {
 		Vertices: *72 {
 			a: 3.00000011920929,2.99999993294477,0,-2.99999993294477,2.99999974668026,0.289937574416399,-2.99999993294477,2.99999974668026,0,3.00000011920929,2.99999993294477,0.289937597699463,-2.99999993294477,2.78686229139566,1.27614112570882,3.00000011920929,2.78686247766018,1.27614121884108,-2.99999993294477,2.1798986941576,2.11220420897007,3.00000011920929,2.17989888042212,2.11220420897007,-2.99999993294477,1.27151347696781,2.67084334045649,3.00000011920929,1.27151357010007,2.670843526721,-2.99999993294477,-0.200000032782555,2.86701153963804,3.00000011920929,-1.27151357010007,2.670843526721,-2.99999993294477,-1.27151347696781,2.67084334045649,3.00000011920929,-0.200000032782555,2.86701172590256,-2.99999993294477,0.200000032782555,2.86701153963804,3.00000011920929,0.200000032782555,2.86701172590256,3.00000011920929,-2.17989888042212,2.11220420897007,-2.99999993294477,-2.1798986941576,2.11220402270555,3.00000011920929,-2.78686247766018,1.27614103257656,-2.99999993294477,-2.78686229139566,1.2761409394443,3.00000011920929,-2.99999993294477,0.289937411434948,-2.99999993294477,-2.99999974668026,0.28993736486882,-2.99999993294477,-2.99999974668026,0,3.00000011920929,-2.99999993294477,0
 		} 
@@ -384,7 +384,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2065964131744, "Model::round_tile_001", "Mesh" {
+	Model: 2164265542176, "Model::round_tile_001", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -392,13 +392,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.4148254394531,-127.09740447998,77.1343688964844
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",78.3849487304688,75.1104431152344,66.058967590332
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.4148254394531,-40.5513305664062,77.1339416503906
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",78.3849029541016,75.1104507446289,66.058967590332
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2071616816768, "Material::M_roof_tile", "" {
+	Material: 2164599947360, "Material::M_roof_tile", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -412,7 +412,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2065352576816, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164598543904, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roof\T_rooftile_BaseMap.png"
@@ -422,7 +422,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roof\T_rooftile_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\roof\T_rooftile_BaseMap.png"
 	}
-	Texture: 2065352578256, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -442,22 +442,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::round_tile_001, Model::RootNode
-	C: "OO",2065964131744,0
+	C: "OO",2164265542176,0
 	
 	;Material::M_roof_tile, Model::round_tile_001
-	C: "OO",2071616816768,2065964131744
+	C: "OO",2164599947360,2164265542176
 	
 	;Geometry::Scene, Model::round_tile_001
-	C: "OO",2066668939456,2065964131744
+	C: "OO",2158620985520,2164265542176
 	
 	;Texture::DiffuseColor_Texture, Material::M_roof_tile
-	C: "OO",2065352578256,2071616816768
+	C: "OO",2176327841456,2164599947360
 	
 	;Texture::DiffuseColor_Texture, Material::M_roof_tile
-	C: "OP",2065352578256,2071616816768, "DiffuseColor"
+	C: "OP",2176327841456,2164599947360, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2065352576816,2065352578256
+	C: "OO",2164598543904,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

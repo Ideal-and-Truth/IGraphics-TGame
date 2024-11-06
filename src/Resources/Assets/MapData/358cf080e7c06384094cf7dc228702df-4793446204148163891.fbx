@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 18
-		Minute: 43
-		Second: 1
-		Millisecond: 8
+		Hour: 20
+		Minute: 20
+		Second: 36
+		Millisecond: 493
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\phqy0qx9_358cf080e7c06384094cf7dc228702df-4793446204148163891.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\phqy0qx9_358cf080e7c06384094cf7dc228702df-4793446204148163891.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\unr7js8n_358cf080e7c06384094cf7dc228702df-4793446204148163891.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\unr7js8n_358cf080e7c06384094cf7dc228702df-4793446204148163891.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2056713910160, "Scene", "Scene" {
+	Document: 2164598935520, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2056507103168, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620995824, "Geometry::Scene", "Mesh" {
 		Vertices: *102 {
 			a: -2.49999985098839,0.135000050067902,0.100000202655792,-2.49999985098839,-0.165000045672059,0.100000202655792,-2.49999985098839,-0.165000045672059,-3.17864984333838e-08,-2.49999985098839,0.135000050067902,-3.17864984333838e-08,-0,-0.164999859407544,0.100000482052565,-0,-0.164999859407544,2.4214386051824e-07,-0,0.135000224690884,2.4214386051824e-07,-0,0.135000224690884,0.100000482052565,2.49999985098839,0.135000050067902,0.100000202655792,2.49999985098839,0.135000050067902,-3.17864984333838e-08,2.49999985098839,-0.165000045672059,-3.17864984333838e-08,2.49999985098839,-0.165000045672059,0.100000202655792,-2.49999985098839,0.135000050067902,0.199999031610787,-2.49999985098839,0.135000050067902,0.299999257549644,-2.49999985098839,-0.165000045672059,0.299999257549644,-2.49999985098839,-0.165000045672059,0.199999031610787,-0,-0.164999859407544,0.299999001435935,-0,-0.164999859407544,0.199998752214015,-0,0.135000224690884,0.299999001435935,-0,0.135000224690884,0.199998752214015,2.49999985098839,0.135000050067902,0.199999031610787,2.49999985098839,-0.165000045672059,0.199999031610787,2.49999985098839,-0.165000045672059,0.299999257549644,2.49999985098839,0.135000050067902,0.299999257549644,-2.46999990195036,0.165000045672059,0.19999963697046,-2.46999990195036,-0.134999956935644,0.19999963697046,-2.46999990195036,-0.134999956935644,0.0999996322207153,-2.46999990195036,0.165000045672059,0.0999996322207153,-0,-0.134999782312661,0.199999916367233,-0,-0.134999782312661,0.0999998999759555,2.46999990195036,0.165000045672059,0.19999963697046,2.46999990195036,0.165000045672059,0.0999996322207153,2.46999990195036,-0.134999956935644,0.0999996322207153,2.46999990195036,-0.134999956935644,0.19999963697046
 		} 
@@ -384,7 +384,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2065964129744, "Model::SM_wall_bot__1_", "Mesh" {
+	Model: 2164301277328, "Model::SM_wall_bot__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -392,13 +392,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.980224609375,1.11627197265625,0
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",130.297607421875,114.674354553223,75.3926620483398
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-53.4962692260742
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",130.940063476562,242.003509521484,130.940048217773
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2071616857200, "Material::M_wall_bigpattern", "" {
+	Material: 2164598893056, "Material::M_wall_bigpattern", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -412,7 +412,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2066671338496, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164599947840, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
@@ -422,7 +422,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_wall\T_town_wall_big_pattern_BaseMap.png"
 	}
-	Texture: 2066671338016, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -442,22 +442,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_wall_bot__1_, Model::RootNode
-	C: "OO",2065964129744,0
+	C: "OO",2164301277328,0
 	
 	;Material::M_wall_bigpattern, Model::SM_wall_bot__1_
-	C: "OO",2071616857200,2065964129744
+	C: "OO",2164598893056,2164301277328
 	
 	;Geometry::Scene, Model::SM_wall_bot__1_
-	C: "OO",2056507103168,2065964129744
+	C: "OO",2158620995824,2164301277328
 	
 	;Texture::DiffuseColor_Texture, Material::M_wall_bigpattern
-	C: "OO",2066671338016,2071616857200
+	C: "OO",2176327841456,2164598893056
 	
 	;Texture::DiffuseColor_Texture, Material::M_wall_bigpattern
-	C: "OP",2066671338016,2071616857200, "DiffuseColor"
+	C: "OP",2176327841456,2164598893056, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2066671338496,2066671338016
+	C: "OO",2164599947840,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

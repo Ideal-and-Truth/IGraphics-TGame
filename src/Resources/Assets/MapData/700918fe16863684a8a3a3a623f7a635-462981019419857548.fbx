@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 19
-		Minute: 43
-		Second: 5
-		Millisecond: 858
+		Hour: 20
+		Minute: 21
+		Second: 56
+		Millisecond: 538
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\nixby3nb_700918fe16863684a8a3a3a623f7a635-462981019419857548.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\nixby3nb_700918fe16863684a8a3a3a623f7a635-462981019419857548.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\k0vp3eyj_700918fe16863684a8a3a3a623f7a635-462981019419857548.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\k0vp3eyj_700918fe16863684a8a3a3a623f7a635-462981019419857548.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2878727305744, "Scene", "Scene" {
+	Document: 2164598934752, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745415632, "Geometry::Scene", "Mesh" {
+	Geometry: 2158621006128, "Geometry::Scene", "Mesh" {
 		Vertices: *90 {
 			a: 0.0151759799337015,5.82340453636476e-08,0.979744642972946,-0.022778297716286,1.00492089986801,0.979744642972946,0.0151761807501316,1.00492089986801,0.979744642972946,-0.0227784999879077,6.16618922588685e-08,0.979744642972946,0.0151757791172713,-1.00492089986801,0.979744642972946,-0.0227786993491463,-1.00492089986801,0.979744642972946,-0.022778297716286,1.00492089986801,0.902124587446451,-0.0227784999879077,6.16618922588685e-08,0.902124587446451,-0.0227787008043379,-1.00492089986801,0.902124587446451,-0.0340649217832834,1.00492089986801,0.902124587446451,-0.0340651225997135,6.26812435289281e-08,0.902124587446451,-0.0340653205057606,-1.00492089986801,0.902124587446451,-0.0340649188729003,1.00492089986801,0.8742306381464,-0.0340651196893305,6.2681237977813e-08,0.8742306381464,-0.0340653175953776,-1.00492089986801,0.8742306381464,-0.018600100884214,1.00492089986801,0.87283393368125,-0.0186003017006442,6.12845385550287e-08,0.87283393368125,-0.0186004952411167,-1.00492089986801,0.87283393368125,0.011129258928122,1.00492089986801,0.836360175162554,0.0111290573840961,5.85995418855845e-08,0.836360175162554,0.0111288638436235,-1.00492089986801,0.836360175162554,0.0111292552901432,1.00492089986801,0.781877711415291,0.0111290617496707,5.85995363344693e-08,0.781877711415291,0.0111288609332405,-1.00492089986801,0.781877711415291,0.0340652419254184,1.00492089986801,0.781877711415291,0.0340650411089882,5.65280822151237e-08,0.781877711415291,0.0340648402925581,-1.00492089986801,0.781877711415291,0.0340652390150353,1.00492089986801,8.17833821498137e-10,0.0340650381986052,5.65280655617784e-08,8.17872852776347e-10,0.034064837382175,-1.00492089986801,8.1791197079073e-10
 		} 
@@ -384,7 +384,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882424118640, "Model::SM_walllow", "Mesh" {
+	Model: 2164265558176, "Model::SM_walllow__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -392,13 +392,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-15.4409484863281,90,89.9999084472656
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",100,148.767379760742,100
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-7.63031005859376,21.7130126953125,-164.590606689453
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000175476074,148.767578125,100
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2876427126704, "Material::M_yellowwall", "" {
+	Material: 2164604536832, "Material::M_yellowwall", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -412,7 +412,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2881716558320, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2176335579616, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_yellowwall_BaseMap.png"
@@ -422,7 +422,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_yellowwall_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_yellowwall_BaseMap.png"
 	}
-	Texture: 2881716557360, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -441,23 +441,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_walllow, Model::RootNode
-	C: "OO",2882424118640,0
+	;Model::SM_walllow__1_, Model::RootNode
+	C: "OO",2164265558176,0
 	
-	;Material::M_yellowwall, Model::SM_walllow
-	C: "OO",2876427126704,2882424118640
+	;Material::M_yellowwall, Model::SM_walllow__1_
+	C: "OO",2164604536832,2164265558176
 	
-	;Geometry::Scene, Model::SM_walllow
-	C: "OO",2878745415632,2882424118640
-	
-	;Texture::DiffuseColor_Texture, Material::M_yellowwall
-	C: "OO",2881716557360,2876427126704
+	;Geometry::Scene, Model::SM_walllow__1_
+	C: "OO",2158621006128,2164265558176
 	
 	;Texture::DiffuseColor_Texture, Material::M_yellowwall
-	C: "OP",2881716557360,2876427126704, "DiffuseColor"
+	C: "OO",2176327841456,2164604536832
+	
+	;Texture::DiffuseColor_Texture, Material::M_yellowwall
+	C: "OP",2176327841456,2164604536832, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2881716558320,2881716557360
+	C: "OO",2176335579616,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

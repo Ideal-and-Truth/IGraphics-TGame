@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 19
-		Minute: 42
-		Second: 7
-		Millisecond: 976
+		Hour: 20
+		Minute: 20
+		Second: 33
+		Millisecond: 4
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\9xotm1vt_6af8191892329af46b1b074a5a5156ea2443006920219811311.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\9xotm1vt_6af8191892329af46b1b074a5a5156ea2443006920219811311.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\dgvdmqo3_6af8191892329af46b1b074a5a5156ea2443006920219811311.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\dgvdmqo3_6af8191892329af46b1b074a5a5156ea2443006920219811311.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2887088837504, "Scene", "Scene" {
+	Document: 2164598940128, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745418768, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620998960, "Geometry::Scene", "Mesh" {
 		Vertices: *87 {
 			a: -16.2101849913597,5.43303489685059,48.6752301454544,-16.4408504962921,28.9322167634964,43.5161203145981,-12.4711625277996,29.1469484567642,49.2380201816559,4.09830175340176,29.5235842466354,-48.2844084501266,-12.4401450157166,29.6051800251007,-49.2866426706314,15.0418862700462,27.7343183755875,-48.9909917116165,-15.7945334911346,1.60456597805023,29.166653752327,-12.9974901676178,0.479215383529663,49.1038590669632,-15.6414806842804,0.0201627612113953,4.92909848690033,-16.3486585021019,17.3564776778221,8.44632014632225,-14.7012770175934,0.690983235836029,-49.0074187517166,-15.8861219882965,28.6479651927948,17.4416691064835,-16.3101255893707,17.5895303487778,-48.7221866846085,-16.3059055805206,28.5759687423706,-35.9392076730728,16.4408445358276,7.91851133108139,-49.407896399498,11.8678621947765,0.439703464508057,-49.3932247161865,16.3113221526146,0.313545763492584,-35.1637959480286,16.3869112730026,9.33696627616882,-33.2024484872818,15.7675743103027,0.330057740211487,2.80112307518721,15.5650079250336,29.0240228176117,-28.9004057645798,16.2605509161949,12.6603007316589,4.76568639278412,16.1225736141205,0,33.1024497747421,15.7795310020447,28.5263359546661,7.29498565196991,16.1744549870491,14.924693107605,30.635729432106,14.5954191684723,1.11245959997177,49.0893632173538,16.1427438259125,29.7241806983948,36.9701772928238,16.1573514342308,15.0680750608444,48.7580358982086,14.8743867874146,27.2684156894684,49.407896399498,1.59891843795776,29.2711794376373,49.0436404943466
 		} 
@@ -396,7 +396,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882448581952, "Model::SM_gatedoorbaserock2__262_", "Mesh" {
+	Model: 2164265360176, "Model::SM_gatedoorbaserock2__87_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -404,13 +404,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.0130920410156448,-48.9006843566895,-0.0266726743429899
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",2,1,2
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",1.46631151665133e-09,-145.168685913086,8.96864749133641e-10
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.29348003864288,1.02649986743927,6.69088459014893
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2888900409824, "Material::M_gatearchpillar", "" {
+	Material: 2164598572832, "Material::M_gatearchpillar", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -424,7 +424,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2878745998512, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164600668928, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\gatedoor\T_archbase_BaseMap.png"
@@ -434,7 +434,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\gatedoor\T_archbase_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\gatedoor\T_archbase_BaseMap.png"
 	}
-	Texture: 2888829579680, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -453,23 +453,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_gatedoorbaserock2__262_, Model::RootNode
-	C: "OO",2882448581952,0
+	;Model::SM_gatedoorbaserock2__87_, Model::RootNode
+	C: "OO",2164265360176,0
 	
-	;Material::M_gatearchpillar, Model::SM_gatedoorbaserock2__262_
-	C: "OO",2888900409824,2882448581952
+	;Material::M_gatearchpillar, Model::SM_gatedoorbaserock2__87_
+	C: "OO",2164598572832,2164265360176
 	
-	;Geometry::Scene, Model::SM_gatedoorbaserock2__262_
-	C: "OO",2878745418768,2882448581952
-	
-	;Texture::DiffuseColor_Texture, Material::M_gatearchpillar
-	C: "OO",2888829579680,2888900409824
+	;Geometry::Scene, Model::SM_gatedoorbaserock2__87_
+	C: "OO",2158620998960,2164265360176
 	
 	;Texture::DiffuseColor_Texture, Material::M_gatearchpillar
-	C: "OP",2888829579680,2888900409824, "DiffuseColor"
+	C: "OO",2176327841456,2164598572832
+	
+	;Texture::DiffuseColor_Texture, Material::M_gatearchpillar
+	C: "OP",2176327841456,2164598572832, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2878745998512,2888829579680
+	C: "OO",2164600668928,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

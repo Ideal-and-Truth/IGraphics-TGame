@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 19
-		Minute: 42
-		Second: 16
-		Millisecond: 34
+		Hour: 20
+		Minute: 20
+		Second: 54
+		Millisecond: 501
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\ggn7bl7y_088c9348268ed924e942e142f49e07715968613971208702791.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\ggn7bl7y_088c9348268ed924e942e142f49e07715968613971208702791.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\7getxqdh_088c9348268ed924e942e142f49e07715968613971208702791.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\7getxqdh_088c9348268ed924e942e142f49e07715968613971208702791.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2878727303440, "Scene", "Scene" {
+	Document: 2164598935008, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745440272, "Geometry::Scene", "Mesh" {
+	Geometry: 2158621013296, "Geometry::Scene", "Mesh" {
 		Vertices: *84 {
 			a: 160.082697868347,128.332483768463,-8.87365341186523,160.082697868347,-352.183032035828,-8.87365341186523,-159.917366504669,-352.183032035828,-8.87365341186523,-159.917366504669,128.332483768463,-8.87365341186523,-150.110161304474,-352.182984352112,-8.87365341186523,-150.110161304474,-352.182984352112,-6.62326812744141,-150.110161304474,127.832388877869,-6.62326812744141,-150.110161304474,127.832388877869,-8.87365341186523,-160.110211372375,-352.182984352112,-6.62326812744141,-160.110211372375,127.832388877869,-6.62326812744141,159.889781475067,-352.182984352112,-6.62326812744141,149.889826774597,-352.182984352112,-6.62326812744141,149.889826774597,127.832388877869,-6.62326812744141,159.889781475067,127.832388877869,-6.62326812744141,149.889826774597,-352.182984352112,-8.87365341186523,149.889826774597,127.832388877869,-8.87365341186523,-159.917366504669,157.816994190216,25.1110076904297,-159.917366504669,167.817044258118,25.1110076904297,160.082697868347,167.817044258118,25.1110076904297,160.082697868347,157.816994190216,25.1110076904297,160.082697868347,127.816987037659,15.1406288146973,160.082697868347,127.816987037659,-8.87365341186523,-159.917366504669,127.816987037659,-8.87365341186523,-159.917366504669,127.816987037659,15.1406288146973,-159.917366504669,167.817044258118,-9.64422225952148,160.082697868347,167.817044258118,-9.64422225952148,-159.917366504669,147.816967964172,15.1406288146973,160.082697868347,147.816967964172,15.1406288146973
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882448551952, "Model::JShouse_001", "Mesh" {
+	Model: 2164265542176, "Model::JShouse_001", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -390,13 +390,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.0271911621093854,-177.489486694336,-0.0119780004024506
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.800000607967377,0.79999977350235,0.800000846385956
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.0198855902999639,19.2412719726563,-0.0220695100724697
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.809999942779541,0.799999952316284,0.800000190734863
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2876427125104, "Material::M_JShouse_wall", "" {
+	Material: 2164598542464, "Material::M_JShouse_wall", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -410,7 +410,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2888830959120, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2164598573792, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JShouse\Wall\T_JShouse_wall_BaseMap.png"
@@ -420,7 +420,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\JShouse\Wall\T_JShouse_wall_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\JShouse\Wall\T_JShouse_wall_BaseMap.png"
 	}
-	Texture: 2888830959600, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -440,22 +440,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::JShouse_001, Model::RootNode
-	C: "OO",2882448551952,0
+	C: "OO",2164265542176,0
 	
 	;Material::M_JShouse_wall, Model::JShouse_001
-	C: "OO",2876427125104,2882448551952
+	C: "OO",2164598542464,2164265542176
 	
 	;Geometry::Scene, Model::JShouse_001
-	C: "OO",2878745440272,2882448551952
+	C: "OO",2158621013296,2164265542176
 	
 	;Texture::DiffuseColor_Texture, Material::M_JShouse_wall
-	C: "OO",2888830959600,2876427125104
+	C: "OO",2176327841456,2164598542464
 	
 	;Texture::DiffuseColor_Texture, Material::M_JShouse_wall
-	C: "OP",2888830959600,2876427125104, "DiffuseColor"
+	C: "OP",2176327841456,2164598542464, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2888830959120,2888830959600
+	C: "OO",2164598573792,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

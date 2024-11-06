@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 19
-		Minute: 42
-		Second: 56
-		Millisecond: 419
+		Hour: 20
+		Minute: 21
+		Second: 36
+		Millisecond: 589
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\3dtc4opr_306c220fe6a4fec4f887f77e76efa13e-4147658636294527891.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\3dtc4opr_306c220fe6a4fec4f887f77e76efa13e-4147658636294527891.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\g8xdlznd_306c220fe6a4fec4f887f77e76efa13e-4147658636294527891.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\g8xdlznd_306c220fe6a4fec4f887f77e76efa13e-4147658636294527891.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2887088829824, "Scene", "Scene" {
+	Document: 2164598934240, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745428624, "Geometry::Scene", "Mesh" {
+	Geometry: 2158621009712, "Geometry::Scene", "Mesh" {
 		Vertices: *12 {
 			a: -52.8000116348267,-79.9999952316284,-3.49691120504758e-06,-52.8000116348267,79.9999952316284,3.49691120504758e-06,52.8000116348267,79.9999952316284,3.49691120504758e-06,52.8000116348267,-79.9999952316284,-3.49691120504758e-06
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882424118640, "Model::SM_poster_004", "Mesh" {
+	Model: 2164595963792, "Model::SM_poster_004_Prefab__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -390,26 +390,28 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-3.28263127791217e-09,-147.183197021484,2.29270424867423e-09
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.832060575485229,0.832059979438782,0.832060873508453
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",14.7592687606812,-24.4729232788086,0.0444641113281196
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000023841858,0.999999940395355,0.999999701976776
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2879641789744, "Material::M_poster", "" {
+	Material: 2164604537632, "Material::M_POSTER_URP_", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
 		Properties70:  {
+			P: "EmissiveColor", "Color", "", "A",0.584905624389648,0.545168340206146,0.157262355089188
 			P: "AmbientColor", "Color", "", "A",0,0,0
 			P: "DiffuseColor", "Color", "", "A",1,1,1
-			P: "Emissive", "Vector3D", "Vector", "",0,0,0
+			P: "BumpFactor", "double", "Number", "",0
+			P: "Emissive", "Vector3D", "Vector", "",0.584905624389648,0.545168340206146,0.157262355089188
 			P: "Ambient", "Vector3D", "Vector", "",0,0,0
 			P: "Diffuse", "Vector3D", "Vector", "",1,1,1
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2878745998512, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2176335580576, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\poster\T_poster_BaseMap.png"
@@ -419,7 +421,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\poster\T_poster_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\poster\T_poster_BaseMap.png"
 	}
-	Texture: 2888829579680, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -438,23 +440,26 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_poster_004, Model::RootNode
-	C: "OO",2882424118640,0
+	;Model::SM_poster_004_Prefab__1_, Model::RootNode
+	C: "OO",2164595963792,0
 	
-	;Material::M_poster, Model::SM_poster_004
-	C: "OO",2879641789744,2882424118640
+	;Material::M_POSTER_URP_, Model::SM_poster_004_Prefab__1_
+	C: "OO",2164604537632,2164595963792
 	
-	;Geometry::Scene, Model::SM_poster_004
-	C: "OO",2878745428624,2882424118640
+	;Geometry::Scene, Model::SM_poster_004_Prefab__1_
+	C: "OO",2158621009712,2164595963792
 	
-	;Texture::DiffuseColor_Texture, Material::M_poster
-	C: "OO",2888829579680,2879641789744
+	;Texture::DiffuseColor_Texture, Material::M_POSTER_URP_
+	C: "OO",2176327841456,2164604537632
 	
-	;Texture::DiffuseColor_Texture, Material::M_poster
-	C: "OP",2888829579680,2879641789744, "DiffuseColor"
+	;Texture::DiffuseColor_Texture, Material::M_POSTER_URP_
+	C: "OP",2176327841456,2164604537632, "EmissiveColor"
+	
+	;Texture::DiffuseColor_Texture, Material::M_POSTER_URP_
+	C: "OP",2176327841456,2164604537632, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2878745998512,2888829579680
+	C: "OO",2176335580576,2176327841456
 }
 ;Takes section
 ;----------------------------------------------------

@@ -9,10 +9,10 @@ FBXHeaderExtension:  {
 		Year: 2024
 		Month: 11
 		Day: 6
-		Hour: 19
-		Minute: 42
-		Second: 29
-		Millisecond: 895
+		Hour: 20
+		Minute: 21
+		Second: 1
+		Millisecond: 244
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\jufan04x_3a1ad424c745ccb4f9c8b63ede6ad6b26434008096517374666.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\jufan04x_3a1ad424c745ccb4f9c8b63ede6ad6b26434008096517374666.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\axa1ybus_3a1ad424c745ccb4f9c8b63ede6ad6b26434008096517374666.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\axa1ybus_3a1ad424c745ccb4f9c8b63ede6ad6b26434008096517374666.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2878727302928, "Scene", "Scene" {
+	Document: 2164598938336, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745420560, "Geometry::Scene", "Mesh" {
+	Geometry: 2158620995824, "Geometry::Scene", "Mesh" {
 		Vertices: *3009 {
 			a: -26.3640612363815,0.125834799837321,15.1079997420311,-26.3640612363815,0.125834799837321,-15.1079997420311,-26.3640612363815,6.64816722273827,-15.1079997420311,-26.3640612363815,6.64816722273827,15.1079997420311,-0,0.125835905782878,-30.3947627544403,26.3640612363815,0.125834799837321,-15.1079997420311,26.3640612363815,6.64816722273827,-15.1079997420311,-0,6.64816722273827,-30.3947627544403,26.3640612363815,0.125834799837321,15.1079997420311,26.3640612363815,6.64816722273827,15.1079997420311,-0,0.125835905782878,30.3947627544403,-0,6.64816722273827,30.3947627544403,-0,357.483720779419,-12.536196410656,8.86442959308624,357.483720779419,-8.86442959308624,8.86442959308624,403.172445297241,-8.86442959308624,-0,403.172445297241,-12.536196410656,12.536196410656,357.483720779419,0,12.536196410656,403.172445297241,0,8.86442959308624,357.483720779419,8.86442959308624,8.86442959308624,403.172445297241,8.86442959308624,-0,357.483720779419,12.536196410656,-0,403.172445297241,12.536196410656,-8.86442959308624,357.483720779419,8.86442959308624,-8.86442959308624,403.172445297241,8.86442959308624,-12.536196410656,357.483720779419,0,-12.536196410656,403.172445297241,0,12.0131127536297,406.595039367676,0,8.49455371499062,406.595039367676,-8.49455371499062,-8.86442959308624,357.483720779419,-8.86442959308624,-8.86442959308624,403.172445297241,-8.86442959308624,8.31139236688614,356.510925292969,8.31139236688614,7.3576807975769,355.890703201294,7.3576807975769,3.14467618611758e-08,355.890703201294,10.4053311049938,1.59758969942025e-08,356.510925292969,11.7540843784809,7.025196403265,354.971408843994,-7.025196403265,6.90886378288269,353.941464424133,-6.90886378288269,9.77060943841934,353.941464424133,-6.94063070905138e-09,9.93512868881226,354.971408843994,-2.94191476735151e-09,-11.7540843784809,356.510925292969,1.89171490971862e-09,-10.4053311049938,355.890703201294,-2.13917772384775e-10,-7.3576807975769,355.890703201294,-7.3576807975769,-8.31139236688614,356.510925292969,-8.31139236688614,8.31139236688614,356.510925292969,-8.31139236688614,
 7.3576807975769,355.890703201294,-7.3576807975769,10.4053311049938,355.890703201294,-2.13917772384775e-10,11.7540843784809,356.510925292969,1.89171490971862e-09,-7.3576807975769,355.890703201294,7.3576807975769,-8.31139236688614,356.510925292969,8.31139236688614,3.14467618611758e-08,355.890703201294,-10.4053311049938,1.59758969942025e-08,356.510925292969,-11.7540843784809,-6.90886378288269,353.941464424133,-6.90886378288269,-6.30274787545204,353.583216667175,-6.30274787545204,2.41379249921181e-08,353.583216667175,-8.91343131661415,3.6268288372554e-08,353.941464424133,-9.77060943841934,-9.93512868881226,354.971408843994,-2.94191476735151e-09,-9.77060943841934,353.941464424133,-6.94063070905138e-09,-7.025196403265,354.971408843994,-7.025196403265,3.52770174183448e-08,354.971408843994,9.93512868881226,3.6268288372554e-08,353.941464424133,9.77060943841934,-6.90886378288269,353.941464424133,6.90886378288269,-7.025196403265,354.971408843994,7.025196403265,6.90886378288269,353.941464424133,6.90886378288269,7.025196403265,354.971408843994,7.025196403265,3.52770174183448e-08,354.971408843994,-9.93512868881226,-6.30274787545204,353.583216667175,6.30274787545204,-8.91343131661415,353.583216667175,-2.56437537871079e-08,6.30274787545204,353.583216667175,6.30274787545204,2.41379249921181e-08,353.583216667175,8.91343131661415,6.30274787545204,353.583216667175,-6.30274787545204,8.91343131661415,353.583216667175,-2.56437537871079e-08,-3.72529029846191e-07,353.583192825317,0,7.77203856827668e-09,406.595039367676,-12.0131127536297,-8.2522433331178e-09,409.340333938599,-10.1053491234779,-7.14556127786636,409.340333938599,-7.14556127786636,-8.49455371499062,406.595039367676,-8.49455371499062,-8.49455371499062,406.595039367676,8.49455371499062,7.77203856827668e-09,406.595039367676,12.0131127536297,8.49455371499062,406.595039367676,8.49455371499062,-12.0131127536297,406.595039367676,0,-7.14556127786636,409.340333938599,7.14556127786636,-4.86822687089443,411.256456375122,4.86822687089443,-4.60284838021963e-08,411.256456375122,6.8847119808197,
@@ -905,7 +905,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882424118640, "Model::body_low", "Mesh" {
+	Model: 2164265360176, "Model::body_low", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -913,64 +913,66 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.013122558593737,-49.0000953674316,-0.0266499444842339
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.999999821186066,1,0.999999701976776
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-1.41554934440791e-09,-138.955139160156,-9.75015845838811e-10
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000059604645,1,1.00000095367432
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2876427120304, "Material::M_StreetLamp", "" {
+	Material: 2164598574032, "Material::M_Streetlamp", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
 		Properties70:  {
+			P: "EmissiveColor", "Color", "", "A",1,1,1
 			P: "AmbientColor", "Color", "", "A",0,0,0
-			P: "DiffuseColor", "Color", "", "A",0.943396210670471,0.921146273612976,0.921146273612976
-			P: "Emissive", "Vector3D", "Vector", "",0,0,0
+			P: "DiffuseColor", "Color", "", "A",1,1,1
+			P: "BumpFactor", "double", "Number", "",0
+			P: "Emissive", "Vector3D", "Vector", "",1,1,1
 			P: "Ambient", "Vector3D", "Vector", "",0,0,0
-			P: "Diffuse", "Vector3D", "Vector", "",0.943396210670471,0.921146273612976,0.921146273612976
+			P: "Diffuse", "Vector3D", "Vector", "",1,1,1
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2881716556880, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2176328620272, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\Textures\Streetlamp_low_DefaultMaterial_AlbedoTransparency.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\Textures\Streetlamp_low_DefaultMaterial_AlbedoTransparency.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_BaseMap.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_BaseMap.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\Textures\Streetlamp_low_DefaultMaterial_AlbedoTransparency.png"
-		RelativeFilename: "..\Resources\Textures\Streetlamp_low_DefaultMaterial_AlbedoTransparency.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_BaseMap.png"
 	}
-	Video: 2881716555920, "Video::NormalMap_Texture", "Clip" {
+	Video: 2176328621232, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\Textures\Streetlamp_low_DefaultMaterial_Normal.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\Textures\Streetlamp_low_DefaultMaterial_Normal.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_Emissive.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_Emissive.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\Textures\Streetlamp_low_DefaultMaterial_Normal.png"
-		RelativeFilename: "..\Resources\Textures\Streetlamp_low_DefaultMaterial_Normal.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_Emissive.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_Emissive.png"
 	}
-	Texture: 2881716557360, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\Textures\Streetlamp_low_DefaultMaterial_AlbedoTransparency.png"
-		RelativeFilename: "..\Resources\Textures\Streetlamp_low_DefaultMaterial_AlbedoTransparency.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_BaseMap.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2881716559280, "Texture::NormalMap_Texture", "" {
+	Texture: 2176328618832, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
-		TextureName: "Texture::NormalMap_Texture"
-		Media: "Video::NormalMap_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\Textures\Streetlamp_low_DefaultMaterial_Normal.png"
-		RelativeFilename: "..\Resources\Textures\Streetlamp_low_DefaultMaterial_Normal.png"
+		TextureName: "Texture::EmissiveColor_Texture"
+		Media: "Video::EmissiveColor_Texture"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_Emissive.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\streetlamp\T_JSStreetlamp_Emissive.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -984,31 +986,31 @@ Objects:  {
 Connections:  {
 	
 	;Model::body_low, Model::RootNode
-	C: "OO",2882424118640,0
+	C: "OO",2164265360176,0
 	
-	;Material::M_StreetLamp, Model::body_low
-	C: "OO",2876427120304,2882424118640
+	;Material::M_Streetlamp, Model::body_low
+	C: "OO",2164598574032,2164265360176
 	
 	;Geometry::Scene, Model::body_low
-	C: "OO",2878745420560,2882424118640
+	C: "OO",2158620995824,2164265360176
 	
-	;Texture::DiffuseColor_Texture, Material::M_StreetLamp
-	C: "OO",2881716557360,2876427120304
+	;Texture::DiffuseColor_Texture, Material::M_Streetlamp
+	C: "OO",2176327841456,2164598574032
 	
-	;Texture::NormalMap_Texture, Material::M_StreetLamp
-	C: "OO",2881716559280,2876427120304
+	;Texture::EmissiveColor_Texture, Material::M_Streetlamp
+	C: "OO",2176328618832,2164598574032
 	
-	;Texture::DiffuseColor_Texture, Material::M_StreetLamp
-	C: "OP",2881716557360,2876427120304, "DiffuseColor"
+	;Texture::EmissiveColor_Texture, Material::M_Streetlamp
+	C: "OP",2176328618832,2164598574032, "EmissiveColor"
 	
-	;Texture::NormalMap_Texture, Material::M_StreetLamp
-	C: "OP",2881716559280,2876427120304, "NormalMap"
+	;Texture::DiffuseColor_Texture, Material::M_Streetlamp
+	C: "OP",2176327841456,2164598574032, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2881716556880,2881716557360
+	C: "OO",2176328620272,2176327841456
 	
-	;Video::NormalMap_Texture, Texture::NormalMap_Texture
-	C: "OO",2881716555920,2881716559280
+	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
+	C: "OO",2176328621232,2176328618832
 }
 ;Takes section
 ;----------------------------------------------------
