@@ -72,6 +72,7 @@ using namespace std;
 #define DefaultLayer 0
 #define PlayerLayer 1
 
+//#define MAKE_PARTICLE
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -797,6 +798,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
 
+#ifdef MAKE_PARTICLE
 #pragma region Beam1
 		//------------------------Create Particle---------------------------//
 
@@ -2393,6 +2395,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 #pragma endregion
+#endif
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -2549,7 +2552,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}*/
 
-
+#ifdef MAKE_PARTICLE
 				if (GetAsyncKeyState('F') & 0x8000)
 				{
 					slashParticleSystem->Pause();
@@ -2736,6 +2739,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						lightPos++;
 					}
 				}
+#endif
 				static float delayHomeKey = 0.3f;
 				if (delayHomeKey <= 0.3f)
 				{
@@ -2765,6 +2769,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					DebugPlayer->AnimationDeltaTime(0.106f);
 				}
 
+#ifdef MAKE_PARTICLE
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
@@ -2800,6 +2805,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				enemyChargeParticleSystem->SetDeltaTime(0.003f);
 				enemyChargeParticleSystem2->SetDeltaTime(0.003f);
 				ScannerParticleSystem->SetDeltaTime(0.003f);
+#endif
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -2940,6 +2946,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 
+#ifdef MAKE_PARTICLE
 		gRenderer->DeleteTexture(slashParticleTexture0);
 		slashParticleTexture0.reset();
 		gRenderer->DeleteTexture(slashParticleTexture1);
@@ -2958,6 +2965,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			gRenderer->DeleteTexture(particleTexturesToDelete[i]);
 			particleTexturesToDelete[i].reset();
 		}
+
+#endif
 		
 		//meshes.clear();
 
