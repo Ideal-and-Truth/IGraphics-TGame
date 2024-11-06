@@ -32,5 +32,7 @@ namespace Ideal
 		virtual void AddLayer(unsigned int LayerNum) abstract;
 		virtual void DeleteLayer(unsigned int LayerNum) abstract;
 		virtual void ChangeLayer(unsigned int LayerNum) abstract;
+
+		virtual void ChangeLayerBitMask(unsigned int BitMask) abstract;
 	};
 }

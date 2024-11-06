@@ -67,3 +67,9 @@ void Ideal::IdealPointLight::ChangeLayer(uint32 LayerNum)
 	m_layer.ChangeLayer(LayerNum);
 	m_pointLight.Layer = m_layer.GetLayer();
 }
+
+void Ideal::IdealPointLight::ChangeLayerBitMask(uint32 BitMask)
+{
+	m_layer.ChangeBitMask(BitMask);
+	m_pointLight.Layer = m_layer.GetLayer();
+}

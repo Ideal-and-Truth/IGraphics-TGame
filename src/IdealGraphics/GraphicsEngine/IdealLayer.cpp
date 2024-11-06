@@ -24,3 +24,8 @@ void Ideal::IdealLayer::ChangeLayer(uint32 LayerNum)
 {
 	m_Layer = 1 << LayerNum;
 }
+
+void Ideal::IdealLayer::ChangeBitMask(uint32 LayerMask)
+{
+	m_Layer = LayerMask;
+}

@@ -30,6 +30,7 @@ namespace Ideal
 		virtual void AddLayer(uint32 LayerNum) override;
 		virtual void DeleteLayer(uint32 LayerNum) override;
 		virtual void ChangeLayer(uint32 LayerNum) override;
+		virtual void ChangeLayerBitMask(uint32 BitMask) override;
 
 	public:
 		PointLight const& GetPointLightDesc() { return m_pointLight; }
