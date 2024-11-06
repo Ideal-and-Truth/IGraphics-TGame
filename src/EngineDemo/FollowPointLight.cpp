@@ -11,11 +11,13 @@ FollowPointLight::~FollowPointLight()
 
 }
 
+#ifdef EDITOR_MODE
 void FollowPointLight::EditorSetValue()
 {
 	PointLight::EditorSetValue();
 	SetPosition(m_owner.lock()->GetWorldPosition());
 }
+#endif // EDITOR_MODE
 
 void FollowPointLight::Update()
 {

@@ -435,7 +435,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 	auto gp = m_managers.lock()->Graphics();
 
 	std::wstring mapPath = L"../Resources/MapData/" + _path + L"/";
-	std::wstring assetPath = L"MapData/" + _path + L"/";
+	std::wstring assetPath = L"MapData/";
 	USES_CONVERSION;
 	std::string assetPathS(W2A(assetPath.c_str()));
 	std::string mapPathS(W2A(mapPath.c_str()));
@@ -683,7 +683,6 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			size_t offset = vPositions.size() / 3;
 			std::shared_ptr<TFileUtils> posFile = std::make_shared<TFileUtils>();
 			fs::path posFilePath = "../Resources/Models/MapData/";
-			posFilePath /= fs::path(_path);
 			posFilePath /= name + ".pos";
 
 			fs::path test = fs::absolute(posFilePath);
