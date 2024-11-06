@@ -15,6 +15,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(MeleeWeapon)
 MeleeWeapon::MeleeWeapon()
 	: m_collider(nullptr)
 	, m_isAttacking(false)
+	, m_canHit(false)
 {
 	m_name = "MeleeWeapon";
 }
@@ -59,9 +60,14 @@ void MeleeWeapon::Update()
 		{
 			m_isAttacking = m_enemyAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_enemyAnimator.get()).Get();
 		}
-		else
+		else if (m_bossAnimator)
 		{
 			m_isAttacking = m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_bossAnimator.get()).Get();
+		}
+
+		if (!m_isAttacking)
+		{
+			m_canHit = true;
 		}
 	}
 
@@ -146,7 +152,7 @@ void MeleeWeapon::Update()
 
 void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 {
-	if (m_isAttacking)
+	if (m_isAttacking&& m_canHit)
 	{
 		if (m_player && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
 		{
@@ -158,7 +164,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 					{
 						m_onHitEnemys.push_back(_other->GetOwner().lock());
 						m_playerAnimator->GetTypeInfo().GetProperty("hit")->Set(m_playerAnimator.get(), true);
-						WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
+						//WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
 					}
 				}
 				else
@@ -167,7 +173,7 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 					{
 						m_onHitEnemys.push_back(_other->GetOwner().lock());
 						m_playerAnimator->GetTypeInfo().GetProperty("hit")->Set(m_playerAnimator.get(), true);
-						WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
+						//WaitForSecondsRealtime(m_playerAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_playerAnimator.get()).Get());
 					}
 				}
 			}
@@ -181,13 +187,15 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 					if (_other->GetOwner().lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(_other->GetOwner().lock()->GetComponent<Player>().lock().get()).Get() > 0.f)
 					{
 						m_onHitEnemys.push_back(_other->GetOwner().lock());
+						m_canHit = false;
+
 						if (m_bossAnimator)
 						{
-							WaitForSecondsRealtime(m_bossAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_bossAnimator.get()).Get());
+							//WaitForSecondsRealtime(m_bossAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_bossAnimator.get()).Get());
 						}
 						else
 						{
-							WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
+							//WaitForSecondsRealtime(m_enemyAnimator->GetTypeInfo().GetProperty("hitStopTime")->Get<float>(m_enemyAnimator.get()).Get());
 						}
 					}
 				}

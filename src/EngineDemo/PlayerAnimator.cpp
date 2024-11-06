@@ -412,7 +412,7 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 			m_isHit = true;
 			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 
-			if ((m_passingTime > 0.f && m_passingTime < 0.4f))
+			if ((m_passingTime > 0.f && m_passingTime < 0.4f) && m_currentState == m_animationStateMap["Guard"])
 			{
 				SetTimeScaleForSeconds(0.2f, 1.f);
 				m_isHit = false;
@@ -429,7 +429,7 @@ void PlayerAnimator::OnCollisionEnter(Truth::Collider* _other)
 		m_isHit = true;
 		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
 
-		if ((m_passingTime > 0.f && m_passingTime < 0.4f))
+		if ((m_passingTime > 0.f && m_passingTime < 0.4f) && m_currentState == m_animationStateMap["Guard"])
 		{
 			SetTimeScaleForSeconds(0.2f, 1.f);
 			m_isHit = false;
