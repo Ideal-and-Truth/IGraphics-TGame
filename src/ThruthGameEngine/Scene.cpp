@@ -135,7 +135,7 @@ void Truth::Scene::Initalize(std::weak_ptr<Managers> _manager)
 		LoadEntity(e);
 	}
 
-	LoadUnityData(m_mapPath);
+	// LoadUnityData(m_mapPath);
 
 	m_managers.lock()->Graphics()->ChangeSkyBox(m_skyBox);
 

@@ -35,6 +35,9 @@ namespace Truth
 		PROPERTY(layer);
 		int m_layer;
 
+		PROPERTY(isShadow);
+		bool m_isShadow;
+
 	public:
 		PointLight();
 		virtual ~PointLight();
@@ -46,6 +49,8 @@ namespace Truth
 		void SetPosition();
 
 		void SetLayer();
+
+		void SetShadow();
 
 		METHOD(Initialize);
 		void Initialize();
@@ -69,6 +74,10 @@ namespace Truth
 		{
 			_ar& m_layer;
 		}
+		if (file_version >= 2)
+		{
+			_ar& m_isShadow;
+		}
 	}
 
 	template<class Archive>
@@ -80,8 +89,9 @@ namespace Truth
 		_ar& m_intensity;
 		_ar& m_lightColor;
 		_ar& m_layer;
+		_ar& m_isShadow;
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::PointLight)
-BOOST_CLASS_VERSION(Truth::PointLight, 1)
+BOOST_CLASS_VERSION(Truth::PointLight, 2)
