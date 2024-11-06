@@ -149,8 +149,10 @@ namespace Ideal
 		virtual void AddLayer(uint32 LayerNum) override;
 		virtual void DeleteLayer(uint32 LayerNum) override;
 		virtual void ChangeLayer(uint32 LayerNum) override;
+		virtual void ChangeLayerBitMask(uint32 BitMask) override;
 
 		Ideal::IdealLayer& GetLayer() { return m_Layer; }
+		
 	private:
 		Ideal::IdealLayer m_Layer;
 	};

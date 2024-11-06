@@ -248,3 +248,8 @@ void Ideal::IdealMaterial::ChangeLayer(uint32 LayerNum)
 	m_Layer.ChangeLayer(LayerNum);
 	m_cbMaterialInfo.Layer = m_Layer.GetLayer();
 }
+
+void Ideal::IdealMaterial::ChangeLayerBitMask(uint32 BitMask)
+{
+	m_Layer.ChangeBitMask(BitMask);
+}
