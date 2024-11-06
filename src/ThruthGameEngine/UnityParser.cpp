@@ -37,20 +37,20 @@ Truth::UnityParser::~UnityParser()
 /// <param name="_path">유니티 프로젝트의 루트 디렉토리</param>
 void Truth::UnityParser::SetRootDir(const std::string& _path)
 {
-	fs::path root(_path);
+	m_rootPath = _path;
 
-	if (!fs::exists(root))
+	if (!fs::exists(m_rootPath))
 	{
 		assert(false && "Wrong File or Directory Path");
 		return;
 	}
-	if (fs::is_directory(root))
+	if (fs::is_directory(m_rootPath))
 	{
-		ParseDir(root);
+		ParseDir(m_rootPath);
 	}
-	else if (fs::is_regular_file(root))
+	else if (fs::is_regular_file(m_rootPath))
 	{
-		ParseFile(root);
+		ParseFile(m_rootPath);
 	}
 }
 
@@ -606,7 +606,7 @@ void Truth::UnityParser::ParseFbxMetaFile(GameObject* _GO, const fs::path& _fbxP
 
 void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _matGuid)
 {
-	fs::create_directories(m_texturePath / m_sceneName);
+	fs::create_directories(m_texturePath);
 	
 	MatarialData matdata = MatarialData();
 
@@ -637,12 +637,27 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 			}
 		}
 
+		const YAML::Node& keywordNode = matNode["Material"]["m_ValidKeywords"];
+		bool normalMap = false, maskMap = false, metalicMap = false;
+		if (keywordNode.IsDefined() && keywordNode.IsSequence())
+		{
+			for (auto& keyword : keywordNode)
+			{
+				if (keyword.as<std::string>() == "_MASKMAP")
+					maskMap = true;
+				if (keyword.as<std::string>() == "_NORMALMAP")
+					normalMap = true;
+				if (keyword.as<std::string>() == "_METALLICSPECGLOSSMAP")
+					metalicMap = true;
+			}
+		}
+
 		const YAML::Node& texNode = matNode["Material"]["m_SavedProperties"]["m_TexEnvs"];
 		if (texNode.IsDefined() && texNode.IsSequence())
 		{
 			for (auto& texmap : texNode)
 			{
-				if (texmap["_NormalMap"].IsDefined())
+				if (texmap["_NormalMap"].IsDefined() && normalMap)
 					CopyTexture(texmap["_NormalMap"], matdata.m_normal);
 
 				else if (texmap["_BumpMap"].IsDefined())
@@ -658,7 +673,7 @@ void Truth::UnityParser::ParseMatarialFile(GameObject* _GO, const std::string& _
 				else if (texmap["_MaskMap"].IsDefined())
 					CopyTexture(texmap["_MaskMap"], matdata.m_metalicRoughness);
 
-				else if (texmap["_MetallicGlossMap"].IsDefined())
+				else if (texmap["_MetallicGlossMap"].IsDefined() && metalicMap)
 					CopyTexture(texmap["_MetallicGlossMap"], matdata.m_metalicRoughness);
 
 				else if (texmap["_BarkBaseColorMap"].IsDefined())
@@ -684,16 +699,16 @@ void Truth::UnityParser::CopyTexture(const YAML::Node& _node, fs::path& _output)
 		return;
 
 	const fs::path originPath = m_guidMap[texGuid]->m_filePath;
-	fs::path parent = originPath.parent_path();
-	fs::path p = m_texturePath / m_sceneName / parent.filename() / originPath.filename();
-	fs::path copyPath = m_texturePath / m_sceneName / parent.filename();
+	fs::path parent = fs::relative(originPath, m_rootPath);
+	fs::path copyPath = m_texturePath / parent;
+
+	if (!fs::exists(copyPath.parent_path()))
+		fs::create_directories(copyPath.parent_path());
 
 	if (!fs::exists(copyPath))
-		fs::create_directory(copyPath);
-
-	if (!fs::exists(p))
 		fs::copy(originPath, copyPath, fs::copy_options::skip_existing);
-	_output = copyPath / originPath.filename();
+
+	_output = copyPath;
 }
 
 void Truth::UnityParser::WriteMaterialData()
@@ -736,17 +751,16 @@ void Truth::UnityParser::WriteMaterialData()
 
 void Truth::UnityParser::ConvertUnloadedMesh()
 {
-	fs::path assetPath = m_assetPath / m_sceneName;
+	fs::path assetPath = m_assetPath;
 	fs::path dataPath = "MapData";
-	dataPath /= m_sceneName;
 
-	fs::path modelPath = m_modelPath / m_sceneName;
+	fs::path modelPath = m_modelPath;
 	fs::create_directories(assetPath);
 	fs::create_directories(modelPath);
 
 	for (auto& path : m_unLoadMesh)
 	{
-		fs::copy(path, assetPath, fs::copy_options::skip_existing);
+		fs::copy(path, assetPath, fs::copy_options::update_existing);
 		m_gp->ConvertAsset(dataPath / path.filename(), false, true);
 	}
 }

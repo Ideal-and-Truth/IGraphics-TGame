@@ -102,6 +102,11 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 			m_mat.push_back(material);
 
 			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+
+			if (material->m_alphaCulling)
+			{
+				m_skinnedMesh->AlphaClippingCheck();
+			}
 		}
 	}
 	// 저장되어 있는 머테리얼 정보를 불러온다.
@@ -113,6 +118,10 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 			m_mat.push_back(material);
 
 			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+			if (material->m_alphaCulling)
+			{
+				m_skinnedMesh->AlphaClippingCheck();
+			}
 		}
 	}
 }

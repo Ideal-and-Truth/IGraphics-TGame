@@ -31,18 +31,6 @@ Truth::GraphicsManager::GraphicsManager()
 /// </summary>
 Truth::GraphicsManager::~GraphicsManager()
 {
-	for (auto& mat : m_matarialMap)
-	{
-		m_renderer->DeleteMaterial(mat.second->m_material);
-		// mat.second->m_material.reset();
-	}
-	m_matarialMap.clear();
-	for (auto& tex : m_textureMap)
-	{
-		m_renderer->DeleteTexture(tex.second->m_texture);
-		// tex.second->m_texture.reset();
-	}
-	m_textureMap.clear();
 	DEBUG_PRINT("Finalize GraphicsManager\n");
 }
 
@@ -79,8 +67,6 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 		m_assetPath[2]
 	);
 #endif // EDITOR_MODE
-
-
 	m_renderer->Init();
 
 	// 추후에 카메라에 넘겨 줄 시야각
@@ -91,7 +77,20 @@ void Truth::GraphicsManager::Initalize(HWND _hwnd, uint32 _wight, uint32 _height
 
 void Truth::GraphicsManager::Finalize()
 {
+	for (auto& mat : m_matarialMap)
+	{
+		m_renderer->DeleteMaterial(mat.second->m_material);
+		// mat.second->m_material.reset();
+	}
+	m_matarialMap.clear();
+	for (auto& tex : m_textureMap)
+	{
+		m_renderer->DeleteTexture(tex.second->m_texture);
+		// tex.second->m_texture.reset();
+	}
+	m_textureMap.clear();
 
+	m_renderer.reset();
 }
 
 /// <summary>
@@ -111,7 +110,13 @@ void Truth::GraphicsManager::Render()
 #endif // EDITOR_MODE
 }
 
-
+/// <summary>
+/// FBX 에셋을 엔진 포멧에 맞도록 컨버팅
+/// </summary>
+/// <param name="_path">경로</param>
+/// <param name="_isSkind">skinned 여부</param>
+/// <param name="_isData">위치 데이터</param>
+/// <param name="_isCenter">피벗 보간</param>
 void Truth::GraphicsManager::ConvertAsset(std::wstring _path, bool _isSkind /*= false*/, bool _isData /*= false*/, bool _isCenter)
 {
 	m_renderer->ConvertAssetToMyFormat(_path, _isSkind, _isData, _isCenter);
@@ -137,21 +142,40 @@ std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateMesh(std::wstr
 	return m_renderer->CreateStaticMeshObject(_path);
 }
 
+/// <summary>
+/// 디버깅 매쉬 생성
+/// </summary>
+/// <param name="_path">경로</param>
+/// <returns>디버깅 매쉬</returns>
 std::shared_ptr<Ideal::IMeshObject> Truth::GraphicsManager::CreateDebugMeshObject(std::wstring _path)
 {
 	return m_renderer->CreateDebugMeshObject(_path);
 }
 
+/// <summary>
+/// 애니메이션 생성
+/// </summary>
+/// <param name="_path">경로</param>
+/// <param name="_offset">애니메이션 오프셋 매트릭스</param>
+/// <returns>애니메이션</returns>
 std::shared_ptr<Ideal::IAnimation> Truth::GraphicsManager::CreateAnimation(std::wstring _path, const Matrix& _offset /*= Matrix::Identity*/)
 {
 	return m_renderer->CreateAnimation(_path, _offset);
 }
 
+/// <summary>
+/// 직사광성 생성
+/// </summary>
+/// <returns>직사광선</returns>
 std::shared_ptr<Ideal::IDirectionalLight> Truth::GraphicsManager::CreateDirectionalLight()
 {
 	return m_renderer->CreateDirectionalLight();
 }
 
+/// <summary>
+/// 직사광선 삭제
+/// </summary>
+/// <param name="_dLight">직사광선</param>
 void Truth::GraphicsManager::DeleteDirectionalLight(std::shared_ptr<Ideal::IDirectionalLight> _dLight)
 {
 	m_renderer->DeleteLight(_dLight);
@@ -298,11 +322,18 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			if (node["maskMap"].IsDefined())
 				metalicRoughness = node["maskMap"].as<std::string>();
 
-			mat->m_tileX = node["tileX"].as<float>();
-			mat->m_tileY = node["tileY"].as<float>();
+			if (node["tileX"].IsDefined())
+				mat->m_tileX = node["tileX"].as<float>();
+			if (node["tileY"].IsDefined())
+				mat->m_tileY = node["tileY"].as<float>();
 
 			if (node["alphaCulling"].IsDefined())
 				mat->m_alphaCulling = node["alphaCulling"].as<bool>();
+			if (node["alphaCulling"].as<bool>())
+			{
+				int a = 1;
+			}
+
 			if (node["transparent"].IsDefined())
 				mat->m_transparent = node["transparent"].as<bool>();
 			if (node["layer"].IsDefined())
@@ -313,7 +344,6 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			mat->m_maskMap = CreateTexture(metalicRoughness, true, true);
 
 			mat->SetTexture();
-			// mat->SaveMaterial();
 
 			fin.close();
 		}

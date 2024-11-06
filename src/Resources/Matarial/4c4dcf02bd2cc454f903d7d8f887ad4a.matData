@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/0_TitleTest/firetorch/T_firetorch_BaseMap.png
-normalMap: ../Resources/Textures/MapData/0_TitleTest/firetorch/T_firetorch_Normal.png
-maskMap: ../Resources/Textures/MapData/0_TitleTest/firetorch/T_firetorch_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/firetorch/T_firetorch_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/firetorch/T_firetorch_Normal.png
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/firetorch/T_firetorch_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

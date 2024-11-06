@@ -19,30 +19,37 @@ Truth::EditorCamera::~EditorCamera()
 
 void Truth::EditorCamera::Update(float _dt)
 {
+	float speed = m_speed;
+
+	if (GetKey(KEY::LSHIFT))
+	{
+		speed = m_speed * 0.1f;
+	}
+
 	if (GetKey(KEY::W))
 	{
-		m_camera->Walk(_dt * m_speed);
+		m_camera->Walk(_dt * speed);
 	}
 	if (GetKey(KEY::S))
 	{
-		m_camera->Walk(-_dt * m_speed);
+		m_camera->Walk(-_dt * speed);
 	}
 	if (GetKey(KEY::A))
 	{
-		m_camera->Strafe(-_dt * m_speed);
+		m_camera->Strafe(-_dt * speed);
 	}
 	if (GetKey(KEY::D))
 	{
-		m_camera->Strafe(_dt * m_speed);
+		m_camera->Strafe(_dt * speed);
 	}
 
 	if (GetKey(KEY::E))
 	{
-		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, _dt * m_speed, 0.0f));
+		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, _dt * speed, 0.0f));
 	}
 	if (GetKey(KEY::Q))
 	{
-		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, -_dt * m_speed, 0.0f));
+		m_camera->SetPosition(m_camera->GetPosition() + Vector3(0.0f, -_dt * speed, 0.0f));
 	}
 
 	if (GetKey(MOUSE::RMOUSE))

@@ -18,6 +18,8 @@ void Truth::Material::SetTexture()
 	m_material->SetTiling(m_tileX, m_tileY);
 	m_material->SetAlphaClipping(m_alphaCulling);
 	m_material->SetSurfaceTypeTransparent(m_transparent);
+
+	m_material->ChangeLayerBitMask(m_layer);
 }
 
 void Truth::Material::ChangeTexture(std::wstring _path, int _type)

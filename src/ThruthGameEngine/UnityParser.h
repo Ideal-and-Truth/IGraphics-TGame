@@ -145,6 +145,8 @@ namespace Truth
 
 		GraphicsManager* m_gp;
 
+		fs::path m_rootPath;
+
 	public:
 		UnityParser(GraphicsManager* _gp);
 		~UnityParser();
