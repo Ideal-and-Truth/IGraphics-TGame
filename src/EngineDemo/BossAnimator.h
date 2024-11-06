@@ -85,6 +85,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class BossDodge
@@ -567,6 +568,9 @@ private:
 	PROPERTY(isSkillActive);
 	bool m_isSkillActive;
 
+	PROPERTY(isUseSkill);
+	bool m_isUseSkill;
+
 	PROPERTY(isAttacking);
 	bool m_isAttacking;
 
@@ -665,6 +669,8 @@ public:
 	void SetEnemyDamage(float damage);
 
 	void SetEnemySpeed(float speed);
+
+	void SetChargeAttack(bool onoff);
 
 	inline bool GetIsLockOn() const { return m_isLockOn; }
 };

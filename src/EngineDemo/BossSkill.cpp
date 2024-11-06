@@ -154,7 +154,7 @@ void BossSkill::Update()
 
 	m_readyToShoot = m_bossAnimator->GetTypeInfo().GetProperty("isSkillActive")->Get<bool>(m_bossAnimator.get()).Get();
 
-	if (m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_bossAnimator.get()).Get())
+	if (m_bossAnimator->GetTypeInfo().GetProperty("isUseSkill")->Get<bool>(m_bossAnimator.get()).Get())
 	{
 		if (m_bossAnimator->GetTypeInfo().GetProperty("attackSwordShoot")->Get<bool>(m_bossAnimator.get()).Get() && !m_deleteSword)
 		{
@@ -332,7 +332,7 @@ void BossSkill::ShockWave()
 
 					m_shockWaves.clear();
 
-					m_bossAnimator->GetTypeInfo().GetProperty("isAttacking")->Set(m_bossAnimator.get(), false);
+					m_bossAnimator->GetTypeInfo().GetProperty("isUseSkill")->Set(m_bossAnimator.get(), false);
 				}
 			}
 		}
@@ -574,6 +574,8 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				collider->m_size = { 1.f,3.f,1.f };
 				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 3.f);
 				damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
+				damage->GetTypeInfo().GetProperty("onlyHitOnce")->Set(damage.get(), true);
+
 				skinnedMesh->SetSkinnedMesh(L"BossAnimations/Idle/Idle");
 				skinnedMesh->AddAnimation("AttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
 				skinnedMesh->AddAnimation("AttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
@@ -589,11 +591,6 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				m_clones.push_back(std::make_pair(illusion, false));
 				skinnedMesh->SetAnimation("AttackLightSpeedReady", false);
 			}
-
-			auto damager = m_owner.lock()->GetComponent<SimpleDamager>().lock();
-			damager->GetTypeInfo().GetProperty("damage")->Set(damager.get(), 3.f);
-			damager->GetTypeInfo().GetProperty("onlyHitOnce")->Set(damager.get(), false);
-
 
 			m_createComplete4 = true;
 
@@ -649,6 +646,10 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 
 						rigid->AddImpulse(power);
 						rigid->SetUserData(true);
+
+						auto damager = m_clones[m_cloneCount].first->GetComponent<SimpleDamager>().lock();
+						damager->GetTypeInfo().GetProperty("damage")->Set(damager.get(), 3.f);
+						damager->GetTypeInfo().GetProperty("onlyHitOnce")->Set(damager.get(), false);
 
 						m_cloneCount++;
 					}

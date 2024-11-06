@@ -29,6 +29,7 @@ private:
 	std::vector<std::shared_ptr<Truth::Entity>> m_onHitEnemys;
 
 	bool m_isAttacking;
+	bool m_canHit;
 	
 private:
 	void PlayEffect(Vector3 pos);
