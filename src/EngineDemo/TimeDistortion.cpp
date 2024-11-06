@@ -72,7 +72,6 @@ void TimeDistortion::Update()
 				dir.y = -100.f;
 				dir *= GetDeltaTime() * 5.f;
 				m_moveVec = dir;
-
 			}
 
 			if (m_passingTime > 1.f)
