@@ -308,12 +308,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
 		//DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"BossAnimations/Idle/BossEntranceRoot");
 		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 		// 
 		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
 		DebugStaticEnemy->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(3, 0, 0));
+
+
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
 		//DebugPlayer2->AddAnimation("Debug1", DebugPlayerAnim2);
