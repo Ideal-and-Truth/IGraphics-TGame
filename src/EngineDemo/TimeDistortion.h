@@ -7,6 +7,11 @@ namespace Truth
 	class SkinnedMesh;
 }
 
+namespace Ideal
+{
+	class IParticleSystem;
+}
+
 class Player;
 
 class TimeDistortion :
@@ -25,6 +30,8 @@ private:
 	std::shared_ptr<Truth::SkinnedMesh> m_playerMesh;
 	std::shared_ptr<Player> m_player;
 	std::shared_ptr<Truth::Entity> m_playerEntity;
+	std::shared_ptr<Ideal::IParticleSystem> m_blackHole;
+	std::shared_ptr<Ideal::IParticleSystem> m_blackHoleRing;
 
 	PROPERTY(active);
 	bool m_active;

@@ -549,13 +549,17 @@ void PlayerIdle::OnStateUpdate()
 void PlayerRun::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Run", false);
+	lastFrame = 0;
 }
 
 void PlayerRun::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 42)
+	if ((GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19
+		|| GetProperty("currentFrame")->Get<int>(m_animator).Get() == 42)
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Player\\Player_Walk_1_Sound.wav", true, 15);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 
@@ -1480,6 +1484,7 @@ void PlayerSkillE::OnStateEnter()
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(50.f);
+	lastFrame = 0;
 }
 
 void PlayerSkillE::OnStateUpdate()
@@ -1488,11 +1493,12 @@ void PlayerSkillE::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19 && lastFrame!= GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_2_Sound.wav", false, 21);
 		GetProperty("swordBeam")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 24)
 	{

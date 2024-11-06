@@ -41,7 +41,7 @@ class PlayerRun
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	PlayerRun(Truth::Component* animator)
@@ -417,7 +417,7 @@ class PlayerSkillE
 {
 private:
 	bool isReset = false;
-
+	int lastFrame = 0;
 public:
 	PlayerSkillE(Truth::Component* animator)
 		: AnimationState(animator)

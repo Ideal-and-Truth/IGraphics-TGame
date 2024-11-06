@@ -321,13 +321,16 @@ void EnemyIdle::OnStateUpdate()
 void EnemyChase::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleePursuit", false);
+	lastFrame = 0;
 }
 
 void EnemyChase::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	if ((GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (GetProperty("isDeath")->Get<bool>(m_animator).Get())
@@ -385,6 +388,7 @@ void EnemyReturn::OnStateUpdate()
 void EnemyAttackReady::OnStateEnter()
 {
 	m_isChangePose = true;
+	lastFrame = 0;
 }
 
 void EnemyAttackReady::OnStateUpdate()
@@ -409,16 +413,20 @@ void EnemyAttackReady::OnStateUpdate()
 
 	if (m_sidePose > 0.f)
 	{
-		if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 33)
+		if ((GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 33)
+			&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 		{
 			dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+			lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 		}
 	}
 	else
 	{
-		if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 18 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 36)
+		if ((GetProperty("currentFrame")->Get<int>(m_animator).Get() == 18 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 36)
+			&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 		{
 			dynamic_cast<EnemyAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 44);
+			lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 		}
 	}
 

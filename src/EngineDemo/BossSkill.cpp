@@ -16,6 +16,7 @@
 #include "Controller.h"
 #include "PhysicsManager.h"
 #include "DotDamage.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -110,6 +111,11 @@ void BossSkill::Awake()
 
 
 
+}
+
+void BossSkill::Start()
+{
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_1_Sound.wav", false);
 }
 
 void BossSkill::FixedUpdate()
@@ -233,7 +239,7 @@ void BossSkill::ShockWave()
 			m_owner.lock()->AddChild(shock);
 
 			shock->SetPosition({ 0.f,0.f,0.f });
-			shock->SetScale({ 5.f,3.f,5.f });
+			shock->SetScale({ 6.f,3.f,6.f });
 
 
 			//shock->Awake();
@@ -806,7 +812,8 @@ void BossSkill::CoolTimeCheck()
 
 void BossSkill::DeleteCheck()
 {
-	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get())
+	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get() 
+		|| m_bossAnimator->GetTypeInfo().GetProperty("isDeath")->Get<bool>(m_bossAnimator.get()).Get())
 	{
 		for (auto& e : m_fires)
 		{
@@ -982,7 +989,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
 			p->SetTransformMatrix(
-				Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
+				Matrix::CreateScale(Vector3(0.8f, 0.8f, 1.f)) *
 				Matrix::CreateRotationX(3.14f * 0.5f) *
 				Matrix::CreateTranslation(pos)
 			);
@@ -994,7 +1001,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
 			p->SetTransformMatrix(
-				Matrix::CreateScale(Vector3(0.4f, 0.4f, 1.f)) *
+				Matrix::CreateScale(Vector3(0.8f, 0.8f, 1.f)) *
 				Matrix::CreateRotationX(3.14f * 0.5f) *
 				Matrix::CreateTranslation(pos)
 			);
@@ -1006,6 +1013,7 @@ void BossSkill::PlayEffect(Vector3 pos)
 		{
 			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
 			p->SetTransformMatrix(
+				Matrix::CreateScale(2.f) *
 				Matrix::CreateTranslation(pos)
 			);
 
@@ -1062,6 +1070,8 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 			p->Play();
 		}
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_1_Sound.wav", true, 62);
 	}
 
 	/// บา น฿ป็

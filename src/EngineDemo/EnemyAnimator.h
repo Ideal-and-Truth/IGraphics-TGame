@@ -34,7 +34,7 @@ class EnemyChase
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	EnemyChase(Truth::Component* animator)
@@ -72,6 +72,7 @@ class EnemyAttackReady
 private:
 	float m_sidePose;
 	bool m_isChangePose;
+	int lastFrame = 0;
 
 public:
 	EnemyAttackReady(Truth::Component* animator)

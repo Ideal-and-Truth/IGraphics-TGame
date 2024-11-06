@@ -319,13 +319,16 @@ void RangerIdle::OnStateUpdate()
 void RangerPursuit::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangePursuitReturn", false);
+	lastFrame = 0;
 }
 
 void RangerPursuit::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	if ((GetProperty("currentFrame")->Get<int>(m_animator).Get() == 6 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 51);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (GetProperty("isAttack")->Get<bool>(m_animator).Get())

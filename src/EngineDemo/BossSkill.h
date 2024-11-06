@@ -89,6 +89,9 @@ public:
 	METHOD(Awake);
 	void Awake();
 
+	METHOD(Start);
+	void Start();
+
 	METHOD(FixedUpdate);
 	void FixedUpdate();
 

@@ -16,7 +16,7 @@ class BossEntrance
 	: public AnimationState
 {
 private:
-
+	int lastFrame=0;
 
 public:
 	BossEntrance(Truth::Component* animator)
@@ -27,6 +27,7 @@ public:
 
 public:
 	virtual void OnStateEnter() override;
+	virtual void OnStateUpdate() override;
 };
 
 class BossIdle
@@ -51,7 +52,7 @@ class BossRun
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	BossRun(Truth::Component* animator)
@@ -72,6 +73,7 @@ class BossStrafe
 private:
 	float m_sidePose;
 	bool m_isChangePose;
+	int lastFrame = 0;
 
 public:
 	BossStrafe(Truth::Component* animator)
@@ -151,7 +153,7 @@ class BossAttackRunning
 {
 private:
 	bool isReset = false;
-
+	int lastFrame = 0;
 
 public:
 	BossAttackRunning(Truth::Component* animator)
@@ -266,7 +268,7 @@ class BossAttackSpin
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	BossAttackSpin(Truth::Component* animator)
@@ -308,6 +310,8 @@ class BossAttackCombo1_1
 private:
 	bool m_isChangePose;
 	bool isReset = false;
+	int lastFrame = 0;
+
 public:
 	BossAttackCombo1_1(Truth::Component* animator)
 		: AnimationState(animator)
@@ -327,6 +331,7 @@ class BossAttackCombo1_2
 {
 private:
 	bool m_isChangePose;
+	int lastFrame = 0;
 
 public:
 	BossAttackCombo1_2(Truth::Component* animator)
@@ -348,6 +353,7 @@ class BossAttackCombo1_3
 private:
 	bool m_isChangePose;
 	bool isReset = false;
+	int lastFrame = 0;
 
 public:
 	BossAttackCombo1_3(Truth::Component* animator)
@@ -369,6 +375,7 @@ class BossAttackCombo2_1
 private:
 	bool m_isChangePose;
 	bool isReset = false;
+	int lastFrame = 0;
 
 public:
 	BossAttackCombo2_1(Truth::Component* animator)
@@ -389,6 +396,7 @@ class BossAttackCombo3_1
 {
 private:
 	bool m_isChangePose;
+	int lastFrame = 0;
 
 public:
 	BossAttackCombo3_1(Truth::Component* animator)
@@ -671,6 +679,8 @@ public:
 	void SetEnemySpeed(float speed);
 
 	void SetChargeAttack(bool onoff);
+
+	void SoundPlay(std::wstring path, bool isDup, int channel);
 
 	inline bool GetIsLockOn() const { return m_isLockOn; }
 };

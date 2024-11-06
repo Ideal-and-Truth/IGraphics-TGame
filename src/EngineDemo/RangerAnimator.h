@@ -40,7 +40,7 @@ class RangerPursuit
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	RangerPursuit(Truth::Component* animator)
