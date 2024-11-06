@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_cafesign</Name>
-        <DiffuseFile>T_town_cafe_walldoor_BaseMap.png</DiffuseFile>
+        <Name>M_cafesign_re</Name>
+        <DiffuseFile>T_town_cafe_sign_re_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>

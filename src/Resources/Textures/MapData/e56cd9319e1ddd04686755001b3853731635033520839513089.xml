@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_Ground_Forest_Leaves_01</Name>
-        <DiffuseFile>T_forest_ground_leaves_01_A_SM.tga</DiffuseFile>
+        <Name>M_Ground_Forest_needles_01</Name>
+        <DiffuseFile>T_forest_ground_needles_01_A_SM.tga</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
-        <NormalFile>T_forest_ground_leaves_01_N.png</NormalFile>
+        <NormalFile>T_forest_ground_needles_01_N.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
         <RoughnessFile>DefaulBlack.png</RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
