@@ -58,6 +58,14 @@ void PlayerCamera::Start()
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
 }
 
+void PlayerCamera::FixedUpdate()
+{
+// 	if (m_isLockOn && !m_enemys.empty())
+// 		LockOnCamera();
+// 	else
+// 		FreeCamera();
+}
+
 void PlayerCamera::LateUpdate()
 {
 	if (m_isCutScenePlay)

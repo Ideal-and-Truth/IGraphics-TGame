@@ -67,6 +67,9 @@ public:
 	METHOD(Start);
 	void Start();
 
+	METHOD(FixedUpdate);
+	void FixedUpdate();
+
 	METHOD(LateUpdate);
 	void LateUpdate();
 
