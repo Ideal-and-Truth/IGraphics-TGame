@@ -1,5 +1,5 @@
 ---
-baseMap: ../Resources/Textures/MapData/0_TitleTest/ej_brickwalltile/T_town_ej_wall_tile_BaseMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/ej_brickwalltile/T_town_ej_wall_tile_BaseMap.png
 normalMap: ""
 maskMap: ""
 tileX: 1

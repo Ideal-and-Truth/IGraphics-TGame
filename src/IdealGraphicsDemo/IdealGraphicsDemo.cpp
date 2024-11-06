@@ -72,6 +72,7 @@ using namespace std;
 #define DefaultLayer 0
 #define PlayerLayer 1
 
+//#define MAKE_PARTICLE
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -307,12 +308,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//std::shared_ptr<Ideal::IAnimation> DebugEnemyAnim = gRenderer->CreateAnimation(L"EnemyTest/idelTest");
 		//DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
+		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"BossAnimations/Idle/BossEntranceRoot");
 		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
 		// 
 		std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
 		DebugStaticEnemy->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(3, 0, 0));
+
+
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
 		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim2 = gRenderer->CreateAnimation(L"DebugPlayer/animation_ka_walk");
 		//DebugPlayer2->AddAnimation("Debug1", DebugPlayerAnim2);
@@ -438,27 +443,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//garland->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
 		//garland->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(0, 5, 0)));
 
-		auto windowMaterial = gRenderer->CreateMaterial();
-		auto windowBase = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_BaseMap.png");
-		auto windowNormal = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_Normal.png");
-		auto windowMask = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_MaskMap.png");
-		windowMaterial->SetBaseMap(windowBase);
-		windowMaterial->SetNormalMap(windowNormal);
-		windowMaterial->SetMaskMap(windowMask);
-		windowMaterial->SetSurfaceTypeTransparent(true);
-		windowMaterial->ChangeLayer(PlayerLayer);
-		for(int y = 0 ; y < 20;y++)
-		{
-			for (int x = 0; x < 20; x++)
-			{
-				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-				plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
-				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
-				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
-				meshes.push_back(plane);
-				plane->AlphaClippingCheck();
-			}
-		}
+		//auto windowMaterial = gRenderer->CreateMaterial();
+		//auto windowBase = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_BaseMap.png");
+		//auto windowNormal = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_Normal.png");
+		//auto windowMask = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/T_town_glass_MaskMap.png");
+		//windowMaterial->SetBaseMap(windowBase);
+		//windowMaterial->SetNormalMap(windowNormal);
+		//windowMaterial->SetMaskMap(windowMask);
+		//windowMaterial->SetSurfaceTypeTransparent(true);
+		//windowMaterial->ChangeLayer(PlayerLayer);
+		//for(int y = 0 ; y < 20;y++)
+		//{
+		//	for (int x = 0; x < 20; x++)
+		//	{
+		//		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
+		//		plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
+		//		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+		//		plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
+		//		meshes.push_back(plane);
+		//		plane->AlphaClippingCheck();
+		//	}
+		//}
 
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
@@ -470,10 +475,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma endregion
 #pragma region CreateDebugMesh
-		std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
-		debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
-		cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 2, 0)));
-		cart->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+		//std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateDebugMeshObject(L"cart/SM_cart");
+		//debugCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 10, 0)));
+		//cart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 2, 0)));
+		//cart->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
 
 		//cart->SetStaticWhenRunTime(true);
 		//cart2->SetTransformMatrix(Matrix::CreateTranslation(Vector3(0, 0, 21)));
@@ -486,7 +491,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
 		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png", true);
 		//std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/1_Test/uni_spill.tga");
-		std::shared_ptr<Ideal::ITexture> kaTexture;// = gRenderer->CreateTexture(L"../Resources/Textures/Kachujin/Kachujin_diffuse.png");
 		//std::shared_ptr<Ideal::ITexture> normalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
@@ -548,25 +552,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::vector<std::shared_ptr<Ideal::IText>>texts;
 
 
-		std::shared_ptr<Ideal::ITexture> uiTex0 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_base.png");
-		std::shared_ptr<Ideal::ITexture> uiTex1 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_gph.png", false, false, true);
-		std::shared_ptr<Ideal::ITexture> uiTex2 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_deco.png");
-
-		std::shared_ptr<Ideal::ISprite> sp0 = gRenderer->CreateSprite();
-		sp0->SetTexture(uiTex0);
-		sp0->SetPosition(Vector2(500, 400));
-		sp0->SetZ(0.7);
-		sp0->SetScale(Vector2(2, 2));
-		std::shared_ptr<Ideal::ISprite> sp1 = gRenderer->CreateSprite();
-		sp1->SetTexture(uiTex2);
-		sp1->SetPosition(Vector2(500, 400));
-		sp1->SetZ(0.6);
-		sp1->SetScale(Vector2(2, 2));
-		std::shared_ptr<Ideal::ISprite> sp2 = gRenderer->CreateSprite();
-		sp2->SetTexture(uiTex1);
-		sp2->SetPosition(Vector2(500, 400));
-		sp2->SetZ(0.5);
-		sp2->SetScale(Vector2(2, 2));
+		//std::shared_ptr<Ideal::ITexture> uiTex0 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_base.png");
+		//std::shared_ptr<Ideal::ITexture> uiTex1 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_gph.png", false, false, true);
+		//std::shared_ptr<Ideal::ITexture> uiTex2 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_deco.png");
+		//
+		//std::shared_ptr<Ideal::ISprite> sp0 = gRenderer->CreateSprite();
+		//sp0->SetTexture(uiTex0);
+		//sp0->SetPosition(Vector2(500, 400));
+		//sp0->SetZ(0.7);
+		//sp0->SetScale(Vector2(2, 2));
+		//std::shared_ptr<Ideal::ISprite> sp1 = gRenderer->CreateSprite();
+		//sp1->SetTexture(uiTex2);
+		//sp1->SetPosition(Vector2(500, 400));
+		//sp1->SetZ(0.6);
+		//sp1->SetScale(Vector2(2, 2));
+		//std::shared_ptr<Ideal::ISprite> sp2 = gRenderer->CreateSprite();
+		//sp2->SetTexture(uiTex1);
+		//sp2->SetPosition(Vector2(500, 400));
+		//sp2->SetZ(0.5);
+		//sp2->SetScale(Vector2(2, 2));
 
 #pragma endregion
 
@@ -797,6 +801,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
 
+#ifdef MAKE_PARTICLE
 #pragma region Beam1
 		//------------------------Create Particle---------------------------//
 
@@ -2393,6 +2398,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 #pragma endregion
+#endif
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
 		float angle = 0.f;
@@ -2549,7 +2555,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}*/
 
-
+#ifdef MAKE_PARTICLE
 				if (GetAsyncKeyState('F') & 0x8000)
 				{
 					slashParticleSystem->Pause();
@@ -2736,6 +2742,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						lightPos++;
 					}
 				}
+#endif
 				static float delayHomeKey = 0.3f;
 				if (delayHomeKey <= 0.3f)
 				{
@@ -2765,6 +2772,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					DebugPlayer->AnimationDeltaTime(0.106f);
 				}
 
+#ifdef MAKE_PARTICLE
 				particleSystem->SetDeltaTime(0.003f);
 				slashParticleSystem->SetDeltaTime(0.0015f);
 				bossParticleSystem0->SetDeltaTime(0.003f);
@@ -2800,6 +2808,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				enemyChargeParticleSystem->SetDeltaTime(0.003f);
 				enemyChargeParticleSystem2->SetDeltaTime(0.003f);
 				ScannerParticleSystem->SetDeltaTime(0.003f);
+#endif
 				//if (DebugPlayer)
 				{
 					//DebugPlayer->AnimationDeltaTime(0.002f);
@@ -2940,6 +2949,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->DeleteMeshObject(boss);
 		//boss.reset();
 
+#ifdef MAKE_PARTICLE
 		gRenderer->DeleteTexture(slashParticleTexture0);
 		slashParticleTexture0.reset();
 		gRenderer->DeleteTexture(slashParticleTexture1);
@@ -2958,25 +2968,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			gRenderer->DeleteTexture(particleTexturesToDelete[i]);
 			particleTexturesToDelete[i].reset();
 		}
+
+#endif
 		
 		//meshes.clear();
 
-		//gRenderer->DeleteMeshObject(cart);
-		//cart.reset();
+		gRenderer->DeleteMeshObject(cart);
+		cart.reset();
 		//gRenderer->DeleteMeshObject(cart2);
 		//cart2.reset();
-		//gRenderer->DeleteMeshObject(DebugStaticEnemy);
-		//DebugStaticEnemy.reset();
-		//gRenderer->DeleteMeshObject(DebugEnemy);
-		//DebugEnemy.reset();
-		//gRenderer->DeleteMeshObject(DebugPlayer);
-		//gRenderer->DeleteMeshObject(DebugPlayer2);
-		//gRenderer->DeleteMeshObject(DebugPlayer3);
-		//DebugPlayer.reset();
-		//DebugPlayer2.reset();
-		//DebugPlayer3.reset();
-		//gRenderer->DeleteMeshObject(playerRe);
-		//playerRe.reset();
+
+
+		gRenderer->DeleteMeshObject(DebugStaticEnemy);
+		DebugStaticEnemy.reset();
+		gRenderer->DeleteMeshObject(DebugPlayer);
+		DebugPlayer.reset();
 		gRenderer->DeleteMaterial(kaMaterial);
 		kaMaterial.reset();
 		gRenderer->DeleteMaterial(skirtMaterial);
@@ -2985,8 +2991,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		eyeMaterial.reset();
 		gRenderer->DeleteTexture(faceTexture);
 		faceTexture.reset();
-		gRenderer->DeleteTexture(kaTexture);
-		kaTexture.reset();
 		//gRenderer->DeleteTexture(normalTexture);
 		//normalTexture.reset();
 		gRenderer->DeleteTexture(faceNormalTexture);
@@ -2998,9 +3002,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		gRenderer->DeleteTexture(skirtBottomNormalTexture);
 		skirtBottomNormalTexture.reset();
 
+		gRenderer->DeleteMaterial(planeMaterial);
+		planeMaterial.reset();
+		gRenderer->DeleteTexture(planeAlbedoTexture);
+		planeAlbedoTexture.reset();
+		gRenderer->DeleteTexture(planeMaskTexture);
+		planeMaskTexture.reset();
+		gRenderer->DeleteTexture(planeNormalTexture);
+		planeNormalTexture.reset();
 		gRenderer->DeleteText(text);
 		text.reset();
 
+		gRenderer->DeleteTexture(skybox);
+		skybox.reset();
 		gRenderer.reset();
 	}
 

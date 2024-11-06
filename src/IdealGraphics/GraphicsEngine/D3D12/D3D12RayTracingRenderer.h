@@ -304,13 +304,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderMeshVS;
 		std::shared_ptr<Ideal::D3D12Shader> m_DefaultParticleShaderBillboardCS;
 		// RAY TRACING FRAMEWORK
-	private:
-		// shader
-		ComPtr<IDxcCompiler3> m_compiler3;
-		ComPtr<IDxcUtils> m_dxcUtils;
-		ComPtr<IDxcBlob> m_testBlob;
-
-		
 
 	private:
 		// AS
@@ -351,12 +344,6 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12DescriptorHeap> m_mainDescriptorHeaps[MAX_PENDING_FRAME_COUNT];
 		std::shared_ptr<Ideal::IdealCanvas> m_UICanvas;
 
-		std::shared_ptr<Ideal::FontHandle> m_fontHandle;
-		BYTE* gTextImage;
-		std::shared_ptr<Ideal::D3D12Texture> m_dynamicTexture;
-		std::shared_ptr<Ideal::IdealSprite> m_textSprite;
-		std::shared_ptr<Ideal::IdealText> m_idealText;
-
 		void UpdateTextureWithImage(std::shared_ptr<Ideal::D3D12Texture> Texture, BYTE* SrcBits, uint32 SrcWidth, uint32 SrcHeight);
 
 		// Particle
@@ -389,8 +376,5 @@ namespace Ideal
 		Vector2 m_mainCameraEditorTopLeft;
 		Vector2 m_mainCameraEditorBottomRight;
 		Vector2 m_mainCameraEditorWindowSize;
-
-
-		std::shared_ptr<Ideal::D3D12StructuredBuffer> m_ParticleStructuredBuffer;
 	};
 }

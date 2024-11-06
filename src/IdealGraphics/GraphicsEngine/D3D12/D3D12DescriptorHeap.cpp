@@ -86,6 +86,7 @@ void D3D12DescriptorHandle::Free()
 			default:
 				break;
 		}
+		type = Ideal::EDescriptorType::None;
 		/*m_ownerHeap.lock()->Free(m_allocatedIndex);
 		m_ownerHeap.reset();*/
 	}

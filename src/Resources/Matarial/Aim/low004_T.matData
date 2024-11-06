@@ -4,6 +4,7 @@ normalMap: ../Resources/Textures/Monster/T_Eunji_monster_cape, belt_Normal.png
 maskMap: ../Resources/Textures/Monster/T_Eunji_monster_cape, belt_MaskMap.png
 tileX: 1
 tileY: 1
-alphaCulling: false
+alphaCulling: true
 transparent: false
+layer: 1
 ...

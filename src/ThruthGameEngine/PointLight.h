@@ -35,6 +35,9 @@ namespace Truth
 		PROPERTY(layer);
 		int m_layer;
 
+		PROPERTY(isShadow);
+		bool m_isShadow;
+
 	public:
 		PointLight();
 		virtual ~PointLight();
@@ -44,18 +47,23 @@ namespace Truth
 		void SetColor();
 		void SetRange();
 		void SetPosition();
-
+		void SetPosition(const Vector3& _position);
 		void SetLayer();
 
+		void SetShadow();
+
+#ifdef EDITOR_MODE
+		virtual void EditorSetValue();
+#endif // EDITOR_MODE
+
+	private:
 		METHOD(Initialize);
 		void Initialize();
 
 		METHOD(Destroy);
 		void Destroy();
 
-#ifdef EDITOR_MODE
-		virtual void EditorSetValue();
-#endif // EDITOR_MODE
+
 	};
 	template<class Archive>
 	void Truth::PointLight::load(Archive& _ar, const unsigned int file_version)
@@ -69,6 +77,10 @@ namespace Truth
 		{
 			_ar& m_layer;
 		}
+		if (file_version >= 2)
+		{
+			_ar& m_isShadow;
+		}
 	}
 
 	template<class Archive>
@@ -80,8 +92,9 @@ namespace Truth
 		_ar& m_intensity;
 		_ar& m_lightColor;
 		_ar& m_layer;
+		_ar& m_isShadow;
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::PointLight)
-BOOST_CLASS_VERSION(Truth::PointLight, 1)
+BOOST_CLASS_VERSION(Truth::PointLight, 2)
