@@ -107,6 +107,8 @@ void EnemyAnimator::Start()
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_1_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Dead_2_Sound.wav", false);
+	/// 장난
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Falling.wav", false);
 
 	m_currentState->OnStateEnter();
 }
@@ -174,10 +176,13 @@ void EnemyAnimator::Update()
 		{
 			int random = RandomNumber(1, 2);
 
+			/// 장난
 			if (random == 1)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 41);
+				//m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Falling.wav", false, 41);
 			else if (random == 2)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 41);
+				//m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Falling.wav", false, 41);
 
 
 			m_isFall = true;

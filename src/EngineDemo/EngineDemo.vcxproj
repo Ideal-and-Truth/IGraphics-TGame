@@ -190,6 +190,7 @@
     <ClInclude Include="SimpleDamager.h" />
     <ClInclude Include="Skill.h" />
     <ClInclude Include="SkillTree.h" />
+    <ClInclude Include="StageBGM.h" />
     <ClInclude Include="StartButton.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestEffectGenerator.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="SimpleDamager.cpp" />
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="SkillTree.cpp" />
+    <ClCompile Include="StageBGM.cpp" />
     <ClCompile Include="StartButton.cpp" />
     <ClCompile Include="TestEffectGenerator.cpp" />
     <ClCompile Include="TestMovement.cpp" />

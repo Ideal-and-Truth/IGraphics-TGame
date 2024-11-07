@@ -16,7 +16,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(MeleeWeapon)
 MeleeWeapon::MeleeWeapon()
 	: m_collider(nullptr)
 	, m_isAttacking(false)
-	, m_canHit(false)
+	, m_canHit(true)
 {
 	m_name = "MeleeWeapon";
 }
@@ -57,6 +57,7 @@ void MeleeWeapon::Update()
 	if (m_player)
 	{
 		m_isAttacking = m_playerAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_playerAnimator.get()).Get();
+		m_canHit = true;
 	}
 	else if (m_enemy)
 	{
