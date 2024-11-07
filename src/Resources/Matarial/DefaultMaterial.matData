@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/DefaultData/DefaultAlbedo.png
-normalMap: ../Resources/DefaultData/DefaultNormalMap.png
-maskMap: ../Resources/Textures/UVSphere/DefaultWhite.png
+baseMap: ../Resources/Textures/BossMonster/T_niddle_gold_BaseMap.png
+normalMap: ../Resources/Textures/BossMonster/T_niddle_gold_Normal.png
+maskMap: ../Resources/Textures/BossMonster/T_niddle_gold_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
