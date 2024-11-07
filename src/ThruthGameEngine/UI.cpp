@@ -186,6 +186,10 @@ void Truth::UI::Update()
 #endif
 	if (m_behavior)
 		m_behavior->Update();
+
+	if (m_noneUpdate)
+		return;
+
 	if (!m_isButton)
 	{
 		SetSpriteActive(BUTTON_STATE::IDEL);

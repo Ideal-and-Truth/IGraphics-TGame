@@ -40,9 +40,9 @@ namespace Truth
 			END,
 		};
 
-	private:
-		PROPERTY(sprite)
-			std::shared_ptr<UISpriteSet> m_sprite;
+	public:
+		PROPERTY(sprite);
+		std::shared_ptr<UISpriteSet> m_sprite;
 
 		std::string m_texturePath[3];
 
@@ -58,6 +58,7 @@ namespace Truth
 
 		PROPERTY(minSampling);
 		Vector2 m_minSampling;
+
 		PROPERTY(maxSampling);
 		Vector2 m_maxSampling;
 
@@ -75,6 +76,8 @@ namespace Truth
 
 		PROPERTY(behavior);
 		std::shared_ptr<ButtonBehavior> m_behavior;
+
+		bool m_noneUpdate = false;
 
 	public:
 		UI();
