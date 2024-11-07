@@ -179,10 +179,10 @@ void EnemyAnimator::Update()
 			/// Àå³­
 			if (random == 1)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_5_Sound.wav", false, 41);
-				//m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Falling.wav", false, 41);
+			//m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Falling.wav", false, 41);
 			else if (random == 2)
 				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Enemy_Pain_6_Sound.wav", false, 41);
-				//m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Falling.wav", false, 41);
+			//m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\08. Enemy_Sound\\Falling.wav", false, 41);
 
 
 			m_isFall = true;
@@ -477,6 +477,7 @@ void EnemyAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeAttack", false);
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(50.f);
+	lastFrame = 0;
 }
 
 void EnemyAttack::OnStateUpdate()
@@ -485,10 +486,12 @@ void EnemyAttack::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16 
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("normalAttack")->Set(m_animator, true);
 		GetProperty("isAttacking")->Set(m_animator, true);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 26)
 	{
@@ -547,6 +550,7 @@ void EnemyChargeAttack::OnStateEnter()
 {
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetAnimation("EnemyMeleeStrongAttack", false);
 	dynamic_cast<EnemyAnimator*>(m_animator)->SetImpulse(150.f);
+	lastFrame = 0;
 }
 
 void EnemyChargeAttack::OnStateUpdate()
@@ -555,10 +559,12 @@ void EnemyChargeAttack::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 16
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("chargeAttack")->Set(m_animator, true);
 		GetProperty("isAttacking")->Set(m_animator, true);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 26)

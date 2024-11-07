@@ -93,6 +93,7 @@ class EnemyAttack
 {
 private:
 	bool isReset = false;
+	int lastFrame = 0;
 
 public:
 	EnemyAttack(Truth::Component* animator)
@@ -112,6 +113,7 @@ class EnemyChargeAttack
 {
 private:
 	bool isReset = false;
+	int lastFrame = 0;
 
 public:
 	EnemyChargeAttack(Truth::Component* animator)
