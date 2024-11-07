@@ -491,7 +491,7 @@ void Truth::PhysicsManager::CreatePhysxScene()
 	groundPlane->getShapes(planeShape, sizeof(physx::PxShape));
 	planeShape[0]->setSimulationFilterData(filterData);
 	planeShape[0]->setQueryFilterData(filterData);
-	//m_scene->addActor(*groundPlane);
+	// m_scene->addActor(*groundPlane);
 
 	// 컨트롤러 매니저 만들기
 	m_CCTManager = PxCreateControllerManager(*m_scene);

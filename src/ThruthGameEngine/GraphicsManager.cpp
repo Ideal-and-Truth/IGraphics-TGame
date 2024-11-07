@@ -339,6 +339,7 @@ std::shared_ptr<Truth::Material> Truth::GraphicsManager::CreateMaterial(const st
 			if (node["layer"].IsDefined())
 				mat->m_layer = node["layer"].as<uint32>();
 
+
 			mat->m_baseMap = CreateTexture(albedo, true, false);
 			mat->m_normalMap = CreateTexture(normal, true, true);
 			mat->m_maskMap = CreateTexture(metalicRoughness, true, true);
