@@ -41,6 +41,7 @@ private:
 
 public:
 	PlayerHPUI();
+	virtual ~PlayerHPUI();
 	virtual void Update() override;
 	virtual void Start() override;
 

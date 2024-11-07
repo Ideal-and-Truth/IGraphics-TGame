@@ -414,6 +414,7 @@ float3 Shade(
                 bool isInShadow = false;
 
                 uint lightCast = l_materialInfo.Layer & g_lightList.PointLights[i].Layer;
+                lightCast = clamp(0, 1, lightCast);
                 range *= (float)lightCast;
 
                 if(distance <= range)

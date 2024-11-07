@@ -12,6 +12,21 @@ PlayerHPUI::PlayerHPUI()
 	m_name = "Player Cp Behavior";
 }
 
+PlayerHPUI::~PlayerHPUI()
+{
+	auto gp = m_managers.lock()->Graphics();
+	if (m_underSprite)
+	{
+		gp->DeleteSprite(m_underSprite);
+		m_underSprite.reset();
+	}
+	if (m_upSprite)
+	{
+		gp->DeleteSprite(m_upSprite);
+		m_upSprite.reset();
+	}
+}
+
 void PlayerHPUI::Update()
 {
 	if (!m_player.expired())
