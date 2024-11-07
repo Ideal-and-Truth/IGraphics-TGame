@@ -22,6 +22,7 @@ Truth::GraphicsManager::GraphicsManager()
 	, m_aspect(1.0f)
 	, m_mainCamera(nullptr)
 	, m_resolution(1920, 1080)
+	, m_hwnd()
 {
 
 }

@@ -21,8 +21,8 @@ namespace Truth
 	struct Material
 	{
 		OPENFILENAME m_openFileName;
-		TCHAR m_filePathBuffer[256];
-		TCHAR m_fileBuffer[256];
+		TCHAR m_filePathBuffer[256] = {};
+		TCHAR m_fileBuffer[256] = {};
 
 		std::string m_name; 
 

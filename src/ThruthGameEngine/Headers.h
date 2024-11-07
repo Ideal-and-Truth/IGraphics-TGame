@@ -3,7 +3,7 @@
 #pragma warning(disable : 4275)
 
 #include "EditorDefine.h"
-
+// #define yaml_cpp_EXPORTS
 // extern library
 #include "SimpleMath.h"
 #include "Types.h"

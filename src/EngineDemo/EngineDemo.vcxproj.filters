@@ -94,6 +94,9 @@
     <Filter Include="Component\Sound">
       <UniqueIdentifier>{0e3bdcbc-18b8-4f86-81d2-8b7a9de433eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\AnchorCamera">
+      <UniqueIdentifier>{623b97e3-844a-4d66-9840-784542345422}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -237,6 +240,9 @@
     <ClInclude Include="StageBGM.h">
       <Filter>Component\Sound</Filter>
     </ClInclude>
+    <ClInclude Include="AnchorCamera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -370,6 +376,9 @@
     </ClCompile>
     <ClCompile Include="StageBGM.cpp">
       <Filter>Component\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="AnchorCamera.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

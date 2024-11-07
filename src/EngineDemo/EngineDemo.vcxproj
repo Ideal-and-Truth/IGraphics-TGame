@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnchorCamera.h" />
     <ClInclude Include="AnimationState.h" />
     <ClInclude Include="AutoTarget.h" />
     <ClInclude Include="BezierShooter.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="TimeDistortion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnchorCamera.cpp" />
     <ClCompile Include="AnimationState.cpp" />
     <ClCompile Include="AutoTarget.cpp" />
     <ClCompile Include="BezierShooter.cpp" />
