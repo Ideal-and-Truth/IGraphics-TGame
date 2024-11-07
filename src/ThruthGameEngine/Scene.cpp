@@ -362,6 +362,14 @@ void Truth::Scene::Start()
 		e->Awake();
 		m_awakedEntity.pop();
 	}
+
+	while (!m_startedEntity.empty())
+	{
+		auto& e = m_startedEntity.front();
+		e->Start();
+		m_startedEntity.pop();
+	}
+
 	m_started = true;
 }
 

@@ -191,8 +191,8 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 			{
 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundEffect.yaml");
 				p->SetTransformMatrix(
-					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
-					* Matrix::CreateTranslation(localPos)
+					Matrix::CreateTranslation(localPos)
+					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
 					* Matrix::CreateTranslation(effPos)
 				);
 
@@ -203,8 +203,8 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 			{
 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundSmoke.yaml");
 				p->SetTransformMatrix(
-					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
-					* Matrix::CreateTranslation(localPos)
+					Matrix::CreateTranslation(localPos)
+					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
 					* Matrix::CreateTranslation(effPos)
 				);
 
@@ -215,8 +215,8 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 			{
 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundFire.yaml");
 				p->SetTransformMatrix(
-					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
-					* Matrix::CreateTranslation(localPos)
+					Matrix::CreateTranslation(localPos)
+					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
 					* Matrix::CreateTranslation(effPos)
 				);
 
