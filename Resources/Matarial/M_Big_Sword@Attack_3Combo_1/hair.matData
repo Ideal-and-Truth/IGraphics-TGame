@@ -1,7 +1,7 @@
 ---
 baseMap: ../Resources/Textures/PlayerRe/adsf/hair_AlbedoTransparency.png
 normalMap: ../Resources/Textures/PlayerRe/adsf/hair_Normal.png
-maskMap: ../Resources/Textures/PlayerRe/adsf/hair_MetallicSmoothness.png
+maskMap: ../Resources/Textures/PlayerRe/T_hair_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
