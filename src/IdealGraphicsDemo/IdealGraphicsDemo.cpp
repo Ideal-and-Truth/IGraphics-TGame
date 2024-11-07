@@ -413,15 +413,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 #pragma region TestPlane
 		auto planeMaterial = gRenderer->CreateMaterial();
-		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_BaseMap.png", true);
-		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_MaskMap.png", true);
+		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/archtile/T_archtile_BaseMap.png", true);
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/archtile/T_archtile_MaskMap.png", true);
 		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png");
-		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_Normal.png", true, true);
+		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/archtile/T_archtile_Normal.png", true, true);
 		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
 		planeMaterial->SetNormalMap(planeNormalTexture);
 		planeMaterial->SetSurfaceTypeTransparent(true);
+		planeMaterial->ChangeLayerBitMask(0x0011);
 		
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
@@ -452,18 +453,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//windowMaterial->SetMaskMap(windowMask);
 		//windowMaterial->SetSurfaceTypeTransparent(true);
 		//windowMaterial->ChangeLayer(PlayerLayer);
-		//for(int y = 0 ; y < 20;y++)
-		//{
-		//	for (int x = 0; x < 20; x++)
-		//	{
-		//		std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-		//		plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
-		//		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
-		//		plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
-		//		meshes.push_back(plane);
-		//		plane->AlphaClippingCheck();
-		//	}
-		//}
+		for(int y = 0 ; y < 20;y++)
+		{
+			for (int x = 0; x < 20; x++)
+			{
+				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
+				plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
+				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
+				meshes.push_back(plane);
+				plane->AlphaClippingCheck();
+			}
+		}
 
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(garlandMaterial);
@@ -485,11 +486,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 #pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
-		std::shared_ptr<Ideal::ITexture> faceTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
-		std::shared_ptr<Ideal::ITexture> faceNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_Normal.png");
-		std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
-		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
-		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png", true);
+		//std::shared_ptr<Ideal::ITexture> faceTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
+		//std::shared_ptr<Ideal::ITexture> faceNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_Normal.png");
+		//std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
+		//std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
+		//std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png", true);
 		//std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/1_Test/uni_spill.tga");
 		//std::shared_ptr<Ideal::ITexture> normalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png");
 		//testTexture2 = nullptr;
@@ -497,8 +498,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//--------------------Create Material----------------------//
 		std::shared_ptr<Ideal::IMaterial> skirtMaterial = gRenderer->CreateMaterial();
-		skirtMaterial->SetBaseMap(skirtBottomTexture);
-		skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
+		//skirtMaterial->SetBaseMap(skirtBottomTexture);
+		//skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
 
 		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
 		std::shared_ptr<Ideal::IMaterial> kaMaterial;// = gRenderer->CreateMaterial();
@@ -510,21 +511,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateUI
 		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
-		sprite->SetTexture(eyeTexture);
+		//sprite->SetTexture(eyeTexture);
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		sprite->SetScale(Vector2(0.1, 0.1));
 		sprite->SetPosition(Vector2(0, 0));
 		sprite->SetAlpha(0.8f);
 		sprite->SetZ(0.2);
 		// 아래의 값은 기본으로 적용되어 있음. (Set Texture 할 때 Texture의 사이즈로 아래의 작업을 함)
-		sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight() });
+		//sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight() });
 
 		//sprite->SetTextureSize(Vector2(512, 512));
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		//sprite->SetTextureSampleSize(Vector2(2048, 2048));
 
 		std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
-		sprite2->SetTexture(eyeTexture);
+		//sprite2->SetTexture(eyeTexture);
 		//sprite2->SetSampleRect({ 0, 0, 4096*2, 4096*2 });
 		sprite2->SetSampleRect({ 1024, 0, 2048, 2048 });
 		sprite2->SetSampleRect({ 1024, 0, 4096, 2048 });
@@ -596,7 +597,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pointLight->SetRange(6.f);
 		pointLight->SetLightColor(Color(1.f, 0.f, 1.f, 1.f));
 		pointLight->SetIntensity(0.f);
-		pointLight->ChangeLayer(0);
+		//pointLight->ChangeLayer(0);
+		pointLight->ChangeLayerBitMask(0x0010);
 
 		std::shared_ptr<Ideal::IPointLight> pointLight2 = gRenderer->CreatePointLight();
 		pointLight2->SetPosition(Vector3(0.f, 3.f, 3.f));
@@ -2889,22 +2891,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						{
 							SpotLightInspector(spotLight);
 						}
-						if (faceTexture)
-						{
-							ImageTest(faceTexture);
-						}
-						if (eyeTexture)
-						{
-							ImageTest(eyeTexture);
-						}
-						if (skirtBottomTexture)
-						{
-							ImageTest(skirtBottomTexture);
-						}
+						//if (faceTexture)
+						//{
+						//	ImageTest(faceTexture);
+						//}
+						//if (eyeTexture)
+						//{
+						//	ImageTest(eyeTexture);
+						//}
+						//if (skirtBottomTexture)
+						//{
+						//	ImageTest(skirtBottomTexture);
+						//}
 						//if (playerRe)
 						//{
 						//	//SkinnedMeshObjectBoneInfoTest(playerRe);
-						SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+						//SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 
 						//if (DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
@@ -2989,18 +2991,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		skirtMaterial.reset();
 		gRenderer->DeleteMaterial(eyeMaterial);
 		eyeMaterial.reset();
-		gRenderer->DeleteTexture(faceTexture);
-		faceTexture.reset();
-		//gRenderer->DeleteTexture(normalTexture);
-		//normalTexture.reset();
-		gRenderer->DeleteTexture(faceNormalTexture);
-		faceNormalTexture.reset();
-		gRenderer->DeleteTexture(eyeTexture);
-		eyeTexture.reset();
-		gRenderer->DeleteTexture(skirtBottomTexture);
-		skirtBottomTexture.reset();
-		gRenderer->DeleteTexture(skirtBottomNormalTexture);
-		skirtBottomNormalTexture.reset();
+		//gRenderer->DeleteTexture(faceTexture);
+		//faceTexture.reset();
+		////gRenderer->DeleteTexture(normalTexture);
+		////normalTexture.reset();
+		//gRenderer->DeleteTexture(faceNormalTexture);
+		//faceNormalTexture.reset();
+		//gRenderer->DeleteTexture(eyeTexture);
+		//eyeTexture.reset();
+		//gRenderer->DeleteTexture(skirtBottomTexture);
+		//skirtBottomTexture.reset();
+		//gRenderer->DeleteTexture(skirtBottomNormalTexture);
+		//skirtBottomNormalTexture.reset();
 
 		gRenderer->DeleteMaterial(planeMaterial);
 		planeMaterial.reset();
