@@ -1132,7 +1132,7 @@ void BossAttackCombo1_3::OnStateUpdate()
 		isReset = true;
 	}
 	if (isReset && GetProperty("attackCombo1_3")->Get<bool>(m_animator).Get()
-		&& GetProperty("currentFrame")->Get<int>(m_animator).Get() < 34)
+		&& GetProperty("currentFrame")->Get<int>(m_animator).Get() < 35)
 	{
 		GetProperty("isAttacking")->Set(m_animator, true);
 		dynamic_cast<BossAnimator*>(m_animator)->SetCanMove(true);
