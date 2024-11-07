@@ -50,6 +50,8 @@ namespace Truth
 
 		fs::path m_skyBox;
 
+		bool m_started = false;
+
 	public:
 		typedef std::vector<std::shared_ptr<Entity>> EntityVector;
 		PROPERTY(entities);
