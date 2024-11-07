@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/0_TitleTest/Hannatile/T_brickwall_002_BaseMap-1.png
-normalMap: ../Resources/Textures/MapData/0_TitleTest/brickwalltile/T_brickwall_002_Normal.png
-maskMap: ../Resources/Textures/MapData/0_TitleTest/brickwalltile/T_brickwall_002_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/brickwalltile/Hannatile/T_brickwall_002_BaseMap-1.png
+normalMap: ""
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/brickwalltile/T_brickwall_002_MaskMap.png
 tileX: -4.42000008
 tileY: 1.70000005
 alphaCulling: false

@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/statue/T_statue_003_BaseMap.png
-normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/statue/T_statue_003_Normal.png
-maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/statue/T_statue_001_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/statue/T_statue_003_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/statue/T_statue_003_Normal.png
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/statue/T_statue_003_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

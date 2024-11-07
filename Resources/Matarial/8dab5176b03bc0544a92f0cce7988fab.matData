@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/3_EJ_Scene2/Ground/T_forest_ground_needles_01_A_SM.tga
-normalMap: ../Resources/Textures/MapData/3_EJ_Scene2/Ground/T_forest_ground_needles_01_N.png
-maskMap: ../Resources/Textures/MapData/3_EJ_Scene2/Ground/T_forest_ground_needles_01_AO_H_SM.tga
+baseMap: ../Resources/Textures/MapData/Assets/ArtResource/ADDassets/Ground/T_forest_ground_needles_01_A_SM.tga
+normalMap: ../Resources/Textures/MapData/Assets/ArtResource/ADDassets/Ground/T_forest_ground_needles_01_N.png
+maskMap: ../Resources/Textures/MapData/Assets/ArtResource/ADDassets/Ground/T_forest_ground_needles_01_AO_H_SM.tga
 tileX: 0.100000001
 tileY: 0.200000003
 alphaCulling: false

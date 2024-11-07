@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ETCwall/T_castlelamabase_BaseMap.png
-normalMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ETCwall/T_castlelamabase_Normal.png
-maskMap: ../Resources/Textures/MapData/Hanna_BOSSROOM/ETCwall/T_castlelamabase_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/ETCwall/T_castlelamabase_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/ETCwall/T_castlelamabase_Normal.png
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BossRoom/BR_Assets/ETCwall/T_castlelamabase_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false
