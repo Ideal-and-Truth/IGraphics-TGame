@@ -78,7 +78,7 @@ class RangerAttack
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	RangerAttack(Truth::Component* animator)
@@ -98,7 +98,7 @@ class RangerAim
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	RangerAim(Truth::Component* animator)
@@ -117,7 +117,7 @@ class RangerReload
 	: public AnimationState
 {
 private:
-
+	int lastFrame = 0;
 
 public:
 	RangerReload(Truth::Component* animator)

@@ -406,13 +406,16 @@ void RangerReturn::OnStateUpdate()
 void RangerAttack::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangeAttack", false);
+	lastFrame = 0;
 }
 
 void RangerAttack::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 9)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 9
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("isShooting")->Set(m_animator, true);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 43)
@@ -472,13 +475,16 @@ void RangerAim::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangeAim", false);
 	GetProperty("shootReady")->Set(m_animator, true);
+	lastFrame = 0;
 }
 
 void RangerAim::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 127)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 127
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("shootReady")->Set(m_animator, true);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
@@ -527,13 +533,16 @@ void RangerReload::OnStateEnter()
 {
 	dynamic_cast<RangerAnimator*>(m_animator)->SetAnimation("EnemyRangeReload", false);
 	GetProperty("isReload")->Set(m_animator, true);
+	lastFrame = 0;
 }
 
 void RangerReload::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 17 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 40)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 17 || GetProperty("currentFrame")->Get<int>(m_animator).Get() == 40
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<RangerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Enemy\\Enemy_Walk_1_Sound.wav", true, 51);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (GetProperty("passingTime")->Get<float>(m_animator).Get() > 1.f)
