@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 51
-		Second: 0
-		Millisecond: 884
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 35
+		Millisecond: 535
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\7ou79iar_ac8b8b84d1964794f85726c8c1ff11e4-4929894232094130436.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\7ou79iar_ac8b8b84d1964794f85726c8c1ff11e4-4929894232094130436.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\kdqpp420_ac8b8b84d1964794f85726c8c1ff11e4-4929894232094130436.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\kdqpp420_ac8b8b84d1964794f85726c8c1ff11e4-4929894232094130436.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2234728130272, "Scene", "Scene" {
+	Document: 1711006008944, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2227054696288, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559751984, "Geometry::Scene", "Mesh" {
 		Vertices: *102 {
 			a: -218.358087539673,135.182785987854,58.5603296756744,-218.358087539673,135.182785987854,61.0776007175446,218.358087539673,135.182785987854,61.0776007175446,218.358087539673,135.182785987854,58.5603296756744,-218.358087539673,0,-65.2576684951782,-218.358087539673,11.3974571228027,64.1992092132568,-218.358087539673,0,65.2578592300415,-218.358087539673,17.3850774765015,59.2165529727936,-218.358087539673,35.8203887939453,55.0900101661682,-218.358087539673,35.8203887939453,58.5603594779968,-218.358087539673,43.6115264892578,55.0900101661682,-218.358087539673,174.686479568481,-65.2576684951782,-218.358087539673,52.9751062393188,58.5603415966034,-218.358087539673,43.6115264892578,58.5603415966034,-218.358087539673,141.812038421631,56.6779494285583,-218.358087539673,141.812038421631,61.0776007175446,-218.358087539673,162.74209022522,56.6779494285583,-218.358087539673,165.169382095337,62.0902359485626,-218.358087539673,169.295787811279,63.7527585029602,218.358087539673,162.74209022522,56.6779494285583,218.358087539673,165.169382095337,62.0902359485626,218.358087539673,52.9751062393188,58.5603296756744,218.358087539673,43.6115264892578,58.5603415966034,218.358087539673,141.812038421631,56.6779494285583,218.358087539673,141.812038421631,61.0776007175446,218.358087539673,0,-65.2576684951782,218.358087539673,43.6115264892578,55.0900101661682,218.358087539673,35.8203887939453,55.0900101661682,218.358087539673,174.686479568481,-65.2576684951782,218.358087539673,169.29634809494,63.7250959873199,218.358087539673,35.8203887939453,58.5603594779968,218.358087539673,17.3850774765015,59.2165350914001,218.358087539673,0,65.2577757835388,218.358087539673,11.3974571228027,64.199161529541
 		} 
@@ -367,7 +367,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2234632457008, "Model::SM_castlebase__4_", "Mesh" {
+	Model: 1700593154176, "Model::SM_castlebase__9_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -375,13 +375,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-4.39321899414063,16.0027465820312,0
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.90349054336548,1.90349125862122,1.90349054336548
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",5.12992912038435e-11,6.270263671875,-9.36579813703986e-10
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.693975031375885,0.693974852561951,0.693974912166595
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2221921257968, "Material::M_castleETCbase", "" {
+	Material: 1711011000240, "Material::M_castleETCbase", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -396,7 +396,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2231045770576, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568670016, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\ETCwall\T_castlelamabase_BaseMap.png"
@@ -406,7 +406,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\ETCwall\T_castlelamabase_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\ETCwall\T_castlelamabase_BaseMap.png"
 	}
-	Video: 2230459628288, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 1710568670496, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\ETCwall\T_castlelamabase_Emissive.png"
@@ -416,7 +416,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\ETCwall\T_castlelamabase_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\ETCwall\T_castlelamabase_Emissive.png"
 	}
-	Texture: 2231045769616, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568665216, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -428,7 +428,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2231045770096, "Texture::EmissiveColor_Texture", "" {
+	Texture: 1710568676256, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -447,32 +447,32 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_castlebase__4_, Model::RootNode
-	C: "OO",2234632457008,0
+	;Model::SM_castlebase__9_, Model::RootNode
+	C: "OO",1700593154176,0
 	
-	;Material::M_castleETCbase, Model::SM_castlebase__4_
-	C: "OO",2221921257968,2234632457008
+	;Material::M_castleETCbase, Model::SM_castlebase__9_
+	C: "OO",1711011000240,1700593154176
 	
-	;Geometry::Scene, Model::SM_castlebase__4_
-	C: "OO",2227054696288,2234632457008
-	
-	;Texture::DiffuseColor_Texture, Material::M_castleETCbase
-	C: "OO",2231045769616,2221921257968
-	
-	;Texture::EmissiveColor_Texture, Material::M_castleETCbase
-	C: "OO",2231045770096,2221921257968
-	
-	;Texture::EmissiveColor_Texture, Material::M_castleETCbase
-	C: "OP",2231045770096,2221921257968, "EmissiveColor"
+	;Geometry::Scene, Model::SM_castlebase__9_
+	C: "OO",1710559751984,1700593154176
 	
 	;Texture::DiffuseColor_Texture, Material::M_castleETCbase
-	C: "OP",2231045769616,2221921257968, "DiffuseColor"
+	C: "OO",1710568665216,1711011000240
+	
+	;Texture::EmissiveColor_Texture, Material::M_castleETCbase
+	C: "OO",1710568676256,1711011000240
+	
+	;Texture::EmissiveColor_Texture, Material::M_castleETCbase
+	C: "OP",1710568676256,1711011000240, "EmissiveColor"
+	
+	;Texture::DiffuseColor_Texture, Material::M_castleETCbase
+	C: "OP",1710568665216,1711011000240, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2231045770576,2231045769616
+	C: "OO",1710568670016,1710568665216
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2230459628288,2231045770096
+	C: "OO",1710568670496,1710568676256
 }
 ;Takes section
 ;----------------------------------------------------

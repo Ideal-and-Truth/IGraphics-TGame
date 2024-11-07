@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 48
-		Millisecond: 120
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 32
+		Millisecond: 306
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\xmjfw8j0_e4c5dfcfad6fa5547824c77b1a750cbe291604004147996131.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\xmjfw8j0_e4c5dfcfad6fa5547824c77b1a750cbe291604004147996131.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\c0uhasd6_e4c5dfcfad6fa5547824c77b1a750cbe291604004147996131.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\c0uhasd6_e4c5dfcfad6fa5547824c77b1a750cbe291604004147996131.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598939616, "Scene", "Scene" {
+	Document: 1711006009968, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620987312, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559751984, "Geometry::Scene", "Mesh" {
 		Vertices: *36 {
 			a: 0.499999988824129,-0.499999988824129,0.87500000372529,0.499999988824129,-0.499999988824129,0,-0.499999988824129,-0.499999988824129,0,-0.499999988824129,-0.499999988824129,0.87500000372529,-0.443060789257288,-0.499999988824129,1.08750006183982,0.443060789257288,-0.499999988824129,1.08750006183982,-0.287499977275729,-0.499999988824129,1.24306092038751,0.287499977275729,-0.499999988824129,1.24306092038751,0.0749999890103936,-0.499999988824129,1.30000002682209,-0.0749999890103936,-0.499999988824129,1.30000002682209,-0.499999988824129,0.499999988824129,0,0.499999988824129,0.499999988824129,0
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265360176, "Model::miniroof2_low_001", "Mesh" {
+	Model: 1700592950176, "Model::miniroof2_low_001", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -396,7 +396,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164604536832, "Material::M_ej_wall_urp_", "" {
+	Material: 1711011001840, "Material::M_ej_wall_urp_", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -410,7 +410,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164603156800, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568665216, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
@@ -420,7 +420,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\ej_brickwalltile\T_town_ej_wall_tile_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568678656, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -440,22 +440,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::miniroof2_low_001, Model::RootNode
-	C: "OO",2164265360176,0
+	C: "OO",1700592950176,0
 	
 	;Material::M_ej_wall_urp_, Model::miniroof2_low_001
-	C: "OO",2164604536832,2164265360176
+	C: "OO",1711011001840,1700592950176
 	
 	;Geometry::Scene, Model::miniroof2_low_001
-	C: "OO",2158620987312,2164265360176
+	C: "OO",1710559751984,1700592950176
 	
 	;Texture::DiffuseColor_Texture, Material::M_ej_wall_urp_
-	C: "OO",2176327841456,2164604536832
+	C: "OO",1710568678656,1711011001840
 	
 	;Texture::DiffuseColor_Texture, Material::M_ej_wall_urp_
-	C: "OP",2176327841456,2164604536832, "DiffuseColor"
+	C: "OP",1710568678656,1711011001840, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164603156800,2176327841456
+	C: "OO",1710568665216,1710568678656
 }
 ;Takes section
 ;----------------------------------------------------

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_hoteldoor_urp_</Name>
+        <Name>M_hoteldoor</Name>
         <DiffuseFile>T_hotelwindow_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>
@@ -10,7 +10,7 @@
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="1" G="1" B="1" A="1"/>
         <Specular R="1" G="1" B="1" A="1"/>
-        <Emissive R="0.46226418" G="0.46226418" B="0.46226418" A="1"/>
+        <Emissive R="0.81089509" G="0.8490566" B="0.41251338" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
         <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>

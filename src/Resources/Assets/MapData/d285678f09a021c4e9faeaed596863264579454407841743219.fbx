@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 19
-		Minute: 43
-		Second: 0
-		Millisecond: 528
+		Day: 7
+		Hour: 10
+		Minute: 38
+		Second: 1
+		Millisecond: 289
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\xx18kkgf_d285678f09a021c4e9faeaed596863264579454407841743219.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\xx18kkgf_d285678f09a021c4e9faeaed596863264579454407841743219.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\0iumrufp_d285678f09a021c4e9faeaed596863264579454407841743219.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\0iumrufp_d285678f09a021c4e9faeaed596863264579454407841743219.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2876419635312, "Scene", "Scene" {
+	Document: 2649309345648, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745434448, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116200896, "Geometry::Scene", "Mesh" {
 		Vertices: *36 {
 			a: 1.41167594119906,-1.00492089986801,4.8428772103648e-07,-0,-1.00492089986801,2.08616257602046e-07,-0,5.9604643443123e-08,2.08616257602046e-07,1.41167594119906,5.9604643443123e-08,4.8428772103648e-07,-0,1.00492089986801,2.08616257602046e-07,1.41167594119906,1.00492089986801,4.8428772103648e-07,2.83863078802824,-1.00492089986801,7.59959206675376e-07,2.83863078802824,5.9604643443123e-08,7.67409780166872e-07,2.83863078802824,1.00492089986801,7.67409780166872e-07,4.25074584782124,1.00492089986801,6.48200515485087e-07,4.25074584782124,-5.9604643443123e-08,6.48200515485087e-07,4.25074584782124,-1.00492089986801,6.48200515485087e-07
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882424118640, "Model::SM_wallbrick__1_", "Mesh" {
+	Model: 2639147905120, "Model::SM_wallbrick__11_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",4.43962308054324e-05,42.5634765625,90
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",135.089996337891,148.767364501953,100
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.0296891257166863,69.4691772460938,90.0011596679687
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",135.09001159668,148.767395019531,100.000015258789
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2882447657456, "Material::M_yellowwall", "" {
+	Material: 2649306340288, "Material::M_yellowwall", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2882330844528, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997741904, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_yellowwall_BaseMap.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_yellowwall_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_yellowwall_BaseMap.png"
 	}
-	Texture: 2882330842608, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2630166102256, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -420,23 +420,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_wallbrick__1_, Model::RootNode
-	C: "OO",2882424118640,0
+	;Model::SM_wallbrick__11_, Model::RootNode
+	C: "OO",2639147905120,0
 	
-	;Material::M_yellowwall, Model::SM_wallbrick__1_
-	C: "OO",2882447657456,2882424118640
+	;Material::M_yellowwall, Model::SM_wallbrick__11_
+	C: "OO",2649306340288,2639147905120
 	
-	;Geometry::Scene, Model::SM_wallbrick__1_
-	C: "OO",2878745434448,2882424118640
-	
-	;Texture::DiffuseColor_Texture, Material::M_yellowwall
-	C: "OO",2882330842608,2882447657456
+	;Geometry::Scene, Model::SM_wallbrick__11_
+	C: "OO",2636116200896,2639147905120
 	
 	;Texture::DiffuseColor_Texture, Material::M_yellowwall
-	C: "OP",2882330842608,2882447657456, "DiffuseColor"
+	C: "OO",2630166102256,2649306340288
+	
+	;Texture::DiffuseColor_Texture, Material::M_yellowwall
+	C: "OP",2630166102256,2649306340288, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2882330844528,2882330842608
+	C: "OO",2645997741904,2630166102256
 }
 ;Takes section
 ;----------------------------------------------------

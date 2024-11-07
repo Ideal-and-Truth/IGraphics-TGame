@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 49
-		Millisecond: 150
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 38
+		Millisecond: 611
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\8gmnl3eh_af2e2f60a27dd074c8d019c27c75a24f2831307363500630281.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\8gmnl3eh_af2e2f60a27dd074c8d019c27c75a24f2831307363500630281.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\63w8aj6b_af2e2f60a27dd074c8d019c27c75a24f2831307363500630281.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\63w8aj6b_af2e2f60a27dd074c8d019c27c75a24f2831307363500630281.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598939616, "Scene", "Scene" {
+	Document: 1711006008432, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158621000304, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559740784, "Geometry::Scene", "Mesh" {
 		Vertices: *3969 {
 			a: -144.044089317322,334.152364730835,-60.1533055305481,-107.900452613831,351.696515083313,-22.0952406525612,-101.679790019989,351.696515083313,-42.6018297672272,-152.876257896423,334.152364730835,-31.0416609048843,-186.410355567932,318.637681007385,-77.7021706104279,-110.00097990036,351.696491241455,-0.769087299704552,-197.852075099945,318.637681007385,-39.9880796670914,-273.08714389801,254.630136489868,-113.605201244354,-155.857968330383,334.152364730835,-0.769256986677647,-289.867734909058,254.630160331726,-58.2914650440216,-323.456263542175,176.581645011902,-134.465646743774,-152.876472473145,334.152364730835,29.5031726360321,-107.900607585907,351.696491241455,20.5570846796036,-101.680076122284,351.696491241455,41.063717007637,-144.045984745026,334.152364730835,58.6154699325562,-197.85236120224,318.637681007385,38.4492516517639,-186.412870883942,318.637681007385,76.1608004570007,-201.714968681335,318.637681007385,-0.769426859915257,-289.868187904358,254.630136489868,56.7520022392273,-273.089909553528,254.630136489868,112.063264846802,-343.337368965149,176.581621170044,-68.9274251461029,-353.866028785706,99.1303384304047,-147.061884403229,-375.620174407959,99.1302847862244,-75.3490030765533,-295.53337097168,254.630160331726,-0.769767258316278,-350.33438205719,176.038539409637,-0.769963953644037,-382.965874671936,99.1302788257599,-0.770074035972357,-343.337821960449,176.58154964447,67.3875868320465,-323.457264900208,176.581537723541,132.925879955292,-375.620651245117,99.1302311420441,73.8089382648468,-353.866600990295,99.1303384304047,145.525097846985,-107.900452613831,360.355472564697,-22.0952406525612,-101.679790019989,360.355472564697,-42.6018297672272,-110.00097990036,360.355424880981,-0.769087951630354,-107.900607585907,360.355424880981,20.5570846796036,-101.680076122284,360.355424880981,41.063717007637,-0.686225621029735,360.355520248413,-0.765462638810277,-60.0624620914459,334.152364730835,-144.131541252136,-61.4161670207977,351.696515083313,-91.6630148887634,-42.5171434879303,351.696515083313,-101.764702796936,
 -86.8927955627441,334.152364730835,-129.791808128357,-77.6110053062439,318.637681007385,-186.497914791107,-77.9813349246979,351.696491241455,-78.0684471130371,-112.369430065155,318.637681007385,-167.920577526093,-113.516664505005,254.630160331726,-273.174548149109,-110.406994819641,334.152364730835,-110.494351387024,-164.491879940033,254.630160331726,-245.927929878235,-134.376084804535,176.581537723541,-323.542308807373,-129.704606533051,334.152364730835,-86.9802832603455,-91.5760159492493,351.696491241455,-61.5033805370331,-167.833197116852,318.637681007385,-112.457203865051,-142.832672595978,318.637681007385,-142.92026758194,-245.840191841125,254.630136489868,-164.58021402359,-194.779825210571,176.581621170044,-291.257405281067,-146.975302696228,99.1303384304047,-353.951716423035,-213.066482543945,99.1302847862244,-318.625545501709,-209.172081947327,254.630160331726,-209.260153770447,-247.922086715698,176.038539409637,-248.010420799255,-270.99597454071,99.1302788257599,-271.084475517273,-291.169452667236,176.58154964447,-194.868469238281,-318.537449836731,99.1302311420441,-213.155293464661,-61.4161670207977,360.355472564697,-91.6630148887634,-42.5171434879303,360.355472564697,-101.764702796936,-77.9813349246979,360.355424880981,-78.0684471130371,-91.5760159492493,360.355424880981,-61.5033805370331,58.7004840373993,334.152364730835,-144.131088256836,20.6450343132019,351.696515083313,-107.985508441925,41.1542266607285,351.696491241455,-101.762890815735,29.5914530754089,334.152364730835,-152.961313724518,76.2519598007202,318.637681007385,-186.495387554169,-0.681117502972484,351.696491241455,-110.086035728455,38.537871837616,318.637681007385,-197.937142848969,112.152433395386,254.630160331726,-273.174118995667,-0.680947815999389,334.152364730835,-155.943024158478,56.841254234314,254.630160331726,-289.952778816223,133.015418052673,176.581645011902,-323.541307449341,-30.953374505043,334.152364730835,-152.961540222168,-22.0072880387306,351.696491241455,-107.985663414001,-39.8994565010071,318.637681007385,-197.937417030334,
@@ -983,7 +983,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595963792, "Model::SM_alterroof", "Mesh" {
+	Model: 1700593182176, "Model::SM_alterroof", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -991,13 +991,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0,38.7278442382813,0
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.807430982589722,0.807430922985077,0.807430982589722
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0,91.99853515625,0
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.807431280612946,0.807430922985077,0.807431280612946
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598898880, "Material::M_alterbase_3", "" {
+	Material: 1711011001440, "Material::M_alterbase_3", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -1011,7 +1011,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Material: 2164598900480, "Material::M_alterbase_2", "" {
+	Material: 1711011000640, "Material::M_alterbase_2", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -1026,7 +1026,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164603158240, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568672416, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_roofinside_BaseMap.png"
@@ -1036,7 +1036,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_roofinside_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_roofinside_BaseMap.png"
 	}
-	Video: 2164603159200, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 1710568672896, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_alterroofoutside_Emissive.png"
@@ -1046,7 +1046,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_alterroofoutside_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_alterroofoutside_Emissive.png"
 	}
-	Video: 2164603158720, "Video::DiffuseColor_Texture_1", "Clip" {
+	Video: 1710568679136, "Video::DiffuseColor_Texture_1", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_alterroofoutside_BaseMap.png"
@@ -1056,7 +1056,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_alterroofoutside_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\monsteralter\T_alterroofoutside_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568673856, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -1068,7 +1068,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164603157280, "Texture::EmissiveColor_Texture", "" {
+	Texture: 1710568665216, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -1080,7 +1080,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164603157760, "Texture::DiffuseColor_Texture_1", "" {
+	Texture: 1710568671936, "Texture::DiffuseColor_Texture_1", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture_1"
@@ -1100,46 +1100,46 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_alterroof, Model::RootNode
-	C: "OO",2164595963792,0
+	C: "OO",1700593182176,0
 	
 	;Material::M_alterbase_3, Model::SM_alterroof
-	C: "OO",2164598898880,2164595963792
+	C: "OO",1711011001440,1700593182176
 	
 	;Material::M_alterbase_2, Model::SM_alterroof
-	C: "OO",2164598900480,2164595963792
+	C: "OO",1711011000640,1700593182176
 	
 	;Geometry::Scene, Model::SM_alterroof
-	C: "OO",2158621000304,2164595963792
+	C: "OO",1710559740784,1700593182176
 	
 	;Texture::DiffuseColor_Texture, Material::M_alterbase_3
-	C: "OO",2176327841456,2164598898880
+	C: "OO",1710568673856,1711011001440
 	
 	;Texture::EmissiveColor_Texture, Material::M_alterbase_3
-	C: "OO",2164603157280,2164598898880
+	C: "OO",1710568665216,1711011001440
 	
 	;Texture::EmissiveColor_Texture, Material::M_alterbase_3
-	C: "OP",2164603157280,2164598898880, "EmissiveColor"
+	C: "OP",1710568665216,1711011001440, "EmissiveColor"
 	
 	;Texture::DiffuseColor_Texture, Material::M_alterbase_3
-	C: "OP",2176327841456,2164598898880, "DiffuseColor"
+	C: "OP",1710568673856,1711011001440, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164603158240,2176327841456
+	C: "OO",1710568672416,1710568673856
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2164603159200,2164603157280
+	C: "OO",1710568672896,1710568665216
 	
 	;Texture::DiffuseColor_Texture_1, Material::M_alterbase_2
-	C: "OO",2164603157760,2164598900480
+	C: "OO",1710568671936,1711011000640
 	
 	;Texture::EmissiveColor_Texture, Material::M_alterbase_2
-	C: "OP",2164603157280,2164598900480, "EmissiveColor"
+	C: "OP",1710568665216,1711011000640, "EmissiveColor"
 	
 	;Texture::DiffuseColor_Texture_1, Material::M_alterbase_2
-	C: "OP",2164603157760,2164598900480, "DiffuseColor"
+	C: "OP",1710568671936,1711011000640, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture_1, Texture::DiffuseColor_Texture_1
-	C: "OO",2164603158720,2164603157760
+	C: "OO",1710568679136,1710568671936
 }
 ;Takes section
 ;----------------------------------------------------

@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 16
-		Millisecond: 680
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 50
+		Millisecond: 810
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\7pjpigy3_74c406cbac82885488d5baed86630751-8614177832165409770.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\7pjpigy3_74c406cbac82885488d5baed86630751-8614177832165409770.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\yqdmt0zm_74c406cbac82885488d5baed86630751-8614177832165409770.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\yqdmt0zm_74c406cbac82885488d5baed86630751-8614177832165409770.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598938080, "Scene", "Scene" {
+	Document: 1711006011248, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158621008816, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559740784, "Geometry::Scene", "Mesh" {
 		Vertices: *24 {
 			a: 0.319873332045972,-0.35991994664073,0.0737268594093621,-0.319873332045972,-0.35991994664073,0.0737270165700465,-0.319873332045972,0.543756224215031,0.0737270165700465,0.319873332045972,0.543756224215031,0.0737268710508943,0.319873332045972,-0.35991994664073,4.28408364339106e-08,0.319873332045972,0.543756224215031,-1.13684063794593e-14,-0.319873332045972,-0.35991994664073,1.49011603056692e-07,-0.319873332045972,0.543756224215031,1.49011591954462e-07
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265360176, "Model::SM_road1tile", "Mesh" {
+	Model: 1700593194176, "Model::SM_road1tile", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -377,7 +377,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2174397920944, "Material::M_loaddeco", "" {
+	Material: 1711010998640, "Material::M_loaddeco", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2176330889696, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568670496, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roaddeco\T_roadrockdeco_BaseMap.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roaddeco\T_roadrockdeco_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\roaddeco\T_roadrockdeco_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568679616, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -421,22 +421,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_road1tile, Model::RootNode
-	C: "OO",2164265360176,0
+	C: "OO",1700593194176,0
 	
 	;Material::M_loaddeco, Model::SM_road1tile
-	C: "OO",2174397920944,2164265360176
+	C: "OO",1711010998640,1700593194176
 	
 	;Geometry::Scene, Model::SM_road1tile
-	C: "OO",2158621008816,2164265360176
+	C: "OO",1710559740784,1700593194176
 	
 	;Texture::DiffuseColor_Texture, Material::M_loaddeco
-	C: "OO",2176327841456,2174397920944
+	C: "OO",1710568679616,1711010998640
 	
 	;Texture::DiffuseColor_Texture, Material::M_loaddeco
-	C: "OP",2176327841456,2174397920944, "DiffuseColor"
+	C: "OP",1710568679616,1711010998640, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2176330889696,2176327841456
+	C: "OO",1710568670496,1710568679616
 }
 ;Takes section
 ;----------------------------------------------------

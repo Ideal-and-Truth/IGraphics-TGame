@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_woodboard</Name>
+        <Name>M_woodboard_urp</Name>
         <DiffuseFile>T_town_wood_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
         <NormalFile>DefaultNormalMap.png</NormalFile>

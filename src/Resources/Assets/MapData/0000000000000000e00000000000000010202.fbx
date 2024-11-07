@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 19
-		Minute: 42
-		Second: 22
-		Millisecond: 726
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 8
+		Millisecond: 200
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\t5uvytdo_0000000000000000e00000000000000010202.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\t5uvytdo_0000000000000000e00000000000000010202.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\pdxj1foi_0000000000000000e00000000000000010202.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\pdxj1foi_0000000000000000e00000000000000010202.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2878727305232, "Scene", "Scene" {
+	Document: 2649309347440, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745432208, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116187456, "Geometry::Scene", "Mesh" {
 		Vertices: *24 {
 			a: -50,-50,50,50,-50,50,-50,50,50,50,50,50,-50,50,-50,50,50,-50,-50,-50,-50,50,-50,-50
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882448603952, "Model::brickpillar", "Mesh" {
+	Model: 2639147735120, "Model::brickpillar__2_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -390,13 +390,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-9.34775146177458e-10,-53.2099990844727,-3.72805164516876e-09
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000035762787,6.11679983139038,1.00000035762787
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.0158081054687473,-54.9382362365723,-0.0251490380614996
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.743670344352722,4.5488805770874,0.743670284748077
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2876427130704, "Material::pillar", "" {
+	Material: 2649306341088, "Material::pillar", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -410,7 +410,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2881716557360, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997745264, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
@@ -420,7 +420,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
 	}
-	Texture: 2881716556880, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2630166102256, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -439,23 +439,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::brickpillar, Model::RootNode
-	C: "OO",2882448603952,0
+	;Model::brickpillar__2_, Model::RootNode
+	C: "OO",2639147735120,0
 	
-	;Material::pillar, Model::brickpillar
-	C: "OO",2876427130704,2882448603952
+	;Material::pillar, Model::brickpillar__2_
+	C: "OO",2649306341088,2639147735120
 	
-	;Geometry::Scene, Model::brickpillar
-	C: "OO",2878745432208,2882448603952
-	
-	;Texture::DiffuseColor_Texture, Material::pillar
-	C: "OO",2881716556880,2876427130704
+	;Geometry::Scene, Model::brickpillar__2_
+	C: "OO",2636116187456,2639147735120
 	
 	;Texture::DiffuseColor_Texture, Material::pillar
-	C: "OP",2881716556880,2876427130704, "DiffuseColor"
+	C: "OO",2630166102256,2649306341088
+	
+	;Texture::DiffuseColor_Texture, Material::pillar
+	C: "OP",2630166102256,2649306341088, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2881716557360,2881716556880
+	C: "OO",2645997745264,2630166102256
 }
 ;Takes section
 ;----------------------------------------------------

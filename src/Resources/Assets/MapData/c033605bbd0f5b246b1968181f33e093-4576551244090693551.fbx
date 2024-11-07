@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 56
-		Millisecond: 875
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 44
+		Millisecond: 884
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\0924bc2a_c033605bbd0f5b246b1968181f33e093-4576551244090693551.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\0924bc2a_c033605bbd0f5b246b1968181f33e093-4576551244090693551.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\7svblkof_c033605bbd0f5b246b1968181f33e093-4576551244090693551.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\7svblkof_c033605bbd0f5b246b1968181f33e093-4576551244090693551.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598935776, "Scene", "Scene" {
+	Document: 1711006007408, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620993584, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559751984, "Geometry::Scene", "Mesh" {
 		Vertices: *12 {
 			a: 0.283321691676974,0.283321691676974,0,0.283321691676974,-0.283321691676974,0,-0.283321691676974,-0.283321691676974,0,-0.283321691676974,0.283321691676974,0
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265560176, "Model::SM_town_appleplane__3_", "Mesh" {
+	Model: 1700592950176, "Model::SM_town_appleplane__3_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -377,7 +377,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598572832, "Material::M_marketprop", "" {
+	Material: 1711010999040, "Material::M_marketprop", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164604574032, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568678176, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\market\prop\T_town_marketprop_BaseMap.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\market\prop\T_town_marketprop_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\market\prop\T_town_marketprop_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568676736, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -421,22 +421,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_town_appleplane__3_, Model::RootNode
-	C: "OO",2164265560176,0
+	C: "OO",1700592950176,0
 	
 	;Material::M_marketprop, Model::SM_town_appleplane__3_
-	C: "OO",2164598572832,2164265560176
+	C: "OO",1711010999040,1700592950176
 	
 	;Geometry::Scene, Model::SM_town_appleplane__3_
-	C: "OO",2158620993584,2164265560176
+	C: "OO",1710559751984,1700592950176
 	
 	;Texture::DiffuseColor_Texture, Material::M_marketprop
-	C: "OO",2176327841456,2164598572832
+	C: "OO",1710568676736,1711010999040
 	
 	;Texture::DiffuseColor_Texture, Material::M_marketprop
-	C: "OP",2176327841456,2164598572832, "DiffuseColor"
+	C: "OP",1710568676736,1711010999040, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164604574032,2176327841456
+	C: "OO",1710568678176,1710568676736
 }
 ;Takes section
 ;----------------------------------------------------

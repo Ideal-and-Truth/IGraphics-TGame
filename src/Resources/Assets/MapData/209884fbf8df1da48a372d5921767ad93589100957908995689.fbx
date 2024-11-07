@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 20
-		Second: 55
-		Millisecond: 600
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 31
+		Millisecond: 594
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\mt16ondf_209884fbf8df1da48a372d5921767ad93589100957908995689.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\mt16ondf_209884fbf8df1da48a372d5921767ad93589100957908995689.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\nzircv68_209884fbf8df1da48a372d5921767ad93589100957908995689.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\nzircv68_209884fbf8df1da48a372d5921767ad93589100957908995689.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598939360, "Scene", "Scene" {
+	Document: 1711006011248, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620989552, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559740784, "Geometry::Scene", "Mesh" {
 		Vertices: *60 {
 			a: 47.755041718483,0.236746296286583,-12.1449172496796,49.3197023868561,0,6.97505474090576,49.9649465084076,2.97513268887997,-9.52376127243042,48.9535391330719,7.81135261058807,-12.4376349151134,-49.6425956487656,0.023987889289856,-6.26407861709595,-50.007963180542,1.55478743836284,9.52876806259155,-47.7514356374741,0.22587925195694,12.2509956359863,50.0404417514801,3.81059050559998,9.4443678855896,47.1458077430725,0.813697278499603,12.0237909257412,-50.0404596328735,11.5921340882778,3.12201678752899,-47.9216903448105,11.5109525620937,9.69052016735077,-49.3541359901428,8.15331265330315,12.4376349151134,46.8270897865295,11.0008217394352,11.5555256605148,-47.3688006401062,11.378088593483,-9.74166914820671,-49.1646856069565,8.38803946971893,-12.1609024703503,31.1726868152618,0.107112526893616,11.6700410842896,-47.4533677101135,0.300094485282898,-12.2484683990479,49.7811377048492,10.975481569767,6.66292905807495,47.9431360960007,11.3139286637306,-9.78266596794128,26.3580143451691,1.2132316827774,12.0243601500988
 		} 
@@ -371,7 +371,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595915792, "Model::SM_rocktile001__16_", "Mesh" {
+	Model: 1700593154176, "Model::SM_rocktile001__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -379,13 +379,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-2.11674002770224e-08,111.707977294922,-4.45787442515666e-08
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000059604645,1,1.00000059604645
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",2.42009234874274e-09,-93.0464553833008,2.2947181932409e-09
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000035762787,1,1.00000035762787
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598544064, "Material::M_potandtile", "" {
+	Material: 1711011000640, "Material::M_potandtile", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -398,7 +398,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164599644144, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568672416, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\potandtile\T_potandtile_BaseMap.png"
@@ -408,7 +408,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\potandtile\T_potandtile_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\potandtile\T_potandtile_BaseMap.png"
 	}
-	Video: 2164599643664, "Video::NormalMap_Texture", "Clip" {
+	Video: 1710568672896, "Video::NormalMap_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\potandtile\T_potandtile_Normal.png"
@@ -418,7 +418,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\potandtile\T_potandtile_Normal.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\potandtile\T_potandtile_Normal.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568671936, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -430,7 +430,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164599645104, "Texture::NormalMap_Texture", "" {
+	Texture: 1710568674336, "Texture::NormalMap_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::NormalMap_Texture"
@@ -449,32 +449,32 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_rocktile001__16_, Model::RootNode
-	C: "OO",2164595915792,0
+	;Model::SM_rocktile001__1_, Model::RootNode
+	C: "OO",1700593154176,0
 	
-	;Material::M_potandtile, Model::SM_rocktile001__16_
-	C: "OO",2164598544064,2164595915792
+	;Material::M_potandtile, Model::SM_rocktile001__1_
+	C: "OO",1711011000640,1700593154176
 	
-	;Geometry::Scene, Model::SM_rocktile001__16_
-	C: "OO",2158620989552,2164595915792
-	
-	;Texture::DiffuseColor_Texture, Material::M_potandtile
-	C: "OO",2176327841456,2164598544064
-	
-	;Texture::NormalMap_Texture, Material::M_potandtile
-	C: "OO",2164599645104,2164598544064
+	;Geometry::Scene, Model::SM_rocktile001__1_
+	C: "OO",1710559740784,1700593154176
 	
 	;Texture::DiffuseColor_Texture, Material::M_potandtile
-	C: "OP",2176327841456,2164598544064, "DiffuseColor"
+	C: "OO",1710568671936,1711011000640
 	
 	;Texture::NormalMap_Texture, Material::M_potandtile
-	C: "OP",2164599645104,2164598544064, "NormalMap"
+	C: "OO",1710568674336,1711011000640
+	
+	;Texture::DiffuseColor_Texture, Material::M_potandtile
+	C: "OP",1710568671936,1711011000640, "DiffuseColor"
+	
+	;Texture::NormalMap_Texture, Material::M_potandtile
+	C: "OP",1710568674336,1711011000640, "NormalMap"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164599644144,2176327841456
+	C: "OO",1710568672416,1710568671936
 	
 	;Video::NormalMap_Texture, Texture::NormalMap_Texture
-	C: "OO",2164599643664,2164599645104
+	C: "OO",1710568672896,1710568674336
 }
 ;Takes section
 ;----------------------------------------------------

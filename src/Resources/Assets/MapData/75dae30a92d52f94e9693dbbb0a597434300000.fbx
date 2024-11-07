@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 15
-		Millisecond: 591
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 53
+		Millisecond: 962
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\qpolrfps_75dae30a92d52f94e9693dbbb0a597434300000.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\qpolrfps_75dae30a92d52f94e9693dbbb0a597434300000.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\ef6au9z3_75dae30a92d52f94e9693dbbb0a597434300000.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\ef6au9z3_75dae30a92d52f94e9693dbbb0a597434300000.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598937568, "Scene", "Scene" {
+	Document: 1711006006640, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -223,7 +223,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620993584, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559751984, "Geometry::Scene", "Mesh" {
 		Vertices: *48 {
 			a: 9.79125872254372,153.532373905182,0.00101765617728233,23.2762366533279,149.370646476746,0.00101765617728233,10.8150318264961,125.879621505737,0.00101765617728233,-9.00591537356377,139.610469341278,0.00101765617728233,-21.7108130455017,153.83129119873,0.00101765617728233,-2.27824915200472,171.508276462555,0.00101765617728233,15.3623953461647,165.830743312836,0.00101765617728233,-12.4752186238766,120.576786994934,0.00101765617728233,-26.1011183261871,131.846809387207,0.00101765617728233,21.1821585893631,100.073063373566,0.00101765617728233,-20.7102596759796,96.2514638900757,0.00101765617728233,-23.7084329128265,76.3166189193726,0.00101765617728233,25.1322418451309,76.4831125736237,0.00101765617728233,-27.0760178565979,53.9254307746887,0.00101765617728233,29.5497000217438,49.6200621128082,0.00101765617728233,-2.4183351546526,-8.55608806014061,0.00100573524832726
 		} 
@@ -331,7 +331,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265360176, "Model::flower_sunroot_01_1__1_", "Mesh" {
+	Model: 1700593198176, "Model::flower_sunroot_01_1", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -345,7 +345,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2176328620432, "Material::M_flower_sunroot_01", "" {
+	Material: 1711011001440, "Material::M_flower_sunroot_01", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -366,14 +366,14 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::flower_sunroot_01_1__1_, Model::RootNode
-	C: "OO",2164265360176,0
+	;Model::flower_sunroot_01_1, Model::RootNode
+	C: "OO",1700593198176,0
 	
-	;Material::M_flower_sunroot_01, Model::flower_sunroot_01_1__1_
-	C: "OO",2176328620432,2164265360176
+	;Material::M_flower_sunroot_01, Model::flower_sunroot_01_1
+	C: "OO",1711011001440,1700593198176
 	
-	;Geometry::Scene, Model::flower_sunroot_01_1__1_
-	C: "OO",2158620993584,2164265360176
+	;Geometry::Scene, Model::flower_sunroot_01_1
+	C: "OO",1710559751984,1700593198176
 }
 ;Takes section
 ;----------------------------------------------------

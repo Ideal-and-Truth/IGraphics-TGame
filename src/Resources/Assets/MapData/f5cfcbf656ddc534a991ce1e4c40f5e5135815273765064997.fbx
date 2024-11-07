@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 58
-		Millisecond: 588
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 35
+		Millisecond: 851
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\g3zdv3ux_f5cfcbf656ddc534a991ce1e4c40f5e5135815273765064997.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\g3zdv3ux_f5cfcbf656ddc534a991ce1e4c40f5e5135815273765064997.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\ueflw2gm_f5cfcbf656ddc534a991ce1e4c40f5e5135815273765064997.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\ueflw2gm_f5cfcbf656ddc534a991ce1e4c40f5e5135815273765064997.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598934752, "Scene", "Scene" {
+	Document: 1711006007920, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158621001648, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559740784, "Geometry::Scene", "Mesh" {
 		Vertices: *114 {
 			a: 4801438.28125,-1458667.1875,-2000000,5000000,-5800000,-2000000,5000479.296875,-600000.341796875,-2000000,4522855.859375,-2284336.1328125,-2000000,3461644.140625,-3712246.875,-2000000,4070462.5,-3045276.3671875,-2000000,1873428.3203125,-4666345.3125,-2000000,2719795.8984375,-4259614.84375,-2000000,-0.212269090116024,-5001380.859375,-2000000,955065.0390625,-4916809.765625,-2000000,-5000000,-5800000,-2000000,-955065.4296875,-4916809.765625,-2000000,-1873428.7109375,-4666345.3125,-2000000,-3461644.140625,-3712246.875,-2000000,-2719796.6796875,-4259614.84375,-2000000,-4522856.25,-2284335.15625,-2000000,-4070463.28125,-3045276.3671875,-2000000,-5000479.296875,-599999.853515625,-2000000,-4801438.28125,-1458667.1875,-2000000,4801438.28125,-1458667.1875,2000000,5000479.296875,-600000.341796875,2000000,5000000,-5800000,2000000,4522855.859375,-2284336.1328125,2000000,3461644.140625,-3712246.875,2000000,4070462.5,-3045276.3671875,2000000,1873428.3203125,-4666345.3125,2000000,2719795.8984375,-4259614.84375,2000000,-0.212269090116024,-5001380.859375,2000000,955065.0390625,-4916809.765625,2000000,-5000000,-5800000,2000000,-955065.4296875,-4916809.765625,2000000,-1873428.7109375,-4666345.3125,2000000,-3461644.140625,-3712246.875,2000000,-2719796.6796875,-4259614.84375,2000000,-4522856.25,-2284335.15625,2000000,-4070463.28125,-3045276.3671875,2000000,-5000479.296875,-599999.853515625,2000000,-4801438.28125,-1458667.1875,2000000
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265542176, "Model::SM_bridgebase", "Mesh" {
+	Model: 1700593182176, "Model::SM_bridgebase", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -377,7 +377,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598572832, "Material::M_brickwall_002_1", "" {
+	Material: 1711011001440, "Material::M_brickwall_002_1", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164604536672, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568670016, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\T_brickwall_BaseMap.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\T_brickwall_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\T_brickwall_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568674336, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -421,22 +421,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_bridgebase, Model::RootNode
-	C: "OO",2164265542176,0
+	C: "OO",1700593182176,0
 	
 	;Material::M_brickwall_002_1, Model::SM_bridgebase
-	C: "OO",2164598572832,2164265542176
+	C: "OO",1711011001440,1700593182176
 	
 	;Geometry::Scene, Model::SM_bridgebase
-	C: "OO",2158621001648,2164265542176
+	C: "OO",1710559740784,1700593182176
 	
 	;Texture::DiffuseColor_Texture, Material::M_brickwall_002_1
-	C: "OO",2176327841456,2164598572832
+	C: "OO",1710568674336,1711011001440
 	
 	;Texture::DiffuseColor_Texture, Material::M_brickwall_002_1
-	C: "OP",2176327841456,2164598572832, "DiffuseColor"
+	C: "OP",1710568674336,1711011001440, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164604536672,2176327841456
+	C: "OO",1710568670016,1710568674336
 }
 ;Takes section
 ;----------------------------------------------------
