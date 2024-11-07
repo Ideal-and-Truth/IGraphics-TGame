@@ -60,8 +60,10 @@ void PlayerSkill::SwordBeam()
 		m_managers.lock()->Scene()->m_currentScene->CreateEntity(swordBeam);
 		m_owner.lock()->AddChild(swordBeam);
 
-		swordBeam->SetPosition({ 0.f,m_owner.lock()->GetWorldPosition().y + 4.f,-2.f });
-		swordBeam->SetScale({ 2.f,5.f,5.f });
+		//swordBeam->SetScale({ 2.f,5.f,5.f });
+		swordBeam->m_transform->m_scale = { 2.f,5.f,5.f };
+		swordBeam->m_transform->m_position = { 0.f,1.f,-2.f };
+		//	swordBeam->m_transform->m_worldPosition = { 0.f,m_owner.lock()->GetWorldPosition().y + 2.f,-2.f };
 
 		swordBeam->Start();
 
@@ -81,6 +83,7 @@ void PlayerSkill::SwordBeam()
 		m_swordBeamPos += GetDeltaTime() * 0.8f;
 		m_passingTime += GetDeltaTime();
 		m_swordBeam->m_transform->m_position.z += -m_swordBeamPos;
+		//m_swordBeam->m_transform->m_scale = { 2.f,5.f,5.f };
 
 		PlayEffect(m_swordBeam->GetWorldPosition());
 
@@ -188,8 +191,8 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 			{
 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundEffect.yaml");
 				p->SetTransformMatrix(
-					Matrix::CreateTranslation(localPos)
-					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					* Matrix::CreateTranslation(localPos)
 					* Matrix::CreateTranslation(effPos)
 				);
 
@@ -200,8 +203,8 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 			{
 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundSmoke.yaml");
 				p->SetTransformMatrix(
-					Matrix::CreateTranslation(localPos)
-					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					* Matrix::CreateTranslation(localPos)
 					* Matrix::CreateTranslation(effPos)
 				);
 
@@ -212,8 +215,8 @@ void PlayerSkill::PlayEffect(Vector3 pos)
 			{
 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundFire.yaml");
 				p->SetTransformMatrix(
-					Matrix::CreateTranslation(localPos)
-					* Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					* Matrix::CreateTranslation(localPos)
 					* Matrix::CreateTranslation(effPos)
 				);
 
