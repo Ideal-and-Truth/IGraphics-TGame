@@ -35,6 +35,8 @@ namespace Truth
 
 		std::shared_ptr<Ideal::IParticleSystem> GetParticle();
 		void Reset();
+
+		void StopAllParticle();
 	};
 
 
@@ -62,6 +64,8 @@ namespace Truth
 		std::shared_ptr<Ideal::IParticleSystem> GetParticle(fs::path _path);
 
 		void Reset();
+
+		void StopAllParticle();
 
 	private:
 		void GetControlPoints(const YAML::Node* _node, std::shared_ptr<Ideal::IParticleSystem> _particle, Ideal::IBezierCurve& _graph);

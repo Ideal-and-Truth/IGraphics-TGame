@@ -562,6 +562,14 @@ void Truth::ParticleManager::Reset()
 	m_particleMatMap.clear();
 }
 
+void Truth::ParticleManager::StopAllParticle()
+{
+	for (auto& pool : m_particleMap)
+	{
+		pool.second->StopAllParticle();
+	}
+}
+
 void Truth::ParticleManager::GetControlPoints(const YAML::Node* _node, std::shared_ptr<Ideal::IParticleSystem> _particle, Ideal::IBezierCurve& _graph)
 {
 	for (YAML::const_iterator it = _node->begin(); it != _node->end(); ++it)
@@ -597,5 +605,13 @@ void Truth::ParticePool::Reset()
 	for (auto& p : m_pool)
 	{
 		m_grapics->DeleteParticle(p);
+	}
+}
+
+void Truth::ParticePool::StopAllParticle()
+{
+	for (auto& p : m_pool)
+	{
+		p->SetActive(false);
 	}
 }

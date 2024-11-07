@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "Scene.h"
+#include "ParticleManager.h"
 
 /// <summary>
 /// »ý¼ºÀÚ
@@ -122,6 +123,7 @@ void Truth::SceneManager::ChangeScene()
 
 	m_mangers.lock()->Time()->RestartTime();
 	m_mangers.lock()->Input()->m_fpsMode = s->m_useNavMesh;
+	m_mangers.lock()->Particle()->StopAllParticle();
 }
 
 /// <summary>
