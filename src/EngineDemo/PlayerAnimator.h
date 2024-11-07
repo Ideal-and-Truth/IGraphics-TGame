@@ -250,6 +250,7 @@ class ChargedAttack4
 {
 private:
 	bool isReset = false;
+	int lastFrame = 0;
 
 public:
 	ChargedAttack4(Truth::Component* animator)
@@ -269,6 +270,7 @@ class ChargedAttack5
 {
 private:
 	bool isReset = false;
+	int lastFrame = 0;
 
 public:
 	ChargedAttack5(Truth::Component* animator)
@@ -288,6 +290,7 @@ class ChargedAbility
 {
 private:
 	bool isReset = false;
+	int lastFrame = 0;
 
 public:
 	ChargedAbility(Truth::Component* animator)
@@ -362,6 +365,7 @@ class PlayerDodgeAttack
 	: public AnimationState
 {
 private:
+	int lastFrame = 0;
 
 public:
 	PlayerDodgeAttack(Truth::Component* animator)
@@ -380,6 +384,7 @@ class PlayerRushAttack
 	: public AnimationState
 {
 private:
+	int lastFrame = 0;
 
 public:
 	PlayerRushAttack(Truth::Component* animator)
@@ -437,6 +442,7 @@ class PlayerParry
 private:
 	bool isReset = false;
 	bool isChange = false;
+	int lastFrame = 0;
 
 public:
 	PlayerParry(Truth::Component* animator)

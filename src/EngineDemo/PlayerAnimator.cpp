@@ -1189,6 +1189,7 @@ void ChargedAttack4::OnStateEnter()
 	GetProperty("fallAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(5.f);
+	lastFrame = 0;
 }
 
 void ChargedAttack4::OnStateUpdate()
@@ -1201,10 +1202,12 @@ void ChargedAttack4::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 8)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 8
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("chargedAttack4")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 25)
 	{
@@ -1243,6 +1246,7 @@ void ChargedAttack5::OnStateEnter()
 	GetProperty("downAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(10.f);
+	lastFrame = 0;
 }
 
 void ChargedAttack5::OnStateUpdate()
@@ -1255,10 +1259,12 @@ void ChargedAttack5::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("chargedAttack5")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() > 24)
 	{
@@ -1288,6 +1294,7 @@ void ChargedAbility::OnStateEnter()
 	GetProperty("isChargedAttack")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
+	lastFrame = 0;
 }
 
 void ChargedAbility::OnStateUpdate()
@@ -1296,10 +1303,12 @@ void ChargedAbility::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 89)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 89
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("chargedAbility")->Set(m_animator, true);
 		dynamic_cast<PlayerAnimator*>(m_animator)->CameraShake(6.f);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
 	{
@@ -1356,13 +1365,16 @@ void PlayerDodgeAttack::OnStateEnter()
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(22.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(3.f);
 	GetProperty("isDodge")->Set(m_animator, false);
+	lastFrame = 0;
 }
 
 void PlayerDodgeAttack::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 13)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 13
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("dodgeAttack")->Set(m_animator, true);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (GetProperty("isAnimationEnd")->Get<bool>(m_animator).Get())
@@ -1429,14 +1441,17 @@ void PlayerRushAttack::OnStateEnter()
 	GetProperty("isDodge")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(30.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(5.f);
+	lastFrame = 0;
 }
 
 void PlayerRushAttack::OnStateUpdate()
 {
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("rushAttack")->Set(m_animator, true);
 		GetProperty("isAttacking")->Set(m_animator, true);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 68)
@@ -1495,7 +1510,8 @@ void PlayerSkillE::OnStateUpdate()
 	{
 		isReset = true;
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19 && lastFrame!= GetProperty("currentFrame")->Get<int>(m_animator).Get())
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 19 
+		&& lastFrame!= GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<PlayerAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_2_Sound.wav", false, 21);
 		GetProperty("swordBeam")->Set(m_animator, true);
@@ -1527,6 +1543,7 @@ void PlayerParry::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("ParryAttack1", false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(-30.f, true);
+	lastFrame = 0;
 }
 
 void PlayerParry::OnStateUpdate()
@@ -1546,9 +1563,11 @@ void PlayerParry::OnStateUpdate()
 			isChange = true;
 		}
 	}
-	if (isChange && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 21)
+	if (isChange && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 21
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		GetProperty("dodgeAttack")->Set(m_animator, true);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() >= 58)
