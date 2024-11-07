@@ -51,6 +51,7 @@ PlayerAnimator::PlayerAnimator()
 	, m_chargedAttack5(false)
 	, m_dodgeAttack(false)
 	, m_rush(false)
+	, m_guard(false)
 	, m_rushAttack(false)
 	, m_normalAbility(false)
 	, m_chargedAbility(false)
@@ -221,7 +222,6 @@ void PlayerAnimator::Update()
 	{
 		m_isDead = true;
 	}
-
 
 	m_isLockOn = m_playerCamera->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_playerCamera.get()).Get();
 	m_forwardInput = m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get();
@@ -948,6 +948,7 @@ void NormalAbility::OnStateExit()
 void PlayerGuard::OnStateEnter()
 {
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetAnimation("Guard", false);
+	GetProperty("guard")->Set(m_animator, true);
 }
 
 void PlayerGuard::OnStateUpdate()
@@ -981,6 +982,7 @@ void PlayerGuard::OnStateUpdate()
 void PlayerGuard::OnStateExit()
 {
 	GetProperty("isHit")->Set(m_animator, false);
+	GetProperty("guard")->Set(m_animator, false);
 }
 
 void PlayerHit::OnStateEnter()

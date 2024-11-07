@@ -598,6 +598,9 @@ private:
 	PROPERTY(hit);
 	bool m_hit;
 
+	PROPERTY(guard);
+	bool m_guard;
+
 	float m_lastHp;
 
 	PROPERTY(passingTime);

@@ -640,7 +640,7 @@ void BossAttackRunning::OnStateUpdate()
 	{
 		isReset = false;
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimationSpeed(0.f);
-		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(500.f, 0.f);
+		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(700.f, 0.f);
 		GetProperty("isLockOn")->Set(m_animator, true);
 	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 22
@@ -807,11 +807,11 @@ void BossAttackCharge::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossAttackLightSpeedDash", false);
 		if (GetProperty("currentPhase")->Get<int>(m_animator).Get() > 1)
 		{
-			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(500.f, 0.f, true);
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(700.f, 0.f, true);
 		}
 		else
 		{
-			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(600.f, 0.f, true);
+			dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(800.f, 0.f, true);
 		}
 		dynamic_cast<BossAnimator*>(m_animator)->SetChargeAttack(false);
 		GetProperty("passingTime")->Set(m_animator, 0.f);
