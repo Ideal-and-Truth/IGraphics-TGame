@@ -43,7 +43,7 @@ void SimpleDamager::Update()
 		{
 			float currentTP = m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get();
 			float damage = m_damage;
-			if (playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(playerAnimator.get()).Get()
+			if (playerAnimator->GetTypeInfo().GetProperty("guard")->Get<bool>(playerAnimator.get()).Get()
 				&& !playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(playerAnimator.get()).Get())
 			{
 				damage *= 0.3f;
