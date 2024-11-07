@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 14
-		Minute: 30
+		Day: 7
+		Hour: 10
+		Minute: 37
 		Second: 42
-		Millisecond: 258
+		Millisecond: 24
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\muznrjie_48f948bdfcc5a724b856b77d64124daf8570724768532217173.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\muznrjie_48f948bdfcc5a724b856b77d64124daf8570724768532217173.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\x4g64z72_48f948bdfcc5a724b856b77d64124daf8570724768532217173.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\x4g64z72_48f948bdfcc5a724b856b77d64124daf8570724768532217173.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1881009162256, "Scene", "Scene" {
+	Document: 2649309343856, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029978256, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116200896, "Geometry::Scene", "Mesh" {
 		Vertices: *72 {
 			a: 0.0585284607950598,0.0945069768931717,0.226311222650111,0.0706195598468184,0.106597424019128,0.226311222650111,-0.0706195831298828,0.106597424019128,0.226311245933175,-0.0585293106269091,0.0945067382417619,0.226311245933175,-0.0706195831298828,-0.106597424019128,0.226311339065433,-0.0585284607950598,-0.0945072155445814,0.226311339065433,0.0706195714883506,-0.106597424019128,0.226311315782368,0.0585293106269091,-0.0945069768931717,0.226311315782368,-0.0585293280892074,0.0945067382417619,0.0452832842711359,0.0706195598468184,0.106597424019128,0.0452832609880716,0.0585284375119954,0.0945069768931717,0.0452832638984546,-0.0706195831298828,0.106597424019128,0.045283287181519,-0.0585284840781242,-0.0945072155445814,0.0452833686722443,-0.0706195831298828,-0.106597424019128,0.0452833715826273,0.0585292873438448,-0.0945069768931717,0.045283351209946,0.0706195714883506,-0.106597424019128,0.0452833453891799,-0.0706195831298828,0.106597424019128,0.271594477817416,0.0706195598468184,0.106597424019128,0.271594454534352,0.0706195598468184,-0.106597424019128,0.271594570949674,-0.0706195831298828,-0.106597424019128,0.271594617515802,-0.0706195831298828,0.106597424019128,2.3283064365387e-08,0.0706195598468184,0.106597424019128,0,0.0706195714883506,-0.106597424019128,8.75443217918104e-08,-0.0706195831298828,-0.106597424019128,1.09896058919645e-07
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845832464, "Model::SM_stairdeco__1_", "Mesh" {
+	Model: 2639147905120, "Model::SM_stairdeco__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -396,7 +396,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881008348960, "Material::M_stair", "" {
+	Material: 2649306358288, "Material::M_stair", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -410,7 +410,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1880247294944, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997741904, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\stairset\T_stairset_BaseMap.png"
@@ -420,7 +420,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\stairset\T_stairset_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\stairset\T_stairset_BaseMap.png"
 	}
-	Texture: 1880247292544, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997745264, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -440,22 +440,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_stairdeco__1_, Model::RootNode
-	C: "OO",1875845832464,0
+	C: "OO",2639147905120,0
 	
 	;Material::M_stair, Model::SM_stairdeco__1_
-	C: "OO",1881008348960,1875845832464
+	C: "OO",2649306358288,2639147905120
 	
 	;Geometry::Scene, Model::SM_stairdeco__1_
-	C: "OO",1868029978256,1875845832464
+	C: "OO",2636116200896,2639147905120
 	
 	;Texture::DiffuseColor_Texture, Material::M_stair
-	C: "OO",1880247292544,1881008348960
+	C: "OO",2645997745264,2649306358288
 	
 	;Texture::DiffuseColor_Texture, Material::M_stair
-	C: "OP",1880247292544,1881008348960, "DiffuseColor"
+	C: "OP",2645997745264,2649306358288, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1880247294944,1880247292544
+	C: "OO",2645997741904,2645997745264
 }
 ;Takes section
 ;----------------------------------------------------

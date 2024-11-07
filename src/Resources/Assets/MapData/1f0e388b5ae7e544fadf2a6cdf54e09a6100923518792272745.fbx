@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 14
-		Minute: 30
-		Second: 15
-		Millisecond: 712
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 44
+		Millisecond: 665
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\ngiiw8gm_1f0e388b5ae7e544fadf2a6cdf54e09a6100923518792272745.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\ngiiw8gm_1f0e388b5ae7e544fadf2a6cdf54e09a6100923518792272745.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\uetixx77_1f0e388b5ae7e544fadf2a6cdf54e09a6100923518792272745.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\uetixx77_1f0e388b5ae7e544fadf2a6cdf54e09a6100923518792272745.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1881009167120, "Scene", "Scene" {
+	Document: 2649309343344, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029984080, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116194624, "Geometry::Scene", "Mesh" {
 		Vertices: *42 {
 			a: 9.68677866808321e-06,0,37.3128741979599,1.94707183709397e-05,0,75,-0,100,75,-0,100,37.3128741979599,-1.94707183709397e-05,200,75,-9.68677937862594e-06,149.750483036041,37.3128741979599,-1.94707183709397e-05,200,0,-9.68677937862594e-06,149.750483036041,0,-1.94707183709397e-05,200,-75,-9.68677937862594e-06,149.750483036041,-37.3128741979599,-0,100,-75,-0,100,-37.3128741979599,1.94707183709397e-05,0,-75,9.68677866808321e-06,0,-37.3128741979599
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845822464, "Model::SM_ghettodoorwall", "Mesh" {
+	Model: 2639147907120, "Model::SM_ghettodoorwall", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-0.0201416015625151,-65.4414138793945,-0.0218452475965023
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.93527603149414,1.93527638912201,1.93527626991272
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.0131288962438703,130.992813110352,0.0266418457031159
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.93527734279633,1.93527638912201,1.93527722358704
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881008361360, "Material::M_brickwalldoor", "" {
+	Material: 2649306349488, "Material::M_brickwalldoor", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1880247292544, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2642812187344, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_TileMap\brickwalltile\Hannatile\T_brickwall_002_BaseMap-1.png"
 	}
-	Texture: 1880247295424, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997741904, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -421,22 +421,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_ghettodoorwall, Model::RootNode
-	C: "OO",1875845822464,0
+	C: "OO",2639147907120,0
 	
 	;Material::M_brickwalldoor, Model::SM_ghettodoorwall
-	C: "OO",1881008361360,1875845822464
+	C: "OO",2649306349488,2639147907120
 	
 	;Geometry::Scene, Model::SM_ghettodoorwall
-	C: "OO",1868029984080,1875845822464
+	C: "OO",2636116194624,2639147907120
 	
 	;Texture::DiffuseColor_Texture, Material::M_brickwalldoor
-	C: "OO",1880247295424,1881008361360
+	C: "OO",2645997741904,2649306349488
 	
 	;Texture::DiffuseColor_Texture, Material::M_brickwalldoor
-	C: "OP",1880247295424,1881008361360, "DiffuseColor"
+	C: "OP",2645997741904,2649306349488, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1880247292544,1880247295424
+	C: "OO",2642812187344,2645997741904
 }
 ;Takes section
 ;----------------------------------------------------

@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 20
-		Second: 49
-		Millisecond: 153
+		Day: 7
+		Hour: 10
+		Minute: 44
+		Second: 38
+		Millisecond: 386
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\gp28s9di_5d218b9f13d014b46b97fe5a124078c9-4117881369427209994.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\gp28s9di_5d218b9f13d014b46b97fe5a124078c9-4117881369427209994.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\6r76ddn0_5d218b9f13d014b46b97fe5a124078c9-4117881369427209994.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\6r76ddn0_5d218b9f13d014b46b97fe5a124078c9-4117881369427209994.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598935008, "Scene", "Scene" {
+	Document: 1861591170400, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -98,7 +98,7 @@ References:  {
 
 Definitions:  {
 	Version: 100
-	Count: 8
+	Count: 10
 	ObjectType: "GlobalSettings" {
 		Count: 1
 	}
@@ -218,7 +218,7 @@ Definitions:  {
 		}
 	}
 	ObjectType: "Texture" {
-		Count: 2
+		Count: 3
 		PropertyTemplate: "FbxFileTexture" {
 			Properties70:  {
 				P: "TextureTypeUse", "enum", "", "",0
@@ -241,7 +241,7 @@ Definitions:  {
 		}
 	}
 	ObjectType: "Video" {
-		Count: 2
+		Count: 3
 		PropertyTemplate: "FbxVideo" {
 			Properties70:  {
 				P: "Path", "KString", "XRefUrl", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620989552, "Geometry::Scene", "Mesh" {
+	Geometry: 1851538557600, "Geometry::Scene", "Mesh" {
 		Vertices: *852 {
 			a: -1082.72151947021,549.457263946533,1024.44152832031,-1078.66840362549,549.270820617676,1028.41625213623,-1029.50353622437,549.270725250244,1028.43379974365,-1025.28505325317,549.457263946533,1024.52564239502,24.0886986255646,549.270820617676,-24.659389257431,26.2885898351669,90.8510565757751,-23.3595937490463,26.2885838747025,90.8510625362396,25.0483065843582,24.103944003582,549.270820617676,24.5055630803108,-24.0495845675468,549.270820617676,-24.6593907475471,-25.4762977361679,90.8510386943817,-23.359589278698,-24.103944003582,549.270725250244,24.5055615901947,-25.4763096570969,90.8510386943817,25.0483006238937,-23.1463715434074,83.7110340595245,23.9476293325424,-25.4763096570969,87.6618027687073,25.1344054937363,26.288577914238,87.6618027687073,25.1344233751297,23.9586398005486,83.7110340595245,23.9476412534714,-23.1463715434074,78.4403443336487,23.9476293325424,23.9586398005486,78.4403443336487,23.9476412534714,-23.1463715434074,9.45358276367188,27.2609978914261,-23.1463715434074,14.185357093811,27.2609978914261,23.9586398005486,14.185357093811,27.2610157728195,23.9586398005486,9.45358276367188,27.2610157728195,-25.1574784517288,0,29.256597161293,-25.1574784517288,9.45358276367188,29.256597161293,25.9697467088699,9.45358276367188,29.256609082222,25.9697467088699,0,29.256609082222,25.9697586297989,9.45358276367188,-27.5678783655167,25.9697586297989,0,-27.5678783655167,-23.146365582943,9.45358276367188,-25.5722969770432,-25.1574665307999,9.45358276367188,-27.5678902864456,23.958645761013,9.45358276367188,-25.5722850561142,21.0447251796722,17.6321506500244,23.1178104877472,21.0447251796722,78.4403443336487,23.1178104877472,21.0447311401367,78.4403443336487,-21.5962246060371,21.0447311401367,17.6321506500244,-21.5962246060371,12.4242760241032,70.4379379749298,23.8380715250969,12.4242760241032,25.8016109466553,23.8380715250969,-11.6120100021362,25.8016109466553,23.8380610942841,-11.6120100021362,70.4379379749298,23.8380610942841,23.958645761013,83.7110340595245,-22.2589179873466,23.958645761013,78.4403443336487,-22.2589179873466,
 -20.2324569225311,17.6321506500244,23.1178015470505,-20.2324569225311,78.4403443336487,23.1178015470505,-20.2324524521828,78.4403443336487,-21.5962290763855,-23.146365582943,78.4403443336487,-22.2589239478111,-25.4762977361679,87.6618027687073,-23.4456971287727,-23.146365582943,83.7110340595245,-22.2589239478111,-15.616250038147,73.6764430999756,23.1178015470505,16.4285153150558,73.6764430999756,23.1178104877472,-15.616250038147,22.4795818328857,23.1178015470505,16.4285153150558,22.4795818328857,23.1178104877472,-14.6954849362373,23.0550035834312,24.9908596277237,15.5077517032623,23.0550035834312,24.9908655881882,-20.2324524521828,17.6321506500244,-21.5962290763855,23.958645761013,14.185357093811,-25.5722850561142,-23.146365582943,14.185357093811,-25.5722969770432,-25.1574665307999,0,-27.5678902864456,27.3995965719223,90.4104828834534,25.9757548570633,-26.5873104333878,90.4104828834534,25.9757369756699,26.2885898351669,87.6618027687073,-23.4457015991211,-26.5873104333878,87.6040577888489,25.9757369756699,27.3996084928513,87.6618027687073,25.9757608175278,-26.5872985124588,87.6040577888489,-24.2870226502419,-14.6954849362373,73.1845438480377,24.9908596277237,15.5077517032623,73.1845438480377,24.9908655881882,-13.0441978573799,71.5332448482513,25.425124168396,13.8564646244049,71.5332448482513,25.4251301288605,13.8564646244049,24.7062906622887,25.4251301288605,-13.0441978573799,24.7062906622887,25.425124168396,12.4242819845676,70.3543961048126,-21.6293483972549,-11.6120040416718,70.3543961048126,-21.6293498873711,-11.6120040416718,25.718092918396,-21.6293498873711,12.4242819845676,25.718092918396,-21.6293483972549,15.5077561736107,22.9714870452881,-22.7821439504623,-15.6162440776825,22.3960399627686,-21.5962290763855,16.4285212755203,22.3960399627686,-21.5962246060371,-14.6954789757729,22.9714870452881,-22.7821454405785,15.5077561736107,23.0550035834312,-23.4692797064781,16.4285212755203,22.4795818328857,-22.2833588719368,-14.6954789757729,23.0550035834312,-23.4692797064781,-15.6162440776825,22.4795818328857,-22.2833648324013,
@@ -548,7 +548,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164596049792, "Model::SM_hotelpillar_002", "Mesh" {
+	Model: 1860494679872, "Model::SM_hotelpillar_002", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -556,28 +556,27 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",6.87273349342377e-09,34.0689392089844,6.02981620190235e-09
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1,1,1.00000023841858
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-2.8268332119552e-09,107.162094116211,-1.0227961810827e-09
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000047683716,1,1.00000047683716
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2176335582336, "Material::M_hotelside_urp_", "" {
+	Material: 1851533370112, "Material::M_hotelside", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
 		Properties70:  {
-			P: "EmissiveColor", "Color", "", "A",0.679245293140411,0.679245293140411,0.679245293140411
+			P: "EmissiveColor", "Color", "", "A",0.556603789329529,0.313174992799759,0.160154849290848
 			P: "AmbientColor", "Color", "", "A",0,0,0
 			P: "DiffuseColor", "Color", "", "A",1,1,1
-			P: "BumpFactor", "double", "Number", "",0
-			P: "Emissive", "Vector3D", "Vector", "",0.679245293140411,0.679245293140411,0.679245293140411
+			P: "Emissive", "Vector3D", "Vector", "",0.556603789329529,0.313174992799759,0.160154849290848
 			P: "Ambient", "Vector3D", "Vector", "",0,0,0
 			P: "Diffuse", "Vector3D", "Vector", "",1,1,1
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164599645584, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1861590963312, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_BaseMap.png"
@@ -587,7 +586,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_BaseMap.png"
 	}
-	Video: 2164599644624, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 1861590960432, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
@@ -597,7 +596,17 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Video: 1861590961872, "Video::NormalMap_Texture", "Clip" {
+		Type: "Clip"
+		Properties70:  {
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
+		}
+		UseMipMap: 0
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
+	}
+	Texture: 1861590961392, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -609,13 +618,25 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164599644144, "Texture::EmissiveColor_Texture", "" {
+	Texture: 1861590959952, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
 		Media: "Video::EmissiveColor_Texture"
 		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
+		ModelUVTranslation: 0,0
+		ModelUVScaling: 1,1
+		Texture_Alpha_Source: "None"
+		Cropping: 0,0,0,0
+	}
+	Texture: 1861590960912, "Texture::NormalMap_Texture", "" {
+		Type: "TextureVideoClip"
+		Version: 202
+		TextureName: "Texture::NormalMap_Texture"
+		Media: "Video::NormalMap_Texture"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -629,31 +650,40 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_hotelpillar_002, Model::RootNode
-	C: "OO",2164596049792,0
+	C: "OO",1860494679872,0
 	
-	;Material::M_hotelside_urp_, Model::SM_hotelpillar_002
-	C: "OO",2176335582336,2164596049792
+	;Material::M_hotelside, Model::SM_hotelpillar_002
+	C: "OO",1851533370112,1860494679872
 	
 	;Geometry::Scene, Model::SM_hotelpillar_002
-	C: "OO",2158620989552,2164596049792
+	C: "OO",1851538557600,1860494679872
 	
-	;Texture::DiffuseColor_Texture, Material::M_hotelside_urp_
-	C: "OO",2176327841456,2176335582336
+	;Texture::DiffuseColor_Texture, Material::M_hotelside
+	C: "OO",1861590961392,1851533370112
 	
-	;Texture::EmissiveColor_Texture, Material::M_hotelside_urp_
-	C: "OO",2164599644144,2176335582336
+	;Texture::EmissiveColor_Texture, Material::M_hotelside
+	C: "OO",1861590959952,1851533370112
 	
-	;Texture::EmissiveColor_Texture, Material::M_hotelside_urp_
-	C: "OP",2164599644144,2176335582336, "EmissiveColor"
+	;Texture::NormalMap_Texture, Material::M_hotelside
+	C: "OO",1861590960912,1851533370112
 	
-	;Texture::DiffuseColor_Texture, Material::M_hotelside_urp_
-	C: "OP",2176327841456,2176335582336, "DiffuseColor"
+	;Texture::EmissiveColor_Texture, Material::M_hotelside
+	C: "OP",1861590959952,1851533370112, "EmissiveColor"
+	
+	;Texture::DiffuseColor_Texture, Material::M_hotelside
+	C: "OP",1861590961392,1851533370112, "DiffuseColor"
+	
+	;Texture::NormalMap_Texture, Material::M_hotelside
+	C: "OP",1861590960912,1851533370112, "NormalMap"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164599645584,2176327841456
+	C: "OO",1861590963312,1861590961392
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2164599644624,2164599644144
+	C: "OO",1861590960432,1861590959952
+	
+	;Video::NormalMap_Texture, Texture::NormalMap_Texture
+	C: "OO",1861590961872,1861590960912
 }
 ;Takes section
 ;----------------------------------------------------

@@ -1,6 +1,7 @@
 #include "TestEffectGenerator.h"
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "Transform.h"
 BOOST_CLASS_EXPORT_IMPLEMENT(TestEffectGenerator)
 
 void TestEffectGenerator::Update()
@@ -225,15 +226,15 @@ void TestEffectGenerator::Update()
 // 	}
 
 	/// 불장판
-	if (GetKeyDown(KEY::P))
-	{
-		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
-		p->SetTransformMatrix(
-			Matrix::CreateRotationX(3.14 * 0.5)
-		);
-		p->SetActive(true);
-		p->Play();
-	}
+// 	if (GetKeyDown(KEY::P))
+// 	{
+// 		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BossFireFloor.yaml");
+// 		p->SetTransformMatrix(
+// 			Matrix::CreateRotationX(3.14 * 0.5)
+// 		);
+// 		p->SetActive(true);
+// 		p->Play();
+// 	}
 
 	/// 피격이펙트
 // 	if (GetKeyDown(KEY::P))
@@ -290,4 +291,120 @@ void TestEffectGenerator::Update()
 // 		p->SetActive(true);
 // 		p->Play();
 // 	}
+
+	/// 실험실
+	if (GetKeyDown(KEY::P))
+	{
+		Vector3 effectRot = m_owner.lock()->m_transform->m_rotation.ToEuler();
+		{
+			effectRot.z += (3.141592f / 180.f) * 70.f;
+			//effectRot.y += (3.141592f / 180.f) * 20.f;
+			effectRot.x += (3.141592f / 180.f) * 90.f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			{
+				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+				p->SetTransformMatrix(
+					Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+					//* rotationMT
+				);
+
+				p->SetActive(true);
+				p->SetSimulationSpeed(2.f);
+				p->Play();
+			}
+		}
+
+		{
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+				//* rotationMT
+
+
+			);
+
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+
+		{
+			//effectRot.z += (3.141592f / 180.f) * 50.f;
+			effectRot.x += (3.141592f / 180.f) * -180.f;
+
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack.yaml");
+			p->SetTransformMatrix(
+				Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+				//* rotationMT
+			);
+
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+
+		{
+			Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
+
+			auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\ComAttack2.yaml");
+			p->SetTransformMatrix(
+				//rotationMT
+				Matrix::CreateScale(Vector3(1.5f, 1.2f, 1.5f))
+				* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+			);
+
+			p->SetActive(true);
+			p->SetSimulationSpeed(2.f);
+			p->Play();
+		}
+
+		// 고슴도치
+ 		{
+			Vector3 effPos = m_owner.lock()->GetWorldPosition();
+			effPos.y -= 0.1f;
+			Vector3 localPos = { 0.f,0.f,-1.f };
+			{
+				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundEffect.yaml");
+				p->SetTransformMatrix(
+					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+					* Matrix::CreateTranslation(localPos)
+					* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+				);
+
+				p->SetActive(true);
+				p->Play();
+			}
+// 
+// 			{
+// 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundSmoke.yaml");
+// 				p->SetTransformMatrix(
+// 					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+// 					* Matrix::CreateTranslation(localPos)
+// 					* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+// 				);
+// 
+// 				p->SetActive(true);
+// 				p->Play();
+// 			}
+// 
+// 			{
+// 				auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\GroundFire.yaml");
+// 				p->SetTransformMatrix(
+// 					Matrix::CreateFromQuaternion(m_owner.lock()->m_transform->m_rotation)
+// 					* Matrix::CreateTranslation(localPos)
+// 					* Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+// 				);
+// 
+// 				p->SetActive(true);
+// 				p->Play();
+// 			}
+ 		}
+	}
 }

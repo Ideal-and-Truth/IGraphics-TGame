@@ -304,12 +304,15 @@ void Truth::Scene::Update()
 /// </summary>
 void Truth::Scene::FixedUpdate()
 {
-	for (auto& e : m_entities)
+	if (m_started)
 	{
-		if (!e->m_isDead)
-			e->FixedUpdate();
-		else
-			m_beginDestroy.push(e);
+		for (auto& e : m_entities)
+		{
+			if (!e->m_isDead)
+				e->FixedUpdate();
+			else
+				m_beginDestroy.push(e);
+		}
 	}
 }
 
@@ -359,6 +362,15 @@ void Truth::Scene::Start()
 		e->Awake();
 		m_awakedEntity.pop();
 	}
+
+	while (!m_startedEntity.empty())
+	{
+		auto& e = m_startedEntity.front();
+		e->Start();
+		m_startedEntity.pop();
+	}
+
+	m_started = true;
 }
 
 /// <summary>

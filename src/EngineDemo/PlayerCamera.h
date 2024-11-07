@@ -47,8 +47,6 @@ private:
 	PROPERTY(zoomOutTime);
 	float m_zoomOutTime;
 
-	float m_lockOnTime;
-
 	PROPERTY(isShaking);
 	bool m_isShaking;
 

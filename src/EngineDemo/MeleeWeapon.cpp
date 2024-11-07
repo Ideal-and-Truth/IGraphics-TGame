@@ -16,7 +16,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(MeleeWeapon)
 MeleeWeapon::MeleeWeapon()
 	: m_collider(nullptr)
 	, m_isAttacking(false)
-	, m_canHit(false)
+	, m_canHit(true)
 {
 	m_name = "MeleeWeapon";
 }
@@ -57,6 +57,7 @@ void MeleeWeapon::Update()
 	if (m_player)
 	{
 		m_isAttacking = m_playerAnimator->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(m_playerAnimator.get()).Get();
+		m_canHit = true;
 	}
 	else if (m_enemy)
 	{
@@ -104,7 +105,7 @@ void MeleeWeapon::Update()
 			auto player = e->GetComponent<Player>().lock().get();
 			float enemyDamage = m_enemy->GetTypeInfo().GetProperty("currentDamage")->Get<float>(m_enemy.get()).Get();
 			float playerHp = player->GetTypeInfo().GetProperty("currentTP")->Get<float>(player).Get();
-			if (m_playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(m_playerAnimator.get()).Get()
+			if (m_playerAnimator->GetTypeInfo().GetProperty("guard")->Get<bool>(m_playerAnimator.get()).Get()
 				&&!m_playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(m_playerAnimator.get()).Get())
 			{
 				enemyDamage *= 0.3f;

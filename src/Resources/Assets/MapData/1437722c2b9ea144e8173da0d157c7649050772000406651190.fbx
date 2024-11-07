@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 14
-		Minute: 30
-		Second: 29
-		Millisecond: 194
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 36
+		Millisecond: 53
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\dsldyk3s_1437722c2b9ea144e8173da0d157c7649050772000406651190.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\dsldyk3s_1437722c2b9ea144e8173da0d157c7649050772000406651190.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\1g20zsrh_1437722c2b9ea144e8173da0d157c7649050772000406651190.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\1g20zsrh_1437722c2b9ea144e8173da0d157c7649050772000406651190.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1881009167120, "Scene", "Scene" {
+	Document: 2649309349232, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029975120, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116194624, "Geometry::Scene", "Mesh" {
 		Vertices: *132 {
 			a: 13.2377028465271,0.0621795654296875,49.9904483556747,-15.0497376918793,20.4835295677185,50.240033864975,-15.0915503501892,20.4790413379669,53.5708665847778,13.190670311451,0.0844597816467285,53.3676445484161,14.4547924399376,1.84685662388802,50.2853631973267,-15.2028635144234,23.3174905180931,50.1950621604919,-15.2365580201149,23.3782470226288,19.2808076739311,14.4168525934219,1.7632357776165,19.4623813033104,-15.2686834335327,28.1829535961151,0.00776201486587524,-7.32459425926208,21.4247971773148,53.4753024578094,-15.227872133255,28.6253184080124,53.5422682762146,-7.48084336519241,21.5718433260918,-0.0999812735244632,-15.2708813548088,28.461828827858,-53.0034601688385,1.53319938108325,14.0169724822044,53.5140156745911,3.19511480629444,12.5090047717094,-0.247681140899658,-7.61875063180923,21.7395305633545,-53.4959852695465,2.27357428520918,13.5710656642914,-53.4916043281555,14.7619664669037,5.24603277444839,-53.5708665847778,14.6878957748413,5.08414246141911,-16.0832703113556,14.6199807524681,4.93570789694786,18.2885229587555,9.2678926885128,8.66743996739388,53.4986853599548,14.5553082227707,4.79435659945011,51.020085811615,15.2708813548088,4.70541939139366,53.5028994083405,-15.1775658130646,20.6045314669609,-53.4173250198364,13.256548345089,0.0125214457511902,-53.4593462944031,15.0745213031769,1.96936056017876,-53.4936010837555,-15.0638625025749,20.4850256443024,19.4303676486015,13.1396427750587,0.169095396995544,19.1533327102661,13.2292717695236,0.0379353761672974,15.8399254083633,-14.9914816021919,20.4562410712242,16.197943687439,14.4236385822296,1.78088918328285,15.3717145323753,-14.8663341999054,20.3233033418655,-15.872623026371,14.4753158092499,1.91531106829643,-15.7768979668617,13.2858440279961,0.0612944364547729,-16.1310136318207,-15.2583137154579,23.4017938375473,-15.9711197018623,14.424940943718,1.74057018011808,-50.251317024231,-15.2168169617653,23.3488187193871,-50.1469075679779,-15.234686434269,23.3757495880127,-19.3028464913368,14.4707426428795,1.75069104880095,-19.5962443947792,-15.0891989469528,20.4925492405891,-50.0230491161346,
 13.2493704557419,0.0795960426330566,-50.223571062088,13.2625684142113,-1.04308128356934e-05,-19.3438053131104,-14.8775950074196,20.3601866960526,-19.1431760787964,-15.1714563369751,23.3226865530014,15.875943005085
@@ -380,7 +380,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845804464, "Model::SM_2Froof", "Mesh" {
+	Model: 2639147837120, "Model::SM_2Froof", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -388,12 +388,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.00401560077443719,-15.0107374191284,-0.0294339843094349
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.0236823558807373,30.0845642089844,-0.0179345086216927
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.99999988079071,1,1.00000023841858
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881008353360, "Material::M_ghetto2F", "" {
+	Material: 2649306357088, "Material::M_ghetto2F", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -408,7 +409,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1880247292544, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2642812187344, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
@@ -418,7 +419,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
 	}
-	Video: 1861208680096, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 2630166102256, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_Emissive.png"
@@ -428,7 +429,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_Emissive.png"
 	}
-	Texture: 1880247294944, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997745264, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -440,7 +441,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 1880247295424, "Texture::EmissiveColor_Texture", "" {
+	Texture: 2645997741904, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -460,31 +461,31 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_2Froof, Model::RootNode
-	C: "OO",1875845804464,0
+	C: "OO",2639147837120,0
 	
 	;Material::M_ghetto2F, Model::SM_2Froof
-	C: "OO",1881008353360,1875845804464
+	C: "OO",2649306357088,2639147837120
 	
 	;Geometry::Scene, Model::SM_2Froof
-	C: "OO",1868029975120,1875845804464
+	C: "OO",2636116194624,2639147837120
 	
 	;Texture::DiffuseColor_Texture, Material::M_ghetto2F
-	C: "OO",1880247294944,1881008353360
+	C: "OO",2645997745264,2649306357088
 	
 	;Texture::EmissiveColor_Texture, Material::M_ghetto2F
-	C: "OO",1880247295424,1881008353360
+	C: "OO",2645997741904,2649306357088
 	
 	;Texture::EmissiveColor_Texture, Material::M_ghetto2F
-	C: "OP",1880247295424,1881008353360, "EmissiveColor"
+	C: "OP",2645997741904,2649306357088, "EmissiveColor"
 	
 	;Texture::DiffuseColor_Texture, Material::M_ghetto2F
-	C: "OP",1880247294944,1881008353360, "DiffuseColor"
+	C: "OP",2645997745264,2649306357088, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1880247292544,1880247294944
+	C: "OO",2642812187344,2645997745264
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",1861208680096,1880247295424
+	C: "OO",2630166102256,2645997741904
 }
 ;Takes section
 ;----------------------------------------------------

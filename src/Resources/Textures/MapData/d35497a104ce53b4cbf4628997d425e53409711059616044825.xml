@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>M_HNbuilding_urp_</Name>
+        <Name>SM_HNbuilding</Name>
         <DiffuseFile>T_HNbuilding_BaseMap.png</DiffuseFile>
         <SpecularFile>DefaultAlbedo.png</SpecularFile>
-        <NormalFile>DefaultNormalMap.png</NormalFile>
+        <NormalFile>T_HNbuilding_Normal.png</NormalFile>
         <MetalicFile>DefaulBlack.png</MetalicFile>
         <RoughnessFile>DefaulBlack.png</RoughnessFile>
         <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.94509798" G="0.94117647" B="0.94117647" A="1"/>
-        <Specular R="0.94509798" G="0.94117647" B="0.94117647" A="1"/>
+        <Diffuse R="0.94339621" G="0.93894625" B="0.93894625" A="1"/>
+        <Specular R="0.94339621" G="0.93894625" B="0.93894625" A="1"/>
         <Emissive R="0" G="0" B="0" A="1"/>
         <Metallic Factor="-1.0737418e+08"/>
         <Roughness Factor="0"/>
-        <UseTextureInfo Diffuse="true" Normal="false" Metallic="false" Roughness="false"/>
+        <UseTextureInfo Diffuse="true" Normal="true" Metallic="false" Roughness="false"/>
     </Material>
 </Materials>

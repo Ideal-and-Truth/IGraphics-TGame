@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 2
-		Millisecond: 299
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 51
+		Millisecond: 432
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\y2dyf8rl_2a1924298a8fb144d8e1b2414e91371b2262338266717957862.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\y2dyf8rl_2a1924298a8fb144d8e1b2414e91371b2262338266717957862.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\hfcbehua_2a1924298a8fb144d8e1b2414e91371b2262338266717957862.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\hfcbehua_2a1924298a8fb144d8e1b2414e91371b2262338266717957862.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598938592, "Scene", "Scene" {
+	Document: 2649309347184, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158621001648, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116200000, "Geometry::Scene", "Mesh" {
 		Vertices: *18 {
 			a: -0.999999977648258,4.37113872875372e-08,0,-0.999999977648258,-4.37113872875372e-08,0.300000002607703,-0,-4.37113872875372e-08,0.300000002607703,-0,4.37113872875372e-08,0,0.999999977648258,4.37113872875372e-08,0,0.999999977648258,-4.37113872875372e-08,0.300000002607703
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265360176, "Model::SM_chain__4_", "Mesh" {
+	Model: 2639147907120, "Model::SM_chain__3_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,162.905853271484
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000091552734,100.000015258789,100.000114440918
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-55.371467590332
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000038146973,100.000076293945,100.000091552734
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2174397921344, "Material::M_chain", "" {
+	Material: 2649306341088, "Material::M_chain", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164599949280, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997745264, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\chain\T_chain_BaseMap.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\chain\T_chain_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\chain\T_chain_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2630166102256, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -420,23 +420,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_chain__4_, Model::RootNode
-	C: "OO",2164265360176,0
+	;Model::SM_chain__3_, Model::RootNode
+	C: "OO",2639147907120,0
 	
-	;Material::M_chain, Model::SM_chain__4_
-	C: "OO",2174397921344,2164265360176
+	;Material::M_chain, Model::SM_chain__3_
+	C: "OO",2649306341088,2639147907120
 	
-	;Geometry::Scene, Model::SM_chain__4_
-	C: "OO",2158621001648,2164265360176
-	
-	;Texture::DiffuseColor_Texture, Material::M_chain
-	C: "OO",2176327841456,2174397921344
+	;Geometry::Scene, Model::SM_chain__3_
+	C: "OO",2636116200000,2639147907120
 	
 	;Texture::DiffuseColor_Texture, Material::M_chain
-	C: "OP",2176327841456,2174397921344, "DiffuseColor"
+	C: "OO",2630166102256,2649306341088
+	
+	;Texture::DiffuseColor_Texture, Material::M_chain
+	C: "OP",2630166102256,2649306341088, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164599949280,2176327841456
+	C: "OO",2645997745264,2630166102256
 }
 ;Takes section
 ;----------------------------------------------------

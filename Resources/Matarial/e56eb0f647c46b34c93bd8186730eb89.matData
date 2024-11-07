@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/1_HN_Scene2/brickwalltile/T_brickwall_002_BaseMap.png
-normalMap: ../Resources/Textures/MapData/1_HN_Scene2/brickwalltile/T_brickwall_002_Normal.png
-maskMap: ../Resources/Textures/MapData/1_HN_Scene2/brickwalltile/T_brickwall_002_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/brickwalltile/T_brickwall_002_BaseMap.png
+normalMap: ""
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/brickwalltile/T_brickwall_002_MaskMap.png
 tileX: 0.949999988
 tileY: 1.22000003
 alphaCulling: false

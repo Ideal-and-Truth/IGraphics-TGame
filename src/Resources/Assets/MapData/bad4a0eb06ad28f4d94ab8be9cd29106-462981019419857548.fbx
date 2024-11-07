@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 50
+		Day: 7
+		Hour: 10
+		Minute: 36
 		Second: 54
-		Millisecond: 274
+		Millisecond: 65
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\ef5sn0fg_bad4a0eb06ad28f4d94ab8be9cd29106-462981019419857548.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\ef5sn0fg_bad4a0eb06ad28f4d94ab8be9cd29106-462981019419857548.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\fa2mfz9r_bad4a0eb06ad28f4d94ab8be9cd29106-462981019419857548.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\fa2mfz9r_bad4a0eb06ad28f4d94ab8be9cd29106-462981019419857548.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2234728131296, "Scene", "Scene" {
+	Document: 2649309350768, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2227054709280, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116212544, "Geometry::Scene", "Mesh" {
 		Vertices: *36 {
 			a: -1.99999995529652,0,7.54978968231512e-08,-1.99999995529652,0.999999977648258,7.54978968231512e-08,-0,0.999999977648258,7.54978968231512e-08,-0,0,7.54978968231512e-08,-1.99999995529652,-0.999999977648258,7.54978968231512e-08,-0,-0.999999977648258,7.54978968231512e-08,-1.99999995529652,7.54978968231512e-08,-3.30011811748033e-15,-1.99999995529652,3.17865123111716e-08,-0.999999977648258,-0,3.17865123111716e-08,-0.999999977648258,-0,7.54978968231512e-08,-3.30011811748033e-15,-1.99999995529652,1.19209286886246e-07,0.999999977648258,-0,1.19209286886246e-07,0.999999977648258
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2234632455008, "Model::FlameQuad", "Mesh" {
+	Model: 2639147881120, "Model::FlameQuad", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-1.19528313007322e-05,-53.961051940918,-90.0000076293945
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",3.50000238418579,3.50000190734863,3.50000190734863
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-1.0245284101984e-05,51.0803833007812,-90
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",4.36625242233276,4.36625385284424,4.36625194549561
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2221921259168, "Material::FlameMaterial", "" {
+	Material: 2649306354288, "Material::FlameMaterial", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -391,7 +391,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2231045769616, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997741904, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\candle\flame.png"
@@ -401,7 +401,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\candle\flame.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\candle\flame.png"
 	}
-	Texture: 2230459628288, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2642812187344, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -421,22 +421,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::FlameQuad, Model::RootNode
-	C: "OO",2234632455008,0
+	C: "OO",2639147881120,0
 	
 	;Material::FlameMaterial, Model::FlameQuad
-	C: "OO",2221921259168,2234632455008
+	C: "OO",2649306354288,2639147881120
 	
 	;Geometry::Scene, Model::FlameQuad
-	C: "OO",2227054709280,2234632455008
+	C: "OO",2636116212544,2639147881120
 	
 	;Texture::DiffuseColor_Texture, Material::FlameMaterial
-	C: "OO",2230459628288,2221921259168
+	C: "OO",2642812187344,2649306354288
 	
 	;Texture::DiffuseColor_Texture, Material::FlameMaterial
-	C: "OP",2230459628288,2221921259168, "DiffuseColor"
+	C: "OP",2642812187344,2649306354288, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2231045769616,2230459628288
+	C: "OO",2645997741904,2642812187344
 }
 ;Takes section
 ;----------------------------------------------------

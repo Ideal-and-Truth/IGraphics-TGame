@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
+		Day: 7
+		Hour: 10
+		Minute: 37
 		Second: 51
-		Millisecond: 909
+		Millisecond: 847
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\j5bx3mry_3614825f430c910498738ca818472ed1-1950161191548756339.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\j5bx3mry_3614825f430c910498738ca818472ed1-1950161191548756339.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\mhped2y8_3614825f430c910498738ca818472ed1-1950161191548756339.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\mhped2y8_3614825f430c910498738ca818472ed1-1950161191548756339.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598939104, "Scene", "Scene" {
+	Document: 2649309344368, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620998512, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116187456, "Geometry::Scene", "Mesh" {
 		Vertices: *12 {
 			a: -0.400000018998981,0,-4.37113872875372e-08,-0.400000018998981,0.999999977648258,0,0.400000018998981,0.999999977648258,0,0.400000018998981,0,-4.37113872875372e-08
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595963792, "Model::sign_neon_low_001__1_", "Mesh" {
+	Model: 2639147837120, "Model::sign_neon_low_001__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -390,13 +390,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-2.79608469710979e-09,-55.1687126159668,4.97482506578439e-11
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",77.0000228881836,140,77.0000152587891
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.0239658690989017,31,-0.0175538528710604
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",77.0000076293945,140,77.0000381469727
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598572832, "Material::M_oldsign_neon", "" {
+	Material: 2649306355088, "Material::M_oldsign_neon", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -411,7 +411,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164604536672, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2630166102256, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\oldsign\T_town_sign_BaseMap.png"
@@ -421,7 +421,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\oldsign\T_town_sign_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\oldsign\T_town_sign_BaseMap.png"
 	}
-	Video: 2164604537152, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 2642812187344, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\oldsign\T_town_sign_Emissive.png"
@@ -431,7 +431,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\oldsign\T_town_sign_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\oldsign\T_town_sign_Emissive.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997745264, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -443,7 +443,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164604538112, "Texture::EmissiveColor_Texture", "" {
+	Texture: 2645997741904, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -463,31 +463,31 @@ Objects:  {
 Connections:  {
 	
 	;Model::sign_neon_low_001__1_, Model::RootNode
-	C: "OO",2164595963792,0
+	C: "OO",2639147837120,0
 	
 	;Material::M_oldsign_neon, Model::sign_neon_low_001__1_
-	C: "OO",2164598572832,2164595963792
+	C: "OO",2649306355088,2639147837120
 	
 	;Geometry::Scene, Model::sign_neon_low_001__1_
-	C: "OO",2158620998512,2164595963792
+	C: "OO",2636116187456,2639147837120
 	
 	;Texture::DiffuseColor_Texture, Material::M_oldsign_neon
-	C: "OO",2176327841456,2164598572832
+	C: "OO",2645997745264,2649306355088
 	
 	;Texture::EmissiveColor_Texture, Material::M_oldsign_neon
-	C: "OO",2164604538112,2164598572832
+	C: "OO",2645997741904,2649306355088
 	
 	;Texture::EmissiveColor_Texture, Material::M_oldsign_neon
-	C: "OP",2164604538112,2164598572832, "EmissiveColor"
+	C: "OP",2645997741904,2649306355088, "EmissiveColor"
 	
 	;Texture::DiffuseColor_Texture, Material::M_oldsign_neon
-	C: "OP",2176327841456,2164598572832, "DiffuseColor"
+	C: "OP",2645997745264,2649306355088, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164604536672,2176327841456
+	C: "OO",2630166102256,2645997745264
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2164604537152,2164604538112
+	C: "OO",2642812187344,2645997741904
 }
 ;Takes section
 ;----------------------------------------------------

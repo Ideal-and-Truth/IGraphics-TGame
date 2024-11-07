@@ -258,7 +258,7 @@ void BossSkill::ShockWave()
 
 			if (m_shockWaveTime > 0.3f)
 			{
-				float bossHeight = m_owner.lock()->m_transform->m_position.y + 0.25f;
+				float bossHeight = 0.25f;
 
 				auto pos = sqrt(pow(m_shockWavePos[m_shockCount], 2.f) / 2.f);
 
@@ -398,14 +398,13 @@ void BossSkill::FlameSword()
 	{
 		if (m_readyToShoot)
 		{
-			float bossHeight = m_owner.lock()->m_transform->m_position.y + 2.3f;
 			m_flameSwordTime += GetDeltaTime();
 			if (m_flameSwordTime > 0.13f && m_flameCount <= m_flamePos.size())
 			{
 				auto damage = m_fires[m_flameCount].first->GetComponent<DotDamage>().lock();
 				damage->GetTypeInfo().GetProperty("playEffect")->Set(damage.get(), true);
 
-				m_fires[m_flameCount].first->SetPosition({ 0.f,bossHeight,-m_flamePos[m_flameCount] });
+				m_fires[m_flameCount].first->SetPosition({ 0.f,0.2f,-m_flamePos[m_flameCount] });
 				Vector3 worldPos = m_fires[m_flameCount].first->m_transform->m_worldPosition;
 				m_owner.lock()->DeleteChild(m_fires[m_flameCount].first);
 				m_owner.lock().reset();
@@ -429,7 +428,7 @@ void BossSkill::FlameSword()
 				}
 
 				m_flameShotPos += GetDeltaTime() * 0.8f;
-				m_fires[5].first->m_transform->m_position.y = m_owner.lock()->m_transform->m_position.y + 5.f;
+				m_fires[5].first->m_transform->m_position.y = 1.5f;
 				m_fires[5].first->m_transform->m_position.z += -m_flameShotPos;
 
 				PlayEffect(m_fires[5].first->GetWorldPosition());
@@ -648,7 +647,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 						power.Normalize();
 						power.y = -100.f;
 						power *= GetDeltaTime();
-						power *= 500.f;
+						power *= 700.f;
 
 						rigid->AddImpulse(power);
 						rigid->SetUserData(true);

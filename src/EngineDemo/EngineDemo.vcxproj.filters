@@ -91,6 +91,9 @@
     <Filter Include="Component\Light">
       <UniqueIdentifier>{4b8610a4-d062-4c3b-86a8-bb0961bc1899}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\Sound">
+      <UniqueIdentifier>{0e3bdcbc-18b8-4f86-81d2-8b7a9de433eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -231,6 +234,9 @@
     <ClInclude Include="FollowPointLight.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="StageBGM.h">
+      <Filter>Component\Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -361,6 +367,9 @@
     </ClCompile>
     <ClCompile Include="FollowPointLight.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="StageBGM.cpp">
+      <Filter>Component\Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

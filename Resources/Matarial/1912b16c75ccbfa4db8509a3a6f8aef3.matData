@@ -1,8 +1,9 @@
 ---
-baseMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/T_grass_meadow_03_A_M.tga
-normalMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/T_grass_meadow_03_N.png
-maskMap: ../Resources/Textures/MapData/2_JS_Scene2/Textures/T_grass_meadow_03_MT_AO_SM.tga
+baseMap: ../Resources/Textures/MapData/Assets/ArtResource/ADDassets/NatureManufacture Assets/Meadow Environment Dynamic Nature/Grass/Models/Textures/T_grass_meadow_03_A_M.tga
+normalMap: ../Resources/Textures/MapData/Assets/ArtResource/ADDassets/NatureManufacture Assets/Meadow Environment Dynamic Nature/Grass/Models/Textures/T_grass_meadow_03_N.png
+maskMap: ../Resources/Textures/MapData/Assets/ArtResource/ADDassets/NatureManufacture Assets/Meadow Environment Dynamic Nature/Grass/Models/Textures/T_grass_meadow_03_MT_AO_SM.tga
 tileX: 1
 tileY: 1
 alphaCulling: false
+transparent: false
 ...

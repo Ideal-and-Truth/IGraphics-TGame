@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 20
-		Second: 48
-		Millisecond: 36
+		Day: 7
+		Hour: 10
+		Minute: 36
+		Second: 49
+		Millisecond: 882
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\6cupfxue_bf84c43c2045aef449bff5b41343a116-405076137928168129.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\6cupfxue_bf84c43c2045aef449bff5b41343a116-405076137928168129.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\x8qdk6xh_bf84c43c2045aef449bff5b41343a116-405076137928168129.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\x8qdk6xh_bf84c43c2045aef449bff5b41343a116-405076137928168129.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598935008, "Scene", "Scene" {
+	Document: 2649309345648, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620995376, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116208512, "Geometry::Scene", "Mesh" {
 		Vertices: *60 {
 			a: 0.499999988824129,0.499999988824129,0,0.499999988824129,-0.499999988824129,0,0.499999988824129,-0.499999988824129,0.0749999890103936,0.499999988824129,0.499999988824129,0.0749999890103936,0.443060789257288,0.499999988824129,0.287499977275729,0.443060789257288,-0.499999988824129,0.287499977275729,0.287499977275729,0.499999988824129,0.443060789257288,0.287499977275729,-0.499999988824129,0.443060789257288,-0.499999988824129,-0.499999988824129,0,-0.499999988824129,0.499999988824129,0,-0.499999988824129,0.499999988824129,0.0749999890103936,-0.499999988824129,-0.499999988824129,0.0749999890103936,-0.443060789257288,-0.499999988824129,0.287499977275729,-0.443060789257288,0.499999988824129,0.287499977275729,-0.287499977275729,-0.499999988824129,0.443060789257288,-0.287499977275729,0.499999988824129,0.443060789257288,0.0749999890103936,0.499999988824129,0.499999988824129,-0.0749999890103936,0.499999988824129,0.499999988824129,-0.0749999890103936,-0.499999988824129,0.499999988824129,0.0749999890103936,-0.499999988824129,0.499999988824129
 		} 
@@ -383,7 +383,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164301277328, "Model::mini_roof1_low_001", "Mesh" {
+	Model: 2639147735120, "Model::mini_roof1_low_001", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -391,13 +391,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-104.948852539062
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",137.120040893555,137.120056152344,137.120040893555
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-92.8177795410156
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",152.149978637695,152.149963378906,152.149978637695
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164600338608, "Material::M_roof_tile", "" {
+	Material: 2649306346688, "Material::M_roof_tile", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -411,7 +411,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164598548976, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997741904, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roof\T_rooftile_BaseMap.png"
@@ -421,7 +421,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\roof\T_rooftile_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\roof\T_rooftile_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997745264, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -441,22 +441,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::mini_roof1_low_001, Model::RootNode
-	C: "OO",2164301277328,0
+	C: "OO",2639147735120,0
 	
 	;Material::M_roof_tile, Model::mini_roof1_low_001
-	C: "OO",2164600338608,2164301277328
+	C: "OO",2649306346688,2639147735120
 	
 	;Geometry::Scene, Model::mini_roof1_low_001
-	C: "OO",2158620995376,2164301277328
+	C: "OO",2636116208512,2639147735120
 	
 	;Texture::DiffuseColor_Texture, Material::M_roof_tile
-	C: "OO",2176327841456,2164600338608
+	C: "OO",2645997745264,2649306346688
 	
 	;Texture::DiffuseColor_Texture, Material::M_roof_tile
-	C: "OP",2176327841456,2164600338608, "DiffuseColor"
+	C: "OP",2645997745264,2649306346688, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164598548976,2176327841456
+	C: "OO",2645997741904,2645997745264
 }
 ;Takes section
 ;----------------------------------------------------

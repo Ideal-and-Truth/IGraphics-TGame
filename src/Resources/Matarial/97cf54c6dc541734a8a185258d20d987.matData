@@ -4,6 +4,6 @@ normalMap: ""
 maskMap: ""
 tileX: 1
 tileY: 1
-alphaCulling: false
+alphaCulling: true
 transparent: false
 ...

@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 20
-		Second: 58
-		Millisecond: 366
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 31
+		Millisecond: 649
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\qjeiacoc_d764f63ff9d04dc4baa7f949d4fe7ca9-716487026287406971.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\qjeiacoc_d764f63ff9d04dc4baa7f949d4fe7ca9-716487026287406971.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\6h84asdy_d764f63ff9d04dc4baa7f949d4fe7ca9-716487026287406971.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\6h84asdy_d764f63ff9d04dc4baa7f949d4fe7ca9-716487026287406971.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598935008, "Scene", "Scene" {
+	Document: 2649309343600, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620995376, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116207616, "Geometry::Scene", "Mesh" {
 		Vertices: *132 {
 			a: 0.699999975040555,0.0021925121473032,2.54325717687607,0.699999975040555,0.0521924928762019,2.54325661808252,0.699999975040555,0.0521921785548329,1.19209286886246e-07,0.699999975040555,0.00219218436541269,1.19209286886246e-07,-0.699999975040555,0.00219218436541269,1.19209286886246e-07,-0.699999975040555,0.0521921785548329,1.19209286886246e-07,-0.699999975040555,0.0521924928762019,2.54325717687607,-0.699999975040555,0.0021925121473032,2.54325661808252,-0.676829507574439,0.00219252706301631,2.71925404667854,-0.676829507574439,0.0521925161592662,2.71925404667854,-0.608897255733609,0.00219254197872942,2.88325678557158,-0.608897255733609,0.0521925394423306,2.88325678557158,-0.500832544639707,0.0021925716282567,3.02408970892429,-0.500832544639707,0.0521925510838628,3.02408970892429,-0.359999970532954,0.00219258654396981,3.13215404748917,-0.359999970532954,0.0521925685461611,3.13215404748917,-0.195996928960085,0.00219260145968292,3.20008620619774,-0.195996928960085,0.0521925743669271,3.20008620619774,-0.0199999805772677,0.00219258654396981,3.22325639426708,-0.0199999805772677,0.0521925743669271,3.22325639426708,0.0199999805772677,0.0521925743669271,3.22325639426708,0.0199999805772677,0.00219258654396981,3.22325639426708,0.195996928960085,0.00219260145968292,3.20008620619774,0.195996928960085,0.0521925743669271,3.20008620619774,0.359999970532954,0.00219258654396981,3.13215404748917,0.359999970532954,0.0521925685461611,3.13215404748917,0.500832544639707,0.0021925716282567,3.02408970892429,0.500832544639707,0.0521925510838628,3.02408970892429,0.608897255733609,0.00219254197872942,2.88325678557158,0.608897255733609,0.0521925394423306,2.88325678557158,0.676829507574439,0.00219252706301631,2.71925404667854,0.676829507574439,0.0521925161592662,2.71925404667854,0.800000037997961,-0.0521926558576524,2.40000002086163,-0.800000037997961,-0.0521926558576524,2.40000002086163,-0.800000037997961,-0.0521926442161202,2.45077088475227,0.800000037997961,-0.0521926442161202,2.45077088475227,-0.800000037997961,0.0521925219800323,2.40000002086163,
 0.800000037997961,0.0521925219800323,2.40000002086163,0.800000037997961,0.0521925278007984,2.45077088475227,-0.800000037997961,0.0521925278007984,2.45077088475227,0.800000037997961,0.0521920912433416,0,-0.800000037997961,0.0521920912433416,0,-0.800000037997961,0.0521926558576524,3.50000001490116,0.800000037997961,0.0521926558576524,3.50000001490116
@@ -369,7 +369,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164301277328, "Model::SM_town_BD_door", "Mesh" {
+	Model: 2639147907120, "Model::SM_town_BD_door", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -377,13 +377,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,34.8313293457031
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",146.850006103516,146.850036621094,146.850036621094
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.9720153808594,-50.5294532775879,0
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",83.3570785522461,83.3570556640625,83.3570709228516
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598542464, "Material::M_EJ_buildingdoor", "" {
+	Material: 2649306357888, "Material::M_EJ_buildingdoor", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -396,7 +396,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2174397920784, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997745264, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_building\door\T_town_DefaultMaterial_BaseMap.png"
@@ -406,7 +406,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\EJ_building\door\T_town_DefaultMaterial_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\EJ_building\door\T_town_DefaultMaterial_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997741904, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -426,22 +426,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_town_BD_door, Model::RootNode
-	C: "OO",2164301277328,0
+	C: "OO",2639147907120,0
 	
 	;Material::M_EJ_buildingdoor, Model::SM_town_BD_door
-	C: "OO",2164598542464,2164301277328
+	C: "OO",2649306357888,2639147907120
 	
 	;Geometry::Scene, Model::SM_town_BD_door
-	C: "OO",2158620995376,2164301277328
+	C: "OO",2636116207616,2639147907120
 	
 	;Texture::DiffuseColor_Texture, Material::M_EJ_buildingdoor
-	C: "OO",2176327841456,2164598542464
+	C: "OO",2645997741904,2649306357888
 	
 	;Texture::DiffuseColor_Texture, Material::M_EJ_buildingdoor
-	C: "OP",2176327841456,2164598542464, "DiffuseColor"
+	C: "OP",2645997741904,2649306357888, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2174397920784,2176327841456
+	C: "OO",2645997745264,2645997741904
 }
 ;Takes section
 ;----------------------------------------------------

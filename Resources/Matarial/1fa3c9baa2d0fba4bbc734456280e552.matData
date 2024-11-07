@@ -1,7 +1,7 @@
 ---
-baseMap: ../Resources/Textures/MapData/0_TitleTest/statuebase/T_statuebase_BaseMap.png
-normalMap: ../Resources/Textures/MapData/0_TitleTest/statuebase/T_statuebase_Normal 1.png
-maskMap: ../Resources/Textures/MapData/0_TitleTest/statuebase/T_statuebase_MaskMap.png
+baseMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/statuebase/T_statuebase_BaseMap.png
+normalMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/statuebase/T_statuebase_Normal 1.png
+maskMap: ../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_Assets/statuebase/T_statuebase_MaskMap.png
 tileX: 1
 tileY: 1
 alphaCulling: false

@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 50
-		Second: 57
-		Millisecond: 713
+		Day: 7
+		Hour: 11
+		Minute: 6
+		Second: 48
+		Millisecond: 19
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\dhg0qg0o_4a1133b659ab3ca4cb57b5da5d75cf37686820285577505805.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\dhg0qg0o_4a1133b659ab3ca4cb57b5da5d75cf37686820285577505805.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\cxoatrfj_4a1133b659ab3ca4cb57b5da5d75cf37686820285577505805.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\cxoatrfj_4a1133b659ab3ca4cb57b5da5d75cf37686820285577505805.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2234728127456, "Scene", "Scene" {
+	Document: 1992086078064, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2227054702560, "Geometry::Scene", "Mesh" {
+	Geometry: 1984430171872, "Geometry::Scene", "Mesh" {
 		Vertices: *138 {
 			a: 30.7519018650055,1265.09990692139,-5.77501319348812,25.517264008522,1286.98778152466,-5.77501133084297,-26.0545700788498,1286.98778152466,-5.77497892081738,-31.2892109155655,1265.09990692139,-5.77497854828835,31.6834151744843,1245.98445892334,-5.77501952648163,-32.220721244812,1245.98445892334,-5.77498376369476,29.2764127254486,1224.29132461548,-5.7750292122364,-29.8137217760086,1224.29122924805,-5.7749941945076,25.2192765474319,1200.82349777222,-5.77503778040409,-25.7565855979919,1200.82349777222,-5.7750042527914,-21.8305677175522,1176.49621963501,-5.77500909566879,21.2932556867599,1176.49602890015,-5.77503852546215,18.0502891540527,1151.37157440186,-5.77503517270088,-18.5875982046127,1151.37157440186,-5.77500946819782,-16.7556419968605,1125.55017471313,-5.77500946819782,16.2183254957199,1125.55027008057,-5.77503331005573,18.4587582945824,1100.13666152954,-5.77503517270088,-18.9960688352585,1100.1368522644,-5.77501058578491,-27.3280799388885,1076.11474990845,-5.77501058578491,26.7907738685608,1076.11474990845,-5.77503964304924,38.7313485145569,1052.97498703003,-5.77504560351372,-39.2686575651169,1052.97498703003,-5.77500984072685,-0.268652546219528,982.974910736084,-5.77501654624939,25.517275929451,1286.98778152466,14.2249882221222,-31.2891989946365,1265.09990692139,14.2250210046768,-26.0545581579208,1286.98778152466,14.2250210046768,30.7519137859344,1265.09990692139,14.2249867320061,-32.2207093238831,1245.98445892334,14.2250165343285,31.6834270954132,1245.98445892334,14.2249807715416,-29.8137098550797,1224.29122924805,14.2250061035156,29.2764246463776,1224.29132461548,14.2249688506126,-25.7565706968307,1200.82349777222,14.2249956727028,25.2192884683609,1200.82349777222,14.2249628901482,21.2932720780373,1176.49602890015,14.224961400032,-21.8305543065071,1176.49621963501,14.2249912023544,18.0503040552139,1151.37157440186,14.2249643802643,-18.5875847935677,1151.37157440186,14.2249912023544,16.2183418869972,1125.55027008057,14.2249673604965,-16.7556256055832,1125.55017471313,14.2249912023544,18.4587702155113,1100.13666152954,14.2249643802643,
 -18.9960569143295,1100.1368522644,14.2249897122383,26.7907857894897,1076.11474990845,14.224961400032,-27.3280680179596,1076.11474990845,14.2249897122383,38.7313634157181,1052.97498703003,14.2249539494514,-39.2686456441879,1052.97498703003,14.2249897122383,-0.268643395975232,982.974910736084,14.2249837517738
@@ -379,7 +379,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2234632457008, "Model::MidbossWall02_low", "Mesh" {
+	Model: 1992086774928, "Model::MidbossWall02_low", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -392,7 +392,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2221921259168, "Material::M_MidbossWall", "" {
+	Material: 1988899254160, "Material::M_MidbossWall", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -406,7 +406,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2231045769616, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1988726252720, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\MidBossWindow\T_MidbossWall_BaseMap.png"
@@ -416,7 +416,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\MidBossWindow\T_MidbossWall_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\MidBossWindow\T_MidbossWall_BaseMap.png"
 	}
-	Texture: 2231045770096, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1988726255120, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -436,22 +436,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::MidbossWall02_low, Model::RootNode
-	C: "OO",2234632457008,0
+	C: "OO",1992086774928,0
 	
 	;Material::M_MidbossWall, Model::MidbossWall02_low
-	C: "OO",2221921259168,2234632457008
+	C: "OO",1988899254160,1992086774928
 	
 	;Geometry::Scene, Model::MidbossWall02_low
-	C: "OO",2227054702560,2234632457008
+	C: "OO",1984430171872,1992086774928
 	
 	;Texture::DiffuseColor_Texture, Material::M_MidbossWall
-	C: "OO",2231045770096,2221921259168
+	C: "OO",1988726255120,1988899254160
 	
 	;Texture::DiffuseColor_Texture, Material::M_MidbossWall
-	C: "OP",2231045770096,2221921259168, "DiffuseColor"
+	C: "OP",1988726255120,1988899254160, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2231045769616,2231045770096
+	C: "OO",1988726252720,1988726255120
 }
 ;Takes section
 ;----------------------------------------------------

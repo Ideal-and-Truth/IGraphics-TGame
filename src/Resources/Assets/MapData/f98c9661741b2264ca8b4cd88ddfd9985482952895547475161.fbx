@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 14
-		Minute: 29
-		Second: 35
-		Millisecond: 925
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 6
+		Millisecond: 156
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\oogyholq_f98c9661741b2264ca8b4cd88ddfd9985482952895547475161.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\oogyholq_f98c9661741b2264ca8b4cd88ddfd9985482952895547475161.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\u9dzpfq9_f98c9661741b2264ca8b4cd88ddfd9985482952895547475161.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\u9dzpfq9_f98c9661741b2264ca8b4cd88ddfd9985482952895547475161.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1867954430816, "Scene", "Scene" {
+	Document: 2649309347440, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029977808, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116191040, "Geometry::Scene", "Mesh" {
 		Vertices: *144 {
 			a: -4.98352460563183,140.580534934998,40.9860134124756,4.86232042312622,143.60283613205,38.4006381034851,4.8835963010788,126.331901550293,50.5247473716736,4.80352975428104,114.76616859436,38.4737759828568,-0.380708277225494,119.825291633606,35.5871945619583,-0.572206079959869,94.5026993751526,44.0597981214523,4.86027002334595,156.139993667603,22.811271250248,-4.98352460563183,157.030558586121,21.8667581677437,4.98352460563183,168.426966667175,-2.38418579101562e-05,-4.98352460563183,124.886047840118,51.0817110538483,-0.436876341700554,130.721473693848,28.6580801010132,4.84701655805111,131.620025634766,28.2874137163162,-4.98352460563183,168.266272544861,-2.38418579101562e-05,4.41931672394276,94.6528077125549,44.1665798425674,-4.98352460563183,140.580534934998,-40.9860134124756,4.8835963010788,126.331901550293,-50.5247473716736,4.86232042312622,143.60283613205,-38.4006381034851,4.80352975428104,114.76616859436,-38.4737759828568,-0.572206079959869,94.5026993751526,-44.0597981214523,-0.380708277225494,119.825291633606,-35.5871945619583,4.86027002334595,156.139993667603,-22.811271250248,-4.98352460563183,157.030558586121,-21.8667581677437,-4.98352460563183,124.886047840118,-51.0817110538483,-0.436876341700554,130.721473693848,-28.6580801010132,4.84701655805111,131.620025634766,-28.2874137163162,4.41931672394276,94.6528077125549,-44.1665798425674,-4.98352460563183,94.3152964115143,43.9264863729477,-0.571257201954722,0.031280517578125,43.9769119024277,-4.98352460563183,0.163727998733521,43.8709050416946,-0.418172031641006,142.281413078308,16.3569614291191,4.7414168715477,142.048835754395,17.0762494206429,4.79405075311661,111.285722255707,55.1789581775665,-4.98352460563183,94.6168184280396,57.7040672302246,-4.98352460563183,110.544121265411,55.284583568573,4.83871400356293,94.6963012218475,57.5910151004791,-0.643800524994731,0,-2.38418579101562e-05,-0.273974053561687,151.166069507599,-2.38418579101562e-05,-0.418172031641006,142.281413078308,-16.3569614291191,-0.571257201954722,0.031280517578125,-43.9769119024277,
 4.8856146633625,150.933480262756,-2.38418579101562e-05,4.7414168715477,142.048835754395,-17.0762494206429,4.79405075311661,111.285722255707,-55.1789581775665,4.83871400356293,94.6963012218475,-57.5910151004791,-4.98352460563183,0.0594973564147949,-2.38418579101562e-05,-4.98352460563183,0.163727998733521,-43.8709050416946,-4.98352460563183,94.3152964115143,-43.9264863729477,-4.98352460563183,110.544121265411,-55.284583568573,-4.98352460563183,94.6168184280396,-57.7040672302246
@@ -383,7 +383,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845824464, "Model::SM_2Fwindowarch", "Mesh" {
+	Model: 2639147875120, "Model::SM_2Fwindowarch", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -391,38 +391,38 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.734895884990692,179.445877075195,0.0502319335937454
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.895677745342255,0.891947448253632,1.04681551456451
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0.714026272296906,6.61413574218752,-0.0194309838116169
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.03029644489288,1.02600681781769,1.20414972305298
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881009531248, "Material::M_ghetto2F_yellow_off", "" {
+	Material: 2649306359088, "Material::M_ghetto2F", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
 		Properties70:  {
-			P: "EmissiveColor", "Color", "", "A",0.160377383232117,0.142977952957153,0.142977952957153
+			P: "EmissiveColor", "Color", "", "A",0.734199464321136,0.745283007621765,0.537869334220886
 			P: "AmbientColor", "Color", "", "A",0,0,0
 			P: "DiffuseColor", "Color", "", "A",1,1,1
 			P: "BumpFactor", "double", "Number", "",0
-			P: "Emissive", "Vector3D", "Vector", "",0.160377383232117,0.142977952957153,0.142977952957153
+			P: "Emissive", "Vector3D", "Vector", "",0.734199464321136,0.745283007621765,0.537869334220886
 			P: "Ambient", "Vector3D", "Vector", "",0,0,0
 			P: "Diffuse", "Vector3D", "Vector", "",1,1,1
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1870153851840, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2630166102256, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_BaseMap.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_BaseMap.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_BaseMap.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
 	}
-	Video: 1861436083152, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 2642812187344, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_Emissive.png"
@@ -432,19 +432,19 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_Emissive.png"
 	}
-	Texture: 1870153851360, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997745264, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2F_BaseMap.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\ghettohome\T_ghetto2Forenge_BaseMap.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 1870153852320, "Texture::EmissiveColor_Texture", "" {
+	Texture: 2645997741904, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -464,31 +464,31 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_2Fwindowarch, Model::RootNode
-	C: "OO",1875845824464,0
+	C: "OO",2639147875120,0
 	
-	;Material::M_ghetto2F_yellow_off, Model::SM_2Fwindowarch
-	C: "OO",1881009531248,1875845824464
+	;Material::M_ghetto2F, Model::SM_2Fwindowarch
+	C: "OO",2649306359088,2639147875120
 	
 	;Geometry::Scene, Model::SM_2Fwindowarch
-	C: "OO",1868029977808,1875845824464
+	C: "OO",2636116191040,2639147875120
 	
-	;Texture::DiffuseColor_Texture, Material::M_ghetto2F_yellow_off
-	C: "OO",1870153851360,1881009531248
+	;Texture::DiffuseColor_Texture, Material::M_ghetto2F
+	C: "OO",2645997745264,2649306359088
 	
-	;Texture::EmissiveColor_Texture, Material::M_ghetto2F_yellow_off
-	C: "OO",1870153852320,1881009531248
+	;Texture::EmissiveColor_Texture, Material::M_ghetto2F
+	C: "OO",2645997741904,2649306359088
 	
-	;Texture::EmissiveColor_Texture, Material::M_ghetto2F_yellow_off
-	C: "OP",1870153852320,1881009531248, "EmissiveColor"
+	;Texture::EmissiveColor_Texture, Material::M_ghetto2F
+	C: "OP",2645997741904,2649306359088, "EmissiveColor"
 	
-	;Texture::DiffuseColor_Texture, Material::M_ghetto2F_yellow_off
-	C: "OP",1870153851360,1881009531248, "DiffuseColor"
+	;Texture::DiffuseColor_Texture, Material::M_ghetto2F
+	C: "OP",2645997745264,2649306359088, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1870153851840,1870153851360
+	C: "OO",2630166102256,2645997745264
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",1861436083152,1870153852320
+	C: "OO",2642812187344,2645997741904
 }
 ;Takes section
 ;----------------------------------------------------

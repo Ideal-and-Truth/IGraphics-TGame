@@ -152,14 +152,14 @@ void Truth::Managers::Finalize()
 	m_physXManager->Finalize();
 	m_physXManager.reset();
 
-	m_graphicsManager->Finalize();
-	m_graphicsManager.reset();
-
 	m_soundManager->Finalize();
 	m_soundManager.reset();
 
 	m_particleManager->Finalize();
 	m_particleManager.reset();
+
+	m_graphicsManager->Finalize();
+	m_graphicsManager.reset();
 }
 
 

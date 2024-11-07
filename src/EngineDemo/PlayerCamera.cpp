@@ -15,7 +15,6 @@ PlayerCamera::PlayerCamera()
 	, m_cameraDistance(10.f)
 	, m_cameraSpeed(0.003f)
 	, m_passingTime(0.f)
-	, m_lockOnTime(0.f)
 	, m_isLockOn(false)
 	, m_isShaking(false)
 	, m_enemyCount(0)
@@ -60,10 +59,10 @@ void PlayerCamera::Start()
 
 void PlayerCamera::FixedUpdate()
 {
-// 	if (m_isLockOn && !m_enemys.empty())
-// 		LockOnCamera();
-// 	else
-// 		FreeCamera();
+	if (m_isLockOn && !m_enemys.empty())
+		LockOnCamera();
+	else
+		FreeCamera();
 }
 
 void PlayerCamera::LateUpdate()
@@ -89,17 +88,77 @@ void PlayerCamera::LateUpdate()
 				m_isLockOn = false;
 				m_enemyCount = 0;
 				m_passingTime = 0.f;
-				m_lockOnTime = 0.f;
 			}
 		}
 		else if (GetKeyUp(MOUSE::WHEEL) && m_isLockOn)
 			m_passingTime = 0.f;
 	}
 
+	/// //////////////////////////////////////////////////////////////////
+	/// 락온용
 	if (m_isLockOn && !m_enemys.empty())
-		LockOnCamera();
+	{
+		SortEnemy();
+
+		// 락온 카메라
+		if (GetKeyDown(MOUSE::WHEEL))
+		{
+			m_enemyCount++;
+
+			if (m_enemys.size() <= m_enemyCount)
+			{
+				m_enemyCount = 0;
+			}
+		}
+
+		if ((m_player.lock()->GetWorldPosition() - m_enemys[m_enemyCount]->GetWorldPosition()).Length() > 20.f)
+			m_enemyCount++;
+
+		if (m_enemys.size() <= m_enemyCount)
+		{
+			m_enemyCount = 0;
+			m_loopCount++;
+		}
+
+		if (m_loopCount > 2)
+		{
+			m_isLockOn = false;
+			m_loopCount = 0;
+		}
+
+
+		// 락온 중일때 각도 계산
+		if (!m_isShaking)
+		{
+			m_elevation = acos(m_camera.lock()->m_look.y);
+			m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
+		}
+
+		if (m_camera.lock()->m_look.z < 0.f)
+			m_azimuth *= -1.f;
+	}
+	/// 자유용
 	else
-		FreeCamera();
+	{
+		m_elevation += MouseDy() * m_cameraSpeed;
+		m_azimuth -= MouseDx() * m_cameraSpeed;
+
+		if (m_elevation > 3.0f)
+			m_elevation = 3.0f;
+		if (m_elevation < 0.5f)
+			m_elevation = 0.5f;
+
+		if (m_azimuth > 3.14f)
+			m_azimuth = -3.14f;
+		if (m_azimuth < -3.14f)
+			m_azimuth = 3.14f;
+
+
+		m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
+		if (m_cameraDistance <= 0.0f)
+			m_cameraDistance = 0.001f;
+	}
+	/// //////////////////////////////////////////////////////////////////
 
 	for (auto& e : m_enemys)
 	{
@@ -110,7 +169,6 @@ void PlayerCamera::LateUpdate()
 				e->Destroy();
 			}
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
-			m_lockOnTime = 0.f;
 			break;
 		}
 	}
@@ -144,36 +202,16 @@ void PlayerCamera::FreeCamera()
 	Vector3 cameraPos = m_owner.lock()->m_transform->m_position;
 	Vector3 targetPos = m_player.lock()->m_transform->m_position + Vector3{ 0.0f, 1.0f, 0.0f };
 
-	m_elevation += MouseDy() * m_cameraSpeed;
-	m_azimuth -= MouseDx() * m_cameraSpeed;
-
-	if (m_elevation > 3.0f)
-		m_elevation = 3.0f;
-	if (m_elevation < 0.5f)
-		m_elevation = 0.5f;
-
-	if (m_azimuth > 3.14f)
-		m_azimuth = -3.14f;
-	if (m_azimuth < -3.14f)
-		m_azimuth = 3.14f;
-
-
-	m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
-	if (m_cameraDistance <= 0.0f)
-		m_cameraDistance = 0.001f;
-
-
 	cameraPos.x = sin(m_elevation) * cos(m_azimuth);
 	cameraPos.y = cos(m_elevation);
 	cameraPos.z = sin(m_elevation) * sin(m_azimuth);
-
 
 	Vector3 look = cameraPos;
 	look.Normalize(look);
 	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
 	// look = targetPos - cameraPos;
-	m_owner.lock()->m_transform->m_position = cameraPos;
-	m_camera.lock()->m_look = look;
+	m_owner.lock()->m_transform->m_position = Vector3::Lerp(m_owner.lock()->m_transform->m_position, cameraPos, 0.2f);
+	m_camera.lock()->m_look = Vector3::Lerp(m_camera.lock()->m_look, look, 0.2f);
 
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0;
@@ -182,65 +220,18 @@ void PlayerCamera::FreeCamera()
 
 void PlayerCamera::LockOnCamera()
 {
-	SortEnemy();
-
-	// 락온 카메라
-	if (GetKeyDown(MOUSE::WHEEL))
-	{
-		m_enemyCount++;
-
-		if (m_enemys.size() <= m_enemyCount)
-		{
-			m_enemyCount = 0;
-			m_lockOnTime = 0.f;
-		}
-
-		m_lockOnTime = 0.f;
-	}
-
-	if ((m_player.lock()->GetWorldPosition() - m_enemys[m_enemyCount]->GetWorldPosition()).Length() > 20.f)
-		m_enemyCount++;
-
-	if (m_enemys.size() <= m_enemyCount)
-	{
-		m_enemyCount = 0;
-		m_lockOnTime = 0.f;
-		m_loopCount++;
-	}
-
-	if (m_loopCount > 2)
-	{
-		m_isLockOn = false;
-		m_loopCount = 0;
-	}
-
-
-	m_lockOnTime += GetDeltaTime() * 0.8f;
-
 	Vector3 enemyPos = m_enemys[m_enemyCount]->GetWorldPosition();
 	Vector3 playerPos = m_player.lock()->GetWorldPosition();
 	Vector3 targetPos = playerPos + Vector3{ 0.0f, 2.0f, 0.0f };
 	Vector3 cameraPos = m_owner.lock()->GetWorldPosition();
 
-	// 락온 중일때 각도 계산
-	if (!m_isShaking)
-	{
-		m_elevation = acos(m_camera.lock()->m_look.y);
-		m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
-	}
-
-	if (m_camera.lock()->m_look.z < 0.f)
-		m_azimuth *= -1.f;
-
-	if (m_lockOnTime >= 1.f)
-		m_lockOnTime = 1.f;
 
 	Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 2.0f, 0.0f });
 	look.Normalize(look);
 	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
 
-	m_owner.lock()->m_transform->m_position += (cameraPos - m_owner.lock()->m_transform->m_position) * m_lockOnTime;
-	m_camera.lock()->m_look += (look - m_camera.lock()->m_look) * m_lockOnTime;
+	m_owner.lock()->m_transform->m_position = Vector3::Lerp(m_owner.lock()->m_transform->m_position, cameraPos, 0.2f);
+	m_camera.lock()->m_look =Vector3::Lerp(m_camera.lock()->m_look, look, 0.2f);
 
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0.f;
@@ -269,7 +260,6 @@ void PlayerCamera::SortEnemy()
 				std::shared_ptr<Truth::Entity> lastLocked = m_enemys[m_enemyCount];
 				m_enemys[j].swap(m_enemys[i]);
 				m_enemyCount = (int)(find(m_enemys.begin(), m_enemys.end(), lastLocked) - m_enemys.begin());
-				m_lockOnTime = 0.f;
 			}
 		}
 	}

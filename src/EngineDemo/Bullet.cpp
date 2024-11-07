@@ -45,7 +45,7 @@ void Bullet::OnCollisionEnter(Truth::Collider* _other)
 		if (!playerAnimator->GetTypeInfo().GetProperty("isDodge")->Get<bool>(playerAnimator.get()).Get())
 		{
 			float damage = m_bulletDamage;
-			if (playerAnimator->GetTypeInfo().GetProperty("isGuard")->Get<bool>(playerAnimator.get()).Get()
+			if (playerAnimator->GetTypeInfo().GetProperty("guard")->Get<bool>(playerAnimator.get()).Get()
 				&& !playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(playerAnimator.get()).Get())
 			{
 				damage *= 0.3f;

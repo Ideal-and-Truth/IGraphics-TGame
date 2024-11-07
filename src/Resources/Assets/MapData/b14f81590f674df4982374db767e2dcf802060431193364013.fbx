@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 20
-		Second: 51
-		Millisecond: 866
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 25
+		Millisecond: 227
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\op6sqxo1_b14f81590f674df4982374db767e2dcf802060431193364013.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\op6sqxo1_b14f81590f674df4982374db767e2dcf802060431193364013.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\b5nbbyvb_b14f81590f674df4982374db767e2dcf802060431193364013.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\b5nbbyvb_b14f81590f674df4982374db767e2dcf802060431193364013.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598940384, "Scene", "Scene" {
+	Document: 2649309347184, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620985520, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116200000, "Geometry::Scene", "Mesh" {
 		Vertices: *216 {
 			a: 0.240000011399388,-0.217933347448707,0,0.199999962933362,-0.217933347448707,0,0.199999962933362,-0.166370102670044,0.242543336935341,0.240000011399388,-0.166370102670044,0.242543336935341,0.199999962933362,-0.157917104661465,0.281639979220927,-0.199999962933362,-0.16637013759464,0.242543336935341,0.199999962933362,-0.0277410406852141,0.883728172630072,0.240000011399388,-0.0192880455870181,0.922824814915657,-0.199999962933362,-0.0277410581475124,0.883728172630072,-0.240000011399388,-0.0192880688700825,0.922824814915657,-0.240000011399388,-0.16637013759464,0.242543336935341,-0.199999962933362,-0.157917139586061,0.281639979220927,-0.239999988116324,-0.217933370731771,0,-0.199999939650297,-0.217933370731771,0,0.240000011399388,0.000260274146057782,0.918598286807537,-0.240000011399388,0.000260253204942273,0.918598286807537,0.240000011399388,-0.198385049588978,0,0.199999962933362,-0.146821793168783,0.238316832110286,0.199999962933362,-0.198385049588978,0,0.240000011399388,-0.146821793168783,0.238316832110286,0.199999962933362,-0.138368795160204,0.277413474395871,-0.199999962933362,-0.14682182809338,0.238316832110286,0.199999962933362,-0.00819272463559173,0.879501644521952,-0.199999962933362,-0.00819274137029424,0.879501644521952,-0.240000011399388,-0.14682182809338,0.238316832110286,-0.199999962933362,-0.138368830084801,0.277413474395871,-0.239999988116324,-0.198385072872043,0,-0.199999939650297,-0.198385072872043,0,-0.20523548591882,-0.146718556061387,0.26879059150815,0.205235951580107,-0.146718532778323,0.26879059150815,0.205235951580107,-0.0118584153824486,0.892543327063322,-0.20523548591882,-0.0118584212032147,0.892543327063322,-0.20523548591882,-0.151605636347085,0.269847200252116,-0.20523548591882,-0.0167455014889129,0.893600005656481,0.205235951580107,-0.0167454942129552,0.893600005656481,0.205235951580107,-0.151605601422489,0.269847200252116,0.239999988116324,0.217933370731771,0,0.199999962933362,0.16637013759464,0.242543336935341,0.199999939650297,0.217933370731771,0,0.240000011399388,0.16637013759464,0.242543336935341,
 0.199999962933362,0.157917139586061,0.281639979220927,-0.199999962933362,0.166370102670044,0.242543336935341,0.199999962933362,0.0277410581475124,0.883728172630072,0.240000011399388,0.0192880688700825,0.922824814915657,-0.199999962933362,0.0277410406852141,0.883728172630072,-0.240000011399388,0.0192880455870181,0.922824814915657,-0.240000011399388,0.166370102670044,0.242543336935341,-0.199999962933362,0.157917104661465,0.281639979220927,-0.240000011399388,0.217933347448707,0,-0.199999962933362,0.217933347448707,0,0.240000011399388,-0.000260253204942273,0.918598286807537,-0.240000011399388,-0.000260274146057782,0.918598286807537,0.239999988116324,0.198385072872043,0,0.199999939650297,0.198385072872043,0,0.199999962933362,0.14682182809338,0.238316832110286,0.240000011399388,0.14682182809338,0.238316832110286,0.199999962933362,0.138368830084801,0.277413474395871,-0.199999962933362,0.146821793168783,0.238316832110286,0.199999962933362,0.00819274137029424,0.879501644521952,-0.199999962933362,0.00819272463559173,0.879501644521952,-0.240000011399388,0.146821793168783,0.238316832110286,-0.199999962933362,0.138368795160204,0.277413474395871,-0.240000011399388,0.198385049588978,0,-0.199999962933362,0.198385049588978,0,-0.20523548591882,0.146718532778323,0.26879059150815,-0.20523548591882,0.0118584022857249,0.892543327063322,0.205235951580107,0.0118584342999384,0.892543327063322,0.205235951580107,0.146718556061387,0.26879059150815,-0.20523548591882,0.151605601422489,0.269847200252116,0.205235951580107,0.151605636347085,0.269847200252116,0.205235951580107,0.016745513130445,0.893600005656481,-0.20523548591882,0.0167454825714231,0.893600005656481
@@ -402,7 +402,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265558176, "Model::SM_town_stand", "Mesh" {
+	Model: 2639147907120, "Model::SM_town_stand", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -410,13 +410,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",12.4963874816895,-180,-180
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",124.75,124.750061035156,124.750061035156
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-7.54636459987523e-08
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",99.9999923706055,100,99.9999923706055
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2176328622032, "Material::M_cafesign_re", "" {
+	Material: 2649306343888, "Material::M_cafesign", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -430,23 +430,23 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164599646544, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997745264, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
-			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_sign_re_BaseMap.png"
-			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_sign_re_BaseMap.png"
+			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_walldoor_BaseMap.png"
+			P: "RelPath", "KString", "XRefUrl", "", "..\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_walldoor_BaseMap.png"
 		}
 		UseMipMap: 0
-		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_sign_re_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_sign_re_BaseMap.png"
+		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_walldoor_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_walldoor_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2642812187344, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
 		Media: "Video::DiffuseColor_Texture"
-		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_sign_re_BaseMap.png"
-		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_sign_re_BaseMap.png"
+		FileName: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_walldoor_BaseMap.png"
+		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\cafe\T_town_cafe_walldoor_BaseMap.png"
 		ModelUVTranslation: 0,0
 		ModelUVScaling: 1,1
 		Texture_Alpha_Source: "None"
@@ -460,22 +460,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_town_stand, Model::RootNode
-	C: "OO",2164265558176,0
+	C: "OO",2639147907120,0
 	
-	;Material::M_cafesign_re, Model::SM_town_stand
-	C: "OO",2176328622032,2164265558176
+	;Material::M_cafesign, Model::SM_town_stand
+	C: "OO",2649306343888,2639147907120
 	
 	;Geometry::Scene, Model::SM_town_stand
-	C: "OO",2158620985520,2164265558176
+	C: "OO",2636116200000,2639147907120
 	
-	;Texture::DiffuseColor_Texture, Material::M_cafesign_re
-	C: "OO",2176327841456,2176328622032
+	;Texture::DiffuseColor_Texture, Material::M_cafesign
+	C: "OO",2642812187344,2649306343888
 	
-	;Texture::DiffuseColor_Texture, Material::M_cafesign_re
-	C: "OP",2176327841456,2176328622032, "DiffuseColor"
+	;Texture::DiffuseColor_Texture, Material::M_cafesign
+	C: "OP",2642812187344,2649306343888, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164599646544,2176327841456
+	C: "OO",2645997745264,2642812187344
 }
 ;Takes section
 ;----------------------------------------------------
