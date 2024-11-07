@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 19
-		Minute: 42
-		Second: 35
-		Millisecond: 162
+		Day: 7
+		Hour: 10
+		Minute: 36
+		Second: 52
+		Millisecond: 185
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\nk67d02x_423b4f8ade7b62e4b96bf45446b55158-888070509751293269.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\nk67d02x_423b4f8ade7b62e4b96bf45446b55158-888070509751293269.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\nbpg37sp_423b4f8ade7b62e4b96bf45446b55158-888070509751293269.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\nbpg37sp_423b4f8ade7b62e4b96bf45446b55158-888070509751293269.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2887088839808, "Scene", "Scene" {
+	Document: 2649309350512, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2878745421904, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116209408, "Geometry::Scene", "Mesh" {
 		Vertices: *24 {
 			a: -0.333384890109301,0.139999995008111,5.9604643443123e-08,0.333384866826236,0.139999995008111,5.9604643443123e-08,0.333384866826236,0.139999995008111,0.0999999581836164,-0.333384890109301,0.139999995008111,0.0999999581836164,0.333384866826236,-0.139999995008111,5.9604643443123e-08,-0.333384890109301,-0.139999995008111,5.9604643443123e-08,-0.333384890109301,-0.139999995008111,0.0999999581836164,0.333384866826236,-0.139999995008111,0.0999999581836164
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2882448551952, "Model::SM_stone_bot", "Mesh" {
+	Model: 2639147905120, "Model::SM_stone_bot__19_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.9720153808594,-89.2866821289062,0
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",100,99.9999923706055,99.9999847412109
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.80517578125,73.9848327636719,-129.938919067383
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",81.8411636352539,89.2308349609375,103.549194335938
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2879641790144, "Material::M_fence_stone", "" {
+	Material: 2649306347088, "Material::M_fence_stone", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -390,7 +390,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2878745998512, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997741904, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\fence\stone\T_town_fence_one_BaseMap.png"
@@ -400,7 +400,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\fence\stone\T_town_fence_one_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\fence\stone\T_town_fence_one_BaseMap.png"
 	}
-	Texture: 2878745997552, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997745264, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -419,23 +419,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_stone_bot, Model::RootNode
-	C: "OO",2882448551952,0
+	;Model::SM_stone_bot__19_, Model::RootNode
+	C: "OO",2639147905120,0
 	
-	;Material::M_fence_stone, Model::SM_stone_bot
-	C: "OO",2879641790144,2882448551952
+	;Material::M_fence_stone, Model::SM_stone_bot__19_
+	C: "OO",2649306347088,2639147905120
 	
-	;Geometry::Scene, Model::SM_stone_bot
-	C: "OO",2878745421904,2882448551952
-	
-	;Texture::DiffuseColor_Texture, Material::M_fence_stone
-	C: "OO",2878745997552,2879641790144
+	;Geometry::Scene, Model::SM_stone_bot__19_
+	C: "OO",2636116209408,2639147905120
 	
 	;Texture::DiffuseColor_Texture, Material::M_fence_stone
-	C: "OP",2878745997552,2879641790144, "DiffuseColor"
+	C: "OO",2645997745264,2649306347088
+	
+	;Texture::DiffuseColor_Texture, Material::M_fence_stone
+	C: "OP",2645997745264,2649306347088, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2878745998512,2878745997552
+	C: "OO",2645997741904,2645997745264
 }
 ;Takes section
 ;----------------------------------------------------

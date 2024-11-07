@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 30
-		Millisecond: 635
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 33
+		Millisecond: 11
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\mtc18ou4_bd1ec714ccd0e8b4c9a55b7e22589ab1-7101949142569153765.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\mtc18ou4_bd1ec714ccd0e8b4c9a55b7e22589ab1-7101949142569153765.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\haclobmi_bd1ec714ccd0e8b4c9a55b7e22589ab1-7101949142569153765.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\haclobmi_bd1ec714ccd0e8b4c9a55b7e22589ab1-7101949142569153765.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598939616, "Scene", "Scene" {
+	Document: 1711006011248, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158621001648, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559752880, "Geometry::Scene", "Mesh" {
 		Vertices: *75 {
 			a: -488.656520843506,69.7177171707153,472.441005706787,-264.553880691528,69.8204696178436,477.632713317871,-434.537506103516,61.3715887069702,499.055957794189,491.882419586182,10.1735778152943,-495.236825942993,500,-66.761189699173,-497.287082672119,463.111782073975,76.4880418777466,-474.534511566162,-144.407427310944,-66.76344871521,500,-490.02742767334,-66.8560266494751,477.090358734131,-497.55072593689,-67.0817315578461,-496.574687957764,-489.224147796631,60.0677073001862,-489.050960540771,500,-66.6619658470154,451.992273330688,499.690008163452,68.449479341507,465.183305740356,80.5569052696228,47.480982542038,494.790697097778,466.019725799561,69.8204696178436,493.801689147949,457.737493515015,-66.0713016986847,489.76993560791,24.0251109004021,69.393402338028,492.538642883301,-300.974583625793,30.5611312389374,487.241077423096,165.003502368927,53.9018213748932,-490.798950195312,193.867838382721,69.8204696178436,-491.117668151855,-221.754121780396,28.499037027359,-493.636989593506,-118.298041820526,56.1105370521545,-492.2532081604,-233.583116531372,68.2853698730469,-477.846384048462,165.093731880188,69.8204696178436,-445.73712348938,-21.8783438205719,74.481987953186,42.8716778755188,9.16720479726791,74.2618143558502,440.9912109375
 		} 
@@ -389,7 +389,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265360176, "Model::logotile002_high__3_", "Mesh" {
+	Model: 1700593154176, "Model::logotile002_high__4_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -397,13 +397,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",7.73732381276204e-07,127.183029174805,-0.750000298023224
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.558191299438477,0.558191359043121,0.558191478252411
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-5.33608556452236e-07,-52.8169746398926,0.750000000000018
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.45388787984848,0.453888028860092,0.453888058662415
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598543664, "Material::M_bosslogotile2", "" {
+	Material: 1711011001440, "Material::M_bosslogotile2", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -418,7 +418,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164598902240, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568670016, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_sqlogotile_BaseMap.png"
@@ -428,7 +428,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_sqlogotile_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_sqlogotile_BaseMap.png"
 	}
-	Video: 2164598899360, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 1710568670496, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_bossfieldcircle_Emissive.png"
@@ -438,7 +438,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_bossfieldcircle_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_bossfieldcircle_Emissive.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568674336, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -450,7 +450,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164598901760, "Texture::EmissiveColor_Texture", "" {
+	Texture: 1710568671936, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -469,32 +469,32 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::logotile002_high__3_, Model::RootNode
-	C: "OO",2164265360176,0
+	;Model::logotile002_high__4_, Model::RootNode
+	C: "OO",1700593154176,0
 	
-	;Material::M_bosslogotile2, Model::logotile002_high__3_
-	C: "OO",2164598543664,2164265360176
+	;Material::M_bosslogotile2, Model::logotile002_high__4_
+	C: "OO",1711011001440,1700593154176
 	
-	;Geometry::Scene, Model::logotile002_high__3_
-	C: "OO",2158621001648,2164265360176
-	
-	;Texture::DiffuseColor_Texture, Material::M_bosslogotile2
-	C: "OO",2176327841456,2164598543664
-	
-	;Texture::EmissiveColor_Texture, Material::M_bosslogotile2
-	C: "OO",2164598901760,2164598543664
-	
-	;Texture::EmissiveColor_Texture, Material::M_bosslogotile2
-	C: "OP",2164598901760,2164598543664, "EmissiveColor"
+	;Geometry::Scene, Model::logotile002_high__4_
+	C: "OO",1710559752880,1700593154176
 	
 	;Texture::DiffuseColor_Texture, Material::M_bosslogotile2
-	C: "OP",2176327841456,2164598543664, "DiffuseColor"
+	C: "OO",1710568674336,1711011001440
+	
+	;Texture::EmissiveColor_Texture, Material::M_bosslogotile2
+	C: "OO",1710568671936,1711011001440
+	
+	;Texture::EmissiveColor_Texture, Material::M_bosslogotile2
+	C: "OP",1710568671936,1711011001440, "EmissiveColor"
+	
+	;Texture::DiffuseColor_Texture, Material::M_bosslogotile2
+	C: "OP",1710568674336,1711011001440, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164598902240,2176327841456
+	C: "OO",1710568670016,1710568674336
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2164598899360,2164598901760
+	C: "OO",1710568670496,1710568671936
 }
 ;Takes section
 ;----------------------------------------------------

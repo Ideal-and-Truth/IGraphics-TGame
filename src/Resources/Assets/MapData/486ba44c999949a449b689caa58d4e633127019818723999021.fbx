@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 50
-		Millisecond: 609
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 35
+		Millisecond: 42
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\6aox4tc4_486ba44c999949a449b689caa58d4e633127019818723999021.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\6aox4tc4_486ba44c999949a449b689caa58d4e633127019818723999021.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\q5d2uxmy_486ba44c999949a449b689caa58d4e633127019818723999021.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\q5d2uxmy_486ba44c999949a449b689caa58d4e633127019818723999021.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598933984, "Scene", "Scene" {
+	Document: 1711006013296, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620997168, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559751984, "Geometry::Scene", "Mesh" {
 		Vertices: *204 {
 			a: 18.9666211605072,16.7295649647713,-476.747751235962,4.75157052278519,18.8145503401756,-320.39647102356,0.235938839614391,9.02100950479507,-478.146886825562,21.8591719865799,6.47846460342407,497.797441482544,87.0699048042297,-16.6672050952911,491.251611709595,-0.612190226092935,-16.6672050952911,476.005887985229,0.141290063038468,11.0745444893837,476.762819290161,17.0482516288757,22.1248686313629,-170.355689525604,0.324857444502413,18.0961847305298,-87.5086486339569,0.0289021409116685,0.344074890017509,-306.710362434387,41.1075711250305,10.5975680053234,-494.959926605225,-0.00526053881912958,-16.6672050952911,239.03956413269,0.710430601611733,14.3596813082695,425.892543792725,0.0741324387490749,18.6146020889282,2.71433610469103,1.73375494778156,0.340829836204648,0.701064523309469,0.95535172149539,3.53765338659286,-28.4423023462296,-0.39858091622591,-16.6672050952911,-265.544462203979,497.222185134888,17.0869797468185,12.7580642700195,498.64821434021,-16.6672050952911,-9.84508469700813,488.852119445801,-16.6672050952911,101.517617702484,485.94446182251,18.2291179895401,109.721171855927,455.266523361206,-16.6672050952911,203.603744506836,435.092926025391,16.6060402989388,240.607619285583,411.611175537109,-16.6672050952911,281.623387336731,357.844972610474,15.7393738627434,348.132371902466,333.400726318359,-16.6672050952911,364.212036132812,274.001860618591,16.8431609869003,417.403411865234,251.670026779175,-16.6672050952911,428.836011886597,190.135645866394,17.8401291370392,461.44003868103,184.376537799835,-16.6672050952911,461.281776428223,110.198664665222,17.4710273742676,485.832834243774,-0.0918429694138467,-16.6672050952911,-477.35710144043,26.8510073423386,-16.6672050952911,-494.589710235596,0.754699949175119,-4.51856553554535,-366.232585906982,-0.21932905074209,-16.6672050952911,-362.43155002594,31.6122710704803,-16.6672050952911,-302.499651908875,102.905964851379,-16.6672050952911,-488.513851165771,111.039173603058,17.3854649066925,-485.428524017334,190.691447257996,-16.6672050952911,-461.227750778198,
 203.094220161438,18.6365365982056,-455.117654800415,263.190627098083,-16.6672050952911,-422.499179840088,283.689713478088,16.4908736944199,-409.884166717529,344.622492790222,-16.6672050952911,-360.683941841125,352.562046051025,16.1054074764252,-353.250980377197,413.42716217041,-16.6672050952911,-279.101920127869,414.302062988281,17.9862171411514,-278.225064277649,465.339660644531,-16.6672050952911,-179.882836341858,465.26927947998,18.1607872247696,-180.723714828491,490.786933898926,11.7454014718533,-88.6659443378448,16.5132060647011,22.0204368233681,-14.7871941328049,19.019740819931,21.7506155371666,-83.6729109287262,78.0168890953064,18.4400647878647,-473.93913269043,476.645517349243,21.7539399862289,11.9337849318981,17.6015615463257,22.3220571875572,383.324003219604,327.128434181213,19.9458867311478,338.980102539062,450.071048736572,21.8589037656784,-161.887168884277,90.1929974555969,19.7172805666924,471.457576751709,162.736129760742,22.0192849636078,451.163959503174,229.503846168518,22.0001175999641,419.454765319824,282.718253135681,21.1922511458397,388.913106918335,388.055491447449,21.8163073062897,266.213226318359,436.971139907837,21.424226462841,194.872033596039,457.937145233154,21.6502219438553,142.009711265564,472.813653945923,20.9471389651299,-98.3643651008606,406.945610046387,20.0409442186356,-257.079792022705,346.545958518982,21.5130642056465,-326.860046386719,265.072464942932,21.3430806994438,-392.330408096313,185.451805591583,21.8410760164261,-441.978025436401
@@ -392,7 +392,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164265360176, "Model::SM_bosslogotile__2_", "Mesh" {
+	Model: 1700592940176, "Model::SM_bosslogotile__3_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -400,13 +400,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",3.2189997334342e-09,-51.3073577880859,8.62830784598145e-09
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.57923424243927,0.294146597385406,0.57923424243927
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",1.77515346866386e-09,-51.3073577880859,5.62200019871284e-09
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",0.57923424243927,0.294146597385406,0.579234004020691
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598571232, "Material::M_bossfieldcircle_1", "" {
+	Material: 1711011001040, "Material::M_bossfieldcircle_1", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -421,7 +421,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164604535712, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568665216, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_logotile_BaseMap.png"
@@ -431,7 +431,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_logotile_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_logotile_BaseMap.png"
 	}
-	Video: 2164604535232, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 1710568679136, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_bossfieldcircle_Emissive.png"
@@ -441,7 +441,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_bossfieldcircle_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\bossfieldcircle\T_bossfieldcircle_Emissive.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568670016, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -453,7 +453,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164604538592, "Texture::EmissiveColor_Texture", "" {
+	Texture: 1710568676736, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -472,32 +472,32 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_bosslogotile__2_, Model::RootNode
-	C: "OO",2164265360176,0
+	;Model::SM_bosslogotile__3_, Model::RootNode
+	C: "OO",1700592940176,0
 	
-	;Material::M_bossfieldcircle_1, Model::SM_bosslogotile__2_
-	C: "OO",2164598571232,2164265360176
+	;Material::M_bossfieldcircle_1, Model::SM_bosslogotile__3_
+	C: "OO",1711011001040,1700592940176
 	
-	;Geometry::Scene, Model::SM_bosslogotile__2_
-	C: "OO",2158620997168,2164265360176
-	
-	;Texture::DiffuseColor_Texture, Material::M_bossfieldcircle_1
-	C: "OO",2176327841456,2164598571232
-	
-	;Texture::EmissiveColor_Texture, Material::M_bossfieldcircle_1
-	C: "OO",2164604538592,2164598571232
-	
-	;Texture::EmissiveColor_Texture, Material::M_bossfieldcircle_1
-	C: "OP",2164604538592,2164598571232, "EmissiveColor"
+	;Geometry::Scene, Model::SM_bosslogotile__3_
+	C: "OO",1710559751984,1700592940176
 	
 	;Texture::DiffuseColor_Texture, Material::M_bossfieldcircle_1
-	C: "OP",2176327841456,2164598571232, "DiffuseColor"
+	C: "OO",1710568670016,1711011001040
+	
+	;Texture::EmissiveColor_Texture, Material::M_bossfieldcircle_1
+	C: "OO",1710568676736,1711011001040
+	
+	;Texture::EmissiveColor_Texture, Material::M_bossfieldcircle_1
+	C: "OP",1710568676736,1711011001040, "EmissiveColor"
+	
+	;Texture::DiffuseColor_Texture, Material::M_bossfieldcircle_1
+	C: "OP",1710568670016,1711011001040, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164604535712,2176327841456
+	C: "OO",1710568665216,1710568670016
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2164604535232,2164604538592
+	C: "OO",1710568679136,1710568676736
 }
 ;Takes section
 ;----------------------------------------------------

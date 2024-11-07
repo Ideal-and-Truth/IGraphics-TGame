@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 18
-		Millisecond: 439
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 4
+		Millisecond: 171
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\n2gq6nq1_e6f1649df3002c34e9e6745a524dda0e4178815816057590306.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\n2gq6nq1_e6f1649df3002c34e9e6745a524dda0e4178815816057590306.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\qninpt75_e6f1649df3002c34e9e6745a524dda0e4178815816057590306.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\qninpt75_e6f1649df3002c34e9e6745a524dda0e4178815816057590306.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598939616, "Scene", "Scene" {
+	Document: 2649309350768, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620997168, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116204480, "Geometry::Scene", "Mesh" {
 		Vertices: *48 {
 			a: -0.0899999577086419,0.0799999863374978,0,-0.0900000450201333,0.0799999863374978,1.7000000923872,-0.0900000333786011,-0.0799999746959656,1.7000000923872,-0.0899999402463436,-0.0799999746959656,0,0.0899999518878758,0.0799999863374978,0,0.0899999518878758,-0.0799999746959656,0,0.0900000391993672,-0.0799999746959656,1.7000000923872,0.0900000391993672,0.0799999863374978,1.7000000923872,-0.0799999805167317,-0.0899999518878758,0,-0.0799999805167317,-0.0900000391993672,1.7000000923872,0.0799999805167317,-0.0900000391993672,1.7000000923872,0.0799999805167317,-0.0899999518878758,0,-0.0799999805167317,0.0899999518878758,0,0.0799999805167317,0.0899999518878758,0,0.0799999805167317,0.0900000391993672,1.7000000923872,-0.0799999805167317,0.0900000391993672,1.7000000923872
 		} 
@@ -363,7 +363,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595963792, "Model::fence_pillar_002", "Mesh" {
+	Model: 2639147735120, "Model::fence_pillar_002", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,13 +371,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,160.298202514648
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",130.000091552734,130.000061035156,130.000030517578
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,120.854232788086
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",130.000030517578,130,129.999984741211
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164600668208, "Material::M_fence", "" {
+	Material: 2649306346288, "Material::M_fence", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -392,7 +392,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2176328619792, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2642812187344, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\fence\T_town_fence_BaseMap.png"
@@ -402,7 +402,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\fence\T_town_fence_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\fence\T_town_fence_BaseMap.png"
 	}
-	Video: 2176328622192, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 2630166102256, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\fence\T_town_fence_Emissive.png"
@@ -412,7 +412,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\fence\T_town_fence_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\fence\T_town_fence_Emissive.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2645997745264, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -424,7 +424,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2176328619312, "Texture::EmissiveColor_Texture", "" {
+	Texture: 2645997741904, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -444,31 +444,31 @@ Objects:  {
 Connections:  {
 	
 	;Model::fence_pillar_002, Model::RootNode
-	C: "OO",2164595963792,0
+	C: "OO",2639147735120,0
 	
 	;Material::M_fence, Model::fence_pillar_002
-	C: "OO",2164600668208,2164595963792
+	C: "OO",2649306346288,2639147735120
 	
 	;Geometry::Scene, Model::fence_pillar_002
-	C: "OO",2158620997168,2164595963792
+	C: "OO",2636116204480,2639147735120
 	
 	;Texture::DiffuseColor_Texture, Material::M_fence
-	C: "OO",2176327841456,2164600668208
+	C: "OO",2645997745264,2649306346288
 	
 	;Texture::EmissiveColor_Texture, Material::M_fence
-	C: "OO",2176328619312,2164600668208
+	C: "OO",2645997741904,2649306346288
 	
 	;Texture::EmissiveColor_Texture, Material::M_fence
-	C: "OP",2176328619312,2164600668208, "EmissiveColor"
+	C: "OP",2645997741904,2649306346288, "EmissiveColor"
 	
 	;Texture::DiffuseColor_Texture, Material::M_fence
-	C: "OP",2176327841456,2164600668208, "DiffuseColor"
+	C: "OP",2645997745264,2649306346288, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2176328619792,2176327841456
+	C: "OO",2642812187344,2645997745264
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2176328622192,2176328619312
+	C: "OO",2630166102256,2645997741904
 }
 ;Takes section
 ;----------------------------------------------------

@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 53
-		Millisecond: 274
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 40
+		Millisecond: 418
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\7arsh6rd_5ee9da81b894ce04aaa359d7a5cd4a83-63037751536185760.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\7arsh6rd_5ee9da81b894ce04aaa359d7a5cd4a83-63037751536185760.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\w7l5cvtv_5ee9da81b894ce04aaa359d7a5cd4a83-63037751536185760.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\w7l5cvtv_5ee9da81b894ce04aaa359d7a5cd4a83-63037751536185760.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598938848, "Scene", "Scene" {
+	Document: 1711006011760, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -223,7 +223,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620985968, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559736752, "Geometry::Scene", "Mesh" {
 		Vertices: *36 {
 			a: -2.02739406377077,1.00000007078052,-0.0750000006519258,2.02739406377077,0.999999791383743,-0.0750000006519258,2.02739406377077,0.999999791383743,0.0561549444682896,-2.02739406377077,1.00000007078052,0.0561549444682896,-2.02739406377077,-0.999999791383743,-0.0750000006519258,-2.02739406377077,-0.999999791383743,0.0561549444682896,-1.95544622838497,-0.999999884516001,0.0749999948311597,-1.95544604212046,0.89777447283268,0.0749999948311597,1.95544604212046,-1.00000007078052,0.0750000064726919,1.95544622838497,0.897774193435907,0.0750000064726919,2.02739406377077,-1.00000007078052,0.0561549444682896,2.02739406377077,-1.00000007078052,-0.0750000006519258
 		} 
@@ -332,7 +332,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595963792, "Model::bank_base_low_003", "Mesh" {
+	Model: 1700592956176, "Model::bank_base_low_003", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -346,7 +346,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598570832, "Material::Lit", "" {
+	Material: 1711036531664, "Material::Lit", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -367,13 +367,13 @@ Objects:  {
 Connections:  {
 	
 	;Model::bank_base_low_003, Model::RootNode
-	C: "OO",2164595963792,0
+	C: "OO",1700592956176,0
 	
 	;Material::Lit, Model::bank_base_low_003
-	C: "OO",2164598570832,2164595963792
+	C: "OO",1711036531664,1700592956176
 	
 	;Geometry::Scene, Model::bank_base_low_003
-	C: "OO",2158620985968,2164595963792
+	C: "OO",1710559736752,1700592956176
 }
 ;Takes section
 ;----------------------------------------------------

@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 14
-		Minute: 30
-		Second: 31
-		Millisecond: 362
+		Day: 7
+		Hour: 10
+		Minute: 37
+		Second: 39
+		Millisecond: 120
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\lb9z6qy5_7b92d1b95201b8749922eff042d269773473745058088130267.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\lb9z6qy5_7b92d1b95201b8749922eff042d269773473745058088130267.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\smlu1iib_7b92d1b95201b8749922eff042d269773473745058088130267.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\smlu1iib_7b92d1b95201b8749922eff042d269773473745058088130267.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 1881009166608, "Scene", "Scene" {
+	Document: 2649309348208, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 1868029978704, "Geometry::Scene", "Mesh" {
+	Geometry: 2636116190144, "Geometry::Scene", "Mesh" {
 		Vertices: *57 {
 			a: -29.8233509063721,10.4177892208099,1.09961815178394,-26.0150790214539,9.74907279014587,-3.36120240390301,-27.1474242210388,46.3907539844513,-1.25700496137142,-21.9069838523865,45.6162631511688,-1.07563696801662,-22.507381439209,8.85087847709656,0.124284997582436,-2.39371061325073,4.7113474458456,0.523993000388145,-4.87070083618164,44.0275728702545,0.660501047968864,-27.1595120429993,46.1091578006744,0.425629643723369,-10.7867121696472,43.7212735414505,-0.670988485217094,3.98226976394653,42.6487982273102,0.225098803639412,-5.26721477508545,43.2663828134537,1.60776041448116,12.3916737735271,41.6977941989899,2.40097753703594,-3.23746204376221,17.2400638461113,0.558518199250102,-28.0140399932861,18.0003806948662,0.583041040226817,19.4418177008629,41.2063390016556,1.03246374055743,29.8233509063721,40.7088816165924,2.76179704815149,29.405689239502,17.1273872256279,3.36120240390301,26.8327713012695,22.225147485733,1.8955010920763,22.7990865707397,0,1.69099383056164
 		} 
@@ -366,7 +366,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 1875845804464, "Model::SM_cloth2__1_", "Mesh" {
+	Model: 2639147907120, "Model::SM_cloth2__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -380,7 +380,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 1881008348560, "Material::M_clothline", "" {
+	Material: 2649306346288, "Material::M_clothline", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -393,7 +393,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 1880247292544, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 2645997745264, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\clothline\T_clothline_BaseMap.png"
@@ -403,7 +403,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\clothline\T_clothline_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\clothline\T_clothline_BaseMap.png"
 	}
-	Video: 1861187018944, "Video::NormalMap_Texture", "Clip" {
+	Video: 2642812187344, "Video::NormalMap_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\clothline\T_clothline_Normal.png"
@@ -413,7 +413,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\clothline\T_clothline_Normal.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\clothline\T_clothline_Normal.png"
 	}
-	Texture: 1880247294944, "Texture::DiffuseColor_Texture", "" {
+	Texture: 2630166102256, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -425,7 +425,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 1880247295424, "Texture::NormalMap_Texture", "" {
+	Texture: 2645997741904, "Texture::NormalMap_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::NormalMap_Texture"
@@ -445,31 +445,31 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_cloth2__1_, Model::RootNode
-	C: "OO",1875845804464,0
+	C: "OO",2639147907120,0
 	
 	;Material::M_clothline, Model::SM_cloth2__1_
-	C: "OO",1881008348560,1875845804464
+	C: "OO",2649306346288,2639147907120
 	
 	;Geometry::Scene, Model::SM_cloth2__1_
-	C: "OO",1868029978704,1875845804464
+	C: "OO",2636116190144,2639147907120
 	
 	;Texture::DiffuseColor_Texture, Material::M_clothline
-	C: "OO",1880247294944,1881008348560
+	C: "OO",2630166102256,2649306346288
 	
 	;Texture::NormalMap_Texture, Material::M_clothline
-	C: "OO",1880247295424,1881008348560
+	C: "OO",2645997741904,2649306346288
 	
 	;Texture::DiffuseColor_Texture, Material::M_clothline
-	C: "OP",1880247294944,1881008348560, "DiffuseColor"
+	C: "OP",2630166102256,2649306346288, "DiffuseColor"
 	
 	;Texture::NormalMap_Texture, Material::M_clothline
-	C: "OP",1880247295424,1881008348560, "NormalMap"
+	C: "OP",2645997741904,2649306346288, "NormalMap"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",1880247292544,1880247294944
+	C: "OO",2645997745264,2630166102256
 	
 	;Video::NormalMap_Texture, Texture::NormalMap_Texture
-	C: "OO",1861187018944,1880247295424
+	C: "OO",2642812187344,2645997741904
 }
 ;Takes section
 ;----------------------------------------------------

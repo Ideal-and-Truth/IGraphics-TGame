@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 21
-		Second: 50
-		Millisecond: 786
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 36
+		Millisecond: 629
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\s25zmfpe_c1a2de763bc03cb45ae90b4add000bb88709004668946261349.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\s25zmfpe_c1a2de763bc03cb45ae90b4add000bb88709004668946261349.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\0juvi1sx_c1a2de763bc03cb45ae90b4add000bb88709004668946261349.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\0juvi1sx_c1a2de763bc03cb45ae90b4add000bb88709004668946261349.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598936544, "Scene", "Scene" {
+	Document: 1711006013808, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620985968, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559751984, "Geometry::Scene", "Mesh" {
 		Vertices: *156 {
 			a: -0.270000100135803,0.240277824923396,0.20600005518645,-0.270000263117254,-0.270000007003546,0.206000031903386,-0.269999983720481,0.239999848417938,0.286000058986247,-0.300000072456896,0.269999937154353,0.286000058986247,-0.300000235438347,-0.270000007003546,0.206000031903386,-0.300000188872218,0.269999937154353,0.206000031903386,0.270000007003546,0.24027784820646,0.20600005518645,0.269999937154353,0.239999871701002,0.286000058986247,0.270000193268061,-0.270000007003546,0.206000031903386,0.300000025890768,0.269999937154353,0.286000058986247,0.300000165589154,0.269999937154353,0.206000031903386,0.300000165589154,-0.270000007003546,0.206000031903386,-0.299999979324639,-0.270000007003546,1.19209286886246e-07,0.300000165589154,-0.270000007003546,1.49011608607807e-08,0.300000165589154,0.269999913871288,1.49011608607807e-08,-0.299999979324639,0.269999937154353,1.19209286886246e-07,0.300000165589154,-0.270000123418868,0.0299999548587948,0.300000165589154,0.269999820739031,0.0299999548587948,-0.299999956041574,-0.270000053569674,0.0300000596325845,-0.299999956041574,0.26999986730516,0.0300000596325845,-0.270000216551125,0.239999918267131,0.0300000014249235,-0.269999983720481,0.239999894984066,0.110000045970082,0.269999913871288,0.239999894984066,0.110000045970082,0.270000146701932,0.239999918267131,0.0300000014249235,-0.300000072456896,-0.270000007003546,0.110000045970082,-0.300000188872218,-0.270000007003546,0.0300000014249235,-0.300000188872218,0.269999937154353,0.0300000014249235,-0.300000072456896,0.269999937154353,0.110000045970082,-0.270000216551125,-0.23999996483326,0.0300000014249235,-0.269999983720481,-0.239999941550195,0.110000045970082,0.300000119023025,0.269999937154353,0.0300000014249235,0.300000002607703,0.269999937154353,0.110000045970082,0.270000146701932,-0.23999996483326,0.0300000014249235,0.269999913871288,-0.239999941550195,0.110000045970082,0.300000002607703,-0.270000007003546,0.110000045970082,0.300000119023025,-0.270000007003546,0.0300000014249235,-0.269999983720481,0.239999894984066,0.198000087402761,
 -0.300000072456896,0.269999937154353,0.198000087402761,0.300000002607703,0.269999937154353,0.198000087402761,0.269999913871288,0.239999894984066,0.198000087402761,-0.270000216551125,0.239999918267131,0.118000048678368,0.270000146701932,0.239999918267131,0.118000048678368,-0.300000072456896,-0.270000007003546,0.198000087402761,-0.300000188872218,-0.270000007003546,0.118000048678368,-0.300000188872218,0.269999937154353,0.118000048678368,-0.270000216551125,-0.23999996483326,0.118000048678368,-0.269999983720481,-0.239999941550195,0.198000087402761,0.300000119023025,0.269999937154353,0.118000048678368,0.270000146701932,-0.23999996483326,0.118000048678368,0.269999913871288,-0.239999941550195,0.198000087402761,0.300000002607703,-0.270000007003546,0.198000087402761,0.300000119023025,-0.270000007003546,0.118000048678368
@@ -370,7 +370,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595963792, "Model::SM_town_minibox", "Mesh" {
+	Model: 1700592950176, "Model::SM_town_minibox__1_", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -378,13 +378,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-90,0,-180
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000137329102,100.000045776367,100.000045776367
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-89.980224609375,144.086807250977,0
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",100.000030517578,100,100
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164599949360, "Material::M_marketprop", "" {
+	Material: 1711010998640, "Material::M_marketprop", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -398,7 +398,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164604536672, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568678656, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\market\prop\T_town_marketprop_BaseMap.png"
@@ -408,7 +408,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\market\prop\T_town_marketprop_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\market\prop\T_town_marketprop_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568678176, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -427,23 +427,23 @@ Objects:  {
 
 Connections:  {
 	
-	;Model::SM_town_minibox, Model::RootNode
-	C: "OO",2164595963792,0
+	;Model::SM_town_minibox__1_, Model::RootNode
+	C: "OO",1700592950176,0
 	
-	;Material::M_marketprop, Model::SM_town_minibox
-	C: "OO",2164599949360,2164595963792
+	;Material::M_marketprop, Model::SM_town_minibox__1_
+	C: "OO",1711010998640,1700592950176
 	
-	;Geometry::Scene, Model::SM_town_minibox
-	C: "OO",2158620985968,2164595963792
-	
-	;Texture::DiffuseColor_Texture, Material::M_marketprop
-	C: "OO",2176327841456,2164599949360
+	;Geometry::Scene, Model::SM_town_minibox__1_
+	C: "OO",1710559751984,1700592950176
 	
 	;Texture::DiffuseColor_Texture, Material::M_marketprop
-	C: "OP",2176327841456,2164599949360, "DiffuseColor"
+	C: "OO",1710568678176,1711010998640
+	
+	;Texture::DiffuseColor_Texture, Material::M_marketprop
+	C: "OP",1710568678176,1711010998640, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164604536672,2176327841456
+	C: "OO",1710568678656,1710568678176
 }
 ;Takes section
 ;----------------------------------------------------

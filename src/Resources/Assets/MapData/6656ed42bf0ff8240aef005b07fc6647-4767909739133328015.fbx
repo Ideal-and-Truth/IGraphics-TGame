@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 20
-		Second: 50
-		Millisecond: 265
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 33
+		Millisecond: 941
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\aj1s8and_6656ed42bf0ff8240aef005b07fc6647-4767909739133328015.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\aj1s8and_6656ed42bf0ff8240aef005b07fc6647-4767909739133328015.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\tl77l8ho_6656ed42bf0ff8240aef005b07fc6647-4767909739133328015.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\tl77l8ho_6656ed42bf0ff8240aef005b07fc6647-4767909739133328015.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598938336, "Scene", "Scene" {
+	Document: 1711006012016, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158621013296, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559734064, "Geometry::Scene", "Mesh" {
 		Vertices: *57 {
 			a: 266.404342651367,-236.142897605896,57.8583478927612,266.404342651367,-236.142897605896,-57.8586578369141,-261.169815063477,36.5418195724487,-57.8586578369141,-261.169815063477,36.5418195724487,57.8583478927612,-332.065105438232,36.5418195724487,-57.8586578369141,-332.065105438232,36.5418195724487,57.8583478927612,308.020734786987,-236.142897605896,57.8583478927612,326.146030426025,-236.142897605896,57.8583478927612,326.146030426025,-236.142897605896,34.4080716371536,308.020782470703,-236.142897605896,34.4080775976181,326.146030426025,-236.142897605896,-0.000155811403601547,266.404342651367,-236.142897605896,34.4080775976181,308.020782470703,-236.142897605896,-0.000154972076416016,326.146030426025,-236.142897605896,-34.4083845615387,266.404342651367,-236.142897605896,-0.000154972076416016,308.020782470703,-236.142897605896,-34.4083845615387,326.146030426025,-236.142897605896,-57.8586578369141,266.404342651367,-236.142897605896,-34.4083845615387,308.020734786987,-236.142897605896,-57.8586578369141
 		} 
@@ -382,7 +382,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595907792, "Model::SM_stairsdewall_001", "Mesh" {
+	Model: 1700593154176, "Model::SM_stairsdewall_001", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -390,13 +390,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",3.17899429003177e-10,146.505401611328,-1.83704829126441e-09
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.0000011920929,1,1.0000011920929
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",1.8645947008622e-08,123.503402709961,1.88496827036033e-08
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000095367432,1,1.00000095367432
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598572832, "Material::M_bosswalltile", "" {
+	Material: 1711011001840, "Material::M_bosswalltile", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -410,7 +410,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164598544384, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1710568674336, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\walltile\T_bosswalltile_BaseMap.png"
@@ -420,7 +420,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BossRoom\BR_Assets\walltile\T_bosswalltile_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BossRoom\BR_Assets\walltile\T_bosswalltile_BaseMap.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1710568665216, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -440,22 +440,22 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_stairsdewall_001, Model::RootNode
-	C: "OO",2164595907792,0
+	C: "OO",1700593154176,0
 	
 	;Material::M_bosswalltile, Model::SM_stairsdewall_001
-	C: "OO",2164598572832,2164595907792
+	C: "OO",1711011001840,1700593154176
 	
 	;Geometry::Scene, Model::SM_stairsdewall_001
-	C: "OO",2158621013296,2164595907792
+	C: "OO",1710559734064,1700593154176
 	
 	;Texture::DiffuseColor_Texture, Material::M_bosswalltile
-	C: "OO",2176327841456,2164598572832
+	C: "OO",1710568665216,1711011001840
 	
 	;Texture::DiffuseColor_Texture, Material::M_bosswalltile
-	C: "OP",2176327841456,2164598572832, "DiffuseColor"
+	C: "OP",1710568665216,1711011001840, "DiffuseColor"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164598544384,2176327841456
+	C: "OO",1710568674336,1710568665216
 }
 ;Takes section
 ;----------------------------------------------------

@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 22
-		Second: 11
-		Millisecond: 64
+		Day: 7
+		Hour: 10
+		Minute: 57
+		Second: 59
+		Millisecond: 452
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\bv9tyzwg_000000000000000000000000000000001437858046132113967.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\bv9tyzwg_000000000000000000000000000000001437858046132113967.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\bxd1ha33_000000000000000000000000000000001437858046132113967.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\bxd1ha33_000000000000000000000000000000001437858046132113967.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598941152, "Scene", "Scene" {
+	Document: 1711006013552, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -223,7 +223,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620985520, "Geometry::Scene", "Mesh" {
+	Geometry: 1710559752880, "Geometry::Scene", "Mesh" {
 		Vertices: *24 {
 			a: 1275,-2270.00007629395,0,1275,2270.00007629395,0,-1275,-2270.00007629395,0,-1275,2270.00007629395,0,-1275,-2270.00007629395,3603.55987548828,-1275,2270.00007629395,3603.55987548828,1275,-2270.00007629395,3603.55987548828,1275,2270.00007629395,3603.55987548828
 		} 
@@ -248,7 +248,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595963792, "Model::Volumetric_Rect_Area_Light", "Mesh" {
+	Model: 1700592950176, "Model::Volumetric_Rect_Area_Light", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -262,7 +262,7 @@ Objects:  {
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164604576432, "Material::VolumetricLights_VolumetricLightURP", "" {
+	Material: 1711010966208, "Material::VolumetricLights_VolumetricLightURP", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -284,13 +284,13 @@ Objects:  {
 Connections:  {
 	
 	;Model::Volumetric_Rect_Area_Light, Model::RootNode
-	C: "OO",2164595963792,0
+	C: "OO",1700592950176,0
 	
 	;Material::VolumetricLights_VolumetricLightURP, Model::Volumetric_Rect_Area_Light
-	C: "OO",2164604576432,2164595963792
+	C: "OO",1711010966208,1700592950176
 	
 	;Geometry::Scene, Model::Volumetric_Rect_Area_Light
-	C: "OO",2158620985520,2164595963792
+	C: "OO",1710559752880,1700592950176
 }
 ;Takes section
 ;----------------------------------------------------

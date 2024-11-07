@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2024
 		Month: 11
-		Day: 6
-		Hour: 20
-		Minute: 20
-		Second: 49
-		Millisecond: 545
+		Day: 7
+		Hour: 10
+		Minute: 44
+		Second: 38
+		Millisecond: 672
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.3.2"
 	OtherFlags:  {
@@ -31,8 +31,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\oxeh4loq_5d218b9f13d014b46b97fe5a124078c9-3325410641082829517.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\oxeh4loq_5d218b9f13d014b46b97fe5a124078c9-3325410641082829517.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "Assets\4_Resources\pooawg2z_5d218b9f13d014b46b97fe5a124078c9-3325410641082829517.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "Assets\4_Resources\pooawg2z_5d218b9f13d014b46b97fe5a124078c9-3325410641082829517.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -78,7 +78,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2164598937056, "Scene", "Scene" {
+	Document: 1851371836432, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -273,7 +273,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Geometry: 2158620995824, "Geometry::Scene", "Mesh" {
+	Geometry: 1851538557152, "Geometry::Scene", "Mesh" {
 		Vertices: *852 {
 			a: -303.661918640137,599.207735061646,35.4268342256546,-303.661942481995,599.207735061646,-35.4267925024033,-303.810048103333,596.462821960449,-35.2105706930161,-303.661918640137,596.473598480225,35.4268252849579,-364.361143112183,602.233457565308,32.9612374305725,-367.267537117004,605.258178710938,35.4465216398239,-302.144455909729,605.258274078369,35.446497797966,-305.050921440125,602.233457565308,32.9612225294113,24.0886986255646,549.270820617676,-24.659389257431,26.2885898351669,90.8510565757751,-23.3595937490463,26.2885838747025,90.8510625362396,25.0483065843582,24.103944003582,549.270820617676,24.5055630803108,-24.0495845675468,549.270820617676,-24.6593907475471,-25.4762977361679,90.8510386943817,-23.359589278698,-24.103944003582,549.270725250244,24.5055615901947,-25.4763096570969,90.8510386943817,25.0483006238937,-23.1463715434074,83.7110340595245,23.9476293325424,-25.4763096570969,87.6618027687073,25.1344054937363,26.288577914238,87.6618027687073,25.1344233751297,23.9586398005486,83.7110340595245,23.9476412534714,-23.1463715434074,78.4403443336487,23.9476293325424,23.9586398005486,78.4403443336487,23.9476412534714,-23.1463715434074,9.45358276367188,27.2609978914261,-23.1463715434074,14.185357093811,27.2609978914261,23.9586398005486,14.185357093811,27.2610157728195,23.9586398005486,9.45358276367188,27.2610157728195,-25.1574784517288,0,29.256597161293,-25.1574784517288,9.45358276367188,29.256597161293,25.9697467088699,9.45358276367188,29.256609082222,25.9697467088699,0,29.256609082222,25.9697586297989,9.45358276367188,-27.5678783655167,25.9697586297989,0,-27.5678783655167,-23.146365582943,9.45358276367188,-25.5722969770432,-25.1574665307999,9.45358276367188,-27.5678902864456,23.958645761013,9.45358276367188,-25.5722850561142,21.0447251796722,17.6321506500244,23.1178104877472,21.0447251796722,78.4403443336487,23.1178104877472,21.0447311401367,78.4403443336487,-21.5962246060371,21.0447311401367,17.6321506500244,-21.5962246060371,12.4242760241032,70.4379379749298,23.8380715250969,12.4242760241032,25.8016109466553,23.8380715250969,
 -11.6120100021362,25.8016109466553,23.8380610942841,-11.6120100021362,70.4379379749298,23.8380610942841,23.958645761013,83.7110340595245,-22.2589179873466,23.958645761013,78.4403443336487,-22.2589179873466,-20.2324569225311,17.6321506500244,23.1178015470505,-20.2324569225311,78.4403443336487,23.1178015470505,-20.2324524521828,78.4403443336487,-21.5962290763855,-23.146365582943,78.4403443336487,-22.2589239478111,-25.4762977361679,87.6618027687073,-23.4456971287727,-23.146365582943,83.7110340595245,-22.2589239478111,-15.616250038147,73.6764430999756,23.1178015470505,16.4285153150558,73.6764430999756,23.1178104877472,-15.616250038147,22.4795818328857,23.1178015470505,16.4285153150558,22.4795818328857,23.1178104877472,-14.6954849362373,23.0550035834312,24.9908596277237,15.5077517032623,23.0550035834312,24.9908655881882,-20.2324524521828,17.6321506500244,-21.5962290763855,23.958645761013,14.185357093811,-25.5722850561142,-23.146365582943,14.185357093811,-25.5722969770432,-25.1574665307999,0,-27.5678902864456,27.3995965719223,90.4104828834534,25.9757548570633,-26.5873104333878,90.4104828834534,25.9757369756699,26.2885898351669,87.6618027687073,-23.4457015991211,-26.5873104333878,87.6040577888489,25.9757369756699,27.3996084928513,87.6618027687073,25.9757608175278,-26.5872985124588,87.6040577888489,-24.2870226502419,-14.6954849362373,73.1845438480377,24.9908596277237,15.5077517032623,73.1845438480377,24.9908655881882,-13.0441978573799,71.5332448482513,25.425124168396,13.8564646244049,71.5332448482513,25.4251301288605,13.8564646244049,24.7062906622887,25.4251301288605,-13.0441978573799,24.7062906622887,25.425124168396,12.4242819845676,70.3543961048126,-21.6293483972549,-11.6120040416718,70.3543961048126,-21.6293498873711,-11.6120040416718,25.718092918396,-21.6293498873711,12.4242819845676,25.718092918396,-21.6293483972549,15.5077561736107,22.9714870452881,-22.7821439504623,-15.6162440776825,22.3960399627686,-21.5962290763855,16.4285212755203,22.3960399627686,-21.5962246060371,-14.6954789757729,22.9714870452881,-22.7821454405785,
@@ -541,7 +541,7 @@ Objects:  {
 			}
 		}
 	}
-	Model: 2164595915792, "Model::SM_hotelpillar", "Mesh" {
+	Model: 1860494687872, "Model::SM_hotelpillar", "Mesh" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -549,13 +549,13 @@ Objects:  {
 			P: "InheritType", "enum", "", "",1
 			P: "ScalingMax", "Vector3D", "Vector", "",0,0,0
 			P: "DefaultAttributeIndex", "int", "Integer", "",0
-			P: "Lcl Rotation", "Lcl Rotation", "", "A",-1.02778496824385e-09,79.0269775390625,7.7982695856349e-09
-			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000047683716,1,1.00000035762787
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",-9.09636865831231e-10,152.120132446289,-2.03746672311489e-10
+			P: "Lcl Scaling", "Lcl Scaling", "", "A",1.00000071525574,1,1.00000083446503
 		}
 		Shading: W
 		Culling: "CullingOff"
 	}
-	Material: 2164598544464, "Material::M_hotelside", "" {
+	Material: 1851533355712, "Material::M_hotelside", "" {
 		Version: 102
 		ShadingModel: "lambert"
 		MultiLayer: 0
@@ -569,7 +569,7 @@ Objects:  {
 			P: "Opacity", "double", "Number", "",1
 		}
 	}
-	Video: 2164598573312, "Video::DiffuseColor_Texture", "Clip" {
+	Video: 1857357189936, "Video::DiffuseColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_BaseMap.png"
@@ -579,7 +579,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_BaseMap.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_BaseMap.png"
 	}
-	Video: 2164598570912, "Video::EmissiveColor_Texture", "Clip" {
+	Video: 1857357190416, "Video::EmissiveColor_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
@@ -589,7 +589,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Emissive.png"
 	}
-	Video: 2164598571392, "Video::NormalMap_Texture", "Clip" {
+	Video: 1861699401344, "Video::NormalMap_Texture", "Clip" {
 		Type: "Clip"
 		Properties70:  {
 			P: "Path", "KString", "XRefUrl", "", "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
@@ -599,7 +599,7 @@ Objects:  {
 		Filename: "E:\Projects\ChronosUnity\Kronos_IAT_Unity\Cronos_URP\Assets\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
 		RelativeFilename: "..\Resources\InGameResources\BackGround\BG_Assets\hotel\T_hoteldoor_Normal.png"
 	}
-	Texture: 2176327841456, "Texture::DiffuseColor_Texture", "" {
+	Texture: 1857357188016, "Texture::DiffuseColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::DiffuseColor_Texture"
@@ -611,7 +611,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164598571872, "Texture::EmissiveColor_Texture", "" {
+	Texture: 1857357188976, "Texture::EmissiveColor_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::EmissiveColor_Texture"
@@ -623,7 +623,7 @@ Objects:  {
 		Texture_Alpha_Source: "None"
 		Cropping: 0,0,0,0
 	}
-	Texture: 2164598572832, "Texture::NormalMap_Texture", "" {
+	Texture: 1857357189456, "Texture::NormalMap_Texture", "" {
 		Type: "TextureVideoClip"
 		Version: 202
 		TextureName: "Texture::NormalMap_Texture"
@@ -643,40 +643,40 @@ Objects:  {
 Connections:  {
 	
 	;Model::SM_hotelpillar, Model::RootNode
-	C: "OO",2164595915792,0
+	C: "OO",1860494687872,0
 	
 	;Material::M_hotelside, Model::SM_hotelpillar
-	C: "OO",2164598544464,2164595915792
+	C: "OO",1851533355712,1860494687872
 	
 	;Geometry::Scene, Model::SM_hotelpillar
-	C: "OO",2158620995824,2164595915792
+	C: "OO",1851538557152,1860494687872
 	
 	;Texture::DiffuseColor_Texture, Material::M_hotelside
-	C: "OO",2176327841456,2164598544464
+	C: "OO",1857357188016,1851533355712
 	
 	;Texture::EmissiveColor_Texture, Material::M_hotelside
-	C: "OO",2164598571872,2164598544464
+	C: "OO",1857357188976,1851533355712
 	
 	;Texture::NormalMap_Texture, Material::M_hotelside
-	C: "OO",2164598572832,2164598544464
+	C: "OO",1857357189456,1851533355712
 	
 	;Texture::EmissiveColor_Texture, Material::M_hotelside
-	C: "OP",2164598571872,2164598544464, "EmissiveColor"
+	C: "OP",1857357188976,1851533355712, "EmissiveColor"
 	
 	;Texture::DiffuseColor_Texture, Material::M_hotelside
-	C: "OP",2176327841456,2164598544464, "DiffuseColor"
+	C: "OP",1857357188016,1851533355712, "DiffuseColor"
 	
 	;Texture::NormalMap_Texture, Material::M_hotelside
-	C: "OP",2164598572832,2164598544464, "NormalMap"
+	C: "OP",1857357189456,1851533355712, "NormalMap"
 	
 	;Video::DiffuseColor_Texture, Texture::DiffuseColor_Texture
-	C: "OO",2164598573312,2176327841456
+	C: "OO",1857357189936,1857357188016
 	
 	;Video::EmissiveColor_Texture, Texture::EmissiveColor_Texture
-	C: "OO",2164598570912,2164598571872
+	C: "OO",1857357190416,1857357188976
 	
 	;Video::NormalMap_Texture, Texture::NormalMap_Texture
-	C: "OO",2164598571392,2164598572832
+	C: "OO",1861699401344,1857357189456
 }
 ;Takes section
 ;----------------------------------------------------
