@@ -24,18 +24,18 @@ VelocityDirectionMode: 1
 VelocityDirectionRandomMIN: -10
 VelocityDirectionRandomMAX: 10
 VelocitySpeedModifierMode: 1
-VelocitySpeedModifierRandomMIN: 1.8
-VelocitySpeedModifierRandomMAX: 2
+VelocitySpeedModifierRandomMIN: 3.6
+VelocitySpeedModifierRandomMAX: 4
 
 #--------SizeOverLifetime---------#
 SizeOverLifetime: true
 SizeOverLifetimeAxisX:
   - x: 0
-    y: 0.03
+    y: 0.06
   - x: 0.2
-    y: 0.01
+    y: 0.02
 SizeOverLifetimeAxisY:
   - x: 0
-    y: 0.03
+    y: 0.06
   - x: 0.2
-    y: 0.01
+    y: 0.02
