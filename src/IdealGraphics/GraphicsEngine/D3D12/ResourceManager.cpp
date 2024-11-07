@@ -341,8 +341,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
 	{
-		OutTexture = m_textures[name];
-		return;
+		//OutTexture = m_textures[name];
+		//return;
 	}
 
 	m_textures[name] = std::make_shared<Ideal::D3D12Texture>();
@@ -380,6 +380,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	D3D12_RESOURCE_FLAGS resourceFlag = D3D12_RESOURCE_FLAG_NONE;
 
 	//----------------------Load TGA Texture From File---------------------//
+	//auto Start = std::chrono::high_resolution_clock::now();
+
 	DirectX::ScratchImage image;
 	DirectX::TexMetadata metadata;
 	const DirectX::Image* img = nullptr;
@@ -394,7 +396,12 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		Check(DirectX::LoadFromWICFile(Path.c_str(), WIC_FLAGS_FORCE_RGB, &metadata, image), L"Failed to load WIC from file");
 		img = image.GetImages();
 	}
-	
+
+	//auto End = std::chrono::high_resolution_clock::now();
+	//std::chrono::duration<double> duration = End - Start;
+	//std::string resultMessage = "Direct X Tex Load Times : " + std::to_string(duration.count()) + " seconds\n";
+	//OutputDebugStringA(resultMessage.c_str());
+
 	if (IgnoreSRGB || IsNormalMap)
 	{
 		metadata.format = MakeLinear(metadata.format);
@@ -423,6 +430,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 		
 		img = mipChain.GetImages();
 	}
+
 	// 각 MIP 레벨별 서브리소스 데이터 생성
 	for (uint32_t i = 0; i < MipLevels; ++i) {
 		D3D12_SUBRESOURCE_DATA subResource = {};
@@ -462,7 +470,7 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 #endif
 	//----------------------Update Subresources--------------------------//
 #ifndef USE_UPLOAD_CONTAINER
-	//uploadBuffer.Map();
+	uploadBuffer.Map();
 	UpdateSubresources(
 		m_commandList.Get(),
 		resource.Get(),

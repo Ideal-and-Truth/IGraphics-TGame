@@ -164,7 +164,7 @@ namespace Ideal
 			{
 				void* mappedData = uploadBuffer.Map();
 				memcpy(mappedData, Vertices.data(), bufferSize);
-				uploadBuffer.UnMap();
+				//uploadBuffer.UnMap();
 			}
 			OutVertexBuffer->Create(m_device.Get(),
 				m_commandList.Get(),

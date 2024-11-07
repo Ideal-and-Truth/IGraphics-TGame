@@ -134,10 +134,10 @@ void Ideal::UploadCommandListPool::CheckFreedUploadContainer()
 	{
 		std::shared_ptr<Ideal::CommandListContainer> Container = (*it);
 
-		std::string count =std::to_string(m_Fence->GetCompletedValue());
-		std::string count2 =std::to_string(Container->FenceValue);
-		std::string result = count + " : " + count2 + "\n";
-		OutputDebugStringA(result.c_str());
+		//std::string count =std::to_string(m_Fence->GetCompletedValue());
+		//std::string count2 =std::to_string(Container->FenceValue);
+		//std::string result = count + " : " + count2 + "\n";
+		//OutputDebugStringA(result.c_str());
 		if (m_Fence->GetCompletedValue() >= Container->FenceValue)
 		{
 			RevertUploadBuffer(Container);

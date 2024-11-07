@@ -36,6 +36,7 @@
 
 
 #include <iostream>
+#include <chrono>
 using namespace std;
 
 #include "GraphicsEngine/public/IdealRendererFactory.h"
@@ -245,6 +246,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_800_600);
 		//gRenderer->SetDisplayResolutionOption(Ideal::Resolution::EDisplayResolutionOption::R_1920_1080);
 		//gRenderer->ToggleFullScreenWindow();
+
 #pragma endregion
 
 #pragma region FBXConvert
@@ -402,27 +404,46 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ka->AddAnimation("HipHop", hiphopAnim2);
 		//cat->AddAnimation("Walk", walkAnim);
 
-		std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
 
-		for (int i = 0; i < 300; i++)
-		{
-			//std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
-			//meshes.push_back(debugCart);
-		}
 
 #pragma endregion
 #pragma region TestPlane
 		auto planeMaterial = gRenderer->CreateMaterial();
-		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_BaseMap.png", true);
-		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_MaskMap.png", true);
+		auto planeAlbedoTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/archTile/T_archtile_BaseMap.png", true);
+		auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/archTile/T_archtile_MaskMap.png", true);
 		//auto planeMaskTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultBlack.png");
-		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/1_HN_Scene2/archTile/T_archtile_Normal.png", true, true);
+		auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/archTile/T_archtile_Normal.png", true, true);
 		//auto planeNormalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png", true, true);
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
 		planeMaterial->SetNormalMap(planeNormalTexture);
 		planeMaterial->SetSurfaceTypeTransparent(true);
-		
+
+		std::vector<std::shared_ptr<Ideal::ITexture>> textures;
+		for (int i = 0; i < 300; i++)
+		{
+			//auto Start = std::chrono::high_resolution_clock::now();
+			auto testTexture = gRenderer->CreateTexture(L"../Resources/Textures/MapData/Assets/Resources/InGameResources/BackGround/BG_TileMap/archTile/T_archtile_BaseMap.png", true);
+			textures.push_back(testTexture);
+			//auto End = std::chrono::high_resolution_clock::now();
+			//std::chrono::duration<double> duration = End - Start;
+			//std::string resultMessage = "Load Textures Times : " + std::to_string(duration.count()) + " seconds\n";
+			//OutputDebugStringA(resultMessage.c_str());
+		}
+
+
+		//std::vector<std::shared_ptr<Ideal::IMeshObject>> meshes;
+		//auto Start = std::chrono::high_resolution_clock::now();
+		//for (int i = 0; i < 300; i++)
+		//{
+		//	std::shared_ptr<Ideal::IMeshObject> debugCart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		//	meshes.push_back(debugCart);
+		//}
+		//auto End = std::chrono::high_resolution_clock::now();
+		//std::chrono::duration<double> duration = End - Start;
+		//std::string resultMessage = "Load Mesh Times : " + std::to_string(duration.count()) + " seconds\n";
+		//OutputDebugStringA(resultMessage.c_str());
+
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
 		//plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
 		//plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(2, 8, 2)));
@@ -485,20 +506,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 #pragma region CreateTextureAndMaterial
 		//--------------------Create Texture----------------------//
-		std::shared_ptr<Ideal::ITexture> faceTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
-		std::shared_ptr<Ideal::ITexture> faceNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_Normal.png");
-		std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
-		std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
-		std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png", true);
+		//std::shared_ptr<Ideal::ITexture> faceTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_BaseMap.png");
+		//std::shared_ptr<Ideal::ITexture> faceNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_face_Normal.png");
+		//std::shared_ptr<Ideal::ITexture> skirtBottomTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_BaseMap.png");
+		//std::shared_ptr<Ideal::ITexture> skirtBottomNormalTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_skirtbottom_Normal.png");
+		//std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/PlayerRe/T_eyes_BaseMap.png", true);
 		//std::shared_ptr<Ideal::ITexture> eyeTexture = gRenderer->CreateTexture(L"../Resources/Textures/1_Test/uni_spill.tga");
 		//std::shared_ptr<Ideal::ITexture> normalTexture = gRenderer->CreateTexture(L"../Resources/DefaultData/DefaultNormalMap.png");
 		//testTexture2 = nullptr;
 		//std::shared_ptr<Ideal::ITexture> testTexture = nullptr;
 
 		//--------------------Create Material----------------------//
-		std::shared_ptr<Ideal::IMaterial> skirtMaterial = gRenderer->CreateMaterial();
-		skirtMaterial->SetBaseMap(skirtBottomTexture);
-		skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
+		//std::shared_ptr<Ideal::IMaterial> skirtMaterial = gRenderer->CreateMaterial();
+		//skirtMaterial->SetBaseMap(skirtBottomTexture);
+		//skirtMaterial->SetNormalMap(skirtBottomNormalTexture);
 
 		std::shared_ptr<Ideal::IMaterial> eyeMaterial = gRenderer->CreateMaterial();
 		std::shared_ptr<Ideal::IMaterial> kaMaterial;// = gRenderer->CreateMaterial();
@@ -510,21 +531,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #pragma region CreateUI
 		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
-		sprite->SetTexture(eyeTexture);
+		//sprite->SetTexture(eyeTexture);
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		sprite->SetScale(Vector2(0.1, 0.1));
 		sprite->SetPosition(Vector2(0, 0));
 		sprite->SetAlpha(0.8f);
 		sprite->SetZ(0.2);
 		// 아래의 값은 기본으로 적용되어 있음. (Set Texture 할 때 Texture의 사이즈로 아래의 작업을 함)
-		sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight() });
+		//sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight() });
 
 		//sprite->SetTextureSize(Vector2(512, 512));
 		//sprite->SetTextureSamplePosition(Vector2(0, 0));
 		//sprite->SetTextureSampleSize(Vector2(2048, 2048));
 
 		std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
-		sprite2->SetTexture(eyeTexture);
+		//sprite2->SetTexture(eyeTexture);
 		//sprite2->SetSampleRect({ 0, 0, 4096*2, 4096*2 });
 		sprite2->SetSampleRect({ 1024, 0, 2048, 2048 });
 		sprite2->SetSampleRect({ 1024, 0, 4096, 2048 });
@@ -548,7 +569,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		text->ChangeText(L"Test");
 		text->SetPosition(Vector2(500, 500));
 		text->SetZ(0.2);
-		
+
 		std::vector<std::shared_ptr<Ideal::IText>>texts;
 
 
@@ -814,7 +835,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		bossParticleMaterial0->SetTexture1(bossParticleTexture1);
 		particleTexturesToDelete.push_back(bossParticleTexture0);
 		particleTexturesToDelete.push_back(bossParticleTexture1);
-			
+
 		bossParticleMaterial0->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Additive);
 
 		std::shared_ptr<Ideal::IParticleSystem> bossParticleSystem0 = gRenderer->CreateParticleSystem(bossParticleMaterial0);
@@ -1136,7 +1157,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackholeMaterial->SetShader(bossBlackHoleShader);
 		//blackholeMaterial->SetWriteDepthBuffer(true);
 
-		
+
 		std::shared_ptr<Ideal::ITexture> bhTex0 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/PerlinMap_1.png");
 		std::shared_ptr<Ideal::ITexture> bhTex1 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_4.png");
 		std::shared_ptr<Ideal::ITexture> bhTex2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/BossBlackHole/Normal_5.png");
@@ -1165,7 +1186,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		blackHoleParticleSystem->SetStartLifetime(8.f);
 		blackHoleParticleSystem->SetTransformMatrix(
 			Matrix::CreateRotationX(3.14 * 0.5)
-			* Matrix::CreateTranslation(Vector3(-4,0,0))
+			* Matrix::CreateTranslation(Vector3(-4, 0, 0))
 		);
 		blackHoleParticleSystem->SetColorOverLifetime(true);
 		//{
@@ -1269,18 +1290,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		magicCircleMaterial->SetShader(defaultTextureParticleShader);
 		std::shared_ptr<Ideal::ITexture> magicCircleTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Enemy/MagicCircle51.png");
 		particleTexturesToDelete.push_back(magicCircleTexture);
-		
+
 		magicCircleMaterial->SetTexture0(magicCircleTexture);
 		magicCircleMaterial->SetBackFaceCulling(false);
 		magicCircleMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
-		
+
 		std::shared_ptr<Ideal::IParticleSystem> magicCircleParticleSystem = gRenderer->CreateParticleSystem(magicCircleMaterial);
 		magicCircleParticleSystem->SetLoop(true);
 		magicCircleParticleSystem->SetDuration(2.5f);
 		magicCircleParticleSystem->SetStartLifetime(2.5f);
 		magicCircleParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		magicCircleParticleSystem->SetRenderMesh(particleMeshPlane);
-		magicCircleParticleSystem->SetTransformMatrix(Matrix::CreateScale(0.5f) * Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0,3,0)));
+		magicCircleParticleSystem->SetTransformMatrix(Matrix::CreateScale(0.5f) * Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0, 3, 0)));
 		magicCircleParticleSystem->SetStartColor(Color(1, 1, 1, 1));
 
 		// 아래 색 조정, 사이즈 조절은 유니티 별로여서 걍 내가 넣은거임. 알아서 넣을지 말지 결정하셈
@@ -1324,7 +1345,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		bowAttackParticleSystem->SetStartLifetime(2.5f);
 		bowAttackParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		bowAttackParticleSystem->SetRenderMesh(particleMeshPlane);
-		bowAttackParticleSystem->SetTransformMatrix(Matrix::CreateScale(0.8f)* Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(-1.57f)* Matrix::CreateTranslation(Vector3(0, 3, -0.2f)));
+		bowAttackParticleSystem->SetTransformMatrix(Matrix::CreateScale(0.8f) * Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(-1.57f) * Matrix::CreateTranslation(Vector3(0, 3, -0.2f)));
 		bowAttackParticleSystem->SetStartColor(Color(1, 1, 1, 1));
 		// 아래 색 조정, 사이즈 조절은 유니티 별로여서 걍 내가 넣은거임. 알아서 넣을지 말지 결정하셈
 		bowAttackParticleSystem->SetColorOverLifetime(true);
@@ -1334,7 +1355,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			graph.AddPoint(Color(1, 1, 1, 1), 0.5f / 2.5f);
 			graph.AddPoint(Color(1, 1, 1, 0), 2.5f / 2.5f);
 		}
-		
+
 #pragma endregion
 #pragma region Nor_Attack_Effect
 		//---------------Particle Sword Slash-------------------//
@@ -1727,7 +1748,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::ITexture> slashParticleTexture1_2 = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Noise43b.png");
 		slashParticleMaterial1->SetTexture2(slashParticleTexture1_2);
 
-		
+
 		particleTexturesToDelete.push_back(slashParticleTexture1_0);
 		particleTexturesToDelete.push_back(slashParticleTexture1_1);
 		particleTexturesToDelete.push_back(slashParticleTexture1_2);
@@ -1735,7 +1756,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		slashParticleMaterial1->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::Alpha);
 
 
-		std::shared_ptr<Ideal::IParticleSystem> dodgeEffect= gRenderer->CreateParticleSystem(slashParticleMaterial1);
+		std::shared_ptr<Ideal::IParticleSystem> dodgeEffect = gRenderer->CreateParticleSystem(slashParticleMaterial1);
 		dodgeEffect->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		dodgeEffect->SetRenderMesh(slashParticleMesh);
 		dodgeEffect->SetLoop(false);
@@ -1820,7 +1841,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Animation
 		fireExplosionParticle->SetTextureSheetAnimation(true);
 		fireExplosionParticle->SetTextureSheetAnimationTiles({ 8,8 });
-		fireExplosionParticle->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0,3,0)));
+		fireExplosionParticle->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0, 3, 0)));
 
 
 		fireExplosionParticle->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
@@ -1871,7 +1892,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		// Animation
 		fireExplosionParticle2->SetTextureSheetAnimation(true);
 		fireExplosionParticle2->SetTextureSheetAnimationTiles({ 8,8 });
-		fireExplosionParticle2->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateTranslation(Vector3(0, 3, 0)));
+		fireExplosionParticle2->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(Vector3(0, 3, 0)));
 
 
 		fireExplosionParticle2->SetStartColor(Color(2.2f, 0.f, 0.f, 1.f));
@@ -1899,7 +1920,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageMaterial0->SetBackFaceCulling(false);
 		std::shared_ptr<Ideal::ITexture> norDamageTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Flash21.png");
 		norDamageMaterial0->SetTexture0(norDamageTexture);
-		
+
 		std::shared_ptr<Ideal::IParticleSystem> norDamageParticleSystem0 = gRenderer->CreateParticleSystem(norDamageMaterial0);
 
 		norDamageParticleSystem0->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
@@ -1940,7 +1961,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem0_1->SetLoop(false);
 		norDamageParticleSystem0_1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
 		norDamageParticleSystem0_1->SetSizeOverLifetime(true);
-		norDamageParticleSystem0_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
+		norDamageParticleSystem0_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f) * Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
 			auto& graph = norDamageParticleSystem0_1->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0,0.5f });
@@ -1976,7 +1997,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem1->SetLoop(false);
 		norDamageParticleSystem1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
 		norDamageParticleSystem1->SetSizeOverLifetime(true);
-		norDamageParticleSystem1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
+		norDamageParticleSystem1->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
 			auto& graph = norDamageParticleSystem1->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0,0.5f });
@@ -2003,7 +2024,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		norDamageParticleSystem1_1->SetLoop(false);
 		norDamageParticleSystem1_1->SetStartColor(Color(1.f, 1.f, 1.f, 1.f));
 		norDamageParticleSystem1_1->SetSizeOverLifetime(true);
-		norDamageParticleSystem1_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f)* Matrix::CreateRotationY(1.57f) * Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
+		norDamageParticleSystem1_1->SetTransformMatrix(Matrix::CreateRotationX(1.57f) * Matrix::CreateRotationY(1.57f) * Matrix::CreateTranslation(0, 5, 0)); // 로테이션은 적용, 위치는 데모에서 위치 확인용
 		{
 			auto& graph = norDamageParticleSystem1_1->GetSizeOverLifetimeAxisX();
 			graph.AddControlPoint({ 0,0.5f });
@@ -2069,7 +2090,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::shared_ptr<Ideal::IParticleSystem> groundEffectParticleSystem = gRenderer->CreateParticleSystem(groundEffectMaterial);
 		groundEffectParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
-		
+
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/IceSpikes2.fbx");
 		std::shared_ptr<Ideal::IMesh> iceSpikeMesh = gRenderer->CreateParticleMesh(L"0_Particle/IceSpikes2");
 		groundEffectParticleSystem->SetRenderMesh(iceSpikeMesh);
@@ -2121,7 +2142,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		groundSmokeParticleSystem->SetLoop(false);
 		groundSmokeParticleSystem->SetDuration(0.2f);
 		groundSmokeParticleSystem->SetStartLifetime(0.2f);
-		
+
 		groundSmokeParticleSystem->SetMaxParticles(40);
 		groundSmokeParticleSystem->SetShapeMode(true);
 		groundSmokeParticleSystem->SetShape(Ideal::ParticleMenu::EShape::Circle);
@@ -2305,7 +2326,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma region EnemyCharge
 		gRenderer->ConvertParticleMeshAssetToMyFormat(L"0_Particle/Cone2.fbx");
 		std::shared_ptr<Ideal::IMesh> Cone2Mesh = gRenderer->CreateParticleMesh(L"0_Particle/Cone2");
-		
+
 		std::shared_ptr<Ideal::IParticleMaterial> enemyChargeMaterial = gRenderer->CreateParticleMaterial();
 		enemyChargeMaterial->SetShader(enemyChargePS);
 		//enemyChargeMaterial->SetTexture0(norDamageTexture1);
@@ -2320,12 +2341,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		enemyChargeParticleSystem->SetStartLifetime(1.f);
 		enemyChargeParticleSystem->SetDuration(2.f);
 		enemyChargeParticleSystem->SetTransformMatrix(
-			Matrix::CreateScale(Vector3(0.5,0.5,1))				// 여기는 적용
+			Matrix::CreateScale(Vector3(0.5, 0.5, 1))				// 여기는 적용
 			* Matrix::CreateTranslation(Vector3(19, 0, 0))	// 여기는 데모 위치 확인용
 		);
 		enemyChargeParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
 		enemyChargeParticleSystem->SetRenderMesh(Cone2Mesh);
-		
+
 		{
 			auto& graph = enemyChargeParticleSystem->GetCustomData1X();
 			graph.AddControlPoint({ 0,5 });
@@ -2394,7 +2415,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			auto& graph = ScannerParticleSystem->GetColorOverLifetimeGradientGraph();
 			graph.AddPoint(Color(0.4f, 0.4f, 0.4f, 1), 0.f);
-			graph.AddPoint(Color(0, 0, 0,0), 2.f / 2.f);
+			graph.AddPoint(Color(0, 0, 0, 0), 2.f / 2.f);
 		}
 
 #pragma endregion
@@ -2889,22 +2910,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						{
 							SpotLightInspector(spotLight);
 						}
-						if (faceTexture)
-						{
-							ImageTest(faceTexture);
-						}
-						if (eyeTexture)
-						{
-							ImageTest(eyeTexture);
-						}
-						if (skirtBottomTexture)
-						{
-							ImageTest(skirtBottomTexture);
-						}
-						//if (playerRe)
+						//if (faceTexture)
 						//{
-						//	//SkinnedMeshObjectBoneInfoTest(playerRe);
-						SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
+						//	ImageTest(faceTexture);
+						//}
+						//if (eyeTexture)
+						//{
+						//	ImageTest(eyeTexture);
+						//}
+						//if (skirtBottomTexture)
+						//{
+						//	ImageTest(skirtBottomTexture);
+						//}
+						////if (playerRe)
+						////{
+						////	//SkinnedMeshObjectBoneInfoTest(playerRe);
+						//SkinnedMeshObjectGetMeshTest(DebugPlayer, skirtMaterial, eyeMaterial, faceTexture, faceNormalTexture);
 
 						//if (DebugPlayer)	SkinnedMeshObjectAnimationTest(DebugPlayer);
 						//}
@@ -2970,7 +2991,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 #endif
-		
+
 		//meshes.clear();
 
 		gRenderer->DeleteMeshObject(cart);
@@ -2985,22 +3006,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		DebugPlayer.reset();
 		gRenderer->DeleteMaterial(kaMaterial);
 		kaMaterial.reset();
-		gRenderer->DeleteMaterial(skirtMaterial);
-		skirtMaterial.reset();
-		gRenderer->DeleteMaterial(eyeMaterial);
-		eyeMaterial.reset();
-		gRenderer->DeleteTexture(faceTexture);
-		faceTexture.reset();
-		//gRenderer->DeleteTexture(normalTexture);
-		//normalTexture.reset();
-		gRenderer->DeleteTexture(faceNormalTexture);
-		faceNormalTexture.reset();
-		gRenderer->DeleteTexture(eyeTexture);
-		eyeTexture.reset();
-		gRenderer->DeleteTexture(skirtBottomTexture);
-		skirtBottomTexture.reset();
-		gRenderer->DeleteTexture(skirtBottomNormalTexture);
-		skirtBottomNormalTexture.reset();
+		//gRenderer->DeleteMaterial(skirtMaterial);
+		//skirtMaterial.reset();
+		//gRenderer->DeleteMaterial(eyeMaterial);
+		//eyeMaterial.reset();
+		//gRenderer->DeleteTexture(faceTexture);
+		//faceTexture.reset();
+		////gRenderer->DeleteTexture(normalTexture);
+		////normalTexture.reset();
+		//gRenderer->DeleteTexture(faceNormalTexture);
+		//faceNormalTexture.reset();
+		//gRenderer->DeleteTexture(eyeTexture);
+		//eyeTexture.reset();
+		//gRenderer->DeleteTexture(skirtBottomTexture);
+		//skirtBottomTexture.reset();
+		//gRenderer->DeleteTexture(skirtBottomNormalTexture);
+		//skirtBottomNormalTexture.reset();
 
 		gRenderer->DeleteMaterial(planeMaterial);
 		planeMaterial.reset();
@@ -3407,7 +3428,7 @@ void LightTest(std::shared_ptr<Ideal::IDirectionalLight> DirLight)
 	mat *= Matrix::CreateRotationY(lightAngleY);
 
 	ImGui::SliderFloat("Intensity", &lightIntensity, 0.f, 10.f);
-	
+
 	Vector3 rot = mat.Forward();
 	if (DirLight)
 	{
