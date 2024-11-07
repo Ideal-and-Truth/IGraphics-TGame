@@ -638,6 +638,9 @@ void RangerDamage::OnStateUpdate()
 void RangerDamage::OnStateExit()
 {
 	GetProperty("isDamage")->Set(m_animator, false);
+	GetProperty("isBack")->Set(m_animator, false);
+	GetProperty("isFall")->Set(m_animator, false);
+	GetProperty("isDown")->Set(m_animator, false);
 }
 
 void RangerDown::OnStateEnter()
@@ -671,6 +674,9 @@ void RangerDown::OnStateUpdate()
 
 void RangerDown::OnStateExit()
 {
+	GetProperty("isDamage")->Set(m_animator, false);
+	GetProperty("isBack")->Set(m_animator, false);
+	GetProperty("isFall")->Set(m_animator, false);
 	GetProperty("isDown")->Set(m_animator, false);
 	isChange = false;
 	isReset = false;
@@ -697,7 +703,10 @@ void RangerFall::OnStateUpdate()
 
 void RangerFall::OnStateExit()
 {
+	GetProperty("isDamage")->Set(m_animator, false);
+	GetProperty("isBack")->Set(m_animator, false);
 	GetProperty("isFall")->Set(m_animator, false);
+	GetProperty("isDown")->Set(m_animator, false);
 }
 
 void RangerKnockBack::OnStateEnter()
@@ -730,7 +739,10 @@ void RangerKnockBack::OnStateUpdate()
 
 void RangerKnockBack::OnStateExit()
 {
-
+	GetProperty("isDamage")->Set(m_animator, false);
+	GetProperty("isBack")->Set(m_animator, false);
+	GetProperty("isFall")->Set(m_animator, false);
+	GetProperty("isDown")->Set(m_animator, false);
 }
 
 void RangerDeath::OnStateEnter()

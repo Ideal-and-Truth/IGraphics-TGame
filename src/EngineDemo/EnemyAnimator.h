@@ -144,6 +144,7 @@ public:
 public:
 	virtual void OnStateEnter() override;
 	virtual void OnStateUpdate() override;
+	virtual void OnStateExit() override;
 };
 
 class EnemyDown
