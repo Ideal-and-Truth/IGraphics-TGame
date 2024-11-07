@@ -107,6 +107,10 @@ void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<
 	CreateDefaultQuadMesh2();
 	CreateDefaultDebugLine();
 	CreateParticleVertexBuffer();
+
+
+	//----Loading Thread----//
+	InitThreadPool();
 }
 
 void ResourceManager::WaitForResourceUpload()
@@ -1830,3 +1834,237 @@ std::shared_ptr<Ideal::D3D12VertexBuffer> ResourceManager::GetParticleVertexBuff
 	return m_particleVertexBuffer;
 }
 
+typedef BOOL(WINAPI* LPFN_GLPI)(PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
+
+UINT WINAPI Ideal::LoadThread(void* pArg)
+{
+	LOAD_THREAD_DESC* pDesc = (LOAD_THREAD_DESC*)pArg;
+	std::shared_ptr<Ideal::ResourceManager> pResourceManager = pDesc->pResourceManager;
+	DWORD dwThreadIndex = pDesc->dwThreadIndex;
+	const HANDLE* phEventList = pDesc->hEventList;
+	while (1)
+	{
+		DWORD dwEventIndex = WaitForMultipleObjects(LOAD_THREAD_EVENT_TYPE_COUNT, phEventList, FALSE, INFINITE);
+
+		switch (dwEventIndex)
+		{
+			case LOAD_THREAD_EVENT_TYPE_PROCESS:
+				pResourceManager->ProcessByThread(dwThreadIndex);
+				break;
+			case LOAD_THREAD_EVENT_TYPE_DESTROY:
+				goto lb_exit;
+			default:
+				__debugbreak();
+		}
+	}
+lb_exit:
+	_endthreadex(0);
+	return 0;
+}
+
+void ResourceManager::InitThreadPool()
+{
+	DWORD dwPhysicalCoreCount = 0;
+	DWORD dwLogicalCoreCount = 0;
+	GetPhysicalCoreCount(&dwPhysicalCoreCount, &dwLogicalCoreCount);
+
+	m_dwRenderThreadCount = dwPhysicalCoreCount;
+	if (m_dwRenderThreadCount > MAX_LOAD_THREAD_COUNT)
+		m_dwRenderThreadCount = MAX_LOAD_THREAD_COUNT;
+
+	{
+		m_pThreadDescList = new LOAD_THREAD_DESC[m_dwRenderThreadCount];
+		memset(m_pThreadDescList, 0, sizeof(LOAD_THREAD_DESC) * m_dwRenderThreadCount);
+
+		m_hCompleteEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		for (DWORD i = 0; i < dwPhysicalCoreCount; ++i)
+		{
+			for (DWORD j = 0; j < LOAD_THREAD_EVENT_TYPE_COUNT; ++j)
+			{
+				m_pThreadDescList[i].hEventList[j] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+			}
+			m_pThreadDescList[i].pResourceManager = shared_from_this();
+			m_pThreadDescList[i].dwThreadIndex = i;
+			uint32 ThreadID = 0;
+			m_pThreadDescList[i].hThread = (HANDLE)_beginthreadex(nullptr, 0, LoadThread, m_pThreadDescList + i, 0, &ThreadID);
+		}
+	}
+}
+
+bool ResourceManager::GetPhysicalCoreCount(DWORD* pdwOutPhysicalCoreCount, DWORD* pdwOutLogicalCoreCount)
+{
+	bool result = false;
+	BOOL	bResult = FALSE;
+
+	{
+		LPFN_GLPI glpi;
+
+		PSYSTEM_LOGICAL_PROCESSOR_INFORMATION pBuffer = nullptr;
+		PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = nullptr;
+		DWORD returnLength = 0;
+		DWORD logicalProcessorCount = 0;
+		DWORD numaNodeCount = 0;
+		DWORD processorCoreCount = 0;
+		DWORD processorL1CacheCount = 0;
+		DWORD processorL2CacheCount = 0;
+		DWORD processorL3CacheCount = 0;
+		DWORD processorPackageCount = 0;
+		DWORD byteOffset = 0;
+		PCACHE_DESCRIPTOR Cache;
+
+
+
+		glpi = (LPFN_GLPI)GetProcAddress(GetModuleHandle(TEXT("kernel32")), "GetLogicalProcessorInformation");
+		if (nullptr == glpi)
+		{
+			SYSTEM_INFO systemInfo;
+			GetSystemInfo(&systemInfo);
+			*pdwOutPhysicalCoreCount = systemInfo.dwNumberOfProcessors;
+			*pdwOutLogicalCoreCount = systemInfo.dwNumberOfProcessors;
+
+			OutputDebugStringW(L"\nGetLogicalProcessorInformation is not supported.\n");
+			goto lb_return;
+		}
+
+		BOOL done = FALSE;
+		while (!done)
+		{
+			DWORD rc = glpi(pBuffer, &returnLength);
+
+			if (FALSE == rc)
+			{
+				if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+				{
+					if (pBuffer)
+						free(pBuffer);
+
+					pBuffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)malloc(returnLength);
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				done = TRUE;
+			}
+		}
+
+		ptr = pBuffer;
+
+		while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength)
+		{
+			switch (ptr->Relationship)
+			{
+				case RelationNumaNode:
+					// Non-NUMA systems report a single record of this type.
+					numaNodeCount++;
+					break;
+
+				case RelationProcessorCore:
+					processorCoreCount++;
+
+					// A hyperthreaded core supplies more than one logical processor.
+					logicalProcessorCount += CountSetBits(ptr->ProcessorMask);
+					break;
+
+				case RelationCache:
+					// Cache data is in ptr->Cache, one CACHE_DESCRIPTOR structure for each cache. 
+					Cache = &ptr->Cache;
+					if (Cache->Level == 1)
+					{
+						processorL1CacheCount++;
+					}
+					else if (Cache->Level == 2)
+					{
+						processorL2CacheCount++;
+					}
+					else if (Cache->Level == 3)
+					{
+						processorL3CacheCount++;
+					}
+					break;
+
+				case RelationProcessorPackage:
+					// Logical processors share a physical package.
+					processorPackageCount++;
+					break;
+
+				default:
+					OutputDebugStringW(L"\nError: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
+					break;
+			}
+			byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+			ptr++;
+		}
+		*pdwOutPhysicalCoreCount = processorCoreCount;
+		*pdwOutLogicalCoreCount = logicalProcessorCount;
+		//numaNodeCount;
+		//processorPackageCount;
+		//processorCoreCount;
+		//logicalProcessorCount;
+		//processorL1CacheCount;
+		//processorL2CacheCount;
+		//processorL3CacheCount
+
+		free(pBuffer);
+
+		bResult = TRUE;
+	}
+lb_return:
+	return bResult;
+}
+
+DWORD ResourceManager::CountSetBits(ULONG_PTR bitMask)
+{
+	DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
+	DWORD bitSetCount = 0;
+	ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
+	DWORD i;
+
+	for (i = 0; i <= LSHIFT; ++i)
+	{
+		bitSetCount += ((bitMask & bitTest) ? 1 : 0);
+		bitTest /= 2;
+	}
+
+	return bitSetCount;
+}
+
+void ResourceManager::CleanupThreadPool()
+{
+	if (m_pThreadDescList)
+	{
+		for (DWORD i = 0; i < m_dwRenderThreadCount; ++i)
+		{
+			SetEvent(m_pThreadDescList[i].hEventList[LOAD_THREAD_EVENT_TYPE_DESTROY]);
+
+			WaitForSingleObject(m_pThreadDescList[i].hThread, INFINITE);
+			CloseHandle(m_pThreadDescList[i].hThread);
+			m_pThreadDescList[i].hThread = nullptr;
+
+			for (DWORD j = 0; j < LOAD_THREAD_EVENT_TYPE_COUNT; ++j)
+			{
+				CloseHandle(m_pThreadDescList[i].hEventList[j]);
+				m_pThreadDescList[i].hEventList[j] = nullptr;
+			}
+		}
+		delete[] m_pThreadDescList;
+		m_pThreadDescList = nullptr;
+	}
+	if (m_hCompleteEvent)
+	{
+		CloseHandle(m_hCompleteEvent);
+		m_hCompleteEvent = nullptr;
+	}
+}
+
+void ResourceManager::ProcessByThread(DWORD dwThreadIndex)
+{
+	LONG lCurCount = _InterlockedDecrement(&m_lActiveThreadCount);
+	if (0 == lCurCount)
+	{
+		SetEvent(m_hCompleteEvent);
+	}
+}

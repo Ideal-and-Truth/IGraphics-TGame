@@ -6,6 +6,7 @@
 #include "GraphicsEngine/D3D12/UploadCommandListPool.h"
 #include "GraphicsEngine/D3D12/D3D12Definitions.h"
 // 따로 GPU에 메모리를 업로드 하는 command list를 파서 여기서 사용한다.
+#include <memory>
 
 namespace Ideal
 {
@@ -30,10 +31,28 @@ namespace Ideal
 	class IMesh;
 	class D3D12DynamicConstantBufferAllocator;
 	class UploadCommandListPool;
+	class ResourceManager;
 }
 
 namespace Ideal
 {
+	enum LOAD_THREAD_EVENT_TYPE
+	{
+		LOAD_THREAD_EVENT_TYPE_PROCESS,
+		LOAD_THREAD_EVENT_TYPE_DESTROY,
+		LOAD_THREAD_EVENT_TYPE_COUNT
+	};
+
+	struct LOAD_THREAD_DESC
+	{
+		std::shared_ptr<Ideal::ResourceManager> pResourceManager;
+		DWORD dwThreadIndex;
+		HANDLE hThread;
+		HANDLE hEventList[LOAD_THREAD_EVENT_TYPE_COUNT];
+	};
+
+	UINT WINAPI LoadThread(void* pArg);
+
 	typedef
 		enum IdealTextureTypeFlag
 	{
@@ -337,9 +356,27 @@ namespace Ideal
 		std::shared_ptr<Ideal::D3D12VertexBuffer> GetParticleVertexBuffer();
 
 	private:
-		// 그냥 10000개 만들어벼렸~
 		const uint32 ParticleCount = 1000;
-
 		std::shared_ptr<Ideal::D3D12VertexBuffer> m_particleVertexBuffer;
+
+		// 로딩 속도 높이기. 
+		// 멀티 스레드 도입
+	public:
+		void InitThreadPool();
+		bool GetPhysicalCoreCount(DWORD* pdwOutPhysicalCoreCount, DWORD* pdwOutLogicalCoreCount);
+		DWORD CountSetBits(ULONG_PTR bitMask);
+
+		void CleanupThreadPool();
+
+	public:
+		void ProcessByThread(DWORD dwThreadIndex);
+
+	private:
+		LONG volatile m_lActiveThreadCount = 0;
+
+		DWORD m_dwRenderThreadCount = 0;
+
+		LOAD_THREAD_DESC* m_pThreadDescList;
+		HANDLE m_hCompleteEvent = nullptr;
 	};
 }

@@ -4,7 +4,7 @@
 #include "Types.h"
 
 #include <windows.h>
-
+#include <process.h>
 
 #include <memory>
 #include <string>

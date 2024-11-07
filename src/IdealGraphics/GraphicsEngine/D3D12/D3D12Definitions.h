@@ -11,6 +11,9 @@
 
 #define SizeOfInUint32(obj) ((sizeof(obj) - 1) / sizeof(UINT32) + 1)
 
+//----Loading Thread----//
+#define MAX_LOAD_THREAD_COUNT 8
+
 //----USE UPLOAD COMMANDLIST CONTAINER----//
 #define USE_UPLOAD_CONTAINER
 #define UPLOAD_CONTAINER_COUNT 8
