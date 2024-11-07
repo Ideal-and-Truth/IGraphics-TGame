@@ -812,7 +812,8 @@ void BossSkill::CoolTimeCheck()
 void BossSkill::DeleteCheck()
 {
 	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get() 
-		|| m_bossAnimator->GetTypeInfo().GetProperty("isDeath")->Get<bool>(m_bossAnimator.get()).Get())
+		|| m_bossAnimator->GetTypeInfo().GetProperty("isDeath")->Get<bool>(m_bossAnimator.get()).Get()
+		|| m_bossAnimator->GetTypeInfo().GetProperty("isDown")->Get<bool>(m_bossAnimator.get()).Get())
 	{
 		for (auto& e : m_fires)
 		{

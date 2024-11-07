@@ -48,7 +48,8 @@ RangerAnimator::RangerAnimator()
 
 RangerAnimator::~RangerAnimator()
 {
-
+	m_magicCircle->SetActive(false);
+	m_shootEffect->SetActive(false);
 }
 
 void RangerAnimator::Awake()

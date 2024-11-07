@@ -684,6 +684,11 @@ void BossAttackUpperCut::OnStateEnter()
 
 void BossAttackUpperCut::OnStateUpdate()
 {
+	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Down");
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -900,9 +905,11 @@ void BossAttackSpin::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Down");
 	}
 
-	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 53)
+	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 53
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(250.f, 0.f);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 62
 		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
@@ -1190,10 +1197,12 @@ void BossAttackCombo2_1::OnStateUpdate()
 		dynamic_cast<BossAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_SwingSword_1_Sound.wav", false, 57);
 		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
-	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 63)
+	if (isReset && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 63
+		&& lastFrame != GetProperty("currentFrame")->Get<int>(m_animator).Get())
 	{
 		dynamic_cast<BossAnimator*>(m_animator)->SetImpulse(90.f, 0.f);
 		GetProperty("isAttacking")->Set(m_animator, false);
+		lastFrame = GetProperty("currentFrame")->Get<int>(m_animator).Get();
 	}
 
 
@@ -1274,6 +1283,11 @@ void BossAttackSwordShoot::OnStateEnter()
 
 void BossAttackSwordShoot::OnStateUpdate()
 {
+	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Down");
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -1306,6 +1320,11 @@ void BossAttackShockWave::OnStateEnter()
 
 void BossAttackShockWave::OnStateUpdate()
 {
+	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Down");
+	}
+
 	if (GetProperty("currentFrame")->Get<int>(m_animator).Get() == 0)
 	{
 		isReset = true;
@@ -1345,6 +1364,11 @@ void BossAttackTimeSphere::OnStateEnter()
 
 void BossAttackTimeSphere::OnStateUpdate()
 {
+	if (GetProperty("isDown")->Get<bool>(m_animator).Get())
+	{
+		dynamic_cast<BossAnimator*>(m_animator)->ChangeState("Down");
+	}
+
 	if (!GetProperty("isSkillActive")->Get<bool>(m_animator).Get() && GetProperty("currentFrame")->Get<int>(m_animator).Get() == 14)
 	{
 		isReset = true;
@@ -1685,7 +1709,7 @@ void BossAnimator::Phase3()
 		}
 		if (m_currentState == m_animationStateMap["Down"] && m_isDown)
 		{
-			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 5.f);
+			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 15.f);
 		}
 		if (currentTP / maxTP >= 0.5f && m_currentState == m_animationStateMap["Down"])
 		{
