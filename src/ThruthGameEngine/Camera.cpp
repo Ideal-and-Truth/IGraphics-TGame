@@ -57,12 +57,6 @@ void Truth::Camera::RotateY(float angle)
 	m_camera->RotateY(angle);
 }
 
-
-void Truth::Camera::Start()
-{
-	SetMainCamera();
-}
-
 void Truth::Camera::DefaultUpdate()
 {
 	float m_speed = 1.0f;
@@ -96,13 +90,12 @@ void Truth::Camera::Initialize()
 	//m_camera->SetPosition(Vector3(0.f, 0.f, -150.f));
 	m_position = { 0.f, 0.f, 0.f };
 	SetLens(0.25f * 3.141592f, m_managers.lock()->Graphics()->GetAspect(), 1.f, 100000.f);
-	SetMainCamera();
+	// SetMainCamera();
 }
 
 void Truth::Camera::CompleteCamera()
 {
 	m_camera->SetPosition(m_owner.lock()->m_transform->m_position);
-
 	m_camera->SetLook(m_look);
 }
 

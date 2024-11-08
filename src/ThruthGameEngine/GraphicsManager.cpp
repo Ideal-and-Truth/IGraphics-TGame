@@ -558,6 +558,14 @@ void Truth::GraphicsManager::SetMainCamera(EditorCamera* _camera)
 
 void Truth::GraphicsManager::CompleteCamera()
 {
-	m_mainCamera->CompleteCamera();
+	if (m_mainCamera)
+	{
+		m_mainCamera->CompleteCamera();
+	}
+}
+
+void Truth::GraphicsManager::ResetMainCamera()
+{
+	m_mainCamera = nullptr;
 }
 
