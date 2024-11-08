@@ -25,13 +25,17 @@ private:
 
 	std::vector<std::shared_ptr<Truth::Entity>> m_enemys;
 
-	std::shared_ptr<PlayerController> m_playerController;
+	std::shared_ptr<PlayerController> m_playerController; 
 
+	PROPERTY(cameraDistance);
 	float m_cameraDistance;
+
 	PROPERTY(elevation);
 	float m_elevation;
+
 	PROPERTY(azimuth);
 	float m_azimuth;
+
 	float m_cameraSpeed;
 
 	PROPERTY(isLockOn);

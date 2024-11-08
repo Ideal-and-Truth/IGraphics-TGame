@@ -12,7 +12,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 PlayerCamera::PlayerCamera()
 	: m_elevation(3.3f)
 	, m_azimuth(0.1f)
-	, m_cameraDistance(10.f)
+	, m_cameraDistance(4.f)
 	, m_cameraSpeed(0.003f)
 	, m_passingTime(0.f)
 	, m_isLockOn(false)
@@ -153,8 +153,9 @@ void PlayerCamera::LateUpdate()
 		if (m_azimuth < -3.14f)
 			m_azimuth = 3.14f;
 
-
+		/// TODO : Ä«¸Þ¶ó ÁÜÀÎ ÁÜ¾Æ¿ô ³ªÁß¿¡ ²ô±â
 		m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
+
 		if (m_cameraDistance <= 0.0f)
 			m_cameraDistance = 0.001f;
 	}

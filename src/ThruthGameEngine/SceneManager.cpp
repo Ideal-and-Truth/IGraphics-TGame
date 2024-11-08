@@ -109,6 +109,8 @@ void Truth::SceneManager::ChangeScene()
 {
 	m_eventManager.lock()->RemoveAllEvents();
 	
+	m_mangers.lock()->Particle()->StopAllParticle();
+
 	m_currentScene->Exit();
 
 	std::ifstream inputstream(m_savedFilePath + m_nextSceneName + ".scene");
@@ -123,7 +125,6 @@ void Truth::SceneManager::ChangeScene()
 
 	m_mangers.lock()->Time()->RestartTime();
 	m_mangers.lock()->Input()->m_fpsMode = s->m_useNavMesh;
-	m_mangers.lock()->Particle()->StopAllParticle();
 }
 
 /// <summary>
