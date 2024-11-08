@@ -17,6 +17,7 @@
 #include "PhysicsManager.h"
 #include "DotDamage.h"
 #include "SoundManager.h"
+#include "PlayerCamera.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(BossSkill)
 
@@ -811,7 +812,7 @@ void BossSkill::CoolTimeCheck()
 
 void BossSkill::DeleteCheck()
 {
-	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get() 
+	if (m_currentPhase != m_bossAnimator->GetTypeInfo().GetProperty("currentPhase")->Get<int>(m_bossAnimator.get()).Get()
 		|| m_bossAnimator->GetTypeInfo().GetProperty("isDeath")->Get<bool>(m_bossAnimator.get()).Get()
 		|| m_bossAnimator->GetTypeInfo().GetProperty("isDown")->Get<bool>(m_bossAnimator.get()).Get())
 	{
@@ -1070,6 +1071,10 @@ void BossSkill::PlayEffect(Vector3 pos)
 
 			p->Play();
 		}
+
+		auto playerCamera = m_player->GetOwner().lock()->GetComponent<PlayerCamera>().lock();
+		playerCamera->GetTypeInfo().GetProperty("isShaking")->Set(playerCamera.get(), true);
+		playerCamera->GetTypeInfo().GetProperty("shakeCount")->Set(playerCamera.get(), 5.f);
 
 		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_1_Sound.wav", true, 62);
 	}
