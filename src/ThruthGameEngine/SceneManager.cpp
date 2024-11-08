@@ -105,6 +105,11 @@ void Truth::SceneManager::ChangeScene(const std::string& _name)
 	m_nextSceneName = _name;
 }
 
+void Truth::SceneManager::ResetScene()
+{
+	ChangeScene(m_currentScene->m_name);
+}
+
 void Truth::SceneManager::ChangeScene()
 {
 	m_eventManager.lock()->RemoveAllEvents();

@@ -23,7 +23,6 @@ void FailedUI::Start()
 	if (!playerEntity.expired())
 		m_player = playerEntity.lock()->GetComponent<Player>();
 	m_UI.lock()->SetAlpha(m_alpha);
-	m_UI.lock()->SetOnlyUI();
 }
 
 void FailedUI::Update()
@@ -40,5 +39,7 @@ void FailedUI::Update()
 		}
 
 		m_UI.lock()->SetAlpha(m_alpha);
+
+		m_managers.lock()->Input()->SetFPSMode(false);
 	}
 }

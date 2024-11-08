@@ -51,6 +51,7 @@ namespace Truth
 
 		RECT m_rect;
 
+		PROPERTY(isButton);
 		bool m_isButton;
 
 		PROPERTY(size);
@@ -68,7 +69,7 @@ namespace Truth
 		PROPERTY(position);
 		Vector2 m_position;
 
-		PROPERTYM(alpha, 0.0f, 1.0f);
+		PROPERTYM(alpha, 0.0f, 1.f);
 		float m_alpha;
 
 		PROPERTYM(zDepth, 0.0f, 1.0f);
@@ -76,6 +77,7 @@ namespace Truth
 
 		PROPERTY(behavior);
 		std::shared_ptr<ButtonBehavior> m_behavior;
+
 
 		bool m_noneUpdate = false;
 
@@ -88,7 +90,7 @@ namespace Truth
 		void SetOnlyUI();
 		void SetButton();
 		void SetAlpha(float _alpha);
-
+		const std::string& GetName() { return m_owner.lock()->m_name; };
 	private:
 		METHOD(Initialize);
 		virtual void Initialize() override;
@@ -129,6 +131,7 @@ namespace Truth
 		_ar& m_scale;
 		_ar& m_minSampling;
 		_ar& m_maxSampling;
+		_ar& m_isButton;
 	}
 
 	template<class Archive>
@@ -154,9 +157,11 @@ namespace Truth
 			_ar& m_minSampling;
 			_ar& m_maxSampling;
 		}
+		if (file_version >= 4)
+			_ar& m_isButton;
 	}
 }
 
 BOOST_CLASS_EXPORT_KEY(Truth::UI)
-BOOST_CLASS_VERSION(Truth::UI, 3)
+BOOST_CLASS_VERSION(Truth::UI, 4)
 

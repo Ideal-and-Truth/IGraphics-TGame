@@ -83,7 +83,6 @@ void Truth::UI::SetOnlyUI()
 void Truth::UI::SetButton()
 {
 	m_isButton = true;
-
 }
 
 void Truth::UI::SetAlpha(float _alpha)

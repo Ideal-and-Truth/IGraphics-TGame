@@ -377,7 +377,6 @@ void Truth::Scene::Start()
 		m_startedEntity.pop();
 	}
 
-	m_started = true;
 }
 
 /// <summary>
@@ -393,6 +392,8 @@ void Truth::Scene::Enter()
 	Start();
 	ApplyTransform();
 #endif // EDITOR_MODE
+	m_started = true;
+
 }
 
 /// <summary>
