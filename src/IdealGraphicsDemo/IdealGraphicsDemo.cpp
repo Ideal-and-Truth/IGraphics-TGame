@@ -72,7 +72,7 @@ using namespace std;
 #define DefaultLayer 0
 #define PlayerLayer 1
 
-//#define MAKE_PARTICLE
+#define MAKE_PARTICLE
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -745,6 +745,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			L"../Shaders/Particle/"
 		);
 		std::shared_ptr<Ideal::IShader> defaultTextureParticleShader = gRenderer->CreateAndLoadParticleShader(L"DefaultTextureParticlePS");
+
+		gRenderer->CompileShader(
+			L"../Shaders/Particle/DefaultTextureParticleClipPS.hlsl",
+			L"../Shaders/Particle/",
+			L"DefaultTextureParticleClipPS",
+			L"ps_6_3",
+			L"PSMain",
+			L"../Shaders/Particle/"
+		);
+		std::shared_ptr<Ideal::IShader> defaultTextureParticleClipShader = gRenderer->CreateAndLoadParticleShader(L"DefaultTextureParticleClipPS");
+
 
 		gRenderer->CompileShader(
 			L"../Shaders/Particle/BossFireFloor.hlsl",
@@ -2400,6 +2411,88 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 
 #pragma endregion
+
+#pragma region Portal
+		std::shared_ptr<Ideal::IParticleMaterial> portalMaterial = gRenderer->CreateParticleMaterial();
+		portalMaterial->SetShader(defaultTextureParticleClipShader);
+		std::shared_ptr<Ideal::ITexture> portalTexture = gRenderer->CreateTexture(L"../Resources/Textures/0_Particle/Circle.png");
+		portalMaterial->SetTexture0(portalTexture);
+		portalMaterial->SetBlendingMode(Ideal::ParticleMaterialMenu::EBlendingMode::AlphaAdditive);
+		portalMaterial->SetBackFaceCulling(false);
+		std::shared_ptr<Ideal::IParticleSystem> portalParticleSystem = gRenderer->CreateParticleSystem(portalMaterial);
+		portalParticleSystem->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateTranslation(0, 8, 0)
+		);
+
+		portalParticleSystem->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		portalParticleSystem->SetRenderMesh(particleMeshPlane);
+		portalParticleSystem->SetStartSize(0.5f);
+		portalParticleSystem->SetDuration(1.f);
+		portalParticleSystem->SetStartLifetime(1.f);
+		portalParticleSystem->SetLoop(true);
+		portalParticleSystem->SetStartColor(Color(1, 0, 0, 1));
+		portalParticleSystem->SetSizeOverLifetime(true);
+		{
+			auto& graph = portalParticleSystem->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.7 });
+			graph.AddControlPoint({ 1,2 });
+		}
+		{
+			auto& graph = portalParticleSystem->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1 });
+		}
+		{
+			auto& graph = portalParticleSystem->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.7 });
+			graph.AddControlPoint({ 1,3 });
+		}
+
+		portalParticleSystem->SetColorOverLifetime(true);
+		{
+			auto& graph = portalParticleSystem->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 0, 0, 1), 0);
+			graph.AddPoint(Color(1, 0, 0, 0), 1);
+		}
+
+		// 2
+
+		std::shared_ptr<Ideal::IParticleSystem> portalParticleSystem1 = gRenderer->CreateParticleSystem(portalMaterial);
+		portalParticleSystem1->SetTransformMatrix(
+			Matrix::CreateRotationX(1.57f)
+			* Matrix::CreateTranslation(0, 8, 0)
+		);
+
+		portalParticleSystem1->SetRenderMode(Ideal::ParticleMenu::ERendererMode::Mesh);
+		portalParticleSystem1->SetRenderMesh(particleMeshPlane);
+		portalParticleSystem1->SetStartSize(0.5f);
+		portalParticleSystem1->SetDuration(1.f);
+		portalParticleSystem1->SetStartLifetime(1.f);
+		portalParticleSystem1->SetLoop(true);
+		portalParticleSystem1->SetStartColor(Color(1, 0, 0, 1));
+		portalParticleSystem1->SetSizeOverLifetime(true);
+		{
+			auto& graph = portalParticleSystem1->GetSizeOverLifetimeAxisX();
+			graph.AddControlPoint({ 0,0.3 });
+			graph.AddControlPoint({ 1,1.7 });
+		}
+		{
+			auto& graph = portalParticleSystem1->GetSizeOverLifetimeAxisY();
+			graph.AddControlPoint({ 0,1 });
+		}
+		{
+			auto& graph = portalParticleSystem1->GetSizeOverLifetimeAxisZ();
+			graph.AddControlPoint({ 0,0.3 });
+			graph.AddControlPoint({ 1,2.7 });
+		}
+
+		portalParticleSystem1->SetColorOverLifetime(true);
+		{
+			auto& graph = portalParticleSystem1->GetColorOverLifetimeGradientGraph();
+			graph.AddPoint(Color(1, 0, 0, 1), 0);
+			graph.AddPoint(Color(1, 0, 0, 0), 1);
+		}
+#pragma endregion
 #endif
 		DirectX::SimpleMath::Matrix world = DirectX::SimpleMath::Matrix::Identity;
 		DirectX::SimpleMath::Matrix world2 = DirectX::SimpleMath::Matrix::Identity;
@@ -2810,6 +2903,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				enemyChargeParticleSystem->SetDeltaTime(0.003f);
 				enemyChargeParticleSystem2->SetDeltaTime(0.003f);
 				ScannerParticleSystem->SetDeltaTime(0.003f);
+				portalParticleSystem->SetDeltaTime(0.003f);
+				portalParticleSystem1->SetDeltaTime(0.003f);
 #endif
 				//if (DebugPlayer)
 				{

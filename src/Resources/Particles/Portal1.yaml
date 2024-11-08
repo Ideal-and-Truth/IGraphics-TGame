@@ -1,0 +1,45 @@
+MaxCount: 40
+MatName: Portal
+EBlendingMode: 2
+Shader: DefaultTextureParticleClipPS
+Texture0: ../Resources/Textures/0_Particle/Circle.png
+Mesh: 0_Particle/Plane
+StartLifetime: 1
+StartColor:
+  - 1
+  - 0
+  - 0
+  - 1
+Loop: true
+Duration: 1
+BackFaceCulling: false
+StartSize: 0.5
+RenderMode: 1
+SizeOverLifetime: true
+SizeOverLifetimeAxisX:
+  - x: 0
+    y: 0.3
+  - x: 1
+    y: 1.7
+SizeOverLifetimeAxisY:
+  - x: 0
+    y: 1
+SizeOverLifetimeAxisZ:
+  - x: 0
+    y: 0.3
+  - x: 1
+    y: 2.7
+ColorOverLifetime: true
+ColorOverLifetimeGradientGraph:
+  - Color:
+      - 1
+      - 0
+      - 0
+      - 1
+    position: 0
+  - Color:
+      - 1
+      - 0
+      - 0
+      - 0
+    position: 1
