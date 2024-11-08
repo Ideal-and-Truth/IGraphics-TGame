@@ -86,6 +86,14 @@ void Truth::UI::SetButton()
 
 }
 
+void Truth::UI::SetAlpha(float _alpha)
+{
+	for (uint32 i = 0; i < 3; i++)
+	{
+		(*m_sprite)[i]->SetAlpha(_alpha);
+	}
+}
+
 void Truth::UI::Initialize()
 {
 	auto gp = m_managers.lock()->Graphics();

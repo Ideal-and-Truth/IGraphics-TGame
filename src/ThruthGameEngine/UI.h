@@ -87,6 +87,7 @@ namespace Truth
 		void SetSampling(const Vector2& _min, const Vector2& _max);
 		void SetOnlyUI();
 		void SetButton();
+		void SetAlpha(float _alpha);
 
 	private:
 		METHOD(Initialize);
