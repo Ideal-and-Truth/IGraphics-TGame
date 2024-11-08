@@ -29,6 +29,7 @@ void Ideal::IdealCanvas::Init(ComPtr<ID3D12Device> Device)
 
 void Ideal::IdealCanvas::DrawCanvas(ComPtr<ID3D12Device> Device, ComPtr<ID3D12GraphicsCommandList> CommandList, std::shared_ptr<Ideal::D3D12DescriptorHeap> UIDescriptorHeap, std::shared_ptr<Ideal::D3D12DynamicConstantBufferAllocator> CBPool)
 {
+	SortSpriteByZ();
 	// TODO Set
 	CommandList->SetPipelineState(m_rectPSO.Get());
 	CommandList->SetGraphicsRootSignature(m_rectRootSignature.Get());
@@ -146,6 +147,26 @@ void Ideal::IdealCanvas::SetCanvasSize(uint32 Width, uint32 Height)
 	for (auto text : m_texts)
 	{
 		text.lock()->Resize(Width, Height);
+	}
+}
+
+void Ideal::IdealCanvas::SortSpriteByZ()
+{
+	bool IsDirty = false;
+	for (auto& sprite : m_sprites)
+	{
+		if (sprite.lock()->IsDirty())
+		{
+			sprite.lock()->SetDirty(false);
+			IsDirty = true;
+			break;
+		}
+	}
+	if (IsDirty)
+	{
+		IsDirty = false;
+		std::sort(m_sprites.begin(), m_sprites.end(), [](const std::weak_ptr<Ideal::IdealSprite>& A, const std::weak_ptr<Ideal::IdealSprite>& B) 
+			{ return A.lock()->GetZ() > B.lock()->GetZ(); });
 	}
 }
 

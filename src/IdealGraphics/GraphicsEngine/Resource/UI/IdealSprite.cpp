@@ -118,6 +118,7 @@ void Ideal::IdealSprite::SetTextureSampleSize(const Vector2& TextureSampleSize)
 void Ideal::IdealSprite::SetZ(float Z)
 {
 	m_cbSprite.Z = Z;
+	SetDirty(true);
 }
 
 void Ideal::IdealSprite::SetAlpha(float Alpha)
