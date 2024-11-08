@@ -57,6 +57,9 @@ namespace Ideal
 		void SetCanvasSize(uint32 Width, uint32 Height);
 
 	private:
+
+		void SortSpriteByZ();
+
 		void CreateRootSignature(ComPtr<ID3D12Device> Device);
 		void CreatePSO(ComPtr<ID3D12Device> Device);
 
