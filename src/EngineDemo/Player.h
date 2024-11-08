@@ -66,6 +66,9 @@ private:
 
 	float m_burnedTime;
 
+	PROPERTY(isDead);
+	bool m_isDead;
+
 public:
 	Player();
 	virtual ~Player();

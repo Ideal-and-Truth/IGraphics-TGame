@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "ParticleManager.h"
 #include "IParticleSystem.h"
+#include "SoundManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(TimeDistortion)
 
@@ -26,6 +27,43 @@ TimeDistortion::~TimeDistortion()
 {
 	m_blackHole->SetActive(false);
 	m_blackHoleRing->SetActive(false);
+	m_managers.lock()->Sound()->Stop(67);
+	m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_BlackHole_Bomb_Sound.wav", false, 68);
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateScale(Vector3(0.8f, 0.8f, 1.f)) *
+			Matrix::CreateRotationX(3.14f * 0.5f) *
+			Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam1.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateScale(Vector3(0.8f, 0.8f, 1.f)) *
+			Matrix::CreateRotationX(3.14f * 0.5f) *
+			Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+
+		p->SetActive(true);
+		p->Play();
+	}
+
+	{
+		auto p = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\Beam2.yaml");
+		p->SetTransformMatrix(
+			Matrix::CreateScale(2.f) *
+			Matrix::CreateTranslation(m_owner.lock()->GetWorldPosition())
+		);
+
+		p->SetActive(true);
+		p->Play();
+	}
 }
 
 void TimeDistortion::Awake()
@@ -41,6 +79,10 @@ void TimeDistortion::Start()
 
 	m_blackHole = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BlackHoleSphere.yaml");
 	m_blackHoleRing = m_managers.lock()->Particle()->GetParticle("..\\Resources\\Particles\\BlackHole.yaml");
+
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_BlackHole_Drop_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_BlackHole_Base_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_BlackHole_Bomb_Sound.wav", false);
 }
 
 void TimeDistortion::FixedUpdate()
@@ -169,5 +211,8 @@ void TimeDistortion::PlayEffect()
 		m_blackHoleRing->SetActive(true);
 		m_blackHoleRing->Play();
 		m_playCount++;
+
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_BlackHole_Drop_Sound.wav", false, 66);
+		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_BlackHole_Base_Sound.wav", false, 67);
 	}
 }

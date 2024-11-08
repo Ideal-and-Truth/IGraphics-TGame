@@ -119,6 +119,9 @@ void BossSkill::Awake()
 void BossSkill::Start()
 {
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_1_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_Flame_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_Ground_Impact_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_ClockHand_Summon_Sound.wav", false);
 }
 
 void BossSkill::FixedUpdate()
@@ -292,6 +295,8 @@ void BossSkill::ShockWave()
 					PlayEffect(m_shockWaves[6].first->GetWorldPosition());
 					m_playShock = true;
 					PlayEffect(m_shockWaves[7].first->GetWorldPosition());
+
+					m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_Ground_Impact_Sound.wav", true, 69);
 				}
 				else if (m_shockCount % 2 == 1)
 				{
@@ -320,6 +325,8 @@ void BossSkill::ShockWave()
 					PlayEffect(m_shockWaves[14].first->GetWorldPosition());
 					m_playShock = true;
 					PlayEffect(m_shockWaves[15].first->GetWorldPosition());
+
+					m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_Ground_Impact_Sound.wav", true, 69);
 				}
 
 				m_shockCount++;
@@ -481,6 +488,8 @@ void BossSkill::SwordShooting()
 
 			m_swordShootTime = 0.f;
 			m_swordCount++;
+
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_ClockHand_Summon_Sound.wav", true, 70);
 		}
 		if (m_swordCount >= m_swordPos.size())
 		{
@@ -736,7 +745,7 @@ void BossSkill::DistortedTimeSphere()
 			{
 				if (e.first->m_transform->m_position.y > m_owner.lock()->GetWorldPosition().y + 0.5f)
 				{
-					e.first->m_transform->m_position.y -= GetDeltaTime() * 2.f;
+					e.first->m_transform->m_position.y -= GetDeltaTime() * 5.f;
 				}
 				else
 				{
@@ -1114,6 +1123,8 @@ void BossSkill::PlayEffect(Vector3 pos)
 			{
 				p1->SetActive(true);
 				p1->Play();
+
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_Flame_Sound.wav", false, 71);
 			}
 
 			m_playFlameShot = false;

@@ -58,6 +58,11 @@ void PlayerController::FixedUpdate()
 
 void PlayerController::Update()
 {
+	if (m_player.lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(m_player.lock().get()).Get())
+	{
+		return;
+	}
+
 	PlayerMove(nullptr);
 }
 

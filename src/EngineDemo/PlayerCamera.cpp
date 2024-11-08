@@ -3,9 +3,11 @@
 #include "Transform.h"
 #include "Enemy.h"
 #include "PhysicsManager.h"
+#include "Player.h"
 #include "PlayerController.h"
 #include "EnemyAnimator.h"
 #include "BossAnimator.h"
+#include "GraphicsManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 
@@ -55,14 +57,21 @@ void PlayerCamera::Start()
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
+
+	m_managers.lock()->Graphics()->SetMainCamera(m_camera.lock().get());
 }
 
 void PlayerCamera::FixedUpdate()
 {
-	if (m_isLockOn && !m_enemys.empty())
+	if (m_isLockOn && !m_enemys.empty()
+		&& !m_player.lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(m_player.lock()->GetComponent<Player>().lock().get()).Get())
+	{
 		LockOnCamera();
+	}
 	else
+	{
 		FreeCamera();
+	}
 }
 
 void PlayerCamera::LateUpdate()
@@ -232,7 +241,7 @@ void PlayerCamera::LockOnCamera()
 	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
 
 	m_owner.lock()->m_transform->m_position = Vector3::Lerp(m_owner.lock()->m_transform->m_position, cameraPos, 0.2f);
-	m_camera.lock()->m_look =Vector3::Lerp(m_camera.lock()->m_look, look, 0.2f);
+	m_camera.lock()->m_look = Vector3::Lerp(m_camera.lock()->m_look, look, 0.2f);
 
 	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
 	m_owner.lock()->m_transform->m_rotation.z = 0.f;
