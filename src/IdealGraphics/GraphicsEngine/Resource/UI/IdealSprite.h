@@ -57,6 +57,8 @@ namespace Ideal
 		void SetTextureSamplePosition(const Vector2& TextureSamplePosition);
 		void SetTextureSampleSize(const Vector2& TextureSampleSize);
 
+		bool IsDirty() {return m_isDirty; }
+		void SetDirty(bool Dirty) { m_isDirty = Dirty; }
 	public:
 		// default mesh를 넣어줄 것
 		void SetMesh(std::shared_ptr<Ideal::IdealMesh<SimpleVertex>> Mesh);
@@ -74,5 +76,6 @@ namespace Ideal
 		// 스프라이트 정보!
 		CB_Sprite m_cbSprite;
 		bool m_isActive = true;
+		bool m_isDirty = false;
 	};
 }
