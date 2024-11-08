@@ -24,6 +24,7 @@ Player::Player()
 	, m_isInvincible(false)
 	, m_onFire(false)
 	, m_getDotDeal(false)
+	, m_isDead(false)
 {
 	m_name = "Player";
 }
@@ -45,6 +46,17 @@ void Player::Start()
 
 void Player::Update()
 {
+	if (m_currentTP <= 0.f)
+	{
+		m_isDead = true;
+	}
+
+	if (m_isDead)
+	{
+		return;
+	}
+
+
 	/// 무적이 되는 마법의 커맨드
 	if (GetKey(KEY::O) && GetKeyDown(KEY::P))
 		m_isInvincible = !m_isInvincible;
@@ -94,7 +106,7 @@ void Player::Update()
 	}
 
 	/// 1초마다 체력 감소
-	if (m_currentTP > 0.f)
+	if (m_currentTP >= 0.f)
 	{
 		m_passingTime += GetDeltaTime();
 		if (m_passingTime >= 1.f)

@@ -153,6 +153,7 @@ void BossAnimator::Start()
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_SwingSword_2_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_SwingSword_3_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_SwingSword_4_Sound.wav", false);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_Groggy_Sound.wav", false);
 
 
 	m_currentState->OnStateEnter();
@@ -985,6 +986,7 @@ void BossAttackDoubleUpperCut::OnStateExit()
 void BossDown::OnStateEnter()
 {
 	dynamic_cast<BossAnimator*>(m_animator)->SetAnimation("BossDown1", false);
+	dynamic_cast<BossAnimator*>(m_animator)->SoundPlay(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_Groggy_Sound.wav", false, 70);
 	GetProperty("isLockOn")->Set(m_animator, true);
 	GetProperty("passingTime")->Set(m_animator, 0.f);
 }
