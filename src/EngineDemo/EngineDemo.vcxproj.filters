@@ -103,6 +103,9 @@
     <Filter Include="Component\TitleUI">
       <UniqueIdentifier>{787aa36b-2408-4b6c-bc24-062f32af7fcc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\ClearUI">
+      <UniqueIdentifier>{3c81ab4a-3652-46b4-926f-394836f16efa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -258,6 +261,9 @@
     <ClInclude Include="TitleUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ClearUI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineDemo.cpp">
@@ -402,6 +408,9 @@
       <Filter>Component\FailedUI</Filter>
     </ClCompile>
     <ClCompile Include="TitleUI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ClearUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

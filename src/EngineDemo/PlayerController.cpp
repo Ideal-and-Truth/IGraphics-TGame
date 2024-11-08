@@ -222,8 +222,8 @@ void PlayerController::PlayerMove(const void*)
 		}
 	}
 
-// 	if (!m_canMove)
-// 		return;
+	if (!m_canMove)
+		return;
 
 	/// 락온 중에 가만히 있으면 회전
 	if (m_faceDirection == Vector3::Zero)

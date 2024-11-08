@@ -159,6 +159,7 @@
     </ClInclude>
     <ClInclude Include="BulletMove.h" />
     <ClInclude Include="ButtonTest.h" />
+    <ClInclude Include="ClearUI.h" />
     <ClInclude Include="CombatZone.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="CutSceneTrigger.h" />
@@ -215,6 +216,7 @@
     </ClCompile>
     <ClCompile Include="BulletMove.cpp" />
     <ClCompile Include="ButtonTest.cpp" />
+    <ClCompile Include="ClearUI.cpp" />
     <ClCompile Include="CombatZone.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="CutSceneTrigger.cpp" />
