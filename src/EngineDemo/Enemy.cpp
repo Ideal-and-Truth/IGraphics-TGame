@@ -4,7 +4,7 @@
 BOOST_CLASS_EXPORT_IMPLEMENT(Enemy)
 
 Enemy::Enemy()
-	: m_speed(3.0f)
+	: m_speed(2.0f)
 	, m_attackCoefficient(0.f)
 	, m_moveCoefficient(0.f)
 	, m_maxTP(100.f)
@@ -52,12 +52,26 @@ void Enemy::Update()
 		m_isTargetIn = true;
 	}
 
+	std::shared_ptr<Player> player = m_player.lock();
 
+	if (!m_slowTime)
+	{
+		m_slowTime = player->GetSlowTime();
+	}
+
+	if (m_slowTime && m_owner.lock()->m_name != "Boss")
+	{
+		m_speed = m_baseSpeed * 0.5f;
+		if (player->GetCurrentCP() <= 0.f)
+		{
+			m_speed = m_baseSpeed;
+			m_slowTime = false;
+		}
+	}
 
 	if (m_isInvincible)
 	{
 		m_currentTP = m_maxTP;
-		return;
 	}
 
 	if (!m_isTargetIn)
@@ -66,17 +80,5 @@ void Enemy::Update()
 
 void Enemy::LateUpdate()
 {
-	std::shared_ptr<Player> player = m_player.lock();
-
-	m_slowTime = player->GetSlowTime();
-
-	if (m_slowTime && m_owner.lock()->m_name != "Boss")
-	{
-		m_speed = m_baseSpeed * 0.3f;
-		if (player->GetCurrentCP() <= 0.f)
-		{
-			m_speed = m_baseSpeed;
-			m_slowTime = false;
-		}
-	}
+	
 }

@@ -854,6 +854,7 @@ void NormalAttack6::OnStateEnter()
 	GetProperty("fallAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(10.f, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(15.f);
+	GetProperty("normalAttack6")->Set(m_animator, true);
 }
 
 void NormalAttack6::OnStateUpdate()
