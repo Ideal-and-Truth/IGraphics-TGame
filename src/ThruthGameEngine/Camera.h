@@ -73,9 +73,6 @@ namespace Truth
 		virtual void EditorSetValue();
 #endif // EDITOR_MODE
 
-		METHOD(Start);
-		virtual void Start();
-
 		void DefaultUpdate();
 	};
 

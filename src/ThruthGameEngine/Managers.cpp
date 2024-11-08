@@ -191,6 +191,7 @@ void Truth::Managers::GameToEdit()
 	m_sceneManager->ReloadSceneData();
 	m_isEdit = true;
 	m_inputManager->m_fpsMode = false;
+	m_graphicsManager->ResetMainCamera();
 }
 #endif // EDITOR_MODE
 

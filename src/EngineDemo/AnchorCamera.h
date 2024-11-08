@@ -40,6 +40,12 @@ private:
 	PROPERTY(distance);
 	float m_distance;
 
+	PROPERTY(height);
+	float m_height;
+
+	PROPERTY(azimuth);
+	float m_azimuth;
+
 private:
 
 	METHOD(Awake);
@@ -54,12 +60,20 @@ template<class Archive>
 void AnchorCamera::save(Archive& _ar, const unsigned int file_version) const
 {
 	_ar& boost::serialization::base_object<Camera>(*this);
+	_ar& m_anchor;
+	_ar& m_speed;
+	_ar& m_distance;
+	_ar& m_height;
 }
 
 template<class Archive>
 void AnchorCamera::load(Archive& _ar, const unsigned int file_version)
 {
 	_ar& boost::serialization::base_object<Camera>(*this);
+	_ar& m_anchor;
+	_ar& m_speed;
+	_ar& m_distance;
+	_ar& m_height;
 }
 
 

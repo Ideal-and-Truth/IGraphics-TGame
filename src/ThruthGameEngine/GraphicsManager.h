@@ -140,6 +140,8 @@ namespace Truth
 		std::shared_ptr<Ideal::IdealRenderer> GetRenderer() const {return m_renderer;}
 
 		void CompleteCamera();
+
+		void ResetMainCamera();
 	};
 }
 
