@@ -45,8 +45,7 @@ void ClearUI::Update()
 		}
 	}
 
-
-	if (!m_isShown)
+	if (m_boss.expired())
 	{
 		m_alpha -= speed;
 
@@ -57,4 +56,16 @@ void ClearUI::Update()
 
 		m_UI.lock()->SetAlpha(m_alpha);
 	}
+
+// 	if (!m_isShown)
+// 	{
+// 		m_alpha -= speed;
+// 
+// 		if (m_alpha <= 0.0f)
+// 		{
+// 			m_alpha = 0.0f;
+// 		}
+// 
+// 		m_UI.lock()->SetAlpha(m_alpha);
+// 	}
 }
