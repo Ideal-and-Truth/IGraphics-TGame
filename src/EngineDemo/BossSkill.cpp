@@ -83,6 +83,8 @@ void BossSkill::Awake()
 {
 	m_bossAnimator = m_owner.lock()->GetComponent<BossAnimator>().lock();
 	m_player = m_managers.lock()->Scene()->m_currentScene->FindEntity("Player").lock()->GetComponent<Player>().lock();
+	m_playerCamera = m_managers.lock()->Scene()->m_currentScene->FindEntity("ThirdPersonCamera").lock()->GetComponent<PlayerCamera>().lock();
+
 
 	m_shockWavePos.push_back(4.2f);
 	m_shockWavePos.push_back(8.2f);
@@ -1072,9 +1074,8 @@ void BossSkill::PlayEffect(Vector3 pos)
 			p->Play();
 		}
 
-		auto playerCamera = m_player->GetOwner().lock()->GetComponent<PlayerCamera>().lock();
-		playerCamera->GetTypeInfo().GetProperty("isShaking")->Set(playerCamera.get(), true);
-		playerCamera->GetTypeInfo().GetProperty("shakeCount")->Set(playerCamera.get(), 5.f);
+		m_playerCamera->GetTypeInfo().GetProperty("isShaking")->Set(m_playerCamera.get(), true);
+		m_playerCamera->GetTypeInfo().GetProperty("shakeCount")->Set(m_playerCamera.get(), 5.f);
 
 		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_1_Sound.wav", true, 62);
 	}

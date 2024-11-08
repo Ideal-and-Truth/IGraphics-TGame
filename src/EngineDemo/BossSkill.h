@@ -4,6 +4,7 @@
 
 class BossAnimator;
 class Player;
+class PlayerCamera;
 
 class BossSkill :
 	public Truth::Component
@@ -20,6 +21,7 @@ private:
 private:
 	std::shared_ptr<BossAnimator> m_bossAnimator;
 	std::shared_ptr<Player> m_player;
+	std::shared_ptr<PlayerCamera> m_playerCamera;
 
 	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_fires;
 	std::vector<std::pair<std::shared_ptr<Truth::Entity>, bool>> m_shockWaves;
