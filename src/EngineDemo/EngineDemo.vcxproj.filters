@@ -97,6 +97,9 @@
     <Filter Include="Component\AnchorCamera">
       <UniqueIdentifier>{623b97e3-844a-4d66-9840-784542345422}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\FailedUI">
+      <UniqueIdentifier>{e3e62388-7bff-4dd7-b74f-b31b39c8e04d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -241,6 +244,9 @@
       <Filter>Component\Sound</Filter>
     </ClInclude>
     <ClInclude Include="AnchorCamera.h">
+      <Filter>Component\AnchorCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="FailedUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -378,6 +384,9 @@
       <Filter>Component\Sound</Filter>
     </ClCompile>
     <ClCompile Include="AnchorCamera.cpp">
+      <Filter>Component\AnchorCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="FailedUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

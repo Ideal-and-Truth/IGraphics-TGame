@@ -169,6 +169,7 @@
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="ExitButton.h" />
+    <ClInclude Include="FailedUI.h" />
     <ClInclude Include="FixedCamera.h" />
     <ClInclude Include="FollowPointLight.h" />
     <ClInclude Include="FrameUI.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
     <ClCompile Include="ExitButton.cpp" />
+    <ClCompile Include="FailedUI.cpp" />
     <ClCompile Include="FixedCamera.cpp" />
     <ClCompile Include="FollowPointLight.cpp" />
     <ClCompile Include="FrameUI.cpp" />

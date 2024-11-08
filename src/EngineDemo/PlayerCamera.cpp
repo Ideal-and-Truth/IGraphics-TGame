@@ -6,6 +6,7 @@
 #include "PlayerController.h"
 #include "EnemyAnimator.h"
 #include "BossAnimator.h"
+#include "GraphicsManager.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(PlayerCamera)
 
@@ -55,6 +56,7 @@ void PlayerCamera::Start()
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("RangeEnemy").lock());
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("MeleeEnemy").lock());
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
+	m_managers.lock()->Graphics()->SetMainCamera(m_camera.lock().get());
 }
 
 void PlayerCamera::FixedUpdate()

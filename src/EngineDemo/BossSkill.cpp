@@ -1072,9 +1072,9 @@ void BossSkill::PlayEffect(Vector3 pos)
 			p->Play();
 		}
 
-		auto playerCamera = m_player->GetOwner().lock()->GetComponent<PlayerCamera>().lock();
-		playerCamera->GetTypeInfo().GetProperty("isShaking")->Set(playerCamera.get(), true);
-		playerCamera->GetTypeInfo().GetProperty("shakeCount")->Set(playerCamera.get(), 5.f);
+		// auto playerCamera = m_player->GetOwner().lock()->GetComponent<PlayerCamera>().lock();
+		// playerCamera->GetTypeInfo().GetProperty("isShaking")->Set(playerCamera.get(), true);
+		// playerCamera->GetTypeInfo().GetProperty("shakeCount")->Set(playerCamera.get(), 5.f);
 
 		m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\03. Skill_sound\\Ground_Impact_1_Sound.wav", true, 62);
 	}
