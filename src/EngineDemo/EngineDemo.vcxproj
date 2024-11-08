@@ -199,6 +199,7 @@
     <ClInclude Include="TestEffectGenerator.h" />
     <ClInclude Include="TestMovement.h" />
     <ClInclude Include="TimeDistortion.h" />
+    <ClInclude Include="TitleUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnchorCamera.cpp" />
@@ -251,6 +252,7 @@
     <ClCompile Include="TestEffectGenerator.cpp" />
     <ClCompile Include="TestMovement.cpp" />
     <ClCompile Include="TimeDistortion.cpp" />
+    <ClCompile Include="TitleUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EngineDemo.rc" />

@@ -100,6 +100,9 @@
     <Filter Include="Component\FailedUI">
       <UniqueIdentifier>{e3e62388-7bff-4dd7-b74f-b31b39c8e04d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\TitleUI">
+      <UniqueIdentifier>{787aa36b-2408-4b6c-bc24-062f32af7fcc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -250,6 +253,9 @@
       <Filter>Component\FailedUI</Filter>
     </ClInclude>
     <ClInclude Include="FailedButton.h">
+      <Filter>Component\FailedUI</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -393,6 +399,9 @@
       <Filter>Component\FailedUI</Filter>
     </ClCompile>
     <ClCompile Include="FailedButton.cpp">
+      <Filter>Component\FailedUI</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

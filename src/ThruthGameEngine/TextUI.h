@@ -65,6 +65,7 @@ namespace Truth
 		virtual ~TextUI();
 
 		void ChangeText(const std::wstring& _text);
+		void SetAlpha(float _alpha);
 
 	private:
 		METHOD(Initialize);
