@@ -63,6 +63,10 @@ void PlayerCamera::Start()
 
 void PlayerCamera::FixedUpdate()
 {
+	if (m_player.lock()->GetComponent<Player>().lock()->GetCurrentTP() <= 0.0f)
+	{
+		return;
+	}
 	if (m_isLockOn && !m_enemys.empty()
 		&& !m_player.lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(m_player.lock()->GetComponent<Player>().lock().get()).Get())
 	{
