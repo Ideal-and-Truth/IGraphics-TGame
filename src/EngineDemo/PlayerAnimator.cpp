@@ -2031,7 +2031,7 @@ void PlayerAnimator::HitSounds()
 		}
 		else if (m_currentState == m_animationStateMap["NormalAttack6"])
 		{
-			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 26);
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Enemy_Slash_Normal_Sound.wav", true, 26);
 		}
 		else if (m_currentState == m_animationStateMap["ChargedAttack1"])
 		{
@@ -2051,27 +2051,27 @@ void PlayerAnimator::HitSounds()
 		}
 		else if (m_currentState == m_animationStateMap["ChargedAttack5"])
 		{
-			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_1_Impact_Sound.wav", true, 31);
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Enemy_Slash_Combo_Sound.wav", true, 31);
 		}
 		else if (m_currentState == m_animationStateMap["NormalAbility"])
 		{
-			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 32);
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Enemy_Slash_Normal_Sound.wav", true, 32);
 		}
 		else if (m_currentState == m_animationStateMap["RushAttack"])
 		{
-			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 33);
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Enemy_Slash_Normal_Sound.wav", true, 33);
 		}
 		else if (m_currentState == m_animationStateMap["DodgeAttack"])
 		{
-			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 34);
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Enemy_Slash_Normal_Sound.wav", true, 34);
 		}
 		else if (m_currentState == m_animationStateMap["Parry"])
 		{
-			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Nor_Attack_1_Impact_Sound.wav", true, 35);
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Enemy_Slash_Normal_Sound.wav", true, 35);
 		}
 		else if (m_currentState == m_animationStateMap["SkillE"])
 		{
-			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Com_Attack_4_Impact_Sound.wav", true, 36);
+			SoundPlay(L"..\\Resources\\Sounds\\02 Combat_Sound\\Enemy_Slash_Combo_Sound.wav", true, 36);
 		}
 
 		m_hit = false;
