@@ -45,7 +45,7 @@ namespace Ideal
 
 	struct LOAD_THREAD_DESC
 	{
-		std::shared_ptr<Ideal::ResourceManager> pResourceManager;
+		std::weak_ptr<Ideal::ResourceManager> pResourceManager;
 		DWORD dwThreadIndex;
 		HANDLE hThread;
 		HANDLE hEventList[LOAD_THREAD_EVENT_TYPE_COUNT];
@@ -53,8 +53,16 @@ namespace Ideal
 
 	UINT WINAPI LoadThread(void* pArg);
 
-	typedef
-		enum IdealTextureTypeFlag
+	struct LOAD_ITEM
+	{
+		std::shared_ptr<Ideal::D3D12Texture> OutTexture;
+		std::wstring Path;
+		bool IgnoreSRGB = false;
+		uint32 MipLevels = 1;
+		bool IsNormalMap = false;
+	};
+
+	typedef enum IdealTextureTypeFlag
 	{
 		IDEAL_TEXTURE_NONE = 0,
 		IDEAL_TEXTURE_SRV = 0x1,
@@ -371,6 +379,10 @@ namespace Ideal
 	public:
 		void ProcessByThread(DWORD dwThreadIndex);
 
+	public:
+		void LoadTextureMultiThread(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB = false, uint32 MipLevels = 1, bool IsNormalMap = false);
+		void EndLoad();
+
 	private:
 		LONG volatile m_lActiveThreadCount = 0;
 
@@ -378,5 +390,6 @@ namespace Ideal
 
 		LOAD_THREAD_DESC* m_pThreadDescList;
 		HANDLE m_hCompleteEvent = nullptr;
+		std::queue<LOAD_ITEM> m_loadQueue;
 	};
 }

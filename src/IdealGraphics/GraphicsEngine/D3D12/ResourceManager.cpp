@@ -57,6 +57,8 @@ ResourceManager::~ResourceManager()
 	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultAlbedo);
 	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultNormal);
 	//m_deferredDeleteManager->AddTextureToDeferredDelete(m_defaultMask);
+
+	CleanupThreadPool();
 }
 
 void Ideal::ResourceManager::Init(ComPtr<ID3D12Device5> Device, std::shared_ptr<Ideal::DeferredDeleteManager> DeferredDeleteManager)
@@ -345,8 +347,8 @@ void Ideal::ResourceManager::CreateTexture(std::shared_ptr<Ideal::D3D12Texture>&
 	std::string name = StringUtils::ConvertWStringToString(Path);
 	if (m_textures[name] != nullptr)
 	{
-		//OutTexture = m_textures[name];
-		//return;
+		OutTexture = m_textures[name];
+		return;
 	}
 
 	m_textures[name] = std::make_shared<Ideal::D3D12Texture>();
@@ -1839,7 +1841,7 @@ typedef BOOL(WINAPI* LPFN_GLPI)(PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
 UINT WINAPI Ideal::LoadThread(void* pArg)
 {
 	LOAD_THREAD_DESC* pDesc = (LOAD_THREAD_DESC*)pArg;
-	std::shared_ptr<Ideal::ResourceManager> pResourceManager = pDesc->pResourceManager;
+	std::weak_ptr<Ideal::ResourceManager> pResourceManager = pDesc->pResourceManager;
 	DWORD dwThreadIndex = pDesc->dwThreadIndex;
 	const HANDLE* phEventList = pDesc->hEventList;
 	while (1)
@@ -1849,7 +1851,7 @@ UINT WINAPI Ideal::LoadThread(void* pArg)
 		switch (dwEventIndex)
 		{
 			case LOAD_THREAD_EVENT_TYPE_PROCESS:
-				pResourceManager->ProcessByThread(dwThreadIndex);
+				pResourceManager.lock()->ProcessByThread(dwThreadIndex);
 				break;
 			case LOAD_THREAD_EVENT_TYPE_DESTROY:
 				goto lb_exit;
@@ -1862,7 +1864,7 @@ lb_exit:
 	return 0;
 }
 
-void ResourceManager::InitThreadPool()
+void Ideal::ResourceManager::InitThreadPool()
 {
 	DWORD dwPhysicalCoreCount = 0;
 	DWORD dwLogicalCoreCount = 0;
@@ -1874,10 +1876,10 @@ void ResourceManager::InitThreadPool()
 
 	{
 		m_pThreadDescList = new LOAD_THREAD_DESC[m_dwRenderThreadCount];
-		memset(m_pThreadDescList, 0, sizeof(LOAD_THREAD_DESC) * m_dwRenderThreadCount);
+		memset(m_pThreadDescList, NULL, sizeof(LOAD_THREAD_DESC) * m_dwRenderThreadCount);
 
 		m_hCompleteEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		for (DWORD i = 0; i < dwPhysicalCoreCount; ++i)
+		for (DWORD i = 0; i < m_dwRenderThreadCount; ++i)
 		{
 			for (DWORD j = 0; j < LOAD_THREAD_EVENT_TYPE_COUNT; ++j)
 			{
@@ -1891,7 +1893,7 @@ void ResourceManager::InitThreadPool()
 	}
 }
 
-bool ResourceManager::GetPhysicalCoreCount(DWORD* pdwOutPhysicalCoreCount, DWORD* pdwOutLogicalCoreCount)
+bool Ideal::ResourceManager::GetPhysicalCoreCount(DWORD* pdwOutPhysicalCoreCount, DWORD* pdwOutLogicalCoreCount)
 {
 	bool result = false;
 	BOOL	bResult = FALSE;
@@ -2016,7 +2018,7 @@ lb_return:
 	return bResult;
 }
 
-DWORD ResourceManager::CountSetBits(ULONG_PTR bitMask)
+DWORD Ideal::ResourceManager::CountSetBits(ULONG_PTR bitMask)
 {
 	DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
 	DWORD bitSetCount = 0;
@@ -2032,7 +2034,7 @@ DWORD ResourceManager::CountSetBits(ULONG_PTR bitMask)
 	return bitSetCount;
 }
 
-void ResourceManager::CleanupThreadPool()
+void Ideal::ResourceManager::CleanupThreadPool()
 {
 	if (m_pThreadDescList)
 	{
@@ -2060,11 +2062,37 @@ void ResourceManager::CleanupThreadPool()
 	}
 }
 
-void ResourceManager::ProcessByThread(DWORD dwThreadIndex)
+void Ideal::ResourceManager::ProcessByThread(DWORD dwThreadIndex)
 {
 	LONG lCurCount = _InterlockedDecrement(&m_lActiveThreadCount);
+	
+	MyDebugConsoleMessage(
+		"Processed By Thread : " +
+		std::to_string(m_lActiveThreadCount) + '\n');
+
 	if (0 == lCurCount)
 	{
 		SetEvent(m_hCompleteEvent);
 	}
+}
+
+void Ideal::ResourceManager::LoadTextureMultiThread(std::shared_ptr<Ideal::D3D12Texture>& OutTexture, const std::wstring& Path, bool IgnoreSRGB /*= false*/, uint32 MipLevels /*= 1*/, bool IsNormalMap /*= false*/)
+{
+	LOAD_ITEM newLoadItem;
+	newLoadItem.OutTexture = OutTexture;
+	newLoadItem.Path = Path;
+	newLoadItem.IsNormalMap = IsNormalMap;
+	newLoadItem.IgnoreSRGB = IgnoreSRGB;
+
+	m_loadQueue.push(newLoadItem);
+}
+
+void ResourceManager::EndLoad()
+{
+	m_lActiveThreadCount = m_dwRenderThreadCount;
+	for (DWORD i = 0; i < m_dwRenderThreadCount; ++i)
+	{
+		SetEvent(m_pThreadDescList[i].hEventList[LOAD_THREAD_EVENT_TYPE_PROCESS]);
+	}
+	WaitForSingleObject(m_hCompleteEvent, INFINITE);
 }

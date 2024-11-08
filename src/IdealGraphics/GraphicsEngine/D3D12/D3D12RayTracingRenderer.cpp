@@ -477,6 +477,8 @@ void Ideal::D3D12RayTracingRenderer::Tick()
 
 void Ideal::D3D12RayTracingRenderer::Render()
 {
+	m_resourceManager->EndLoad();
+
 #ifdef USE_UPLOAD_CONTAINER
 	m_resourceManager->WaitForResourceUpload();
 #endif
