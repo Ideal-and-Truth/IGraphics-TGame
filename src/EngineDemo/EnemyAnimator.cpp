@@ -254,6 +254,7 @@ void EnemyAnimator::Update()
 	m_currentState->OnStateUpdate();
 	PlayEffect();
 
+	m_managers.lock()->Sound()->SetVolum(44, 0.5f);
 	m_lastHp = m_enemy->GetCurrentTP();
 }
 

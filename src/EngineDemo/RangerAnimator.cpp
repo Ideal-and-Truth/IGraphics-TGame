@@ -238,6 +238,8 @@ void RangerAnimator::Update()
 		m_isDeath = true;
 		PlayEffect();
 	}
+
+	m_managers.lock()->Sound()->SetVolum(51, 0.5f);
 }
 
 void RangerAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
