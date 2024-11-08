@@ -16,12 +16,18 @@ private:
 	PROPERTY(nextMap);
 	std::string m_nextMap;
 
+private:
+	void PortalEffect();
+
 public:
 	MapMoveTrigger();
 	virtual ~MapMoveTrigger();
 
 	METHOD(OnTriggerEnter);
 	virtual void OnTriggerEnter(Truth::Collider* _other) override;
+
+	METHOD(Start);
+	virtual void Start() override;
 
 	METHOD(Update);
 	virtual void Update() override;
