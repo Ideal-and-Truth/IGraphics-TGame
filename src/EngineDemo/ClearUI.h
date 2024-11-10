@@ -34,6 +34,9 @@ public:
 private:
 	virtual void Start() override;
 	virtual void Update() override;
+
+	void Trigger([[maybe_unused]] const void* _);
+
 };
 
 template<class Archive>

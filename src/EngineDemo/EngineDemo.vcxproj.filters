@@ -106,6 +106,9 @@
     <Filter Include="Component\ClearUI">
       <UniqueIdentifier>{3c81ab4a-3652-46b4-926f-394836f16efa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\LoadingUI">
+      <UniqueIdentifier>{e0fc2aa1-ebf9-4b27-bd59-ba0a92cd7d62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -258,10 +261,13 @@
     <ClInclude Include="FailedButton.h">
       <Filter>Component\FailedUI</Filter>
     </ClInclude>
-    <ClInclude Include="TitleUI.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ClearUI.h">
+      <Filter>Component\TitleUI</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleUI.h">
+      <Filter>Component\TitleUI</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -407,10 +413,13 @@
     <ClCompile Include="FailedButton.cpp">
       <Filter>Component\FailedUI</Filter>
     </ClCompile>
-    <ClCompile Include="TitleUI.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ClearUI.cpp">
+      <Filter>Component\TitleUI</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleUI.cpp">
+      <Filter>Component\TitleUI</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

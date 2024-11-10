@@ -24,6 +24,13 @@ void ClearUI::Start()
 	if (!bossEntity.expired())
 		m_boss = bossEntity.lock()->GetComponent<Enemy>();
 	m_UI.lock()->SetAlpha(m_alpha);
+
+	// m_managers.lock()->Event()->Subscribe("Boss Destroy", MakeListenerInfo(&ClearUI::Trigger));
+}
+
+void ClearUI::Trigger([[maybe_unused]] const void* _)
+{
+	m_isShown = false;
 }
 
 void ClearUI::Update()
@@ -39,13 +46,12 @@ void ClearUI::Update()
 		}
 
 		m_UI.lock()->SetAlpha(m_alpha);
-		if (m_managers.lock()->Input()->GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
+		if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
 		{
 			m_isShown = false;
 		}
 	}
-
-	if (m_boss.expired())
+	else
 	{
 		m_alpha -= speed;
 
@@ -56,16 +62,8 @@ void ClearUI::Update()
 
 		m_UI.lock()->SetAlpha(m_alpha);
 	}
-
-// 	if (!m_isShown)
-// 	{
-// 		m_alpha -= speed;
-// 
-// 		if (m_alpha <= 0.0f)
-// 		{
-// 			m_alpha = 0.0f;
-// 		}
-// 
-// 		m_UI.lock()->SetAlpha(m_alpha);
-// 	}
+	if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+	{
+		m_managers.lock()->Scene()->ChangeScene("TitleScene");
+	}
 }

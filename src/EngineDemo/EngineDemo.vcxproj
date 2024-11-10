@@ -177,6 +177,7 @@
     <ClInclude Include="FrameUI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HitStop.h" />
+    <ClInclude Include="LoadingUI.h" />
     <ClInclude Include="MapMoveTrigger.h" />
     <ClInclude Include="MeleeWeapon.h" />
     <ClInclude Include="Player.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="FollowPointLight.cpp" />
     <ClCompile Include="FrameUI.cpp" />
     <ClCompile Include="HitStop.cpp" />
+    <ClCompile Include="LoadingUI.cpp" />
     <ClCompile Include="MapMoveTrigger.cpp" />
     <ClCompile Include="MeleeWeapon.cpp" />
     <ClCompile Include="Player.cpp" />

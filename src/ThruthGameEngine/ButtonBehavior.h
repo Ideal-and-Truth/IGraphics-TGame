@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include "Types.h"
+// #include "EventHandler.h"
 
 namespace Truth
 {
@@ -23,6 +24,7 @@ namespace Truth
 namespace Truth
 {
 	class ButtonBehavior
+		// : public EventHandler
 	{
 		GENERATE_CLASS_TYPE_INFO(ButtonBehavior);
 

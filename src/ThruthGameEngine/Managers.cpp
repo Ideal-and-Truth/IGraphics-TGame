@@ -122,7 +122,6 @@ void Truth::Managers::Render() const
 	if (m_isEdit)
 		m_graphicsManager->Render();
 	else
-		// m_graphicsManager->CompleteCamera();
 		m_graphicsManager->Render();
 #else
 	m_graphicsManager->Render();
@@ -214,8 +213,8 @@ void Truth::Managers::InitlizeManagers(HINSTANCE _hinstance, HWND _hwnd, uint32 
 	m_eventManager->Initialize(m_timeManager, m_physXManager);
 	m_timeManager->Initalize(shared_from_this());
 	m_inputManager->Initalize(_hinstance, _hwnd, m_eventManager);
+	m_graphicsManager->Initalize(_hwnd, _width, _height);
 	m_sceneManager->Initalize(shared_from_this());
 	m_physXManager->Initalize();
-	m_graphicsManager->Initalize(_hwnd, _width, _height);
 	m_particleManager->Initalize(m_graphicsManager, m_timeManager);
 }

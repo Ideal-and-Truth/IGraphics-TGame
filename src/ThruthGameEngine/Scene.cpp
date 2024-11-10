@@ -457,6 +457,7 @@ void Truth::Scene::SetBrightness()
 /// <param name="_path">유니티 데이터 경로</param>
 void Truth::Scene::LoadUnityData(const std::wstring& _path)
 {
+
 	if (_path.empty())
 		return;
 
@@ -514,6 +515,8 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 
 	for (size_t i = 0; i < objCount; ++i)
 	{
+		// m_managers.lock()->Graphics()->Render();
+
 		/// read base data
 		m_mapEntity[i] = std::make_shared<Entity>(m_managers.lock());
 		int32 parent = file->Read<int32>();
@@ -807,6 +810,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 				break;
 			}
 		}
+
 	}
 
 	/// create nav mesh

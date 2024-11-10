@@ -26,7 +26,8 @@ void MapMoveTrigger::OnTriggerEnter(Truth::Collider* _other)
 
 	if (_other->GetOwner().lock()->m_name == "Player")
 	{
-		m_managers.lock()->Scene()->ChangeScene(m_nextMap);
+		EventPublish("Scene Move", nullptr);
+		// m_managers.lock()->Scene()->ChangeScene(m_nextMap);
 	}
 }
 

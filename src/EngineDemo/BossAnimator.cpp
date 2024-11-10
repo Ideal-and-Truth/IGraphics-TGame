@@ -168,6 +168,7 @@ void BossAnimator::Update()
 	if (m_killBoss)
 	{
 		m_owner.lock()->Destroy();
+		EventPublish("Boss Destroy", nullptr);
 		// m_managers.lock()->Scene()->ChangeScene("TitleScene");
 		return;
 	}
