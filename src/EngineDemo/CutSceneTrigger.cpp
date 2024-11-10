@@ -12,6 +12,11 @@ CutSceneTrigger::CutSceneTrigger()
 
 void CutSceneTrigger::OnTriggerEnter(Truth::Collider* _other)
 {
+	if (m_wasActive)
+		return;
+
+	m_wasActive = true;
+
 	if (_other == nullptr)
 		return;
 
@@ -34,7 +39,6 @@ void CutSceneTrigger::OnTriggerEnter(Truth::Collider* _other)
 void CutSceneTrigger::Update()
 {
 	CineCamera::Update();
-
 	if (!m_pCamera.expired() && m_isEnd)
 	{
 		m_pCamera.lock()->SetCutScenePaly(false);

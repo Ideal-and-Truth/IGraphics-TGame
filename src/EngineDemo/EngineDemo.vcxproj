@@ -264,6 +264,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Resources\CeniData\BossTest.yaml" />
     <None Include="..\Resources\CeniData\testCamera.yaml" />
     <None Include="..\Resources\Particles\Beam.yaml" />
     <None Include="..\Resources\Particles\Beam1.yaml" />

@@ -483,5 +483,8 @@
     <None Include="..\Resources\CeniData\testCamera.yaml">
       <Filter>YAML Resource\ceniCameraData</Filter>
     </None>
+    <None Include="..\Resources\CeniData\BossTest.yaml">
+      <Filter>YAML Resource\ceniCameraData</Filter>
+    </None>
   </ItemGroup>
 </Project>

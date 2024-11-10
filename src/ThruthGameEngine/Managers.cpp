@@ -131,7 +131,7 @@ void Truth::Managers::Render() const
 	std::string temp = std::to_string(static_cast<float>(finish.QuadPart - start.QuadPart) / static_cast<float>(frameCounter.QuadPart));
 	temp = std::string("Render : ") + temp;
 	temp += " \n ";
-	DEBUG_PRINT(temp.c_str());
+	// DEBUG_PRINT(temp.c_str());
 
 }
 
