@@ -72,7 +72,7 @@ using namespace std;
 #define DefaultLayer 0
 #define PlayerLayer 1
 
-#define MAKE_PARTICLE
+//#define MAKE_PARTICLE
 
 std::string wstring_to_utf8Func(const std::wstring& wstr) {
 	std::string utf8str;
@@ -309,7 +309,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//DebugEnemy->AddAnimation("Debug", DebugEnemyAnim);
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
-		//std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim0 = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
 		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
 		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"BossAnimations/Idle/BossEntranceRoot");
 		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
@@ -389,7 +389,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//sphere7->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 2.5f, 0.f)));
 		//sphere8->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5.f, 5.f, 0.f)));
 
-		std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		//std::shared_ptr<Ideal::IMeshObject> cart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> cart2 = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
 		//std::shared_ptr<Ideal::IMeshObject> car = gRenderer->CreateStaticMeshObject(L"formula1/Formula 1 mesh");
 		//std::shared_ptr<Ideal::IMeshObject> building = gRenderer->CreateStaticMeshObject(L"building/building_dummy3_hanna");
@@ -813,6 +813,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 
 		std::vector<std::shared_ptr<Ideal::ITexture>> particleTexturesToDelete;
+		std::vector<std::shared_ptr<Ideal::ISkinnedMeshObject>> skinnedMeshes;
 
 #ifdef MAKE_PARTICLE
 #pragma region Beam1
@@ -2564,6 +2565,41 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					}
 				}
 
+				if (skinnedMeshes.size())
+				{
+					for (auto& s : skinnedMeshes)
+					{
+						s->AnimationDeltaTime(0.003f);
+					}
+				}
+
+				if (GetAsyncKeyState('N') & 0x8000)
+				{
+					if (skinnedMeshes.size() % 2 == 0)
+					{
+						std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
+						DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+						skinnedMeshes.push_back(DebugPlayer);
+					}
+					else
+					{
+						std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+						DebugPlayer->AddAnimation("Debug", DebugPlayerAnim0);
+						skinnedMeshes.push_back(DebugPlayer);
+					}
+				}
+				
+
+				if (GetAsyncKeyState('M') & 0x8000)
+				{
+					if (skinnedMeshes.size())
+					{
+						auto& t = skinnedMeshes.back();
+						skinnedMeshes.pop_back();
+						gRenderer->DeleteMeshObject(t);
+					}
+
+				}
 				//if (GetAsyncKeyState('C') & 0x8000)
 				{
 					//if (!kaMaterial)
@@ -3070,8 +3106,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		
 		//meshes.clear();
 
-		gRenderer->DeleteMeshObject(cart);
-		cart.reset();
+		//gRenderer->DeleteMeshObject(cart);
+		//cart.reset();
 		//gRenderer->DeleteMeshObject(cart2);
 		//cart2.reset();
 
