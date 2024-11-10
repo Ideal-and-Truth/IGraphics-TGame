@@ -25,7 +25,7 @@ namespace Truth
 		void load(Archive& ar, const unsigned int file_version);
 
 	public:
-		std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
+		std::weak_ptr<Truth::SkinnedMesh> m_skinnedMesh;
 
 	public:
 		template <typename T, std::size_t N>
@@ -207,6 +207,9 @@ namespace Truth
 
 		METHOD(Update);
 		void Update();
+
+		METHOD(Destroy);
+		virtual void Destroy() override;
 
 	private:
 		AnimatorNode m_currentNode;

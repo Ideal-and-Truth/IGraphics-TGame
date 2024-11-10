@@ -62,6 +62,7 @@ namespace Truth
 		virtual void Update() {};
 		virtual void Awake() {};
 		virtual void Start() {};
+		virtual void Destroy() {};
 		virtual void LateUpdate() {};
 		virtual void FixedUpdate() {};
 		virtual void OnCollisionEnter(Truth::Collider* _other) {};

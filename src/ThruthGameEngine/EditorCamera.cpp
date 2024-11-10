@@ -59,19 +59,6 @@ void Truth::EditorCamera::Update(float _dt)
 		m_camera->Pitch(MouseDy() * 0.003f);
 		m_camera->RotateY(MouseDx() * 0.003f);
 	}
-
-	static float timer = 0.0f;
-	timer += m_managers->Time()->GetDT();
-	while (timer >= 1.0f)
-	{
-		timer -= 1.0f;
-		Vector3 pos = m_camera->GetPosition();
-		Vector3 look = m_camera->GetLook();
-		std::string sPos = "Pos: " + std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
-		std::string slook = "Look: " + std::to_string(look.x) + " " + std::to_string(look.y) + " " + std::to_string(look.z) + "\n";
-		DEBUG_PRINT(sPos.c_str());
-		DEBUG_PRINT(slook.c_str());
-	}
 }
 
 bool Truth::EditorCamera::GetKey(KEY _key)
