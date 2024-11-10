@@ -16,6 +16,9 @@ private:
 	template<class Archive>
 	void load(Archive& ar, const unsigned int file_version);
 
+private:
+	bool m_wasActive = false;
+
 public:
 	CutSceneTrigger();
 

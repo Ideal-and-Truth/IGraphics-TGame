@@ -2,6 +2,8 @@
 #ifdef EDITOR_MODE
 #include "Managers.h"
 #include "GraphicsManager.h"
+#include "TimeManager.h"
+
 Truth::EditorCamera::EditorCamera(Managers* _managers)
 	: m_camera(nullptr)
 	, m_speed(50.0f)

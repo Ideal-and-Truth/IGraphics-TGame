@@ -38,6 +38,7 @@ namespace Truth
 		void StartGameScene() const;
 
 		void ChangeScene(const std::string& _name);
+		void ResetScene();
 		void ChangeScene();
 
 		void ResetScene() const;

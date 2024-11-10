@@ -39,6 +39,7 @@ void PlayerController::Start()
 	m_controller.lock()->SetMask(static_cast<uint32>(Truth::COLLISION_GROUP::PLAYER_MASK));
 	m_controller.lock()->SetUpFiltering();
 	m_player = m_owner.lock().get()->GetComponent<Player>();
+	m_owner.lock()->m_transform->SetRotate(Quaternion());
 }
 
 void PlayerController::FixedUpdate()

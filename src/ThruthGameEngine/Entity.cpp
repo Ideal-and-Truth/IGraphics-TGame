@@ -166,17 +166,13 @@ void Truth::Entity::Destroy()
 	{
 		if (p->first.expired())
 		{
-			auto temp = m_destroy.end() - 1;
-			std::iter_swap(p, temp);
-			m_destroy.pop_back();
-			p = temp;
-
-			if (m_destroy.empty())
-			{
-				return;
-			}
+			continue;
 		}
 		p->second->Invoke<void>(p->first.lock().get());
+	}
+	for (auto& c : m_components)
+	{
+		c.reset();
 	}
 	m_components.clear();
 

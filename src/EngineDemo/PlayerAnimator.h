@@ -468,11 +468,11 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
-	std::shared_ptr<PlayerController> m_playerController;
-	std::shared_ptr<Player> m_player;
-	std::shared_ptr<PlayerCamera> m_playerCamera;
-	std::shared_ptr<Ideal::IParticleSystem> m_normalAbilityEffect;
+	std::weak_ptr<Truth::SkinnedMesh> m_skinnedMesh;
+	std::weak_ptr<PlayerController> m_playerController;
+	std::weak_ptr<Player> m_player;
+	std::weak_ptr<PlayerCamera> m_playerCamera;
+	std::weak_ptr<Ideal::IParticleSystem> m_normalAbilityEffect;
 
 
 	/// <summary>

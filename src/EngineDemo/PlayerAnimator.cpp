@@ -158,31 +158,33 @@ void PlayerAnimator::Start()
 // 	m_skinnedMesh->AddAnimation("BackStrafeL", L"PlayerAnimations/Move/BackStep/M_katana_Blade@Walk_ver_A_Back_L45");
 // 	m_skinnedMesh->AddAnimation("BackStrafeR", L"PlayerAnimations/Move/BackStep/M_katana_Blade@Walk_ver_A_Back_R45");
 
-	m_skinnedMesh->AddAnimation("Idle", L"PlayerAnimations/Idle/Idle");
-	m_skinnedMesh->AddAnimation("Run", L"PlayerAnimations/Move/Run");
-	m_skinnedMesh->AddAnimation("NormalAttack1", L"PlayerAnimations/NormalAttack/NormalAttack1");
-	m_skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations/NormalAttack/NormalAttack2");
-	m_skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations/NormalAttack/NormalAttack3");
-	m_skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations/NormalAttack/NormalAttack4");
-	m_skinnedMesh->AddAnimation("NormalAttack6", L"PlayerAnimations/NormalAttack/NormalAttack6");
-	m_skinnedMesh->AddAnimation("NormalAbility", L"PlayerAnimations/NormalAttack/NormalAbility");
-	m_skinnedMesh->AddAnimation("ParryAttack1", L"PlayerAnimations/NormalAttack/NormalVariation1");
-	m_skinnedMesh->AddAnimation("ParryAttack2", L"PlayerAnimations/NormalAttack/NormalVariation2");
-	m_skinnedMesh->AddAnimation("ChargedAttack1", L"PlayerAnimations/ChargedAttack/ChargedAttack1");
-	m_skinnedMesh->AddAnimation("ChargedAttack2", L"PlayerAnimations/ChargedAttack/ChargedAttack2");
-	m_skinnedMesh->AddAnimation("ChargedAttack3", L"PlayerAnimations/ChargedAttack/ChargedAttack3");
-	m_skinnedMesh->AddAnimation("ChargedAttack4", L"PlayerAnimations/ChargedAttack/ChargedAttack4");
-	m_skinnedMesh->AddAnimation("ChargedAttack5", L"PlayerAnimations/ChargedAttack/ChargedAttack5");
-	m_skinnedMesh->AddAnimation("ChargedAbility", L"PlayerAnimations/ChargedAttack/ChargedAbility");
-	m_skinnedMesh->AddAnimation("RushAttack", L"PlayerAnimations/NormalAttack/RushAttack");
-	m_skinnedMesh->AddAnimation("ComboReady", L"PlayerAnimations/ComboAttackReady/ComboAttackReady");
-	m_skinnedMesh->AddAnimation("Guard", L"PlayerAnimations/Guard/GuardLoop");
-	m_skinnedMesh->AddAnimation("GuardHit", L"PlayerAnimations/Guard/GuardHit");
-	m_skinnedMesh->AddAnimation("Hit", L"PlayerAnimations/Hit/Hit");
-	m_skinnedMesh->AddAnimation("Dodge", L"PlayerAnimations/Dodge/Dodge");
-	m_skinnedMesh->AddAnimation("DodgeAttack", L"PlayerAnimations/Dodge/DodgeAttack");
-	m_skinnedMesh->AddAnimation("SlashSkill", L"PlayerAnimations/Skill/SlashSkill");
-	m_skinnedMesh->AddAnimation("TimeStop", L"PlayerAnimations/Skill/TimeStop");
+	auto skinnedMesh = m_skinnedMesh.lock();
+
+	skinnedMesh->AddAnimation("Idle", L"PlayerAnimations/Idle/Idle");
+	skinnedMesh->AddAnimation("Run", L"PlayerAnimations/Move/Run");
+	skinnedMesh->AddAnimation("NormalAttack1", L"PlayerAnimations/NormalAttack/NormalAttack1");
+	skinnedMesh->AddAnimation("NormalAttack2", L"PlayerAnimations/NormalAttack/NormalAttack2");
+	skinnedMesh->AddAnimation("NormalAttack3", L"PlayerAnimations/NormalAttack/NormalAttack3");
+	skinnedMesh->AddAnimation("NormalAttack4", L"PlayerAnimations/NormalAttack/NormalAttack4");
+	skinnedMesh->AddAnimation("NormalAttack6", L"PlayerAnimations/NormalAttack/NormalAttack6");
+	skinnedMesh->AddAnimation("NormalAbility", L"PlayerAnimations/NormalAttack/NormalAbility");
+	skinnedMesh->AddAnimation("ParryAttack1", L"PlayerAnimations/NormalAttack/NormalVariation1");
+	skinnedMesh->AddAnimation("ParryAttack2", L"PlayerAnimations/NormalAttack/NormalVariation2");
+	skinnedMesh->AddAnimation("ChargedAttack1", L"PlayerAnimations/ChargedAttack/ChargedAttack1");
+	skinnedMesh->AddAnimation("ChargedAttack2", L"PlayerAnimations/ChargedAttack/ChargedAttack2");
+	skinnedMesh->AddAnimation("ChargedAttack3", L"PlayerAnimations/ChargedAttack/ChargedAttack3");
+	skinnedMesh->AddAnimation("ChargedAttack4", L"PlayerAnimations/ChargedAttack/ChargedAttack4");
+	skinnedMesh->AddAnimation("ChargedAttack5", L"PlayerAnimations/ChargedAttack/ChargedAttack5");
+	skinnedMesh->AddAnimation("ChargedAbility", L"PlayerAnimations/ChargedAttack/ChargedAbility");
+	skinnedMesh->AddAnimation("RushAttack", L"PlayerAnimations/NormalAttack/RushAttack");
+	skinnedMesh->AddAnimation("ComboReady", L"PlayerAnimations/ComboAttackReady/ComboAttackReady");
+	skinnedMesh->AddAnimation("Guard", L"PlayerAnimations/Guard/GuardLoop");
+	skinnedMesh->AddAnimation("GuardHit", L"PlayerAnimations/Guard/GuardHit");
+	skinnedMesh->AddAnimation("Hit", L"PlayerAnimations/Hit/Hit");
+	skinnedMesh->AddAnimation("Dodge", L"PlayerAnimations/Dodge/Dodge");
+	skinnedMesh->AddAnimation("DodgeAttack", L"PlayerAnimations/Dodge/DodgeAttack");
+	skinnedMesh->AddAnimation("SlashSkill", L"PlayerAnimations/Skill/SlashSkill");
+	skinnedMesh->AddAnimation("TimeStop", L"PlayerAnimations/Skill/TimeStop");
 
 	/// 사운드 추가
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_1_Sound.wav", false);
@@ -216,7 +218,7 @@ void PlayerAnimator::Start()
 
 void PlayerAnimator::Update()
 {
-	if (m_player->GetTypeInfo().GetProperty("isDead")->Get<bool>(m_player.get()).Get())
+	if (m_player.lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(m_player.lock().get()).Get())
 	{
 		m_isDead = true;
 	}
@@ -227,28 +229,28 @@ void PlayerAnimator::Update()
 	}
 
 
-	m_isLockOn = m_playerCamera->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_playerCamera.get()).Get();
-	m_forwardInput = m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get();
-	m_sideInput = m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get();
-	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
-	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
+	m_isLockOn = m_playerCamera.lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_playerCamera.lock().get()).Get();
+	m_forwardInput = m_playerController.lock()->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.lock().get()).Get();
+	m_sideInput = m_playerController.lock()->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.lock().get()).Get();
+	m_currentFrame = m_skinnedMesh.lock()->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.lock().get()).Get();
+	m_isAnimationEnd = m_skinnedMesh.lock()->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.lock().get()).Get();
 
 
 	PlayEffects();
 
 	m_coolTimeE += GetDeltaTime();
 
-	float currentCP = m_player->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.get()).Get();
+	float currentCP = m_player.lock()->GetTypeInfo().GetProperty("currentCP")->Get<float>(m_player.lock().get()).Get();
 	if (GetKeyDown(KEY::Q) && !m_skillQ && currentCP >= 100.f)
 	{
 		m_skillQ = true;
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+		m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 	}
 
 	if (GetKeyDown(KEY::E) && m_coolTimeE > 10.f && (m_currentState == m_animationStateMap["Idle"] || m_currentState == m_animationStateMap["Run"]))
 	{
 		m_skillE = true;
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+		m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 	}
 
 	m_rush = GetKey(KEY::LSHIFT);
@@ -273,7 +275,7 @@ void PlayerAnimator::Update()
 	{
 		if (m_isComboReady)
 		{
-			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+			m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 			if (GetKey(KEY::W) || GetKey(KEY::A) || GetKey(KEY::S) || GetKey(KEY::D))
 			{
 				m_isComboReady = false;
@@ -288,7 +290,7 @@ void PlayerAnimator::Update()
 	if (GetKeyDown(MOUSE::LMOUSE))
 	{
 		m_isAttack = true;
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+		m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 	}
 
 	if (GetKey(MOUSE::LMOUSE))
@@ -305,7 +307,7 @@ void PlayerAnimator::Update()
 		m_passingTime += GetDeltaTime();
 		m_isGuard = true;
 		m_isRun = false;
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+		m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 	}
 	else
 	{
@@ -316,17 +318,17 @@ void PlayerAnimator::Update()
 
 	// 	if (m_playerController->GetTypeInfo().GetProperty("canMove")->Get<bool>(m_playerController.get()).Get())
 	// 	{
-	if (m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() > 0.f
-		|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() > 0.f
-		|| m_playerController->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.get()).Get() < 0.f
-		|| m_playerController->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.get()).Get() < 0.f)
+	if (m_playerController.lock()->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.lock().get()).Get() > 0.f
+		|| m_playerController.lock()->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.lock().get()).Get() > 0.f
+		|| m_playerController.lock()->GetTypeInfo().GetProperty("forwardInput")->Get<float>(m_playerController.lock().get()).Get() < 0.f
+		|| m_playerController.lock()->GetTypeInfo().GetProperty("sideInput")->Get<float>(m_playerController.lock().get()).Get() < 0.f)
 	{
 		m_isRun = true;
 
 		if (GetKeyDown(KEY::SPACE))
 		{
 			m_isDodge = true;
-			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+			m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 		}
 	}
 	else
@@ -352,16 +354,16 @@ void PlayerAnimator::Update()
 
 	if (!m_parry && !m_skillQ && !m_skillE && !m_isDodge && !m_isAttacking && !m_isGuard && !m_isComboReady && !m_isNormalAttack && !m_isChargedAttack && m_currentState != m_animationStateMap["Hit"])
 	{
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), true);
+		m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), true);
 	}
 
 	if (m_currentState == m_animationStateMap["Guard"] || m_currentState == m_animationStateMap["Parry"] || m_currentState == m_animationStateMap["Hit"] || m_currentState == m_animationStateMap["RushAttack"])
 	{
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+		m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 	}
 
 
-	m_lastHp = m_player->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.get()).Get();
+	m_lastHp = m_player.lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_player.lock().get()).Get();
 }
 
 
@@ -378,7 +380,7 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 			if (enemyAnim->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(enemyAnim.get()).Get())
 			{
 				m_isHit = true;
-				m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+				m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 
 				if ((m_passingTime > 0.f && m_passingTime < 0.4f) && m_currentState == m_animationStateMap["Guard"])
 				{
@@ -396,7 +398,7 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 			if (bossAnim->GetTypeInfo().GetProperty("isAttacking")->Get<bool>(bossAnim.get()).Get())
 			{
 				m_isHit = true;
-				m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+				m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 
 				if ((m_passingTime > 0.f && m_passingTime < 0.4f) && m_currentState == m_animationStateMap["Guard"])
 				{
@@ -414,7 +416,7 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 		if (!damager->GetTypeInfo().GetProperty("onlyHitOnce")->Get<bool>(damager.get()).Get())
 		{
 			m_isHit = true;
-			m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+			m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 
 			if ((m_passingTime > 0.f && m_passingTime < 0.4f) && m_currentState == m_animationStateMap["Guard"])
 			{
@@ -431,7 +433,7 @@ void PlayerAnimator::OnCollisionEnter(Truth::Collider* _other)
 	if (_other->GetOwner().lock()->GetComponent<Bullet>().lock() && !m_isDodge)
 	{
 		m_isHit = true;
-		m_playerController->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.get(), false);
+		m_playerController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_playerController.lock().get(), false);
 
 		if ((m_passingTime > 0.f && m_passingTime < 0.4f) && m_currentState == m_animationStateMap["Guard"])
 		{
@@ -444,19 +446,19 @@ void PlayerAnimator::OnCollisionEnter(Truth::Collider* _other)
 
 void PlayerAnimator::SetImpulse(float power, bool needRot)
 {
-	m_playerController->GetTypeInfo().GetProperty("useImpulse")->Set(m_playerController.get(), true);
-	m_playerController->GetTypeInfo().GetProperty("impulsePower")->Set(m_playerController.get(), power);
-	m_playerController->GetTypeInfo().GetProperty("needRot")->Set(m_playerController.get(), needRot);
+	m_playerController.lock()->GetTypeInfo().GetProperty("useImpulse")->Set(m_playerController.lock().get(), true);
+	m_playerController.lock()->GetTypeInfo().GetProperty("impulsePower")->Set(m_playerController.lock().get(), power);
+	m_playerController.lock()->GetTypeInfo().GetProperty("needRot")->Set(m_playerController.lock().get(), needRot);
 }
 
 void PlayerAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
 {
-	m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
+	m_skinnedMesh.lock()->SetAnimation(_name, WhenCurrentAnimationFinished);
 }
 
 void PlayerAnimator::SetAnimationSpeed(float speed)
 {
-	m_skinnedMesh->SetAnimationSpeed(speed);
+	m_skinnedMesh.lock()->SetAnimationSpeed(speed);
 }
 
 void PlayerAnimator::ChangeState(std::string stateName)
@@ -468,23 +470,23 @@ void PlayerAnimator::ChangeState(std::string stateName)
 
 void PlayerAnimator::SetPlayerDamage(float damage)
 {
-	m_player->GetTypeInfo().GetProperty("currentDamage")->Set(m_player.get(), damage);
+	m_player.lock()->GetTypeInfo().GetProperty("currentDamage")->Set(m_player.lock().get(), damage);
 }
 
 void PlayerAnimator::CameraShake(float shakeCount)
 {
-	m_playerCamera->GetTypeInfo().GetProperty("isShaking")->Set(m_playerCamera.get(), true);
-	m_playerCamera->GetTypeInfo().GetProperty("shakeCount")->Set(m_playerCamera.get(), shakeCount);
+	m_playerCamera.lock()->GetTypeInfo().GetProperty("isShaking")->Set(m_playerCamera.lock().get(), true);
+	m_playerCamera.lock()->GetTypeInfo().GetProperty("shakeCount")->Set(m_playerCamera.lock().get(), shakeCount);
 }
 
 void PlayerAnimator::CameraZoom(float timing)
 {
-	m_playerCamera->GetTypeInfo().GetProperty("zoomOutTime")->Set(m_playerCamera.get(), timing);
+	m_playerCamera.lock()->GetTypeInfo().GetProperty("zoomOutTime")->Set(m_playerCamera.lock().get(), timing);
 }
 
 void PlayerAnimator::SetTimeSlow()
 {
-	m_player->GetTypeInfo().GetProperty("slowTime")->Set(m_player.get(), true);
+	m_player.lock()->GetTypeInfo().GetProperty("slowTime")->Set(m_player.lock().get(), true);
 }
 
 void PlayerAnimator::SoundPlay(std::wstring path, bool isDup, int channel)
@@ -1993,16 +1995,16 @@ void PlayerAnimator::PlayEffects()
 		Matrix scaleMT = Matrix::CreateScale(m_owner.lock()->m_transform->m_scale);
 		Matrix rotationMT = Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(effectRot));
 		Matrix traslationMT = Matrix::CreateTranslation(effectPos);
-		m_normalAbilityEffect->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
+		m_normalAbilityEffect.lock()->SetTransformMatrix(scaleMT * rotationMT * traslationMT);
 
 		if (m_normalAbility)
 		{
 			m_normalAbility = false;
 
 			{
-				m_normalAbilityEffect->SetActive(true);
-				m_normalAbilityEffect->SetSimulationSpeed(3.f);
-				m_normalAbilityEffect->Play();
+				m_normalAbilityEffect.lock()->SetActive(true);
+				m_normalAbilityEffect.lock()->SetSimulationSpeed(3.f);
+				m_normalAbilityEffect.lock()->Play();
 			}
 
 			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Swing_2_Sound.wav", false, 14);

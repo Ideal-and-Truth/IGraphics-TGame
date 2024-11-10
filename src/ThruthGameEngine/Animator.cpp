@@ -18,17 +18,21 @@ Truth::Animator::Animator()
 
 Truth::Animator::~Animator()
 {
-
 }
 
 void Truth::Animator::Initialize()
 {
-	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
+	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>();
 }
 
 void Truth::Animator::Awake()
 {
 
+}
+
+void Truth::Animator::Destroy()
+{
+	m_skinnedMesh.reset();
 }
 
 void Truth::Animator::Start()
@@ -37,7 +41,7 @@ void Truth::Animator::Start()
 	{
 		if (e.animationPath != L"")
 		{
-			m_skinnedMesh->AddAnimation(e.name, e.animationPath);
+			m_skinnedMesh.lock()->AddAnimation(e.name, e.animationPath);
 		}
 	}
 	m_currentNode = delegate.m_animationNodes[0];

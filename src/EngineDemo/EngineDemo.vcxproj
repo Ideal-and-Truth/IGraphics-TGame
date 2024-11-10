@@ -159,6 +159,7 @@
     </ClInclude>
     <ClInclude Include="BulletMove.h" />
     <ClInclude Include="ButtonTest.h" />
+    <ClInclude Include="ClearUI.h" />
     <ClInclude Include="CombatZone.h" />
     <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="CutSceneTrigger.h" />
@@ -169,6 +170,8 @@
     <ClInclude Include="EnemyController.h" />
     <ClInclude Include="EngineDemo.h" />
     <ClInclude Include="ExitButton.h" />
+    <ClInclude Include="FailedUI.h" />
+    <ClInclude Include="FailedButton.h" />
     <ClInclude Include="FixedCamera.h" />
     <ClInclude Include="FollowPointLight.h" />
     <ClInclude Include="FrameUI.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="TestEffectGenerator.h" />
     <ClInclude Include="TestMovement.h" />
     <ClInclude Include="TimeDistortion.h" />
+    <ClInclude Include="TitleUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnchorCamera.cpp" />
@@ -212,6 +216,7 @@
     </ClCompile>
     <ClCompile Include="BulletMove.cpp" />
     <ClCompile Include="ButtonTest.cpp" />
+    <ClCompile Include="ClearUI.cpp" />
     <ClCompile Include="CombatZone.cpp" />
     <ClCompile Include="ComponentBase.cpp" />
     <ClCompile Include="CutSceneTrigger.cpp" />
@@ -222,6 +227,8 @@
     <ClCompile Include="EnemyController.cpp" />
     <ClCompile Include="EngineDemo.cpp" />
     <ClCompile Include="ExitButton.cpp" />
+    <ClCompile Include="FailedUI.cpp" />
+    <ClCompile Include="FailedButton.cpp" />
     <ClCompile Include="FixedCamera.cpp" />
     <ClCompile Include="FollowPointLight.cpp" />
     <ClCompile Include="FrameUI.cpp" />
@@ -247,6 +254,7 @@
     <ClCompile Include="TestEffectGenerator.cpp" />
     <ClCompile Include="TestMovement.cpp" />
     <ClCompile Include="TimeDistortion.cpp" />
+    <ClCompile Include="TitleUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EngineDemo.rc" />
@@ -256,6 +264,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Resources\CeniData\BossTest.yaml" />
     <None Include="..\Resources\CeniData\testCamera.yaml" />
     <None Include="..\Resources\Particles\Beam.yaml" />
     <None Include="..\Resources\Particles\Beam1.yaml" />

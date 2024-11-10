@@ -262,6 +262,14 @@ void Truth::Scene::Update()
 		if (e->m_isDead)
 		{
 			m_beginDestroy.pop();
+			for (auto i = m_entities.begin(); i != m_entities.end() ; i++)
+			{
+				if (e == *i)
+				{
+					m_entities.erase(i);
+					break;
+				}
+			}
 			continue;
 		}
 		e->Destroy();
@@ -377,7 +385,6 @@ void Truth::Scene::Start()
 		m_startedEntity.pop();
 	}
 
-	m_started = true;
 }
 
 /// <summary>
@@ -393,6 +400,8 @@ void Truth::Scene::Enter()
 	Start();
 	ApplyTransform();
 #endif // EDITOR_MODE
+	m_started = true;
+
 }
 
 /// <summary>

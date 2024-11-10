@@ -97,6 +97,15 @@
     <Filter Include="Component\AnchorCamera">
       <UniqueIdentifier>{623b97e3-844a-4d66-9840-784542345422}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component\FailedUI">
+      <UniqueIdentifier>{e3e62388-7bff-4dd7-b74f-b31b39c8e04d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\TitleUI">
+      <UniqueIdentifier>{787aa36b-2408-4b6c-bc24-062f32af7fcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component\ClearUI">
+      <UniqueIdentifier>{3c81ab4a-3652-46b4-926f-394836f16efa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -241,6 +250,18 @@
       <Filter>Component\Sound</Filter>
     </ClInclude>
     <ClInclude Include="AnchorCamera.h">
+      <Filter>Component\AnchorCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="FailedUI.h">
+      <Filter>Component\FailedUI</Filter>
+    </ClInclude>
+    <ClInclude Include="FailedButton.h">
+      <Filter>Component\FailedUI</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleUI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ClearUI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -378,6 +399,18 @@
       <Filter>Component\Sound</Filter>
     </ClCompile>
     <ClCompile Include="AnchorCamera.cpp">
+      <Filter>Component\AnchorCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="FailedUI.cpp">
+      <Filter>Component\FailedUI</Filter>
+    </ClCompile>
+    <ClCompile Include="FailedButton.cpp">
+      <Filter>Component\FailedUI</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleUI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ClearUI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -448,6 +481,9 @@
       <Filter>YAML Resource\Particle</Filter>
     </None>
     <None Include="..\Resources\CeniData\testCamera.yaml">
+      <Filter>YAML Resource\ceniCameraData</Filter>
+    </None>
+    <None Include="..\Resources\CeniData\BossTest.yaml">
       <Filter>YAML Resource\ceniCameraData</Filter>
     </None>
   </ItemGroup>

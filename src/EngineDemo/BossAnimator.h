@@ -486,11 +486,11 @@ private:
 	void serialize(Archive& _ar, const unsigned int _file_version);
 
 private:
-	std::shared_ptr<Truth::SkinnedMesh> m_skinnedMesh;
-	std::shared_ptr<Enemy> m_enemy;
-	std::shared_ptr<EnemyController> m_enemyController;
+	std::weak_ptr<Truth::SkinnedMesh> m_skinnedMesh;
+	std::weak_ptr<Enemy> m_enemy;
+	std::weak_ptr<EnemyController> m_enemyController;
 
-	std::shared_ptr<PlayerAnimator> m_playerAnimator;
+	std::weak_ptr<PlayerAnimator> m_playerAnimator;
 
 
 	/// <summary>

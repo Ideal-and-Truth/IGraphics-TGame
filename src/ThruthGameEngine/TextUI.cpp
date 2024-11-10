@@ -47,6 +47,12 @@ void Truth::TextUI::ChangeText(const std::wstring& _text)
 	}
 }
 
+void Truth::TextUI::SetAlpha(float _alpha)
+{
+	m_alpha = _alpha;
+	m_textSprite->SetAlpha(_alpha);
+}
+
 /// <summary>
 /// √ ±‚»≠
 /// </summary>

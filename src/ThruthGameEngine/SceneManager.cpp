@@ -105,6 +105,11 @@ void Truth::SceneManager::ChangeScene(const std::string& _name)
 	m_nextSceneName = _name;
 }
 
+void Truth::SceneManager::ResetScene()
+{
+	ChangeScene(m_currentScene->m_name);
+}
+
 void Truth::SceneManager::ChangeScene()
 {
 	m_eventManager.lock()->RemoveAllEvents();
@@ -112,13 +117,13 @@ void Truth::SceneManager::ChangeScene()
 	m_mangers.lock()->Particle()->StopAllParticle();
 
 	m_currentScene->Exit();
+	m_currentScene.reset();
 
 	std::ifstream inputstream(m_savedFilePath + m_nextSceneName + ".scene");
 	boost::archive::text_iarchive inputArchive(inputstream);
 	std::shared_ptr<Truth::Scene> s;
 	inputArchive >> s;
 
-	m_currentScene.reset();
 	m_currentScene = s;
 	m_currentScene->Initalize(m_mangers);
 	m_currentScene->Enter();

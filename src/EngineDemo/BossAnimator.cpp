@@ -111,42 +111,44 @@ void BossAnimator::Start()
 	m_skinnedMesh = m_owner.lock().get()->GetComponent<Truth::SkinnedMesh>().lock();
 	m_enemyController = m_owner.lock().get()->GetComponent<EnemyController>().lock();
 	m_enemy = m_owner.lock().get()->GetComponent<Enemy>().lock();
-	auto playerEntity = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
+	auto playerEntity = m_enemy.lock()->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.lock().get()).Get().lock();
 	m_playerAnimator = playerEntity->GetComponent<PlayerAnimator>().lock();
-	m_baseSpeed = m_enemy->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.get()).Get();
+	m_baseSpeed = m_enemy.lock()->GetTypeInfo().GetProperty("speed")->Get<float>(m_enemy.lock().get()).Get();
 	auto damager = m_owner.lock()->GetComponent<SimpleDamager>().lock();
 	damager->GetTypeInfo().GetProperty("onlyHitOnce")->Set(damager.get(), true);
 
-	m_skinnedMesh->AddAnimation("BossEntranceRoot", L"BossAnimations/Idle/BossEntranceRoot");
-	m_skinnedMesh->AddAnimation("BossIdle", L"BossAnimations/Idle/Idle");
-	m_skinnedMesh->AddAnimation("BossAttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
-	m_skinnedMesh->AddAnimation("BossAttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
-	m_skinnedMesh->AddAnimation("BossAttackChargedCombo", L"BossAnimations/Attacks/AttackChargedCombo");
-	m_skinnedMesh->AddAnimation("BossBlackHole", L"BossAnimations/Attacks/BlackHoleSummon");
-	m_skinnedMesh->AddAnimation("BossSwordShoot", L"BossAnimations/Attacks/BossSwordShoot");
-	m_skinnedMesh->AddAnimation("BossJumpAttack", L"BossAnimations/Attacks/JumpAttack");
-	m_skinnedMesh->AddAnimation("BossAttackRun", L"BossAnimations/Attacks/AttackRun");
-	m_skinnedMesh->AddAnimation("BossAttackShockWave", L"BossAnimations/Attacks/AttackShockWave");
-	m_skinnedMesh->AddAnimation("BossAttackSmashGround", L"BossAnimations/Attacks/AttackSmashGround");
-	m_skinnedMesh->AddAnimation("BossAttackSpin", L"BossAnimations/Attacks/AttackSpin");
-	m_skinnedMesh->AddAnimation("BossAttackSwing", L"BossAnimations/Attacks/AttackSwing");
-	m_skinnedMesh->AddAnimation("BossAttackUpperCut", L"BossAnimations/Attacks/AttackUpperCut");
-	m_skinnedMesh->AddAnimation("BossAttackUpperCutMirror", L"BossAnimations/Attacks/AttackUpperCutMirror");
-	m_skinnedMesh->AddAnimation("BossAttackCombo1_1", L"BossAnimations/Attacks/Combo1-1");
-	m_skinnedMesh->AddAnimation("BossAttackCombo1_2", L"BossAnimations/Attacks/Combo1-2");
-	m_skinnedMesh->AddAnimation("BossAttackCombo1_3", L"BossAnimations/Attacks/Combo1-3");
-	m_skinnedMesh->AddAnimation("BossAttackCombo2_1", L"BossAnimations/Attacks/Combo2-1");
-	m_skinnedMesh->AddAnimation("BossAttackCombo3_1", L"BossAnimations/Attacks/Combo3-1");
-	m_skinnedMesh->AddAnimation("BossDodge", L"BossAnimations/Dodge/Dodge");
-	m_skinnedMesh->AddAnimation("BossDodgeLeft", L"BossAnimations/Dodge/DodgeLeft");
-	m_skinnedMesh->AddAnimation("BossDodgeRight", L"BossAnimations/Dodge/DodgeRight");
-	m_skinnedMesh->AddAnimation("BossRun", L"BossAnimations/Run/Run");
-	m_skinnedMesh->AddAnimation("BossWalk", L"BossAnimations/Strafe/BossWalk");
-	m_skinnedMesh->AddAnimation("BossStrafeL", L"BossAnimations/Strafe/StrafeL");
-	m_skinnedMesh->AddAnimation("BossStrafeR", L"BossAnimations/Strafe/StrafeR");
-	m_skinnedMesh->AddAnimation("BossDown1", L"BossAnimations/Down/Down1");
-	m_skinnedMesh->AddAnimation("BossDown2", L"BossAnimations/Down/Down2");
-	m_skinnedMesh->AddAnimation("BossDown3", L"BossAnimations/Down/Down3");
+	auto skinnedMesh = m_skinnedMesh.lock();
+
+	skinnedMesh->AddAnimation("BossEntranceRoot", L"BossAnimations/Idle/BossEntranceRoot");
+	skinnedMesh->AddAnimation("BossIdle", L"BossAnimations/Idle/Idle");
+	skinnedMesh->AddAnimation("BossAttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
+	skinnedMesh->AddAnimation("BossAttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
+	skinnedMesh->AddAnimation("BossAttackChargedCombo", L"BossAnimations/Attacks/AttackChargedCombo");
+	skinnedMesh->AddAnimation("BossBlackHole", L"BossAnimations/Attacks/BlackHoleSummon");
+	skinnedMesh->AddAnimation("BossSwordShoot", L"BossAnimations/Attacks/BossSwordShoot");
+	skinnedMesh->AddAnimation("BossJumpAttack", L"BossAnimations/Attacks/JumpAttack");
+	skinnedMesh->AddAnimation("BossAttackRun", L"BossAnimations/Attacks/AttackRun");
+	skinnedMesh->AddAnimation("BossAttackShockWave", L"BossAnimations/Attacks/AttackShockWave");
+	skinnedMesh->AddAnimation("BossAttackSmashGround", L"BossAnimations/Attacks/AttackSmashGround");
+	skinnedMesh->AddAnimation("BossAttackSpin", L"BossAnimations/Attacks/AttackSpin");
+	skinnedMesh->AddAnimation("BossAttackSwing", L"BossAnimations/Attacks/AttackSwing");
+	skinnedMesh->AddAnimation("BossAttackUpperCut", L"BossAnimations/Attacks/AttackUpperCut");
+	skinnedMesh->AddAnimation("BossAttackUpperCutMirror", L"BossAnimations/Attacks/AttackUpperCutMirror");
+	skinnedMesh->AddAnimation("BossAttackCombo1_1", L"BossAnimations/Attacks/Combo1-1");
+	skinnedMesh->AddAnimation("BossAttackCombo1_2", L"BossAnimations/Attacks/Combo1-2");
+	skinnedMesh->AddAnimation("BossAttackCombo1_3", L"BossAnimations/Attacks/Combo1-3");
+	skinnedMesh->AddAnimation("BossAttackCombo2_1", L"BossAnimations/Attacks/Combo2-1");
+	skinnedMesh->AddAnimation("BossAttackCombo3_1", L"BossAnimations/Attacks/Combo3-1");
+	skinnedMesh->AddAnimation("BossDodge", L"BossAnimations/Dodge/Dodge");
+	skinnedMesh->AddAnimation("BossDodgeLeft", L"BossAnimations/Dodge/DodgeLeft");
+	skinnedMesh->AddAnimation("BossDodgeRight", L"BossAnimations/Dodge/DodgeRight");
+	skinnedMesh->AddAnimation("BossRun", L"BossAnimations/Run/Run");
+	skinnedMesh->AddAnimation("BossWalk", L"BossAnimations/Strafe/BossWalk");
+	skinnedMesh->AddAnimation("BossStrafeL", L"BossAnimations/Strafe/StrafeL");
+	skinnedMesh->AddAnimation("BossStrafeR", L"BossAnimations/Strafe/StrafeR");
+	skinnedMesh->AddAnimation("BossDown1", L"BossAnimations/Down/Down1");
+	skinnedMesh->AddAnimation("BossDown2", L"BossAnimations/Down/Down2");
+	skinnedMesh->AddAnimation("BossDown3", L"BossAnimations/Down/Down3");
 
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\09. FootStep_Sound\\Boss\\Boss_Walk_1_Sound.wav", false);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\07. Boss_Sound\\Boss_SwingSword_1_Sound.wav", false);
@@ -170,23 +172,27 @@ void BossAnimator::Update()
 		return;
 	}
 
-	auto playerEntity = m_enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(m_enemy.get()).Get().lock();
+	auto enemy = m_enemy.lock();
+	auto skinnedMesh = m_skinnedMesh.lock();
+	auto controller = m_enemyController.lock();
+
+	auto playerEntity = enemy->GetTypeInfo().GetProperty("target")->Get<std::weak_ptr<Truth::Entity>>(enemy.get()).Get().lock();
 	Vector3 playerPos = { playerEntity->GetWorldPosition().x,0.f,playerEntity->GetWorldPosition().z };
 	Vector3 bossPos = { m_owner.lock()->GetWorldPosition().x,0.f,m_owner.lock()->GetWorldPosition().z };
 
 	if ((GetKey(KEY::W) || GetKey(KEY::S) || GetKey(KEY::A) || GetKey(KEY::D)) && (playerPos - bossPos).Length() < 15.f
-		&& !m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get()
+		&& !enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(enemy.get()).Get()
 		&& m_currentState == m_animationStateMap["Idle"])
 	{
-		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
+		enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(enemy.get(), true);
 	}
 
 	// 	if (GetKeyDown(KEY::_9))
 	// 	{
 	// 		m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Set(m_enemy.get(), true);
 	// 	}
-	m_currentFrame = m_skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(m_skinnedMesh.get()).Get();
-	m_isAnimationEnd = m_skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(m_skinnedMesh.get()).Get();
+	m_currentFrame = skinnedMesh->GetTypeInfo().GetProperty("currentFrame")->Get<int>(skinnedMesh.get()).Get();
+	m_isAnimationEnd = skinnedMesh->GetTypeInfo().GetProperty("isAnimationEnd")->Get<bool>(skinnedMesh.get()).Get();
 
 	if (m_animationStateMap["Entrance"] == m_currentState)
 	{
@@ -197,28 +203,28 @@ void BossAnimator::Update()
 		m_currentState->OnStateUpdate();
 	}
 
-	if (!m_enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(m_enemy.get()).Get())
+	if (!enemy->GetTypeInfo().GetProperty("isTargetIn")->Get<bool>(enemy.get()).Get())
 	{
 		return;
 	}
 
 
-	if (m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get() <= 0.f)
+	if (enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy.get()).Get() <= 0.f)
 	{
 		m_isDeath = true;
 		m_isDown = true;
 	}
 
-	m_sideMove = m_enemyController->GetTypeInfo().GetProperty("sideMove")->Get<float>(m_enemyController.get()).Get();
-	m_isInRange = m_enemyController->GetTypeInfo().GetProperty("isAttackReady")->Get<bool>(m_enemyController.get()).Get();
-	m_enemyController->GetTypeInfo().GetProperty("strafeMove")->Set(m_enemyController.get(), m_strafeMove);
+	m_sideMove = controller->GetTypeInfo().GetProperty("sideMove")->Get<float>(controller.get()).Get();
+	m_isInRange = controller->GetTypeInfo().GetProperty("isAttackReady")->Get<bool>(controller.get()).Get();
+	controller->GetTypeInfo().GetProperty("strafeMove")->Set(controller.get(), m_strafeMove);
 
-	float currentTP = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
-	float maxTP = m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get();
+	float currentTP = enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(enemy.get()).Get();
+	float maxTP = enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(enemy.get()).Get();
 
 
 	// ╫╨ео©К
-	if (!m_isDown && m_enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(m_enemy.get()).Get() > m_downGuage)
+	if (!m_isDown && enemy->GetTypeInfo().GetProperty("stunGuage")->Get<float>(enemy.get()).Get() > m_downGuage)
 	{
 		m_isDown = true;
 		m_passingTime = 0.f;
@@ -230,7 +236,7 @@ void BossAnimator::Update()
 		m_passingTime += GetDeltaTime();
 		if (m_passingTime > 8.f)
 		{
-			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+			enemy->GetTypeInfo().GetProperty("stunGuage")->Set(enemy.get(), 0.f);
 			m_isDown = false;
 			m_passingTime = 0.f;
 		}
@@ -274,11 +280,11 @@ void BossAnimator::Update()
 
 	if (m_isPursuit)
 	{
-		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed * 1.5f);
+		enemy->GetTypeInfo().GetProperty("speed")->Set(enemy.get(), m_baseSpeed * 1.5f);
 	}
 	else
 	{
-		m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), m_baseSpeed);
+		enemy->GetTypeInfo().GetProperty("speed")->Set(enemy.get(), m_baseSpeed);
 	}
 
 	if (m_isUseSkill || m_isDodge || m_isDown || m_currentState == m_animationStateMap["Down"]
@@ -287,11 +293,11 @@ void BossAnimator::Update()
 		|| m_currentState == m_animationStateMap["AttackCombo3_1"] || m_currentState == m_animationStateMap["AttackSpin"]
 		|| m_currentState == m_animationStateMap["AttackJump"] || m_currentState == m_animationStateMap["AttackRunning"])
 	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), false);
+		controller->GetTypeInfo().GetProperty("canMove")->Set(controller.get(), false);
 	}
 	else
 	{
-		m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), true);
+		controller->GetTypeInfo().GetProperty("canMove")->Set(controller.get(), true);
 	}
 
 
@@ -301,30 +307,32 @@ void BossAnimator::Update()
 
 void BossAnimator::SetImpulse(float power, float pL_mR_M, bool isPassThrough)
 {
-	m_enemyController->GetTypeInfo().GetProperty("isPassThrough")->Set(m_enemyController.get(), isPassThrough);
-	m_enemyController->GetTypeInfo().GetProperty("useImpulse")->Set(m_enemyController.get(), true);
-	m_enemyController->GetTypeInfo().GetProperty("impulsePower")->Set(m_enemyController.get(), power);
-	m_enemyController->GetTypeInfo().GetProperty("sideImpulse")->Set(m_enemyController.get(), pL_mR_M);
+	auto controller = m_enemyController.lock();
+
+	controller->GetTypeInfo().GetProperty("isPassThrough")->Set(controller.get(), isPassThrough);
+	controller->GetTypeInfo().GetProperty("useImpulse")->Set(controller.get(), true);
+	controller->GetTypeInfo().GetProperty("impulsePower")->Set(controller.get(), power);
+	controller->GetTypeInfo().GetProperty("sideImpulse")->Set(controller.get(), pL_mR_M);
 }
 
 void BossAnimator::SetCanMove(bool canMove)
 {
-	m_enemyController->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.get(), canMove);
+	m_enemyController.lock()->GetTypeInfo().GetProperty("canMove")->Set(m_enemyController.lock().get(), canMove);
 }
 
 void BossAnimator::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
 {
-	m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
+	m_skinnedMesh.lock()->SetAnimation(_name, WhenCurrentAnimationFinished);
 }
 
 void BossAnimator::SetAnimationSpeed(float speed)
 {
-	m_skinnedMesh->SetAnimationSpeed(speed);
+	m_skinnedMesh.lock()->SetAnimationSpeed(speed);
 }
 
 void BossAnimator::SetAnimationPlay(bool playStop)
 {
-	m_skinnedMesh->SetPlayStop(playStop);
+	m_skinnedMesh.lock()->SetPlayStop(playStop);
 }
 
 void BossAnimator::ChangeState(std::string stateName)
@@ -336,12 +344,12 @@ void BossAnimator::ChangeState(std::string stateName)
 
 void BossAnimator::SetEnemyDamage(float damage)
 {
-	m_enemy->GetTypeInfo().GetProperty("currentDamage")->Set(m_enemy.get(), damage);
+	m_enemy.lock()->GetTypeInfo().GetProperty("currentDamage")->Set(m_enemy.lock().get(), damage);
 }
 
 void BossAnimator::SetEnemySpeed(float speed)
 {
-	m_enemy->GetTypeInfo().GetProperty("speed")->Set(m_enemy.get(), speed);
+	m_enemy.lock()->GetTypeInfo().GetProperty("speed")->Set(m_enemy.lock().get(), speed);
 }
 
 void BossAnimator::SetChargeAttack(bool onoff)
@@ -1441,7 +1449,7 @@ void BossAnimator::Phase1()
 
 	if (!m_playOnce)
 	{
-		m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+		m_enemy.lock()->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.lock().get(), 0.f);
 
 		m_attackRunning = true;
 		m_playOnce = true;
@@ -1565,7 +1573,7 @@ void BossAnimator::Phase2()
 			AllStateReset();
 			m_isDodge = true;
 			ChangeState("Dodge");
-			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+			m_enemy.lock()->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.lock().get(), 0.f);
 			m_attackCount = 3;
 		}
 		if (m_currentState == m_animationStateMap["Dodge"])
@@ -1695,8 +1703,8 @@ void BossAnimator::Phase2()
 
 void BossAnimator::Phase3()
 {
-	float currentTP = m_enemy->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.get()).Get();
-	float maxTP = m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get();
+	float currentTP = m_enemy.lock()->GetTypeInfo().GetProperty("currentTP")->Get<float>(m_enemy.lock().get()).Get();
+	float maxTP = m_enemy.lock()->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.lock().get()).Get();
 
 	int random = RandomNumber(1, 20);
 
@@ -1707,16 +1715,16 @@ void BossAnimator::Phase3()
 			AllStateReset();
 			m_isDown = true;
 			ChangeState("Down");
-			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+			m_enemy.lock()->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.lock().get(), 0.f);
 		}
 		if (m_currentState == m_animationStateMap["Down"] && m_isDown)
 		{
-			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), currentTP + GetDeltaTime() * 15.f);
+			m_enemy.lock()->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.lock().get(), currentTP + GetDeltaTime() * 15.f);
 		}
 		if (currentTP / maxTP >= 0.5f && m_currentState == m_animationStateMap["Down"])
 		{
-			m_enemy->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.get(), m_enemy->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.get()).Get() * 0.5f);
-			m_enemy->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.get(), 0.f);
+			m_enemy.lock()->GetTypeInfo().GetProperty("currentTP")->Set(m_enemy.lock().get(), m_enemy.lock()->GetTypeInfo().GetProperty("maxTP")->Get<float>(m_enemy.lock().get()).Get() * 0.5f);
+			m_enemy.lock()->GetTypeInfo().GetProperty("stunGuage")->Set(m_enemy.lock().get(), 0.f);
 			m_playOnce = true;
 			m_isDown = false;
 			m_jumpAttack = true;
