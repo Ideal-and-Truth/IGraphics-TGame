@@ -119,7 +119,7 @@ void BossAnimator::Start()
 
 	auto skinnedMesh = m_skinnedMesh.lock();
 
-	skinnedMesh->AddAnimation("BossEntranceRoot", L"BossAnimations/Idle/BossEntranceRoot");
+	skinnedMesh->AddAnimation("BossEntranceRoot", L"BossAnimations/Idle/BossBattleEntranceRoot");
 	skinnedMesh->AddAnimation("BossIdle", L"BossAnimations/Idle/Idle");
 	skinnedMesh->AddAnimation("BossAttackLightSpeedReady", L"BossAnimations/Attacks/AttackLightSpeedReady");
 	skinnedMesh->AddAnimation("BossAttackLightSpeedDash", L"BossAnimations/Attacks/AttackLightSpeedDash");
