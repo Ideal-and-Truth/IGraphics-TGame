@@ -40,6 +40,8 @@ Truth::TextUI::~TextUI()
 /// <param name="_text">변경할 텍스트</param>
 void Truth::TextUI::ChangeText(const std::wstring& _text)
 {
+	return;
+
 	if (!m_text._Equal(_text))
 	{
 		m_textSprite.lock()->ChangeText(_text);
@@ -49,6 +51,8 @@ void Truth::TextUI::ChangeText(const std::wstring& _text)
 
 void Truth::TextUI::SetAlpha(float _alpha)
 {
+	return;
+
 	m_alpha = _alpha;
 	m_textSprite.lock()->SetAlpha(_alpha);
 }
@@ -110,6 +114,8 @@ void Truth::TextUI::Update()
 /// <returns></returns>
 bool Truth::TextUI::IsActive()
 {
+	return false;
+
 	auto owner = m_owner.lock();
 
 	bool isActive;
@@ -130,12 +136,15 @@ bool Truth::TextUI::IsActive()
 /// <param name="_active">활성화 여부</param>
 void Truth::TextUI::SetSpriteActive(bool _active)
 {
+	return;
+
 	m_textSprite.lock()->SetActive(_active);
 }
 
 #ifdef EDITOR_MODE
 void Truth::TextUI::EditorSetValue()
 {
+	return;
 	auto gp = m_managers.lock()->Graphics();
 	gp->DeleteTextSprite(m_textSprite.lock());
 	m_textSprite = gp->CreateTextSprite(
