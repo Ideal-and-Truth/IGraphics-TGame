@@ -312,12 +312,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim0 = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
 		DebugPlayer0->AddAnimation("Debug", DebugPlayerAnim0);
 
-		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
-		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"BossAnimations/Idle/BossEntranceRoot");
-		DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
-		// 
 		//std::shared_ptr<Ideal::IMeshObject> DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
 		//DebugStaticEnemy->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(3, 0, 0));
+
+		std::shared_ptr<Ideal::ISkinnedMeshObject> DebugEnemy = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
+		std::shared_ptr<Ideal::IAnimation> DebugPlayerAnim = gRenderer->CreateAnimation(L"BossAnimations/Idle/BossEntranceRoot");
+		DebugEnemy->AddAnimation("Debug", DebugPlayerAnim);
+		// 
 
 
 		//std::shared_ptr<Ideal::ISkinnedMeshObject> DebugPlayer2 = gRenderer->CreateSkinnedMeshObject(L"DebugPlayer/animation_ka_walk");
@@ -2654,26 +2655,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 				if (GetAsyncKeyState('N') & 0x8000)
 				{
-					gRenderer->DeleteMeshObject(DebugPlayer);
-					DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
+					gRenderer->DeleteMeshObject(DebugEnemy);
+					DebugEnemy = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
 				}
 
 				if (GetAsyncKeyState('M') * 0x8000)
 				{
 					gRenderer->DeleteMeshObject(DebugPlayer0);
-					gRenderer->DeleteMeshObject(DebugPlayer);
 					DebugPlayer0.reset();
-					DebugPlayer.reset();
+					gRenderer->DeleteMeshObject(DebugEnemy);
+					gRenderer->DeleteMeshObject(DebugEnemy);
+					DebugEnemy.reset();
+
+					DebugPlayer0 = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+					gRenderer->DeleteMeshObject(DebugPlayer0);
 
 					DebugPlayer0 = gRenderer->CreateSkinnedMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
 					//DebugPlayerAnim0 = nullptr;
 					//DebugPlayerAnim0 = gRenderer->CreateAnimation(L"PlayerAnimations/Idle/idle");
 					DebugPlayer0->AddAnimation("Debug", DebugPlayerAnim0);
 
-					DebugPlayer = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
+					//DebugStaticEnemy = gRenderer->CreateStaticMeshObject(L"PlayerAnimations/ChargedAttack/M_Big_Sword@Attack_3Combo_1");
+
+					DebugEnemy = gRenderer->CreateSkinnedMeshObject(L"BossAnimations/Idle/Idle");
 					//DebugPlayerAnim = nullptr;
 					//DebugPlayerAnim = gRenderer->CreateAnimation(L"BossAnimations/Idle/BossEntranceRoot");
-					DebugPlayer->AddAnimation("Debug", DebugPlayerAnim);
+					DebugEnemy->AddAnimation("Debug", DebugPlayerAnim);
 				}
 
 #ifdef MAKE_PARTICLE
@@ -2885,7 +2892,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				//player3->AnimationDeltaTime(0.002f);
 				//playerRe->AnimationDeltaTime(0.002f);
 				//DebugEnemy->AnimationDeltaTime(0.003f);
-				DebugPlayer->AnimationDeltaTime(0.003f);
+				DebugEnemy->AnimationDeltaTime(0.003f);
 				//DebugPlayer->AnimationDeltaTime(1.003f);
 
 				if (GetAsyncKeyState(VK_END) * 0x8000)
@@ -3105,8 +3112,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//gRenderer->DeleteMeshObject(DebugStaticEnemy);
 		//DebugStaticEnemy.reset();
-		gRenderer->DeleteMeshObject(DebugPlayer);
-		DebugPlayer.reset();
+		gRenderer->DeleteMeshObject(DebugEnemy);
+		DebugEnemy.reset();
 		gRenderer->DeleteMaterial(kaMaterial);
 		kaMaterial.reset();
 		gRenderer->DeleteMaterial(skirtMaterial);
