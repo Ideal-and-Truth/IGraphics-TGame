@@ -12,7 +12,8 @@ StageBGM::StageBGM()
 
 StageBGM::~StageBGM()
 {
-
+	m_managers.lock()->Sound()->Stop(64);
+	m_managers.lock()->Sound()->Stop(65);
 }
 
 void StageBGM::Start()
