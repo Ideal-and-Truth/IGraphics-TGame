@@ -5,6 +5,7 @@
 #include "ISprite.h"
 #include "InputManager.h"
 #include "ButtonBehavior.h"
+#include "..\EngineDemo\TitleUI.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::UI)
 
@@ -157,6 +158,11 @@ void Truth::UI::Initialize()
 	m_rect.bottom = static_cast<LONG>(m_position.y + (m_size.y * 0.5f) * m_scale.y);
 
 	SetSpriteActive(BUTTON_STATE::IDEL);
+
+// 	if (m_behavior == nullptr)
+// 	{
+// 		m_behavior = std::make_shared<TitleUI>();
+// 	}
 }
 
 void Truth::UI::Start()

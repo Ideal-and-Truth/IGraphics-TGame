@@ -1,5 +1,5 @@
 #include "TitleUI.h"
-#include "TextUI.h"
+#include "UI.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(TitleUI)
 
@@ -31,7 +31,7 @@ void TitleUI::Update()
 		m_alphaDirection *= -1.0f;
 	}
 	
-	m_TextUI.lock()->SetAlpha(m_alpha);
+	m_UI.lock()->SetAlpha(m_alpha);
 
 	if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
 	{
