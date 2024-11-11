@@ -1982,7 +1982,7 @@ void PlayerAnimator::PlayEffects()
 				* Matrix::CreateTranslation(effectPos)
 			);
 			p->SetActive(true);
-			p->SetSimulationSpeed(1.f);
+			p->SetSimulationSpeed(0.5f);
 			p->Play();
 		}
 
