@@ -1,7 +1,7 @@
 MaxCount: 10
 #-------Material--------#
 MatName: NorDamageMaterial2
-EBlendingMode: 1
+EBlendingMode: 2
 Shader: BossFX_1BeamRingPS
 Texture0: ../Resources/Textures/0_Particle/Glow1.png
 WriteDepthBuffer: false
