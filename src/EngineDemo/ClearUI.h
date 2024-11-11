@@ -27,6 +27,8 @@ private:
 
 	bool m_isShown;
 
+	bool m_revers = false;
+
 public:
 	ClearUI();
 	virtual ~ClearUI();

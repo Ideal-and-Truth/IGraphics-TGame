@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "ButtonBehavior.h"
 #include "..\EngineDemo\TitleUI.h"
+#include "..\EngineDemo\ClearUI.h"
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Truth::UI)
 
@@ -159,10 +160,7 @@ void Truth::UI::Initialize()
 
 	SetSpriteActive(BUTTON_STATE::IDEL);
 
-// 	if (m_behavior == nullptr)
-// 	{
-// 		m_behavior = std::make_shared<TitleUI>();
-// 	}
+
 }
 
 void Truth::UI::Start()

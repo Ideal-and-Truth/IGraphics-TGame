@@ -165,7 +165,7 @@ void Truth::InputManager::Update()
 		::GetWindowRect(m_hwnd, &rect);
 		SetCursorPos((rect.right - rect.left) * 0.5f + rect.left, (rect.bottom - rect.top) * 0.5f + rect.top);
 
-		if (GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
+		if (GetKeyState(KEY::M) == KEY_STATE::DOWN)
 		{
 			SetShowCursor(true);
 			m_fpsMode = false;
@@ -173,7 +173,7 @@ void Truth::InputManager::Update()
 	}
 	else
 	{
-		if (GetKeyState(KEY::F1) == KEY_STATE::DOWN)
+		if (GetKeyState(KEY::N) == KEY_STATE::DOWN)
 		{
 			SetShowCursor(false);
 			m_fpsMode = true;

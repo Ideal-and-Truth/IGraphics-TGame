@@ -24,7 +24,10 @@ void ClearUI::Start()
 	if (!bossEntity.expired())
 		m_boss = bossEntity.lock()->GetComponent<Enemy>();
 	m_UI.lock()->SetAlpha(m_alpha);
-
+	if (m_UI.lock()->GetOwner().lock()->GetName() == "ESC")
+	{
+		m_revers = true;
+	}
 	// m_managers.lock()->Event()->Subscribe("Boss Destroy", MakeListenerInfo(&ClearUI::Trigger));
 }
 
@@ -47,7 +50,7 @@ void ClearUI::Update()
 
 		m_UI.lock()->SetAlpha(m_alpha);
 	}
-	else
+	else if (!m_revers)
 	{
 		m_alpha -= speed;
 
@@ -57,7 +60,7 @@ void ClearUI::Update()
 		}
 
 		m_UI.lock()->SetAlpha(m_alpha);
-		if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+		if (m_managers.lock()->Input()->GetKeyState(KEY::O) == KEY_STATE::DOWN)
 		{
 			m_managers.lock()->Scene()->ChangeScene("TitleScene");
 		}

@@ -53,7 +53,7 @@ void PlayerSkill::SwordBeam()
 		swordBeam->m_layer = 1;
 		swordBeam->AddComponent<Truth::SphereCollider>();
 		auto damage = swordBeam->AddComponent<SimpleDamager>();
-		damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 30.f);
+		damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 25.f);
 		damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 
 		swordBeam->m_name = "SwordBeam";

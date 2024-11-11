@@ -24,6 +24,8 @@ private:
 	PROPERTY(nextMap);
 	std::string m_nextMap;
 
+	std::string m_cheat = "TitleScene";
+
 	std::shared_ptr<Ideal::ISprite> m_sprite;
 
 	bool m_isActive = false;

@@ -856,7 +856,7 @@ void NormalAttack6::OnStateEnter()
 	GetProperty("isNormalAttack")->Set(m_animator, true);
 	GetProperty("fallAttack")->Set(m_animator, true);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(10.f, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(15.f);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(6.f);
 	GetProperty("normalAttack6")->Set(m_animator, true);
 }
 
@@ -1510,7 +1510,7 @@ void PlayerSkillE::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(50.f);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(20.f);
 	lastFrame = 0;
 }
 

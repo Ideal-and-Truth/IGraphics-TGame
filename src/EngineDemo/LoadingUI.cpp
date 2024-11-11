@@ -27,6 +27,10 @@ void LoadingUI::Start()
 
 void LoadingUI::Update()
 {
+	if (GetKeyDown(KEY::F10) && m_nextMap == m_cheat)
+	{
+		m_isActive = true;
+	}
 	if (!m_isActive)
 		return;
 
@@ -38,7 +42,10 @@ void LoadingUI::Update()
 	if (m_alpha >= 2.0f)
 	{
 		EventPublish("SaveData", nullptr);
-		m_managers.lock()->Scene()->ChangeScene(m_nextMap);
+		if (m_nextMap != m_cheat)
+		{
+			m_managers.lock()->Scene()->ChangeScene(m_nextMap);
+		}
 	}
 }
 
