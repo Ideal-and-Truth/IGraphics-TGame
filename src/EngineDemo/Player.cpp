@@ -36,7 +36,8 @@ Player::~Player()
 
 void Player::Awake()
 {
-
+	EventBind("SaveData", &Player::SavePlayerData);
+	EventBind("LoadData", &Player::LoadPlayerData);
 }
 
 void Player::Start()
@@ -127,9 +128,9 @@ void Player::Update()
 
 }
 
-void Player::SavePlayerData(int _slot)
+void Player::SavePlayerData([[maybe_unused]] const void* _)
 {
-	fs::path savePath = m_dataPath / std::to_string(_slot) / ".player";
+	fs::path savePath = m_dataPath / ".player";
 
 	YAML::Node node;
 	YAML::Emitter emitter;
@@ -152,9 +153,9 @@ void Player::SavePlayerData(int _slot)
 	fout.close();
 }
 
-void Player::LoadPlayerData(int _slot)
+void Player::LoadPlayerData([[maybe_unused]] const void* _)
 {
-	fs::path savePath = m_dataPath / std::to_string(_slot) / ".player";
+	fs::path savePath = m_dataPath / ".player";
 	std::ifstream fin(savePath);
 	auto node = YAML::Load(fin);
 

@@ -90,8 +90,8 @@ public:
 
 	inline bool GetSlowTime() const { return m_slowTime; }
 
-	void SavePlayerData(int _slot = 0);
-	void LoadPlayerData(int _slot = 0);
+	void SavePlayerData([[maybe_unused]] const void* _);
+	void LoadPlayerData([[maybe_unused]] const void* _);
 
 private:
 };

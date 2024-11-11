@@ -101,7 +101,7 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 			auto material = m_managers.lock()->Graphics()->CreateMaterial(matPath.generic_string());
 			m_mat.push_back(material);
 
-			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+			// m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
 
 			if (material->m_alphaCulling)
 			{
@@ -117,7 +117,7 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 			auto material = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
 			m_mat.push_back(material);
 
-			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+			// m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
 			if (material->m_alphaCulling)
 			{
 				m_skinnedMesh->AlphaClippingCheck();
