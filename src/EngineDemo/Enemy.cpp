@@ -43,6 +43,10 @@ void Enemy::Start()
 
 void Enemy::Update()
 {
+	if (GetKey(KEY::K) && GetKey(KEY::I) && GetKeyDown(KEY::L))
+	{
+		m_currentTP = 0.f;
+	}
 	if (GetKey(KEY::O) && GetKeyDown(KEY::P))
 	{
 		m_isInvincible = !m_isInvincible;
