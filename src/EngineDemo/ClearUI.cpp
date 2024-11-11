@@ -46,10 +46,6 @@ void ClearUI::Update()
 		}
 
 		m_UI.lock()->SetAlpha(m_alpha);
-		if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
-		{
-			m_isShown = false;
-		}
 	}
 	else
 	{
@@ -61,9 +57,9 @@ void ClearUI::Update()
 		}
 
 		m_UI.lock()->SetAlpha(m_alpha);
-	}
-	if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
-	{
-		m_managers.lock()->Scene()->ChangeScene("TitleScene");
+		if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+		{
+			m_managers.lock()->Scene()->ChangeScene("TitleScene");
+		}
 	}
 }

@@ -33,7 +33,7 @@ void TitleUI::Update()
 	
 	m_UI.lock()->SetAlpha(m_alpha);
 
-	if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
+	if (m_managers.lock()->Input()->GetKeyState(KEY::SPACE) == KEY_STATE::DOWN)
 	{
 		m_managers.lock()->Event()->PublishEvent("Loading");
 	}
