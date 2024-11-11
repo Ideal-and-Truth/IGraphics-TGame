@@ -1,8 +1,8 @@
 ---
 maxTP: 300
 maxCP: 100
-currentDamage: 30
-currentTP: 237
-currentCP: 0
+currentDamage: 15
+currentTP: 129
+currentCP: 45
 chargingCP: 10
 ...

@@ -1,0 +1,11 @@
+NodeData:
+  - position: {x: 0.065463 , y: 0.9, z: 8.367342}
+    rotation: {x: 0, y: -0.220183, z: 0.975464}
+    positionMode: 1
+    rotationMode: 1
+    delayTime: 8.0
+  - position: {x: 0.1006862, y: 0.9, z: -3.3736612}
+    rotation: {x: 0, y: -0.220183, z: 0.975464}
+    positionMode: 1
+    rotationMode: 1
+    delayTime: 8.0

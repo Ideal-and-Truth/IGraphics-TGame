@@ -15,9 +15,12 @@ private:
 	void load(Archive& ar, const unsigned int file_version);
 
 public:
-
+	DataLoader();
+	virtual ~DataLoader();
 
 private:
+	METHOD(Awake);
+	virtual void Awake();
 
 };
 

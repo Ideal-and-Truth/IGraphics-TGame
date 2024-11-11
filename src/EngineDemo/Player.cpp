@@ -161,7 +161,7 @@ void Player::SavePlayerData([[maybe_unused]] const void* _)
 
 void Player::LoadPlayerData([[maybe_unused]] const void* _)
 {
-	fs::path savePath = m_dataPath / ".player";
+	fs::path savePath = m_dataPath / "data.player";
 	std::ifstream fin(savePath);
 	auto node = YAML::Load(fin);
 
