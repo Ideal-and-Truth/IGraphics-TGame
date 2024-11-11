@@ -264,6 +264,7 @@
     <ResourceCompile Include="EngineDemo.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\Resources\ICon\main_gear_light.ico" />
     <Image Include="EngineDemo.ico" />
     <Image Include="small.ico" />
   </ItemGroup>

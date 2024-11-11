@@ -11,6 +11,7 @@
 #include "framework.h"
 #include "EngineDemo.h"
 #include "Processor.h"
+#include "Resource.h"
 
 #pragma region test Scene
 #include "Entity.h"
@@ -56,7 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	std::unique_ptr<Processor> processor = std::make_unique<Processor>();
 
-	processor->Initialize(hInstance);
+	processor->Initialize(hInstance, MAKEINTRESOURCE(IDI_MAIN_ICON));
 	///...///
 //  	std::shared_ptr<Truth::Scene> testScene = std::make_shared<Truth::Scene>(processor->GetManagers());
 //  	testScene->m_name = "test";

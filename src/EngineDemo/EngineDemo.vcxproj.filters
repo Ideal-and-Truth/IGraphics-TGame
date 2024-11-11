@@ -441,6 +441,9 @@
     <Image Include="EngineDemo.ico">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="..\Resources\ICon\main_gear_light.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

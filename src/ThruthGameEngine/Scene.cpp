@@ -766,6 +766,7 @@ void Truth::Scene::LoadUnityData(const std::wstring& _path)
 			{
 				int a = 1;
 			}
+			// Volumetric Spot Light (2)
 
 			switch (lightType)
 			{

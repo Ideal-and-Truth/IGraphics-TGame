@@ -99,13 +99,15 @@ private:
 
 	const std::string m_savedFilePath = "../Scene/";
 
+	LPCWSTR m_icon;
+
 public:
 	// 특수 멤버함수
 	Processor();
 	~Processor();
 
 	// 초기화
-	void Initialize(HINSTANCE _hInstance);
+	void Initialize(HINSTANCE _hInstance, LPCWSTR _icon = IDI_APPLICATION);
 	void Finalize();
 	void Process();
 	void Loop();

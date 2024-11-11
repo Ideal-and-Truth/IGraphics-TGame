@@ -46,8 +46,9 @@ Processor::~Processor()
 /// 프로세서 초기화
 /// </summary>
 /// <param name="_hInstance"></param>
-void Processor::Initialize(HINSTANCE _hInstance)
+void Processor::Initialize(HINSTANCE _hInstance, LPCWSTR _icon)
 {
+	m_icon = _icon;
 	m_hinstance = _hInstance;
 	CreateMainWindow(_hInstance);
 	InitializeManager();
@@ -297,12 +298,12 @@ void Processor::CreateMainWindow(HINSTANCE _hInstance, uint32 _width, uint32 _he
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = _hInstance;
-	wcex.hIcon = LoadIcon(_hInstance, IDI_APPLICATION);
+	wcex.hIcon = LoadIcon(_hInstance, m_icon);
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = szAppName;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
+	wcex.hIconSm = LoadIcon(wcex.hInstance, m_icon);
 
 	RegisterClassExW(&wcex);
 
