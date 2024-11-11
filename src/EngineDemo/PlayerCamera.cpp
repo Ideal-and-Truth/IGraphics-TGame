@@ -59,6 +59,16 @@ void PlayerCamera::Start()
 	// 	m_enemys.push_back(m_managers.lock()->Scene()->m_currentScene->FindEntity("Boss").lock());
 
 	m_managers.lock()->Graphics()->SetMainCamera(m_camera.lock().get());
+
+	Vector3 rot = m_player.lock()->m_transform->m_rotation.ToEuler();
+	rot.x = 0.f;
+	rot.z = 0.f;
+
+	m_camera.lock()->m_look = Vector3::Transform(Vector3::Forward, Quaternion::CreateFromYawPitchRoll(rot));
+
+	Vector3 look = m_camera.lock()->m_look;
+	m_elevation = acos(m_camera.lock()->m_look.y);
+	m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
 }
 
 void PlayerCamera::FixedUpdate()
@@ -82,6 +92,7 @@ void PlayerCamera::LateUpdate()
 {
 	if (m_isCutScenePlay)
 		return;
+
 
 	if (m_enemys.empty())
 		m_isLockOn = false;

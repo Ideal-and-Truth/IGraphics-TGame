@@ -39,7 +39,12 @@ void PlayerController::Start()
 	m_controller.lock()->SetMask(static_cast<uint32>(Truth::COLLISION_GROUP::PLAYER_MASK));
 	m_controller.lock()->SetUpFiltering();
 	m_player = m_owner.lock().get()->GetComponent<Player>();
-	m_owner.lock()->m_transform->SetRotate(Quaternion());
+
+	Vector3 rot = m_owner.lock()->m_transform->m_rotation.ToEuler();
+	rot.x = 0.f;
+	rot.z = 0.f;
+
+	m_playerDirection = Vector3::Transform(Vector3::Forward, Quaternion::CreateFromYawPitchRoll(rot));
 }
 
 void PlayerController::FixedUpdate()
@@ -182,7 +187,10 @@ void PlayerController::PlayerMove(const void*)
 		{
 			Quaternion lookRot;
 			Quaternion::LookRotation(impRot, Vector3::Up, lookRot);
-			m_owner.lock()->m_transform->m_rotation = lookRot;
+			Vector3 euler = lookRot.ToEuler();
+			euler.x = 0.f;
+			euler.z = 0.f;
+			m_owner.lock()->m_transform->m_rotation = Quaternion::CreateFromYawPitchRoll(euler);
 		}
 
 		m_needRot = false;
@@ -209,15 +217,23 @@ void PlayerController::PlayerMove(const void*)
 				m_playerDirection = playerDir;
 				Quaternion lookRot;
 				Quaternion::LookRotation(playerDir, Vector3::Up, lookRot);
+				Vector3 euler = lookRot.ToEuler();
+				euler.x = 0.f;
+				euler.z = 0.f;
 				auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
-				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, Quaternion::CreateFromYawPitchRoll(euler), lookRotationDampFactor * GetDeltaTime());
 			}
 			else
 			{
+				m_faceDirection.x = 0.f;
+				m_faceDirection.z = 0.f;
 				Quaternion lookRot;
 				Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
+				Vector3 euler = lookRot.ToEuler();
+				euler.x = 0.f;
+				euler.z = 0.f;
 				auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
-				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, Quaternion::CreateFromYawPitchRoll(euler), lookRotationDampFactor * GetDeltaTime());
 			}
 		}
 	}
@@ -233,22 +249,33 @@ void PlayerController::PlayerMove(const void*)
 			if (!m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetCutScenePaly())
 			{
 				Vector3 playerDir = direction;
+				playerDir.x = 0.f;
+				playerDir.z = 0.f;
 				m_playerDirection = playerDir;
 				Quaternion lookRot;
 				Quaternion::LookRotation(playerDir, Vector3::Up, lookRot);
+				Vector3 euler = lookRot.ToEuler();
+				euler.x = 0.f;
+				euler.z = 0.f;
 				auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
-				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+				m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, Quaternion::CreateFromYawPitchRoll(euler), lookRotationDampFactor * GetDeltaTime());
 			}
 		}
 		return;
 	}
 
-
+	playerDir.x = 0.f;
+	playerDir.z = 0.f;
 	m_playerDirection = playerDir;
+	m_faceDirection.x = 0.f;
+	m_faceDirection.z = 0.f;
 	Quaternion lookRot;
 	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
+	Vector3 euler = lookRot.ToEuler();
+	euler.x = 0.f;
+	euler.z = 0.f;
 	auto lookRotationDampFactor = m_player.lock().get()->GetTypeInfo().GetProperty("lookRotationDampFactor")->Get<float>(m_player.lock().get()).Get();
-	m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, lookRot, lookRotationDampFactor * GetDeltaTime());
+	m_owner.lock()->m_transform->m_rotation = Quaternion::Slerp(m_owner.lock().get()->m_transform->m_rotation, Quaternion::CreateFromYawPitchRoll(euler), lookRotationDampFactor * GetDeltaTime());
 
 	// 플레이어 회전
 	/*if (m_camera.lock()->GetComponent<PlayerCamera>().lock()->GetTypeInfo().GetProperty("isLockOn")->Get<bool>(m_camera.lock()->GetComponent<PlayerCamera>().lock().get()).Get())
