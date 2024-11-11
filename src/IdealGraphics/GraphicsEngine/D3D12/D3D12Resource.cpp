@@ -47,7 +47,7 @@ D3D12UploadBuffer::~D3D12UploadBuffer()
 {
 	if (m_resource.Get())
 	{
-		m_resource->Unmap(0, nullptr);
+		//m_resource->Unmap(0, nullptr);
 	}
 }
 
@@ -118,7 +118,8 @@ void Ideal::D3D12GPUBuffer::CreateBuffer(ID3D12Device* Device, uint32 ElementSiz
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
 		&resourceDesc,
-		D3D12_RESOURCE_STATE_COPY_DEST,
+		//D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_COMMON,
 		nullptr,
 		IID_PPV_ARGS(m_resource.GetAddressOf())
 	));
