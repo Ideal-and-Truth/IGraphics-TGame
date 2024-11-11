@@ -22,8 +22,8 @@ namespace Truth
 		void load(Archive& ar, const unsigned int file_version);
 
 	private:
-		std::shared_ptr<Ideal::ISkinnedMeshObject> m_skinnedMesh;
-		std::shared_ptr<Ideal::IAnimation> m_animation;
+		std::weak_ptr<Ideal::ISkinnedMeshObject> m_skinnedMesh;
+		std::weak_ptr<Ideal::IAnimation> m_animation;
 
 		std::map<std::string, std::weak_ptr<Ideal::IBone>> m_boneMap;
 

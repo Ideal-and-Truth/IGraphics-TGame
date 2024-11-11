@@ -458,6 +458,7 @@ void Truth::GraphicsManager::DeleteUISpriteSet(std::shared_ptr<UISpriteSet> _UIS
 
 std::shared_ptr<Ideal::IText> Truth::GraphicsManager::CreateTextSprite(uint32 _w, uint32 _h, float _size, std::wstring _font)
 {
+	return nullptr;
 	return m_renderer->CreateText(_w, _h, _size, _font);
 }
 

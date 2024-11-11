@@ -18,7 +18,7 @@ Truth::SkinnedMesh::SkinnedMesh(std::wstring _path)
 	: Component()
 	, m_path(_path)
 	, m_isRendering(true)
-	, m_skinnedMesh(nullptr)
+	, m_skinnedMesh()
 	, m_currentFrame(0)
 	, m_isAnimationPlaying(false)
 	, m_isAnimationEnd(false)
@@ -37,7 +37,7 @@ Truth::SkinnedMesh::SkinnedMesh()
 	: Component()
 	, m_path(L"Kachujin/Mesh")
 	, m_isRendering(true)
-	, m_skinnedMesh(nullptr)
+	, m_skinnedMesh()
 	, m_currentFrame(0)
 	, m_animationMaxFrame(0)
 	, m_isAnimationPlaying(false)
@@ -67,7 +67,7 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 	fs::path meshPath = m_path;
 
 	// 이미 매쉬가 있다면 지우고 새로 만든다.
-	if (m_skinnedMesh != nullptr)
+	if (!m_skinnedMesh.expired())
 	{
 		DeleteMesh();
 		m_skinnedMesh.reset();
@@ -77,10 +77,10 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 
 	// 본 정보 리로드
 	m_boneMap.clear();
-	uint32 boneSize = m_skinnedMesh->GetBonesSize();
+	uint32 boneSize = m_skinnedMesh.lock()->GetBonesSize();
 	for (uint32 i = 0; i < boneSize; i++)
 	{
-		std::weak_ptr<Ideal::IBone> bone = m_skinnedMesh->GetBoneByIndex(i);
+		std::weak_ptr<Ideal::IBone> bone = m_skinnedMesh.lock()->GetBoneByIndex(i);
 		m_boneMap[bone.lock()->GetName()] = bone;
 	}
 
@@ -88,9 +88,9 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 	// 기본 머테리얼을 정보를 생성하여 저장한다.
 	if (m_matPath.empty())
 	{
-		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
+		for (size_t i = 0; i < m_skinnedMesh.lock()->GetMeshesSize(); i++)
 		{
-			std::string matName = m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->GetFBXMaterialName();
+			std::string matName = m_skinnedMesh.lock()->GetMeshByIndex(static_cast<uint32>(i)).lock()->GetFBXMaterialName();
 			fs::path matPath = "../Resources/Matarial" / meshPath.filename();
 
 			if (!fs::exists(matPath))
@@ -101,26 +101,26 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 			auto material = m_managers.lock()->Graphics()->CreateMaterial(matPath.generic_string());
 			m_mat.push_back(material);
 
-			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+			m_skinnedMesh.lock()->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
 
 			if (material->m_alphaCulling)
 			{
-				m_skinnedMesh->AlphaClippingCheck();
+				m_skinnedMesh.lock()->AlphaClippingCheck();
 			}
 		}
 	}
 	// 저장되어 있는 머테리얼 정보를 불러온다.
 	else
 	{
-		for (size_t i = 0; i < m_skinnedMesh->GetMeshesSize(); i++)
+		for (size_t i = 0; i < m_skinnedMesh.lock()->GetMeshesSize(); i++)
 		{
 			auto material = m_managers.lock()->Graphics()->CreateMaterial(m_matPath[i], false);
 			m_mat.push_back(material);
 
-			m_skinnedMesh->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
+			m_skinnedMesh.lock()->GetMeshByIndex(static_cast<uint32>(i)).lock()->SetMaterialObject(material->m_material);
 			if (material->m_alphaCulling)
 			{
-				m_skinnedMesh->AlphaClippingCheck();
+				m_skinnedMesh.lock()->AlphaClippingCheck();
 			}
 		}
 	}
@@ -134,13 +134,13 @@ void Truth::SkinnedMesh::SetSkinnedMesh(std::wstring _path)
 /// <param name="_offset">애니메이션 오프셋 매트릭스</param>
 void Truth::SkinnedMesh::AddAnimation(std::string _name, std::wstring _path, const Matrix& _offset /*= Matrix::Identity*/)
 {
-	if (m_animation != nullptr)
+	if (!m_animation.expired())
 		m_animation.reset();
 
 	m_animation = m_managers.lock()->Graphics()->CreateAnimation(_path, _offset);
 
-	if (m_skinnedMesh != nullptr)
-		m_skinnedMesh->AddAnimation(_name, m_animation);
+	if (!m_skinnedMesh.expired())
+		m_skinnedMesh.lock()->AddAnimation(_name, m_animation.lock());
 }
 
 /// <summary>
@@ -150,10 +150,10 @@ void Truth::SkinnedMesh::AddAnimation(std::string _name, std::wstring _path, con
 /// <param name="WhenCurrentAnimationFinished">현재 애니메이션이 종료 되고 재생할지 여부</param>
 void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrentAnimationFinished)
 {
-	if (m_animation != nullptr)
+	if (!m_animation.expired())
 	{
 		m_isAnimationChanged = true;
-		m_skinnedMesh->SetAnimation(_name, WhenCurrentAnimationFinished);
+		m_skinnedMesh.lock()->SetAnimation(_name, WhenCurrentAnimationFinished);
 	}
 }
 
@@ -163,7 +163,7 @@ void Truth::SkinnedMesh::SetAnimation(const std::string& _name, bool WhenCurrent
 /// <param name="Speed">속도 (배율)</param>
 void Truth::SkinnedMesh::SetAnimationSpeed(float Speed)
 {
-	m_skinnedMesh->SetAnimationSpeed(Speed);
+	m_skinnedMesh.lock()->SetAnimationSpeed(Speed);
 }
 
 /// <summary>
@@ -172,24 +172,24 @@ void Truth::SkinnedMesh::SetAnimationSpeed(float Speed)
 /// <param name="playStop">재생 여부</param>
 void Truth::SkinnedMesh::SetPlayStop(bool playStop)
 {
-	m_skinnedMesh->SetPlayAnimation(playStop);
+	m_skinnedMesh.lock()->SetPlayAnimation(playStop);
 }
 
 void Truth::SkinnedMesh::Initialize()
 {
 	SetSkinnedMesh(m_path);
-	if (m_skinnedMesh)
-		m_skinnedMesh->SetDrawObject(m_owner.lock()->m_isActive);
+	if (m_skinnedMesh.lock())
+		m_skinnedMesh.lock()->SetDrawObject(m_owner.lock()->m_isActive);
 }
 
 void Truth::SkinnedMesh::Update()
 {
 	if (!m_isAnimationChanged)
-		m_currentFrame = m_skinnedMesh->GetCurrentAnimationIndex();
+		m_currentFrame = m_skinnedMesh.lock()->GetCurrentAnimationIndex();
 
 	if (m_isAnimationChanged)
 	{
-		if (m_skinnedMesh->GetCurrentAnimationIndex() == 0)
+		if (m_skinnedMesh.lock()->GetCurrentAnimationIndex() == 0)
 		{
 			m_currentFrame = 0;
 			m_oldFrame = 0;
@@ -197,11 +197,11 @@ void Truth::SkinnedMesh::Update()
 		}
 	}
 
-	if (m_animation != nullptr)
+	if (!m_animation.expired())
 	{
-		m_animationMaxFrame = m_skinnedMesh->GetCurrentAnimationMaxFrame();
+		m_animationMaxFrame = m_skinnedMesh.lock()->GetCurrentAnimationMaxFrame();
 
-		m_skinnedMesh->AnimationDeltaTime(GetDeltaTime());
+		m_skinnedMesh.lock()->AnimationDeltaTime(GetDeltaTime());
 
 		if (m_oldFrame > m_currentFrame)
 		{
@@ -232,8 +232,8 @@ void Truth::SkinnedMesh::ApplyTransform()
 // 			"x: " + std::to_string(rot.x) + " y: " + std::to_string(rot.y) + " z: " + std::to_string(rot.z) + "\n";
 // 		DEBUG_PRINT(temp.c_str());
 // 	}
-	m_skinnedMesh->SetTransformMatrix(m_owner.lock()->GetWorldTM());
-	m_skinnedMesh->SetDrawObject(m_isRendering);
+	m_skinnedMesh.lock()->SetTransformMatrix(m_owner.lock()->GetWorldTM());
+	m_skinnedMesh.lock()->SetDrawObject(m_isRendering);
 }
 
 void Truth::SkinnedMesh::Destroy()
@@ -243,8 +243,8 @@ void Truth::SkinnedMesh::Destroy()
 
 void Truth::SkinnedMesh::SetActive()
 {
-	if (m_skinnedMesh)
-		m_skinnedMesh->SetDrawObject(m_owner.lock()->m_isActive);
+	if (!m_skinnedMesh.expired())
+		m_skinnedMesh.lock()->SetDrawObject(m_owner.lock()->m_isActive);
 }
 
 /// <summary>
@@ -252,10 +252,9 @@ void Truth::SkinnedMesh::SetActive()
 /// </summary>
 void Truth::SkinnedMesh::DeleteMesh()
 {
-	if (m_skinnedMesh)
-		m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh);
+	if (!m_skinnedMesh.expired())
+		m_managers.lock()->Graphics()->DeleteMeshObject(m_skinnedMesh.lock());
 	m_skinnedMesh.reset();
-	m_skinnedMesh = nullptr;
 }
 
 /// <summary>

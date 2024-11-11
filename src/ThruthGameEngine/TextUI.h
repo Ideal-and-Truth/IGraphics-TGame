@@ -32,7 +32,7 @@ namespace Truth
 		void load(Archive& ar, const unsigned int file_version);
 
 	private:
-		std::shared_ptr<Ideal::IText> m_textSprite;
+		std::weak_ptr<Ideal::IText> m_textSprite;
 
 		PROPERTY(spriteSize);
 		Vector2 m_spriteSize;

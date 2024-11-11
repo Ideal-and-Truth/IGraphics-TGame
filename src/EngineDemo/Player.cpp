@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Collider.h"
+#include "Managers.h"
 #include <yaml-cpp/yaml.h>
 BOOST_CLASS_EXPORT_IMPLEMENT(Player)
 
@@ -130,7 +131,9 @@ void Player::Update()
 
 void Player::SavePlayerData([[maybe_unused]] const void* _)
 {
-	fs::path savePath = m_dataPath / ".player";
+	::SetCurrentDirectory(Truth::Managers::GetRootPath().c_str());
+
+	fs::path savePath = m_dataPath / "data.player";
 
 	YAML::Node node;
 	YAML::Emitter emitter;
@@ -146,8 +149,11 @@ void Player::SavePlayerData([[maybe_unused]] const void* _)
 
 	emitter << YAML::EndMap;
 	emitter << YAML::EndDoc;
-
-	std::ofstream fout(m_dataPath);
+	if (!fs::exists(savePath.parent_path()))
+	{
+		fs::create_directories(savePath.parent_path());
+	}
+	std::ofstream fout(savePath);
 	fout << emitter.c_str();
 
 	fout.close();

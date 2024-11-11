@@ -1,8 +1,8 @@
 #pragma once
 #include "windows.h"
-//#ifndef _DEBUG
-// #define DEBUG_PRINT
-//#else
+#ifndef _DEBUG
+#define DEBUG_PRINT
+#else
 #include <debugapi.h>
 // static void _PrintDebugString(const WCHAR* format, ...) 
 // {
@@ -23,4 +23,4 @@ static void _PrintDebugString(const char* format, ...)
 	OutputDebugStringA(buf);
 }
 #define DEBUG_PRINT _PrintDebugString
-//#endif
+#endif

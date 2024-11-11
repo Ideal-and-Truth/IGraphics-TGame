@@ -12,7 +12,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(Truth::TextUI)
 /// 积己磊
 /// </summary>
 Truth::TextUI::TextUI()
-	: m_textSprite(nullptr)
+	: m_textSprite()
 	, m_spriteSize{ 1, 1 }
 	, m_textSize{ 100.f, 100.f }
 	, m_alpha(1.0f)
@@ -30,7 +30,7 @@ Truth::TextUI::TextUI()
 /// </summary>
 Truth::TextUI::~TextUI()
 {
-	m_managers.lock()->Graphics()->DeleteTextSprite(m_textSprite);
+	m_managers.lock()->Graphics()->DeleteTextSprite(m_textSprite.lock());
 }
 
 /// <summary>
@@ -42,7 +42,7 @@ void Truth::TextUI::ChangeText(const std::wstring& _text)
 {
 	if (!m_text._Equal(_text))
 	{
-		m_textSprite->ChangeText(_text);
+		m_textSprite.lock()->ChangeText(_text);
 		m_text = _text;
 	}
 }
@@ -50,7 +50,7 @@ void Truth::TextUI::ChangeText(const std::wstring& _text)
 void Truth::TextUI::SetAlpha(float _alpha)
 {
 	m_alpha = _alpha;
-	m_textSprite->SetAlpha(_alpha);
+	m_textSprite.lock()->SetAlpha(_alpha);
 }
 
 /// <summary>
@@ -58,6 +58,7 @@ void Truth::TextUI::SetAlpha(float _alpha)
 /// </summary>
 void Truth::TextUI::Initialize()
 {
+	return;
 	if (m_behavior)
 		m_behavior->Initialize(m_managers, ::Cast<TextUI, Component>(shared_from_this()), m_owner);
 	auto gp = m_managers.lock()->Graphics();
@@ -65,17 +66,19 @@ void Truth::TextUI::Initialize()
 		static_cast<uint32>(m_textSize.x), 
 		static_cast<uint32>(m_textSize.y),
 		m_fontSize);
-	m_textSprite->SetScale({ m_spriteSize.x, m_spriteSize.y });
+	m_textSprite.lock()->SetScale({ m_spriteSize.x, m_spriteSize.y });
 	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
-	m_textSprite->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });
-	m_textSprite->SetActive(IsActive());
-	m_textSprite->SetAlpha(m_alpha);
-	m_textSprite->SetZ(m_zDepth);
-	m_textSprite->ChangeText(m_text);
+	m_textSprite.lock()->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });
+	m_textSprite.lock()->SetActive(IsActive());
+	m_textSprite.lock()->SetAlpha(m_alpha);
+	m_textSprite.lock()->SetZ(m_zDepth);
+	m_textSprite.lock()->ChangeText(m_text);
 }
 
 void Truth::TextUI::Start()
 {
+	return;
+
 	if (m_behavior)
 		m_behavior->Start();
 	ResizeWindow();
@@ -83,12 +86,16 @@ void Truth::TextUI::Start()
 
 void Truth::TextUI::Awake()
 {
+	return;
+
 	if (m_behavior)
 		m_behavior->Awake();
 }
 
 void Truth::TextUI::Update()
 {
+	return;
+
 #ifdef EDITOR_MODE
 	ResizeWindow();
 #endif
@@ -123,24 +130,24 @@ bool Truth::TextUI::IsActive()
 /// <param name="_active">劝己拳 咯何</param>
 void Truth::TextUI::SetSpriteActive(bool _active)
 {
-	m_textSprite->SetActive(_active);
+	m_textSprite.lock()->SetActive(_active);
 }
 
 #ifdef EDITOR_MODE
 void Truth::TextUI::EditorSetValue()
 {
 	auto gp = m_managers.lock()->Graphics();
-	gp->DeleteTextSprite(m_textSprite);
+	gp->DeleteTextSprite(m_textSprite.lock());
 	m_textSprite = gp->CreateTextSprite(
 		static_cast<uint32>(m_textSize.x), 
 		static_cast<uint32>(m_textSize.y),
 		m_fontSize);
-	m_textSprite->SetScale({ m_spriteSize.x, m_spriteSize.y });
+	m_textSprite.lock()->SetScale({ m_spriteSize.x, m_spriteSize.y });
 	m_finalSize = { m_spriteSize.x * m_textSize.x, m_spriteSize.y * m_textSize.y };
-	m_textSprite->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });
-	m_textSprite->SetActive(IsActive());
-	m_textSprite->SetAlpha(m_alpha);
-	m_textSprite->SetZ(m_zDepth);
-	m_textSprite->ChangeText(m_text);
+	m_textSprite.lock()->SetPosition({ m_position.x - (m_finalSize.x * 0.5f), m_position.y - (m_finalSize.y * 0.5f) });
+	m_textSprite.lock()->SetActive(IsActive());
+	m_textSprite.lock()->SetAlpha(m_alpha);
+	m_textSprite.lock()->SetZ(m_zDepth);
+	m_textSprite.lock()->ChangeText(m_text);
 }
 #endif // EDITOR_MODE
