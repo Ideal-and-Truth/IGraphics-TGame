@@ -35,7 +35,7 @@ void TitleUI::Update()
 
 	if (m_managers.lock()->Input()->GetKeyState(KEY::ENTER) == KEY_STATE::DOWN)
 	{
-		m_managers.lock()->Scene()->ChangeScene("Stage1");
+		m_managers.lock()->Event()->PublishEvent("Loading");
 	}
 }
 

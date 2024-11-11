@@ -1,18 +1,6 @@
 #pragma once
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/serialization/string.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/shared_ptr.hpp>
-#include <boost/serialization/weak_ptr.hpp>
-#include <boost/serialization/export.hpp>
-#include <boost/serialization/version.hpp>
-#include <boost/serialization/split_member.hpp>
-#include "TypeInfoMacros.h"
-#include <string>
-#include <memory>
-#include "Types.h"
-// #include "EventHandler.h"
+#include "Headers.h"
+#include "EventHandler.h"
 
 namespace Truth
 {
@@ -24,7 +12,7 @@ namespace Truth
 namespace Truth
 {
 	class ButtonBehavior
-		// : public EventHandler
+		: public EventHandler
 	{
 		GENERATE_CLASS_TYPE_INFO(ButtonBehavior);
 

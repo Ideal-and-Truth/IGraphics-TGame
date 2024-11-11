@@ -4,8 +4,6 @@ namespace Truth
 {
 	class EventHandler
 	{
-
-
 	public:
 		// EventSystem 에 등록하기 위한 Callable 생성
 		template <typename T>

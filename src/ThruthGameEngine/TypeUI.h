@@ -15,7 +15,7 @@
 #include "ISprite.h"
 #include "Material.h"
 #include "Texture.h"
-#include "ButtonBehavior.h"
+// #include "ButtonBehavior.h"
 #include "TypeInfo.h"
 #include "UISpriteSet.h"
 
@@ -191,25 +191,25 @@ namespace TypeUI
 					_val->ChangeTexture(2);
 			}
 		}
-		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::ButtonBehavior>>)
-		{
-			if (_val != nullptr)
-				ImGui::Text(_val->m_name.c_str());
-
-			const auto& buttonList = TypeInfo::g_buttonFactory->m_buttonList;
-			if (ImGui::CollapsingHeader("Set Button"))
-			{
-				int selectedItem = -1;
-				if (ImGui::ListBox("Button", &selectedItem, buttonList.data(), static_cast<int32>(buttonList.size()), 6))
-				{
-					if (_val)
-						_val.reset();
-					_val = TypeInfo::g_buttonFactory->Create(buttonList[selectedItem]);
-					return true;
-				}
-			}
-			return false;
-		}
+// 		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::ButtonBehavior>>)
+// 		{
+// 			if (_val != nullptr)
+// 				ImGui::Text(_val->m_name.c_str());
+// 
+// 			const auto& buttonList = TypeInfo::g_buttonFactory->m_buttonList;
+// 			if (ImGui::CollapsingHeader("Set Button"))
+// 			{
+// 				int selectedItem = -1;
+// 				if (ImGui::ListBox("Button", &selectedItem, buttonList.data(), static_cast<int32>(buttonList.size()), 6))
+// 				{
+// 					if (_val)
+// 						_val.reset();
+// 					_val = TypeInfo::g_buttonFactory->Create(buttonList[selectedItem]);
+// 					return true;
+// 				}
+// 			}
+// 			return false;
+// 		}
 		else if constexpr (std::is_same_v<T, std::shared_ptr<Truth::UISpriteSet>>)
 		{
 			const ImVec2 size(100, 100);
