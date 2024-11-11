@@ -23,6 +23,7 @@ void StageBGM::Start()
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_2_BGM.wav", true);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_3_BGM.wav", true);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_1_Ambient_Sound.wav", true);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\chronos_boss_loop_1.mp3", true);
 }
 
 void StageBGM::Update()
@@ -72,9 +73,8 @@ void StageBGM::Update()
 
 		if (sceneName == "StageBoss")
 		{
-			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_1_BGM.wav", false, 64);
-			m_managers.lock()->Sound()->SetVolum(64, 0.5f);
-			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_1_Ambient_Sound.wav", false, 65);
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\01. Ambient_Sound\\chronos_boss_loop_1.mp3", false, 64);
+			m_managers.lock()->Sound()->SetVolum(64, 1.f);
 			m_isPlay = true;
 			m_sceneName = sceneName;
 		}
