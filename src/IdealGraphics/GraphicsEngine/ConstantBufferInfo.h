@@ -40,6 +40,8 @@ struct CB_MaterialInfo
 
 	uint32 bIsTransmissive;
 	uint32 Layer = 0;
+
+	float pad0 = 0;
 };
 
 struct CB_Bone

@@ -56,13 +56,17 @@ struct MaterialInfoConstantBuffer
 
 	float metallicFactor;
 	float roughnessFactor;
+
     float TilingX;
     float TilingY;
+
     float OffsetX;
     float OffsetY;
 
     unsigned int bIsTransmissive;
     unsigned int Layer;
+
+    float pad0;
 };
 
 struct CubeConstantBuffer
