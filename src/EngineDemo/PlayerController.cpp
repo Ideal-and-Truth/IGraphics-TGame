@@ -225,8 +225,6 @@ void PlayerController::PlayerMove(const void*)
 			}
 			else
 			{
-				m_faceDirection.x = 0.f;
-				m_faceDirection.z = 0.f;
 				Quaternion lookRot;
 				Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
 				Vector3 euler = lookRot.ToEuler();
@@ -264,11 +262,7 @@ void PlayerController::PlayerMove(const void*)
 		return;
 	}
 
-	playerDir.x = 0.f;
-	playerDir.z = 0.f;
 	m_playerDirection = playerDir;
-	m_faceDirection.x = 0.f;
-	m_faceDirection.z = 0.f;
 	Quaternion lookRot;
 	Quaternion::LookRotation(m_faceDirection, Vector3::Up, lookRot);
 	Vector3 euler = lookRot.ToEuler();
