@@ -2,7 +2,7 @@
 maxTP: 300
 maxCP: 100
 currentDamage: 30
-currentTP: 243
+currentTP: 72
 currentCP: 0
 chargingCP: 10
 ...

@@ -68,6 +68,9 @@ private:
 
 	PROPERTY(isDead);
 	bool m_isDead;
+	
+	PROPERTY(isCutScene);
+	bool m_isCutScene;
 
 public:
 	Player();

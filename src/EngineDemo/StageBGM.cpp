@@ -23,7 +23,7 @@ void StageBGM::Start()
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_2_BGM.wav", true);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_3_BGM.wav", true);
 	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\Stage_1_Ambient_Sound.wav", true);
-	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\chronos_boss_loop_1.mp3", true);
+	m_managers.lock()->Sound()->CreateSound(L"..\\Resources\\Sounds\\01. Ambient_Sound\\chronos_boss_loop_1.wav", true);
 }
 
 void StageBGM::Update()

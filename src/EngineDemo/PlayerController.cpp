@@ -16,6 +16,7 @@ PlayerController::PlayerController()
 	, m_useImpulse(true)
 	, m_needRot(true)
 	, m_canMove(true)
+	, m_isCutScene(false)
 {
 	m_name = "PlayerController";
 }
@@ -51,7 +52,7 @@ void PlayerController::FixedUpdate()
 {
 	if (!m_controller.expired())
 	{
-		if (!m_canMove)
+		if (!m_canMove || m_isCutScene)
 		{
 			m_moveVec = Vector3::Zero;
 		}
@@ -90,62 +91,64 @@ void PlayerController::PlayerMove(const void*)
 
 	Vector3 right = -direction.Cross({ 0.f,1.f,0.f });
 
+	if (!m_isCutScene)
+	{
+		if (GetKey(KEY::W))
+		{
+			m_forwardInput = 1.f;
+		}
+		else if (GetKey(KEY::S))
+		{
+			m_forwardInput = -1.f;
+		}
+		else
+		{
+			m_forwardInput = 0.f;
+		}
+		if (GetKey(KEY::W) && GetKey(KEY::S))
+		{
+			m_forwardInput = 0.f;
+		}
 
-	if (GetKey(KEY::W))
-	{
-		m_forwardInput = 1.f;
-	}
-	else if (GetKey(KEY::S))
-	{
-		m_forwardInput = -1.f;
-	}
-	else
-	{
-		m_forwardInput = 0.f;
-	}
-	if (GetKey(KEY::W) && GetKey(KEY::S))
-	{
-		m_forwardInput = 0.f;
-	}
 
+		if (GetKey(KEY::A))
+		{
+			m_sideInput = -1.f;
+		}
+		else if (GetKey(KEY::D))
+		{
+			m_sideInput = 1.f;
+		}
+		else
+		{
+			m_sideInput = 0.f;
+		}
+		if (GetKey(KEY::A) && GetKey(KEY::D))
+		{
+			m_sideInput = 0.f;
+		}
 
-	if (GetKey(KEY::A))
-	{
-		m_sideInput = -1.f;
-	}
-	else if (GetKey(KEY::D))
-	{
-		m_sideInput = 1.f;
-	}
-	else
-	{
-		m_sideInput = 0.f;
-	}
-	if (GetKey(KEY::A) && GetKey(KEY::D))
-	{
-		m_sideInput = 0.f;
-	}
+		if (GetKey(KEY::W) && GetKey(KEY::A))
+		{
+			m_forwardInput = 0.6f;
+			m_sideInput = -0.6f;
+		}
+		else if (GetKey(KEY::W) && GetKey(KEY::D))
+		{
+			m_forwardInput = 0.6f;
+			m_sideInput = 0.6f;
+		}
 
-	if (GetKey(KEY::W) && GetKey(KEY::A))
-	{
-		m_forwardInput = 0.6f;
-		m_sideInput = -0.6f;
-	}
-	else if (GetKey(KEY::W) && GetKey(KEY::D))
-	{
-		m_forwardInput = 0.6f;
-		m_sideInput = 0.6f;
-	}
-
-	if (GetKey(KEY::S) && GetKey(KEY::A))
-	{
-		m_forwardInput = -0.6f;
-		m_sideInput = -0.6f;
-	}
-	else if (GetKey(KEY::S) && GetKey(KEY::D))
-	{
-		m_forwardInput = -0.6f;
-		m_sideInput = 0.6f;
+		if (GetKey(KEY::S) && GetKey(KEY::A))
+		{
+			m_forwardInput = -0.6f;
+			m_sideInput = -0.6f;
+		}
+		else if (GetKey(KEY::S) && GetKey(KEY::D))
+		{
+			m_forwardInput = -0.6f;
+			m_sideInput = 0.6f;
+		}
 	}
 
 

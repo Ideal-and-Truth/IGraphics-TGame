@@ -51,6 +51,9 @@ private:
 	PROPERTY(needRot);
 	bool m_needRot;
 
+	PROPERTY(isCutScene);
+	bool m_isCutScene;
+
 public:
 	PlayerController();
 	virtual ~PlayerController();

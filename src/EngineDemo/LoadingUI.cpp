@@ -18,8 +18,16 @@ void LoadingUI::Start()
 	auto tex = m_managers.lock()->Graphics()->CreateTexture(p, false, false, false);
 	m_sprite->SetTexture(tex->m_texture);
 	m_sprite->SetAlpha(m_alpha);
-	m_sprite->SetPosition({ 0, 0 });
-	m_sprite->SetScale({ 1920.f, 1080.f });
+	if (m_path == "../Resources/Textures/UI/Loading/Loading.png")
+	{
+		m_sprite->SetPosition({ 1550.f, 900.f });
+		m_sprite->SetScale({ 1.f, 1.f });
+	}
+	else
+	{
+		m_sprite->SetPosition({ 0, 0 });
+		m_sprite->SetScale({ 1920.f, 1080.f });
+	}
 
 
 	EventBind("Loading", &LoadingUI::Active);
@@ -29,7 +37,7 @@ void LoadingUI::Update()
 {
 	if (GetKeyDown(KEY::F10) && m_nextMap == m_cheat)
 	{
-		m_isActive = true;
+		m_managers.lock()->Scene()->ChangeScene(m_nextMap);
 	}
 	if (!m_isActive)
 		return;

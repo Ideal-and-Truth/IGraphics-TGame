@@ -90,8 +90,13 @@ void PlayerCamera::FixedUpdate()
 
 void PlayerCamera::LateUpdate()
 {
+	m_playerController->GetTypeInfo().GetProperty("isCutScene")->Set(m_playerController.get(), m_isCutScenePlay);
+	m_player.lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("isCutScene")->Set(m_player.lock()->GetComponent<Player>().lock().get(), m_isCutScenePlay);
+
 	if (m_isCutScenePlay)
+	{
 		return;
+	}
 
 
 	if (m_enemys.empty())
@@ -178,7 +183,7 @@ void PlayerCamera::LateUpdate()
 			m_azimuth = 3.14f;
 
 		/// TODO : Ä«¸Þ¶ó ÁÜÀÎ ÁÜ¾Æ¿ô ³ªÁß¿¡ ²ô±â
-		m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
+		//m_cameraDistance -= m_managers.lock()->Input()->m_deltaWheel * 0.01f;
 
 		if (m_cameraDistance <= 0.0f)
 			m_cameraDistance = 0.001f;

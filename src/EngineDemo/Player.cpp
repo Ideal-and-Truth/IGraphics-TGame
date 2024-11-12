@@ -26,6 +26,7 @@ Player::Player()
 	, m_onFire(false)
 	, m_getDotDeal(false)
 	, m_isDead(false)
+	, m_isCutScene(false)
 {
 	m_name = "Player";
 }
@@ -105,6 +106,11 @@ void Player::Update()
 			m_currentCP = 0.f;
 			m_slowTime = false;
 		}
+	}
+	
+	if (m_isCutScene)
+	{
+		return;
 	}
 
 	/// 1초마다 체력 감소
