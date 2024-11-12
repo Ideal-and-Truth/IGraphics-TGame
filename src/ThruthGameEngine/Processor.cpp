@@ -50,7 +50,7 @@ void Processor::Initialize(HINSTANCE _hInstance, LPCWSTR _icon)
 {
 	m_icon = _icon;
 	m_hinstance = _hInstance;
-	CreateMainWindow(_hInstance);
+	CreateMainWindow(_hInstance, 1920, 1080, L"Chronos");
 	InitializeManager();
 	g_inputmanager = m_manager->Input().get();
 	g_sceneManager = m_manager->Scene().get();

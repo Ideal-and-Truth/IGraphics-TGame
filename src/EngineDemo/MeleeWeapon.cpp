@@ -114,6 +114,7 @@ void MeleeWeapon::Update()
 			if (m_playerAnimator->GetTypeInfo().GetProperty("parry")->Get<bool>(m_playerAnimator.get()).Get())
 			{
 				enemyDamage = 0.f;
+				m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\02 Combat_Sound\\Player_Block_Sound_1.wav", true, 63);
 			}
 
 			Vector3 pos = e->GetWorldPosition();
