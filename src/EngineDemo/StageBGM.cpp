@@ -73,7 +73,7 @@ void StageBGM::Update()
 
 		if (sceneName == "StageBoss")
 		{
-			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\01. Ambient_Sound\\chronos_boss_loop_1.mp3", false, 64);
+			m_managers.lock()->Sound()->Play(L"..\\Resources\\Sounds\\01. Ambient_Sound\\chronos_boss_loop_1.wav", false, 64);
 			m_managers.lock()->Sound()->SetVolum(64, 1.f);
 			m_isPlay = true;
 			m_sceneName = sceneName;
