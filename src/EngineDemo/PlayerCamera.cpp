@@ -19,7 +19,7 @@ PlayerCamera::PlayerCamera()
 	, m_passingTime(0.f)
 	, m_isLockOn(false)
 	, m_isShaking(false)
-	, m_enemyCount(0)
+	// , m_enemyCount(0)
 	, m_loopCount(0)
 	, m_shakeCount(0.f)
 	, m_zoomTime(0.f)
@@ -77,11 +77,11 @@ void PlayerCamera::FixedUpdate()
 	{
 		return;
 	}
-	if (m_isLockOn && !m_enemys.empty()
-		&& !m_player.lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(m_player.lock()->GetComponent<Player>().lock().get()).Get())
-	{
-		LockOnCamera();
-	}
+	// if (m_isLockOn && !m_enemys.empty()
+	// 	&& !m_player.lock()->GetComponent<Player>().lock()->GetTypeInfo().GetProperty("isDead")->Get<bool>(m_player.lock()->GetComponent<Player>().lock().get()).Get())
+	// {
+	// 	LockOnCamera();
+	// }
 	else
 	{
 		FreeCamera();
@@ -102,72 +102,76 @@ void PlayerCamera::LateUpdate()
 	if (m_enemys.empty())
 		m_isLockOn = false;
 
-	if (!m_enemys.empty())
-	{
-		if (GetKeyDown(MOUSE::WHEEL))
-		{
-			m_isLockOn = true;
-			m_passingTime = 0.f;
-		}
-		if (GetKey(MOUSE::WHEEL) && m_isLockOn)
-		{
-			m_passingTime += GetDeltaTime();
-			if (m_isLockOn && m_passingTime > 1.f)
-			{
-				m_isLockOn = false;
-				m_enemyCount = 0;
-				m_passingTime = 0.f;
-			}
-		}
-		else if (GetKeyUp(MOUSE::WHEEL) && m_isLockOn)
-			m_passingTime = 0.f;
-	}
+	// if (!m_enemys.empty())
+	// {
+	// 	if (GetKeyDown(MOUSE::WHEEL))
+	// 	{
+	// 		m_isLockOn = true;
+	// 		m_passingTime = 0.f;
+	// 	}
+	// 	if (GetKey(MOUSE::WHEEL) && m_isLockOn)
+	// 	{
+	// 		m_passingTime += GetDeltaTime();
+	// 		if (m_isLockOn && m_passingTime > 1.f)
+	// 		{
+	// 			m_isLockOn = false;
+	// 			m_enemyCount = 0;
+	// 			m_passingTime = 0.f;
+	// 		}
+	// 	}
+	// 	else if (GetKeyUp(MOUSE::WHEEL) && m_isLockOn)
+	// 		m_passingTime = 0.f;
+	// }
 
 	/// //////////////////////////////////////////////////////////////////
 	/// 락온용
-	if (m_isLockOn && !m_enemys.empty())
-	{
-		SortEnemy();
-
-		// 락온 카메라
-		if (GetKeyDown(MOUSE::WHEEL))
-		{
-			m_enemyCount++;
-
-			if (m_enemys.size() <= m_enemyCount)
-			{
-				m_enemyCount = 0;
-			}
-		}
-
-		if ((m_player.lock()->GetWorldPosition() - m_enemys[m_enemyCount]->GetWorldPosition()).Length() > 20.f)
-			m_enemyCount++;
-
-		if (m_enemys.size() <= m_enemyCount)
-		{
-			m_enemyCount = 0;
-			m_loopCount++;
-		}
-
-		if (m_loopCount > 2)
-		{
-			m_isLockOn = false;
-			m_loopCount = 0;
-		}
-
-
-		// 락온 중일때 각도 계산
-		if (!m_isShaking)
-		{
-			m_elevation = acos(m_camera.lock()->m_look.y);
-			m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
-		}
-
-		if (m_camera.lock()->m_look.z < 0.f)
-			m_azimuth *= -1.f;
-	}
+	// if (m_isLockOn && !m_enemys.empty())
+	// {
+	// 	SortEnemy();
+	// 
+	// 	// 락온 카메라
+	// 	if (GetKeyDown(MOUSE::WHEEL))
+	// 	{
+	// 		// m_enemyCount++;
+	// 
+	// 		if (m_enemys.size() <= m_enemyCount)
+	// 		{
+	// 			m_enemyCount = 0;
+	// 		}
+	// 	}
+	// 
+	// 	if (m_enemys.size() <= m_enemyCount)
+	// 	{
+	// 		m_enemyCount = 0;
+	// 		m_loopCount++;
+	// 	}
+	// 
+	// 	if ((m_player.lock()->GetWorldPosition() - m_enemys[m_enemyCount]->GetWorldPosition()).Length() > 20.f)
+	// 		m_enemyCount++;
+	// 
+	// 	if (m_enemys.size() <= m_enemyCount)
+	// 	{
+	// 		m_enemyCount = 0;
+	// 	}
+	// 
+	// 	if (m_loopCount > 2)
+	// 	{
+	// 		m_isLockOn = false;
+	// 		m_loopCount = 0;
+	// 	}
+	// 
+	// 
+	// 	// 락온 중일때 각도 계산
+	// 	if (!m_isShaking)
+	// 	{
+	// 		m_elevation = acos(m_camera.lock()->m_look.y);
+	// 		m_azimuth = acos(m_camera.lock()->m_look.x / sin(m_elevation));
+	// 	}
+	// 
+	// 	if (m_camera.lock()->m_look.z < 0.f)
+	// 		m_azimuth *= -1.f;
+	// }
 	/// 자유용
-	else
 	{
 		m_elevation += MouseDy() * m_cameraSpeed;
 		m_azimuth -= MouseDx() * m_cameraSpeed;
@@ -199,6 +203,10 @@ void PlayerCamera::LateUpdate()
 				e->Destroy();
 			}
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+			// if (m_enemys.size() <= m_enemyCount)
+			// {
+			// 	m_enemyCount = 0;
+			// }
 			break;
 		}
 	}
@@ -226,6 +234,10 @@ void PlayerCamera::OnTriggerExit(Truth::Collider* _other)
 		if (e == _other->GetOwner().lock())
 		{
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+			// if (m_enemys.size() <= m_enemyCount)
+			// {
+			// 	m_enemyCount = 0;
+			// }
 			break;
 		}
 	}
@@ -255,49 +267,58 @@ void PlayerCamera::FreeCamera()
 
 void PlayerCamera::LockOnCamera()
 {
-	Vector3 enemyPos = m_enemys[m_enemyCount]->GetWorldPosition();
-	Vector3 playerPos = m_player.lock()->GetWorldPosition();
-	Vector3 targetPos = playerPos + Vector3{ 0.0f, 2.0f, 0.0f };
-	Vector3 cameraPos = m_owner.lock()->GetWorldPosition();
-
-
-	Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 2.0f, 0.0f });
-	look.Normalize(look);
-	cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
-
-	m_owner.lock()->m_transform->m_position = Vector3::Lerp(m_owner.lock()->m_transform->m_position, cameraPos, 0.2f);
-	m_camera.lock()->m_look = Vector3::Lerp(m_camera.lock()->m_look, look, 0.2f);
-
-	m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
-	m_owner.lock()->m_transform->m_rotation.z = 0.f;
+	// if (m_enemys.size() <= m_enemyCount)
+	// {
+	// 	m_enemyCount = 0;
+	// }
+	// 
+	// Vector3 enemyPos = m_enemys[m_enemyCount]->GetWorldPosition();
+	// Vector3 playerPos = m_player.lock()->GetWorldPosition();
+	// Vector3 targetPos = playerPos + Vector3{ 0.0f, 2.0f, 0.0f };
+	// Vector3 cameraPos = m_owner.lock()->GetWorldPosition();
+	// 
+	// 
+	// Vector3 look = (enemyPos - playerPos - Vector3{ 0.0f, 2.0f, 0.0f });
+	// look.Normalize(look);
+	// cameraPos = m_managers.lock()->Physics()->GetRayCastHitPoint(targetPos, -look, m_cameraDistance, 1 << 3, 1 << 0);
+	// 
+	// m_owner.lock()->m_transform->m_position = Vector3::Lerp(m_owner.lock()->m_transform->m_position, cameraPos, 0.2f);
+	// m_camera.lock()->m_look = Vector3::Lerp(m_camera.lock()->m_look, look, 0.2f);
+	// 
+	// m_owner.lock()->m_transform->m_rotation = Quaternion::LookRotation(look, Vector3::Up);
+	// m_owner.lock()->m_transform->m_rotation.z = 0.f;
 
 
 }
 
 void PlayerCamera::SortEnemy()
 {
-	for (int i = 0; i < m_enemys.size(); i++)
-	{
-		for (int j = 0; j < m_enemys.size(); j++)
-		{
-			if (i == j || i > j)
-				continue;
-
-			Vector3 playerPos = m_player.lock()->m_transform->m_position;
-			Vector3 enemyPos1 = playerPos - m_enemys[i]->m_transform->m_position;
-			Vector3 enemyPos2 = playerPos - m_enemys[j]->m_transform->m_position;
-
-			float enemyDistance1 = (float)sqrt(pow(enemyPos1.x, 2) + pow(enemyPos1.y, 2));
-			float enemyDistance2 = (float)sqrt(pow(enemyPos2.x, 2) + pow(enemyPos2.y, 2));
-
-			if (enemyDistance1 > enemyDistance2)
-			{
-				std::shared_ptr<Truth::Entity> lastLocked = m_enemys[m_enemyCount];
-				m_enemys[j].swap(m_enemys[i]);
-				m_enemyCount = (int)(find(m_enemys.begin(), m_enemys.end(), lastLocked) - m_enemys.begin());
-			}
-		}
-	}
+	// for (int i = 0; i < m_enemys.size(); i++)
+	// {
+	// 	for (int j = 0; j < m_enemys.size(); j++)
+	// 	{
+	// 		if (i == j || i > j)
+	// 			continue;
+	// 
+	// 		Vector3 playerPos = m_player.lock()->m_transform->m_position;
+	// 		Vector3 enemyPos1 = playerPos - m_enemys[i]->m_transform->m_position;
+	// 		Vector3 enemyPos2 = playerPos - m_enemys[j]->m_transform->m_position;
+	// 
+	// 		float enemyDistance1 = (float)sqrt(pow(enemyPos1.x, 2) + pow(enemyPos1.y, 2));
+	// 		float enemyDistance2 = (float)sqrt(pow(enemyPos2.x, 2) + pow(enemyPos2.y, 2));
+	// 
+	// 		if (enemyDistance1 > enemyDistance2)
+	// 		{
+	// 			std::shared_ptr<Truth::Entity> lastLocked = m_enemys[m_enemyCount];
+	// 			m_enemys[j].swap(m_enemys[i]);
+	// 			m_enemyCount = (int)(find(m_enemys.begin(), m_enemys.end(), lastLocked) - m_enemys.begin());
+	// 			if (m_enemys.size() <= m_enemyCount)
+	// 			{
+	// 				m_enemyCount = 0;
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 void PlayerCamera::ShakeCamera(float shakeCount)
