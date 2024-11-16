@@ -28,6 +28,7 @@ private:
 	bool m_isShown;
 
 	bool m_revers = false;
+	bool m_isClear = false;
 
 public:
 	ClearUI();

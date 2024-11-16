@@ -160,6 +160,10 @@ void MeleeWeapon::Update()
 
 void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 {
+	if (_other == nullptr)
+	{
+		return;
+	}
 	if (m_isAttacking && m_canHit)
 	{
 		if (m_player && _other->GetOwner().lock() != m_owner.lock()->m_parent.lock())
@@ -214,7 +218,10 @@ void MeleeWeapon::OnTriggerEnter(Truth::Collider* _other)
 
 void MeleeWeapon::OnTriggerExit(Truth::Collider* _other)
 {
-
+	if (_other == nullptr)
+	{
+		return;
+	}
 }
 
 void MeleeWeapon::PlayEffect(Vector3 pos)

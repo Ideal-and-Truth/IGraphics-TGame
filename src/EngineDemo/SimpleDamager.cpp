@@ -68,6 +68,10 @@ void SimpleDamager::Update()
 
 void SimpleDamager::OnTriggerEnter(Truth::Collider* _other)
 {
+	if (_other == nullptr)
+	{
+		return;
+	}
 	if (m_user)
 	{
 		if (m_user->m_name == "Player")
@@ -92,6 +96,10 @@ void SimpleDamager::OnTriggerEnter(Truth::Collider* _other)
 
 void SimpleDamager::OnTriggerExit(Truth::Collider* _other)
 {
+	if (_other == nullptr)
+	{
+		return;
+	}
 	if (_other->GetOwner().lock()->m_name == "Player")
 	{
 		m_isPlayerIn = false;
@@ -100,6 +108,10 @@ void SimpleDamager::OnTriggerExit(Truth::Collider* _other)
 
 void SimpleDamager::OnCollisionEnter(Truth::Collider* _other)
 {
+	if (_other == nullptr)
+	{
+		return;
+	}
 	if (_other->GetOwner().lock()->m_name == "Player")
 	{
 		m_isPlayerIn = true;
@@ -108,6 +120,10 @@ void SimpleDamager::OnCollisionEnter(Truth::Collider* _other)
 
 void SimpleDamager::OnCollisionExit(Truth::Collider* _other)
 {
+	if (_other == nullptr)
+	{
+		return;
+	}
 	if (_other->GetOwner().lock()->m_name == "Player")
 	{
 		m_isPlayerIn = false;

@@ -49,6 +49,7 @@ void ClearUI::Update()
 		}
 
 		m_UI.lock()->SetAlpha(m_alpha);
+		m_isClear = true;
 	}
 	else if (!m_revers)
 	{
@@ -60,9 +61,9 @@ void ClearUI::Update()
 		}
 
 		m_UI.lock()->SetAlpha(m_alpha);
-		if (m_managers.lock()->Input()->GetKeyState(KEY::O) == KEY_STATE::DOWN)
-		{
-			m_managers.lock()->Scene()->ChangeScene("TitleScene");
-		}
+	}
+	if (m_isClear && m_managers.lock()->Input()->GetKeyState(KEY::ESC) == KEY_STATE::DOWN)
+	{
+		m_managers.lock()->Scene()->ChangeScene("TitleScene");
 	}
 }

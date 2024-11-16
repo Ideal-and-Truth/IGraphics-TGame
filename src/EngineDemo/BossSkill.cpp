@@ -237,7 +237,7 @@ void BossSkill::ShockWave()
 			shock->m_layer = 1;
 			shock->AddComponent<Truth::SphereCollider>();
 			auto damage = shock->AddComponent<SimpleDamager>();
-			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 10.f);
+			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 8.f);
 			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 
 			shock->m_name = "ShockWave";
@@ -387,7 +387,7 @@ void BossSkill::FlameSword()
 			flameShot->m_layer = 1;
 			flameShot->AddComponent<Truth::SphereCollider>();
 			auto damage = flameShot->AddComponent<SimpleDamager>();
-			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 10.f);
+			damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 8.f);
 			damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 
 			flameShot->m_name = "FlameShot";
@@ -589,7 +589,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 				auto collider = illusion->AddComponent<Truth::BoxCollider>();
 				collider->m_center = { 0.f,1.46f,0.f };
 				collider->m_size = { 1.f,3.f,1.f };
-				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 10.f);
+				damage->GetTypeInfo().GetProperty("damage")->Set(damage.get(), 8.f);
 				damage->GetTypeInfo().GetProperty("user")->Set(damage.get(), m_owner.lock());
 				damage->GetTypeInfo().GetProperty("onlyHitOnce")->Set(damage.get(), true);
 
@@ -665,7 +665,7 @@ void BossSkill::LightSpeedDash(bool isSecondPhase)
 						rigid->SetUserData(true);
 
 						auto damager = m_clones[m_cloneCount].first->GetComponent<SimpleDamager>().lock();
-						damager->GetTypeInfo().GetProperty("damage")->Set(damager.get(), 10.f);
+						damager->GetTypeInfo().GetProperty("damage")->Set(damager.get(), 8.f);
 						damager->GetTypeInfo().GetProperty("onlyHitOnce")->Set(damager.get(), false);
 
 						m_cloneCount++;

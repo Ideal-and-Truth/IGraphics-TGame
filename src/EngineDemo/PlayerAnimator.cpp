@@ -371,6 +371,10 @@ void PlayerAnimator::Update()
 
 void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 {
+	if (_other == nullptr)
+	{
+		return;
+	}
 	// 적인지 보고
 	auto enemy = _other->GetOwner().lock()->m_parent.lock();
 	if (enemy)
@@ -431,6 +435,10 @@ void PlayerAnimator::OnTriggerEnter(Truth::Collider* _other)
 
 void PlayerAnimator::OnCollisionEnter(Truth::Collider* _other)
 {
+	if (_other == nullptr)
+	{
+		return;
+	}
 	if (_other->GetOwner().lock()->GetComponent<Bullet>().lock() && !m_isDodge)
 	{
 		m_isHit = true;
@@ -1510,7 +1518,7 @@ void PlayerSkillE::OnStateEnter()
 	GetProperty("isAttacking")->Set(m_animator, true);
 	GetProperty("isRun")->Set(m_animator, false);
 	dynamic_cast<PlayerAnimator*>(m_animator)->SetImpulse(9.f, true);
-	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(20.f);
+	dynamic_cast<PlayerAnimator*>(m_animator)->SetPlayerDamage(8.f);
 	lastFrame = 0;
 }
 

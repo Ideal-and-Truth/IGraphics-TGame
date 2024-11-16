@@ -222,8 +222,13 @@ void PlayerCamera::OnTriggerEnter(Truth::Collider* _other)
 void PlayerCamera::OnTriggerExit(Truth::Collider* _other)
 {
 	for (auto& e : m_enemys)
+	{
 		if (e == _other->GetOwner().lock())
+		{
 			m_enemys.erase(remove(m_enemys.begin(), m_enemys.end(), e));
+			break;
+		}
+	}
 }
 
 void PlayerCamera::FreeCamera()
