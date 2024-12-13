@@ -10,31 +10,6 @@
 #pragma comment(lib, "ReleaseLib/GraphicsEngine/IdealGraphics.lib")
 #endif
 
-//#ifdef _DEBUG
-//#ifdef UNICODE
-//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
-//#else
-//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-//#endif
-//#endif
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// D3D12 Agility SDK Runtime
-
-//extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 613; }
-//
-//#if defined(_M_ARM64EC)
-//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\arm64\\"; }
-//#elif defined(_M_ARM64)
-//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\arm64\\"; }
-//#elif defined(_M_AMD64)
-//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\x64\\"; }
-//#elif defined(_M_IX86)
-//extern "C" { __declspec(dllexport) extern const char* D3D12SDKPath = u8".\\D3D12\\x86\\"; }
-//#endif
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 #include <iostream>
 using namespace std;
 
@@ -247,6 +222,40 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ToggleFullScreenWindow();
 #pragma endregion
 
+#pragma region Sample
+		// Create Static Mesh
+		std::shared_ptr<Ideal::IMeshObject> SampleCart = gRenderer->CreateStaticMeshObject(L"cart/SM_cart");
+		SampleCart->SetTransformMatrix(Matrix::CreateTranslation(Vector3(5, 2, 0)));
+
+		// Create Material
+		std::shared_ptr<Ideal::IMaterial> SampleCartMaterial0 = gRenderer->CreateMaterial();
+		std::shared_ptr<Ideal::IMaterial> SampleCartMaterial1 = gRenderer->CreateMaterial();
+
+		// Create Texture
+		std::shared_ptr<Ideal::ITexture> SampleCartBaseTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/cart/T_cartdeco_BaseMap.png", true, false, false);
+		SampleCartMaterial0->SetBaseMap(SampleCartBaseTexture0);
+		std::shared_ptr<Ideal::ITexture> SampleCartNormalTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/cart/T_cartdeco_Normal.png", true, true, true);
+		SampleCartMaterial0->SetNormalMap(SampleCartNormalTexture0);
+		std::shared_ptr<Ideal::ITexture> SampleCartMaskTexture0 = gRenderer->CreateTexture(L"../Resources/Textures/cart/T_cartdeco_MaskMap.png", true, true, true);
+		SampleCartMaterial0->SetMaskMap(SampleCartMaskTexture0);
+		// Bind Material
+		SampleCart->GetMeshByIndex(0).lock()->SetMaterialObject(SampleCartMaterial0);
+
+		// Create Texture
+		std::shared_ptr<Ideal::ITexture> SampleCartBaseTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/cart/T_fruitcart_BaseMap.png", true, false, false);
+		SampleCartMaterial1->SetBaseMap(SampleCartBaseTexture1);
+		std::shared_ptr<Ideal::ITexture> SampleCartNormalTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/cart/T_fruitcart_Normal.png", true, true, true);
+		SampleCartMaterial1->SetNormalMap(SampleCartNormalTexture1);
+		std::shared_ptr<Ideal::ITexture> SampleCartMaskTexture1 = gRenderer->CreateTexture(L"../Resources/Textures/cart/T_fruitcart_MaskMap.png", true, true, true);
+		SampleCartMaterial1->SetMaskMap(SampleCartMaskTexture1);
+		// Bind Material
+		SampleCart->GetMeshByIndex(1).lock()->SetMaterialObject(SampleCartMaterial1);
+		SampleCart->GetMeshByIndex(2).lock()->SetMaterialObject(SampleCartMaterial1);
+
+
+
+#pragma endregion
+
 #pragma region FBXConvert
 		//-------------------Convert FBX(Model, Animation)-------------------//
 		//gRenderer->ConvertAssetToMyFormat(L"DebugPlayer/asciiFbxAni.fbx", true);
@@ -293,9 +302,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//gRenderer->ConvertAnimationAssetToMyFormat(L"PlayerRe/Sword And Shield Slash.fbx");
 		//gRenderer->ConvertAssetToMyFormat(L"boss/bosshall.fbx", false);
 #pragma endregion
-
-		//-------------------Test Vertices Pos-------------------//
-		//ReadVertexPosition(L"../Resources/Models/Tower/Tower.pos");
 
 #pragma region CreateMeshObjectAndAnimation
 		//-------------------Create Mesh Object-------------------//
@@ -424,7 +430,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		planeMaterial->SetBaseMap(planeAlbedoTexture);
 		planeMaterial->SetMaskMap(planeMaskTexture);
 		planeMaterial->SetNormalMap(planeNormalTexture);
-		planeMaterial->SetSurfaceTypeTransparent(true);
+		planeMaterial->SetSurfaceTypeTransparent(false);
 		planeMaterial->ChangeLayerBitMask(0x0011);
 		
 		//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
@@ -460,11 +466,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			for (int x = 0; x < 20; x++)
 			{
-				//std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
-				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
-				////plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
-				//plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
-				//meshes.push_back(plane);
+				std::shared_ptr<Ideal::IMeshObject> plane = gRenderer->CreateStaticMeshObject(L"DebugPlane/Plane");
+				plane->GetMeshByIndex(0).lock()->SetMaterialObject(planeMaterial);
+				//plane->GetMeshByIndex(0).lock()->SetMaterialObject(windowMaterial);
+				plane->SetTransformMatrix(DirectX::SimpleMath::Matrix::CreateTranslation(Vector3(y * 2, 0, x * 2)));
+				meshes.push_back(plane);
 				//plane->AlphaClippingCheck();
 			}
 		}
@@ -513,47 +519,47 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #pragma endregion
 
 #pragma region CreateUI
-		std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
-		//sprite->SetTexture(eyeTexture);
-		//sprite->SetTextureSamplePosition(Vector2(0, 0));
-		sprite->SetScale(Vector2(0.1, 0.1));
-		sprite->SetPosition(Vector2(0, 0));
-		sprite->SetAlpha(0.8f);
-		sprite->SetZ(0.2);
-		// 아래의 값은 기본으로 적용되어 있음. (Set Texture 할 때 Texture의 사이즈로 아래의 작업을 함)
-		//sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight() });
-
-		//sprite->SetTextureSize(Vector2(512, 512));
-		//sprite->SetTextureSamplePosition(Vector2(0, 0));
-		//sprite->SetTextureSampleSize(Vector2(2048, 2048));
-
-		std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
-		//sprite2->SetTexture(eyeTexture);
-		//sprite2->SetSampleRect({ 0, 0, 4096*2, 4096*2 });
-		sprite2->SetSampleRect({ 1024, 0, 2048, 2048 });
-		sprite2->SetSampleRect({ 1024, 0, 4096, 2048 });
-		//sprite2->SetSampleRect({ 0, 0, 4096, 2048 });
-		//sprite2->SetSampleRect({ 1024, 0, 4096, 2048});
-		//sprite2->SetSampleRect({ 0, 0, 1024, 2048 });
-		sprite2->SetScale(Vector2(0.1, 0.1));
-		sprite2->SetPosition(Vector2(400, 50));
-		sprite2->SetZ(0.1);
-
-		std::shared_ptr<Ideal::ISprite> sprite3 = gRenderer->CreateSprite();
-		sprite3->SetScale(Vector2(0.3, 0.3));
-		sprite3->SetPosition(Vector2(1180, 860));
-		sprite3->SetZ(0);
-
-		//---Text---//
-		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
-		std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
-		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(55, 65, 30, L"times new roman");
-		//text->ChangeText(L"UI\n Test");
-		text->ChangeText(L"Test");
-		text->SetPosition(Vector2(500, 500));
-		text->SetZ(0.2);
-		
-		std::vector<std::shared_ptr<Ideal::IText>>texts;
+		//std::shared_ptr<Ideal::ISprite> sprite = gRenderer->CreateSprite();
+		////sprite->SetTexture(eyeTexture);
+		////sprite->SetTextureSamplePosition(Vector2(0, 0));
+		//sprite->SetScale(Vector2(0.1, 0.1));
+		//sprite->SetPosition(Vector2(0, 0));
+		//sprite->SetAlpha(0.8f);
+		//sprite->SetZ(0.2);
+		//// 아래의 값은 기본으로 적용되어 있음. (Set Texture 할 때 Texture의 사이즈로 아래의 작업을 함)
+		////sprite->SetSampleRect({ 0,0,faceTexture->GetWidth(), faceTexture->GetHeight() });
+		//
+		////sprite->SetTextureSize(Vector2(512, 512));
+		////sprite->SetTextureSamplePosition(Vector2(0, 0));
+		////sprite->SetTextureSampleSize(Vector2(2048, 2048));
+		//
+		//std::shared_ptr<Ideal::ISprite> sprite2 = gRenderer->CreateSprite();
+		////sprite2->SetTexture(eyeTexture);
+		////sprite2->SetSampleRect({ 0, 0, 4096*2, 4096*2 });
+		//sprite2->SetSampleRect({ 1024, 0, 2048, 2048 });
+		//sprite2->SetSampleRect({ 1024, 0, 4096, 2048 });
+		////sprite2->SetSampleRect({ 0, 0, 4096, 2048 });
+		////sprite2->SetSampleRect({ 1024, 0, 4096, 2048});
+		////sprite2->SetSampleRect({ 0, 0, 1024, 2048 });
+		//sprite2->SetScale(Vector2(0.1, 0.1));
+		//sprite2->SetPosition(Vector2(400, 50));
+		//sprite2->SetZ(0.1);
+		//
+		//std::shared_ptr<Ideal::ISprite> sprite3 = gRenderer->CreateSprite();
+		//sprite3->SetScale(Vector2(0.3, 0.3));
+		//sprite3->SetPosition(Vector2(1180, 860));
+		//sprite3->SetZ(0);
+		//
+		////---Text---//
+		////std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(200, 100, 18);
+		//std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(100, 90, 30);	// 기본 tahoma 글꼴임
+		////std::shared_ptr<Ideal::IText> text = gRenderer->CreateText(55, 65, 30, L"times new roman");
+		////text->ChangeText(L"UI\n Test");
+		//text->ChangeText(L"Test");
+		//text->SetPosition(Vector2(500, 500));
+		//text->SetZ(0.2);
+		//
+		//std::vector<std::shared_ptr<Ideal::IText>>texts;
 
 
 		//std::shared_ptr<Ideal::ITexture> uiTex0 = gRenderer->CreateTexture(L"../Resources/Textures/Test_10_15/ingame_CP_base.png");
@@ -2559,7 +2565,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				{
 					//if (sprite)
 						//gRenderer->DeleteSprite(sprite);
-					if (text)
+					//if (text)
 					{
 						//text->ChangeText(L"HELLO WORLDasdf");
 						//gRenderer->DeleteText(text);
@@ -3044,11 +3050,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						//{
 						//	SpriteTest(sprite);
 						//}
-						if (sprite3)
-						{
-							SpriteTest(sprite3);
-						}
-						if (text)
+						//if (sprite3)
+						//{
+						//	SpriteTest(sprite3);
+						//}
+						//if (text)
 						{
 							// 매 루프마다 실행하지 말 것 -> 성능 하락
 							//TextTest(text);
@@ -3141,8 +3147,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		planeMaskTexture.reset();
 		gRenderer->DeleteTexture(planeNormalTexture);
 		planeNormalTexture.reset();
-		gRenderer->DeleteText(text);
-		text.reset();
+		//gRenderer->DeleteText(text);
+		//text.reset();
 
 		gRenderer->DeleteTexture(skybox);
 		skybox.reset();
